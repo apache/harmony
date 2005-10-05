@@ -1,0 +1,25 @@
+This file contains information about all copyright holders.
+
+JC Virtual Machine:
+
+    Archie L. Cobbs <archie@dellroad.org>
+
+Portions derived from SableVM: some or all of:
+
+    Etienne M. Gagnon <etienne.gagnon@uqam.ca>
+    Brent Fulgham <bfulgham@debian.org>
+    Chak Wai So <cso1@cs.mcgill.ca>
+    Grzegorz Prokopski <gadek@debian.org>
+    Archie L. Cobbs <archie@dellroad.org>
+    David Belanger <dbelan2@cs.mcgill.ca>
+    Chris Pickett <chris.pickett@mail.mcgill.ca>
+    Randolph Chung <randolph@tausq.org>
+    Ben Burns <b.burns@chello.nl>
+    Patrick Cernko <errror@errror.de>
+    Julio M. Merino Vidal <jmmv@menta.net>
+    Melanie Lord <lord.melanie.2@courrier.uqam.ca>
+
+Java source files derived from GNU Classpath:
+
+    See http://www.classpath.org/ for more information.
+

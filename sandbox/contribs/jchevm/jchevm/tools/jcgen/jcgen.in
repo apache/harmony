@@ -1,0 +1,280 @@
+#!/bin/sh
+# $Id: jcgen.in,v 1.10 2005/05/15 20:38:55 archiecobbs Exp $
+
+# Constants
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+JAVA="@JAVA@"
+CLASSPATH_HOME="@CLASSPATH_HOME@"
+JC_CFILES="@datadir@/jc/jc.zip"
+CP_CFILES="${CLASSPATH_HOME}/share/classpath/glibj.zip"
+SOOTDIR="@datadir@/jc"
+SOOT_CFILES="${SOOTDIR}/sootclasses-@SOOT_VERSION@.jar:${SOOTDIR}/jasminclasses-sable-@JASMIN_VERSION@.jar:${SOOTDIR}/polyglot-@POLYGLOT_VERSION@.jar"
+JC_CFLAGS="@JC_CFLAGS@"
+HOSTGCC="@HOSTGCC@"
+LIBDIR="@libdir@"
+LDFLAGS="@LDFLAGS@"
+INCLUDEDIR="@includedir@/jc"
+
+GENCLASS="org.dellroad.jc.BootstrapObjectGenerator"
+
+# Defaults
+USERCPATH="."
+VMCPATH="${JC_CFILES}:${SOOT_CFILES}"
+JCCPATH="${JC_CFILES}:${CP_CFILES}:${SOOT_CFILES}"
+BASE_SRCPATH="@datadir@/jc/src"
+USER_SRCPATH="${HOME}/.jc_src"
+OBJDIR="${HOME}/.jc_obj"
+INCDIR="${INCLUDEDIR}"
+VMFLAGS=""
+EXTRA_VERBOSE="false"
+VERBOSE="true"
+FORCE="false"
+DEBUG="true"
+EXECFILE=""
+
+# Check for which java to use
+[ -x "${JAVA}" ] || JAVA="@bindir@/jc"
+
+#
+# Output usage message
+#
+usage()
+{
+    echo 'Usage:' >&2
+    echo '    jcgen [options] pattern ...' >&2
+    echo '    jcgen -o filename [options] classname' >&2
+    echo ''
+    echo 'Options:' >&2
+    echo '  -srcpath path     Prepend path to the search path for generated C source' >&2
+    echo '                    files. The first component of the resulting path is also'
+    echo '                    the destination for newly generated sources. This option' >&2
+    echo '                    is cumulative and may be repeated multiple times.' >&2
+    echo '  -newsrcpath path  Same as -srcpath but replaces the current search path' >&2
+    echo '                    instead of prepending to it.' >&2
+    echo '  -objdir dir       Specify destination for generated ELF objects.' >&2
+    echo '  -incdir dir       Specify include directory for JC headers.' >&2
+    echo '  -classpath path   Specify search path for user class files.' >&2
+#    echo '  -vmclasspath path Specify JVM classpath.' >&2
+#    echo '  -jcclasspath path Specify JC base classpath.' >&2
+    echo '  -vmopt opt        Pass opt through to the Java VM command line.' >&2
+    echo '  -o filename       Generate an executable invoking classname' >&2
+    echo '  -f                Force regeneration even if not needed' >&2
+    echo '  -q                Quiet mode (omit verbose output).' >&2
+    echo '  -v                Increase verbosity.' >&2
+    echo "  -s                Don't include support for Java line numbers." >&2
+    echo '  -N                Only generate source files, no ELF objects.' >&2
+    echo ''
+    echo 'Example patterns:' >&2
+    echo '  jan.foo.Bar       Class jan.foo.Bar' >&2
+    echo '  jan.foo.*         All classes in the jan.foo package' >&2
+    echo '  jan.foo.%         Same' >&2
+    echo '  jan.foo.**        All classes in jan.foo and all its subpackages' >&2
+    echo '  jan.foo.%%        Same' >&2
+    echo ''
+    echo "Default -srcpath:      ${USER_SRCPATH}:${BASE_SRCPATH}"
+    echo "Default -objdir:       ${OBJDIR}"
+    echo "Default -incdir:       ${INCDIR}"
+    echo "Default -classpath:    ${USERCPATH}"
+#    echo "Default -jcclasspath:  ${JCCPATH}"
+#    echo "Default -vmclasspath:  ${VMCPATH}"
+    echo ''
+    exit 1
+}
+
+#
+# Parse command line
+#
+while :
+    do case "$1" in
+	-srcpath)
+	    USER_SRCPATH="${2}:${USER_SRCPATH}"
+	    shift
+	    shift
+	    ;;
+	-newsrcpath)
+	    BASE_SRCPATH=""
+	    USER_SRCPATH="${2}"
+	    shift
+	    shift
+	    ;;
+	-objdir)
+	    OBJDIR="${2}"
+	    shift
+	    shift
+	    ;;
+	-classpath|-cp)
+	    USERCPATH="$2"
+	    shift
+	    shift
+	    ;;
+	-jcclasspath)
+	    JCCPATH="$2"
+	    shift
+	    shift
+	    ;;
+	-vmclasspath)
+	    VMCPATH="$2"
+	    shift
+	    shift
+	    ;;
+	-incdir)
+	    INCDIR="$2"
+	    shift
+	    shift
+	    ;;
+	-vmopt)
+	    VMFLAGS="$2 ${VMFLAGS}"
+	    shift
+	    shift
+	    ;;
+	-o)
+	    EXECFILE="$2"
+	    shift
+	    shift
+	    ;;
+	-f)
+	    FORCE="true"
+	    shift
+	    ;;
+	-q)
+	    VERBOSE="false"
+	    shift
+	    ;;
+	-N)
+	    SOURCES_ONLY="true"
+	    shift
+	    ;;
+	-s)
+	    DEBUG="false"
+	    shift
+	    ;;
+	-v)
+	    EXTRA_VERBOSE="true"
+	    shift
+	    ;;
+	--)
+	    shift
+	    break
+	    ;;
+	-*)
+	    usage
+	    ;;
+    	*)
+	    break
+	    ;;
+    esac
+done
+
+case $# in
+    0) 
+	usage
+	;;
+    *)
+	;;
+esac
+
+# Handle '-o' flag
+if [ "${EXECFILE}" != "" ]; then
+
+	# Sanity check
+	if [ "$#" -ne 1 ] || echo "${@}" | grep -q '[%*]'; then
+		echo 'jcgen: only one class name allowed with "-o" flag' 1>&2
+		exit 1
+	fi
+
+	# Create flags to pass to JC itself
+	VMFLAGS="${VMFLAGS} -classpath ${USERCPATH}"
+
+	# Create temporary file and ensure we clean it up
+	CFILE="/tmp/jcgen$$.c"
+	trap cleanup TERM INT
+	cleanup()
+	{
+	    rm -f ${CFILE}
+	}
+
+	# Construct main C file
+	cat > ${CFILE} <<- xxEOFxx
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <stdarg.h>
+	#include <string.h>
+	#include <errno.h>
+	#include <jc_invoke.h>
+
+	#define MAIN_CLASS "${@}"
+
+	static const char *const vmflags[] = {
+	    "jc",
+xxEOFxx
+	for FLAG in ${VMFLAGS}; do
+		echo ${FLAG} | sed \
+		    -e 's/\\/\\\\/g' -e 's/"/\\"/g' \
+		    -e 's/^/    "/g' -e 's/$/",/g' >> ${CFILE}
+	done
+	echo '};' >> ${CFILE}
+	echo '#define NVMFLAGS (sizeof(vmflags) / sizeof(*vmflags))' >> ${CFILE}
+	cat >> ${CFILE} <<- xxEOFxx
+
+	int main(int ac, char **av)
+	{
+	        const int jc_ac = NVMFLAGS + 1 + ac;
+	        const char **jc_av;
+	        int r;
+
+	        if ((jc_av = malloc(jc_ac * sizeof(*jc_av))) == (void *)0) {
+	                fprintf(stderr, "malloc: %s\n", strerror(errno));
+	                exit(1);
+	        }
+	        memcpy(jc_av, vmflags, NVMFLAGS * sizeof(*jc_av));
+	        jc_av[NVMFLAGS] = MAIN_CLASS;
+	        memcpy(jc_av + NVMFLAGS + 1, av, ac * sizeof(jc_av));
+	        r = _jc_invoke(jc_ac, jc_av, 1, vfprintf);
+	        free(jc_av);
+	        return r == _JC_RETURN_NORMAL ? 0 : 1;
+	}
+xxEOFxx
+
+	# Compile C file
+	CMD="${HOSTGCC} ${JC_CFLAGS} -I${INCLUDEDIR} \
+	    -L${LIBDIR} ${LDFLAGS} -ljc -o ${EXECFILE} ${CFILE}"
+	if [ "${EXTRA_VERBOSE}" = "true" ]; then
+		echo ${CMD}
+	fi
+	${CMD}
+	RTN=$?
+	rm -f ${CFILE}
+	exit ${RTN}
+fi
+
+# Set up various flags
+VMFLAGS="${VMFLAGS} -Djc.verbose.gen=${VERBOSE}"
+VMFLAGS="${VMFLAGS} -Djc.include.line.numbers=${DEBUG}"
+VMFLAGS="${VMFLAGS} -Djc.gen.force=${FORCE}"
+
+SRCPATH="${USER_SRCPATH}:${BASE_SRCPATH}"
+
+GENFLAGS=""
+
+if [ "${SOURCES_ONLY}" = "true" ]; then
+	GENFLAGS="${GENFLAGS} -N"
+fi
+
+if [ "${FORCE}" = "true" ]; then
+	GENFLAGS="${GENFLAGS} -f"
+fi
+
+# Run the command
+if [ "${EXTRA_VERBOSE}" = "true" ]; then
+	echo ${JAVA} ${VMFLAGS} -classpath "${VMCPATH}" \
+	    "${GENCLASS}"${GENFLAGS} \
+	    -classpath "${USERCPATH}:${JCCPATH}" \
+	    -srcpath "${SRCPATH}" -objdir "${OBJDIR}" -incdir "${INCDIR}" "${@}"
+fi
+${JAVA} ${VMFLAGS} -classpath "${VMCPATH}" \
+    "${GENCLASS}"${GENFLAGS} \
+    -classpath "${USERCPATH}:${JCCPATH}" \
+    -srcpath "${SRCPATH}" -objdir "${OBJDIR}" -incdir "${INCDIR}" "${@}"
+exit $?
+

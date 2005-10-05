@@ -1,0 +1,65 @@
+#!/bin/sh
+# $Id: regen.sh,v 1.7 2005/03/26 03:25:44 archiecobbs Exp $
+
+#
+# Script to regenerate all the GNU auto* gunk.
+# Run this from the top directory of the source tree.
+#
+# This is customized for my FreeBSD machine. It probably
+# won't work right on your machine, please edit to suit.
+#
+# If it looks like I don't know what I'm doing here, you're right.
+#
+
+if [ ! -f libjc/Makefile.am ]; then
+    echo '***' run me from the top level directory please
+    exit 1
+fi
+
+echo "cleaning up"
+find . -name 'Makefile.in' -print | xargs rm -f
+rm -rf autom4te*.cache scripts aclocal.m4 configure
+rm -f include/config.h.in include/config.h
+rm -f install-sh missing
+mkdir scripts
+
+LIBTOOLIZE="libtoolize"
+ACLOCAL="aclocal"
+AUTOHEADER="autoheader"
+AUTOMAKE="automake"
+AUTOCONF="autoconf"
+
+if [ `uname -s` = 'FreeBSD' ]; then
+#	LIBTOOLIZE="libtoolize15"
+#	ACLOCAL="aclocal18"
+	ACLOCAL_ARGS="-I /usr/local/share/libtool15/libltdl/ -I /usr/local/share/automake18"
+#	AUTOHEADER="autoheader259"
+#	AUTOMAKE="automake18"
+#	AUTOCONF="autoconf259"
+fi
+
+echo "running libtoolize"
+${LIBTOOLIZE} -c -f
+
+echo "running aclocal"
+${ACLOCAL} ${ACLOCAL_ARGS} -I scripts
+
+echo "running autoheader"
+${AUTOHEADER} -I include -I libjc/arch -I libjc/native
+
+echo "running automake"
+${AUTOMAKE} --add-missing -c --foreign
+
+echo "running autoconf"
+${AUTOCONF} -f -i
+cp scripts/install-sh install-sh
+cp scripts/missing missing
+
+echo "running configure"
+if [ `uname -s` = 'FreeBSD' ]; then
+	export LDFLAGS=-L/usr/local/lib ;
+	export CPPFLAGS=-I/usr/local/include;
+fi
+
+./configure --enable-werror --enable-assertions
+

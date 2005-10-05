@@ -1,0 +1,172 @@
+
+/*
+ * Copyright 2005 The Apache Software Foundation or its licensors,
+ * as applicable.
+ * 
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ * $Id: jc_machdep.h.in,v 1.3 2005/05/10 01:19:23 archiecobbs Exp $
+ */
+
+#ifndef _JC_MACHDEP_H_
+#define _JC_MACHDEP_H_
+
+#include "jni_machdep.h"
+
+/************************************************************************
+ *			Machine specific C definitions			*
+ ************************************************************************/
+
+/*
+ * Goal: declare sigsetjmp()/siglongjmp().
+ */
+
+#include <setjmp.h>
+
+/*
+ * Goal: define these C types:
+ *
+ *	_jc_uint16	Unsigned 16 bit type
+ *	_jc_uint32	Unsigned 32 bit type
+ *	_jc_uint64	Unsigned 64 bit type
+ */
+
+#if defined(__i386__) || defined(__sparc__)
+
+typedef unsigned short		_jc_uint16;
+typedef unsigned int		_jc_uint32;
+typedef unsigned long long	_jc_uint64;
+
+/* Remove namespace pollution */
+#undef i386
+
+#else
+#error "Unsupported architecture for defining C types"
+#endif
+
+/*
+ * Goal:
+ *
+ * 1. Typedef '_jc_word' as the unsigned integral type that can be
+ *    accessed atomically and is such that sizeof(_jc_word) == sizeof(void *).
+ * 2. #define _JC_SIGNED_RIGHT_SHIFT to 1 if right shifts are signed,
+ *    otherwise zero.
+ * 3. #define _JC_JLONG() as how to create a 'jlong' constant in C.
+ */
+
+#if defined(__ia64__) || defined(__alpha__) || defined(__i386__) || defined(__sparc__)
+
+typedef	unsigned int		_jc_word;
+#define _JC_SIGNED_RIGHT_SHIFT	1
+#define _JC_JLONG(x)		(x ## LL)
+
+#else
+#error "Unsupported architecture for various architecture specific stuff"
+#endif
+
+/*
+ * Goal: define how to put together bytes to make float and double constants.
+ */
+
+#if defined(__ia64__) || defined(__i386__)
+
+/* Little endian machines */
+#define _JC_DCONST(b0,b1,b2,b3,b4,b5,b6,b7)				\
+    ({									\
+	const union {							\
+		unsigned char	b[8];					\
+		jdouble		d;					\
+	} u = { .b= { b7,b6,b5,b4,b3,b2,b1,b0 } };			\
+	u.d;								\
+    })
+#define _JC_FCONST(b0,b1,b2,b3)						\
+    ({									\
+	const union {							\
+		unsigned char	b[4];					\
+		jfloat		f;					\
+	} u = { .b= { b3,b2,b1,b0 } };					\
+	u.f;								\
+    })
+
+#elif defined(__alpha__) ||defined(__sparc__)
+
+/* Big endian machines */
+#define _JC_DCONST(b0,b1,b2,b3,b4,b5,b6,b7)				\
+    ({									\
+	const union {							\
+		unsigned char	b[8];					\
+		jdouble		d;					\
+	} u = { .b= { b0,b1,b2,b3,b4,b5,b6,b7 } };			\
+	u.d;								\
+    })
+#define _JC_FCONST(b0,b1,b2,b3)						\
+    ({									\
+	const union {							\
+		unsigned char	b[4];					\
+		jfloat		f;					\
+	} u = { .b= { b0,b1,b2,b3 } };					\
+	u.f;								\
+    })
+
+#else
+#error "Unsupported architecture for _JC_DCONST/_JC_FCONST"
+#endif
+
+/*
+ * Goal: define _JC_DOWNWARD_STACK to 1 if the stack grows downward,
+ * otherwize define it to 0.
+ */
+
+#if defined(__i386__)
+
+#define _JC_DOWNWARD_STACK	1
+
+#else
+#error "Don't know stack direction for _JC_DOWNWARD_STACK"
+#endif
+
+/*
+ * Goal: define _JC_STACK_OVERFLOW_MARGIN, which is (at least) enough
+ * stack bytes sufficient to catch a signal and then construct and
+ * throw a StackOverflowError. I.e., when the amount of stack space
+ * remaining gets this low or lower, we throw a StackOverflowError.
+ */
+
+#define _JC_STACK_OVERFLOW_MARGIN	(8 * 1024)
+
+/*
+ * Goal: define _JC_THREAD_LOCAL_SUPPORT to zero or one.
+ */
+#define _JC_THREAD_LOCAL_SUPPORT	@_JC_THREAD_LOCAL_SUPPORT@
+
+/*
+ * Goal: define _JC_JCNI_ATTR function attributes for any modified
+ * JCNI calling conventions. It's OK to define _JC_JCNI_ATTR as nothing.
+ */
+
+/* Default to normal calling conventions */
+#define _JC_JCNI_ATTR
+
+#if defined(__i386__)
+
+#if __GNUC__ >= 3
+#undef  _JC_JCNI_ATTR
+#define _JC_JCNI_ATTR		__attribute__ ((regparm(3)))
+#define _JC_I386_REGPARM	1
+#else
+#define _JC_I386_REGPARM	0
+#endif
+
+#endif
+
+#endif	/* _JC_MACHDEP_H_ */

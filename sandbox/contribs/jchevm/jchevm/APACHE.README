@@ -1,0 +1,36 @@
+
+This is the JC virtual machine contribution to Apache's Harmony project.
+
+All code herein was written by me. However many ideas and algorithms herein
+were NOT invented by me, rather I just reimplemented them (with modifications).
+These are described the documentation (see doc/jc.texi).
+
+Note that the code in this tarball has been partially stripped down and
+will not build standalone. If you want to play with the complete JCVM,
+please visit: http://jcvm.sf.net/
+
+Here's a posting describing some of the parts of JCVM that may
+be useful to reuse in Harmony:
+
+    http://mail-archives.apache.org/mod_mbox/incubator-harmony-dev/200505.mbox/%3c4288F308.9000502@dellroad.org%3e
+
+Here's how this tarball was created:
+
+1. cvs -d :ext:yournamehere@cvs.sourceforge.net:/cvsroot/jcvm checkout jcvm
+   When: Sun Sep 25 13:28:25 CDT 2005
+
+2. Substituted the Apache copyright header (COPYRIGHT.Apache)
+   into all source files.
+
+3. Removed non-original or irrelevant stuff:
+
+	java/gnu subdirectory
+	java/java subdirectory
+	soot/ subdirectory
+	website/ subdirectory
+	include/queue.h
+
+4. Added LICENSE.Apache
+
+-Archie Cobbs
+

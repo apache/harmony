@@ -1,0 +1,2615 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename jc.info
+@settitle JC Virtual Machine Documentation
+@c %**end of header
+
+@include version.texi
+
+@copying
+JC Virtual Machine Documentation
+
+by Archie L. Cobbs @email{archie@@dellroad.org}.
+
+Copyright @copyright{} 2004, Archie L. Cobbs.
+All rights reserved.
+
+This manual documents version @value{VERSION} of the JC virtual machine.
+
+@quotation
+Permission is granted to reproduce this work in any form
+for non-commercial purposes only.
+
+Permission is granted to modify this work, granted that any modifications
+are clearly attributed to their respective author(s).
+@end quotation
+@end copying
+
+@c Output title page
+@titlepage
+@title JC Virtual Machine Documentation
+@author Archie L. Cobbs @email{archie@freebsd.org}
+
+@code{$Id: jc.texi,v 1.56 2005/06/21 21:54:34 archiecobbs Exp $}
+
+@c Output copyright page
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c Output table of contents
+@contents
+
+@c Define top node
+@ifnottex
+@node Top
+@top JC Virtual Machine Documentation
+
+@insertcopying
+
+@menu
+* Introduction::		Introduction to JC
+* Overview::			Overview of how JC works
+* Objects::			Object layout, locking, etc.
+* Heap Structure::		How the heap is structured
+* Garbage Collection::		Garbage Collection in JC
+* Execution::			Execution flow in JC
+* Exceptions::			How exceptions are handled
+* Class Loaders::		How class loaders are managed
+* ELF Loader::			JC's ELF loader
+* JC Native Interface::		Interface between ELF objects and JC
+* Code Generation::		How classfiles are converted into objects
+* JC Tools::			Tools supplied with JC
+* Porting JC::			Porting JC to new platforms
+* Developer Information::	Information useful to developers
+* Appendix A::			Recognized ELF symbols
+* Appendix B::			JC system properties
+* Index::			Index
+@end menu
+@end ifnottex
+
+@node Introduction
+@chapter Introduction
+@cindex introduction
+
+@menu
+* What is JC::			What JC is (and is not)
+* Goals and Motivation::	Why JC was written
+* Design features::		JC features and design choices
+* Known Issues::		Limitations of JC
+* Related Work::		Other VMs
+@end menu
+
+@node What is JC
+@section What is JC
+
+JC is an open source software library that implements the Java 2
+virtual machine (JVM) specification. A distinguishing characteristic
+of JC when compared to other JVM implementations is its method of
+converting Java class files into C program source and header files
+using the @uref{http://www.sable.mcgill.ca/soot/, Soot} Java bytecode
+optimization and analysis framework, compiling these source files
+into ELF objects using @uref{http://gcc.gnu.org/, GCC}, and then
+loading the resulting ELF objects (containing both executable code
+and class meta-data and cached in the filesystem) into memory at
+runtime using a custom ELF loader. JC also includes a bytecode
+interpreter and supports execution in either or mixed modes.
+JC stands for ``Java? C!''
+
+JC can be thought of as a virtual machine implementation with a
+``way ahead of time'' bytecode compiler. The process of converting
+Java class files into C source code (which is itself implemented
+in Java) and then into ELF object files is slow compared to a typical
+JIT engine, but the compiled code that results is highly optimized.
+Since JC uses the powerful @uref{http://www.sable.mcgill.ca/soot/,
+Soot} bytecode analysis framework, sophisticated ``way ahead of
+time'' optimizations such as method inlining and escape analysis
+for stack allocation of non-escaping objects are possible.
+
+JC can also be thought of as a virtual machine with a JIT
+compiler that is slow but produces highly optimized machine code,
+with the additional feature that once a class has been JIT compiled the
+resulting machine code is cached in the filesystem in an ELF object file
+for subsequent invocations of the JVM.
+
+@node Goals and Motivation
+@section Goals and Motivation
+@cindex motivation
+@cindex goals
+
+The primary goal in developing JC has been to have fun tackling a
+programming project that encompasses many interesting challenges
+in software design, such as virtual machines, multi-threading, code
+analysis, compilation and linking, code clarity vs. complexity,
+even documentation :-) After playing around with a few other open
+source JVM's, I wanted to have one of my own so I could quickly fix
+any pressing bugs (which always seem to come up, open source or
+not) and in general have a warm fuzzy feeling and pride of ownership.
+Any success or practical use for JC is therefore somewhat coincidental.
+
+However, the design of JC was inspired by a particular set problems
+and this makes JC more applicable to some domains than others. The
+idea originally grew out of a desire to be able to write software
+for embedded systems in Java rather than C, which is usually the
+only option. Embedded systems typically have these characteristics:
+
+@itemize @bullet
+@item
+They don't require many of the dynamic linking and security features of Java.
+For example, all possibly loadable class files may be known ahead of time.
+However, re-writing the Java class library is not an option; it must be
+possible to use e.g. the @uref{http://www.classpath.org/, GNU Classpath}
+class libraries with little or no modification.
+@item
+They run on a wide variety of processors. If a VM is going
+to do more than interpret bytecode, it must be able to generate instructions
+for each architecture, a complex and bug-prone process.
+@item
+They need to be efficient with memory use. The object and heap layouts
+must not waste a lot of space in overhead.
+@item
+The code must run at a speed in the ballpark of C/C++ code.
+@item
+The code running on them needs to be understandable, debuggable,
+and easily hackable.
+@end itemize
+
+While not claiming to be a complete solution, JC does have many
+attributes that address these issues. The ability to pre-compile
+ELF objects is one. By implementing a few platform-specific hooks,
+JC can in theory be made to run on any architecture targetable by
+GCC (which is all of them, isn't it?). Almost all code that runs
+in a JC virtual machine, including Java methods, is compiled C code
+and therefore debuggable with GDB.  The generated C source files
+are human readable, editable, and recompilable (e.g., you can insert
+@code{printf()}'s if you want).  JC's heap attempts to be compact.
+Once compiled into ELF objects, Java class files are no longer
+needed and can be dispensed with.  Using the Soot framework,
+sophisticated optimizations are possible that allow execution speed
+to approach the speed of C++. Finally, JC is relieved of having to
+understand and generate machine instructions for each architecture,
+instead leaving that work up to the experts (i.e., GCC hackers).
+This makes the overall design easier to understand and Java execution
+problems much easier to debug.
+
+In general, JC tries to favor correctness over speed. There are
+many possible optimizations that would speed up execution but also
+add code complexity and make bugs harder to track down. The idea
+here is that for many applications (especially in embedded systems)
+robustness, stability, and avoiding random crashes is more important
+that achieving that last 10% speed increase.
+
+An acknowledgment is due here. JC borrows heavily from Etienne
+Gagnon's innovative @uref{http://www.sablevm.org/, SableVM} Java
+virtual machine implementation.  Several ideas have been blatantly
+stolen from SableVM, including bidirectional object layout, the
+object lockword design and spin-free thin lock algorithm, per-class
+loader memory allocation, and thread management. In fact, without
+SableVM as an example to work from this project would probably have
+never been attempted. Of course, any errors in translation are mine.
+
+@node Design features
+@section Design features
+@cindex features
+
+Some design features of JC include:
+
+@itemize @bullet
+@item
+Conversion of Java bytecode into C and optimized compilation using GCC into ELF object files
+resulting in @emph{fast} execution.
+@item
+Java bytecode interpreter with support for compiled, interpreted,
+and mixed mode execution.
+@item
+Sophisticated code generation optimizations including method inlining, allocation of non-escaping objects on the stack, method ``nonvirtualization,'' array bounds check elimination, redundant cast elimination, redundant null pointer check elimination, and class initialization check on first "active use" elimination.
+@item
+On-demand or pre-generated object creation, with the ability to create ``main class'' executables.
+@item
+Complete thread support based on the POSIX @code{pthread(3)} library, including @code{Thread.interrupt()}, @code{Thread.suspend()}, @code{Thread.resume()}, and @code{Thread.stop()}.
+@item
+Complete Java Native Interface (JNI) support, plus a zero overhead JC Native Interface (JCNI).
+@item
+Complete Java 2 style class loader support, including class loader garbage collection and unloading.
+@item
+Complete Java reflection API implementation.
+@item
+Utilizes a stock installation of the @uref{http://www.classpath.org/, GNU Classpath} Java class library.
+@item
+All object pointers are direct pointers. Non-copying "stop the world" mark and sweep garbage collector.
+@item
+Support for object finalization and for soft, weak, and phantom references.
+@item
+Interface method dispatch using "quick" hash tables resulting in one extra pointer dereference (typically) over virtual method dispatch.
+@item
+Flexible usage of ELF object files: multiple ELF objects may be linked together into a single object file (JC will then load all of the defined types simultaneously); class files are not required once ELF objects have been generated from them.
+@item
+Use of the @uref{http://www.sable.mcgill.ca/soot/, Soot} framework for sophisticated bytecode analysis, optimization, and code generation.
+@item
+Innovative spin-free thin lock algorithm from @uref{http://www.sablevm.org/, SableVM}.
+@item
+Use of signals for efficient detection of null pointer dereferences, divide by zero, and for inter-thread communication.
+@end itemize
+
+@node Known Issues
+@section Known Issues
+@cindex issues
+@cindex limitations
+@cindex bugs
+
+JC has a few bugs and limitations.
+
+The most important limitation is that when compiled execution is enabled
+JC will not load two different
+class files defining the same class at the same time (necessarily this
+requires two different class loaders). More precisely,
+JC will not load two class files defining the same class but having different
+contents. This situation does not occur often but certainly can,
+depending on the application. The reason for this limitation is simply
+because of the priorities of the project compared to the work required
+to fix it. For example, JC is relieved of many of the security
+checks (i.e., loading contraints) that would otherwise required.
+More importantly, this limitation allows the code generator to make
+assumptions allowing optimizations that would not otherwise be possible.
+
+JC uses the GNU Classpath class library, and so does not implement any
+classes that are not (yet) part of it.
+
+JC does not support @code{strictfp} floating point math.
+
+JC assumes that C pointers are written to and read from memory atomically
+(this may not be true on all architectures).
+
+Java @code{volatile long} and @code{volatile double} types are supposed
+to be accessed atomically, but we don't enforce that.
+
+There are surely lots more bugs to be discovered. However, JC was
+written carefully with an eye toward making debugging easier.
+Hopefully bugs that do exist should be relatively straighforward to
+track down and fix.
+
+@node Related Work
+@section Related Work
+@cindex related work
+
+There are probably lots of better JVM's out there. I've intentionally ignored
+most of them while writing JC because it's more fun that way, I'm lazy,
+and I'm not being graded on this.
+@uref{http://gcc.gnu.org/java/, GCJ} is clearly relevant.
+Many other VM implementations are listed on the
+@uref{http://www.classpath.org/, Classpath} web site.
+
+Of particular relevance is the paper
+@uref{http://www.enee.umd.edu/~ankush/publications/j2c-DATE-2004.pdf,
+Java-through-C Compilation: An Enabling Technology for Java in
+Embedded Systems}, which describes a project similar to JC that has
+a more embedded systems focus. Their JVM does not support some Java
+features such as class loading, reflection, and threads. However,
+they put more work into optimizing the Soot code generation with
+impressive code speed and code size results.
+
+@node Overview
+@chapter Overview
+@cindex overview
+
+This section gives an overview of what JC contains and how it works.
+
+@menu
+* JC Contents::			What you get
+* Java to ELF::			Converting class files to ELF
+* Managing Dependencies::	Keeping everything sane
+* Installation::		Where everything goes
+* Running JC::			JC command line
+@end menu
+
+@node JC Contents
+@section JC Contents
+
+JC gives you a fairly complete Java VM implementation, including these
+components:
+
+@itemize @bullet
+@item
+@code{jc(1)} command line binary for creating a VM and invoking
+the @code{main()} method of the named class.
+@item
+@code{libjc} library containing the VM innards with a fully
+implemented JNI native and invocation API.
+@item
+GNU Classpath Java class library.
+@item
+@code{jcjavah} utility for creating JNI and JCNI header files
+and C file stubs.
+@item
+@code{cfdump} class file dumper utility.
+@item
+@code{jcgen} utility for pre-generating ELF object files.
+@end itemize
+
+@node Java to ELF
+@section Java to ELF
+@cindex java to ELF conversion
+
+The basic idea in JC code generation is to take class files, convert
+them into ELF objects containing executable code for the methods
+plus some meta-data about the class, and load and link these objects
+at runtime. This conversion is done by Java software in the
+@uref{api/org/dellroad/jc/package-summary.html,
+@code{org.dellroad.jc}} and
+@uref{api/org/dellroad/jc/cgen/package-summary.html,
+@code{org.dellroad.jc.cgen}} packages,
+with the help of GCC. The Java code generates C source files from
+Java class files and compiles them into ELF objects using GCC.  This
+conversion can either be done ahead of time, or on demand during
+execution. If done ahead of time, GCC is not required to be present
+on the system.
+
+A more direct conversion to ELF than via C code, including a pure Java
+implementation, is certainly possible. To do this, one only has to
+implement the
+@uref{api/org/dellroad/jc/ObjectGenerator.html,
+@code{org.dellroad.jc.ObjectGenerator}} Java interface.
+JC will automatically invoke the class named by the
+@code{jc.object.generator} system property (which must implement that
+interface) at runtime when an ELF file needs to be generated.
+
+Although the ELF objects don't necessarily have to derive from C
+source files, it is easiest to describe them and the way that they
+are structured in terms of the C language. As long as the ELF objects
+appear as if they came from C source files, they will still
+work. Normally, for each class @code{foo.Bar} a ``foo/Bar.c'' source
+file and a ``foo/Bar.h'' header file are generated.
+
+ELF files may be pre-generated to avoid long pauses during execution
+(@pxref{jcgen}).
+However, if JC attempts to load a class and a valid ELF file for that class
+cannot be found, it will automatically attempt to generate one
+(unless the @code{jc.object.generation.enabled} system property is set
+to @code{false}, in which case a @code{LinkageError} is thrown).
+Since this process involves executing Java methods, those methods
+may also not be found in valid ELF objects. In that case, JC reverts
+back to interpreted execution.
+
+If you like reading C source, you may want to look at the header file
+@uref{../../../include/jc/jc_defs.h, @code{jc_defs.h}}.
+This file defines all of the structures and
+macros used by the generated C files. Also, you may look at the
+generated header file for a class to see how the various class-specific
+structures are defined. These include the class vtable, object
+structure (which includes all superclass structures), class fields
+structure, etc. Generated C source files show how the macros in
+@code{jc_defs.h} are used to implement Java in C.
+
+Each Java method has a corresponding C function in the ELF file; the
+function parameters are a thread pointer, ``this'' object pointer (for
+non-static methods), and method parameters (object pointers
+and primitive values).
+
+Objects in memory are just C structures. All objects contain an
+object ``head'' which consists of a lock word and a pointer to the
+object's combined type and vtable structure, for a total of two
+machine words. Primitive fields are laid out upwards in memory from
+the head, while reference fields are laid out downwards. This idea
+comes from SableVM and simplifies garbage collection, because the
+references in an object are contiguous. A class'
+static fields are contained in a single ``global'' C structure.
+
+Meta-data in the ELF file consists of structures describing each
+field, method, and the class vtable (for non-interface classes) and
+type information. Most fields in these structures are initialized
+when the ELF file is created, while others are filled in when the
+ELF file is loaded at run time. The class type structure points to
+hash tables used for @code{instanceof} and interface method dispatch.
+
+Interface method lookup is done as follows: the method name, parameter
+types, and return type are hashed at code generation time. At
+run-time, this hash value is used to look up the corresponding
+method in the object's interface method dispatch hash table. As an
+optimization, a separate copy called the ``quick'' hash table is kept
+containing those hash table buckets with only one entry (usually
+the case). So in the common case, one extra pointer dereference is required
+over normal virtual method dispatch. See SableVM for a more clever method
+requiring zero extra pointer dereferences that was not implemented in JC.
+
+ELF symbols follow a specific format. All support functions provided by
+the VM itself begin with the prefix @code{_jc_cs} (for ``JC C support'').
+Other symbols include for example @code{_jc_java_lang_Float$class_object},
+which resolves to the @code{java.lang.Class} instance for class
+@code{java.lang.Float}.
+@xref{Appendix A} for a complete list of these symbols.
+
+Other symbols such as @code{printf} that can be found by the dynamic linker
+will resolve correctly as well, so it's possible to edit the generated C
+files and add debugging statements.
+
+That is basically it. Almost all code that executes in JC is C code,
+either as part of the core JC VM, a generated ELF object, or a JNI native
+library.
+
+@node Managing Dependencies
+@section Managing Dependencies
+@cindex dependencies
+
+Java is a very dynamic language, supporting late binding of
+symbolic references, introspection, etc. JC includes some basic
+checks to prevent ``stale'' ELF files from being loaded, which could
+cause incorrect behavior. Each ELF file is required to contain a
+list of the names of all classes on whose class files it depends,
+along with a hash value of the actual bytes in those class files
+(our hash algorithm is to take the last 64 bits of the MD5 hash).
+When a candidate ELF file is loaded, all dependent class files
+(including of course the class file corresponding to the class
+itself) are acquired by JC and their hash values compared. If any
+fails to match, the ELF object is considered stale and must be
+regenerated.
+
+The way JC generates dependencies currently is very conservative.
+There are lots of changes that trigger regeneration but shouldn't.
+For example, if class A references a field in class B, and that field's
+name (but not its type) is changed, then class A's ELF object
+remains perfectly valid but JC will regenerate it anyway.
+
+This means that if you recompile for example @code{java.lang.Object} class,
+you're in a world of hurt because every ELF object becomes instantly
+invalid.
+
+However JC simply verifies the hashes, it doesn't do any further checking.
+So it's entirely possible to take a generated C file, edit it manually,
+recompile it with GCC, and JC will still load it. Such ``hacks'' can
+also be incorporated directly into the Java source using a special
+construct recognized by the code generator (analogous to GCC's @code{asm()}
+statement). Support for doing this is not currently implemented but has
+been done in the past and is fairly trivial at the Soot level.
+
+The Java code that generates C source (which lives in the
+@uref{api/org/dellroad/jc/cgen/package-summary.html,
+@code{org.dellroad.jc.cgen}} package) has an analogous mechanism whereby
+the generated source file contains hash values in special comment lines
+that are checked before the source is compiled. However, this is purely
+a matter for the @code{org.dellroad.jc.cgen} code and invisible to
+the VM itself.
+
+The astute reader may wonder how exactly a VM proactively ``acquires''
+class files from user-defined class loaders in order to check their
+hash values for classes that are not otherwise supposed to be loaded
+and still maintain correct semantics.  This is tricky because there
+is no such method @code{byte[] ClassLoader.getClassFile()}, there
+is only @code{Class ClassLoader.loadClass()}, and to return a
+@code{Class} object you have to have loaded the class (not just
+acquired the class file).
+
+JC solves this problem by trying to load the class normally. If we
+get as far as @code{defineClass()}, then we've got the class file
+and we don't care what happens next. If the load subsequently fails
+(e.g., because of a @code{ClassCircularityError} we artificially
+created by loading classes out of order) we simply discard the
+exception.  On the other hand, if the class is loaded successfully,
+there's no problem there either. Because JC does not allow class
+files to change, we can never have a situation where a user class
+loader would have changed its mind and returned a different class
+file had it been loaded later on.
+
+The above may seem like somewhat of a hack. However, in my opinion
+the ``real'' design flaw is the @code{ClassLoader} API, which allows
+user class loaders to get ``too close'' to the VM and requires the
+VM to do all sorts of checks to verify the user class loader is not
+misbehaving. It would have been simpler if all that was required
+of a user class loader was to override a method like @code{byte[]
+ClassLoader.getClassFile()}, and let the VM and
+@code{java.lang.ClassLoader} handle the rest.
+
+@node Installation
+@section Installation
+@cindex installation
+@cindex installation directories
+@cindex directories, install
+
+JC is installed in two steps. First, GNU classpath must be built and
+installed. Then JC is configured with @code{--with-classpath=DIR},
+where @code{DIR} is the Classpath installation root directory,
+built and installed. Typically Classpath and JC will have the same
+installation root, but this is not required. JC works with the
+``stock'' installation of Classpath.
+
+The JC installation hierarchy looks something like this:
+
+@table @samp
+@item PREFIX/bin/
+The JC binary @code{jc} and JC specific utilities such as @code{cfdump},
+a class file dumper; @code{jcjavah}, a JNI or JCNI native code header
+file generator; and @code{jcgen}, a shell script for pre-generating
+ELF objects.
+@item PREFIX/etc/jc.conf
+Contains system-wide default command line parameters.
+@item PREFIX/include/jc/
+JC C header files used by generated C code. Also, JNI header files
+used when compiling JNI native libraries.
+@item PREFIX/info/
+GNU Classpath info documentation.
+@item PREFIX/lib/
+GNU Classpath native libraries and properties files.
+@item PREFIX/lib/jc/obj/
+System-wide generated ELF object files.
+@item PREFIX/share/jc/
+ZIP/JAR files containing the Java classes for JC and Soot.
+@item PREFIX/share/jc/doc/
+JC documentation (i.e., this manual).
+@item PREFIX/share/jc/doc/api/
+Javadoc API for the JC code generation classes.
+@item PREFIX/share/jc/src/
+System-wide generated C source and header files.
+@item ~/.jc_src/
+Per-user generated C source and header files.
+@item ~/.jc_obj/
+Per-user generated ELF object files.
+@end table
+
+The @code{PREFIX/share/jc/src} directory hierarchy contains
+pre-generated source files generated from the JC, Soot, and Classpath
+class files. When JC is installed, it regenerates any source files
+that differ from the pre-generated ones that ship with the source
+distribution. This process requires an existing Java runtime, such
+as the JDK. The number of differences can be minimized by using
+the specified version of Classpath, installing it in @code{/usr/local},
+and using jikes version 1.22 to compile it.
+
+The @code{libjc} shared library contains the heart of the JC VM and
+is installed in @code{PREFIX/lib}.
+
+The @code{jc} binary accepts command line flags in either short or
+long form; run @samp{jc --help} for more info. Any flag can also
+be specified (in long form) in either the system wide
+@code{PREFIX/etc/jc.conf} file, or in the per-user
+@code{~/.jc} file. In these files, omit the @code{--} prefix
+and put each flag on a separate line. Blank lines and lines starting
+with a ``#'' character are ignored. Here's an example:
+@cindex .jc file
+@verbatim
+    # sample ~/.jc file
+
+    classpath=.:/home/archie/classes:/home/archie/foobar.zip
+
+    property=jc.heap.size=134217728
+    property=jc.resolve.native.directly=true
+
+    #verbose=jni,jni-invoke,gc,compile,exceptions,code-gen
+    verbose=gen,gc
+
+    #property=jc.gen.inline.verbose=true
+@end verbatim
+
+When JC needs to generate new C source files and ELF objects, it
+will by default put them in @code{~/.jc_src} and @code{~/.jc_obj},
+respectively.
+Change the @code{jc.source.path} and @code{jc.object.path} system
+properties to change these defaults.
+
+Note that these properties are overloaded: they are actually search paths
+for source files and objects, but also the first component in the search
+path is where new source files and objects are stored.
+So for example if you recompiled a Java class file, causing the previously
+generated source files to become obsolete, but you didn't want them to
+be overwritten, you could prepend a directory to your @code{jc.source.path}.
+Any older files that were still valid would still get re-used, and
+newly generated files would end up in the prepended directory,
+thus ``hiding'' the older files.
+
+@cindex bootstrap class path
+One warning: if you modify the bootstrap class path (you shouldn't
+need to), it is important that the JC class files (in
+@code{PREFIX/share/jc/jc.zip}) appear ahead of the Classpath
+class files that they override.  Otherwise the VM will fail to start.
+This is the result of a deliberate choice to not modify the stock Classpath
+build and install process (as a result, tracking changes and updates
+in Classpath is much easier).
+
+@node Running JC
+@section Running JC
+
+The JC command line is fairly straightforward and self-explanatory.
+Running @samp{jc --help} gives this output:
+
+@verbatim
+Usage: jc [flag ...] <classname> [param ...]
+  -c, --classpath=path            Set application class loader search path
+  -b, --bootclasspath=path        Set bootstrap class loader search path
+  -l, --librarypath=path          Set native library search path
+  -p, --property=name=value       Set a system property
+  -v, --verbose=opt1,opt2,...     Enable verbose output:  class=Class loading,
+                                  jni=Native libraries, gc=Garbage collection,
+                                  exceptions=Exceptions, resolution=Class
+                                  resolution, gen=ELF object generation,
+                                  jni-invoke=Native method calls, init=Class
+                                  initialization, obj=ELF object loading.
+  -L, --loadlist=filename         Record loaded ELF objects in file
+  -j, --jar                       Execute main class of JAR file
+  -X, --show-options              Show additional options
+  -V, --version                   Display version and exit
+
+Help options:
+  -?, --help                      Show this help message
+  --usage                         Display brief usage message
+@end verbatim
+
+In addition, JC supports these ``JDK standard'' command line flags
+to remain compatible with shell scripts, etc:
+
+@table @samp
+@item -classpath
+Same as @samp{--classpath}.
+@item -cp
+Same as @samp{--classpath}.
+@item -Dfoo.bar=jam
+Same as @samp{--property foo.bar=jam}.
+@item -version
+Same as @samp{--version}.
+@item -help
+Same as @samp{--help}.
+@item -jar
+Same as @samp{--jar}.
+@item -mx@var{N}, -Xmx@var{N}
+Same as @samp{--property jc.heap.size=@var{N}}.
+@item -ms@var{N}, -Xms@var{N}
+Same as @samp{--property jc.heap.initial=@var{N}}.
+@item -ss@var{N}, -Xss@var{N}
+Same as @samp{--property jc.stack.default=@var{N}}.
+@item -Xint
+Same as @samp{--property jc.object.loader.enabled=false}.
+@item -Xnogen
+Same as @samp{--property jc.object.generation.enabled=false}.
+@item -Xnoln
+Same as @samp{--property jc.include.line.numbers=false}.
+@item -Xobj
+Same as @samp{--property jc.without.classfiles=true}.
+@item -Xrnd
+Same as @samp{--property jc.resolve.native.directly=true}.
+@item -client
+Ignored.
+@item -server
+Ignored.
+@item -hotspot
+Ignored.
+@end table
+
+There are several system properties that affect JC's execution.
+@xref{Appendix B} for a detailed list.
+
+By default, JC will load existing ELF objects and generate new ones
+as necessary. That is, by default the interpreter is disabled.
+
+If you want to use existing ELF objects but interpret a class when
+an ELF object for it doesn't exist, invoke JC with
+@samp{--property jc.object.generation.enabled=false} or @samp{-Xnogen}.
+This results in ``mixed mode'' execution.
+
+Note that while executable methods (i.e., ELF loaded methods) execute
+must faster than interpreted ones, there is a small but non-zero penalty
+whenever control transfers between interpreted and executed methods.
+So ``mixed mode'' execution doesn't come completely free.
+
+If you only want interpreted methods, disable the ELF loader completely
+by setting @samp{--property jc.object.loader.enabled=false} or @samp{-Xint}.
+This eliminates any possibility of code generation delays.
+
+You can even control code generation at runtime, using methods in the
+@code{java.lang.Compiler} class.
+
+If your goal is the fastest possible performance,
+here are some suggestions:
+
+@itemize @bullet
+@item
+Most importantly, configure JC with assertions disabled. Use the
+@code{--disable-assertions} flag (as of version 1.4.0 this is now the default).
+@item
+Set the @code{jc.resolve.native.directly} system property to @code{true}
+(you can use the @samp{-Xrnd} command line flag).
+@item
+Generate all objects ahead of time. Then run JC with
+@code{jc.without.classfiles} set to @code{true}
+(you can use the @samp{-Xobj} command line flag).
+This has the side effect of disabling on-demand object generation.
+@item
+Discard the line number debugging sections from generated objects by
+setting @code{jc.include.line.numbers} set to @code{false}
+(you can use the @samp{-Xnoln} command line flag).
+Alternately, run @code{strip -g foo.o} on all objects from which you
+want to remove line number information.
+@item
+Play around with different values for @code{jc.heap.granularity} and
+@code{jc.stack.default}.
+@item
+Play around with different settings for the @code{jc.gen.inline.*} properties
+when generating code.
+@item
+Consider bundling all application objects together into a single ELF
+object. @xref{Complete Conglomeration} for details.
+@end itemize
+
+@node Objects
+@chapter Objects
+@cindex objects
+
+Overview of Objects in JC
+
+@menu
+* Object Layout::		What an object looks like
+* Lockwords::			Lots of bits jammed together
+@end menu
+
+@node Object Layout
+@section Object Layout
+@cindex object layout
+
+JC objects are defined by C structures. For example, here are some
+portions of the generated header file for the class @code{java.util.ArrayList}.
+@code{ArrayList} extends @code{AbstractList}, which extends
+@code{AbstractCollection}, which extends @code{Object}:
+
+@verbatim
+    #include "java/util/AbstractList.h"
+    
+    // Typedefs
+    typedef struct _jc_java_util_ArrayList$sub_refs _jc_java_util_ArrayList$sub_refs;
+    typedef struct _jc_java_util_ArrayList$sub_nonrefs _jc_java_util_ArrayList$sub_nonrefs;
+    typedef struct _jc_java_util_ArrayList$refs     _jc_java_util_ArrayList$refs;
+    typedef struct _jc_java_util_ArrayList$nonrefs  _jc_java_util_ArrayList$nonrefs;
+    typedef struct _jc_java_util_ArrayList$object   _jc_java_util_ArrayList$object;
+    typedef struct _jc_java_util_ArrayList$vtable   _jc_java_util_ArrayList$vtable;
+    typedef struct _jc_java_util_AbstractList$vtype _jc_java_util_AbstractList$vtype;
+    
+    // Vtable
+    struct _jc_java_util_AbstractList$vtable {
+            _jc_java_lang_Object$vmethods             java_lang_Object;
+            _jc_java_util_AbstractCollection$vmethods java_util_AbstractCollection;
+            _jc_java_util_AbstractList$vmethods       java_util_AbstractList;
+    };
+    
+    // Vtype
+    struct _jc_java_util_AbstractList$vtype {
+            _jc_type                                type;
+            _jc_java_util_AbstractList$vtable       vtable;
+    };
+    
+    // Reference instance fields (subclass)
+    struct _jc_java_util_ArrayList$sub_refs {
+        _jc_object_array        *data;
+    };
+    
+    // Reference instance fields (object)
+    struct _jc_java_util_ArrayList$refs {
+        _jc_java_util_ArrayList$sub_refs            java_util_ArrayList;
+        _jc_java_util_AbstractList$sub_refs         java_util_AbstractList;
+        _jc_java_util_AbstractCollection$sub_refs   java_util_AbstractCollection;
+        _jc_java_lang_Object$sub_refs               java_lang_Object;
+    };
+    
+    // Non-reference instance fields (subclass)
+    struct _jc_java_util_ArrayList$sub_nonrefs {
+        jint    size;
+    };
+    
+    // Non-reference instance fields (object)
+    struct _jc_java_util_ArrayList$nonrefs {
+        _jc_java_lang_Object$sub_nonrefs             java_lang_Object;
+        _jc_java_util_AbstractCollection$sub_nonrefs java_util_AbstractCollection;
+        _jc_java_util_AbstractList$sub_nonrefs       java_util_AbstractList;
+        _jc_java_util_ArrayList$sub_nonrefs          java_util_ArrayList;
+    };
+    
+    // Object instance structure
+    struct _jc_java_util_ArrayList$object {
+            _jc_java_util_ArrayList$refs    refs[0];
+            _jc_word                        lockword;
+            _jc_java_util_ArrayList$vtype   *vtype;
+            _jc_java_util_ArrayList$nonrefs nonrefs;
+    };
+@end verbatim
+
+You can see in the 
+@code{_jc_java_util_ArrayList$object} structure how the subclass fields
+grow outward from the object head, with primitive fields growing upward
+and reference fields growing downward.
+
+Note the zero length @code{refs} field. Pointers to an obect will
+always point to the @code{lockword} field. Members of @code{refs}
+are accessed using the syntax @code{obj->refs[-1]}. So to access a
+primitive field in C, e.g., @code{ArrayList.size}, you would write
+@code{obj->nonrefs.java_util_ArrayList.size}.  To access a reference
+field in C, for example @code{ArrayList.data}, you would write
+@code{obj->refs[-1].java_util_ArrayList.data}.  The
+@uref{../../../include/jc/jc_defs.h, @code{jc_defs.h}}
+include file provides convenience macros for these and other operations.
+
+Arrays have a length field, and grow upward for primitive array types
+and downward for reference array types.
+
+@node Lockwords
+@section Lockwords
+@cindex lockwords
+@cindex object lockwords
+
+Object lockwords encode the following information:
+
+@itemize @bullet
+@item
+Whether the object is has a fat lock associated with it or not;
+if not, whether the object is locked or not and how many times.
+@item
+Whether the object is an array or a normal object, and if it is an array,
+whether its a reference array or primitive array, and in the latter case,
+which primitive type.
+@item
+How many references (non-primitive fields) the object contains.
+@item
+Whether the object has been finalized.
+@item
+Whether the object may require special handling (e.g.,
+@code{java.lang.ClassLoader} objects, weak reference objects, etc.)
+@item
+The low order bit is always odd, so the lockword acts as a terminator
+for all the reference fields in the object.
+@end itemize
+
+The lockword structure and thin lock algorithm is borrowed from SableVM.
+In summary, acquiring an uncontested object lock can be done in a single
+compare-and-swap operation and no mutex needs to be involved. If an object
+lock is contested, or @code{Object.wait()} is invoked, then the thin lock is
+``inflated'' to become a fat lock with an associated mutex. The mutex,
+if any, is reclaimed when the object is recycled during garbage collection.
+
+@node Execution
+@chapter Execution
+@cindex execution
+
+@menu
+* Class resolution::			Resolving symbolic references
+* Thread periodic checks::		Getting threads' attention
+* Class initialization::		Detecting ``active use''
+* Inter-thread operations::		Stop the world, etc.
+* Stack overflow::			Detecting stack overflow
+* Debugging::				JC debugging facilities
+@end menu
+
+JC execution is fairly straightforward. When generated Java code
+is running normally, things look very C-like. Virtual method dispatch
+is done through vtable function pointers.  Non-virtual and static methods
+are called directly. Interface methods are dispatched through function
+pointers in a hashtable.  Objects are pointers to C structures, etc.
+
+JC uses a small bit of processor specific assembly code to
+construct C function calls dynamically at runtime.  This is used
+for calling out to compiled Java methods and JNI native methods
+from within @code{libjc} itself.
+
+@node Class resolution
+@section Class resolution
+@cindex resolution
+
+The JVM specification gives VM implementors freedom when choosing
+when symbolic references in Java class files are resolved, but JC's
+symbolic resolution process is simplistic. All symbolic references
+are resolved before the class is initialized. The advantages to
+this are zero resolution runtime overhead (once a class is initialized),
+a simple implementation, and more
+deterministic execution. The main disadvantage is that all other
+classes referenced by a class must be loaded before the class can
+be used, even if those other classes are never actually needed at
+runtime. This is especially annoying when ELF objects for these
+classes must be generated as a result.
+
+Implementing more ``on demand'' class resolution is possible by
+adding runtime resolution checks at the appropriate points. However,
+these add overhead. A zero-overhead approach might use unmapped memory
+pages to trigger segfaults for unresolved symbols (e.g., just leave
+unresolved symbols pointing to zero). The difficulty is that the
+code would have to be patched up (to replace the symbolic reference
+with the resolved memory address) while one or more threads is half-way
+through executing the instruction sequence.
+
+As an optimization, if the @code{jc.resolve.native.directly} system
+property is @code{true}, then when resolving a class, any references
+to JCNI native methods are resolved directly. That is, instead of
+resolving the symbolic reference to point to the native method's
+generated C stub function that in turn calls into @code{libjc} to
+find and execute the native method at runtime, the native method
+is resolved immediately and the symbolic reference is resolved to
+point directly at the native method. This works because the calling
+conventions for generated C code and JCNI native method code are
+exactly the same. The result is zero execution overhead for these
+native method calls. The minor downside is that these native method
+invocations disappear from Java stack traces (i.e., one frame is
+missing in the stack trace), and they are not displayed under the
+@code{jni-invoke} verbose flag. In effect, the VM is completely
+unaware that native methods are being called.
+
+@node Thread periodic checks
+@section Thread periodic checks
+@cindex periodic checks
+
+Because JC uses preempting pthreads, periodic checks must be added to
+each generated method at backward branches. To optimize this frequent
+operation, we dedicate a single page of memory to be the ``check page''.
+When one thread wants all other threads to ``check in'' it simply
+unmaps the page. The periodic check that each thread performs is
+to read and discard a word from the page. When the page is unmapped,
+these reads cause a SEGV signal which JC catches. By looking at the fault
+address, JC knows that the thread needs invoke the periodic check
+function.
+
+The periodic check checks these things: first, whether another thread
+has requested a ``stop the world'' operation; secondly, whether another
+thread has suspended this thread using @code{Thread.suspend()}; and finally,
+whether another thread has cross-posted an exception into this thread
+(e.g., via @code{Thread.stop()}).
+
+@node Class initialization
+@section Class initialization
+@cindex class initialization
+@cindex initialization, Java class
+
+Java classes must be initialized (i.e., static variables
+given their initial values and any static initializer @code{<clinit>}
+method invoked) at the first ``active use'', where active use is defined
+as creating an instance of the class, invoking any method of the class,
+or referencing any static variable of the class. This is really only
+an issue for static methods and static fields. In all other cases, you
+must have an object so we can do the check at instantiation time.
+
+JC emits manual checks in the code for active use at the appropriate points
+in the code, which involves reading a word from memory and checking
+the relevant bit in that word (an optimization would be to dedicate
+a separate word for this bit and remove the bit mask operation).
+Unfortunately this check is performed every time, even after the
+class has been initialized.  An optimization that trades space
+for time would have a separate check address page for each class.
+
+JC currently includes a simple optimization whereby active use
+checks are omitted if the class is the same class as the current
+method. This eliminates a large number of checks. A better optimization
+would be to eliminate necessarily redundant active use checks via more
+sophisticated Soot code analysis.
+
+@node Inter-thread operations
+@section Inter-thread operations
+@cindex stop the world
+
+JC includes SableVM's ``stop the world'' algorithm with some
+modifications, the main one being to unmap the check page to force
+other threads to do a periodic check. Stop the world is used before
+garbage collection for example.
+
+Although not strictly required, for now JC also stops the world when
+one thread needs to suspend another thread or cross-post an exception
+in another thread. The cost of the stop the world operation is one signal
+delivery and a couple of function calls per stopped thread. Instead,
+we could have a separate check address per thread, but that would require
+more memory and slow down the check operation.
+
+In any case, because threads perform periodic checks at each backward
+branch, the latency caused by stopping the world is low, i.e., the
+other threads will stop very quickly.
+
+@node Stack overflow
+@section Stack overflow
+@cindex stack overflow
+@cindex StackOverflowError
+
+JC detects stack overflow by unmapping a guard page at the end of
+each thread's stack. If touched, the thread receives a SEGV signal
+and the fault address tells us that we need to throw a StackOverflowError.
+
+One subtlety is this: is it possible for a thread to somehow miss
+the guard page entirely and walk onto the next page? The only way
+this could happen is if a method has enough local variables to cover
+an entire page of memory: not likely, but in theory it could happen.
+Code could easily be added to foil such a method but has not been.
+
+@node Debugging
+@section Debugging
+@cindex debugging
+@cindex USR1 signal
+
+JC provides a rudimentary debugging interface in the form of SIGUSR1.
+When this signal is received, JC spits out some interesting summary
+information about live threads and active class loaders to the console.
+This is useful for debugging application deadlocks, etc.
+
+GDB can be used normally. JC provides some useful macros in
+@code{etc/gdb.userdef}.
+
+@node Exceptions
+@chapter Exceptions
+@cindex exceptions
+
+@menu
+* Generating Java stack traces::	How Java stack traces are generated
+* Catching exceptions::			When and what to catch
+* Cross-posted exceptions::		Exceptions in other threads
+* Signal exceptions::			Exceptions detected via signals
+* VM Exceptions::			Throwing exceptions from within the VM
+@end menu
+
+For methods that catch exceptions, @code{sigsetjmp()} is used to catch them;
+@code{siglongjmp()} is used inside @code{libjc} to throw exceptions.
+The value returned in the jump indexes into an array
+of GCC local function labels containing the possible trap handlers
+for that method (created with the @code{_JC_DEFINE_TRAPS()} macro).
+
+If a method catches any exceptions, any locals that can be used
+after catching the exception are marked @code{volatile} in the generated C code
+to avoid being ``clobbered.'' JC performs flow analysis to determine which
+variables can possibly be used after the exception and only marks
+those variables as @code{volatile}.
+
+When executing within @code{libjc} itself, exceptions may be posted but
+are never thrown. Instead, an error return value indicates the
+presence of a posted exception. At the appropriate ``gateway'' functions
+between Java execution and JC internal execution, any exceptions
+are (re)thrown or caught as needed. When configured with assertions enabled,
+JC will verify that all signals occur within Java code and not @code{libjc}.
+
+@node Generating Java stack traces
+@section Generating Java stack traces
+@cindex stack traces
+@cindex stack crawl
+
+To generate nice stack traces like Java users expect, we need to
+be able to walk the frames on the ``Java stack'', which in JC is just a
+subset of the frames on the C stack, as well as being able to determine
+the line number and source file associated with each Java stack
+frame. This presents several challenges.
+
+First, we can't rely on our ability to follow saved frame pointers when
+walking through native code and signal stack frames.
+To solve this problem, we only assume frame pointers
+work for generated Java code and @code{libjc} itself. Each time we
+are about to launch into native code we ``clip'' the top of the
+Java stack by saving the ``last known good'' frame pointer. Each
+time we are entered from native code we establish a new contiguous
+frame pointer sequence and link it to the previous one. The result
+is that by using these linked frame sequences we ``leap over'' the
+uncrawlable portions of the C stack. This is done using the
+@code{_jc_java_stack} structure; each such struture defines a
+contiguous sequence of crawlable stack frames.
+
+To generate Java stack traces, we need to be able to (a) determine
+the program counter (PC) in each C stack frame, and (b) map PC values
+to Java methods and line numbers. For (a), a little machine dependent
+code is used.
+
+In the case of (b), things are trickier. We can easily correlate
+the Java line numbers with the generated C line numbers, because
+Soot gives us this information. The hard part is mapping a PC address
+to a method and then a specific C source file line.
+
+To determine the method from the PC, we maintain a splay tree containing
+all loaded methods, sorted by function address. We determine the ending
+address of each function by examining the ELF symbol, which has an
+associated size attribute. Given a PC, a binary search yeilds the
+corresponding method.
+
+To determine the C source file line number, we parse the ELF debug sections
+generated by GCC when the @code{-g} flag is given. Currently JC knows
+how to parse stabs and DWARF2 formats. If an ELF object doesn't contain
+any line number information (or we don't know how to parse it), the
+result is simply that stack traces don't contain line numbers for that
+class' methods. Including debugging information increases the size
+of generated ELF files, and parsing this information does take time,
+so JC makes both operations optional.
+
+The @code{jc.include.line.numbers} system property controls JC's
+behavior with respect to line numbers. If set to @code{true} (the
+default), JC will parse ELF debug sections to determine line numbers,
+and it will include line number support in any newly generated
+objects. Note that in order to show line numbers for a given class,
+two conditions must be satisfied: the class' ELF object must have
+been compiled with line number support, and the current invocation
+of JC must be with @code{jc.include.line.numbers} set to @code{true}.
+
+To build the Java to C source line mapping, at appropriate points in
+the C function we create a new entry in a list of
+@code{_jc_linenum_info} structures for that method using a GCC local
+label. This technique is something of a hack, because we are relying
+on the fact that GCC lays out static data sequentially in the
+resulting ELF object. It is best demonstrated with examples from
+@code{jc_defs.h} and @code{java.util.AbstractList}:
+
+@verbatim
+
+    /* Line number table entry */
+    struct _jc_linenum {
+	    _jc_uint32		cline;		/* c line number */
+	    _jc_uint16		jline;		/* java line number */
+    };
+ 
+    /* Append a line number table entry */
+    #define _JC_LINE_NUMBER(_jline)					\
+	do {								\
+	    static volatile _jc_linenum _linenum			\
+		__attribute__ ((section(".data"))) = {			\
+		    .cline=		__LINE__,			\
+		    .jline=		_jline,				\
+	    };								\
+	} while (0)
+
+    static _jc_linenum_info _jc_java_util_AbstractList$linenum_table$addAll$28b94b9c09be8eeb[] = { };
+    
+    jboolean
+    _jc_java_util_AbstractList$method$addAll$28b94b9c09be8eeb(_jc_env *const env, _jc_java_util_AbstractList$object *this, jint param0, _jc_object *param1)
+    {
+            jboolean z0;
+            jint i1;
+            struct _jc_object *r2;
+            struct _jc_java_lang_Object$object *r3;
+
+            ...
+    
+            _JC_LINE_NUMBER(181);                           // 0
+            i3 = param0;
+            param0 = param0 + 1;
+            r3 = _JC_INVOKE_INTERFACE(env, r2, _JC_JLONG(0x5874f79a1cf66ea), _jc_object *);
+            _JC_INVOKE_VIRTUAL(env, java_util_AbstractList, add$9953f092f36e3303, this, i3, r3);
+            _JC_LINE_NUMBER(182);                           // 1
+            i1 = i1 + -1;
+            ...
+    }
+@end verbatim
+
+The result is that the @code{_jc_java_util_AbstractList$linenum_table$addAll$28b94b9c09be8eeb[]}
+array contains a list of PC, line number pairs for all points in the function
+where the Java line number changes. Given a PC value, we map it to the
+corresponding C line number using the debug information, then map from
+C line number to Java line number using the @code{linenum_table} table.
+
+When a signal is caught, we rely on a bit of machine dependent
+code to give us the stack frame and PC where the exception occurred
+so we can compute the top Java stack frame.
+
+@node Catching exceptions
+@section Catching exceptions
+@cindex catching exceptions
+
+In order to determine what method on the Java stack catches a thrown
+exception, we have to determine if the exception occured within the
+code corresponding to the original bytecode range specified. To this
+end, JC computes the different regions of exception trap coverage
+within each generated function. A local variable in the exception
+catch frame is updated whenever necessary, so that when an exception
+is thrown the catch frame contains the region the potentially catching
+method was currently in. JC uses this region, along with the type of
+exception, to match against the method's exception trap list.
+
+It is tempting to try to re-use the line number table for this purpose.
+After all, it also tells us information about where we are in the
+function. However, this approach fails in the face of GCC optimizations
+that scramble and fold the generated machine code. For example, when
+GCC collapses two C code fragments that exit the function into one,
+it becomes impossible to tell from the saved PC address alone which of
+the original two C code fragments is the ``real'' one.
+
+@node Cross-posted exceptions
+@section Cross-posted exceptions
+@cindex cross-posted exceptions
+@cindex exceptions, cross-posted
+
+The method @code{Thread.stop()} requires the ability for
+one thread to post an exception in another thread. In JC this is done
+using an atomic compare-and-swap followed by thread notification.
+Each thread has a ``cross posted'' exception field which is set by
+other threads and cleared by the target thread when it handles the
+exception. Atomic operations are used to prevent exceptions from
+being lost.
+
+After posting a cross-posted exception in a target thread, the target
+thread is notified that it needs to ``check in'' using the same mechanism
+used by the stop-the-world operation. That is, all threads end up checking
+in even though only one may need to. An optimization that trades space
+for time would have a separate check address page for each thread.
+@xref{Thread periodic checks} for a description of how the check address
+is used.
+
+@node Signal exceptions
+@section Signal exceptions
+@cindex exceptions, signals used for
+@cindex signals
+
+JC detects null pointer dereferences and divide-by-zero using UNIX
+signal delivery, so no run-time penalty is assesed.
+The signal handler simply throws the exception normally using
+@code{siglongjmp()}.
+
+@node VM Exceptions
+@section VM Exceptions
+@cindex VM exceptions
+@cindex OutOfMemoryError
+
+In any Java VM throwing exceptions from within the VM itself
+without getting yourself into trouble can be tricky, especially
+for @code{OutOfMemoryError}s. Here is JC's approach:
+
+@enumerate
+@item
+For all exceptions that can be instantiated by the VM itself, there
+is a single stacktrace-less ``last resort'' instance. This instance
+is thrown in a thread when we try to instantiate a normal instance
+but the same exception is triggered recursively. Because it has no
+stack trace associated with it, it can be shared among threads.
+This idea is borrowed from SableVM and prevents any infinite loops
+when instantiating exceptions within the VM (recursive exceptions
+within normal Java code are OK).
+@item
+When a heap allocation fails, we perform up to 3 GC cycles to try to
+make memory available:
+@itemize
+@item
+The first GC cycle is normal, and only weak references are cleared.
+@item
+The second GC cycle enables clearing soft references too.
+@item
+Before the third GC cycle, we run the finalizer.
+@end itemize
+If all 3 attempts fail, we then set the per-thread "out of memory"
+flag (see #3) and then instantiate and throw an OutOfMemoryError.
+@item
+A small percentage of the heap is reserved. The reserved portion
+of the heap is only available to threads with the "out of memory"
+flag set. When a GC cycle occurs, all "out of memory" flags for
+all threads are cleared. But if a thread has already started
+its 3 GC attempts (see #2) then it won't notice this flag being
+cleared until the current allocation attempt completes.
+@end enumerate
+
+The net result is that @code{OutOfMemoryError}s are thrown very
+reliably, with stack traces, because they get to draw from the
+reserved area.  Also, because of the multiple GC attempts, typically
+only one thread will throw an OutOfMemoryError. When it does, it
+frees up memory that other threads can then use, so they don't throw
+one also.
+
+Also, the "out of memory" flag is not cleared in a thread until the
+next GC cycle. If you clear it too soon (e.g., immediately after
+you create the @code{OutOfMemoryError} instance), then often the
+thread will throw another one. The extra time gives it a chance to
+"clean up" after itself before restricting it back to the non-reserved
+portion of the heap.
+
+@node Heap Structure
+@chapter Heap Structure
+@cindex heap
+@cindex memory pages
+
+@menu
+* Heap Layout::				How heap memory is chopped up
+* Small Pages::				Small object block pages
+* Large Pages::				Large object block pages
+* Skip Words::				Skipping to the object header
+@end menu
+
+@node Heap Layout
+@section Heap Layout
+
+The heap layout is what you might call a homebrew design.  The main
+design goals were (a) no handles (all object references are direct
+pointers), (b) non-copying (for speed), and (c) compactness (i.e.,
+utilization efficiency), ideally somewhat tunable.  E.g., a split
+design where objects are copied between semi-spaces and half of the
+heap memory is unusable did not fit these criteria. On the other
+hand, my knowledge of the state of the art in GC design is pretty
+limited.  The resulting design is about as fancy a GC design as I
+could come up with without doing a lot of boring research :-)
+
+Another design goal was to have a good impedance match with the
+typical workstation virtual memory paging subsystem. The atomic
+unit of memory in a typical UNIX virtual memory system is the page.
+On i386 a page of memory is 4096 bytes. By trying to match the boundaries
+within the heap to page boundaries, and trying to put ``high activity''
+objects in the same page, we hope to limit the amount of
+page swapping. The latter is done simply by putting objects of the
+same size together, under the assumption that if some subset of the
+objects in the heap are ``high activity'' then that subset probably
+involves a small number of object sizes.
+Of course, for an embedded system with no virtual memory subsystem,
+none of this would apply.
+
+The heap layout consists of some number of contiguous pages of memory.
+Heap pages are divided into three types: ``free'', ``small'' and ``large''.
+The state of each page is stored in the first word of that page.
+There is also a transient state ``allocated'' used to prevent
+race conditions when two threads try to grab a free page at the
+same time.
+
+@node Small Pages
+@section Small Pages
+@cindex small heap pages
+
+``Small'' pages are subdivided into two or more blocks of equal
+size. The first word in each block indicates the status of that
+block as either ``free'', ``allocated'' (a transient state) or
+occupied.  This status word does not cost us anything, because the
+values for ``free'' and ``allocated'' (which are odd) can't possibly
+be the first word of a real object. So when an object is in the
+block, to indicate that the block is occupied the status word is
+simply omitted.
+
+There are various block sizes ranging from the smallest block (two
+words, the size of a @code{java.lang.Object} instance) up to half
+the size of a memory page.  Each block size is a fixed percentage
+bigger than the next smaller block size (rounded up to the minimum
+alignment); the percentage determined by the system property
+@code{jc.heap.granularity}.
+
+For each small block size, we maintain a ``hint'' that points to
+the next free block. To allocate from a small page, threads allocate
+the block pointed to by the hint using an atomic compare-and-swap
+operation, then update the hint. If the compare-and-swap fails, the
+thread grabs the (updated) hint and tries again.
+
+After a GC cycle, all small pages containing blocks of the same
+size which have any free blocks left are linked together in a linked
+list. This list is traversed first when allocating new blocks of
+that size. This ensures small pages are used as efficiently as possible
+and don't become too fragmented.
+
+For non-array objects, the block size is pre-computed when the class
+is loaded, using a binary search on the available block sizes. For
+array objects, the block size depends on the length, and is computed
+when the array is created.
+
+Objects are never moved, so ``holes'' can develop within small
+pages.  As long as more objects of that block size are subsequently
+allocated the holes will get quickly filled. More block sizes means
+less wasted space per object (on average) but also more holes and/or
+partially filled pages. Fewer block sizes means more wasted space
+per object (on average) but fewer holes.  When a small page ends
+up containing nothing but holes after a GC cycle, it is recycled.
+
+An interesting experiment would be to see what heap granularities
+result in the most efficient use of memory for different applications.
+
+Also interesting would be to test the intuition that applications that
+put heavy pressure on the heap (by creating and freeing lots of objects)
+typically are doing so for a small number of object sizes. If that were
+true, then the heap activity would be confined to that portion of the
+heap containing the relevant block sizes, instead of ``spamming'' the
+entire heap memory and causing lots of virtual memory activity. That is,
+test the value of maintaining a loose affinity between object
+size and memory page.
+
+@node Large Pages
+@section Large Pages
+@cindex large heap pages
+
+Objects that don't fit into a small page block (i.e., objects
+larger than half a page of memory) are allocated in one or more
+contiguous ``large'' pages of memory. A large page is just a page
+of memory wholly dedicated to (some portion of) a single object.
+
+Only the first large page in a large page range contains the initial
+descriptor word indicating the status of the page as ``large''.
+This word also contains the number of pages in the range.
+
+@node Skip Words
+@section Skip Words
+@cindex skip words
+
+If an object is smaller than the block it lives in, and the object
+contains a lot of references, then we insert a ``skip word'' as the
+first word of the object block. This is simply a word that tells
+us how many references we need to skip over to reach the head of
+the object (i.e., the lockword). This is useful for going from heap
+block to object pointer.  A skip word is distinguishable from the
+``free'' and ``allocated'' heap block words, as well as from object
+references.
+
+@node Garbage Collection
+@chapter Garbage Collection
+@cindex garbage collection
+
+@menu
+* GC Overview::				Garbage collection overview
+* GC and Class Loaders::		Garbage collection for class loaders
+* Root Set Generation::			Generating the root set of references
+@end menu
+
+@node GC Overview
+@section GC Overview
+
+JC includes a straightforward ``stop the world'' mark and sweep
+non-moving garbage collector. Thanks to bi-directional object layout,
+object references in an object are always contiguous. This has two
+beneficial side effects for garbage collection. First, tracing an
+object does not require knowing its type; we just need to know how
+many references it has. This information is contained in the object
+lockword (an ``overflow'' value means we have to look at the object's
+type).
+
+Secondly, the stack space required to do a GC trace can be made
+smaller, because instead of keeping a stack of references to trace,
+we keep a stack of pointers to lists of references (all such lists
+are terminated by the always-odd object lockword). So the last ``twigs''
+of the GC live object trace tree never need to be put on the stack.
+
+The JC garbage collector supports weak, soft, and phantom references.
+All weak references are cleared when their referents are no longer
+strongly referenced. Depending on an ``urgency'' parameter, soft
+references are treated either like weak references or like strong
+ones; therefore, we never have to explicitly check for weak reference
+referents being softly referenced. Reference enqueing and object
+finalization is handled by a dedicated finalizer thread. This thread
+is only awoken after a GC cycle if there is any work for it to do.
+
+JC also supports stack-allocation of objects.
+@xref{Stack Allocation} for details. Stack-allocated objects are
+traced normally during GC but of course never collected.
+
+@node GC and Class Loaders
+@section GC and Class Loaders
+@cindex class loaders and garbage collection
+@cindex garbage collection, class loaders
+
+JC supports class loader unloading and includes special handling for
+Class objects and class loaders during garbage collection.
+
+Each class loader has its own memory area, another idea borrowed
+from SableVM. Class objects for classes loaded by that loader are
+allocated in this area instead of the heap. During GC, this ``blob''
+of memory is considered as if it were a single giant object in the
+heap. That is, it is only marked once during the GC trace. Each
+class loader has a dedicated bit meaning ``visited during the GC trace.''
+
+Class loaders and their corresponding Class objects implicitly refer
+to each other. Loaded classes implicitly refer to all other types that
+they symbolicly reference, and any interned String objects. So for each
+class loader, we maintain a combined master list of all implicit
+references from classes loaded by that loader to other objects in the
+heap. When a class loader ``blob'' is traced during garbage collection,
+this list, combined with all the explicit references from Class objects
+and static fields, is used as the list of references from the ``blob''
+to other heap objects.
+
+Note that because class loaders and their defined classes are only
+unloaded when all are unreachable, implicit references between two
+classes loaded by the same class loader, or between any class and
+its associated class loader don't need to be explicitly maintained
+in this list. In other words, because the ``blob'' is large many of the
+references in it point back within itself and we can ignore them.
+This is another important benefit of per-class loader memory allocation.
+
+If the @code{gc} verbose flag is turned on, JC will print out 
+lots of interesting statistics after each GC cycle.
+
+@node Root Set Generation
+@section Root Set Generation
+@cindex root set
+@cindex stack references
+@cindex garbage collection, root set
+
+JC generates the root set by conservatively scanning each thread's
+stack. We must check not only for references into the heap, but also
+into per-class loader memory. For the former, we must find the head of
+the corresponding object, so we know where its references are. That is,
+we conservatively accept references to anywhere inside an object, not
+just to the head of the object (in practice, such ``offset'' references
+are probably not very common because GCC doesn't usually generate them).
+This is possible because we know the heap layout.
+
+For pointers into class loader memory, just knowing that the class loader's
+``blob'' is referenced is sufficient. We then add the loader's
+@code{java.lang.ClassLoader} instance to the root set.
+
+Conservative stack scanning requires being able to snapshot all of
+the CPU registers in any thread. Fortunately, this is easy to do
+via the @code{getcontext(3)} function. On systems that don't
+have @code{getcontext(3)}, a self-delivered signal acomplishes the
+same thing.
+
+@node Class Loaders
+@chapter Class Loaders
+@cindex class loaders
+
+JC includes a bootstrap class loader capable of reading class files
+from directories and ZIP/JAR files. JC includes full support for
+user-defined class loaders as well.
+
+Each class loader has its own dedicated area of memory that is
+separate from the Java heap. This memory contains loaded ELF objects,
+@code{java.lang.Class} instances, and various other bits of information
+associated with that class loader, such as native library information, etc.
+The total amount of memory that can be allocated for class loaders
+is determined by the @code{jc.loader.size} system property.
+The associated @code{java.lang.ClassLoader} instance for user-defined
+class loaders, however, lives in the normal Java heap.
+
+Per-class loader memory is treated as a stack: only the most recently
+allocated chunk of memory may be deallocated. In practice, this is
+not a problem because in general class loaders only add memory
+during their lifetimes, and the only times they free memory is
+when recovering from an error, and such free operations typically
+happen in the reverse order of allocation. When/if the class loader is
+unloaded, the whole stack is freed all at once.
+
+Class loaders are unloaded when the associated @code{ClassLoader}
+object becomes unreachable. Unloading a class loader is quite
+straightforward. It involves unloading any associated native
+libraries, unloading the ELF objects associated with the class loader,
+removing methods from the method lookup tree (which is used to populate
+Java stack traces), and freeing the class loader memory blob in
+one fell swoop.
+
+@node ELF Loader
+@chapter ELF Loader
+@cindex ELF loader
+
+@menu
+* Loader Overview::			Overview of what the loader does
+* Combo Objects::			Objects that define multiple types
+* Complete Conglomeration::		Putting all your types in one object
+@end menu
+
+@node Loader Overview
+@section Loader Overview
+
+JC includes a custom ELF loader. The loader requires some architecture
+specific code (for processor-specific relocations), which will have to
+be addressed in any port of JC. The loader does not support the ``common''
+section; it is not needed.
+
+JC expects ELF objects to contain not only functions but also certain 
+structures contain meta-data describing the class, its fields and methods.
+The layout of the structures is defined in
+@uref{../../../include/jc/jc_defs.h, @code{jc_defs.h}}.
+
+The ELF loader recognizes special symbols as references to JC support
+routines, Java methods and fields in other classes, etc.
+@xref{Appendix A} for the list of all special symbols.
+
+When JC loads an ELF object, it performs the following steps. First,
+it loads the pertinent sections into memory. Then it resolves any
+intra-object symbolic references (i.e., references from within the
+object to itself). Next, the object's symbol table is scanned for
+Java type and method definitions. For each method we use the size
+attribute of the associated symbol to compute the end of the method.
+Then, if present, any debugging sections with line number information
+is processed. This gives us the mapping from PC address to Java
+line number which is used in exception traces.
+
+@cindex @samp{--loadlist}
+There are two command line flags relevant to object file loading.
+The @samp{--verbose obj} flag is very useful in tracing which ELF
+objects JC is loading and which Java types are defined from them.
+Also, the @samp{--loadlist filename} flag will create a file that contains
+the names of all ELF objects that get loaded during JC execution.
+This is useful for creating ``combo objects'' (see below).
+
+@node Combo Objects
+@section Combo Objects
+@cindex combo object
+@cindex object, combo
+
+Normally JC looks for an individual ELF object corresponding
+to each Java class file. However, JC can also load multiple types
+from a single ELF object, called a ``combo  object''. More precisely,
+whenever JC loads an ELF object, it loads all types defined in that ELF
+object, even if only one of those types was the one it was actually
+looking for. If you are actually going to use most of those types,
+this is a good thing. Otherwise, it's not.
+
+On the positive side, not only does this replace many small ELF
+loads with one big one, it also simplifies class resolution, as only
+one resolution operation is required for the entire suite of clases.
+
+On the other hand, any unused types waste memory. But more importantly,
+when JC resolves a class it resolves all unresolved symbols in the
+ELF object associated with the class, effectively resolving all of
+the classes defined in that object at once. Many of the extra classes
+will reference still other classes not referenced by the target
+class, causing their ELF objects to be loaded unnecessarily. So if
+the ELF original object contains other classes that would not
+normally be resolved, when linked together these classes will be
+resolved, potentially loading in a bunch more unneeded classes.
+
+Also, JC cannot load a type twice, so if any type in a combo object
+is already defined in the VM, the whole object must be rejected.
+This can sometimes cause curious failures when mixing combo objects
+with regular objects; use the @samp{--verbose obj} flag if unsure.
+
+In any case, there are two ways to use this ``combo object'' feature.
+
+First, if an entry in the @code{jc.object.path} system property points
+to an ELF object instead of a directory tree, then JC will look for types
+in the corresponding ELF object. Note that this should only be done when
+the object contains types that you know will be loaded early in the
+application, because until it actually loads it JC will search the ELF object
+for every class that it tries to load (loading and searching an ELF object
+is a fairly expensive operation).
+
+@cindex @code{_package.o}
+Secondly, before trying the file @code{foo/bar/Jan.o} corresponding
+to Java class @code{foo.bar.Jan}, JC will first look for
+@code{foo/bar/_package.o}. If this file exists and contains a
+definition for the type @code{foo.bar.Jan}, then @code{foo/bar/_package.o}
+will loaded instead. As a side effect, all other types defined in
+that object will be loaded as well.
+
+You can create @code{_package.o} files for a Java package like this:
+
+@verbatim
+    $ cd foo/bar
+    $ gcc -o _package.o -r -nostdlib *.o
+    $ rm [^_]*.o
+@end verbatim
+
+@node Complete Conglomeration
+@section Complete Conglomeration
+
+Taking this idea to its logical extreme, you can conglomerate all of
+the objects used by an application into a single object. However,
+just linking all the objects output by @samp{--loadlist} together
+is not sufficient by itself. This is because of the aforementioned
+unneded resolutions that occur when you conglomerate objects. However,
+there is a special extra-dangerous hack to work around this problem,
+namely, setting the @code{jc.ignore.resolution.failures} property
+to @code{true}. This causes JC to ignore failures to load any
+referred-to classes during class resolution, instead simply resolving
+the symbol to @code{NULL}. Use this only when you know a priori that
+all needed objects are available.
+
+So, putting this all together, here is an example of how to convert
+your application into a single, standalone object file and run it
+without the need for any class files or other generated objects.
+First, we generate the list of needed objects. Then we link them
+all together. Finally, we run JC with the @code{jc.object.path}
+property pointing to (only) the linked object, and tell it also to
+not bother looking for Java class files:
+
+@verbatim
+    $ jc --loadlist list.out foo.Bar
+    $ gcc -o app.o -r -nostdlib `cat list.out`
+    $ jc -Djc.object.path=app.o -Djc.without.classfiles=true \
+	-Djc.ignore.resolution.failures=true foo.Bar
+@end verbatim
+
+For a little more speed, if you don't care about Java source line
+numbers in your exception traces, you can strip out the debugging
+sections (if present):
+
+@verbatim
+    $ strip -g app.o
+@end verbatim
+
+JC is also capable of creating executables from a ``main class''
+(@xref{jcgen}). These simply contain the code to invoke the JC
+runtime (similar to the @code{jc} binary, but with a pre-defined
+main class to start with), and do not contain any actual compiled
+classes in them.
+
+@node JC Native Interface
+@chapter JC Native Interface
+@cindex JC native interface (JCNI)
+
+The JC native interface (JCNI) is an alternative to the JNI.
+However, it was not created as such, rather it simply falls out
+of the fact that JC executes generated C code: the JCNI is simply
+the interface that the generated C code uses.
+
+The JC native interface (JCNI) is really two things. First, it is
+a mapping from Java method call semantics to C function call semantics,
+i.e., what the C prototype of a JCNI native method implementation
+must look like. This part is fairly simple: for parameters and return
+values, the same JNI primitive types are used, and objects are
+represented by @code{_jc_object *} pointers. Static JCNI functions
+do not expect the implicit @code{Class} object as a parameter.
+
+For examples of native methods implementing the JCNI interface,
+look in the @code{libjc/native} subdirectory of the JC source tree.
+
+The second part is how the body of a JCNI method is supposed to
+implement Java functionality like invoking virtual methods and
+catching exceptions. This is defined by the all-important include file
+@uref{../../../include/jc/jc_defs.h, @code{jc_defs.h}},
+installed in the @code{include/} directory.
+
+The basic idea here is to provide a lot of macros that hide the details
+of how things are done. Generated C code ends up looking like some kind
+of flattened-out, long winded version of the original Java code
+written mostly in C macros with names like @code{_JC_INVOKE_VIRTUAL()},
+@code{_JC_PRIM_FIELD()}, @code{_JC_CAUGHT_EXCEPTION()}, etc.
+
+Code speaks better than words here; see
+@uref{../../../include/jc/jc_defs.h, @code{jc_defs.h}}
+for details.
+
+@node Code Generation
+@chapter Code Generation
+@cindex code generation
+
+@menu
+* Generation Overview::			Overview of code generation
+* Current Optimizations::		Current optimizations performed
+* Future Optimizations::		Future possible optimizations
+@end menu
+
+@node Generation Overview
+@section Generation Overview
+
+JC's default code generator is written in Java. If you are familiar with Soot
+then it will appear fairly straightforward. It uses the Soot framework
+to convert bytecode into Jimple, optimizes the Jimple code somewhat,
+and then converts the Jimple statements more or less directly into C
+statements. The code for this lives in the
+@uref{api/org/dellroad/jc/cgen/package-summary.html,
+@code{org.dellroad.jc.cgen}}
+package. The JC install process installs some rudimentary
+@uref{api/index.html, Javadoc}
+describing these classes.
+
+@node Current Optimizations
+@section Current Optimizations
+@cindex optimizations
+
+JC performs several optimizations during the code generation process.
+These are described below.
+
+@menu
+* Method Inlining::			How methods are inlined
+* Nonvirtualization::			Resolving virtual dispatch ahead of time
+* Array Bounds Checks::			Eliminating array bounds checks
+* Cast Checks::				Eliminating casts
+* Null Pointer Checks::			Eliminating null checks
+* Stack Allocation::			Objects on the stack instead of the heap
+* Initialization Checks::		Eliminating class initialization checks
+@end menu
+
+@node Method Inlining
+@subsection Method Inlining
+@cindex inlining, method
+@cindex method inlining
+
+The most important optimization performed by JC's code generator
+is method inlining. Java code makes heavy use of short method
+invocations, so inlining these invocations is a big win, especially
+considering that JC imposes additional overhead to normal C function
+calls. Inlining is done without any call graph, i.e., only when the
+called method is known a priori, i.e., for INVOKESTATIC and non-virtual
+INVOKESPECIAL. A typical example is @code{String.length()} (note
+that because JC doesn't have a verifier, inlining non-public methods
+of other classes is perfectly valid). Other wins include long chains
+of constructor invocations where each constructor does little more
+than invoke its superclass constructor. In particular, every object
+instantiation ultimately invokes @code{Object.<init>}; but this
+method does nothing, so inlining it saves us a function call for
+every object instantiation. JC's inlining code is contained in
+@uref{api/org/dellroad/jc/cgen/DefaultMethodOptimizer.html,
+@code{org.dellroad.jc.cgen.DefaultMethodOptimizer}}.
+
+Method inlining has an additional benefit: it creates more opportunities
+for allocation of objects on the stack instead of the heap
+(@pxref{Stack Allocation} below).
+
+@node Nonvirtualization
+@subsection Nonvirtualization
+@cindex nonvirtualization
+
+Nonvirtualization is the process of converting INVOKEVIRTUAL or
+INVOKEINTERFACE method calls into nonvirtual INVOKESPECIAL method
+calls. This is a win because both INVOKEVIRTUAL and INVOKEINTERFACE
+require looking up the method in the object's vtable or interface
+dispatch hash table at runtime, whereas a nonvirtual INVOKESPECIAL
+method call is just a ``normal'' function call where the function
+to call is known at code generation time. So nonvirtual calls are
+both faster and require less code.
+
+Of course, since a nonvirtual invocation is required for method
+inlining, this process creates more opportunities for method inlining.
+
+To perform nonvirtualization, JC must determine the exact type of
+the base object. First, the easy case: if we know an object is an
+instance of type X, and X is a final class, then we know the exact
+type of the object is X. Second, JC performs a simple type analysis
+to determine the exact runtime type of reference variables (when
+possible). For example, any object created via a @code{new} expression
+has a known exact type.
+
+@node Array Bounds Checks
+@subsection Array Bounds Checks
+@cindex array bounds checks
+
+JC uses Soot analysis to eliminate redundant array bounds checks.
+That is, when we know an array index is not going to cause an
+@code{ArrayIndexOutOfBoundsException} then we can omit the code
+that checks for that case.
+
+@node Cast Checks
+@subsection Cast Checks
+@cindex cast checks
+
+JC uses Soot analysis to eliminate redundant casts. These are common,
+often resulting from code like this:
+
+@verbatim
+    if (foo instanceof Comparable)
+	r = ((Comparable)foo).compareTo(bar);
+@end verbatim
+
+The cast to @code{Comparable} is completely redundant: there's no way
+that foo can not be an instance of @code{Comparable} when that cast
+is performed. JC omits such casts.
+
+@node Null Pointer Checks
+@subsection Null Pointer Checks
+@cindex null pointer checks
+
+JC uses Soot analysis to eliminate redundant null pointer checks.
+Explicit null pointer checks are only required when invoking a
+non-static method nonvirtually, because a virtual invocation goes
+through the vtable which requires dereferencing the object pointer.
+JC eliminates these explicit null pointer checks when it is known
+that the object reference is not null.
+
+@node Stack Allocation
+@subsection Stack Allocation
+@cindex stack allocation
+@cindex allocation, stack
+
+JC uses Soot to perform local escape analysis on each method.  Any objects
+that are allocated in a method but don't ``escape'' that method (either by
+being returned, thrown, assigned to a field, assigned to an array element,
+or passed as a parameter to another method) may be allocated on the stack
+instead of in the heap. This means not only much a faster allocation
+time but also less work for the garbage collector.
+
+Typically only a small percentage of object allocations qualify.
+However, more agressive method inlining means more opportunities
+for stack allocation.
+
+The maximum amount of space in a method's runtime stack frame that
+will be used for stack-allocated Java objects is determined by the
+@code{jc.gen.max.stack.alloc} system property.
+
+When you combine nonvirtualization, method inlining, and stack
+allocation, the results can be fairly significant. For example,
+consider this Java code:
+
+@verbatim
+    for (Iterator iter = foo.iterator(); iter.hasNext(); ) {
+	... iter.next() ...
+    }
+@end verbatim
+
+If the exact type of @code{foo} is known, then @code{foo.iterator()}
+can be inlined, then the exact type of @code{iter} will also be
+known, so @code{iter.hasNext()} and @code{iter.next()} can be
+inlined, and to top it off @code{iter} itself can be allocated on
+the stack. This means significantly faster code for this common
+Java idiom.
+
+@node Initialization Checks
+@subsection Initialization Checks
+@cindex initialization checks
+@cindex active use
+
+Java classes are initialized upon their first ``active use'',
+defined as referencing a static variable, invoking a static
+method, or instantiating an instance of the class.  Performing
+this check before each of these operations is time consuming.
+
+JC performs flow analysis to determine which checks can be eliminated,
+because it can be proven that the class must have already been
+initialized. These checks are then omitted from the generated code.
+
+@node Future Optimizations
+@section Future Optimizations
+@cindex future optimizations
+
+Many neat tricks are possible but not yet attempted. Before discussing
+them, it is worth reiterating an important point: generated ELF objects
+must contain reliable dependency information. Class files can change
+frequently so it is imperative that any change in any class file that
+invalidates a generated ELF object must be covered by that ELF object's
+dependency list.
+
+For the default JC code generator, generating this list is easy: we
+conservatively include all superclasses, superinterfaces, all
+field and method types, parameter types, exception types, etc. When
+more agressive optimizations are made, the list grows longer. For example,
+if a @code{java.lang.String} method is inlined, and that method refers
+to a field in @code{java.lang.StringBuffer}, then it too must be added
+to the dependency list.
+
+The most interesting future possibility with code generation is to perform
+much more agressive optimizations using Soot. Especially for ``closed''
+systems where all class files are known ahead of time, Soot can be used
+for whole program analysis. Inlining and stack allocation of objects
+could be done on a massive scale (inlining creates more opportunities
+for stack allocation). Type analysis could allow virtual methods to be
+resolved at build time, and therefore made candidates for inlining.
+When combined with a conglomerate link, class loading and linking times
+would be reduced. Etc.
+
+Other tricks include a Java equivalent of the GCC @code{asm()} statement.
+For example, something like the following could be used to return an
+object's actual address:
+
+@verbatim
+    public static long getActualMemoryAddress(Object obj) {
+	org.dellroad.jc.cgen.C.inline("return (jlong)param0;");
+    }
+@end verbatim
+
+Extending this idea, one could imagine native C code being written inline
+with Java code, eliminating the need for separate native libraries.
+
+Of course, there's no requirement that C be used as an intermediate
+step to generating ELF objects. In fact, there is something of an
+impedence mismatch between the C language and our needs. For example,
+we use setjmp/longjmp to throw and catch exceptions, but that is not
+necessarily the most efficient method.
+
+Perhaps a different language would work better, such as C++, or an
+even lower level language than C like C-- or GCC's RTL (register transfer
+language).
+
+@node JC Tools
+@chapter JC Tools
+@cindex tools
+@cindex cfdump
+@cindex jcgen
+
+JC supplies a few tools that get automatically installed
+alongside the main @code{jc} binary:
+
+@menu
+* jcjavah::				Native code header file generator
+* jcgen::				ELF object file pre-generator
+* cfdump::				Class file dumper
+@end menu
+
+@node jcjavah
+@section jcjavah
+@cindex @code{jcjavah}
+
+The @code{jcjavah} is the standard C native code header file generator program.
+It also generates C source file stubs.
+It generates JCNI header files by default; specify @code{-jni} for JNI files.
+Here is the usage message:
+
+@verbatim
+    Usage: jcjavah [-classpath path] [-d output-dir] [-c] [-jni] class ...
+    Options:
+	-classpath  Specify search path for class files
+	-d dir      Output directory for generated files
+	-c          Also generate C source files stubs
+	-jni        Generate JNI sources instead of JCNI
+@end verbatim
+
+@node jcgen
+@section jcgen
+@cindex @code{jcgen}
+@cindex ``main class'' executable
+
+The @code{jcgen} program is handy for pre-generating ELF objects or
+``main class'' executables. Here is the usage message:
+
+@verbatim
+Usage:
+    jcgen [options] pattern ...
+    jcgen -o filename [options] classname
+
+Options:
+  -srcpath path     Prepend path to the search path for generated C source
+                    files. The first component of the resulting path is also
+                    the destination for newly generated sources. This option
+                    is cumulative and may be repeated multiple times.
+  -newsrcpath path  Same as -srcpath but replaces the current search path
+                    instead of prepending to it.
+  -objdir dir       Specify destination for generated ELF objects.
+  -incdir dir       Specify include directory for JC headers.
+  -classpath path   Specify search path for user class files.
+  -vmopt opt        Pass opt through to the Java VM command line.
+  -o filename       Generate an executable invoking classname
+  -f                Force regeneration even if not needed
+  -q                Quiet mode (omit verbose output).
+  -v                Increase verbosity.
+  -s                Don't include support for Java line numbers.
+  -N                Only generate source files, no ELF objects.
+
+Example patterns:
+  jan.foo.Bar       Class jan.foo.Bar
+  jan.foo.*         All classes in the jan.foo package
+  jan.foo.%         Same
+  jan.foo.**        All classes in jan.foo and all its subpackages
+  jan.foo.%%        Same
+
+Default -srcpath:      /home/archie/.jc_src:/usr/local/share/jc/src
+Default -objdir:       /home/archie/.jc_obj
+Default -incdir:       /usr/local/include/jc
+Default -classpath:    .
+@end verbatim
+
+The default classpath, source path, and object directory are set up
+to put newly generated files into @code{~/.jc_src} and @code{~/.jc_obj},
+which is usually what you want. So to compile a Java source file,
+pre-generate its ELF object, and execute it you'd do something like this:
+
+@verbatim
+    $ jikes foo/Bar.java
+    $ jcgen foo.Bar
+    $ jc foo.Bar
+@end verbatim
+
+Note that you can use percent signs instead of asterisks on the command
+line. @code{jcgen} is just a shell script wrapper around the JC class
+@uref{api/org/dellroad/jc/BootstrapObjectGenerator.html,
+org.dellroad.jc.BootstrapObjectGenerator}.
+
+Pre-generating all your ELF objects has the advantage that you can
+then run JC with system property @code{jc.without.classfiles=true},
+which yields faster execution and a smaller memory footprint because
+JC is relieved of having to perform several tasks relating to
+handling class files and code generation.
+
+However, note that running with @code{jc.without.classfiles=true}
+can change which class loaders load which classes, which may affect
+application behavior. In general, all classes will end up being
+defined by the boot loader. This is because other class loaders
+will first try to load classes via the boot loader, and in cases
+where this would normally fail (because the class file is not on
+the boot loader's classpath), it will suceed instead, because the
+boot loader skips the class file search and just finds and loads
+the ELF object directly. Another way to explain this is: while each
+class loader may have its own search path for class files, JC has only
+one search path for ELF objects that is shared by all class loaders.
+
+To create an executable, use the @code{-o} flag:
+
+@verbatim
+    $ jcgen -o ~/bin/Bar foo.Bar
+@end verbatim
+
+In this form, no ELF objects are immediately created. Instead,
+@code{jcgen} creates a small executable that simply invokes the JC
+runtime via the JNI invocation interface, passing along the main
+class name (@code{foo.Bar} in this example) along with any
+command line parameters.
+
+All of the other flags except @code{-classpath} (and @code{-v}) are
+ignored; their respective settings are determined at runtime.
+However, by using @code{-classpath}, you can hard-code the classpath
+to the Java class in the executable.
+
+@node cfdump
+@section cfdump
+@cindex @code{cfdump}
+
+@code{cfdump} dumps the contents of a class file in human-readable form.
+Not all contents, most notably method bytecode, are included.
+
+@node Porting JC
+@chapter Porting JC
+@cindex porting
+
+All operating-system and architecture-specific code is contained
+within the following files and directories:
+
+@itemize @bullet
+@item
+@code{include/jc_machdep.h}
+@item
+@code{include/jni_machdep.h}
+@item
+@code{libjc/arch/}
+@end itemize
+
+These files are somewhat self-explanatory.
+The machine independent functionality required includes:
+
+@itemize @bullet
+@item
+Initializing stack frame pointers from a function call or signal handler.
+@item
+Retrieving the saved PC address from a stack frame.
+@item
+Walking from one stack frame to the previous frame.
+@item
+Atomic compare-and-swap of a memory word.
+@item
+Flushing the I-cache (if necessary)
+@item
+Performing architecture-specific ELF relocations.
+@end itemize
+
+@node Developer Information
+@chapter Developer Information
+@cindex developer information
+
+This chapter contains random notes about things that confused me at one
+point and may be useful to other developers.
+
+@menu
+* Classes and Types::		How they are different
+* Bootstrap Process::		How to get things going
+* Types of Class Loaders::	Bootstrap and user-defined
+* Native Object References::	They must always be tracable
+* The Class File Tree::		A tree of class files
+@end menu
+
+@node Classes and Types
+@section Classes and Types
+@cindex classes
+@cindex types
+
+A class is a Java concept represented by a class file. Classes can
+be either normal classes or interfaces. Classes exist even if there
+is no JVM to interpret them.
+
+A type is a runtime concept and is more general. All objects are
+instances of some type. Once a class is loaded, a type is created to
+represent its runtime manifestation. Note that the same class file
+may be loaded more than once (by different class loaders); each time
+the class is loaded a new type is created. In JC ypes are represented
+by @code{_jc_type} structures.
+
+All loaded classes are types but not the converse. The types which
+are not derived from loaded classes are the primitive types and the
+array types. Regardless, all types have instances of @code{java.lang.Class}
+associated with them. Each type contains a reference to the
+@code{java.lang.Class} object associated with that type.
+
+Confusion sometimes results because the word ``class'' is used when
+what is really meant is ``type derived from a loaded class''. Sometimes
+the phrase ``class type'' is used for clarity when referring to a runtime
+type which is neither a primitive nor array type. And @code{java.lang.Class}
+objects are associated with types, not classes. It really should
+have been called @code{java.lang.Type} instead!
+
+If a class is loaded, then unloaded, and then loaded again, the
+second time it is loaded it becomes a completely new and different
+type from the first time it is loaded, a new @code{Class}
+object is instantiated, etc.
+
+All objects are instances of some (non-primitive) type, and contain
+in their 2 word headers pointers to the ``vtype'' structure which
+contains the object's associated @code{_jc_type} structure and
+vtable (virtual method dispath table). The other word is the lockword
+which contains various bits for locking the object, etc.
+
+@node Bootstrap Process
+@section Bootstrap Process
+@cindex bootstrap process
+
+Bootstrapping the VM involves loading the initial types such as
+@code{java.lang.Object} and getting things to the point where we
+are ready to execute arbitrary Java code. Things must be done carefully
+to avoid problems. This is all handled in the file @code{bootstrap.c}.
+
+During bootstrapping, creation of the Class objects that are associated
+with each loaded type is deferred until the @code{java.lang.Class} class has
+been loaded. Then we search the tree of already-loaded types and belatedly
+create their corresponding Class objects. Otherwise in JC Class objects
+are always created whenever a new type is created.
+No constructor is ever invoked for instances of @code{java.lang.Class}.
+
+During early bootstrap class initialization is also disabled, preventing
+execution of arbitrary Java code.
+
+Here is the basic sequence of events:
+
+@itemize @bullet
+@item
+Disable creation of @code{java.lang.Class} instances and class initialization.
+@item
+Load primitive types.
+@item
+Load (but do not resolve, verify, or initialize) lots of other types
+including Object, array types, reflection types, exceptions, etc.
+Basically we're just mapping in a bunch of ELF objects.
+@item
+Find lots of useful fields, methods, and constructors in those types.
+@item
+Load @code{java.lang.Class}.
+@item
+Go through all loaded types and create a @code{java.lang.Class} instance
+for them (note: no constructor for @code{java.lang.Class} is ever invoked,
+and class initialization is still disabled, so no Java code executes).
+@item
+Resolve @code{java.lang.Object} and @code{java.lang.Class}. This step must
+occur after the previous step so that ELF symbolic references to Class objects
+have something to resolve to.
+@item
+Enable creation of @code{java.lang.Class} instances and class initialization.
+@item
+Perform class initialization for @code{java.lang.Class} (and therefore
+@code{java.lang.Object}).
+@item
+Create the fallback exceptions (used to avoid recursion when an exception
+is thrown while trying to create another instance of the same exception).
+@end itemize
+
+Exceptions during bootstrap are particularly annoying to handle.
+There are three cases:
+
+@enumerate
+@item
+@code{env} does not exist (no thread or VM context yet).
+The exception and message are printed out as an error when ``posted.''
+@item
+@code{vm->initialization != NULL && !vm->initialization->may_execute}.
+The exception class name and message are stored in @code{vm->initialization},
+and printed when ``caught''.
+@item
+@code{vm->initialization != NULL && vm->initialization->may_execute}.
+Is this a recursive exception X before pre-instantiated exception X created?
+If yes, the class name and message are stored in @code{vm->initialization},
+printed when ``caught''. If no, the exception is posted normally.
+@end enumerate
+
+Code that is in the ``bootstrap path'' must not call _jc_retrieve_exception()
+because this function doesn't work before execution is enabled (because
+posted exceptions do not actually create any objects).
+
+@node Types of Class Loaders
+@section Types of Class Loaders
+@cindex class loaders
+
+There are two types of class loaders:
+
+@enumerate
+@item
+The bootstrap class loader
+@item
+User-defined class loaders
+@end enumerate
+
+The bootstrap class loader (or ``boot loader'') is an internal JVM
+concept and does not have any corresponding @code{java.lang.ClassLoader}
+object. This loader only knows how to read class files from the
+filesystem and from ZIP files (in this particular JVM implementation),
+is used to load the first classes that are loaded during bootstrapping,
+and is the class loader of last resort so to speak.
+
+User-defined class loaders are simply all loaders other than the boot
+loader, all of which are associated with instances of
+@code{java.lang.ClassLoader}.
+
+The ``system class loader'' (or ``application class loader'') is a
+special user-defined loader.  It is used e.g., to load the class
+specified on the command line.  It is (by definition) the loader
+returned by the method @code{ClassLoader.getSystemClassLoader()}.
+Aside from this, the VM does not treat it specially in any way.
+People sometimes confuse the boot loader with the system loader, but they
+are completely different.
+
+With respect to a specific type, a class loader can be an ``initiating
+loader'' of that type. This basically means that someone successfully
+loaded the type using that loader, perhaps by invoking
+@code{ClassLoader.loadClass()}.
+Another way to load a type using a specific class loader is to load
+another class with that class loader whose class file contains a reference
+to the type.
+
+If a loader is an initiating loader for a type, it can also be the ``defining
+loader'' for that type. There is only one defining loader for each type,
+though there may be multiple initiating loaders. For ``class types'' the
+defining loader is either the boot loader or else it's the loader whose
+@code{ClassLoader.defineClass()} method was called to create the type's
+instance of @code{java.lang.Class}.
+
+A class loader is an initiating loader but not a defining loader for a
+type when it delegates the loading of that type to another class loader
+(typically it's ``parent'' class loader).
+
+@node Native Object References
+@section Native Object References
+@cindex references, object
+@cindex references, native
+@cindex object references
+@cindex native object references
+
+All object references must be tracable at all times.
+
+For GC to not free objects that are actually still in use, the GC
+scan needs to be able to find all live objects. For objects referenced
+via normal Java code, we guarantee this using the usual methods (i.e.,
+scanning the Java stacks of all live threads and Class variables of
+all loaded classes).
+
+The trickiness happens when objects are referenced only by internal
+C code and/or structures. We need a strategy for rigorously tracking
+these references. Here is the strategy.
+
+Each thread has a local native reference list which is explicitly
+scanned during each GC run. In addition, there is a global VM native
+reference list that is scanned during GC and used to hold non-thread
+specific references. All native references must be in one of these
+lists at any time a GC can possibly occur.
+
+References held only by a single thread (e.g., in a local variable)
+must be stored in that thread's local native reference list before
+any opportunity can be allowed to occur in which a GC run may be
+performed. Since GC can happen during any object allocation, or any
+time the current thread checks to see if another thread is trying to
+halt it, this means GC can happen during almost any function call.
+To be conservative, one should assume that the only safe time to call
+a function without storing local reference variables in the native
+reference list is when no functions are called while the reference
+is being used.
+
+If a reference is passed as a function parameter, we generally assume
+that the calling function has already taken care of this.
+
+In addition, certain other references are explicitly scanned during GC:
+
+@itemize
+@item
+Any pending exception in each thread
+@item
+Any pending cross-posted exception in each thread
+@item
+The @code{java.lang.Thread} object associated with each live thread
+@end itemize
+
+@node The Class File Tree
+@section The Class File Tree
+@cindex class file tree
+
+JC keeps an internal tree of loaded class files and their hash values.
+The hash value is how it detects the loading of the same class using
+different files.
+
+The actual class file bytes are only stored if ``on demand'' code
+generation is enabled. Otherwise they are discarded after being parsed.
+The reason we can't throw them away when code generation is enabled is
+because class loaders don't keep class files around, so once a class
+is loaded the class file is normally discarded.
+
+When the code generator needs to look at a class file, we pull it out
+of this tree. A special class
+@uref{api/org/dellroad/jc/JCFinder.html,
+@code{org.dellroad.jc.JCFinder}} containing a native method is used
+to allow Java code access to this tree.
+
+@node Appendix A
+@appendix Appendix A: Recognized ELF symbols
+@cindex ELF symbols
+@cindex symbols, ELF
+
+When an ELF object file corresponding to a class is loaded by JC,
+it is expected to refer to other Java classes and types using
+the following set of symbol names. In the list below, ``XXX''
+and ``YYY'' are replaced by suitably encoded Java names. Method
+names have their signature hashes appended to prevent namespace
+collisions.
+
+Java names are encoded as follows: first the name is converted to
+UTF-8 bytes. Alphanumeric bytes are passed as is. Dots and slashes
+turn into underscores. All other bytes becomes __NN where NN is the
+hex value for the byte. This encoding is also used for file names.
+
+@table @samp
+@item _jc_cs_XXX
+One of the JC C support function declared in @code{jc_defs.h}.
+
+@item _jc_XXX$fields
+Pointer to the static fields structure for class XXX.
+
+@item _jc_XXX$method$YYY
+Pointer to the method YYY of class XXX.
+
+@item _jc_XXX$method_info$YYY
+Pointer to the _jc_method structure for method YYY of class XXX.
+
+@item _jc_XXX$type
+Pointer to the '_jc_type' structure for the non-array type
+associated with class or interface XXX.
+
+@item _jc_XXX$prim$type
+Pointer to the '_jc_type' structure for the primitive type
+XXX, where XXX is one of ``boolean'', ``byte'', ``char'', ``short'',
+``int'', ``long'', ``float'', ``double'', or ``void''.
+
+@item _jc_XXX$class_object
+Pointer to the @code{java.lang.Class} instance for class XXX.
+
+@item _jc_XXX$arrayNNN$type
+Pointer to the '_jc_type' structure for the reference array type having
+NNN dimensions (where NNN is a decimal number between ``1'' and ``255'')
+and associated with class or interface XXX.
+As a special case, for dimension 1 the NNN (``1'' in this case)
+may be omitted: @samp{_jc_XXX$array$type}.
+
+@item _jc_XXX$arrayNNN$prim$type
+Pointer to the '_jc_type' structure for the primitive array type having
+NNN dimensions and associated with primitive type XXX, where
+where XXX is one of ``boolean'', ``byte'', ``char'', ``short'', ``int'',
+``long'', ``float'', or ``double''.
+
+@item _jc_XXX$arrayNNN$class_object
+Pointer to the @code{java.lang.Class} instance for the reference
+array type having NNN dimensions and associated with class or
+interface XXX.
+
+@item _jc_check_address
+Location of a word in a page of memory that is unmapped when the thread is
+being requested to halt, etc. Used by the @code{_JC_PERIODIC_CHECK()} macro.
+
+@item _jc_empty_quick_table
+Location of an empty ``quick'' interface method lookup table. A minor
+optimization that allows classes that would otherwise have to define such
+an empty table to re-use the same one. Classes that don't implement any
+interfaces point to this table as well, which eliminates an extra
+@code{NULL} check in every interface method dispatch.
+@end table
+
+@node Appendix B
+@appendix Appendix B: JC system properties
+@cindex system properties
+@cindex properties, system
+
+These are some of the more important Java system properties that
+affect JC's behavior. The JC build and install process will try
+to figure out the right defaults for everything.
+
+@table @samp
+@item java.boot.class.path
+Directory and ZIP/JAR search path for the bootstrap class loader.
+@item java.boot.class.path.append
+Search path files and directories to append to @code{java.boot.class.path}.
+@item java.boot.class.path.prepend
+Search path files and directories to prepend to @code{java.boot.class.path}.
+@item java.class.path
+Directory and ZIP/JAR search path for the application class loader.
+Default is ``.''. Note that JC ignores the @code{CLASSPATH} environment
+variable to avoid confusion when multiple Java VMs are installed on the
+same host. Instead, use a @code{~/.jc} file.
+@item java.home
+JC installation directory root, e.g. @code{/usr/local}.
+@item java.library.path
+Where JC looks for JNI native libraries.
+Defaults to the Classpath native library directory.
+@item jc.gnu.compiler
+Path to the GCC compiler.
+Used by the default JC code generator when compiling C files into ELF files.
+@item jc.heap.granularity
+A value in the range zero to 99. Zero means each heap block size will
+be twice as big as (100% bigger than) the next smaller size; 99 means
+each heap block size will be no more than 1% bigger than the next smaller size
+(rounded up of course). Default value is 85 (a value chosen out of thin air).
+@item jc.heap.size
+The size of the Java heap. Note that @code{java.lang.Class} objects
+don't live in the Java heap; see also the @code{jc.loader.size} property.
+@item jc.ignore.resolution.failures
+Causes JC to ignore failures to load a referred-to class during class
+resolution. Use with extreme caution; will cause random
+@code{NullPointerException}s if used inappropriately.
+@item jc.include.dir
+Where JC include files (@code{jc_defs.h} and friends) are installed.
+Used by the default JC code generator when compiling C files into ELF files.
+@item jc.include.line.numbers
+@code{true} or @code{false} depending on whether JC should parse the debug
+sections (if present) of ELF objects to extract line number information,
+and should include line number support in newly generated ELF objects.
+Without this property set both during object file creation and during
+execution, Java stack traces will not include source file line numbers.
+Default is @code{true}.
+@item jc.gen.inline.max.expansion
+Limit on a method's expansion ratio from inlining.
+Default is @code{2.5}.
+@item jc.gen.inline.max.caller
+Absolute limit above which a calling method is considered too big to
+do any further inlining of contained invocation sites. This value is
+measured in Soot Jimple statement units, which is roughly equivalent
+to the number of lines of generated C code.
+Set this to zero to completely disable inlining.
+Default is @code{5000}.
+@item jc.gen.inline.max.callee
+Maximum size for a called method when inlining; methods larger than
+this will never be inlined.
+Default is @code{12}.
+@item jc.gen.inline.min.caller
+During inlining, if the calling method size is less than this,
+the @code{jc.gen.inline.max.expansion} limit is ignored.
+Default is @code{20}.
+@item jc.gen.inline.min.callee
+During inlining, if the called method size is less than this,
+the @code{jc.gen.inline.max.expansion} limit is ignored.
+Default is @code{3}.
+@item jc.gen.inline.verbose
+If @code{true}, during code generation inlined methods will be printed
+to standard output.
+@item jc.gen.max.stack.alloc
+Maximum number of bytes of stack allocated object memory allowed in a method.
+Default is @code{1024}.
+@item jc.gen.force
+If @code{true}, causes C source files to be regenerated even if they
+appear valid.
+@item jc.loader.size
+Maximum amount of memory allocated to class loaders (including
+@code{java.lang.Class} objects).
+@item jc.method.optimizer
+Name of a Java class implementing the
+@uref{api/org/dellroad/jc/cgen/MethodOptimizer.html,
+@code{org.dellroad.jc.cgen.MethodOptimizer}}
+interface. An instance is created and used by the @code{JCObjectGenerator}
+class to optimize method Jimple bodies during code generation.
+Default is
+@uref{api/org/dellroad/jc/cgen/DefaultMethodOptimizer.html,
+@code{org.dellroad.jc.cgen.DefaultMethodOptimizer}}.
+@item jc.object.generation.enabled
+Whether JC is allowed to generate ELF objects on demand during execution.
+Note that this being @code{true} means that JC will store copies of all
+loaded class files in memory, for possible subsequent use by the Soot
+code generator. So set this to @code{false} when you want optimal performance
+and you know all classes have already been converted to ELF objects.
+This property is automatically set to @code{false} if either
+@code{jc.without.classfiles} is @code{true} or
+@code{jc.object.loader.enabled} is @code{false}.
+Default is @code{true}.
+@item jc.object.generator
+Name of a Java class implementing the
+@uref{api/org/dellroad/jc/ObjectGenerator.html,
+@code{org.dellroad.jc.ObjectGenerator}}
+interface to be invoked for on-demand ELF object generation.
+Default is
+@uref{api/org/dellroad/jc/cgen/JCObjectGenerator.html,
+@code{org.dellroad.jc.cgen.JCObjectGenerator}}.
+@item jc.object.loader.enabled
+Whether JC should attempt to load ELF files at all. If this is @code{false}
+then JC will function strictly as an interpreting JVM.
+Setting this to @code{false} forces @code{jc.object.generation.enabled}
+to be set to @code{false} as well (as there's no point to generating ELF
+objects on demand if you're not allowed to load them).
+Default is @code{true}.
+@item jc.object.path
+Search path where JC should look for ELF objects.
+The first entry in this path must be a directory and is where newly
+generated ELF objects will be stored.
+Each subseqent entry may be either a directory or the pathname of
+an ELF objects. In the former case, the directory is the root of a
+directory hierarchy mirroring the Java package tree. In the latter case,
+JC will search for java types in the named ELF object.
+@item jc.resolve.native.directly
+@code{true} to cause JCNI native methods to be resolved directly when
+posssible. Enabling this optimization eliminates the overhead for JCNI
+native methods when the invoking class is loaded after the native method
+is resolved, but also causes the native method to disappear from stack traces.
+Default is @code{false}.
+@item jc.source.path
+Directory path where the default JC object generator should look for
+C source and header files.
+The first directory in this path is where newly generated C files
+will be stored.
+@item jc.stack.default
+Default thread stack size.
+@item jc.stack.maximum
+Maximum thread stack size.
+@item jc.stack.minimum
+Minimum thread stack size.
+@item jc.verbose.XXX
+Either @code{true} or @code{false} depending on whether the corresponding
+@code{-v} or @code{--verbose} flag was given as a command line argument to JC.
+These flags are set by the VM itself; any values they are assigned during VM
+creation (e.g., using the @code{--property} command line flag) are ignored.
+The ``XXX'' is one of the verbosity flags, e.g., @code{class}, @code{gc},
+@code{gen}, etc.
+@item jc.without.classfiles
+If @code{true}, then when loading a class JC's bootstrap class loader will
+look first for an already generated ELF object file and, if found, load it
+directly, skipping the step of acquiring the class file. This property being
+set to @code{true} forces the @code{jc.object.generation.enabled} property
+to be set to @code{false} (it requires class files to work). Note that this
+property being @code{true} may cause classes that would normally be
+defined by a user-defined class loader to be defined by the boot loader
+instead, possibly affecting application behavior.
+Default is @code{false}.
+@end table
+
+@c Output the index
+@node Index
+@unnumbered Index
+
+@printindex cp
+
+@bye
+

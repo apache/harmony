@@ -1,0 +1,196 @@
+.\" Copyright 2005 The Apache Software Foundation or its licensors,
+.\" as applicable.
+.\" 
+.\"  Licensed under the Apache License, Version 2.0 (the "License");
+.\"  you may not use this file except in compliance with the License.
+.\"  You may obtain a copy of the License at
+.\" 
+.\"     http://www.apache.org/licenses/LICENSE-2.0
+.\" 
+.\"  Unless required by applicable law or agreed to in writing, software
+.\"  distributed under the License is distributed on an "AS IS" BASIS,
+.\"  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+.\"  See the License for the specific language governing permissions and
+.\"  limitations under the License.
+.\"
+.\" Author: Archie Cobbs <archie@dellroad.org>
+.\"
+.\" $Id: jc.1.in,v 1.11 2005/05/04 13:59:55 archiecobbs Exp $
+.\"
+.Dd January 1, 2004
+.Dt JC 1
+.Os
+.Sh NAME
+.Nm jc
+.Nd JC Java Virtual Machine
+.Sh SYNOPSIS
+.Nm
+.Op options
+.Ar classname
+.Ar ...
+.Nm
+.Op options
+.Fl j
+.Ar jarfile
+.Ar ...
+.Sh DESCRIPTION
+.Nm
+is a Java virtual machine implementation optimized for ``way ahead of time''
+compilation.
+JC converts Java class files into C program source and header files using
+the Soot framework, compiles these with GCC into ELF objects, and then loads
+the resulting ELF objects into the virtual machine using a built-in ELF loader.
+.Pp
+.Nm
+is more completely described in the accompianing
+.Xr info 1
+style online documentation.
+.Pp
+The command line options are as follows:
+.Bl -tag -compact -width XXXX
+.Pp
+.It Fl j
+.It Fl jar
+.It Fl -jar
+Execute the main class of the JAR file specified as the
+first parameter.
+.Pp
+.It Fl c Ar path
+.It Fl cp Ar path
+.It Fl classpath Ar path
+.It Fl -classpath Ar path
+.Pp
+Set the application class loader's search path.
+.Pp
+.It Fl b Ar path
+.It Fl -bootclasspath Ar path
+.Pp
+Set the bootstrap class loader's search path.
+.Pp
+.It Fl l Ar path
+.It Fl -librarypath Ar path
+.Pp
+Set the search path for native libraries.
+.Pp
+.It Fl L Ar filename
+.It Fl -loadlist Ar filename
+Write the pathnames of all ELF objects successfully loaded during
+execution to the named file.
+.Pp
+.It Fl p Ar name=value
+.It Fl Dname=value
+.It Fl -property Ar name=value
+.Pp
+Set a system property.
+.Pp
+.It Fl v Ar opt1,opt2,...
+.It Fl verbose Ar opt1,opt2,...
+.It Fl -verbose Ar opt1,opt2,...
+.Pp
+Enable verbose output flag(s). The verbose flags are:
+.Pp
+.Bl -tag -compact -width exceptionsXX
+.It gc
+Garbage collection progress
+.It class
+Java class loading
+.It jni
+Native library loading and JNI invocation API calls
+.It jni-invoke
+Native method function invocations
+.It exceptions
+Exceptions posted, thrown, and caught
+.It resolution
+Java class resolution
+.It gen
+Code generation
+.It init
+Java class initialization
+.It obj
+ELF object file loading
+.El
+.Pp
+.It Fl V
+.It Fl version
+.It Fl -version
+.Pp
+Display version and exit.
+.Pp
+.It Fl ?
+.It Fl help
+.It Fl -help
+Display command line usage and exit.
+.Pp
+.It Fl mxNNN
+.It Fl XmxNNN
+Same as -p jc.heap.size=NNN
+.Pp
+.It Fl msNNN
+.It Fl XmsNNN
+Same as -p jc.heap.initial=NNN
+.Pp
+.It Fl ssNNN
+.It Fl XssNNN
+Same as -p jc.stack.default=NNN
+.Pp
+.It Fl Xint
+Disable the ELF loader.
+All method execution will use the Java bytecode interpreter.
+.Pp
+Same as -p jc.object.loader.enabled=false.
+.Pp
+.It Fl Xnogen
+Disable on demand code generation, yielding ``mixed mode'' execution.
+ELF objects will be loaded and used if they exist, otherwise
+method execution will use the Java bytecode interpreter.
+.Pp
+Same as -p jc.object.generation.enabled=false
+.Pp
+.It Fl client
+.It Fl server
+.It Fl hotspot
+Ignored for compatibility with Sun's JDK.
+.El
+.Pp
+See the online documentation for further information about the various
+verbose flags and system properties.
+.Sh SIGNALS
+JC responds specially to the following signals:
+.Pp
+.Bl -tag -width SIGUSR1X -compact
+.It Dv SIGUSR1
+Dump debug information to standard output.
+The information includes stack traces of all threads,
+number of loaded classes and memory usage for each active class loader,
+etc.
+.El
+.Sh FILES
+.Bl -tag -width @datadir@/jc/docXX -compact
+.It Pa @libdir@/jc/obj
+System-wide generated JC ELF objects.
+.It Pa @sysconfdir@/jc.conf
+System-wide default command line flags.
+.It Pa @datadir@/jc
+Directory for JC system classes.
+.It Pa @datadir@/jc/doc
+JC documentation.
+.It Pa @datadir@/jc/src
+System-wide generated JC source files.
+.It Pa ~/.jc_src
+Per-user generated JC source files.
+.It Pa ~/.jc_obj
+Per-user generated JC ELF objects.
+.It Pa ~/.jc
+Per-user default command line flags.
+.El
+.Sh SEE ALSO
+.Rs
+.%T "JC home page"
+.%O http://jcvm.sourceforge.net/
+.Re
+.Rs
+.%T "SOOT home page"
+.%O http://www.sable.mcgill.ca/soot/
+.Re
+.Sh AUTHORS
+.An Archie L. Cobbs Aq archie@dellroad.org

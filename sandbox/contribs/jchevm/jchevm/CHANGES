@@ -1,0 +1,195 @@
+Changes in version 1.4.6:
+
+    - Added new command line flags -Xrnd, -Xnoln, and -Xobj.
+    - Fixed JNI method NewObjectArray(); was using the wrong class loader.
+    - Fixed Soot bug that could change class initialization order.
+    - Fixed bug with classes having a name component starting with underscore.
+    - Fixed bug when invoking methods with 'float' parameters dynamically.
+    - Fixed bug in Field.getFloat() when promoting byte -> float.
+    - Throw IllegalArgumentException instead of IllegalAccessException when
+      attempting to retrieve an invalid field via reflection.
+    - Upgrade to Classpath 0.17.
+
+Changes in version 1.4.5:
+
+    - Fixed problem with function attributes declarations on GCC >= 3.4.
+    - Eliminate "bootstrap" code generation; just interpret when needed.
+    - Added --disable-pregenerated-sources flag to ./configure.
+    - Increased default thread stack size from 64K -> 256K.
+    - Upgrade to Classpath 0.15.
+    - Misc other minor fixes.
+
+Changes in version 1.4.4:
+
+    - Allow optimized calling conventions in JCNI (generated) code;
+      on i386, pass the first three parameters in registers.
+    - Add missing access modifier flag `abstract' for array classes.
+    - Fixed JNI bug resolving <clinit> (don't recurse to superclass).
+    - Fix bug invoking interface methods that have 'float' parameters.
+    - Make installation succeed even if JDK not found.
+
+Changes in version 1.4.3:
+
+    - Eliminate use of libffi, instead using a custom dynamic dispatcher.
+    - Fix stack crawling bug occurring on newer versions of FreeBSD.
+
+Changes in version 1.4.2:
+
+    - Fixed code generation bug relating to stack-allocated objects.
+    - Fixed bug in generating exception traces (FreeBSD only).
+
+Changes in version 1.4.1:
+
+    - Add support for "java.boot.class.path.prepend" and
+      "java.boot.class.path.append" system properties.
+    - Allow suffixes like 'k' for kilobytes, etc. for numerical properties.
+    - Fixed serious bug in conservative GC stack scanning (FreeBSD only).
+    - Fixed exception generating stack trace if no source file specified.
+
+Changes in version 1.4.0:
+
+    - Added Java bytecode interpreter.
+    - Add support for more JDK-style VM flags on the command line.
+    - Use "i386" for "os.arch" property for all x86 variants.
+    - Fix bug in method inliner where useless code could get inlined.
+    - More complete cfdump output.
+    - Upgrade to Classpath 0.14.
+    - Other minor fixes.
+
+Changes in version 1.3.2:
+
+    - Add runtime type analysis to improve opportunities for converting
+      invokevirtual and invokeinterface calls into nonvirtual calls.
+    - Allocate stack objects via C variables instead of alloca(),
+      to allow the C compiler more opportunities for optimization.
+    - Fixed code generation bug relating to re-use of parameter variables.
+    - Initialize heap on demand, to avoid faulting in entire heap at startup.
+    - Added ability to create standalone "main class" executables with jcgen.
+    - Convert LinkageError -> NoClassDefFoundError when ELF object not found.
+    - Eliminated an extra indirection when looking up source file line numbers.
+    - Made Java source file line number lookups slightly more efficient.
+    - Updated the manual to reflect recent changes.
+    - Other minor fixes.
+
+Changes in version 1.3.1:
+
+    - Updated the documentation to remove some obsolete information.
+    - Fixed bug where Thread.sleep(0) would sleep forever.
+    - Fixed bugs in Thread.sleep(), Thread.join(), and Object.wait():
+      a sleep time less than 1 second was being treated like 1 millisecond
+      and where a very large sleep time would cause an assertion failure.
+    - Added new property "jc.loader.size" to limit class loader memory.
+    - Fixed bug where OutOfMemoryError could be thrown before attempting
+      garbage collection to unload unreferenced class loaders.
+    - Rejigger the build to respect $(bindir), $(datadir), $(libdir), etc.
+    - Rename "global.jc" -> "jc.conf" and store it in $(sysconfdir).
+    - Added JNI version 1.4 support.
+    - Fixed bugs in Field.get().
+    - Other minor fixes.
+
+Changes in version 1.3:
+
+    - Use conservative stack scanning during GC to eliminate the need
+      for explicit reference tracking within each stack frame, resulting
+      in lower overhead associated with method invocations.
+    - Revamp the installation hierarchy to conform to a more normal layout.
+      Added --with-classpath configure argument to handle separate installs.
+    - Renamed "genobj" to "jcgen" and made -g compilation the default.
+    - New optimization: data flow analysis to eliminate redundant "first
+      active use" checks before accessing static fields and methods.
+    - Make "jc.include.line.numbers" property apply at runtime also.
+    - Improved the efficiency of handling signals.
+    - Several miscellaneous bug fixes and minor optimizations.
+
+Changes in version 1.2.3:
+
+    - New optimization: stack allocation of non-escaping objects.
+    - Added a workaround for the completely broken implementation of
+      pthread_create() that exists on certain versions of Linux.
+    - Try a GC cycle to recycle fat locks before declaring we've run out.
+    - Update return type of JNI function NewObjectArray() to jobjectArray
+      from jarray (this was a bug in the older JNI specification).
+    - Fix bug in parsing classfile CONSTANT_NameAndType constants.
+    - Fixed build problem (e.g., Debian) where 'uname -p' is unsupported.
+    - Made ~/.jc_src and ~/.jc_obj defaults for genobj tool.
+    - Fixed several miscellaneous Soot bugs.
+    - Upgrade to Classpath 0.12.
+
+Changes in version 1.2.2:
+
+    - New optimization: array bounds check elimination.
+    - New optimization: redundant null pointer check elimination.
+    - New optimization: redundant cast check elimination.
+    - Applied workarounds for Soot bugs #92 and #93.
+    - Applied fix for Soot bugs #91 and #94.
+    - Fixed bug caused by inlining certain methods that count stack frames.
+    - Fixed bug from inlining instance methods invoked on the null constant.
+    - Fixed compatibility bug relating to old-style class loaders.
+    - Fixed bug in ClassLoader.defineClass() when name supplied is null.
+    - Improvements in display of exceptions with -verbose output.
+    - Fixed bug in splay tree insertion when configured --disable-assertions.
+
+Changes in version 1.2.1:
+
+    - Automatic inlining of methods during code generation.
+    - Improved performance when jc.resolve.native.directly=true.
+    - Fixed assertion failure during GC of large heaps.
+    - Fixed bug where code generation could be invoked reentrantly,
+      confusing Soot.
+    - Fixed bug where newly generated objects in a newly created object
+      path directory would not be found.
+    - Fixed segfault when trying to throw a ClassCircularityError.
+    - Fixed bug in setting stacks for newly created threads on Linux.
+    - Small change to 'genobj' script to make invocation more convenient.
+    - More efficient null pointer checks for nonvirtual method invocations.
+    - Fixed Java heap memory leak when generating large numbers of objects.
+    - Fix namespace collision with symbol "i386" in large generated functions.
+    - 'make install' faster when run second and subsequent times.
+    - Upgrade to Classpath 0.10.
+
+Changes in version 1.2:
+
+    - Add support for loading multiple types from a single ELF object file.
+    - Add support for execution without needing any class files.
+    - Accept JDK-compatible equivalent command line flags.
+    - Fix a couple of build problems on certain systems.
+    - Miscellaneous bug fixes and speed improvements.
+
+Changes in version 1.1:
+
+    - New heap layout and GC algorithm:
+      - Added support for object finalization.
+      - Added support for soft, weak, and phantom references.
+      - Improvements in tracing algorithm and GC statistics.
+      - Fat locks are now recycled.
+    - Updated for Classpath version 0.08.
+    - Class loader memory is allocated in larger chunks.
+    - Fixed some reflection bugs:
+      - Accessibility is now being checked.
+      - Interfaces were not being returned in declared order.
+      - Inner classes sometimes had the wrong permissions.
+    - Fixed some erroneous mutex assertions.
+    - Fixed infinite loop when local native references exceeded.
+    - Fixed some build problems.
+
+Changes in version 1.0.1:
+
+    - Add support for reflecting inner classes. Add required Soot patches.
+    - Change preferred jikes version from 1.18 to 1.19. Regenerate
+      C source files based on jikes 1.19 classfiles.
+    - Add a version number to "jc_defs.h" to help detect obsolete ELF objects.
+    - Fix bug where Class.forName() could fail for array classes loaded
+      by a user-defined class loader.
+    - Fix several reflection bugs/incompatibilities:
+      - IllegalAccessException was being thrown when setting fields.
+      - Shrink some fields in _jc_type that only need to be 16 bits.
+      - Throw IllegalArgumentException instead of NullPointerException
+        for null non-reference Method.invoke() params and Field.set() values.
+      - Constructor.newInstance() was failing to instantiate the new object.
+      - Convert interface methods to real methods in Method.invoke().
+      - Disallow Method.invoke() on null and non-instanceof objects.
+      - Don't copy the inner exception message in a InvocationTargetException.
+    - Allow Thread.setDaemon() to work setting even if thread is dead.
+    - Fix race condition around method lookup table access.
+
+$Id: CHANGES,v 1.61 2005/07/23 15:31:05 archiecobbs Exp $

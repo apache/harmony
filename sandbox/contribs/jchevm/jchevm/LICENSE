@@ -1,0 +1,34 @@
+JC Virtual Machine
+
+Copyright (C) 2003-2005 Archie L. Cobbs <archie@dellroad.org>.
+All rights reserved.
+
+Portions are derived from SableVM, Copyright (C) 2000-2005
+Etienne M. Gagnon <etienne.gagnon@uqam.ca> and others.
+
+Portions are derived from GNU Classpath.
+See http://www.classpath.org/ for more information.
+
+See the file "AUTHORS" for information about copyright holders.
+
+JC is free software; you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License,
+or (at your option) any later version.
+
+JC is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General
+Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with JC in the file "LGPL-2.1"; if not, write to:
+Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+Boston, MA 02111-1307, USA.
+
+The JC Virtual Machine web site is located at http://jcvm.sourceforge.net/
+
+The SableVM web site is located at http://www.sablevm.org/
+
+The Classpath web site is located at http://www.classpath.org/
+

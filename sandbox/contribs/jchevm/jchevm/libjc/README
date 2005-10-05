@@ -1,0 +1,322 @@
+Subtleties
+==========
+
+There are lots of subtleties in the implementation of a Java VM.
+Here we attempt to discuss some of them.
+
+Basic stuff
+-----------
+
+A class is a Java concept represented by a class file. Classes can
+be either normal classes or interfaces. Classes exist even if there
+is no JVM to interpret them.
+
+A type is a runtime concept and is more general. All objects are
+instances of some type. Once a class is loaded, a type is created to
+represent its runtime manifestation. Note that the same class file
+may be loaded more than once (by different class loaders); each time
+the class is loaded a new type is created.
+
+All loaded classes are types but not the converse. The types which are
+not derived from loaded classes are the primitive types and the array
+types. Regardless, all types have instances of java.lang.Class associated
+with them. Each type contains a reference to the java.lang.Class object
+associated with that type.
+
+Confusion sometimes results because the word "class" is used when
+what is really meant is "type derived from a loaded class". Sometimes
+the phrase "class type" is used for clarity when referring to a runtime
+type which is neither a primitive nor array type.
+
+All objects are instances of some (non-primitive) type, and contain in
+their 2 word headers pointers to the vtable (virtual method dispath
+table) associated with that type (the other word is the lockword which
+contains various bits for locking the object, etc.).
+
+Bootstrap process
+-----------------
+
+During bootstrapping, creation of the Class objects that are associated
+with each loaded type is deferred until the "java.lang.Class" class has
+been loaded. Then we search the tree of already-loaded types and belatedly
+create their corresponding Class objects.
+
+Also, during bootstrap execution of arbitrary Java code (which includes
+class initialization) is disabled.
+
+No constructor is ever invoked for instances of java.lang.Class.
+
+See bootstrap.c for more details on the bootstrap sequence of events.
+Basic sequence of events:
+
+  - Disable creation of java.lang.Class instances and class initialization
+  - Load primitive types
+  - Load (but do not resolve, verify, or initialize) lots of other types
+    including Object, array types, reflection types, exceptions, etc.
+  - Find lots of useful fields, methods, and constructors in those types. 
+  - Load java.lang.Class
+  - Go through all loaded types and create a java.lang.Class instance
+    for them (note: no constructor for java.lang.Class is ever invoked,
+    and class initialization is still disabled, so no Java code executes).
+  - Resolve java.lang.Object and java.lang.Class. This step must be after
+    the previous step so that ELF references to Class objects don't resolve
+    to NULL.
+  - Enable creation of java.lang.Class instances and class initialization 
+  - Perform class initialization for java.lang.Class
+  - Create fallback exceptions (used to avoid recursion when an exception
+    is thrown while trying to create another instance of the same exception).
+
+Exceptions during bootstrap: 3 cases:
+
+  1 'env' does not exist (no thread or vm context yet)
+    -> exception & message is printed out as an error when "posted"
+  2 vm->initialization != NULL && !vm->initialization->may_execute
+    -> type & message stored in vm->initialization, printed when "caught"
+  3 vm->initialization != NULL && vm->initialization->may_execute
+    -> recursive exception X before pre-instantiated exception X created?
+      3a yes: type & message stored in vm->initialization, printed when "caught"
+      3b no: exception is posted normally
+
+Code that is in the "bootstrap path" must not call _jc_retrieve_exception()
+because this function doesn't work before execution is enabled (because
+posted exceptions do not actually create any objects).
+
+Class loaders
+-------------
+
+There are two types of class loaders:
+
+	1. The bootstrap class loader
+	2. User-defined class loaders
+
+The bootstrap class loader (or "boot loader") is an internal JVM concept
+and does not have any corresponding ClassLoader object. This loader
+only knows how to read class files from the filesystem and from ZIP files
+(in this particular JVM implementation), and is used to load the first
+classes that are loaded during bootstrapping.
+
+User-defined class loaders are simply all loaders other than the boot
+loader, all of which are associated with instances of java.lang.ClassLoader.
+
+The system class loader (or "application class loader") is a user-defined
+loader. It is used e.g. to load the class specified on the command line.
+It is the loader returned by ClassLoader.getSystemClassLoader(). The VM has
+no explicit knowledge of it.
+
+People sometimes confuse the boot loader with the system loader, but they
+are completely different.
+
+With respect to a specific type, a class loader can be an "initiating
+loader" of that type. This basically means that someone successfully
+loaded the type using that loader, perhaps by invoking ClassLoader.loadClass().
+Another way to load a type using a specific class loader is to load
+another class with that class loader whose class file contiains a reference
+to the type.
+
+If a loader is an initiating loader for a type, it can also be a defining
+loader for that type. There is only one defining loader for each type,
+though there may be multiple initiating loaders. For "class types" the
+defining loader is either the boot loader or else it's the loader whose
+ClassLoader.defineClass() method was called to create the type's instance
+of java.lang.Class.
+
+Class loader memory
+-------------------
+
+Certain memory internal to the VM is associated with a particular
+class loader, and is only needed and used by that loader. Moreover,
+when/if such memory is freed, it may all be freed together at once
+(when the class loader and all its loaded classes are unloaded).
+
+Therefore for efficiency class loader memory is allocated on a stack
+who's top only grows in one direction (upward), until eventually
+the entire stack is freed at once.
+
+Examples of memory that can be allocated from class loader memory:
+
+0. Internal type structures for types defined by the loader
+1. java.lang.Class objects associated with types defined by the loader
+2. Virtual method dispatch tables associated with types defined by the loader
+3. ELF information associated with class types defined by the loader
+4. Native library information
+
+Class unloading
+---------------
+
+Classes may be unloaded when they are no longer reachable. Basically,
+this means the Class object itself is no longer reachable. Because
+from any Class object you can get the corresponding ClassLoader object,
+and vice-versa from any ClassLoader object you can obtain the Class
+objects associated with all its loaded classes, then it follows that
+a ClassLoader and all its loaded Class objects become unreachable at
+the same time.
+
+All references must be tracable at all times
+--------------------------------------------
+
+For GC to not free objects that are actually still in use, the GC
+scan needs to be able to find all in-use objects. For objects referenced
+via normal Java code, we guarantee this using the usual methods (i.e.,
+scanning the Java stacks of all live threads and Class variables of
+all loaded classes).
+
+The trickiness happens when objects are referenced only by internal
+C code and/or structures. We need a methodology for rigorously tracking
+these references. Here is the strategy.
+
+Each thread has a local native reference list which is explicitly
+scanned during each GC run. In addition, there is a global native
+reference list that is scanned during GC and used to hold non-thread
+specific references. All native references must be in one of these
+lists at any time a GC can possibly occur.
+
+References held only by a single thread (e.g., in a local variable)
+must be stored in that thread's local native reference list before
+any opportunity can be allowed to occur in which a GC run may be
+performed. Since GC can happen during any object allocation, or any
+time the current thread checks to see if another thread is trying to
+halt it, this means GC can happen during almost any function call.
+To be conservative, one should assume that the only safe time to call
+a function without storing local reference variables in the native
+reference list is when no functions are called while the reference
+is being used.
+
+If a reference is passed as a function parameter, we can assume that
+the calling function has already taken care of this.
+
+In addition, certain other references are explicitly scanned during GC:
+
+1. Any pending exception in each thread
+2. The java.lang.Thread object associated with each live thread
+
+Implicit references
+-------------------
+
+There are lots of "implicit" references in Java. E.g., from a Method
+object you can always get the corresponding Class object, but there's
+no actual field in the Method object that points to the class.
+Instead, a native method is used to find the Class object via
+internal references. Such references are called "implicit" references
+(which particular references are implicit depends on the way each
+VM is implemented, but there will always be some). Here are some
+other possible examples:
+
+  Class object -> Class object for its superclass
+  Class object -> Class object for its superinterfaces
+  Class object -> ClassLoader object (and vice-versa)
+  Field, Method, Constructor objects -> Class object
+  Class object -> its inner Class objects (and vice-versa)
+  Class object -> intern'd version of all String constants
+  Class object -> all Class objects corresponding to types explicitly
+    referenced by any field, method, or variable declaration
+
+We handle these "in bulk" as follows: all java.lang.Class objects are
+in class loader memory. We combine all the implicit references from
+all types defined by a loader into a single implicit references list
+for that loader, and then treat the whole class loader memory as a
+single "object" for the purposes of garbage collection, i.e., it only
+gets scanned once during the GC walk. Because types often have implicit
+references to other types defined by the same loader, this saves a lot
+of work because we don't need to follow any of those "loader internal"
+references during GC.
+
+ThreadDeathException
+====================
+
+Java allows a thread to asynchronously throw an exception in another
+thread. Doing this is rightfully deprecated and causes all sorts of
+race conditions. In any case, here is how we implement it:
+
+	%%%
+
+Class loading
+=============
+
+Class types are loaded and initialized using these steps:
+
+1. Class loading
+2. Class verification
+3. Class preparation
+4. Class linking
+5. Class initialization
+
+Loading
+-------
+
+The classfile byte[] array is stored in the JC compile directory
+hierarchy (the "classfile cache"). Any existing but different classfile
+is replaced.
+
+The byte[] array is parsed, resulting in a '_jc_classfile' structure.
+We do not bother to parse any bytecode.
+
+Then JC ensures that all other classfiles required to compile the
+C source for the class are in the classfile cache. This involves loading
+the class's superclasses and superinterfaces. It also involves attempting
+to load all other classes referred to by CONSTANT_Class entries in the
+class's constant pool which don't already exist in the classfile cache.
+Loading these classes may result in ClassCircularityErrors, for example
+if class C refers to class D and D's superclass is C, which are ignored.
+They are ignored because the real objective -- to load their classfiles
+into the classfile cache -- has been achieved.
+
+Then JC generates C source for the class and C header files for all of
+the aforementioned other classes, and then uses GCC to compile the source
+into an ELF object file. The loading of CONSTANT_Class classfiles ensures
+that Soot will not have to create any phantom classes.
+
+This ELF object file is then loaded by JC's internal ELF loader, all
+symbols which can be resolved within the file itself are resolved, and
+the class's '_jc_type' type structure is located. At this point the class
+is loaded.
+
+A class's loaded ELF image is described by a '_jc_elf' structure.
+This structure in turn includes a pointer to a '_jc_elf_info' structure,
+which contains all of the linking information associated with the ELF
+object, i.e., the ELF relocation and symbol tables.
+
+Verification
+------------
+
+Bytecode verification is not performed by JC, but if it was this is
+perhaps where it would be done.
+
+Verification may also be done during the generation of the C source
+file for the class. This may be much easier as it can be done in Java.
+
+Class preparation
+-----------------
+
+Static (i.e., class) fields that have constant initial values are
+initialized with the value proscribed in the class file. Only fields
+having primitive type or type String may have constant initial values.
+
+Linking
+-------
+
+This phase should really be called "Resolution" instead of "Linking".
+
+Linking involves resolving all remaining unresolved symbols in the class's
+loaded ELF image. These will be references to symbols external to the ELF
+file itself, such as references to other classes and JC support functions.
+Linking may involve trigger loading of these other classes.
+
+Note that if a class C contains a symbol referring to class D, then
+assuming D has been loaded, it is not necessary for D's ELF linking
+information (the '_jc_elf_info' structure) to exist for C to link to D,
+because the locations of all of D's fields and methods can be computed
+solely from D's '_jc_type' type descriptor.
+
+Therefore, at this point the class's '_jc_elf' and '_jc_classfile'
+structures may be freed as they are no longer needed.
+
+Initialization
+--------------
+
+The static "<clinit>" method of the class is executed, if any.
+Class initialization is triggered the first time an object of the
+class is instantiated, any static method is called, or any static
+field of the class is accessed.
+
+Classes loaded during bootstrap may not have "<clinit>" methods.
+
