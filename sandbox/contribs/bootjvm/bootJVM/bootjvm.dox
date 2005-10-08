@@ -1,0 +1,335 @@
+########################################################################
+#
+# bootjvm.dox
+#
+# Doxygen setup and controls for Apache Harmony 'bootJVM' project.
+#
+# Doxygen control file for extracting and formatting documentation 
+# from source code.  No Doxygen control tags are used herein.  ;-)
+#
+#
+# $URL: https://svn.apache.org/path/name/bootjvm.dox $ $Id: bootjvm.dox 0 09/28/2005 dlydick $
+#
+# Copyright 2005 The Apache Software Foundation
+# or its licensors, as applicable.
+#
+# Licensed under the Apache License, Version 2.0 ("the License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.
+#
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+# $LastChangedRevision: 0 $
+#
+# $LastChangedDate: 09/28/2005 $
+#
+# $LastChangedBy: dlydick $
+# Original code contributed by Daniel Lydick on 09/28/2005.
+#
+########################################################################
+#
+# --- PROJECT RELATED OPTIONS ---
+#
+# Top level parameters-- See program equivalents in 'arch.h'
+#
+#
+# When modifying the program name, SET THE SAME WAY IN 'arch.h' !!!
+#
+# They are found there as 'ARCH_PROGRAM_NAME/ARCH_PROGRAM_DESCRIPTION'
+# and 'ARCH_PROGRAM_VERSION', respectively.
+#
+
+# defined in 'config/config_dox_setup.dox'.
+# Also paired up in 'config/config.h':
+#    "CONFIG_PROGRAM_NAME: CONFIG_PROGRAM_DESCRIPTION"
+#PROJECT_NAME           =
+
+# defined in 'config/config_dox_setup.dox'
+#    and 'config/config.h' as CONFIG_RELEASE_LEVEL
+#PROJECT_NUMBER         =
+
+#################################
+#
+# REMEMBER:  These relative path names are relative to
+#            the directory where this file is _invoked_
+#            not where it is stored!  This means for
+#            the sake of how paths are specified here
+#            that 'doxygen' must be _invoked_ from _this_
+#            directory!!!
+#
+OUTPUT_DIRECTORY = doc
+#################################
+USE_WINDOWS_ENCODING= YES # Windows users might want to change this
+#################################
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ABBREVIATE_BRIEF       = NO
+#################################
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        =
+STRIP_FROM_INC_PATH    =
+#################################
+CASE_SENSE_NAMES       = NO   # NO for Windows and CD-ROM distribs
+SHORT_NAMES            = NO   # YES for Windows and CD-ROM distribs
+JAVADOC_AUTOBRIEF      = YES
+DETAILS_AT_TOP         = YES  # Either way looks nice
+ALWAYS_DETAILED_SEC    = YES
+SEPARATE_MEMBER_PAGES  = NO
+#################################
+TAB_SIZE               = 4  # Only spaces are used in current code
+ENABLE_PREPROCESSING   = YES
+ALIASES                = 
+OPTIMIZE_OUTPUT_FOR_C  = YES
+########################################################################
+#
+# --- BUILD RELATED OPTIONS ---
+#
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+HIDE_UNDOC_MEMBERS     = NO
+HIDE_IN_BODY_DOCS      = NO
+INTERNAL_DOCS          = YES
+SHOW_INCLUDE_FILES     = YES
+SORT_MEMBER_DOCS       = NO
+SORT_BRIEF_DOCS        = YES
+#################################
+GENERATE_DEPRECATEDLIST= YES
+GENERATE_TODOLIST      = YES
+GENERATE_TESTLIST      = YES
+GENERATE_BUGLIST       = YES
+#################################
+# MAX_INITIALIZER_LINES  =     # Leave as default value
+SHOW_USED_FILES        = YES
+SHOW_DIRECTORIES       = YES
+########################################################################
+#
+# --- OPTIONS RELATED TO WARNINGS AND PROGRESS MESSAGES ---
+#
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES # Overridden by EXTRACT_ALL
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+# WARN_FROMAT          =     # Leave as the default vaule
+# WARN_LOGFILE         =     # Leave as standard error output
+########################################################################
+#
+# --- INPUT RELATED OPTIONS ---
+#
+# File names to process and extract documentation
+#
+
+@INCLUDE = config/config_dox_setup.dox
+@INCLUDE = config/config_roster_c.dox
+@INCLUDE = config/config_roster_h.dox
+@INCLUDE = config/config_roster_jni_c.dox
+@INCLUDE = config/config_roster_jni_h.dox
+@INCLUDE = config/config_roster_jni_java.dox
+@INCLUDE = config/config_roster_test_java.dox
+@INCLUDE = config/config_roster_sh.dox
+
+
+#################################
+# FILE_PATTERNS        =     # Explicitly specify files with INPUT=
+# FILE_VERSION_FILTER  = svnstat.sh # Per doc recommendation
+RECURSIVE              = NO
+#################################
+EXCLUDE                =
+EXCLUDE_SYMLINKS       = NO
+EXCLUDE_PATTERNS       =
+#################################
+#
+# Comment out INPUT_FILTER for
+# faster processing when working
+# _only_ on source code.  This
+# cuts off a good amount of
+# processing time at the expense
+# of having garbage results for
+# shell script pages.  When done
+# with such work, re-enable this
+# parameter and rebuild all docs.
+#
+INPUT_FILTER           = dox_filter.sh
+
+# FILTER_PATTERNS      =
+FILTER_SOURCE_FILES    = YES
+########################################################################
+#
+# --- SOURCE BROWSER RELATED OPTIONS ---
+#
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+########################################################################
+#
+# --- ALPHABETICAL INDEX OPTIONS ---
+#
+ALPHABETICAL_INDEX     = YES
+COLS_IN_ALPHA_INDEX    = 2
+########################################################################
+#
+# --- HTML RELATED OPTIONS ---
+#
+#GENERATE_HTML          = NO    # Enable if desired, via 'config.sh'
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+# HTML_HEADER          =
+# HTML_FOOTER          =
+# HTML_STYLESHEET      =
+HTML_ALIGN_MEMBERS     = YES
+GENERATE_HTMLHELP      = YES  # Windows users will want to change this
+CHM_FILE               = doc/bootjvm.chm
+# HHC_LOCATION         =      # Windows users _may_ want to change this
+# GENERATE_CHI         =      # Windows users _may_ want to change this
+# BINARY_TOC           =      # Windows users _may_ want to change this
+TOC_EXPAND             = YES
+# ENUM_VALUES_PER_LINE =
+DISABLE_INDEX          = NO
+########################################################################
+#
+# --- LATEX RELATED OPTIONS ---
+#
+#GENERATE_LATEX         = NO   # Enable if desired, via 'config.sh'
+LATEX_OUTPUT           = latex
+# LATEX_CMD_NAME       =
+# MAKEINDEX_CMD_NAME   =
+COMPACT_LATEX          = YES
+# PAPER_TYPE           =
+# EXTRA_PACKAGES       =
+# LATEX_HEADER         =
+# PDF_HYPERLINKS         = YES  # Enable if PDF browsing desired
+# USE_PDFLATEX           = YES  # Enable if PDF output desired
+LATEX_BATCHMODE        = YES
+LATEX_HIDE_INDICES     = YES
+########################################################################
+#
+# --- RTF RELATED OPTIONS ---
+#
+#GENERATE_RTF           = NO    # Enable if desired, via 'config.sh'
+RTF_OUTPUT             = rtf
+COMPACT_RTF            = YES
+RTF_HYPERLINKS         = YES
+# RTF_STYLESHEET_FILE  =
+# RTF_EXTENSIONS_FILE  =
+########################################################################
+#
+# --- MAN PAGE RELATED OPTIONS ---
+#
+#GENERATE_MAN           = NO    # Enable if desired, via 'config.sh'
+MAN_OUTPUT             = man
+MAN_EXTENSION          = .3
+MAN_LINKS              = YES
+########################################################################
+#
+# --- XML RELATED OPTIONS ---
+#
+#GENERATE_XML           = NO    # Enable if desired, via 'config.sh'
+XML_OUTPUT             = xml
+# XML_SCHEMA           =
+# XML_DTD              =
+XML_PROGRAMLISTING     = YES
+########################################################################
+#
+# --- PREPROCESSOR RELATED OPTIONS ---
+#
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           = jvm/src \
+                         jvm/include \
+                         config \
+                         jni/src/harmony/generic/0.0/src  \
+                         jni/src/harmony/generic/0.0/include
+
+PREDEFINED             = I_AM_EXIT_C=nonnull \
+                         I_AM_JRTYPES_C=nonnull \
+                         I_AM_JVMCFG_C=nonnull \
+                         I_AM_STDIO_C=nonnull \
+\
+                         CONFIG_HEAP_TYPE_SIMPLE \
+                         CONFIG_HEAP_TYPE_BIMODAL \
+                         CONFIG_HEAP_TYPE_OTHER \
+\
+                         CONFIG_GC_TYPE_STUB \
+                         CONFIG_GC_TYPE_OTHER \
+
+# EXPAND_AS_DEFINED    =
+SKIP_FUNCTION_MACROS   = NO
+########################################################################
+#
+# --- EXTERNAL REFERENCE OPTIONS ---
+#
+# TAGFILES             =
+# GENERATE_TAGFILE     = doc/bootjvm.tag
+EXTERNAL_GROUPS        = YES
+########################################################################
+#
+# --- SEARCH ENGINE OPTIONS ---
+#
+SEARCHENGINE           = NO
+########################################################################
+#
+# Directives not applicable to this project:
+#
+# INLINE_INHERITED_MEMB
+# MULTILINE_CPP_IS_BRIEF
+# INHERIT_DOCS
+# DISTRIBUTE_GROUP_DOC
+# OPTIMIZE_OUTPUT_FOR_JAVA
+# EXTRACT_PRIVATE
+# EXTRACT_LOCAL_CLASSES
+# EXTRACT_LOCAL_METHODS
+# HIDE_UNDOC_CLASSES
+# HIDE_FRIEND_COMPOUNDS
+# INLINE_INFO
+# EXAMPLE_PATH
+# EXAMPLE_RECURSIVE
+# EXAMPLE_PATTERNS
+# IMAGE_PATH
+# VERBATIM_HEADERS
+# USE_HTAGS
+# IGNORE_PREFIX
+# GENERATE_TREEVIEW
+# TREEVIEW_WIDTH
+# ALLEXTERNALS
+# PERL_PATH
+# CLASS_DIAGRAMS
+#
+# ... \todo TODO:  Someone might want to get graphing working, but
+#                  remember that C++ functionality is not applicable:
+# HAVE_DOT
+# CLASS_GRAPH
+# COLLABORATION_GRAPH
+# GROUP_GRAPHS
+# UML_LOOK
+# TEMPLATE_RELATIONS
+# HIDE_UNDOC_RELATIONS
+# INCLUDE_GRAPH
+# INCLUDED_BY_GRAPH
+# CALL_GRAPH
+# GRAPHICAL_HIERARCHY
+# DIRECTORY_GRAPH
+# DOT_IMAGE_FORMAT
+# DOT_PATH
+# DOTFILE DIRS
+# MAX_DOT_GRAPH_HEIGHT
+# MAX_DOT_GRAPH_DEPTH
+# MAX_DOT_GRAPH_WIDTH
+# TOD_TRANSPARENT
+# DOT_MULTI_TARGETS
+# GENERATE_LEGEND
+# DOT_CLEANUP
+########################################################################
+#
+# EOF
