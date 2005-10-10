@@ -505,6 +505,8 @@ rchar *classpath_get_from_prchar(rchar *clsname)
              * with suffix.  Make @e sure all files are writeable
              * for final <b><code>rm -rf</code></b>.
              */
+             
+            
             sprintfLocal(jarscript,
                          JVMCFG_JARFILE_DATA_EXTRACT_SCRIPT,
                          tmparea_get(),
@@ -514,7 +516,34 @@ rchar *classpath_get_from_prchar(rchar *clsname)
                          classpath_list[i],
                          class_location);
 
-            int rc = system(jarscript);
+#ifdef CONFIG_WINDOWS
+
+           /*
+            *   gmj : awful hack - need to escape out every \ in paths
+            *   or it doesn't seem to get across into the batch file correctly
+            */
+		   rchar *fixscript = HEAP_GET_DATA(JVMCFG_SCRIPT_MAX, rfalse);
+
+           char *buffptr = fixscript;
+		   char *jarscriptPtr = jarscript;
+		              
+		   char c;
+           while((c = *jarscriptPtr++)) {
+           		*buffptr++ = c;
+           		
+	             if (c == '\\') 
+	             {
+	           	    *buffptr++ = '\\';
+	             } 
+           }
+           *buffptr = '\0';
+           
+           strcpy(jarscript, fixscript);
+           HEAP_FREE_DATA(fixscript);
+                        
+#endif
+
+           int rc = system(jarscript);
 
             if (0 != rc)
             {
