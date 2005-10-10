@@ -313,12 +313,10 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
     tmpatr.attribute_name_index = GETRS2(&src->attribute_name_index);
     tmpatr.attribute_length     = GETRI4(&src->attribute_length);
 
-    MACHINE_JSHORT_SWAP(tmpatr.attribute_name_index);
-    MACHINE_JINT_SWAP(tmpatr.attribute_length);
-
     cfmsgs_typemsg("cfattrib_loadattribute",
                    pcfs,
                    tmpatr.attribute_name_index);
+
     sysDbgMsg(DMLNORM,
               "cfattrib_loadattribute",
               "len=%d",
@@ -376,7 +374,7 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
 
     classfile_attribute_enum atrenum =
         cfattrib_atr2enum(pcfs, (*dst)->ai.attribute_name_index);
-
+        
     if (LOCAL_CODE_ATTRIBUTE == atrenum)
     {
         /*
@@ -390,6 +388,7 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
          *        byte-stream class file, which has no guaranteed
          *        word alignment.
          */
+         
         PTR_DST_AI(dst)->max_stack =
             GETRS2(&((Code_attribute *) src)->max_stack);
 
@@ -399,11 +398,7 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
         PTR_DST_AI(dst)->code_length =
             GETRI4(&((Code_attribute *) src)->code_length);
 
-        MACHINE_JSHORT_SWAP(*PTR_DST_AI(dst)->max_stack);
-        MACHINE_JSHORT_SWAP(*PTR_DST_AI(dst)->max_locals);
-        MACHINE_JINT_SWAP(*PTR_DST_AI(dst)->code_length);
-
-        if (0 == PTR_DST_AI(dst)->code_length)
+	        if (0 == PTR_DST_AI(dst)->code_length)
         {
             /*
              * Possible, but not theoretically reasonable,
@@ -517,8 +512,26 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
         }
 
     } /* if LOCAL_CODE_ATTRIBUTE */
+    else if (LOCAL_CONSTANTVALUE_ATTRIBUTE == atrenum) 
+    {
+        if (0 != tmpatr.attribute_length)
+        {
+            memcpy(&(*dst)->ai.info,
+                   &src->info,
+                   tmpatr.attribute_length);
+        }
+
+		/*
+		 *  we need to swap the index for the value
+		 */
+        ((ConstantValue_attribute *) &(*dst)->ai)->constantvalue_index =
+        	GETRS2(&((ConstantValue_attribute *) &(*dst)->ai)->constantvalue_index);
+        	
+    } /* if LOCAL_CONSTANT_ATTRIBUTE */
     else
     {
+    	/* $$$ GMJ: I don't agree... things need to be byteswapped for indices and such
+    	 */
         /*
          * See comments at top of @c @b if statment as to why
          * all other structures can be directly copied into the heap
