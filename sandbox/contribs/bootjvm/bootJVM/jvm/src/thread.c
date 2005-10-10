@@ -370,6 +370,8 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
                                           rint                priority,
                                           rboolean            isdaemon)
 {
+	
+	
     /*
      * Declare slot in use, but not initialized.
      * (Redundant for most situations where
@@ -383,15 +385,22 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
     /* Check for stack overflow if this frame is loaded */
     ClassFile *pcfs = CLASS_OBJECT_LINKAGE(clsidx)->pcfs;
     Code_attribute *pca = (Code_attribute *)
-                         &pcfs->methods[mthidx]->attributes[codeatridx];
+                         &pcfs->methods[mthidx]->attributes[codeatridx]->ai;
 
     /* Check if this causes stack overflow, throw StackOverflowError */
-    if (JVMCFG_MAX_SP <= GET_SP(thridx) +
+    if (JVMCFG_MAX_SP <= (ruint)( GET_SP(thridx) +
                          JVMREG_STACK_MIN_FRAME_HEIGHT +
                          JVMREG_STACK_PC_HEIGHT +
                          pca->max_stack +
-                         pca->max_locals)
+                         pca->max_locals))
     {
+       sysDbgMsg(0,"thread.c", "thread_new_common() she's gonna blow! %d %d %d - %d %d\n",
+       	thridx, JVMCFG_MAX_SP, (ruint)(GET_SP(thridx) +
+                         JVMREG_STACK_MIN_FRAME_HEIGHT +
+                         JVMREG_STACK_PC_HEIGHT +
+                         pca->max_stack +
+                         pca->max_locals), pca->max_stack, pca->max_locals);
+       	
         exit_throw_exception(EXIT_THREAD_STACK,
                              JVMCLASS_JAVA_LANG_STACKOVERFLOWERROR);
 /*NOTREACHED*/
@@ -688,7 +697,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
                                    rboolean          usesystemthread,
                                    rboolean        find_registerNatives)
 {
-    /*
+     /*
      * Attempt to load requested class.  Notice that
      * an object is @e not being instantiated here,
      * so the @b arraylength parm (parm 3) can be
@@ -698,7 +707,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
                                                    find_registerNatives,
                                                     (jint *) rnull);
 
-    /* Point to @e this class structure, then get immediate superclass*/
+     /* Point to @e this class structure, then get immediate superclass*/
     ClassFile *pcfs         = CLASS_OBJECT_LINKAGE(clsidx)->pcfs;
     ClassFile *pcfs_recurse = pcfs;
 
