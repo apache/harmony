@@ -76,6 +76,13 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
 
 ARCH_COPYRIGHT_APACHE(classfile, h, "$URL: https://svn.apache.org/path/name/classfile.h $ $Id: classfile.h 0 09/28/2005 dlydick $");
 
+/*
+ *  classfile code depends on packed structures.  Change from 
+ *  global project-wide -fpack-struct to local for the 
+ *  structures that need it
+ */
+
+#pragma pack(1)
 
 /*!
  * @brief Attributes of a field, method, or class.
@@ -2537,6 +2544,11 @@ extern rvoid cfmsgs_show_constant_pool(ClassFile *pcfs);
 extern rvoid cfmsgs_atrmsg(rchar *fn,
                            ClassFile *pcfs,
                            attribute_info_dup *atr);
+
+/*
+ * restore packing
+ */
+#pragma pack()
 
 #endif /* _classfile_h_included_ */
 

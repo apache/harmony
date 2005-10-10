@@ -349,7 +349,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     u2 tmplenutf;
 
     /* Needed for CP_ITEM_SWAP_Ux() macros */
-#ifdef CONFIG_LITTLE_ENDIAN
+#ifdef ARCH_LITTLE_ENDIAN
     u2    *pcpu2;
     u4    *pcpu4;
 #endif
@@ -401,7 +401,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
      * Perform little-endian byte swapping,
      * where appropriate (NOP otherwise)
      */
-    MACHINE_JINT_SWAP(pcfs->magic);
 
     sysDbgMsg(DMLNORM,
               "classfile_loadclassdata",
@@ -448,8 +447,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     pcfs->major_version = GETRS2(pu2++);
 
-    MACHINE_JSHORT_SWAP(pcfs->major_version);
-
     sysDbgMsg(DMLNORM,
               "classfile_loadclassdata",
               "major=%d",
@@ -483,8 +480,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Get constant_pool_count                                       */
     /*****************************************************************/
     pcfs->constant_pool_count = GETRS2(pu2++);
-
-    MACHINE_JSHORT_SWAP(pcfs->constant_pool_count);
 
     sysDbgMsg(DMLNORM,
               "classfile_loadclassdata",
@@ -542,12 +537,14 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
          * Look up structure size, perform in-place byte swap
          * for little-endian architectures.
          */
+         
         switch (((cp_info *) pcpbytes)->tag)
         {
             case CONSTANT_Class:
+            
                 ALLOC_CP_INFO(CONSTANT_Class_info,
                               LOCAL_Class_binding);
-
+                                                           
                 CP_ITEM_SWAP_U2(CONSTANT_Class_info, name_index);
 
                 CPTYPEIDX_RANGE_CHECK(CONSTANT_Class_info,
@@ -884,8 +881,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->this_class = GETRS2(pu2++);
 
-    MACHINE_JSHORT_SWAP(pcfs->this_class);
-
     /*!
      * @todo Need to free constant_pool[0..n] also if failure
      */
@@ -901,8 +896,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->super_class = GETRS2(pu2++);
 
-    MACHINE_JSHORT_SWAP(pcfs->super_class);
-
     /* LOAD_SYSCALL_FAILURE(what needs checking here?,"access flags");*/
 
     cfmsgs_typemsg("super", pcfs, pcfs->super_class);
@@ -912,8 +905,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->interfaces_count = GETRS2(pu2++);
 
-    MACHINE_JSHORT_SWAP(pcfs->interfaces_count);
-
+ 
     sysDbgMsg(DMLNORM,
               "classfile_loadclassdata",
               "intfc count=%d",
@@ -999,8 +991,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->fields_count = GETRS2(pu2++);
 
-    MACHINE_JSHORT_SWAP(pcfs->fields_count);
-
+ 
     /* LOAD_SYSCALL_FAILURE(what needs checking here?,"fields_count");*/
 
     sysDbgMsg(DMLNORM,
@@ -1020,7 +1011,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
         pcfs->fields = (field_info **) rnull;
     }
     else
-    {
+    {    	
         jvm_field_index fldidx;
 
         /*
@@ -1111,8 +1102,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                             pcfs,
                             &pcfs->fields[fldidx]->attributes[atridx],
                             (attribute_info *) pfbytes);
-
-                    LOAD_SYSCALL_FAILURE((rnull == pfbytes),
+     
+               LOAD_SYSCALL_FAILURE((rnull == pfbytes),
                                          "load field attribute",
                                          rnull,
                                          rnull);
@@ -1129,7 +1120,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     } /* if pcfs->fields */
 
-
     /*****************************************************************/
     /* Get method_count                                              */
     /*****************************************************************/
@@ -1138,7 +1128,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     MAKE_PU2(pu2, pfbytes);
 
     /*LOAD_SYSCALL_FAILURE(what needs checking here?,"methods count");*/
-    MACHINE_JSHORT_SWAP(pu2);
+ 
+ 
     pcfs->methods_count =  GETRS2(pu2++);
 
     sysDbgMsg(DMLNORM,
@@ -1228,7 +1219,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
             pcfs->methods[mthidx]
                     ->LOCAL_method_binding.nmordJVM =
                                      jvm_native_method_ordinal_null;
-
 
             /*
              * Map the indices in the class file to point to actual
@@ -1338,7 +1328,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     MAKE_PU2(pu2, pmbytes);
 
     /*LOAD_SYSCALL_FAILURE(what needs checking here?,"methods count");*/
-    MACHINE_JSHORT_SWAP(pu2);
+   
     pcfs->attributes_count = GETRS2(pu2++);
 
     sysDbgMsg(DMLNORM,
