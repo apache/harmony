@@ -240,7 +240,7 @@ rushort bytegames_getrs2(rushort *ptr2)
     wholeval._byteval.b = *ptr1;
 
 #ifdef ARCH_LITTLE_ENDIAN
-    wholeval._usval = swap2(wholeval._usval);
+    wholeval._usval = bytegames_swap2(wholeval._usval);
 #endif
 
     return(wholeval._usval);
@@ -274,7 +274,7 @@ rvoid bytegames_putrs2(rushort *ptr2, rushort val2)
     wholeval._usval = val2;
 
 #ifdef ARCH_LITTLE_ENDIAN
-    wholeval._usval = swap2(wholeval._usval);
+    wholeval._usval = bytegames_swap2(wholeval._usval);
 #endif
 
     *ptr1++ = wholeval._byteval.a;
@@ -311,7 +311,7 @@ ruint bytegames_getri4(ruint *ptr4)
     wholeval._byteval.d = *ptr1;
 
 #ifdef ARCH_LITTLE_ENDIAN
-    wholeval._ruival = swap4(wholeval._ruival);
+    wholeval._ruival = bytegames_swap4(wholeval._ruival);
 #endif
 
     return(wholeval._ruival);
@@ -345,7 +345,7 @@ rvoid bytegames_putri4(ruint *ptr4, ruint val4)
     wholeval._ruival = val4;
 
 #ifdef ARCH_LITTLE_ENDIAN
-    wholeval._ruival = swap4(wholeval._ruival);
+    wholeval._ruival = bytegames_swap4(wholeval._ruival);
 #endif
 
     *ptr1++ = wholeval._byteval.a;
