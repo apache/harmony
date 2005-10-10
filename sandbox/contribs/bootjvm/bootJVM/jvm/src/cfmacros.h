@@ -724,7 +724,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL: https://svn.apache.org/path/name/cfmac
  *
  * @brief Inline the logic to swap bytes on multi-byte elements.
  *
- * This is only meaningful on CONFIG_LITTLE_ENDIAN architectures.
+ * This is only meaningful on ARCH_LITTLE_ENDIAN architectures.
  * (Notice that if @p @b member does not match the pointer's
  * type, there @e will be a compile warning or error.)
  *
@@ -756,7 +756,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL: https://svn.apache.org/path/name/cfmac
 
 /*@{ */ /* Begin grouped definitions */
 
-#ifdef CONFIG_LITTLE_ENDIAN
+#ifdef ARCH_LITTLE_ENDIAN
 #define CP_ITEM_SWAP_U2(type, member) \
     pcpu2 = &(((type *) &pcpd->cp)->member); \
     MACHINE_JSHORT_SWAP_PTR(pcpu2)

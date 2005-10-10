@@ -93,9 +93,9 @@ rvoid tmparea_init(char **argv)
                  "%s%ctmp.%s.%d",
                  env_tmpdir,
                  JVMCFG_PATHNAME_DELIMITER_CHAR,
-                 argv0name,
+                 "bootJVM", /* @todo fix gmj : argv0name, */
                  pid);
-
+                 
     int rc = mkdir(tmparea, 0755); /* Could use <sys/stat.h> constants*/
 
     /* Verify existence of directory */
