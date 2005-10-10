@@ -1197,7 +1197,15 @@ extern rboolean jvm_model_initialized;
 /*!
  * @brief Temporary area default when no @b TMPDIR environment variable
  */
+#ifdef CONFIG_WINDOWS
+
+#define JVMCFG_TMPAREA_DEFAULT "c:\\temp"
+
+#else
+
 #define JVMCFG_TMPAREA_DEFAULT "/tmp"
+
+#endif
 
 /*!
  * @brief Remove temporary directory
@@ -1220,7 +1228,16 @@ extern rboolean jvm_model_initialized;
 
 #ifdef CONFIG_WINDOWS
 
-/* Need Windows equivalents here... */
+#define JVMCFG_JARFILE_DATA_EXTRACT_SCRIPT \
+    ".\\jjdes.bat %s %s %s %c %s %s "
+
+/*    "chdir %s; %s/bin/jar -xf %s%c%s %s; chmod -R +w ." */
+
+#define JVMCFG_JARFILE_MANIFEST_EXTRACT_SCRIPT \
+    "jjmes %s %s %s"
+
+/*    "chdir %s; %s/bin/jar -xf %s; chmod -R +w ."  */
+
 
 #else
 
