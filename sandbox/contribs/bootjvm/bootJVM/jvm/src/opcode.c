@@ -2003,6 +2003,8 @@ rboolean opcode_run(jvm_thread_index thridx,
 static void dummy1(void) { char *p, *dummy2; dummy2 = p; dummy1(); }
 #define STUB { dummy1(); }
 
+sysDbgMsg(0, "opcode.c", "opcode = %x", opcode);
+
 switch(opcode)
 {
 case OPCODE_00_NOP:         /* Do nothing */
