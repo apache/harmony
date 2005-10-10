@@ -59,10 +59,14 @@ ARCH_COPYRIGHT_APACHE(timeslice, c, "$URL: https://svn.apache.org/path/name/time
 
 #include <unistd.h>
 #include <signal.h>
+#include <sys/time.h>
 
 #define _REENTRANT
 #include <pthread.h>
+
+#ifndef CONFIG_WINDOWS
 #include <thread.h> /* WATCH OUT!  /usr/include, not application .h */
+#endif
 
 #include "jvmcfg.h"
 #include "classfile.h"
@@ -274,7 +278,15 @@ void *timeslice_run(void *dummy)
 
     while(rtrue)
     {
-        yield();
+    	/*
+    	 *  gmj : I think that yield() is solaris only
+    	 */
+
+        #ifdef CONFIG_WINDOWS    
+        	/* do something useful */
+        #else		 
+	        yield();
+	    #endif
     }
 
 /*NOTREACHED*/
