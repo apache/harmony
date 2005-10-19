@@ -11,7 +11,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -35,6 +37,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -42,10 +45,12 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(cfattrib, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(cfattrib, c,
+"$URL$",
+"$Id$");
 
 
-#include <string.h>
+/* #include <string.h> */
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -79,9 +84,11 @@ ARCH_COPYRIGHT_APACHE(cfattrib, c, "$URL$ $Id$");
  * @param  attribute_name_index  Constant pool index of @b xxx
  *                               attribute in this class file structure.
  *
- * @todo Both in this group of functions and probably numerous places
- *       around the code, the @link #u2 u2@endlink parameters that
- *       reference constant_pool entries should be changed to
+ *
+ * @todo HARMONY-6-jvm-cfattrib-1 Both in this group of functions and
+ *       probably numerous places around the code, the
+ *       @link #u2 u2@endlink parameters that reference
+ *       @c @b constant_pool entries should be changed to
  *       become type @link #jvm_constant_pool_index
          jvm_constant_pool_index@endlink instead as a more accurate
  *       reflection of their purpose.  This type was a later addition
@@ -94,7 +101,7 @@ ARCH_COPYRIGHT_APACHE(cfattrib, c, "$URL$ $Id$");
 /*@{ */ /* Begin grouped definitions */
 
 /*!
- * @brief Map UTF8 string names for attributes in a constant_pool
+ * @brief Map UTF8 string names for attributes in a @c @b constant_pool
  * to LOCAL_xxx_ATTRIBUTE constants for the purpose of switch(int)
  * instead of switch("string") code constructions.
  *
@@ -106,6 +113,8 @@ ARCH_COPYRIGHT_APACHE(cfattrib, c, "$URL$ $Id$");
 classfile_attribute_enum cfattrib_atr2enum(ClassFile *pcfs,
                                            u2      attribute_name_index)
 {
+    ARCH_FUNCTION_NAME(cfattrib_atr2enum);
+
     if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_CONSTANTVALUE_ATTRIBUTE))
     {
         return(LOCAL_CONSTANTVALUE_ATTRIBUTE);
@@ -217,6 +226,8 @@ classfile_attribute_enum cfattrib_atr2enum(ClassFile *pcfs,
 rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
                                   u2 attribute_name_index)
 {
+    ARCH_FUNCTION_NAME(cfattrib_iscodeattribute);
+
     if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_CODE_ATTRIBUTE))
     {
         return(rtrue);
@@ -299,12 +310,15 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  *          @link attribute_info.attribute_name_index
             attribute_name_index@endlink, else it will also
  *          be @link #rnull rnull@endlink.
+ *
  */
 
 u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                            attribute_info_dup **dst,
                            attribute_info      *src)
 {
+    ARCH_FUNCTION_NAME(cfattrib_loadattribute);
+
     attribute_info tmpatr;
     u4             tmplen;
 
@@ -316,9 +330,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
     cfmsgs_typemsg("cfattrib_loadattribute",
                    pcfs,
                    tmpatr.attribute_name_index);
-
     sysDbgMsg(DMLNORM,
-              "cfattrib_loadattribute",
+              arch_function_name,
               "len=%d",
               tmpatr.attribute_length);
 
@@ -374,21 +387,20 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
 
     classfile_attribute_enum atrenum =
         cfattrib_atr2enum(pcfs, (*dst)->ai.attribute_name_index);
-        
+
     if (LOCAL_CODE_ATTRIBUTE == atrenum)
     {
         /*
          * Copy Code_attribute field-by-field as in the top-level
          * structure, allocating array[] pieces in that same manner.
          *
-         * Note:  You can get away with referencing
+         * @note  You can get away with referencing
          *        @c @b src->member here because these first
          *        few members are of fixed length.  You @e still must
          *        use GETRS2() or GETRI4() because they are in a
          *        byte-stream class file, which has no guaranteed
          *        word alignment.
          */
-         
         PTR_DST_AI(dst)->max_stack =
             GETRS2(&((Code_attribute *) src)->max_stack);
 
@@ -398,7 +410,7 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
         PTR_DST_AI(dst)->code_length =
             GETRI4(&((Code_attribute *) src)->code_length);
 
-	        if (0 == PTR_DST_AI(dst)->code_length)
+        if (0 == PTR_DST_AI(dst)->code_length)
         {
             /*
              * Possible, but not theoretically reasonable,
@@ -414,10 +426,10 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                                 rfalse);
 
             /* Notice this is copy TO *ptr and FROM *bfr, not *ptr! */
-            memcpy( PTR_DST_AI(dst)->code,
-                   /* 1st var len fld in class file code area */
-                   &((Code_attribute *)  src)->code,
-                   (PTR_DST_AI(dst)->code_length) * sizeof(u1));
+            portable_memcpy( PTR_DST_AI(dst)->code,
+                            /* 1st var len fld in class file code area*/
+                            &((Code_attribute *)  src)->code,
+                           (PTR_DST_AI(dst)->code_length) * sizeof(u1));
 
         }
 
@@ -448,10 +460,10 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                                   sizeof(exception_table_entry),
                               rfalse);
 
-            memcpy(&PTR_DST_AI(dst)->exception_table,
-                   pabytes,
-                   (PTR_DST_AI(dst)->exception_table_length) *
-                       sizeof(exception_table_entry));
+            portable_memcpy(&PTR_DST_AI(dst)->exception_table,
+                            pabytes,
+                            (PTR_DST_AI(dst)->exception_table_length) *
+                                sizeof(exception_table_entry));
 
             pabytes += (PTR_DST_AI(dst)->exception_table_length) *
                              sizeof(exception_table_entry);
@@ -516,22 +528,30 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
     {
         if (0 != tmpatr.attribute_length)
         {
-            memcpy(&(*dst)->ai.info,
-                   &src->info,
-                   tmpatr.attribute_length);
+            portable_memcpy(&(*dst)->ai.info,
+                            &src->info,
+                            tmpatr.attribute_length);
         }
 
-		/*
-		 *  we need to swap the index for the value
-		 */
-        ((ConstantValue_attribute *) &(*dst)->ai)->constantvalue_index =
-        	GETRS2(&((ConstantValue_attribute *) &(*dst)->ai)->constantvalue_index);
-        	
+        /*
+         *  we need to swap the index for the value
+         */
+        ((ConstantValue_attribute *) &(*dst)->ai)
+          ->constantvalue_index =
+              GETRS2(&((ConstantValue_attribute *) &(*dst)->ai)
+                        ->constantvalue_index);
+
     } /* if LOCAL_CONSTANT_ATTRIBUTE */
     else
     {
-    	/* $$$ GMJ: I don't agree... things need to be byteswapped for indices and such
-    	 */
+        /*!
+         * @todo HARMONY-6-jvm-cfattrib.c-2
+         *       $$$ GMJ: I don't agree... things need to be byteswapped
+         *       for indices and such.
+         *       DL:  Geir is _absolutely_ right.  I've been living
+         *            in big-endian land and forgot about this.
+         */
+
         /*
          * See comments at top of @c @b if statment as to why
          * all other structures can be directly copied into the heap
@@ -541,140 +561,189 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
          */
         if (0 != tmpatr.attribute_length)
         {
-            memcpy(&(*dst)->ai.info,
-                   &src->info,
-                   tmpatr.attribute_length);
+            portable_memcpy(&(*dst)->ai.info,
+                            &src->info,
+                            tmpatr.attribute_length);
         }
 
     } /* if LOCAL_CODE_ATTRIBUTE else */
 
 
-    /*! @todo Delete this when TODO: items below satisfied */
+    /*!
+     * @todo HARMONY-6-jvm-cfattrib.c-3 Delete this when
+     *  TODO: items below are satisfied
+     */
     rboolean dummy = rtrue;
 
     switch(atrenum)
     {
         case LOCAL_CONSTANTVALUE_ATTRIBUTE:
 
-            /*! @todo Verify "ConstantValue" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-4 Verify "ConstantValue"
+             * attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_CODE_ATTRIBUTE:
 
-            /*! @todo Verify "Code" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-5 Verify "Code" attribute
+             *       contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_EXCEPTIONS_ATTRIBUTE:
 
-            /*! @todo Verify "Exceptions" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-6 Verify "Exceptions"
+             *       attribute  contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_INNERCLASSES_ATTRIBUTE:
 
-            /*! @todo Verify "InnerClasses" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-7 Verify "InnerClasses"
+             *       attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_ENCLOSINGMETHOD_ATTRIBUTE:
 
-           /*! @todo "EnclosingMethod" attribute has nothing to verify*/
+           /*!
+             * @todo HARMONY-6-jvm-cfattrib-8 "EnclosingMethod"
+             *       attribute has nothing to verify
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_SIGNATURE_ATTRIBUTE:
 
-            /*! @todo "Signature" attribute has nothing to verify */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-9 "Signature" attribute 
+             *       has nothing to verify
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_SYNTHETIC_ATTRIBUTE:
 
-            /*! @todo "Synthetic" attribute has nothing to verify */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-10 "Synthetic" attribute
+             *       has nothing to verify
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_SOURCEFILE_ATTRIBUTE:
 
-            /*! @todo Verify "SourceFile" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-11 Verify "SourceFile"
+             *       attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
 
-            /*! @todo Verify "LineNumberTable" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-12 Verify "LineNumberTable" 
+             *       attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
 
-            /*! @todo Verify "LocalVariableTable" attribute contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-13 Verify
+             *       "LocalVariableTable" attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
 
-            /*! @todo Verify "LocalVariableTypeTable" attribute
-                     contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-14 Verify
+             *       "LocalVariableTypeTable" attribute
+                     contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_DEPRECATED_ATTRIBUTE:
 
-            /*! @todo "Deprecated" attribute has nothing to verify */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-15 "Deprecated" attribute
+             *       has nothing to verify
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE:
 
-            /*! @todo Verify "RuntimeVisibleAnnotations" attribute
-                      contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-16 Verify
+             *       "RuntimeVisibleAnnotations" attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
 
-            /*! @todo Verify "RuntimeInvisibleAnnotations" attribute
-                      contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-17 Verify
+             *       "RuntimeInvisibleAnnotations" attribute contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
 
-            /*! @todo Verify "RuntimeVisibleParameterAnnotations"
-                      contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-18 Verify
+             *       "RuntimeVisibleParameterAnnotations" contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
 
-            /*! @todo Verify "RuntimeInvisibleParameterAnnotations"
-                      contents */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-19 Verify
+             *       "RuntimeInvisibleParameterAnnotations" contents
+             */
             dummy = rfalse;
 
             break;
 
         case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
 
-            /*! @todo "AnnotationDefault" attribute has nothing to 
-                      verify */
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib-20 "AnnotationDefault"
+             *       attribute has nothing to verify
+             */
             dummy = rfalse;
 
             break;
@@ -683,8 +752,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
         default:
 
             /*!
-             * @todo Ignore unrecognized attribute.
-             *       There really should not be anything
+             * @todo HARMONY-6-jvm-cfattrib-21 Ignore unrecognized
+             *       attribute.  There really should not be anything
              *       to do here since the return value
              *       already points to the next attribute.
              */
@@ -705,6 +774,7 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
  * @param  dst       Pointer to a attribute_info_dup allocation
  *                   where this attribute is stored in the heap
  *
+ *
  * @returns @link #rvoid rvoid@endlink Whether it succeeds or fails,
  *          returning anything does not make much sense.  This is
  *          similar to @c @b free(3) not returning anything even when
@@ -715,6 +785,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
 rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
                                attribute_info_dup *dst)
 {
+    ARCH_FUNCTION_NAME(cfattrib_unloadattribute);
+
     /* Ignore any NULL pointers, nothing to do (should NEVER happen) */
     if ((rnull == pcfs) || (rnull == dst))
     {
@@ -743,7 +815,7 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
         /*
          * Free Code_attribute, all allocations in reverse order.
          * (Should not make any difference, but this is how the
-         * constant_pool is being freed, so just do it the same
+         * @c @b constant_pool is being freed, so just do it the same
          * way, namely, the reverse order in which allocations
          * were made.)
          */
