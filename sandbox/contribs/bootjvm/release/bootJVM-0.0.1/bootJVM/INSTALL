@@ -1,0 +1,128 @@
+#!
+# @file ./INSTALL
+#
+# @brief Installation procedure.
+#
+# @section Control
+#
+# \$URL$
+#
+# \$Id$
+#
+# Copyright 2005 The Apache Software Foundation
+# or its licensors, as applicable.
+# 
+# Licensed under the Apache License, Version 2.0 ("the License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.
+# 
+# See the License for the specific language governing permissions
+# and limitations under the License.
+#
+#
+# @version \$LastChangedRevision$
+#
+# @date \$LastChangedDate$
+#
+# @author \$LastChangedBy$
+#
+#         Original code contributed by Daniel Lydick on 09/28/2005.
+#
+#
+# @section Reference
+#
+# @see ./README
+#
+# @verbatim
+
+
+Apache Harmony BootJVM Source Installation Procedure
+----------------------------------------------------
+
+1.  Tar extract produces the directory tree where you
+    have found this file (obviously you have done this
+    part already).
+
+2.  Run 'config.sh' and answer the questions to create a
+    valid compilation and runtime environment and optionally build
+    the configured components for the first time (via 'build.sh cfg').
+
+3.  Run 'build.sh cfg' thereafter to compile all configured
+    components.  Run 'build.sh all' to compile all components,
+    regardless of those configured.  Run 'build.sh help' for a
+    list of build options.  Results are stored in:
+
+        jvm/bin/bootjvm
+        libjvm/lib/libjvm.a
+        main/bin/bootjvm
+        test/bin/*.class
+        jni/src/harmony/generic/0.0/bin/bootjvm
+        jni/src/harmony/generic/0.0/bin/*.class
+        doc/*
+
+
+4.  Run 'clean.sh' to remove compiled output, with the same
+    arguments as for 'build.sh'.
+
+5.  Project files for Eclipse have also been provided
+    for those who wish to use the Eclipse IDE.  Although
+    the intermediate objects are stored in a slightly
+    different location, the results are in the same places.
+    Notice that the 'jni/bin' directory is an artifact
+    of Eclipse, where 'jni/src/vendor/product/version/bin'
+    is affilliated with these project build scripts.
+    A source distribution may not be created until this
+    directory has been removed, either explicitly or via
+    an Eclipse 'clean' operation on the 'jni' project.
+
+6.  To produce a source-only distribution, run 'dist-src.sh'.  The
+    release levelof this distribution will be the same as found in
+    'config/config.h' when 'config.sh' was last run.  If the release
+    number is to be different than that, please run 'config.sh' again
+    and rebuild the whole project, then run the distribution script
+    again.
+
+7.  To produce a binary-only distribution, run 'dist-bin.sh'.  The
+    release level of this distribution will be the same as found in
+    'config/config.h' when 'config.sh' was last run.  If the release
+    number is to be different than that, please run 'config.sh' again
+    and rebuild the whole project, then run the distribution script
+    again.
+
+8.  Due to a Doxygen constraint concerning files with the same
+    name that are found in different directories, there are three
+    shell scripts in the top level directory that have absolute path
+    names in their "@file" declaration.  Please change these to your
+    install area so that the documentation compiles without errors.
+    The file names are: ./build.sh and ./clean.sh and ./common.sh .
+    The author apologizes for any inconvenience that this may cause.
+    If you know of a better way around this constraint, please speak up.
+
+9.  Show the run time help menu by running either
+    'jvm/bin/bootjvm -help' or 'main/bin/bootjvm -help'.
+
+10. Work hard.
+
+11. Be creative.
+
+12. Produce the best Java Virtual Machine in the industry.
+    Make it a true work of art that will be worthy of the
+    Apache brand!
+
+@endverbatim
+#
+#/
+#/ /* 
+# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# parsing this non-source text file for the documentation set.
+# Use the above open comment to force termination of parsing
+# since it is not a Doxygen-style 'C' comment.)
+#
+# EOF

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 2.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="jvm.cdt.managedbuild.target.gnu.exe.151003565" name="Executable (Gnu)" projectType="cdt.managedbuild.target.gnu.exe">
+<configuration id="cdt.managedbuild.config.gnu.exe.debug.1499222932" name="bin" parent="cdt.managedbuild.config.gnu.exe.debug" artifactName="bootjvm" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" artifactExtension="" cleanCommand="rm -rf">
+<toolChain superClass="cdt.managedbuild.toolchain.gnu.exe.debug" id="cdt.managedbuild.toolchain.gnu.exe.debug.441454497" name="GCC Tool Chain">
+<builder superClass="cdt.managedbuild.target.gnu.builder.exe.debug" id="cdt.managedbuild.target.gnu.builder.exe.debug.1048311613" name="Gnu Make.bin"/>
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1885617967" name="GCC C Compiler">
+<option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.1144545727" valueType="includePath">
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/jvm/include" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/config" builtIn="false"/>
+</option>
+<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.797961741" value="-c -fmessage-length=0 -m32" valueType="string"/>
+<option superClass="gnu.c.compiler.option.misc.ansi" id="gnu.c.compiler.option.misc.ansi.1817263150" value="true" valueType="boolean"/>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.546772165" name="GCC C++ Compiler"/>
+<tool superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.55031190" name="GCC C Linker" command="gcc">
+<option superClass="gnu.c.link.option.ldflags" id="gnu.c.link.option.ldflags.309413827" value="-m32" valueType="string"/>
+<option superClass="gnu.c.link.option.libs" id="gnu.c.link.option.libs.510816722" valueType="libs">
+<listOptionValue value="pthread" builtIn="false"/>
+<listOptionValue value="m" builtIn="false"/>
+</option>
+<option superClass="gnu.c.link.option.paths" id="gnu.c.link.option.paths.455445367"/>
+<option superClass="gnu.c.link.option.noshared" id="gnu.c.link.option.noshared.957277546" value="false" valueType="boolean"/>
+</tool>
+<tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1864451912" name="GCC C++ Linker"/>
+<tool superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.2022609315" name="GCC Assembler"/>
+</toolChain>
+<resourceConfiguration id="cdt.managedbuild.config.gnu.exe.debug.1499222932./jvm/src/stdio.c" name="stdio.c" exclude="false" resourcePath="/jvm/src/stdio.c">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1885617967" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1885617967./jvm/src/stdio.c" name="GCC C Compiler"/>
+</resourceConfiguration>
+<resourceConfiguration id="cdt.managedbuild.config.gnu.exe.debug.1499222932./jvm/src/portable_setjmp.c" name="portable_setjmp.c" exclude="false" resourcePath="/jvm/src/portable_setjmp.c">
+<tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1885617967" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1885617967./jvm/src/portable_setjmp.c" name="GCC C Compiler">
+<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.1449477602" value="-c -fmessage-length=0 -m32 " valueType="string"/>
+</tool>
+</resourceConfiguration>
+</configuration>
+</project>
+</ManagedProjectBuildInfo>
