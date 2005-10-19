@@ -29,15 +29,20 @@
 
    @endverbatim
  *
- * @todo There needs to be a Java equivalent written for the
- *       macros @link ##ARCH_COPYRIGHT_TEXT_APACHE
+ * @todo HARMONY-6-jvm-arch.h-1 There needs to be a Java equivalent
+ *       written for the macros @link #ARCH_COPYRIGHT_TEXT_APACHE
          ARCH_COPYRIGHT_TEXT_APACHE@endlink, @link
          #ARCH_LICENSE_TEXT_APACHE ARCH_LICENSE_TEXT_APACHE@endlink,
- *      and @link #ARCH_COPYRIGHT_APACHE ARCH_COPYRIGHT_APACHE()@endlink
+ *       @link #ARCH_HEADER_COPYRIGHT_APACHE()
+         ARCH_HEADER_COPYRIGHT_APACHE()@endlink
+ *       and @link #ARCH_SOURCE_COPYRIGHT_APACHE()
+         ARCH_SOURCE_COPYRIGHT_APACHE()@endlink
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -61,6 +66,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -105,20 +111,8 @@ and limitations under the License."
 
 
 /*!
- * @def ARCH_COPYRIGHT_APACHE()
+ * @name Copyright declaration macros
  *
- * @brief Copyright declaration macro for the Apache Software Foundation
- * for all files in program.
- *
- * This macro declares the copyright by the Apache Software Foundation
- * for all source files.
- *
- * Declare a static string containing SVN info plus copyright and
- * declare a static function that references the string, plus a
- * local that recursively calls the function.  This function is
- * used to satisfy the compiler that the static string is being
- * referenced without also generating a similar message about the
- * static function not being referenced.
  *
  * @param filetoken   Any string that, when concatenated with an
  *                    underscore (_) and the @p @b exttoken parameter,
@@ -132,24 +126,40 @@ and limitations under the License."
  *                    This is typically the file extension name itself
  *                    without the file name, unquoted.
  *
- * @param svnidstring Source code management token representing
- *                    as much information about the file as is
- *                    desired to insert into the static copyright
+ * @param svnurl      Source code management token representing
+ *                    the Subversion 'URL' keyword.  This information
+ *                    will be inserted into the static copyright
  *                    string for each source file and header file.
- *                    For RCS and CVS systems, this would typically
- *                    be the <b>@$<code>Header:</code> @$</b> token,
- *                    in double quotes.  As currently managed in
- *                    the Apache SVN repository, it contains the string
- *       &quot;<b>@$<code>URL:</code> @$ @$<code>Id:</code> @$</b>&quot;
+ *
+ * @param svnid       Source code management token representing
+ *                    the Subversion 'ID' keyword.  This information
+ *                    will be inserted into the static copyright
+ *                    string for each source file and header file.
  *
  *
  * @returns @link #rvoid rvoid@endlink
  *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @def ARCH_HEADER_COPYRIGHT_APACHE()
  *
- * @internal The @c @b svnidstring parameter contains highly mangled
- *           source code control keyword strings.  They are mangled so
- *           as to hide them from version control substitution, yet
- *           display in the compiled documentation correctly.
+ * @brief Copyright declaration macro for the Apache Software Foundation
+ * for all header files in program.
+ *
+ * This macro declares the copyright by the Apache Software Foundation
+ * for all header files.  It is also used as a component of
+ * @link #ARCH_SOURCE_COPYRIGHT_APACHE()
+   ARCH_SOURCE_COPYRIGHT_APACHE()@endlink.
+ *
+ * Declare a static string containing this source file name for use
+ * with diagnostic messages to the console, etc.
+ *
+ * Also declare a static string containing SVN info plus copyright and
+ * declare a static function that references the string.
+ *
  *
  * @internal The initial ASCII \\0 (NUL) character is inserted to
  *           guarantee that the string itself will @e never be
@@ -159,22 +169,122 @@ and limitations under the License."
  *           Refer to @link ./getsvndata.sh getsvndata.sh@endlink
  *           for more information.
  *
+ * @internal  Also define a static that recursively calls the itself.
+ *            It is used to satisfy the compiler that the static string
+ *            is being referenced without also generating a similar
+ *            message about the static function not being referenced.
+ *
+ * @internal The static file name variable is referenced in the dummy
+ *           function to avoid "warning 'xx_yy_name' defined but
+ *           not used', as is the 'xx_yy_copyright' variable.  The
+ *           only reason the latter is not @c @b const is for the
+ *           compiler games so @c @b p is not warned about not being
+ *           referenced.  But since is is unlikely to ever be
+ *           referenced, this should never be a problem.
+ *
  */
 
-#define ARCH_COPYRIGHT_APACHE(filetoken, exttoken, svnidstring)    \
-static char *filetoken##_##exttoken##_copyright = "\0" svnidstring \
-" " ARCH_COPYRIGHT_TEXT_APACHE;                                    \
-                                                                   \
-static void filetoken##_##exttoken##_dummy(void) {                 \
-    char *p = filetoken##_##exttoken##_copyright;                  \
-              filetoken##_##exttoken##_copyright = p;              \
-              filetoken##_##exttoken##_dummy(); }
+#define ARCH_HEADER_COPYRIGHT_APACHE(filetoken, exttoken, svnurl,svnid)\
+                                                                       \
+    static /* const */ char *filetoken##_##exttoken##_copyright =      \
+                  "\0" svnurl " " svnid " " ARCH_COPYRIGHT_TEXT_APACHE;\
+                                                                       \
+    static void filetoken##_##exttoken##_dummy_crfn(void)              \
+    {                                                                  \
+        char *p = filetoken##_##exttoken##_copyright;                  \
+                  filetoken##_##exttoken##_copyright = (char *) p;     \
+                  filetoken##_##exttoken##_dummy_crfn();               \
+    }
+
+
+/*!
+ * @def ARCH_SOURCE_COPYRIGHT_APACHE()
+ *
+ * @brief Copyright declaration macro for the Apache Software Foundation
+ * for all @e source files in program.
+ *
+ * This macro declares the copyright by the Apache Software Foundation
+ * for all header files.  It is also used as a component of
+ * @link #ARCH_SOURCE_COPYRIGHT_APACHE()
+   ARCH_SOURCE_COPYRIGHT_APACHE()@endlink.
+ *
+ * The main difference is that it also declares a static string
+ * containing the name of the source file but without the path name
+ * and other components of the <code>__<b>FILE</b>__</code> preprocessor
+ * macro.
+ *
+ */
+#define ARCH_SOURCE_COPYRIGHT_APACHE(filetoken, exttoken, svnurl,svnid)\
+                                                                       \
+    ARCH_HEADER_COPYRIGHT_APACHE(filetoken, exttoken, svnurl, svnid);  \
+                                                                       \
+    static const char *arch_file_name = #filetoken "." #exttoken;      \
+                                                                       \
+    static void filetoken##_##exttoken##_dummy_fnfn(void)              \
+    {                                                                  \
+        char *p = (char *) arch_file_name;                             \
+        char *q = p;                                                   \
+              p = q;                                                   \
+                  filetoken##_##exttoken##_dummy_fnfn();               \
+    }
+
+/*@} */ /* End of grouped definitions */
+
+/*!
+ * @def ARCH_FUNCTION_NAME()
+ *
+ * @brief Declare a static string of a fixed name for use in
+ * displaying diagnostic messages.  The advantage of a fixed name
+ * is that it the name may be used in macros that display
+ * function-specific information, yet the function name should
+ * also be displayed.  This is done so constructions like
+ * <b><code>printf("function1: test 1\n");</code></b> are not necessary.
+ *
+ * Reference the absolute variable name in @link #sysDbgMsg()
+   sysDbgMsg()@endlink invocations and the like so that the function
+ * names prints along with the rest of the output.  This should
+ * typically be coupled with displaying the static file name string
+ * defined by @link #ARCH_SOURCE_COPYRIGHT_APACHE()
+   ARCH_SOURCE_COPYRIGHT_APACHE()@endlink or
+ * @link #ARCH_HEADER_COPYRIGHT_APACHE()
+   ARCH_HEADER_COPYRIGHT_APACHE()@endlink, as appropriate,
+ * that holds the file name.
+ *
+ * @param functiontoken   Any text string.  Recommend to @e always use
+ *                        the name of the function in which it is
+ *                        inserted and to @e always make this the
+ *                        very @e first line in each and every function.
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * @internal Again, play compiler games to defeat unnecessary warnings.
+ *           Also, the optimizer will completely remove the
+ *           <b><code>if(0)</code></b> block from the object
+ *           code output.
+ *
+ */
+
+#define ARCH_FUNCTION_NAME(functiontoken)                   \
+                                                            \
+    static const char *arch_function_name = #functiontoken; \
+                                                            \
+    if (0)                                                  \
+    {                                                       \
+        char *p, *q;                                        \
+        p = (char *) arch_function_name;                    \
+        q = p;                                              \
+        p = q;                                              \
+    }
 
 /*!
  * @brief Static copyright string for @e this source file.
  *
  */
-ARCH_COPYRIGHT_APACHE(arch, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(arch, h,
+"$URL$",
+"$Id$");
 
 #include "config.h"
 
@@ -217,6 +327,9 @@ ARCH_COPYRIGHT_APACHE(arch, h, "$URL$ $Id$");
  *
  * CONFIG_WINDOWS32   Microsoft Windows operating system, 32-bit word
  * CONFIG_WINDOWS64   Microsoft Windows operating system, 64-bit word
+ *
+ * CONFIG_CYGWIN32    CygWin Unix work-alike tools for MSWin,32-bit word
+ * CONFIG_CYGWIN64    CygWin Unix work-alike tools for MSWin,64-bit word
  *
  *
  * ... others as available ...
@@ -311,13 +424,29 @@ ARCH_COPYRIGHT_APACHE(arch, h, "$URL$ $Id$");
 #endif
 #endif
 
+#ifdef CONFIG_CYGWIN32
+#ifdef _ARCH_DEFINED_
+#error "Multiple OS architectures defined"
+#else
+#define _ARCH_DEFINED_
+#endif
+#endif
+
+#ifdef CONFIG_CYGWIN64
+#ifdef _ARCH_DEFINED_
+#error "Multiple OS architectures defined"
+#else
+#define _ARCH_DEFINED_
+#endif
+#endif
+
 /*!
  * @internal Check that that EXACTLY ONE architecture has been defined
  */
 #ifdef _ARCH_DEFINED_
 /*!
  * @internal Make available, especially to
- * @link jvm/src/jvmcfg.h jvmcfg.h@endlink
+ *           @link jvm/src/jvmcfg.h jvmcfg.h@endlink
  *
  */
 #define _VALID_ARCH_DEFINED_
