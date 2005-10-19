@@ -20,7 +20,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -44,6 +46,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -51,7 +54,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(bytegames, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(bytegames, c,
+"$URL$",
+"$Id$");
 
  
 #include "jvmcfg.h"
@@ -214,7 +219,7 @@ typedef union
   
        rshort *pshort;
        ...
-       val = getrs2(pshort);    ... No signal this way.
+       val = bytegames_getrs2(pshort);    ... No signal this way.
   
    @endverbatim
  *
@@ -232,6 +237,8 @@ typedef union
  */
 rushort bytegames_getrs2(rushort *ptr2)
 {
+    ARCH_FUNCTION_NAME(bytegames_getrs2);
+
     twobyte wholeval;
 
     rbyte *ptr1 = (rbyte *) ptr2;
@@ -267,6 +274,8 @@ rushort bytegames_getrs2(rushort *ptr2)
  */
 rvoid bytegames_putrs2(rushort *ptr2, rushort val2)
 {
+    ARCH_FUNCTION_NAME(bytegames_putrs2);
+
     twobyte wholeval;
 
     rbyte *ptr1 = (rbyte *) ptr2;
@@ -301,6 +310,8 @@ rvoid bytegames_putrs2(rushort *ptr2, rushort val2)
  */
 ruint bytegames_getri4(ruint *ptr4)
 {
+    ARCH_FUNCTION_NAME(bytegames_getri4);
+
     fourbyte wholeval;
 
     rbyte *ptr1 = (rbyte *) ptr4;
@@ -338,6 +349,8 @@ ruint bytegames_getri4(ruint *ptr4)
  */
 rvoid bytegames_putri4(ruint *ptr4, ruint val4)
 {
+    ARCH_FUNCTION_NAME(bytegames_putri4);
+
     fourbyte wholeval;
 
     rbyte *ptr1 = (rbyte *) ptr4;
@@ -375,6 +388,8 @@ rvoid bytegames_putri4(ruint *ptr4, ruint val4)
  */
 rulong bytegames_getrl8(rulong *ptr8)
 {
+    ARCH_FUNCTION_NAME(bytegames_getrl8);
+
     eightbyte wholeval;
 
     rbyte *ptr1 = (rbyte *) ptr8;
@@ -420,6 +435,8 @@ rulong bytegames_getrl8(rulong *ptr8)
  */
 rvoid bytegames_putrl8(rulong *ptr8, rulong val8)
 {
+    ARCH_FUNCTION_NAME(bytegames_putrl8);
+
     eightbyte wholeval;
 
     rbyte *ptr1 = (rbyte *) ptr8;
@@ -496,6 +513,8 @@ rvoid bytegames_putrl8(rulong *ptr8, rulong val8)
  */
 rushort bytegames_swap2(rushort val)
 {
+    ARCH_FUNCTION_NAME(bytegames_swap2);
+
     twobyte wholeval;
 
     rbyte tmp;
@@ -538,6 +557,8 @@ rushort bytegames_swap2(rushort val)
  */
 ruint bytegames_swap4(ruint  val)
 {
+    ARCH_FUNCTION_NAME(bytegames_swap4);
+
     fourbyte wholeval;
 
     rbyte tmp;
@@ -585,6 +606,8 @@ ruint bytegames_swap4(ruint  val)
  */
 rulong bytegames_swap8(rulong val)
 {
+    ARCH_FUNCTION_NAME(bytegames_swap8);
+
     eightbyte wholeval;
 
     rbyte tmp;
@@ -634,14 +657,16 @@ rulong bytegames_swap8(rulong val)
    @endverbatim
  *
  *
- *
  * @param    val    eight-byte @link #rulong rulong@endlink to swap/mix
+ *
  *
  * @returns  swapped/mixed byte version of @b val
  *
  */
 rulong bytegames_mix8(rulong val)
 {
+    ARCH_FUNCTION_NAME(bytegames_mix8);
+
     eightbyte wholeval;
 
     rbyte tmp;
@@ -686,17 +711,17 @@ rulong bytegames_mix8(rulong val)
  * extracts two @link #jint jint@endlink words, typically for storage
  * into a JVM local variable or operand stack parameter.
  *
- * @todo Verify that @e all references to these routines load and
- * store the results in the proper order!  The MS word @e must be stored
- * first (local variable 'n' or first @link #PUSH() PUSH()@endlink
- * to operand stack).  The LS word @e must be stored second (local
- * variable 'n+1' or second @link #PUSH() PUSH()@endlink to
- * operand stack).  The retrieval from the operand stack @e must
- * be LS word as the first @link #POP() POP()@endlink, MS word
- * as the second @link #POP() POP()@endlink operation.  This
- * problem may occur especially in
- * @link jvm/src/native.c native.c@endlink and
- * @link jvm/src/opcode.c opcode.c@endlink.
+ * @todo HARMONY-6-jvm-bytegames.c-1 Verify that @e all references to
+ *       these routines load and store the results in the proper order!
+ *       The MS word @e must be stored first (local variable 'n' or
+ *       first @link #PUSH() PUSH()@endlink to operand stack).  The
+ *       LS word @e must be stored second (local variable 'n+1' or
+ *       second @link #PUSH() PUSH()@endlink to operand stack).  The
+ *       retrieval from the operand stack @e must be LS word as the
+ *       first @link #POP() POP()@endlink, MS word as the second
+ *       @link #POP() POP()@endlink operation.  This problem may
+ *       occur especially in @link jvm/src/native.c native.c@endlink and
+ *       @link jvm/src/opcode.c opcode.c@endlink.
  *
  */
 
@@ -716,11 +741,15 @@ rulong bytegames_mix8(rulong val)
  * @param lsword  Java integer at second index, directly subsequent
  *                to @b msword.
  *
+ *
  * @returns  concatenation as @link #jlong jlong@endlink, properly
  *           byte ordered.
+ *
  */
 jlong bytegames_combine_jlong(jint msword, jint lsword)
 {
+    ARCH_FUNCTION_NAME(bytegames_combine_jlong);
+
     eightbyte wholeval;
 
     wholeval._intval.ms._juival = msword;
@@ -745,12 +774,15 @@ jlong bytegames_combine_jlong(jint msword, jint lsword)
  * @param lsword  Java integer at second index, directly subsequent
  *                to @b msword.
  *
+ *
  * @returns  concatenation as @link #jdouble jdouble@endlink ,
  *           properly byte ordered.
  *
  */
 jdouble bytegames_combine_jdouble(jint msword, jint lsword)
 {
+    ARCH_FUNCTION_NAME(bytegames_combine_jdouble);
+
     eightbyte wholeval;
 
     wholeval._intval.ms._juival = msword;
@@ -779,11 +811,14 @@ jdouble bytegames_combine_jdouble(jint msword, jint lsword)
  *
  * @param[out]    lsword    Address of LS half of split value.
  *
+ *
  * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid bytegames_split_jlong(jlong splitlong, jint *msword, jint *lsword)
 {
+    ARCH_FUNCTION_NAME(bytegames_split_jlong);
+
     eightbyte wholeval;
 
     wholeval._julval = splitlong;
@@ -814,6 +849,7 @@ rvoid bytegames_split_jlong(jlong splitlong, jint *msword, jint *lsword)
  *
  * @param[out]    lsword    Address of LS half of split value.
  *
+ *
  * @returns @link #rvoid rvoid@endlink
  *
  */
@@ -821,6 +857,8 @@ rvoid bytegames_split_jdouble(jdouble  splitdouble,
                               jint    *msword,
                               jint    *lsword)
 {
+    ARCH_FUNCTION_NAME(bytegames_split_jdouble);
+
     eightbyte wholeval;
 
     wholeval._jdval = splitdouble;
