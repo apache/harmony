@@ -12,7 +12,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -36,16 +38,17 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(thread, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(thread, h,
+"$URL$",
+"$Id$");
 
-
-#include <setjmp.h>  /* For jmp_buf structure for setjmp(3)/longjmp(3)*/
 
 #include "jvmreg.h"
 
@@ -54,8 +57,8 @@ ARCH_COPYRIGHT_APACHE(thread, h, "$URL$ $Id$");
  *
  *
  * @param thridx  Thread table index into the global
- * @link #rjvm.thread rjvm.thread[]@endlink array (via
- * @link #pjvm pjvm->thread[]@endlink).
+ *                @link #rjvm.thread rjvm.thread[]@endlink array (via
+ *                @link #pjvm pjvm->thread[]@endlink).
  * 
  */
 
@@ -271,7 +274,8 @@ typedef struct
     jvm_thread_index id;         /**< Self-same ID of this thread */
 
     rchar            *name;      /**< Name of thread
-                                  *  @todo not impl.
+                                  *  @todo HARMONY-6-jvm-thread.h-1 not
+                                  *        otherwise implemented.
                                   */
 #define THREAD_NAME_MAX_LEN 64   /**< Arbitrary max thread name length*/
 
@@ -379,9 +383,12 @@ typedef struct
                                   * if nothing was thrown.
                                   */
 
-    jmp_buf *pnonlocal_ThrowableEvent; /**< Non-local return from
+    rvoid *pportable_nonlocal_ThrowableEvent; /**< Non-local return from
                                   * Exception, Error, and Throwable
-                                  * conditions.
+                                  * conditions.  Cast as untyped to
+                                  * avoid having every source file
+                                  * needing to know about
+                                  * @c @b portable_jmp_buf structures.
                                   *
                                   * @note Play pointer games to persuade
                                   * runtime package to accept a jmp_buf
@@ -426,11 +433,12 @@ typedef struct
     jvm_object_hash  locktarget; /**< Doing @c @b Object.wait()
                                   * on this object.
                                   *
-                                  * @todo  This implementation can only
-                                  * handle ONE SINGLE monitor lock.
-                                  * Does it need to be able to
-                                  * handle arbitrary number of them at
-                                  * once?
+                                  * @todo  HARMONY-6-jvm-thread.h-2 This
+                                  *        implementation can only
+                                  *        handle ONE SINGLE monitor
+                                  *        lock.  Does it need to be
+                                  *        able to handle arbitrary
+                                  *        number of them at once?
                                   */
 
 
@@ -502,9 +510,56 @@ extern const rchar *thread_state_name;
 /*@} */ /* End of grouped definitions */
 
 
+/*!
+ * @brief Set up JVM thread-relative exception handler part 2--
+ * implements @c @b setjmp(3)/longjmp(3).
+ *
+ * This macro @e must be used in conjunction with the function
+ * @link #thread_exception_setup() thread_exception_setup()@endlink
+ * for proper operation.
+ *
+ *
+ * @param thridx  Thread table index of thread for which to set up
+ *                this exception handler.
+ *
+ *
+ * @returns From normal setup, integer @link
+            #THREAD_STATUS_EMPTY THREAD_STATUS_EMPTY@endlink.
+ *          Otherwise, return error code passed in to
+ *          @link #thread_throw_exception()
+                   thread_throw_exception()@endlink as shown below.
+ *
+ *
+ * @internal To get this working for complete portability, the
+ *           @link rthread#pportable_nonlocal_ThrowableEvent
+             pportable_nonlocal_ThrowableEvent@endlink was changed
+ *           to a pointer and a buffer allocated from heap.  This
+ *           was due to the @c @b typedef syntax of
+ *           @c @b jmp_buf is typically an internal CPU register array,
+ *           which pointers like.  However, instead of playing games
+ *           with addressing &element[0], a pointer works better
+ *           because not all @c @b jmp_buf implementations will be an
+ *           array of this type.  The second change was to then convert
+ *           this to an (@link #rvoid rvoid@endlink *) is so that
+ *           @link #portable_jmp_buf portable_jmp_buf@endlink is
+ *           isolated to the portability library.
+ *
+ *
+ * @attention See comments in @link jvm/src/portable_jmp_buf.c
+              portable_jmp_buf.c@endlink as to why this @e cannot
+ *            be a function call.
+ *
+ */
+#define THREAD_EXCEPTION_SETUP(thridx)                         \
+    PORTABLE_SETJMP((portable_jmp_buf *)                       \
+                      THREAD(thridx).pportable_nonlocal_ThrowableEvent)
+ 
+
 /* Prototypes for functions in 'thread.c' */
 
 extern const rchar *thread_state_get_name(rushort state);
+
+extern rvoid thread_exception_setup(jvm_thread_index thridx);
 
 extern jvm_thread_index thread_class_load(rchar        *clsname,
                                           rchar        *mthname,
@@ -516,12 +571,12 @@ extern jvm_thread_index thread_class_load(rchar        *clsname,
 
 extern rvoid thread_init(rvoid);
 
+extern jvm_thread_index thread_delete(jvm_thread_index thridx);
+
 extern rboolean thread_die(jvm_thread_index thridx);
 
 extern rvoid thread_shutdown(rvoid);
 
-extern int thread_exception_setup(jvm_thread_index thridx);
- 
 extern rvoid thread_throw_exception(jvm_thread_index  thridx,
                                     rushort  thread_status_bits,
                                     rchar   *exception_name);
