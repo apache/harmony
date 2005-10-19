@@ -5,7 +5,9 @@
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # @verbatim
                                  Apache License
@@ -215,7 +217,9 @@
 #
 # @date \$LastChangedDate$
 #
-# @author Apache Software Foundation \$LastChangedBy$
+# @author \$LastChangedBy$
+#
+#         Apache Software Foundation
 #
 #
 #/ /* 

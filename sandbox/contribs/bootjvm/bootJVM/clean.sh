@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #!
-# @file /home/dlydick/harmony/bootJVM/clean.sh
+# @file /home/dlydick/harmony/bootjvm/bootJVM/clean.sh
 #
 # @brief Remove build of Boot JVM.
 #
@@ -28,12 +28,15 @@
 #            jni/src/harmony/generic/0.0/clean.sh@endlink
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-clean.sh-1 A Windows .BAT version of this script
+#        needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -57,6 +60,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference

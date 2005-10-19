@@ -18,20 +18,25 @@
 #       ./getsvndups.sh getsvndups.sh@endlink
 #       to show this type of analysis.
 #
-# The macro @link #ARCH_COPYRIGHT_APACHE() ARCH_COPYRIGHT_APACHE@endlink
-# generates the appropriate data from the expansion of SubVersion (SVN)
-# keywords that are stored in a static string in each compiled object
-# file.  This data is promoted at link time to be stored in the
+# The @link #ARCH_HEADER_COPYRIGHT_APACHE() ARCH_HEADER_COPYRIGHT_APACHE@endlink
+# and
+# @link #ARCH_SOURCE_COPYRIGHT_APACHE() ARCH_SOURCE_COPYRIGHT_APACHE@endlink
+# macros generate the appropriate data from the expansion of SubVersion
+# (SVN) keywords that are stored in a static string in each compiled
+# object file.  This data is promoted at link time to be stored in the
 # linked binary explicitly for use by this reporting script.
 #
 # @see getsvndups.sh
 #
-# @todo A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-getsvndata.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -55,6 +60,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference

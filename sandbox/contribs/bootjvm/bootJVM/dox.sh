@@ -14,18 +14,19 @@
 #       The reasons are not yet known, and it may be that
 #       the directive file needs some different settings.
 #
-# @todo Identify reason for spurious message on RTF output as
-#       described above.
+# @todo HARMONY-6-dox.sh-1 Identify reason for spurious message on
+#       RTF output as described above.
 #
-# @todo A proper solution to old NetScape 4.7X processing the
-#       HTML tag <b>&lt;pre class="fragment"&gt;</b> syntax needs to be
-#       found and implemented so that <b>&lt;code&gt;</b> and
-#       <b>@@verbatim</b> fragments, etc., may be displayed with proper
-#       framing @e and with proper newlines and white space.  For the
-#       interim solution, see the end of this script.  The problem will
-#       probably be solved by adjusting the <b>doxygen.css</b>
-#       (the default @b .css file) or supplying one that is customized
-#       for the project or perhaps just for old NetScape browsers.
+# @todo HARMONY-6-dox.sh-2 A proper solution to old NetScape 4.7X
+#       processing the HTML tag <b>&lt;pre class="fragment"&gt;</b>
+#       syntax needs to be found and implemented so that
+#       <b>&lt;code&gt;</b> and <b>@@verbatim</b> fragments, etc.,
+#       may be displayed with proper framing @e and with proper
+#       newlines and white space.  For the interim solution, see
+#       the end of this script.  The problem will probably be
+#       solved by adjusting the <b>doxygen.css</b> (the default
+#       @b .css file) or supplying one that is customized for
+#       the project or perhaps just for old NetScape browsers.
 #       The scripts @link ./doxpatch.sh doxpatch.sh@endlink and
 #       @link ./doxunpatch.sh doxunpatch.sh@endlink that support
 #       the interim solution might also be used in support of the
@@ -39,27 +40,32 @@
 #       is to find the HTML problem and fix it, probably in the
 #       style sheet.
 #
-# @todo Perhaps the above to-do item should be generalized for the
-#       old NetScape 4.7X browser since is seems to have some overall
-#       problems with fonts in the default 'doxygen.css' style sheet.
-#       Perhaps someone with CSS experience could contribute one or
-#       more style sheets for use with different types of browsers so
-#       the HTML documents look the same on all of them.
+# @todo HARMONY-6-dox.sh-3 Perhaps the above to-do item should be
+#       generalized for the old NetScape 4.7X browser since is
+#       seems to have some overall problems with fonts in the
+#       default <b>doxygen.css</b> style sheet.  Perhaps someone with
+#       CSS experience could contribute one or more style sheets
+#       for use with different types of browsers so the HTML
+#       documents look the same on all of them.
 #
-# @todo Consider the creation of a <b>.css</b> file that is customized
-#       especially for this project.
+# @todo HARMONY-6-dox.sh-4 Consider the creation of a <b>.css</b>
+#       file that is customized especially for this project.
 #
-# @todo A Windows .BAT version of this script needs to be written
+# @todo HARMONY-6-dox.sh-1 A Windows .BAT version of this
+#       script needs to be written
 #
-# @bug If the token sequence "@b @c word1 word2..." is used, two
-#      words get bolded instead of one (doxygen 1.4.4).  Likewise
+# @bug HARMONY-6-dox.sh-1001 If the token
+#      sequence "@b @c word1 word2..." is used, two words
+#      get bolded instead of one (Doxygen 1.4.4).  Likewise
 #      with "@b @p word1 word2..."  By reversing the sequence,
 #      only one word gets bolded.  Is this a "bug" or a "feature"?
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -83,6 +89,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -239,7 +246,7 @@ SPECIFIC_FILTER="$SPECIFICM1"
 # with shell scripts also.
 #
 
-SHELL1="Warning: Found ';' while parsing initializer list! \(doxygen could be confused by a macro call without semicolon\)"
+SHELL1="Warning: Found ';' while parsing initializer list! \(Doxygen could be confused by a macro call without semicolon\)"
 
 SHELL_FILTER="$SHELL1"
 
@@ -250,7 +257,7 @@ SHELL_FILTER="$SHELL1"
 # configuration file.
 #
 # With the exception of effects of changing the configuration file,
-# this cleanup step really _could_ be done under the covers by doxygen
+# this cleanup step really _could_ be done under the covers by Doxygen
 # by virtue ofthe fact that new output files overwrite old output files,
 # but is done here anyway for the sake of being thorough and only
 # generating _exactly_ what the current contents of the configuration
@@ -268,7 +275,7 @@ then
         echo "    to be non-null in order to not remove all of the"
         echo "    documentation output files every time and thus run"
         echo "    faster at the expense of file roster precision due"
-        echo "    to file add/delete or doxygen directive file changes."
+        echo "    to file add/delete or Doxygen directive file changes."
         echo ""
     fi
 
