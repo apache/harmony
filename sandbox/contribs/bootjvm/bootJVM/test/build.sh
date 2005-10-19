@@ -20,12 +20,15 @@
 # @see @link ./common.sh ./common.sh@endlink
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-test-build.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -49,6 +52,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -88,13 +92,30 @@ rm -f `find $TARGET_DIRECTORY -name \*.class`
 # Build Java class files from source code and create JAR file
 #
 
+if test -d bin
+then
+    chmod -R +w bin
+fi
+
 javac -g -sourcepath src -d bin $SOURCES
 rc=$?
 
 if test 0 -eq $rc
 then
+    if test -f $TMP_LIBRARY
+    then
+        chmod +w $TMP_LIBRARY
+        rm -f $TMP_LIBRARY
+    fi
+
     jar cf $TMP_LIBRARY -C bin .
     rc=$?
+
+    if test -f $TARGET_LIBRARY
+    then
+        chmod +w $TARGET_LIBRARY
+        rm -f $TARGET_LIBRARY
+    fi
     mv $TMP_LIBRARY $TARGET_LIBRARY # Avoid partial JAR file inside self
 fi
 
