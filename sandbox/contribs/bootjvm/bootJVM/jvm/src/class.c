@@ -6,7 +6,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -30,6 +32,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,10 +40,12 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(class, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(class, c,
+"$URL$",
+"$Id$");
 
 
-#include <string.h>
+/* #include <string.h> */
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -79,6 +84,8 @@ ARCH_COPYRIGHT_APACHE(class, c, "$URL$ $Id$");
  */
 rvoid class_static_setup(jvm_class_index clsidx)
 {
+    ARCH_FUNCTION_NAME(class_static_setup);
+
     /*
      * Declare slot in use, but not initialized.
      * (Redundant for most situations where
@@ -144,11 +151,13 @@ rvoid class_static_setup(jvm_class_index clsidx)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid class_init()
 {
+    ARCH_FUNCTION_NAME(class_init);
+
     class_static_setup(jvm_class_index_null);
 
     pjvm->class_allocate_last = jvm_class_index_null;
@@ -177,6 +186,7 @@ rvoid class_init()
  * @returns Class table index of an empty slot.  Throw error if no
  *          slots.
  *
+ *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
  *         @link #JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
  *         if no slots are available.@endlink.
@@ -184,6 +194,8 @@ rvoid class_init()
  */
 static jvm_class_index class_allocate_slot(rboolean tryagain)
 {
+    ARCH_FUNCTION_NAME(class_allocate_slot);
+
     /* Search for a free class table slot */
     jvm_class_index clsidx =
         (JVMCFG_MAX_CLASSES == (1 + pjvm->class_allocate_last))
@@ -314,13 +326,13 @@ static jvm_class_index class_allocate_slot(rboolean tryagain)
  *                      @b CLASS_STATUS_PRIMATIVE requests.
  *
  * @param    arraydims  Number of array dimensions for this class,
- *                        or zero if not an array class.
+ *                      or zero if not an array class.
  *
  * @param  arraylength  Array of length @b arraydims containing the
- *                        length of array in each of those dimensions.
- *                        E.g., @b arraydims is 4 for new X[7][3][9][2]
- *                        so this parameter will be a 4-element array
- *                        containing the numbers {7, 3, 9, 2}
+ *                      length of array in each of those dimensions.
+ *                      E.g., @b arraydims is 4 for new X[7][3][9][2]
+ *                      so this parameter will be a 4-element array
+ *                      containing the numbers {7, 3, 9, 2}
  *
  * @param lower_dim_array Class index of this array class' next
  *                        lower dimension, e.g. if this is a 3-dim
@@ -343,6 +355,8 @@ jvm_class_index class_static_new(rushort          special_cls,
                                  jint            *arraylength,
                                  jvm_class_index  lower_dim_array)
 {
+    ARCH_FUNCTION_NAME(class_static_new);
+
     jvm_class_index clsidx;
 
     /* Locate an empty slot */
@@ -437,7 +451,10 @@ jvm_class_index class_static_new(rushort          special_cls,
         CLASS(clsidx).arraylength       = arraylength;
         CLASS(clsidx).lower_dim_array   = lower_dim_array;
 
-        /*! @todo   Where is this mkref's GC_CLASS_RMREF() ??? */
+        /*!
+         * @todo   HARMONY-6-jvm-class.c-1 Where is this mkref's
+         *         GC_CLASS_RMREF() ???
+         */
         (rvoid) GC_CLASS_MKREF_FROM_CLASS(clsidx,
                                          CLASS(clsidx).lower_dim_array);
     }
@@ -507,20 +524,23 @@ jvm_class_index class_static_new(rushort          special_cls,
  *
  * @param    clsidxOLD  Class table index of slot to tear down.
  *
+ *
  * @returns   New class index of rebuilt class slot.  Throw error if
  *             no slots.
+ *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
  *         @link #JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
  *         if no slots are available.@endlink.
  *
  *
- * @todo  This function needs more testing.  Also, is it @e really
- *        needed in the implementation?
+ * @todo  HARMONY-6-jvm-class.c-2 This function needs more testing.
+ *        Also, is it @e really needed in the implementation?
  */
 
 jvm_class_index class_reload(jvm_class_index clsidxOLD)
 {
+    ARCH_FUNCTION_NAME(class_reload);
 
     if (CLASS(clsidxOLD).status & CLASS_STATUS_INUSE)
     {
@@ -532,7 +552,7 @@ jvm_class_index class_reload(jvm_class_index clsidxOLD)
          */
         rclass *dupslot = HEAP_GET_METHOD(sizeof(rclass), rfalse);
 
-        memcpy(dupslot, &CLASS(clsidxOLD), sizeof(rclass));
+        portable_memcpy(dupslot, &CLASS(clsidxOLD), sizeof(rclass));
 
 
         /* Mark old slot as partially initialized */
@@ -612,7 +632,7 @@ jvm_class_index class_reload(jvm_class_index clsidxOLD)
          */
         dupslot->status |= CLASS_STATUS_NULL; /* Partial init */
 
-        memcpy(&CLASS(clsidxNEW), dupslot, sizeof(rclass));
+        portable_memcpy(&CLASS(clsidxNEW), dupslot, sizeof(rclass));
 
         /* Reverse of first pair of mkref/rmref */
         (rvoid) GC_OBJECT_MKREF_FROM_CLASS(
@@ -662,13 +682,15 @@ jvm_class_index class_reload(jvm_class_index clsidxOLD)
  * slot gets allocated again, any zeroing out of values will just
  * get overwritten again, so don't bother.
  *
- * @todo  Make @e sure all objects of this class type have been
- *        destroyed @e before destroying this class itself!
+ * @todo  HARMONY-6-jvm-class.c-3 Make @e sure all objects of this
+ *        class type have been destroyed @e before destroying this
+ *        class itself!
  *
- * @todo  This function may be used to declutter the class table when
- *        a class has not been used for some period of time (including
- *        any static methods and fields, watch out for static final
- *        constants), so as to free up its slot for other purposes.
+ * @todo  HARMONY-6-jvm-class.c-4 This function may be used to
+ *        declutter the class table when a class has not been used
+ *        for some period of time (including any static methods and
+ *        fields, watch out for static final constants), so as to
+ *        free up its slot for other purposes.
  *
  *
  * @param    clsidx   Class index value of allocation.
@@ -688,20 +710,22 @@ jvm_class_index class_reload(jvm_class_index clsidxOLD)
 jvm_class_index class_static_delete(jvm_class_index clsidx,
                                     rboolean        rmref)
 {
+    ARCH_FUNCTION_NAME(class_static_delete);
+
     if (CLASS(clsidx).status & CLASS_STATUS_INUSE)
     {
         /*!
-         * @todo Determine what to do, if anything, when rfalse is
-         *       returned from linkage_unresolve_class().  Is the
-         *       class slot unusable?  Should class_static_delete()
-         *       proceed?
+         * @todo HARMONY-6-jvm-class.c-5 Determine what to do, if
+         *       anything, when rfalse is returned from
+                 linkage_unresolve_class().  Is the
+         *       class slot unusable?  Should the code proceed?
          */
         (rvoid) linkage_unresolve_class(clsidx);
 
         /*!
-         * @todo  Is there anything equivalent to calling
-         *        @c @b java.lang.Object.finalize() for an object
-         *        that must be invoked before unloading a class?
+         * @todo  HARMONY-6-jvm-class.c-6 Is there anything equivalent
+         *        to calling @c @b java.lang.Object.finalize() for an
+         *        object that must be invoked before unloading a class?
          */
 
         if (jvm_object_hash_null != CLASS(clsidx).class_objhash)
@@ -794,6 +818,8 @@ jvm_class_index class_static_delete(jvm_class_index clsidx,
  */
 jvm_class_index class_find_by_cp_entry(cp_info_dup *clsname)
 {
+    ARCH_FUNCTION_NAME(class_find_by_cp_entry);
+
     jvm_class_index clsidx;
 
     jvm_array_dim arraydims =
@@ -847,6 +873,8 @@ jvm_class_index class_find_by_cp_entry(cp_info_dup *clsname)
  */
 jvm_class_index class_find_by_prchar(rchar *clsname)
 {
+    ARCH_FUNCTION_NAME(class_find_by_prchar);
+
     cp_info_dup *pcip_clsname = nts_prchar2utf(clsname);
 
     jvm_method_index rc =
@@ -879,7 +907,7 @@ jvm_class_index class_find_by_prchar(rchar *clsname)
  *
  *
  * @returns class table index to loaded primative [pseudo-]class,
- *         ready for use.  Throw error if could not load.
+ *          ready for use.  Throw error if could not load.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -889,6 +917,8 @@ jvm_class_index class_find_by_prchar(rchar *clsname)
  */
 jvm_class_index class_load_primative(u1 basetype)
 {
+    ARCH_FUNCTION_NAME(class_load_primative);
+
     ClassFile *pcfs = classfile_allocate_primative(basetype);
 
     return(class_static_new(CLASS_STATUS_PRIMATIVE,
@@ -908,7 +938,7 @@ jvm_class_index class_load_primative(u1 basetype)
  * Using either null-terminated strings or UTF strings from
  * @link #CONSTANT_Utf8_info CONSTANT_Utf8_info@endlink or
  * @link #CONSTANT_Class_info CONSTANT_Class_info@endlink
- * constant_pool entries, the following three functions function
+ * @c @b constant_pool entries, the following three functions function
  * as the system default class loader that can be invoked three
  * different ways.  It searches @b CLASSPATH, reads in a class
  * file, parses its contents, and loads it into the class table
@@ -936,18 +966,20 @@ jvm_class_index class_load_primative(u1 basetype)
  *   or classfile_readjarfile(), and @b off is zero, and @b len being
  *   discovered by classfile_read_XXXfile().
  *
- * @todo  Spec section 5.3.4 <b>Loading Constraints</b> has not been
- *        considered in this implementation.  It needs to be looked at.
+ * @todo  HARMONY-6-jvm-class.c-7 Spec section 5.3.4
+ *        <b>Loading Constraints</b> has not been considered in
+ *        this implementation.  It needs to be looked at.
  *
- * @todo  Convert this function from recursive (easy to write) into
- *        iterative (easier to run and maintain).
+ * @todo  HARMONY-6-jvm-class.c-8 Convert this function from
+ *        recursive (easy to write) into iterative (easier to
+ *        run and maintain).
  *
  *
  * @param  clsname   This parameter may be one of three styles:
  *
  * <ul>
  * <li> for class_load_from_cp_entry_utf() only: a
- *                   CONSTANT_Utf8_info constant_pool entry string
+ *                   CONSTANT_Utf8_info @c @b constant_pool entry string
  *                   containing unqualified class name:
  *
  *                   @c @b Lsome/class/path/SomeClassname;
@@ -965,9 +997,10 @@ jvm_class_index class_load_primative(u1 basetype)
  * </li>
  *
  * <li> for class_load_from_cp_entry_class() only: a
- *                   CONSTANT_Class_info constant_pool entry containing
- *                   constant_pool entry to unqualified class name.
- *                   See above for further comments.
+ *                   CONSTANT_Class_info @c @b constant_pool entry
+ *                   containing @c @b constant_pool entry to
+ *                   unqualified class name.  See above for further
+ *                   comments.
  * </li>
  * </ul>
  *
@@ -1020,7 +1053,9 @@ jvm_class_index
                                  rboolean     find_registerNatives,
                                  jint        *arraylength)
 {
-    /* Disallow all but UTF8 constant_pool entries */
+    ARCH_FUNCTION_NAME(class_load_from_cp_entry_utf);
+
+    /* Disallow all but UTF8 @c @b constant_pool entries */
     if (CONSTANT_Utf8 != PTR_THIS_CP_Utf8(clsname)->tag)
     {
         /* Somebody goofed */
@@ -1134,7 +1169,7 @@ jvm_class_index
 
             GENERIC_FAILURE1_THROWERROR((rnull == pcname),
                                         DMLNORM,
-                                        "class_load_from_prchar",
+                                        arch_function_name,
                                         "Cannot locate class %s",
                                         clsname,
                                         EXIT_JVM_CLASS,
@@ -1157,7 +1192,7 @@ jvm_class_index
 
             GENERIC_FAILURE1_THROWERROR((rnull == pcfd),
                                         DMLNORM,
-                                        "class_load_from_prchar",
+                                        arch_function_name,
                                         "Cannot read file %s",
                                         pcname,
                                         EXIT_JVM_CLASS,
@@ -1165,7 +1200,10 @@ jvm_class_index
                                         pcfd,
                                         pcname);
 
-            /*! @todo  Throw @b UnsupportedClassVersionError */
+            /*! 
+             * @todo  HARMONY-6-jvm-class.c-9 Throw
+             *        @b UnsupportedClassVersionError
+             */
 
             /* Parse out the class file input stream */
             pcfs = classfile_loadclassdata(pcfd);
@@ -1182,7 +1220,7 @@ jvm_class_index
 
             GENERIC_FAILURE1_THROWERROR((rnull == pcfs),
                                         DMLNORM,
-                                        "class_load_from_prchar",
+                                        arch_function_name,
                                         "Invalid class file %s",
                                         pcname,
                                         EXIT_JVM_CLASS,
@@ -1196,10 +1234,10 @@ jvm_class_index
             /*!
              * @internal Load superclass
              *
-             * @todo  (The @c @b \<clinit\> procedure is run when the
-             *        JVM virtual machine execution engine moves
-             *        a new class from the START state into the
-             *        RUNNABLE state.)
+             * @todo  HARMONY-6-jvm-class.c-10 (The @c @b \<clinit\>
+             *        procedure is run when the JVM virtual machine
+             *        execution engine moves a new class from the
+             *        START state into the RUNNABLE state.)
              */
             if (jvm_class_index_null != pcfs->super_class)
             {
@@ -1210,35 +1248,56 @@ jvm_class_index
 
                 /*!
                  * @internal WATCH OUT!  RECURSIVE CALL!  This will
-                 * recurse until super_class is a
-                 * @c @b java.lang.Object, where
-                 * @link ClassFile.super_class
-                   ClassFile.super_class@endlink is 0 (per JVM spec.
-                 * Throw error if could not load superclass.
-                 * Don't care about its class index, as
-                 * that is also available in other places.
+                 *           recurse until super_class is a
+                 *           @c @b java.lang.Object, where
+                 *           @link ClassFile.super_class
+                             ClassFile.super_class@endlink is 0 (per
+                 *           JVM spec.  Throw error if could not load
+                 *           superclass. Don't care about its class
+                 *           index, as that is also available in other
+                 *           places.
                  *
-                 * @todo Make @e sure that this superclass and all of
-                 *       its superclasses are not only loaded, but also
+                 * @todo HARMONY-6-jvm-class.c-11 Make @e sure that
+                 *       this superclass and all of its
+                 *       superclasses are not only loaded, but also
                  *       linked and have @c @b \<clinit\> run also.
+                 *       The current code has now replaced the original
+                 *       invocation of:
+                 *
+                 * @verbatim
+                   (rvoid) class_load_from_prchar(super_name,
+                                                  find_registerNatives,
+                                                  (jint *) rnull);
+                   @endverbatim
+                 *
+                 *       Make sure that it is equivalent in its loading
+                 *       and that class initialization occurs correctly.
                  *
                  */
-                (rvoid) class_load_from_prchar(super_name,
-                                               find_registerNatives,
-                                               (jint *) rnull);
+                (rvoid) class_load_resolve_clinit(super_name,
+                                                  jvm_thread_index_null,
+                                                  rfalse,
+                                                  find_registerNatives);
 
                 /*
                  * If error above, neither HEAP_FREE_DATA(super_name)
                  * nor classfile_unloadclassdata(pcfs) will be called.
+                 *
                  */
             }
 
-            /* Mark as needing @c @b \<clinit\> in JVM class startup */
-            CLASS(clsidx).status |= CLASS_STATUS_DOCLINIT;
+            /*
+             * Unless this was previously complete, mark
+             * as needing @c @b \<clinit\> in JVM class startup
+             */
+            if (!(CLASS_STATUS_CLINIT & CLASS(clsidx).status))
+            {
+                CLASS(clsidx).status |= CLASS_STATUS_DOCLINIT;
+            }
 
         } /* if arraydims else */
 
-        /* Make a pass at resolving constant_pool linkages */
+        /* Make a pass at resolving @c @b constant_pool linkages */
         (rvoid) linkage_resolve_class(clsidx, find_registerNatives);
 
         /*
@@ -1255,6 +1314,8 @@ jvm_class_index class_load_from_prchar(rchar    *clsname,
                                        rboolean  find_registerNatives,
                                        jint     *arraylength)
 {
+    ARCH_FUNCTION_NAME(class_load_from_prchar);
+
     cp_info_dup *cp_clsname = nts_prchar2utf(clsname);
 
     jvm_class_index clsidx =
@@ -1276,7 +1337,9 @@ jvm_class_index
                                    rboolean     find_registerNatives,
                                    jint        *arraylength)
 {
-    /* Disallow all but CLASS constant_pool entries */
+    ARCH_FUNCTION_NAME(class_load_from_cp_entry_class);
+
+    /* Disallow all but CLASS @c @b constant_pool entries */
     if (CONSTANT_Class != PTR_THIS_CP_Class(clsname)->tag)
     {
         /* Somebody goofed */
@@ -1367,11 +1430,12 @@ jvm_class_index
  *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
            if invalid method linked by class@endlink
  *
- * @todo  Any JAR file passed in here that has a @c @b [ in its
- *        first one or more characters may be interpreted as an array
- *        class.  I have not tested this, and it is an oddball,
- *        but somebody needs to make sure that either, (a) such
- *        a name is @e never passed in, which is preferred due to
+ * @todo  HARMONY-6-jvm-class.c-12 Any JAR file passed in here
+ *        that has a @c @b [ in its first one or more characters
+ *        may be interpreted as an array class.  I have not
+ *        tested this, and it is an oddball, but somebody
+ *        needs to make sure that either, (a) such a name is
+ *        @e never passed in, which is preferred due to
  *        standard industry file naming practices, and/or (b) that
  *        no array processing happens in the lower levels.
  *
@@ -1383,6 +1447,8 @@ jvm_class_index class_load_resolve_clinit(rchar        *clsname,
                                           rboolean      usesystemthread,
                                           rboolean find_registerNatives)
 {
+    ARCH_FUNCTION_NAME(class_load_resolve_clinit);
+
     jvm_class_index clsidx = class_load_from_prchar(clsname,
                                                    find_registerNatives,
                                                     (jint *) rnull);
@@ -1428,7 +1494,7 @@ jvm_class_index class_load_resolve_clinit(rchar        *clsname,
 
             /*!
              * @internal see similar logic for loading a new stack
-             * frame and PC in thread_new_common()
+             *           frame and PC in thread_new_common()
              *
              */
 
@@ -1443,12 +1509,13 @@ jvm_class_index class_load_resolve_clinit(rchar        *clsname,
             if (jvm_attribute_index_bad == codeatridx)
             {
                 /*!
-                 * @todo Currently, return valid class index even
-                 * if no @c @b \<clinit\> was available.  Is this
-                 * correct? Or should it throw a @b VerifyError since
-                 * a method was declared, yet had no code area?  Take
-                 * the easy way out for now, evaluate and maybe fix
-                 * later.
+                 * @todo HARMONY-6-jvm-class.c-13 Currently, return
+                 *       valid class index even if no @c @b \<clinit\>
+                 *       was available.  Is this correct?  Or should it
+                 *       throw a @b VerifyError since a method was
+                 *       declared, yet had no code area?  Take the
+                 *       easy way out for now, evaluate and maybe fix
+                 *       later.
                  */
                 return(clsidx);
             }
@@ -1577,6 +1644,8 @@ static
                                             rboolean         staticmark,
                                             jvm_object_hash  objhash)
 {
+    ARCH_FUNCTION_NAME(class_get_constant_field_attribute);
+
     /* Check for an initial value for each field */
      jvm_attribute_index atridx;
      for (atridx = 0;
@@ -1602,7 +1671,10 @@ static
                                            ->ai.attribute_name_index))
          {
              case LOCAL_SIGNATURE_ATTRIBUTE:
-                 /*! @todo  Need to recognize signatures */
+                 /*! 
+                  * @todo  HARMONY-6-jvm-class.c-14 Need to recognize
+                  *        signatures
+                  */
                  break;
 
              case LOCAL_CONSTANTVALUE_ATTRIBUTE:
@@ -1637,7 +1709,10 @@ static
  *                           ((julong) *pu4l));
  */
 
-/*! @todo  Above logic works, 64-bit logic below needs testing: */
+/*!
+ * @todo  HARMONY-6-jvm-class.c-15 Above logic works, 64-bit
+ *        logic below needs testing:
+ */
                          /* LS word always follows MS word */
                          prl8 = (rulong *) pu4h;
                          vall = (jlong) GETRL8(prl8);
@@ -1679,7 +1754,10 @@ static
  *                           ((julong) *pu4l));
  */
 
-/*! @todo  Above logic works, 64-bit logic below needs testing: */
+/*!
+ * @todo  HARMONY-6-jvm-class.c-16 Above logic works, 64-bit
+ *        logic below needs testing:
+ */
                          /* LS word always follows MS word */
                          prd8 = (rdouble *) pu4h;
                          vald = (jdouble) GETRL8((rulong *) prd8);
@@ -1710,36 +1788,36 @@ static
 
                      case CONSTANT_String:
                          /*!
-                          * @todo Load up this string into a
-                          * @c @b java.lang.String using the
-                          * source from
+                          * @todo HARMONY-6-jvm-class.c-17 Load up this
+                          *       string into a @c @b java.lang.String
+                          *       using the source from
                           *
-                          * <b><code> pcfs->constant_pool
+                          *       <b><code> pcfs->constant_pool
                                          [PTR_CP_ENTRY_TYPE(
                                               CONSTANT_String_info,
                                               pcfs,
                                               constantvalue_index)
                                           ->string_index]</code></b>
                           *
-                          * But do not store directly into,
+                          *       But do not store directly into,
                           *
-                          * <b><code>val._jstring = ... </code></b>
+                          *      <b><code>val._jstring = ... </code></b>
                           *
-                          * Instead, store the resulting object
-                          * hash from the algorithm shown in
-                          * @link #jvm_init() jvm_init()@endlink
-                          * where the @link #main() main()@endlink
-                          * parameter @c @b argv[] array is loaded
-                          * into the Java edition of the same.
-                          * The pseudocode for this operation is
-                          * shown there.
+                          *       Instead, store the resulting object
+                          *       hash from the algorithm shown in
+                          *       @link #jvm_init() jvm_init()@endlink
+                          *       where the @link #main() main()@endlink
+                          *       parameter @c @b argv[] array is loaded
+                          *       into the Java edition of the same.
+                          *       The pseudocode for this operation is
+                          *       shown there.
                           *
-                          * <em>DO NOT</em> do this until the class
-                          * initialization is complete for
-                          * @c @b java.lang.String or the results
-                          * may be arbitrary or even fatal.  A
-                          * well-formed class library will not
-                          * attempt such an operation.
+                          *       <em>DO NOT</em> do this until the
+                          *       class initialization is complete for
+                          *       @c @b java.lang.String or the results
+                          *       may be arbitrary or even fatal.  A
+                          *       well-formed class library will not
+                          *       attempt such an operation.
                           *
                           */
 
@@ -1775,7 +1853,9 @@ static
 
 
                  /* Copy constant value into result array */
-                 memcpy(&field_data[fluidx++], &val, sizeof(jvalue));
+                 portable_memcpy(&field_data[fluidx++],
+                                 &val,
+                                 sizeof(jvalue));
                  break;
 
              /* Satisfy compiler that all cases are handled */
@@ -1817,6 +1897,8 @@ static
  */
 u2 class_get_num_static_fields(ClassFile *pcfs)
 {
+    ARCH_FUNCTION_NAME(class_get_num_static_fields);
+
     jvm_field_index fldidx;
     u2 rc = 0;
 
@@ -1841,7 +1923,7 @@ u2 class_get_num_static_fields(ClassFile *pcfs)
  * @param    pcfs         Pointer to ClassFile area
  * 
  *
- * @returns   array of field indices in ClassFile @b fields table
+ * @returns  array of field indices in ClassFile @b fields table
  *           for all static fields in this class or
  *           @link #rnull rnull@endlink if no values
  *           to initialize or heap allocation error.  The
@@ -1851,6 +1933,8 @@ u2 class_get_num_static_fields(ClassFile *pcfs)
  */
 jvm_field_index *class_get_static_field_lookups(ClassFile *pcfs)
 {
+    ARCH_FUNCTION_NAME(class_get_static_field_lookups);
+
     u2 num_static_fields = class_get_num_static_fields(pcfs);
 
     /* Done if no static fields to initialize */
@@ -1883,7 +1967,7 @@ jvm_field_index *class_get_static_field_lookups(ClassFile *pcfs)
  * this class
  *
  *
- * @param   clsidx        Class table index of slot having class loaded
+ * @param  clsidx         Class table index of slot having class loaded
  *
  * @param  pcfs           Pointer to ClassFile area
  * 
@@ -1899,6 +1983,8 @@ jvm_field_index *class_get_static_field_lookups(ClassFile *pcfs)
 jvalue *class_get_static_field_data(jvm_class_index  clsidx,
                                     ClassFile       *pcfs)
 {
+    ARCH_FUNCTION_NAME(class_get_static_field_data);
+
     u2 num_static_fields = class_get_num_static_fields(pcfs);
 
     /* Done if no static fields to initialize */
@@ -1950,6 +2036,8 @@ jvalue *class_get_static_field_data(jvm_class_index  clsidx,
  */
 u2 class_get_num_object_instance_fields(ClassFile *pcfs)
 {
+    ARCH_FUNCTION_NAME(class_get_num_object_instance_fields);
+
     jvm_field_index fldidx;
     u2 rc = 0;
 
@@ -1985,6 +2073,8 @@ u2 class_get_num_object_instance_fields(ClassFile *pcfs)
 jvm_field_index
     *class_get_object_instance_field_lookups(ClassFile *pcfs)
 {
+    ARCH_FUNCTION_NAME(class_get_object_instance_field_lookups);
+
     u2 num_instance_fields = class_get_num_object_instance_fields(pcfs);
 
     /* Done if no object instance fields to initialize */
@@ -2032,17 +2122,20 @@ jvm_field_index
  * @param   pcfs          Pointer to ClassFile area
  * 
  *
- * @returns   array of data values corresponding to each field index
+ * @returns  array of data values corresponding to each field index
  *           as returned from class_get_static_field_lookups() or
  *           @link #rnull rnull@endlink if no values to initialize
  *           or heap allocation error.  The size of the array is
  *           determined by the result of
  *           class_get_num_object_instance_fields().
+ *
  */
 jvalue *class_get_object_instance_field_data(jvm_class_index  clsidx,
                                              jvm_object_hash  objhash,
                                              ClassFile       *pcfs)
 {
+    ARCH_FUNCTION_NAME(class_get_object_instance_field_data);
+
     u2 num_object_instance_fields =
         class_get_num_object_instance_fields(pcfs);
 
@@ -2103,11 +2196,13 @@ jvalue *class_get_object_instance_field_data(jvm_class_index  clsidx,
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid class_shutdown_1()
 {
+    ARCH_FUNCTION_NAME(class_shutdown_1);
+
     jvm_class_index clsidx;
 
     for (clsidx = jvm_class_index_null;
@@ -2140,7 +2235,7 @@ rvoid class_shutdown_1()
         }
     }
 
-    /* This may result in a @e large garbage collection */
+    /*! @note This may result in a @e large garbage collection */
     GC_RUN(rfalse);
 
     return;
@@ -2150,6 +2245,8 @@ rvoid class_shutdown_1()
 
 rvoid class_shutdown_2()
 {
+    ARCH_FUNCTION_NAME(class_shutdown_2);
+
     jvm_class_index clsidx;
 
     for (clsidx = jvm_class_index_null;
@@ -2165,7 +2262,7 @@ rvoid class_shutdown_2()
     /* Declare this module uninitialized */
     jvm_class_initialized = rfalse;
 
-    /* This may result in a @e large garbage collection */
+    /*! @note This may result in a @e large garbage collection */
     GC_RUN(rfalse);
 
     return;
