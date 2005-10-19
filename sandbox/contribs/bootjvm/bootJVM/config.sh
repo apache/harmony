@@ -33,9 +33,10 @@
 # 'doxygen' will automatically incorporate it into the documentation
 # suite.
 #
-# @todo Support the following input parameter format:
+# @todo HARMONY-6-config.sh-1 Support the following input parameter
+#       format:
 #
-# Input:   [hwvendor [wordwidth [osname]]]
+# Input:   [cputype [wordwidth [osname]]]
 #
 # These optional positional parameters contain specific token values,
 # which may change from one release to the next.  Initially, they are
@@ -43,7 +44,7 @@
 # refer to parsing of positional parms $1 and $2 and $3 below.
 #
 # <ul>
-#         <li>hwvendor     Keyword for supported hardware platform.
+#         <li>cputype      Keyword for supported hardware platform.
 #                          Initially @b sparc and @b intel
 #
 #         </li>
@@ -52,14 +53,14 @@
 #         </li>
 #         <li>osname       Keyword for operating system name.
 #                          Initially @b solaris and @b linux and
-#                          @b windows.
+#                          @b windows and @b cygwin.
 #         </li>
 # </ul>
 #
 # These may evolve over time, and not every combination of these
 # is valid.  The initial valid combinations are:
 #
-# (hwvendor, wordwidth, osname) ::=   one of these combinations:
+# (cputype, wordwidth, osname) ::=   one of these combinations:
 #
 # <ul>
 #     <li>(sparc, 32, solaris)
@@ -80,17 +81,22 @@
 #     </li>
 #     <li>(intel, 32, windows)
 #     </li>
+#     <li>(intel, 32, cygwin)
+#     </li>
 #     <li>(amd,   64, windows)... JDK for AMD64 coming soon from Sun.
 #     </li>
 # </ul>
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-config.sh-2 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -114,6 +120,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -178,7 +185,7 @@ CFGH="config/config.h"
 echo "configuration file '$CFGH' and are the ones"
 echo "most likely to need adjustment from time to time."
 echo ""
-echo "Do you wish to read the introductory notes? [y,n] $echoc"
+$echon "Do you wish to read the introductory notes? [y,n] $echoc"
 read readintro
 echo ""
 
@@ -212,7 +219,7 @@ echo ""
 echo "The 'README' file in this directory contains much useful"
 echo "information about which source files perform which function."
 echo ""
-echo "more... $echoc"
+$echon "more... $echoc"
 read dummy
 echo ""
 echo "This project was originally developed on a Solaris 9 platform."
@@ -227,7 +234,7 @@ echo "version 3.3.2 or newer.  There are also compiled binary editions"
 echo "of GCC available from numerous hardware vendors and/or their"
 echo "user groups."
 echo ""
-echo "ready... $echoc"
+$echon "ready... $echoc"
 read dummy
 echo ""
 echo "The 'build.sh dox' facility extracts the documentation from the"
@@ -239,9 +246,10 @@ echo ""
 echo "If not found, binary distributions for numerous platforms are"
 echo "located at: www.doxygen.org.  Please use version 1.4.4 or newer."
 echo ""
+echo ""
 echo "... End of introductory notes ..."
 echo ""
-echo "ready... $echoc"
+$echon "ready... $echoc"
 read dummy
 fi
 
@@ -271,7 +279,7 @@ echo "files, functions, data types, and data structures is all part"
 echo "of the development process.  Running 'build.sh dox' will refresh"
 echo "the documentation suite with your current work.)"
 echo ""
-echo "more... $echoc"
+$echon "more... $echoc"
 read dummy
 echo ""
 echo "Once installed in the 'doc' directory, this information will"
@@ -283,7 +291,7 @@ echo "regularly working with documentation changes, or if you do"
 echo "not need a reference copy of the documentation, you may"
 echo "safely remove this version."
 echo ""
-echo "more... $echoc"
+$echon "more... $echoc"
 read dummy
 echo ""
 echo "It is recommended that a typical user install the documentation"
@@ -293,7 +301,7 @@ echo ""
 echo "If it has already been installed on a previous instance of"
 echo "running '$PGMNAME', then it does not need to be installed again."
 echo ""
-echo "Do you wish to install pre-formatted documentation? [y,n] $echoc"
+$echon "Do you wish to install pre-formatted documentation? [y,n] $echoc"
 read prefmtdocs
 
 ###################################################################
@@ -368,7 +376,7 @@ echo "$PGMNAME:  Testing Java version..."
 $JAVA_HOME/bin/java -version
 
 echo  ""
-echo  "Is this version of Java and JAVA_HOME satisfactory? [y,n] $echoc"
+$echon "Is this version of Java and JAVA_HOME satisfactory? [y,n] $echoc"
 read libsetup
 echo ""
 
@@ -551,13 +559,13 @@ do
     echo "  Hardware vendor name: $HWLIST"
     echo ""
     $echon "  Select [sparc,intel] $echoc"
-    read hwvendor
+    read cputype
 
-    case $hwvendor in
-        sparc) HWVENDOR=SPARC;;
-        intel) HWVENDOR=INTEL;;
+    case $cputype in
+        sparc) CPUTYPE=SPARC;;
+        intel) CPUTYPE=INTEL;;
         *)     echo ""
-               echo "Hardware vendor '$hwvendor' invalid"
+               echo "Hardware vendor '$cputype' invalid"
                echo ""
                continue;;
     esac
@@ -577,15 +585,16 @@ do
     esac
 
     echo ""
-    echo "  Operating system:  Solaris, Linux, Windows"
+    echo "  Operating system:  Solaris, Linux, Windows, CygWin"
     echo ""
-    $echon "  Select [solaris,linux,windows] $echoc"
+    $echon "  Select [solaris,linux,windows,cygwin] $echoc"
     read osname
 
     case $osname in
         solaris) OSNAME=SOLARIS;;
         linux)   OSNAME=LINUX;;
         windows) OSNAME=WINDOWS;;
+        cygwin)  OSNAME=CYGWIN;;
         *)       echo ""
                  echo "Operating system '$osname' invalid"
                  echo ""
@@ -594,17 +603,17 @@ do
 
     # Check invalid combinations
     echo ""
-    case $hwvendor in
-        sparc)  if test "$osname" = "windows"
+    case $cputype in
+        sparc)  if test "$osname" = "windows" -o "$osname" = "cygwin"
                 then
-                    echo "Combination invalid:  $hwvendor/$osname"
+                    echo "Combination invalid:  $cputype/$osname"
                     echo ""
                     continue
                 fi;;
 
         intel)  if test "$wordwidth" = "64"
                 then
-                    echo "Combination unsupported: $hwvendor/$wordwidth"
+                    echo "Combination unsupported: $cputype/$wordwidth"
                     echo ""
                     continue
                 fi;;
@@ -616,7 +625,7 @@ done
 
 echo "---"
 echo \
-"Valid architecture:  HW=$hwvendor  Word=$wordwidth bits OS=$osname"
+"Valid architecture:  CPU=$cputype  Word=$wordwidth bits OS=$osname"
 
 
 echo ""
@@ -744,7 +753,7 @@ echo "selections.  The default option is 'build.sh cfg'.  Choosing"
 echo "'all' declares that all components are to be built by the"
 echo "default build option 'build.sh cfg'."
 echo ""
-echo "more... $echoc"
+$echon "more... $echoc"
 read dummy
 echo ""
 echo \
@@ -866,7 +875,7 @@ echo "time comes to generate documentation, there are several formats"
 echo "available.  Most options may be used in combination to yield only"
 echo "the desired formats.  Choosing 'all' configures every format."
 echo ""
-echo "more... $echoc"
+$echon "more... $echoc"
 read dummy
 echo ""
 echo "The several options for building various documentation formats"
@@ -891,7 +900,7 @@ echo ""
 echo "A suggested combination for Windows users might be HTML and"
 echo "RTF formats."
 echo ""
-echo "more... $echoc"
+$echon "more... $echoc"
 read dummy
 echo ""
 echo "Older versions of the NetScape HTML browser can do odd things to"
@@ -999,7 +1008,8 @@ done
 echo ""
 
 echo ""
-echo "Do you also wish to build the configured components? [y,n] $echoc"
+MSG80="the configured components after configuration?"
+$echon "Do you wish to build ${MSG80}? [y,n] $echoc"
 read buildnow
 echo ""
 echo  ""
@@ -1027,7 +1037,21 @@ case $prefmtdocs in
         then
   echo "$PGMNAME:  Pre-formatted documents not found: $PREFMTDOCSTAR.gz"
             echo ""
-            echo "Configuration will continue..."
+            echo "This probably means that you installed from a"
+            echo "distribution containing only source, namely from"
+            echo "a 'bootJVM-src-x.y.z.tar.gz' file.  The documentation"
+            echo "may be found in both the 'bootJVM-doc-x.y.z.tar.gz'"
+            echo "and the 'bootJVM-srcdoc-x.y.z.tar.gz' distributions."
+            echo "This latter also contains the source distribution."
+            echo ""
+            echo "The documentation can be generated from the source"
+            echo "itself using 'build.sh dox' at any time."
+            echo ""
+            $echon "ready... $echoc"
+            read dummy
+            echo ""
+            echo ""
+            echo "Configuration will continue..."
             echo ""
             sleep 3
             # exit 8
@@ -1111,9 +1135,9 @@ THISDATE=`date`
     echo "on $THISDATE:"
     echo "DO NOT MODIFY!"
     echo ""
-    echo "Instead, run $PGMNAME to change anything."
-    echo "(The same goes for the '*.gcc' and '*.gccld' files in"
-    echo "this directory, but they cannot contain any comments.)"
+    echo "Instead, run $PGMNAME to change _anything_ at all!"
+    echo "(The same goes for the '*.gcc' and '*.gccld' files in this"
+    echo "directory, but notice that they cannot contain any comments.)"
     echo ""
 
 ) > $CRME
@@ -1218,6 +1242,19 @@ echo " * See the License for the specific language governing permissions"
 
     echo ""
     echo "/*!"
+    echo " * @def CONFIG_WORDWIDTH"
+    echo " * @brief Null-terminated string number of bits in real"
+    echo " * machine integer word."
+    echo " *"
+    echo " * This value may be either @b 32 or @b 64."
+    echo " *"
+    echo " * @ see CONFIG_WORDWIDTH$WORDWIDTH"
+    echo " *"
+    echo " */"
+    echo "#define CONFIG_WORDWIDTH \"$wordwidth\""
+
+    echo ""
+    echo "/*!"
     echo " * @def CONFIG_WORDWIDTH$WORDWIDTH"
     echo " * @brief Number of bits in real machine integer word."
     echo " *"
@@ -1228,34 +1265,64 @@ echo " * See the License for the specific language governing permissions"
 
     echo ""
     echo "/*!"
-    echo " * @def CONFIG_$HWVENDOR"
-    echo " * @brief Manufacturer or type of CPU."
+    echo " * @def CONFIG_CPUTYPE"
+    echo " * @brief Null-terminated string name or type of CPU."
     echo " *"
-    echo " * This value typically implys a specific CPU architecture"
+    echo " * Useful for diagnostic strings that report CPU information."
+    echo " *"
+    echo " * This value typically implies a specific CPU architecture"
     echo " * rather than a manufacturer of a number of them."
+    echo " *"
+    echo " * @see CONFIG_$CPUTYPE"
+    echo " *"
+    echo " */"
+    echo "#define CONFIG_CPUTYPE \"$cputype\""
+
+    echo ""
+    echo "/*!"
+    echo " * @def CONFIG_$CPUTYPE"
+    echo " * @brief Explicitly named type of CPU."
+    echo " *"
+    echo " * Another way at specifying CPU architecture, but with"
+    echo " * an explicit token rather than a string in a token."
     echo " *"
     echo " * @b sparc means Sun's SPARC CPU architecture."
     echo " *"
     echo " * @b intel means Intel's x86 CPU architecture."
     echo " *"
+    echo " * @see CONFIG_CPUTYPE"
+    echo " *"
     echo " */"
-    echo "#define CONFIG_$HWVENDOR"
+    echo "#define CONFIG_$CPUTYPE"
 
     echo ""
     echo "/*!"
-    echo " * @def CONFIG_$HWVENDOR$WORDWIDTH"
+    echo " * @def CONFIG_$CPUTYPE$WORDWIDTH"
     echo \
-" * @brief Combination of CONFIG_$HWVENDOR and CONFIG_WORDWIDTH$WORDWIDTH."
+" * @brief Combination of CONFIG_$CPUTYPE and CONFIG_WORDWIDTH$WORDWIDTH."
     echo " *"
     echo " */"
-    echo "#define CONFIG_$HWVENDOR$WORDWIDTH"
+    echo "#define CONFIG_$CPUTYPE$WORDWIDTH"
+
+    echo ""
+    echo "/*!"
+    echo " * @def CONFIG_OSNAME"
+    echo " * @brief Null-terminated string name of operating system."
+    echo " *"
+    echo " * Useful for diagnostic strings that report OS information."
+    echo " *"
+    echo " *"
+    echo " * @see CONFIG_$OSNAME"
+    echo " *"
+    echo " */"
+    echo "#define CONFIG_OSNAME \"$osname\""
 
     echo ""
     echo "/*!"
     echo " * @def CONFIG_$OSNAME"
     echo " * @brief Operating system name."
     echo " *"
-    echo " * This value may be @b solaris or @b linux or @b windows."
+  echo " * This value may be @b solaris or @b linux or @b windows or @b cygwin."
     echo " *"
     OSTXTABBRV="Unix architecture operating system" # Keep short lines
     echo " * @b solaris means Sun's premier $OSTXTABBRV"
@@ -1264,8 +1331,12 @@ echo " * See the License for the specific language governing permissions"
     echo " *"
     echo " * @b windows means Microsoft's proprietary operating system."
     echo " *"
-    echo " * Notice that, with the exception of @b windows, various CPU"
-    echo " * architectures may run various operating systems."
+    echo " * @b cygwin means the open-source Unix work-alike Windows utility."
+    echo " *"
+    echo " * Notice that, with the exception of @b windows and @b cygwin,"
+    echo " * various CPU architectures may run various operating systems."
+    echo " *"
+    echo " * @see CONFIG_OSNAME"
     echo " *"
     echo " */"
     echo "#define CONFIG_$OSNAME"
@@ -1296,16 +1367,17 @@ echo " * See the License for the specific language governing permissions"
 " * @link jvm/src/jvmcfg.h jvmcfg.h @endlink if desired without"
     echo " * changing its definition here in this file."
     echo " *"
-    echo " * @todo  Put fuller definition for this symbol and its" 
-    echo " *        usage into the code in"
+    echo " * @todo  HARMONY-6-config.sh-3 Put fuller definition for"
+    echo " *        this symbol and its usage into the code in"
     echo " *        @link jvm/src/classpath.c classpath.c @endlink."
     echo " *"
-    echo " * @todo  Need to find some other way to locate the class"
-    echo " *        library archive in the JDK so that @e any JDK may"
-    echo " *        be considered (initially).  Need to ultimately"
-    echo " *        change out the logic that uses it over time to"
-    echo " *        begin looking for natively constructed class"
-    echo " *        library archive instead of leaning on outside work."
+    echo " * @todo  HARMONY-6-config.sh-4 Need to find some other way"
+    echo " *        to locate the class library archive in the JDK so"
+    echo " *        that @e any JDK may be considered (initially)."
+    echo " *        Need to ultimately change out the logic that uses"
+    echo " *        it over time to begin looking for natively"
+    echo " *        constructed class library archive instead of" 
+    echo " *        leaning on outside work."
     echo " *"
     echo " */"
     echo "#define CONFIG_HACKED_RTJARFILE \"$RTJARFILE\""
@@ -1327,14 +1399,14 @@ echo " * See the License for the specific language governing permissions"
 " * @link jvm/src/jvmcfg.h jvmcfg.h @endlink if desired without"
     echo " * changing its definition here in this file."
     echo " *"
-    echo " * @todo  Put fuller definition for this symbol and its" 
-    echo " *        usage into the code in"
+    echo " * @todo  HARMONY-6-config.sh-5 Put fuller definition for"
+    echo " *        this symbol and its usage into the code in"
     echo " *        @link jvm/src/classpath.c classpath.c @endlink"
     echo " *        and @link jvm/src/argv.c argv.c @endlink."
     echo " *"
-    echo " * @todo  Remove compiled absolute path name in favor or"
-    echo " *        either a relative path name or removal of this"
-    echo " *        symbol from the logic entirely."
+    echo " * @todo  HARMONY-6-config.sh-6 Remove compiled absolute path"
+    echo " *        name in favor or either a relative path name or"
+    echo " *        removal of this symbol from the logic entirely."
     echo " *"
     echo " */"
     echo "#define CONFIG_HACKED_BOOTCLASSPATH \"$PGMDIR/bootclasspath\""
@@ -1429,8 +1501,9 @@ ALWAYS_REQUIRED_GCC_OPTIONS="\
   $INCLUDE_PATHS \
   $CONSTANT_GCC_OPTIONS"
 
-ALWAYS_REQUIRED_GCCLD_OPTIONS="-m$WORDWIDTH -lpthread"
+ALWAYS_REQUIRED_GCCLD_OPTIONS="-m$WORDWIDTH -lpthread -lm"
 
+# Formerly needed:            -fpack-struct   ... Try to NEVER need it!
 USUALLY_REQUIRED_GCC_OPTIONS=""
 
 COAG="config/config_opts_always.gcc"
@@ -1457,9 +1530,9 @@ LOAG="config/config_opts_always.gccld"
 
 chmod -w $LOAG
 
-USEDOX="for use by 'dox.sh'"
-USEDOXBLD="for use by 'dox.sh' and 'build.sh'"
-USEBLDCLN="for use by 'build.sh' and 'clean.sh'"
+USEDOX="for 'dox.sh'"
+USEDOXBLD="for 'dox.sh' and 'build.sh'"
+USEBLDCLN="for 'build.sh' and 'clean.sh'"
 
 CRCD="config/config_roster_c.dox"
 (
@@ -1632,7 +1705,7 @@ CUSD="config/config_roster_sh.dox"
               ls -1 jni/src/*/*/*/build.sh; \
               ls -1 jni/src/*/*/*/clean.sh; \
               ls -1 jni/src/*/*/*/common.sh; \
-              ls -1 $PGMDIR/[ILR]*; \
+              ls -1 $PGMDIR/[A-Z]*; \
               ls -1 $PGMDIR/*.sh`
     do
         echo "    $f \\"
@@ -1653,8 +1726,18 @@ CBSD="config/config_build_steps.sh"
     echo "# on $THISDATE:"
     echo "# DO NOT MODIFY!"
     echo "#"
+    echo "CONFIG_WORDWIDTH=\"$wordwidth\""
+    echo "export CONFIG_WORDWIDTH"
+    echo "#"
+    echo "CONFIG_CPUTYPE=\"$cputype\""
+    echo "export CONFIG_CPUTYPE"
+    echo "#"
+    echo "CONFIG_OSNAME=\"$osname\""
+    echo "export CONFIG_OSNAME"
+    echo "#"
     echo "CONFIG_RELEASE_LEVEL=\"$RELEASE_LEVEL\""
     echo "export CONFIG_RELEASE_LEVEL"
+    echo "#"
     echo "CONFIG_BUILD_ALLCODE=$BUILD_ALLCODE"
     echo "CONFIG_BUILD_JVM=$BUILD_JVM"
     echo "CONFIG_BUILD_LIB=$BUILD_LIB"
@@ -1662,8 +1745,9 @@ CBSD="config/config_build_steps.sh"
     echo "CONFIG_BUILD_TEST=$BUILD_TEST"
     echo "CONFIG_BUILD_JNI=$BUILD_JNI"
     echo "CONFIG_BUILD_DOX=$BUILD_DOX"
+    echo "#"
  echo "CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X=$BUILD_HTML_ADJ_NETSCAPE47X"
-    echo ""
+    echo "#"
     echo "# EOF"
 
 ) > $CBSD
