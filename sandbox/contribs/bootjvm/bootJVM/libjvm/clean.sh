@@ -17,12 +17,15 @@
 # @see @link ./common.sh ./common.sh@endlink
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-libjvm-clean.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -46,6 +49,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
