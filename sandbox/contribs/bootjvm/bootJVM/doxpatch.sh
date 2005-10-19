@@ -7,11 +7,11 @@
 #
 # A patch is needed to work around the cascading style sheet issue in
 #
-#     &lt;pre class="fragment"^gt;
+#     <b>&lt;pre class="fragment"&gt;</b>
 #
 # directives in Doxygen HTML output so that old NetScape 4.7x browsers
 # do not parse this to eliminate newline characters in @b @@verbatim
-# blocks, @b &lt;code&gt; blocks, etc.
+# blocks, @b &lt;code&gt; blocks, source file listings, etc.
 #
 # This only is effective if @b CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X
 # was configured by @link ./config.sh config.sh@endlink.  Otherwise
@@ -23,16 +23,21 @@
 # originally. @link ./doxunpatch.sh doxunpatch@endlink can use it
 # to revert back to the unpatched copy.  This script moves the symbolic
 # link to the patched copy that suppresses processing that causes
-# the problem.
+# the problem.  The down side of this approach is that other formatting
+# may not be quite right, but at least the blocks in question are
+# readable.
 #
 # @see doxunpatch.sh
 #
-# @todo A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-doxpatch.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -56,6 +61,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
