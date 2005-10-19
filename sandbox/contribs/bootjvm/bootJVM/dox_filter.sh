@@ -27,12 +27,15 @@
 # please refer to @link ./LICENSE LICENSE@endlink.
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-dox_filter.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -56,6 +59,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -94,7 +98,7 @@ then
     convertit=1
 else
     case $FILENAME in
-        INSTALL | LICENSE | README) convertit=2;;
+        AUTHORS | INSTALL | LICENSE | README) convertit=2;;
         *);;
     esac
 fi
