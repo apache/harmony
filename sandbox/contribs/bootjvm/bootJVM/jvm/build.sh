@@ -24,12 +24,15 @@
 # comment may be found in @link ./config.sh config.sh@endlink
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-jvm-build.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -53,9 +56,8 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
-#         Original code contributed by Daniel Lydick on 09/28/2005.
 #
-# @todo  A Windows .BAT version of this script needs to be written
+#         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
 #
@@ -105,6 +107,9 @@ do
     OBJECTS="$OBJECTS ${OBJECT}"
 
     case $f in
+        src/portable_libc.c | \
+        src/portable_libm.c | \
+        src/portable_setjmp.c | \
         src/stdio.c)
             gcc $ALWAYS_OPTIONS \
                 -o ${OBJECT} \
