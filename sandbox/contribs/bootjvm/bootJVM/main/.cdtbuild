@@ -8,19 +8,20 @@
 <builder superClass="cdt.managedbuild.target.gnu.builder.exe.debug" id="cdt.managedbuild.target.gnu.builder.exe.debug.973897522" name="Gnu Make"/>
 <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1081957588" name="GCC C Compiler">
 <option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.193936882" name="Include paths (-I)" valueType="includePath">
-<listOptionValue value="/home/dlydick/harmony/bootJVM/config" builtIn="false"/>
-<listOptionValue value="/home/dlydick/harmony/bootJVM/jvm/src" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/config" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/jvm/src" builtIn="false"/>
 </option>
-<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.1922201730" name="Other flags" value="-c -fmessage-length=0 -fpack-struct -m32" valueType="string"/>
+<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.1922201730" name="Other flags" value="-c -fmessage-length=0 -m32" valueType="string"/>
 <option superClass="gnu.c.compiler.option.misc.ansi" id="gnu.c.compiler.option.misc.ansi.1663911526" name="Support ANSI programs (-ansi)" value="true" valueType="boolean"/>
 </tool>
 <tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1604640686" name="GCC C++ Compiler"/>
 <tool superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1669870623" name="GCC C Linker">
 <option superClass="gnu.c.link.option.libs" id="gnu.c.link.option.libs.795783637" name="Libraries (-l)" valueType="libs">
 <listOptionValue value="jvm" builtIn="false"/>
+<listOptionValue value="m" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.paths" id="gnu.c.link.option.paths.1815763399" name="Library search path (-L)" valueType="stringList">
-<listOptionValue value="/home/dlydick/harmony/bootJVM/libjvm/lib" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/libjvm/lib" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.ldflags" id="gnu.c.link.option.ldflags.1598715765" name="Linker flags" value="-m32" valueType="string"/>
 </tool>
