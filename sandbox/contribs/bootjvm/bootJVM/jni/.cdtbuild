@@ -8,19 +8,22 @@
 <builder superClass="cdt.managedbuild.target.gnu.builder.exe.debug" id="cdt.managedbuild.target.gnu.builder.exe.debug.1585684302" name="Gnu Make.bin"/>
 <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.997157550" name="GCC C Compiler">
 <option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.1943870553" name="Include paths (-I)" valueType="includePath">
-<listOptionValue value="/home/dlydick/harmony/bootJVM/jni/src/harmony/generic/0.0/include" builtIn="false"/>
-<listOptionValue value="/home/dlydick/harmony/bootJVM/jvm/include" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/jni/src/harmony/generic/0.0/include" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/jvm/include" builtIn="false"/>
 <listOptionValue value="/home/dlydick/java/j2sdk1.4.2_06/include" builtIn="false"/>
 <listOptionValue value="/home/dlydick/java/j2sdk1.4.2_06/include/solaris" builtIn="false"/>
 </option>
+<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.658441306" value="-c -fmessage-length=0 -m32" valueType="string"/>
+<option superClass="gnu.c.compiler.option.misc.ansi" id="gnu.c.compiler.option.misc.ansi.188025620" value="true" valueType="boolean"/>
 </tool>
 <tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.984487559" name="GCC C++ Compiler"/>
 <tool superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.358457460" name="GCC C Linker">
 <option superClass="gnu.c.link.option.libs" id="gnu.c.link.option.libs.1554241232" name="Libraries (-l)" valueType="libs">
 <listOptionValue value="jvm" builtIn="false"/>
+<listOptionValue value="m" builtIn="false"/>
 </option>
 <option superClass="gnu.c.link.option.paths" id="gnu.c.link.option.paths.1691287392" name="Library search path (-L)" valueType="stringList">
-<listOptionValue value="/home/dlydick/harmony/bootJVM/libjvm/lib" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/libjvm/lib" builtIn="false"/>
 </option>
 </tool>
 <tool superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.555059834" name="GCC C++ Linker"/>
