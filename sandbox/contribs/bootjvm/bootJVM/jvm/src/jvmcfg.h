@@ -33,9 +33,9 @@
  * These types are used for function prototypes for JNI code.
  *
  *
- * @todo  Add proper searching for 'rt.jar' file and '-bootclasspath'.
- *        For the moment, they are defined in
- *        @link config.h config.h@endlink as the
+ * @todo  HARMONY-6-jvm-jvmcfg.h-1 Add proper searching for 'rt.jar'
+ *        file and '-bootclasspath'.  For the moment, they are
+ *        defined in @link config.h config.h@endlink as the
  *       @link #CONFIG_HACKED_RTJARFILE CONFIG_HACKED_RTJARFILE@endlink
  *        and @link #CONFIG_HACKED_BOOTCLASSPATH
                      CONFIG_HACKED_BOOTCLASSPATH@endlink
@@ -47,7 +47,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -71,28 +73,33 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
- * @todo Need to evaluate if and when and how to phase out use of the 
- *       configuration variables @link #CONFIG_HACKED_RTJARFILE
-         CONFIG_HACKED_RTJARFILE@endlink and
-         @link #CONFIG_HACKED_BOOTCLASSPATH
+ * @todo HARMONY-6-jvm-jvmcfg.h-2 Need to evaluate if and when
+ *       and how to phase out use of the configuration variables
+ *       @link #CONFIG_HACKED_RTJARFILE CONFIG_HACKED_RTJARFILE@endlink
+         and @link #CONFIG_HACKED_BOOTCLASSPATH
          CONFIG_HACKED_BOOTCLASSPATH@endlink
  *
  * @internal Decide whether or not to use the
- * @link #CONFIG_HACKED_RTJARFILE CONFIG_HACKED_xxx@endlink definitions
- * from @link config.h config.h@endlink.  Consider two fragments of
- * source code showing with/without comment possibility (immediately
- * follows this note in the source code).
+ *           @link #CONFIG_HACKED_RTJARFILE CONFIG_HACKED_xxx@endlink
+ *           definitions from @link config.h config.h@endlink.
+ *           Consider two fragments of source code showing with/without
+ *           comment possibility (immediately follows this note in the
+ *           source code).
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(jvmcfg, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jvmcfg, h,
+"$URL$",
+"$Id$");
 
 
 #include "jrtypes.h"
+#include "portable.h"
 
 
 /*
@@ -123,9 +130,23 @@ ARCH_COPYRIGHT_APACHE(jvmcfg, h, "$URL$ $Id$");
 
 /*@{ */ /* Begin grouped definitions */
 
-#ifdef CONFIG_WINDOWS
+#if defined(CONFIG_WINDOWS) || defined(CONFIG_CYGWIN)
+
+#if defined(CONFIG_WINDOWS)
+/* Normal path delimiter */
 #define JVMCFG_PATHNAME_DELIMITER_CHAR   '\\'
 #define JVMCFG_PATHNAME_DELIMITER_STRING "\\"
+
+#else
+/* Normal path delimiter */
+#define JVMCFG_PATHNAME_DELIMITER_CHAR   '/'
+#define JVMCFG_PATHNAME_DELIMITER_STRING "/"
+
+/* Alternative path delimiter-- such as C:\\path\\name/more/path/name */
+#define JVMCFG_PATHNAME_ALT_DELIMITER_CHAR   '\\'
+#define JVMCFG_PATHNAME_ALT_DELIMITER_STRING "\\"
+
+#endif
 
 #define JVMCFG_EXTENSION_DELIMITER_CHAR   '.'
 #define JVMCFG_EXTENSION_DELIMITER_STRING "."
@@ -210,9 +231,10 @@ ARCH_COPYRIGHT_APACHE(jvmcfg, h, "$URL$ $Id$");
 /*!
  * @name Environment variable names
  *
- * @brief Environment variables used by Java.
+ * @brief Environment variables used by Java and/or the JVM.
  *
- * Each one of these may be overridden from the command line.
+ * Each one of these except @b TMPDIR may be overridden from
+ * the command line.
  */
 
 /*@{ */ /* Begin grouped definitions */
@@ -220,6 +242,7 @@ ARCH_COPYRIGHT_APACHE(jvmcfg, h, "$URL$ $Id$");
 #define JVMCFG_ENVIRONMENT_VARIABLE_JAVA_HOME     "JAVA_HOME"
 #define JVMCFG_ENVIRONMENT_VARIABLE_CLASSPATH     "CLASSPATH"
 #define JVMCFG_ENVIRONMENT_VARIABLE_BOOTCLASSPATH "BOOTCLASSPATH"
+#define JVMCFG_ENVIRONMENT_VARIABLE_TMPDIR        "TMPDIR"
 
 /*@} */ /* End of grouped definitions */
 
@@ -233,7 +256,7 @@ ARCH_COPYRIGHT_APACHE(jvmcfg, h, "$URL$ $Id$");
 
 /*!
  * @internal Hard-coded @b CLASSPATH for test purposes.
- * Set to any desired value and uncomment for use.
+ *           Set to any desired value and uncomment for use.
  */
 /* #define JVMCFG_HARDCODED_TEST_CLASSPATH \
            "/tmp:/usr/tmp:/usr/local/tmp"
@@ -534,12 +557,13 @@ typedef jubyte  jvm_array_dim;
  * itself.
  *
  * @warning See warning about use of
- * @link #timeslice_tick() timeslice_tick()@endlink
- * and high-speed interval timing.
+ *          @link #timeslice_tick() timeslice_tick()@endlink
+ *          and high-speed interval timing.
  *
- * @todo Make sure to enable the time slicer for normal JVM operation.
- *       It may be handy to disable it for debugging, but no threading
- *       will occur in the JVM outer loop until it is enabled!
+ * @todo HARMONY-6-jvm-jvmcfg.h-3 Make sure to enable the time slicer
+ *       for normal JVM operation.  It may be handy to disable it
+ *       for debugging, but no threading will occur in the JVM outer
+ *       loop until it is enabled!
  *
  */
 #define JVMCFG_TIMESLICE_PERIOD_ENABLE      rfalse
@@ -555,8 +579,8 @@ typedef jubyte  jvm_array_dim;
  * timer completely.
  *
  * @warning See warning about use of
- * @link #timeslice_tick() timeslice_tick()@endlink
- * and high-speed interval timing.
+ *          @link #timeslice_tick() timeslice_tick()@endlink
+ *          and high-speed interval timing.
  *
  */
 #define JVMCFG_TIMESLICE_PERIOD_SECONDS              0
@@ -576,8 +600,8 @@ typedef jubyte  jvm_array_dim;
  * timer completely.
  *
  * @warning See warning about use of
- * @link #timeslice_tick() timeslice_tick()@endlink
- * and high-speed interval timing.
+ *          @link #timeslice_tick() timeslice_tick()@endlink
+ *          and high-speed interval timing.
  *
  */
 #define JVMCFG_TIMESLICE_PERIOD_MICROSECONDS      1000 /* 1000 := 1 ms*/
@@ -676,11 +700,12 @@ extern const jvm_constant_pool_index jvm_constant_pool_index_null;
 
 /*!
  * @internal Due to the way the JVM spec defines the
- * @link ClassFile#interfaces interfaces@endlink
- * member as an array of @link #u2 u2@endlink,
- * it is technically a bad thing to redefine
- * such data type.  However, in order to be consistent with all
- * of the other array index definitions, this will be done anyway:
+ *           @link ClassFile#interfaces interfaces@endlink
+ *           member as an array of @link #u2 u2@endlink,
+ *           it is technically a bad thing to redefine
+ *           such data type.  However, in order to be consistent with
+ *           all of the other array index definitions, this will be
+ *           done anyway:
  *
  */
 
@@ -1020,9 +1045,25 @@ typedef jushort jvm_sp;
  * @brief Program counter offset into code area of a method
  *
  * This data type is used in jvm_pc.
+ * Notice that it is @e unsigned, where
+ * @link #jvm_pc_offset_actual_size jvm_pc_offset_actual_size@endlink
+ * is @e signed.
  *
  */
 typedef juint         jvm_pc_offset;
+
+/*!
+ * @brief Actual implementation of program counter offset
+ * into code area of a method
+ *
+ * This data type is used to limit jvm_pc offset calculations.
+ * Notice that it is @e signed, where
+ * @link #jvm_pc_offset jvm_pc_offset@endlink is @e unsigned.
+ *
+ * @see TARGET_PC_OFFSET() 
+ *
+ */
+typedef jshort        jvm_pc_offset_actual_size;
 
 /*!
  * @brief Invalid program counter offset
@@ -1140,7 +1181,7 @@ typedef enum
  *
  */
 #if 0
-#define JVMCFG_DEBUG_ECLIPSE_FLUSH_STDIO_BETTER sleep(1)
+#define JVMCFG_DEBUG_ECLIPSE_FLUSH_STDIO_BETTER portable_sleep(1)
 #else
 #define JVMCFG_DEBUG_ECLIPSE_FLUSH_STDIO_BETTER
 #endif
@@ -1152,7 +1193,7 @@ typedef enum
  * standard I/O buffers before quitting JVM.
  *
  */
-#define JVMCFG_DEBUG_ECLIPSE_FLUSH_STDIO_BETTER_EXIT sleep(1)
+#define JVMCFG_DEBUG_ECLIPSE_FLUSH_STDIO_BETTER_EXIT portable_sleep(1)
 
 /*@} */ /* End of grouped definitions */
 
@@ -1169,6 +1210,7 @@ typedef enum
 
 /*@{ */ /* Begin grouped definitions */
 
+extern rboolean jvm_completely_initialized;
 extern rboolean jvm_timeslice_initialized;
 extern rboolean jvm_thread_initialized;
 extern rboolean jvm_class_initialized;
@@ -1197,14 +1239,10 @@ extern rboolean jvm_model_initialized;
 /*!
  * @brief Temporary area default when no @b TMPDIR environment variable
  */
-#ifdef CONFIG_WINDOWS
-
+#if defined(CONFIG_WINDOWS) || defined(CONFIG_CYGWIN)
 #define JVMCFG_TMPAREA_DEFAULT "c:\\temp"
-
 #else
-
 #define JVMCFG_TMPAREA_DEFAULT "/tmp"
-
 #endif
 
 /*!
@@ -1219,8 +1257,12 @@ extern rboolean jvm_model_initialized;
  * @name JAR file structural items
  *
  *
- * @todo  Write and implement DOS/Windows version of these scripts.
- *        Perhaps a two- or three-line .BAT file is the thing to do?
+ * @todo  HARMONY-6-jvm-jvmcfg.h-4 Write and implement DOS/Windows
+ *        version of these scripts. Perhaps a two- or three-line .BAT
+ *        file is the thing to do?
+ *
+ * @todo  HARMONY-6-jvm-jvmcfg.h-5 Need to add JAR support for reading
+ *        class data without forking a process to use the JDK utilities.
  *
  */
 
@@ -1231,13 +1273,8 @@ extern rboolean jvm_model_initialized;
 #define JVMCFG_JARFILE_DATA_EXTRACT_SCRIPT \
     ".\\jjdes.bat %s %s %s %c %s %s "
 
-/*    "chdir %s; %s/bin/jar -xf %s%c%s %s; chmod -R +w ." */
-
 #define JVMCFG_JARFILE_MANIFEST_EXTRACT_SCRIPT \
-    "jjmes %s %s %s"
-
-/*    "chdir %s; %s/bin/jar -xf %s; chmod -R +w ."  */
-
+    "jjmes %S %S %S"
 
 #else
 
