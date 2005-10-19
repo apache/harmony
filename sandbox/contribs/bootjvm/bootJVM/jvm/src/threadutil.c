@@ -4,25 +4,29 @@
  * @brief Utilities for operating the JVM thread state model on this
  * real machine implementation.
  *
- * @todo Timers for Thread.sleep() and Thread.wait() and Object.wait()
- * that use millisecond timers @e are supported.  The variation
- * that supports higher resolution of milliseconds and nanoseconds
- * are @e not supported, but the millisecond version is used instead.
+ * @todo HARMONY-6-jvm-threadutil.c-1 Timers for Thread.sleep() and Thread.wait() and Object.wait()
+ *       that use millisecond timers @e are supported.  The variation
+ *       that supports higher resolution of milliseconds and nanoseconds
+ *       are @e not supported, but the millisecond version is used
+ *       instead.
  *
  * @internal This file also serves the dual purpose as a catch-all for
- * development experiments.  Due to the fact that the implementation
- * of the Java thread and the supporting rthread structure is deeply
- * embedded in the core of the development of this software, this
- * file has contents that come and go during development.  Some
- * functions get staged here before deciding where they @e really
- * go; some are interim functions for debugging, some were glue
- * that eventually went away.  Be careful to remove prototypes
- * to such functions from the appropriate header file.
+ *           development experiments.  Due to the fact that the
+ *           implementation of the Java thread and the supporting
+ *           rthread structure is deeply embedded in the core of the
+ *           development of this software, this file has contents that
+ *           come and go during development.  Some functions get staged
+ *           here before deciding where they @e really go; some are
+ *           interim functions for debugging, some were glue that
+ *           eventually went away.  Be careful to remove prototypes
+ *           to such functions from the appropriate header file.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -46,6 +50,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -53,7 +58,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(threadutil, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(threadutil, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -77,12 +84,14 @@ ARCH_COPYRIGHT_APACHE(threadutil, c, "$URL$ $Id$");
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 
 rvoid threadutil_update_sleeptime_interval(rvoid)
 {
+    ARCH_FUNCTION_NAME(threadutil_update_sleeptime_interval);
+
     jvm_thread_index thridx;
 
     /* Lock out the @e world during timer update */
@@ -205,8 +214,8 @@ rvoid threadutil_update_sleeptime_interval(rvoid)
  * CAVEAT EMPTOR:  Those two functions are deprecated.  Use
  * at your own risk!
  *
- * @todo Interruptible from class
- * @c @b java.nio.channels.InterruptibleChannel
+ * @todo HARMONY-6-jvm-threadutil.c-2 Interruptible from class
+ *       @c @b java.nio.channels.InterruptibleChannel
  *
  *
  * @param  thridxcurr   Thread for which to examine state changes
@@ -218,6 +227,8 @@ rvoid threadutil_update_sleeptime_interval(rvoid)
 
 rvoid threadutil_update_blockingevents(jvm_thread_index thridxcurr)
 {
+    ARCH_FUNCTION_NAME(threadutil_update_blockingevents);
+
     /* Only examine INUSE threads in selected states */
     if (!(THREAD_STATUS_INUSE & THREAD(thridxcurr).status))
     {
@@ -229,7 +240,10 @@ rvoid threadutil_update_blockingevents(jvm_thread_index thridxcurr)
         case THREAD_STATE_COMPLETE:  /* Untimed/untimed Thread.join() */
 
         case THREAD_STATE_BLOCKED:   /* Thread.sleep() and */
-                                     /*! @todo interruptible I/O req's*/
+                                     /*! @todo
+                                      *     HARMONY-6-jvm-threadutil.c-3
+                                      *        interruptible I/O req's
+                                      */
 
         default:                     /* Not meaningful for this logic */
             return;
@@ -262,7 +276,10 @@ rvoid threadutil_update_blockingevents(jvm_thread_index thridxcurr)
     }
     else
 
-    /*! @todo  First pass guess at interruptible I/O */
+    /*!
+     * @todo  HARMONY-6-jvm-threadutil.c-4 First pass guess at
+     *        interruptible I/O
+     */
     if ((THREAD_STATE_BLOCKED == THREAD(thridxcurr).this_state) &&
         (THREAD_STATUS_INTERRUPTIBLEIO & THREAD(thridxcurr).status))
     {
@@ -270,8 +287,8 @@ rvoid threadutil_update_blockingevents(jvm_thread_index thridxcurr)
          * Check if Thread.interrupt() was thrown
          * against the interruptible I/O operation on this thread.
          *
-         * @todo Is this the correct way to handle
-         *       interruptible I/O events?
+         * @todo HARMONY-6-jvm-threadutil.c-5 Is this the correct way
+         *       to handle interruptible I/O events?
          *       Also need to throw the exception in JVM outer loop.
          */
         if (THREAD_STATUS_INTERRUPTED & THREAD(thridxcurr).status)
@@ -393,6 +410,8 @@ rvoid threadutil_update_blockingevents(jvm_thread_index thridxcurr)
 
 rvoid threadutil_update_wait(jvm_thread_index thridxcurr)
 {
+    ARCH_FUNCTION_NAME(threadutil_update_wait);
+
     /* Only examine INUSE threads in WAIT state */
     if (!(THREAD_STATUS_INUSE & THREAD(thridxcurr).status))
     {
@@ -497,6 +516,8 @@ rvoid threadutil_update_wait(jvm_thread_index thridxcurr)
 
 rvoid threadutil_update_lock(jvm_thread_index thridxcurr)
 {
+    ARCH_FUNCTION_NAME(threadutil_update_lock);
+
     /* Only examine INUSE threads in LOCK state */
     if (!(THREAD_STATUS_INUSE & THREAD(thridxcurr).status))
     {
@@ -560,6 +581,8 @@ rvoid threadutil_update_lock(jvm_thread_index thridxcurr)
 rboolean threadutil_holds_lock(jvm_thread_index thridx,
                                jvm_object_hash  objhashlock)
 {
+    ARCH_FUNCTION_NAME(threadutil_holds_lock);
+
     /*
      * Make sure thread and object are both in use,
      * make sure object is locked, then do @b BIDIRECTIONAL check
