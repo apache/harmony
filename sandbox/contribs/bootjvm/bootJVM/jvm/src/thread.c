@@ -7,7 +7,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -31,6 +33,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -38,12 +41,15 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(thread, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(thread, c,
+"$URL$",
+"$Id$");
 
 
  
-#include <strings.h>
+/* #include <strings.h> */
 
+#define PORTABLE_JMP_BUF_VISIBLE
 #include "jvmcfg.h"
 #include "cfmacros.h"
 #include "classfile.h"
@@ -64,11 +70,13 @@ ARCH_COPYRIGHT_APACHE(thread, c, "$URL$ $Id$");
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid thread_init()
 {
+    ARCH_FUNCTION_NAME(thread_init);
+
     for (CURRENT_THREAD = jvm_thread_index_null;
          CURRENT_THREAD < JVMCFG_MAX_THREADS;
          CURRENT_THREAD++)
@@ -116,7 +124,11 @@ rvoid thread_init()
 
     } /* For CURRENT_THREAD */
 
-    /*! @todo  What should the priority be on these threads? */
+    /*!
+     * @todo  HARMONY-6-jvm-thread.c-1 What should the priority
+     *        be on these threads?
+     */
+
     /*
      * Forcibly allocate jvmcfg_thread_index_null thread,
      * system thread, and GC thread.  (These threads are
@@ -184,11 +196,14 @@ const rchar *thread_state_names[THREAD_STATE_MAX_STATE + 1 + 1] =
  *
  * @param  state   state number per @b THREAD_STATE_xxx definitions
  *
+ *
  * @returns string name of that state
  *
  */
 const rchar *thread_state_get_name(rushort state)
 {
+    ARCH_FUNCTION_NAME(thread_state_get_name);
+
 
 /* Unsigned type makes this unnecessary **
     if (THREAD_STATE_MIN_STATE > state)
@@ -227,6 +242,8 @@ const rchar *thread_state_get_name(rushort state)
  */
 static jvm_thread_index thread_allocate_slot(rvoid)
 {
+    ARCH_FUNCTION_NAME(thread_allocate_slot);
+
     jvm_thread_index thridx =
         (JVMCFG_MAX_THREADS == (1 + pjvm->thread_new_last))
         ? 1 + pjvm->thread_new_last
@@ -313,9 +330,10 @@ static jvm_thread_index thread_allocate_slot(rvoid)
  *          does not apply to native methods.  Call that native
  *          method directly from the code instead!
  *
- * @param  thridx        Thread index of unused thread-- for
- *                         thread_new_common() only-- the others
- *                         generate this value and pass it in.
+ * @param  thridx        Thread index of unused thread-- passed only to
+ *                         @link #thread_new_common() 
+ *                                thread_new_common()@endlink-- the
+ *                       others generate this value and pass it in there
  *
  * @param  clsidx        Class index of code to run
  *
@@ -370,8 +388,8 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
                                           rint                priority,
                                           rboolean            isdaemon)
 {
-	
-	
+    ARCH_FUNCTION_NAME(thread_new_common);
+
     /*
      * Declare slot in use, but not initialized.
      * (Redundant for most situations where
@@ -384,37 +402,50 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
 
     /* Check for stack overflow if this frame is loaded */
     ClassFile *pcfs = CLASS_OBJECT_LINKAGE(clsidx)->pcfs;
-    Code_attribute *pca = (Code_attribute *)
-                         &pcfs->methods[mthidx]->attributes[codeatridx]->ai;
+    Code_attribute *pca =
+        (Code_attribute *)
+        &pcfs->methods[mthidx]->attributes[codeatridx]->ai;
 
     /* Check if this causes stack overflow, throw StackOverflowError */
-    if (JVMCFG_MAX_SP <= (ruint)( GET_SP(thridx) +
-                         JVMREG_STACK_MIN_FRAME_HEIGHT +
-                         JVMREG_STACK_PC_HEIGHT +
-                         pca->max_stack +
-                         pca->max_locals))
+    if (JVMCFG_MAX_SP <= (ruint) (GET_SP(thridx) +
+                                  JVMREG_STACK_MIN_FRAME_HEIGHT +
+                                  JVMREG_STACK_PC_HEIGHT +
+                                  pca->max_stack +
+                                  pca->max_locals))
     {
-       sysDbgMsg(0,"thread.c", "thread_new_common() she's gonna blow! %d %d %d - %d %d\n",
-       	thridx, JVMCFG_MAX_SP, (ruint)(GET_SP(thridx) +
-                         JVMREG_STACK_MIN_FRAME_HEIGHT +
-                         JVMREG_STACK_PC_HEIGHT +
-                         pca->max_stack +
-                         pca->max_locals), pca->max_stack, pca->max_locals);
-       	
+        sysDbgMsg(DMLNORM,
+                  arch_function_name,
+                  "she's gonna blow! %d %d %d - %d %d\n",
+                  thridx, 
+                  JVMCFG_MAX_SP,
+                  (ruint)(GET_SP(thridx) +
+                          JVMREG_STACK_MIN_FRAME_HEIGHT +
+                          JVMREG_STACK_PC_HEIGHT +
+                          pca->max_stack +
+                          pca->max_locals),
+                  pca->max_stack,
+                  pca->max_locals);
+
         exit_throw_exception(EXIT_THREAD_STACK,
                              JVMCLASS_JAVA_LANG_STACKOVERFLOWERROR);
 /*NOTREACHED*/
     }
 
     /*!
-     * If no stack overflow would occur during execution,
-     * continue to load up a new thread.  Unless this class
-     * will run on the system thread, start out by generating
-     * a new @c @b java.lang.Thread object to represent
-     * this thread in the object table.
+     * @internal If no stack overflow would occur during execution,
+     *           continue to load up a new thread.  Unless this class
+     *           will run on the system thread, start out by generating
+     *           a new @c @b java.lang.Thread object to represent
+     *           this thread in the object table, but only after the
+     *           @e entire JVM initialization process is complete.
+     *           If this is not true, the @c @b java.lang.Thread class
+     *           may not yet be available.
      *
-     * @todo  Need to also implement java.lang.ThreadGroup as a
-     *        preparatory step to instantiating java.lang.Thread
+     * @todo  HARMONY-6-jvm-thread.c-2 Need to also implement
+     *        java.lang.ThreadGroup at some point.  (This class
+     *        is @e not likely to be a part of the core local
+     *        native implementation.)
+     *
      */
     if (JVMCFG_SYSTEM_THREAD == thridx)
     {
@@ -422,34 +453,44 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
     }
     else
     {
-        jvm_class_index clsidxTHR =
-            class_find_by_prchar(JVMCLASS_JAVA_LANG_THREAD);
-
-        if (jvm_class_index_null == clsidxTHR)
+        if (rtrue == jvm_completely_initialized)
         {
-            /* unreserve thread and quit */
-            THREAD(thridx).status = THREAD_STATUS_EMPTY;
+            jvm_class_index clsidxTHR =
+                class_find_by_prchar(JVMCLASS_JAVA_LANG_THREAD);
 
-            /* No more slots, cannot continue */
-            exit_throw_exception(EXIT_JVM_THREAD,
-                                 JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR);
+            if (jvm_class_index_null == clsidxTHR)
+            {
+                /* unreserve thread and quit */
+                (rvoid) thread_delete(thridx);
+
+                /* No more slots, cannot continue */
+                exit_throw_exception(EXIT_JVM_THREAD,
+                                   JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR);
 /*NOTREACHED*/
-        }
+            }
 
-        jvm_table_linkage *ptl = CLASS_OBJECT_LINKAGE(clsidxTHR);
+            jvm_table_linkage *ptl = CLASS_OBJECT_LINKAGE(clsidxTHR);
 
-        jvm_object_hash objhashTHR =
-            object_instance_new(OBJECT_STATUS_EMPTY,
-                                ptl->pcfs,
-                                ptl->clsidx,
-                                LOCAL_CONSTANT_NO_ARRAY_DIMS,
-                                (jint *) rnull,
-                                rtrue,
-                                thridx);
+            rushort special_obj = OBJECT_STATUS_EMPTY;
 
-        THREAD(thridx).thread_objhash = objhashTHR;
-        (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(jvm_object_hash_null,
+            if (ptl->clsidx == clsidxTHR)
+            {
+                special_obj = OBJECT_STATUS_THREAD;
+            }
+
+            jvm_object_hash objhashTHR =
+                object_instance_new(special_obj,
+                                    ptl->pcfs,
+                                    ptl->clsidx,
+                                    LOCAL_CONSTANT_NO_ARRAY_DIMS,
+                                    (jint *) rnull,
+                                    rtrue,
+                                    thridx);
+
+            THREAD(thridx).thread_objhash = objhashTHR;
+            (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(jvm_object_hash_null,
                                          THREAD(thridx).thread_objhash);
+        }
     }
 
     /*
@@ -527,11 +568,12 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
     threadstate_activate_new(thridx);
 
     /*!
-     * @todo Any time the isdaemon field is modified, MAKE SURE
-     *       that the value in the @c @b java.lang.Thread
-     *       instance variable is set to the same value.  This
-     *       should @e never be an issue except when instantiating
-     *       a new @c @b java.lang.Thread object since the
+     * @todo HARMONY-6-jvm-thread.c-3 Any time the isdaemon
+     *       field is modified, MAKE SURE that the value in
+     *       the @c @b java.lang.Thread instance variable is
+     *       set to the same value.  This should @e never be
+     *       an issue except when instantiating a new
+     *       @c @b java.lang.Thread object since the
      *       API docs say that it can only be set @e once.
      */
     if (rtrue == isdaemon)
@@ -569,6 +611,8 @@ static jvm_thread_index thread_new_system(jvm_class_index     clsidx,
                                           rint                priority,
                                           rboolean            isdaemon)
 {
+    ARCH_FUNCTION_NAME(thread_new_system);
+
     /* Check if system thread is already in use */
     if (THREAD(JVMCFG_SYSTEM_THREAD).status & THREAD_STATUS_INUSE)
     {
@@ -605,6 +649,8 @@ static jvm_thread_index thread_new(jvm_class_index      clsidx,
                                    rint                 priority,
                                    rboolean             isdaemon)
 {
+    ARCH_FUNCTION_NAME(thread_new);
+
     jvm_thread_index thridx = thread_allocate_slot();
 
     /* Set up thread resources and finish */
@@ -697,7 +743,9 @@ jvm_thread_index thread_class_load(rchar            *clsname,
                                    rboolean          usesystemthread,
                                    rboolean        find_registerNatives)
 {
-     /*
+    ARCH_FUNCTION_NAME(thread_class_load);
+
+    /*
      * Attempt to load requested class.  Notice that
      * an object is @e not being instantiated here,
      * so the @b arraylength parm (parm 3) can be
@@ -707,7 +755,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
                                                    find_registerNatives,
                                                     (jint *) rnull);
 
-     /* Point to @e this class structure, then get immediate superclass*/
+    /* Point to @e this class structure, then get immediate superclass*/
     ClassFile *pcfs         = CLASS_OBJECT_LINKAGE(clsidx)->pcfs;
     ClassFile *pcfs_recurse = pcfs;
 
@@ -764,7 +812,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
              * Don't permit recursive call to error handler
              * (this one should @e never happen)
              */
-            if (0 == strcmp(clsname,
+            if (0 == portable_strcmp(clsname,
                             JVMCLASS_JAVA_LANG_CLASSCIRCULARITYERROR))
             {
                 exit_throw_exception(EXIT_JVM_CLASS,
@@ -789,7 +837,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
      * Since this function is @e never called from the JVM runtime,
      * the use of (rchar *) strings for mthname and mthdesc is
      * acceptable.  Normal usage would call method_find() directly
-     * using pointers to UTF8 constant_pool entries.
+     * using pointers to UTF8 @c @b constant_pool entries.
      */
 
     jvm_method_index mthidx = method_find_by_prchar(clsidx,
@@ -859,11 +907,124 @@ jvm_thread_index thread_class_load(rchar            *clsname,
 
 
 /*!
+ * @brief Un-reserve a slot from the thread table.
+ *
+ * This is the reverse of the process of thread_new() above.
+ *  Only tear down the heap allocations and mark the slot as empty.
+ * Leave the rest of the data in place for post-mortem.  When the
+ * slot gets allocated again, any zeroing out of values will just
+ * get overwritten again, so don't bother.
+ *
+ *
+ * @param    thridx   Thread index value of allocation.
+ *
+ *
+ * @returns same thread index as input if slot was freed, else
+ *          @link #jvm_thread_index_null jvm_thread_index_null@endlink
+ *          if slot was already free.
+ *
+ *
+ * @todo  HARMONY-6-jvm-thread.c-4 Could leave stack in place
+ *        for post-mortem if it is assumed that there would be
+ *        a reasonable amount of contents still valid in memory.
+ *
+ */
+
+jvm_thread_index thread_delete(jvm_thread_index thridx)
+{
+    ARCH_FUNCTION_NAME(thread_delete);
+
+    if (THREAD(thridx).status & THREAD_STATUS_INUSE)
+    {
+        /*
+         * Keep thread names around since they are not otherwise
+         * implemented. 
+         */
+        /* THREAD(thridx).name = (rchar *) rnull; */
+
+        if (jvm_object_hash_null != THREAD(thridx).thread_objhash)
+        {
+            (rvoid) GC_OBJECT_RMREF_FROM_OBJECT(jvm_object_hash_null,
+                                         THREAD(thridx).thread_objhash);
+
+            object_instance_finalize(THREAD(thridx).thread_objhash,
+                                     thridx);
+
+            (rvoid) object_instance_delete(
+                        THREAD(thridx).thread_objhash,
+
+                            /*!
+                             * @todo HARMONY-6-jvm-thread.c-5 Should
+                             *       this be
+                             *       @link #rtrue rtrue@endlink ?
+                             */
+                        rfalse);
+
+            /* THREAD(thridx).thread_objhash = jvm_object_hash_null; */
+        }
+
+        /* THREAD(thridx).priority = THREAD_PRIORITY_BAD; */
+
+        /* THREAD(thridx).status = THREAD_STATUS_EMPTY; */
+
+        /* THREAD(thridx).pThrowableEvent = (rchar *) rnull; */
+
+        if (rnull != THREAD(thridx).pportable_nonlocal_ThrowableEvent)
+        {
+            HEAP_FREE_DATA(THREAD(thridx)
+                             .pportable_nonlocal_ThrowableEvent);
+        }
+
+        /* THREAD(thridx).prev_state = THREAD_STATE_DEAD; */
+        /* THREAD(thridx).this_state = THREAD_STATE_DEAD; */
+        /* THREAD(thridx).next_state = THREAD_STATE_DEAD; */
+
+        /* THREAD(thridx).jointarget = jvm_thread_index_null; */
+        /* THREAD(thridx).sleeptime  = 0;                     */
+        /* THREAD(thridx).locktarget = jvm_object_hash_null;  */
+
+        /* PUT_PC_IMMEDIATE(thridx,
+                         jvm_class_index_null,
+                         jvm_method_index_bad,
+                         jvm_attribute_index_bad,
+                         jvm_attribute_index_bad,
+                         jvm_pc_offset_bad); */
+
+        /* THREAD(thridx).pass_instruction_count = 0;      */
+        /* THREAD(thridx).thread_instruction_count = 0;    */
+
+        if (rnull != THREAD(thridx).stack)
+        {
+            HEAP_FREE_STACK(THREAD(thridx).stack);
+
+            THREAD(thridx).stack = (jint *) rnull;
+        }
+
+        /* THREAD(thridx).sp             = JVMCFG_NULL_SP; */
+        /* THREAD(thridx).fp             = JVMCFG_NULL_SP; */
+        /* THREAD(thridx).fp_end_program = JVMCFG_NULL_SP; */
+
+
+        /* Mark slot as not in use */
+        THREAD(thridx).status &= ~THREAD_STATUS_INUSE;
+
+        return(thridx);
+    }
+    else
+    {
+        /* Error-- slot was already free */
+        return(jvm_thread_index_null);
+    }
+
+} /* END of thread_delete() */
+
+/*!
  * @brief Terminate and deallocate a thread that is currently in
  * the @b DEAD state.
  *
  *
  * @param thridx thread index of thread to be deallocated.
+ *
  *
  * @returns @link #rtrue rtrue@endlink if successful,
  *          else @link #rfalse rfalse@endlink.
@@ -872,20 +1033,11 @@ jvm_thread_index thread_class_load(rchar            *clsname,
 
 rboolean thread_die(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(thread_die);
+
     if (THREAD_STATE_DEAD == THREAD(thridx).this_state)
     {
-        /*!
-         * Mark ONLY fields requiring it, leave rest alone for
-         * post-mortem use by developer.
-         *
-         * @todo  Could leave stack in place for post-mortem if
-         *        it is assumed that there would be a reasonable
-         *        amount of contents still valid in memory.
-         */
-        HEAP_FREE_STACK(THREAD(thridx).stack);
-        THREAD(thridx).stack = (jint *) rnull;
-
-        THREAD(thridx).status &= ~THREAD_STATUS_INUSE;
+        (rvoid) thread_delete(thridx);
 
         return(rtrue);
     }
@@ -903,11 +1055,13 @@ rboolean thread_die(jvm_thread_index thridx)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid thread_shutdown()
 {
+    ARCH_FUNCTION_NAME(thread_shutdown);
+
     jvm_thread_index thridx;
 
     for (thridx = jvm_thread_index_null;
@@ -988,48 +1142,32 @@ rvoid thread_shutdown()
 
 
 /*!
- * @brief Set up JVM thread-relative exception handler-- implements
- * @c @b setjmp(3)/longjmp(3).
+ * @brief Set up JVM thread-relative exception handler part 1--
+ * implements @c @b setjmp(3)/longjmp(3).
+ *
+ *
+ * This function @e must be used in conjunction with the macro
+ * @link #THREAD_EXCEPTION_SETUP() THREAD_EXCEPTION_SETUP()@endlink
+ * for proper operation.
  *
  *
  * @param thridx  Thread table index of thread for which to set up
  *                this exception handler.
  *
  *
- * @returns From normal setup, integer @link
-            #THREAD_STATUS_EMPTY THREAD_STATUS_EMPTY@endlink.
- *          Otherwise, return error code passed in to
- *          @link #thread_throw_exception()
-                   thread_throw_exception()@endlink as shown below.
+ * @returns @link #rvoid rvoid@endlink
  *
- *
- * @internal
- * @c @b setjmp(3) and @c @b struct[idx].member do _not_ get
- * along at all:
- *
- * @verbatim
-      
-       int nonlocal_rc =
-                    setjmp(*THREAD(thridx).nonlocal_ThrowableEvent);
-      
-   @endverbatim
- *
- * To get this working, the @link rthread#pnonlocal_ThrowableEvent
- * nonlocal_ThrowableEvent@endlink had to be changed to a pointer
- * and a buffer allocated from heap.  This probably is due to the
- * @c @b typedef syntax of @c @b jmp_buf and a
- * long array, which pointers like.  However, instead of playing
- * games with addressing &element[0], a pointer works better because
- * not all @c @b jmp_buf implementations wil be a long array.
  *
  */
 
-int thread_exception_setup(jvm_thread_index thridx)
+rvoid thread_exception_setup(jvm_thread_index thridx)
 {
-    THREAD(thridx).pnonlocal_ThrowableEvent =
-                                 HEAP_GET_DATA(sizeof(jmp_buf), rfalse);
+    ARCH_FUNCTION_NAME(thread_exception_setup);
 
-    return(setjmp(*THREAD(thridx).pnonlocal_ThrowableEvent));
+    THREAD(thridx).pportable_nonlocal_ThrowableEvent =
+              HEAP_GET_DATA(portable_sizeof_portable_jmp_buf(), rfalse);
+
+    return;
 
 } /* END of thread_exception_setup() */
  
@@ -1066,8 +1204,8 @@ int thread_exception_setup(jvm_thread_index thridx)
  *
  *
  * @returns non-local state restoration from setup via @c @b setjmp(3)
- *          as stored in @link
-            #exit_LinkageError exit_LinkageError@endlink
+ *          as stored in @link #portable_exit_LinkageError
+            portable_exit_LinkageError@endlink
  *          buffer by @link #exit_init() exit_init()@endlink
  *          in @link #jvm_init() jvm_init()@endlink before any of
  *          these errors could occur. All code invoking this
@@ -1081,6 +1219,8 @@ rvoid thread_throw_exception(jvm_thread_index  thridx,
                              rushort           thread_status_bits,
                              rchar            *exception_name)
 {
+    ARCH_FUNCTION_NAME(thread_throw_exception);
+
     /* Disallow invalid status from being reported */
     switch (thread_status_bits)
     {
@@ -1102,7 +1242,9 @@ rvoid thread_throw_exception(jvm_thread_index  thridx,
 
     int rc = (int) thread_status_bits;
 
-    longjmp(*THREAD(thridx).pnonlocal_ThrowableEvent, rc);
+    PORTABLE_LONGJMP((portable_jmp_buf *)
+                       THREAD(thridx).pportable_nonlocal_ThrowableEvent,
+                     rc);
 /*NOTREACHED*/
 
 } /* END of thread_throw_exception() */
