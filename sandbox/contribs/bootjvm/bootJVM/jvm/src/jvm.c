@@ -11,14 +11,16 @@
  *       on the HTML format of these documents, please refer to the
  *       source code of this file.
  *
- * @todo Need to verify which web document for the
+ * @todo HARMONY-6-jvm-jvm.c-1 Need to verify which web document for the
  *       Java 5 class file definition is either "official",
  *       actually correct, or is the <em>de facto</em> standard.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -42,6 +44,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -460,7 +463,12 @@
  * (The following description of source code directories is also found
  * in @link ./README README@endlink for display as a simple text file.)
  *
- * Several directories are provided within the source tree:
+ * Several directories are provided within the source tree.  Each one
+ * provides one component of the project.  These are referenced in
+ * @link ./config.sh config.sh@endlink and @link ./build.sh
+   build.sh@endlink by these same names, and are also used in the
+ * built-in bug tracking numbers described below.  These component
+ * and directory names are:
  *
  * <ul>
  * <li><b>jvm:</b></li>       Source code for JVM, including a main()
@@ -656,7 +664,8 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  *            @link ./README README@endlink file, a quick startup
  *            is possible.
  *
- * @todo An enhanced startup narrative on the main page might be useful.
+ * @todo HARMONY-6-jvm-jvm.c-2 An enhanced startup narrative on the
+ *       main page might be useful.
  *
  * @attention There are @e many to-do items in the
  *            @link ./README README@endlink file at the top of
@@ -668,42 +677,65 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  *            right as a part of a working JVM.
  *
  *
- * @todo Section 2.6.6, value set conversions of floating point
- *       numbers are not implemented.  See note in table in this
- *       section.  Likewise for section 2.18, FP-strict expressions,
- *       and section 3.8, floating point arithmetic.
+ * @attention There is an informal @@bug and @@todo trackingsystem
+ *            in place for the working out of pre-existing items
+ *            that were known when the original code contribution
+ *            was made.  @@bug items start at 1001 in each source
+ *            file, while @@todo items start at 1.  The original
+ *            contribution, <b>HARMONY-6</b> in the Apache JIRA
+ *            system, starts each item number, followed by its
+ *            component, its source file, and its item number.
+ *            Thus @@todo <b>HARMONY-jvm-opcode.c-3</b> refers to
+ *            something in the 'jvm' directory, namely the source
+ *            file 'opcode.c', item 3.  Once these initial
+ *            items are resolved, this system is likely to become
+ *            obsolete in favor of the Apache JIRA system.
+ *
+ *
+ * @todo HARMONY-6-jvm-jvm.c-3 Section 2.6.6, value set conversions
+ *       of floating point numbers are not implemented.  See note
+ *       in table in this section.  Likewise for section 2.18,
+ *       FP-strict expressions, and section 3.8, floating point
+ *       arithmetic.
  *
  * @attention The virtual execution engine is still under development
  *            as this initial contribution is being made.  While the
  *            project team is working on learning what is inside the
  *            code, this final module will be completed.  The relevant
- *            code is found in @link #opcode_run() opcode_run@endlink
+ *            code is found in @link #opcode_run() opcode_run()@endlink
  *            in source file @link jvm/src/opcode.c opcode.c@endlink
  *
- * @todo      The virtual execution engine is still under development
- *            as this initial contribution is being made.  While the
+ * @todo      HARMONY-6-jvm-jvm.c-4 The virtual execution engine is
+ *            still under development as this initial contribution
+ *            is being made.  While the
  *            project team is working on learning what is inside the
  *            code, this final module will be completed.  The relevant
- *            code is found in @link #opcode_run() opcode_run@endlink
+ *            code is found in @link #opcode_run() opcode_run()@endlink
  *            in source file @link jvm/src/opcode.c opcode.c@endlink
  *
- * @bug       The virtual execution engine is still under development
- *            as this initial contribution is being made.  While the
- *            project team is working on learning what is inside the
- *            code, this final module will be completed.  The relevant
- *            code is found in @link #opcode_run() opcode_run@endlink
- *            in source file @link jvm/src/opcode.c opcode.c@endlink
+ * @bug HARMONY-6-jvm-jvm.c-1001 The virtual execution engine is still
+ *      under development as this initial contribution is being made.
+ *      While the project team is working on learning what is inside
+ *      the code, this final module will be completed.  The relevant
+ *      code is found in @link #opcode_run() opcode_run()@endlink
+ *      in source file @link jvm/src/opcode.c opcode.c@endlink
+ *
+ * @attention For a list of contributors, please see
+ *            the @link ./AUTHORS AUTHORS@endlink file.
  *
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jvm, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jvm, c,
+"$URL$",
+"$Id$");
 
 
 #include <signal.h>
-#include <strings.h>
-#include <unistd.h>
+/* #include <strings.h> */
+/* #include <unistd.h> */
 
+#define PORTABLE_JMP_BUF_VISIBLE
 #include "jvmcfg.h" 
 #include "cfmacros.h" 
 #include "classfile.h" 
@@ -740,7 +772,7 @@ rjvm *pjvm = CHEAT_AND_USE_NULL_TO_INITIALIZE;
  * At the very end of initializing a part of the JVM, if everything
  * was set up properly, then the associated flag is set to
  * @link #rtrue rtrue@endlink.  If an error occurs such that
- * jvm_shutdown() is initiated via exit_init(), then only those
+ * jvm_shutdown() is initiated via EXIT_INIT(), then only those
  * components that were fully and properly initialized will be
  * cleaned up.  This helps to avoid unnecessary checks for null pointers
  * and invalid data values in uninitialized memory areas.
@@ -749,15 +781,16 @@ rjvm *pjvm = CHEAT_AND_USE_NULL_TO_INITIALIZE;
 
 /*@{ */ /* Begin grouped definitions */
 
-rboolean jvm_timeslice_initialized = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_class_initialized     = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_object_initialized    = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_thread_initialized    = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_argv_initialized      = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_classpath_initialized = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_tmparea_initialized   = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_model_initialized     = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
-rboolean jvm_heap_initialized      = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_completely_initialized = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_timeslice_initialized  = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_class_initialized      = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_object_initialized     = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_thread_initialized     = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_argv_initialized       = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_classpath_initialized  = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_tmparea_initialized    = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_model_initialized      = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
+rboolean jvm_heap_initialized       = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
 
 /*@} */ /* End of grouped definitions */
 
@@ -779,11 +812,13 @@ rboolean jvm_heap_initialized      = CHEAT_AND_USE_FALSE_TO_INITIALIZE;
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid jvm_model_init()
 {
+    ARCH_FUNCTION_NAME(jvm_model_init);
+
     /*
      * Allocate AND INITIALIZE TO ZERO the main JVM storage area.
      * When allocated, the pointer gets stored in the global
@@ -805,11 +840,13 @@ rvoid jvm_model_init()
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid jvm_model_shutdown()
 {
+    ARCH_FUNCTION_NAME(jvm_model_shutdown);
+
     HEAP_FREE_DATA(pjvm);
 
     pjvm = (rjvm *) rnull;
@@ -936,6 +973,8 @@ rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
                             rchar            *mthname,
                             rchar            *mthdesc)
 {
+    ARCH_FUNCTION_NAME(jvm_manual_thread_run);
+
     /*
      * If thread is not @b RUNNING, then it must @b NEW.
      * Move it to @b RUNNING so that Java byte codes may
@@ -956,7 +995,7 @@ rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
         else
         {
             /* Something went wrong starting method, so quit */
-            sysErrMsg("jvm_manual_thread_run",
+            sysErrMsg(arch_function_name,
                       "Cannot manually start %s %s%s",
                       clsname,
                       mthname,
@@ -977,7 +1016,7 @@ rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
     if (rfalse == opcode_run(thridx, rfalse))
     {
         /* Problem running method, so quit */
-        sysErrMsg("jvm_manual_thread_run",
+        sysErrMsg(arch_function_name,
                   "Cannot manually start %s %s%s",
                   clsname,
                   mthname,
@@ -1003,7 +1042,7 @@ rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
     else
     {
         /* Problem stopping method, so quit */
-        sysErrMsg("jvm_manual_thread_run",
+        sysErrMsg(arch_function_name,
                   "Cannot stop manually stop %s %s%s",
                   clsname,
                   mthname,
@@ -1112,8 +1151,11 @@ rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
  *
  * @param argc  Number of entries in @c @b argv[]
  *                (per @c @b main() entry)
+ *
  * @param argv  Command line parameters from main()
+ *
  * @param envp  Environment pointer from main()
+ *
  *
  * @returns @link #rvoid rvoid@endlink
  *
@@ -1122,20 +1164,24 @@ rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
 
 static rvoid jvm_init(int argc, char **argv, char **envp)
 {
+    ARCH_FUNCTION_NAME(jvm_init);
+
     /* Clear all initialization roll call globals */
-    jvm_timeslice_initialized = rfalse;
-    jvm_class_initialized     = rfalse;
-    jvm_object_initialized    = rfalse;
-    jvm_thread_initialized    = rfalse;
-    jvm_argv_initialized      = rfalse;
-    jvm_classpath_initialized = rfalse;
-    jvm_tmparea_initialized   = rfalse;
-    jvm_model_initialized     = rfalse;
-    jvm_heap_initialized      = rfalse;
+    jvm_completely_initialized = rfalse;
+    jvm_timeslice_initialized  = rfalse;
+    jvm_class_initialized      = rfalse;
+    jvm_object_initialized     = rfalse;
+    jvm_thread_initialized     = rfalse;
+    jvm_argv_initialized       = rfalse;
+    jvm_classpath_initialized  = rfalse;
+    jvm_tmparea_initialized    = rfalse;
+    jvm_model_initialized      = rfalse;
+    jvm_heap_initialized       = rfalse;
 
     /********** Arm java.lang.LinkageError handler ***/
 
-    int nonlocal_rc = exit_exception_setup();
+                      exit_exception_setup();
+    int nonlocal_rc = EXIT_EXCEPTION_SETUP();
 
     if (EXIT_MAIN_OKAY == nonlocal_rc)
     {
@@ -1232,7 +1278,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
        (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_S))||
        (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_Z)))
     {
-        sysErrMsg("jvm_init",
+        sysErrMsg(arch_function_name,
                   "Cannot load primative classes for java.lang.Class");
         exit_jvm(EXIT_JVM_CLASS);
 /*NOTREACHED*/
@@ -1241,21 +1287,11 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     /********** Load java.lang.Class *****************/
 
-    clsidx = class_load_from_prchar(
-                 JVMCLASS_JAVA_LANG_CLASS,
-                 rtrue,
-                 (jint *) rnull);
-
-
     /********** Load java.lang.String ****************/
 
-    clsidx = class_load_from_prchar(
-                 JVMCLASS_JAVA_LANG_STRING,
-                 rtrue,
-                 (jint *) rnull);
+    /********** Load java.lang.Thread ****************/
 
-
-    /********** Resolve and @c @b \<clinit\> all classes *****/
+    /********** Load, resolve, and @c @b \<clinit\> all classes *****/
 
     /*
      * Loading has been performed, but not resolve or run the
@@ -1285,6 +1321,10 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
                                   rtrue);
     cfmsgs_show_constant_pool(CLASS_OBJECT_LINKAGE(clsidxSTRING)->pcfs);
 
+    (rvoid) class_load_resolve_clinit(JVMCLASS_JAVA_LANG_THREAD,
+                                      jvm_thread_index_null,
+                                      rtrue,
+                                      rtrue);
 
     /********** Load java.lang.String[] (1 dim array) */
 
@@ -1332,7 +1372,8 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     /******* Re-arm java.lang.LinkageError handler ***/
 
-    nonlocal_rc = exit_exception_setup();
+                  exit_exception_setup();
+    nonlocal_rc = EXIT_EXCEPTION_SETUP();
 
     if (EXIT_MAIN_OKAY == nonlocal_rc)
     {
@@ -1387,14 +1428,6 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
                                       rtrue,
                                       rfalse);
 
-    /********** Load java.lang.Thread ****************/
-
-    (rvoid) class_load_resolve_clinit(JVMCLASS_JAVA_LANG_THREAD,
-                                      jvm_thread_index_null,
-                                      rtrue,
-                                      rtrue);
-
-
     /********** Load startup class @c @b \<clinit\> **********/
 
     rchar *startup = (rnull != pjvm->startjar)
@@ -1404,7 +1437,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
     /* Chk missing entry point */
     if (rnull == startup)
     {
-        sysErrMsg("jvm_init", "Missing startup class name");
+        sysErrMsg(arch_function_name, "Missing startup class name");
         exit_jvm(EXIT_JVM_CLASS);
 /*NOTREACHED*/
     }
@@ -1431,7 +1464,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     if (jvm_class_index_null == clsidxSTARTUP)
     {
-        sysErrMsg("jvm_init", "Cannot load class %s", startup);
+        sysErrMsg(arch_function_name, "Cannot load class %s", startup);
         exit_jvm(EXIT_JVM_CLASS);
 /*NOTREACHED*/
     }
@@ -1470,16 +1503,17 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
         rint i;
         for (i = 0; i < pjvm->argcj; i++)
         {
-            pcharlen = strlen(pjvm->argv[i]);
+            pcharlen = portable_strlen(pjvm->argv[i]);
 
             /*!
-             * @todo  Create a @c @b java.lang.String as
+             * @todo  HARMONY-6-jvm-jvm.c-5 Create a
+             *        @c @b java.lang.String as
              *    <b><code>java.lang.String(byte[], int, int)</code></b>
              *        where the call is made, as it were, to
              *        <b><code>
                       java.lang.String.\<init\>(pjvm->argv[i],
                                                 0,
-                                                strlen(pjvm->argv[i]));
+                                        portable_strlen(pjvm->argv[i]));
                       </code></b>
              *
              *        The following @link #jvm_object_hash_null
@@ -1508,7 +1542,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
             /* Uncomment for error checking when ready...
             if (jvm_object_hash_null == pjargv[i])
             {
-                sysErrMsg("jvm_init",
+                sysErrMsg(arch_function_name,
                           "Cannot allocate String[] objects");
                 exit_jvm(EXIT_JVM_OBJECT);
 **NOTREACHED** ... RE-comment at this same time!
@@ -1521,9 +1555,12 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     /********** POP_FRAME()/-mod PC-/PUSH_FRAME() ****/
 
-/*! @todo POP_FRAME() and do new PUSH_FRAME() with startup class PC
- * (Do <b><code>new Thread()</code></b> and hack the PC with startup
- * class @c @b main() entry.)
+/*!
+ * @todo HARMONY-6-jvm-jvm.c-6 POP_FRAME() and do new PUSH_FRAME()
+ *       with startup class PC
+ *
+ *        (Do <b><code>new Thread()</code></b> and hack the PC with
+ *        startup class @c @b main() entry.)
  */
 
 
@@ -1536,7 +1573,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
                               JVMCFG_MAIN_METHOD,
                               JVMCFG_MAIN_PARMS))
     {
-        sysErrMsg("jvm_init",
+        sysErrMsg(arch_function_name,
                   "Cannot load main method %s %s%s",
                   startup,
                   JVMCFG_MAIN_METHOD,
@@ -1575,7 +1612,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
     else 
     {
         /* Something went wrong, so quit */
-        sysErrMsg("jvm_init",
+        sysErrMsg(arch_function_name,
                   "Cannot start %s %s%s",
                   startup,
                   JVMCFG_MAIN_METHOD,
@@ -1591,6 +1628,9 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     /********** main() is in the RUNNING state *******/
     /********** and its PC is at 1st instruction... **/
+
+    /********** Declare the JVM completely set up ****/
+    jvm_completely_initialized = rtrue;
 
     return;
 
@@ -1610,12 +1650,14 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 static rvoid jvm_run()
 {
-    sysDbgMsg(DMLMIN, "jvm_run", "started");
+    ARCH_FUNCTION_NAME(jvm_run);
+
+    sysDbgMsg(DMLMIN, arch_function_name, "started");
 
     /*
      * Run the virtual machine as long as there are user threads,
@@ -1716,7 +1758,7 @@ static rvoid jvm_run()
 
                     default:
                         /* Complain and go to BADLOGIC state forever */
-                        sysErrMsg("jvm_run",
+                        sysErrMsg(arch_function_name,
                                 "illegal next state %d this=%d prev=$d",
                                   NEXT_STATE(CURRENT_THREAD),
                                   THIS_STATE(CURRENT_THREAD),
@@ -1731,7 +1773,7 @@ static rvoid jvm_run()
 
             if (rfalse == nextstate_rc)
             {
-                sysErrMsg("jvm_run",
+                sysErrMsg(arch_function_name,
                           "Unable to move thread %d to '%s' state",
                           CURRENT_THREAD,
                           thread_state_get_name(
@@ -1757,7 +1799,7 @@ static rvoid jvm_run()
                          * above should have thrown this thread into
                          * the BADLOGIC state.
                          */
-                        sysErrMsg("jvm_run",
+                        sysErrMsg(arch_function_name,
                                   "illegal thread state %d",
                                   NEXT_STATE(CURRENT_THREAD));
                         exit_jvm(EXIT_JVM_THREAD);
@@ -1766,7 +1808,7 @@ static rvoid jvm_run()
 
                 if (rfalse == nextstate_rc)
                 {
-                    sysErrMsg("jvm_run",
+                    sysErrMsg(arch_function_name,
                            "Unable to activate thread %d in '%s' state",
                               CURRENT_THREAD,
                               thread_state_get_name(
@@ -1801,7 +1843,7 @@ static rvoid jvm_run()
                          * above should have thrown this thread into
                          * the BADLOGIC state.
                          */
-                        sysErrMsg("jvm_run",
+                        sysErrMsg(arch_function_name,
                                   "illegal thread state %d",
                                   NEXT_STATE(CURRENT_THREAD));
                         exit_jvm(EXIT_JVM_THREAD);
@@ -1811,7 +1853,7 @@ static rvoid jvm_run()
 
                 if (rfalse == nextstate_rc)
                 {
-                    sysErrMsg("jvm_run",
+                    sysErrMsg(arch_function_name,
                             "Unable to process thread %d to '%s' state",
                               CURRENT_THREAD,
                               thread_state_get_name(
@@ -1825,7 +1867,7 @@ static rvoid jvm_run()
 
     } /* while no_user_threads */
 
-    sysDbgMsg(DMLMIN, "jvm_run", "finished");
+    sysDbgMsg(DMLMIN, arch_function_name, "finished");
 
 } /* END of jvm_run() */
 
@@ -1841,18 +1883,21 @@ static rvoid jvm_run()
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 
 rvoid jvm_shutdown()
 {
+    ARCH_FUNCTION_NAME(jvm_shutdown);
+
     /*
      * Re-arm @c @b java.lang.LinkageError handler for
      * the final time.
      */
 
-    int nonlocal_rc = exit_exception_setup();
+                      exit_exception_setup();
+    int nonlocal_rc = EXIT_EXCEPTION_SETUP();
 
     if (EXIT_MAIN_OKAY == nonlocal_rc)
     {
@@ -1882,6 +1927,8 @@ rvoid jvm_shutdown()
      * Clean up thread stack areas, ClassFile storage, etc.
      * This process is effectively the reverse of jvm_init().
      */
+
+    jvm_completely_initialized = rfalse;
 
     if (rtrue == jvm_timeslice_initialized)
     {
@@ -1946,12 +1993,14 @@ rvoid jvm_shutdown()
  * @param  sig   Signal number
  *
  *
- * @returns  non-local return via exit_jvm()
+ * @returns non-local return via exit_jvm()
  *
  */
 rvoid jvm_signal(int sig)
 {
-    sysErrMsg("jvm_signal", "received signal %d", sig);
+    ARCH_FUNCTION_NAME(jvm_signal);
+
+    sysErrMsg(arch_function_name, "received signal %d", sig);
 
     exit_jvm(EXIT_JVM_SIGNAL);
 /*NOTREACHED*/
@@ -1966,29 +2015,31 @@ rvoid jvm_signal(int sig)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 
 rint jvm(int argc, char **argv, char **envp)
 {
+    ARCH_FUNCTION_NAME(jvm);
+
     int exit_rc;
 
     /*
      * Protect JVM shutdown and heap free mechanism
      * with non-local error return.  (When setting
-     * it up, @link #exit_init() exit_init()@endlink returns @link
+     * it up, @link #EXIT_INIT() EXIT_INIT()@endlink returns @link
        #EXIT_MAIN_OKAY exit code enumeration EXIT_MAIN_OKAY@endlink,
      * but when invoking @link #exit_jvm() exit_jvm(EXIT_xxx)@endlink,
      * return code @link #EXIT_MAIN_OKAY EXIT_xxx@endlink is returned,
      * see @link src/exit.h exit.h@endlink for particulars.
      */
-    exit_rc = exit_init();
+    exit_rc = EXIT_INIT();
 
     if (EXIT_MAIN_OKAY != exit_rc)
     {
         /* Re-arm handler to simply exit */
-        int rearm_exit_rc = exit_init();
+        int rearm_exit_rc = EXIT_INIT();
 
         if (EXIT_MAIN_OKAY != rearm_exit_rc)
         {
@@ -2009,14 +2060,14 @@ rint jvm(int argc, char **argv, char **envp)
 
     /*
      * Trap various standard signals to stop JVM
-     * (must call exit_init() first)
+     * (must call EXIT_INIT() first)
      */
     signal(SIGHUP, jvm_signal);
     signal(SIGINT, jvm_signal);
     signal(SIGTERM, jvm_signal);
 
     /*
-     * Normal path from exit_init():
+     * Normal path from EXIT_INIT():
      *
      * Initialize JVM model, init all structures, load prequisite
      * classes (Object, String[]), including @c @b \<clinit\>,
