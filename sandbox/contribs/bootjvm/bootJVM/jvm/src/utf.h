@@ -15,7 +15,7 @@
  *
  * @section Control
  *
- * \$URL: https://svn.apache.org/path/name/utf.h $ \$Id: utf.h 0 09/28/2005 dlydick $
+ * \$URL$ \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -34,11 +34,11 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  *
- * @version \$LastChangedRevision: 0 $
+ * @version \$LastChangedRevision$
  *
- * @date \$LastChangedDate: 09/28/2005 $
+ * @date \$LastChangedDate$
  *
- * @author \$LastChangedBy: dlydick $
+ * @author \$LastChangedBy$
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -48,7 +48,7 @@
 
 /* Prototypes for functions in 'utf.c' */
 
-ARCH_COPYRIGHT_APACHE(utf, h, "$URL: https://svn.apache.org/path/name/utf.h $ $Id: utf.h 0 09/28/2005 dlydick $");
+ARCH_COPYRIGHT_APACHE(utf, h, "$URL$ $Id$");
 
 extern jshort utf_utf2unicode(CONSTANT_Utf8_info *utf_inbfr,
                               jchar              *outbfr);

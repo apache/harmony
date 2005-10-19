@@ -6,7 +6,7 @@
  *
  * @section Control
  *
- * \$URL: https://svn.apache.org/path/name/class.c $ \$Id: class.c 0 09/28/2005 dlydick $
+ * \$URL$ \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -25,11 +25,11 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  *
- * @version \$LastChangedRevision: 0 $
+ * @version \$LastChangedRevision$
  *
- * @date \$LastChangedDate: 09/28/2005 $
+ * @date \$LastChangedDate$
  *
- * @author \$LastChangedBy: dlydick $
+ * @author \$LastChangedBy$
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,7 +37,7 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(class, c, "$URL: https://svn.apache.org/path/name/class.c $ $Id: class.c 0 09/28/2005 dlydick $");
+ARCH_COPYRIGHT_APACHE(class, c, "$URL$ $Id$");
 
 
 #include <string.h>

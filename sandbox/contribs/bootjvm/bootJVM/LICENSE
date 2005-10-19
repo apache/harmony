@@ -5,7 +5,7 @@
 #
 # @section Control
 #
-# \$URL: https://svn.apache.org/path/name/LICENSE $ \$Id: LICENSE 0 09/28/2005 dlydick $
+# \$URL$ \$Id$
 #
 # @verbatim
                                  Apache License
@@ -211,11 +211,11 @@
    limitations under the License.
 @endverbatim
 #
-# @version \$LastChangedRevision: 0 $
+# @version \$LastChangedRevision$
 #
-# @date \$LastChangedDate: 09/28/2005 $
+# @date \$LastChangedDate$
 #
-# @author Apache Software Foundation \$LastChangedBy: dlydick $
+# @author Apache Software Foundation \$LastChangedBy$
 #
 #
 #/ /* 

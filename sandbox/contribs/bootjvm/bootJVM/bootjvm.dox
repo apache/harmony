@@ -8,7 +8,7 @@
 # from source code.  No Doxygen control tags are used herein.  ;-)
 #
 #
-# $URL: https://svn.apache.org/path/name/bootjvm.dox $ $Id: bootjvm.dox 0 09/28/2005 dlydick $
+# $URL$ $Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -27,11 +27,11 @@
 # See the License for the specific language governing permissions
 # and limitations under the License.
 #
-# $LastChangedRevision: 0 $
+# $LastChangedRevision$
 #
-# $LastChangedDate: 09/28/2005 $
+# $LastChangedDate$
 #
-# $LastChangedBy: dlydick $
+# $LastChangedBy$
 # Original code contributed by Daniel Lydick on 09/28/2005.
 #
 ########################################################################

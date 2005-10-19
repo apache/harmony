@@ -37,7 +37,7 @@
  *
  * @section Control
  *
- * \$URL: https://svn.apache.org/harmony/project/arch.h  $ \$Id: arch.h 0 09/28/2005 dlydick $
+ * \$URL$ \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -56,11 +56,11 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  *
- * @version \$LastChangedRevision: 0 $
+ * @version \$LastChangedRevision$
  *
- * @date \$LastChangedDate: 09/28/2005 $
+ * @date \$LastChangedDate$
  *
- * @author \$LastChangedBy: dlydick $
+ * @author \$LastChangedBy$
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -174,7 +174,7 @@ static void filetoken##_##exttoken##_dummy(void) {                 \
  * @brief Static copyright string for @e this source file.
  *
  */
-ARCH_COPYRIGHT_APACHE(arch, h, "$URL: https://svn.apache.org/harmony/project/arch.h $ $Id: arch.h 0 09/28/2005 dlydick $");
+ARCH_COPYRIGHT_APACHE(arch, h, "$URL$ $Id$");
 
 #include "config.h"
 
