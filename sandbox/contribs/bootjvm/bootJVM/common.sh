@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #!
-# @file /home/dlydick/harmony/bootJVM/common.sh
+# @file /home/dlydick/harmony/bootjvm/bootJVM/common.sh
 #
 # @brief Common code for @link ./build.sh build.sh@endlink and
 # @link ./clean.sh clean.sh@endlink and
@@ -122,12 +122,15 @@
 #            jni/src/harmony/generic/0.0/common.sh@endlink
 #
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-common.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -151,6 +154,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -333,19 +337,55 @@ fi
 # 'tar' file.
 #
 
+DistChkReleaseLevel()
+{
+RELSPEC1="$CONFIG_RELEASE_LEVEL"
+RELSPEC2="$CONFIG_CPUTYPE-$CONFIG_OSNAME-$CONFIG_WORDWIDTH"
+    echo "$PGMNAME:  Ready to distribute release '$RELSPEC1-$RELSPEC2'"
+    echo ""
+    $echon "    Is this the correct release level?  [y,n] $echoc"
+    read readrelslvl
+    echo ""
+
+    case $readrelslvl in
+        y|ye|yes|Y|YE|YES)
+            ;;
+        *)  echo ""
+            echo \
+"$PGMNAME:  Please run 'config.sh' and set correct release level."
+            exit 1
+    esac
+
+}
+
 # Names of documentation tar file and source distribution tar file
 PREFMTDOCSTAR="bootJVM-docs.tar"
 
 # Can't add release level unless 'config.sh' can locate release level:
 #PREFMTDOCSTAR="bootJVM-docs-$CONFIG_RELEASE_LEVEL.tar"
 
-DISTBINTAR="bootJVM-bin-$CONFIG_RELEASE_LEVEL.tar"
+DISTBINTAR="bootJVM-bin-$CONFIG_RELEASE_LEVEL-$CONFIG_CPUTYPE-$CONFIG_OSNAME-$CONFIG_WORDWIDTH.tar"
 DISTDOCTAR="bootJVM-doc-$CONFIG_RELEASE_LEVEL.tar"
 DISTSRCTAR="bootJVM-src-$CONFIG_RELEASE_LEVEL.tar"
+DISTSRCDOCTAR="bootJVM-srcdoc-$CONFIG_RELEASE_LEVEL.tar"
 
 # Transient storage for keeping existing old configuration
 PGMTMP=../tmp.$$.$PGMNAME
 
+
+DistChkTarget()
+{
+    TARGET_BASENAME="bootJVM-$CONFIG_RELEASE_LEVEL"
+    TARGET_HOME="$TARGET_BASENAME"
+    if test -h ../$TARGET_HOME -o \
+            -d ../$TARGET_HOME -o \
+            -f ../$TARGET_HOME
+    then
+        echo ""
+        echo "$PGMNAME: Target ../$TARGET_HOME exists"
+        exit 2
+    fi
+}
 
 DistPrep()
 {
@@ -373,6 +413,7 @@ DistPrep()
     #     exit 4
     # fi
 
+    chmod +w .
     if test -f $PREFMTDOCSTAR.gz
     then
         mv $PREFMTDOCSTAR.gz $PGMTMP
@@ -383,7 +424,6 @@ DistPrep()
     fi
     if test -d doc.ORIG
     then
-        chmod +w doc.ORIG
         mv doc.ORIG $PGMTMP
     fi
     if test -d bootclasspath
@@ -395,24 +435,30 @@ DistPrep()
 CDSD="config/config_dox_setup.dox"
 DistDocPrep ()
 {
-    echo ""
-    echo "$PGMNAME: Creating documentation set in _all_ formats"
-
     # Keep old doc cfg file, generate all-inclusive temporary one
+    # that overrides certain variable setings.
+    chmod +w config $CDSD
+    if test -f ${CDSD}.ORIG
+    then
+        chmod +w ${CDSD}.ORIG
+    fi
     rm -f ${CDSD}.ORIG
-    mv $CDSD ${CDSD}.ORIG
+    cp $CDSD ${CDSD}.ORIG
     (
         echo "GENERATE_HTML=YES"
         echo "GENERATE_LATEX=YES"
         echo "GENERATE_RTF=YES"
         echo "GENERATE_MAN=YES"
         echo "GENERATE_XML=YES"
-    ) > $CDSD
+    ) >> $CDSD
 }
 
 
 DistTargetBuild ()
 {
+    echo ""
+    echo \
+"$PGMNAME: Creating documentation in _all_ formats via 'build.sh $1'"
     # Make SURE the output area is clean
     SUPPRESS_DOXYGEN_VERYCLEAN=
     export SUPPRESS_DOXYGEN_VERYCLEAN

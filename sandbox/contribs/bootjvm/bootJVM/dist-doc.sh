@@ -25,12 +25,15 @@
 #             Eclipse users without having to change anything.
 #
 #
-# @todo A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-dist-doc.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -54,6 +57,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -86,6 +90,10 @@ trap "" 1 2 3 15
 #
 # Clean up everything and rebuild it.
 #
+DistChkReleaseLevel
+
+DistChkTarget
+
 ./clean.sh all
 
 DistPrep
@@ -93,8 +101,6 @@ DistPrep
 DistDocPrep
 
 DistTargetBuild dox
-
-DistConfigPrep
 
 echo ""
 echo "$PGMNAME: Setting target directory permissions"
@@ -118,38 +124,38 @@ echo "$PGMNAME: Setting target file permissions"
 cd doc.ORIG
 TMPTIMESTAMPFILE=${TMPDIR:-/tmp}/tmp.$PGMNAME.$$
 rm -f $TMPTIMESTAMPFILE
-touch TMPTIMESTAMPFILE
+touch $TMPTIMESTAMPFILE
 for f in `find . -type f -print`
 do
     chmod +w $f
-    touch -r TMPTIMESTAMPFILE $f
+    touch -r $TMPTIMESTAMPFILE $f
     chmod -w $f
 done
 rm -f $TMPTIMESTAMPFILE
 cd ..
 
-TARGET_HOME="harmony/bootJVM-$CONFIG_RELEASE_LEVEL"
-cd ../..
-mv harmony/bootJVM $TARGET_HOME
-
 echo ""
-echo "$PGMNAME: Creating distribution file '../../$DISTDOCTAR'"
+echo "$PGMNAME: Creating distribution file '../$DISTDOCTAR'"
+
+cd ..
+ln -s bootJVM $TARGET_HOME
 
 rm -f $DISTDOCTAR
 tar cf $DISTDOCTAR $TARGET_HOME/doc.ORIG
-mv $TARGET_HOME harmony/bootJVM
+rm $TARGET_HOME
 
 if test ! -r $DISTDOCTAR
 then
     echo ""
-    echo "$PGMNAME: Directory `cd ../..; pwd` is not writable."
+    echo "$PGMNAME: Cannot locate '../$DISTDOCTAR'."
+    echo "$PGMNAME: Directory `cd ..; pwd` is probably not writable."
     echo "$PGMNAME: Please make it writable and try again."
     exit 4
 fi
 
 echo ""
 echo \
-   "$PGMNAME: Compressing distribution file into '../../$DISTDOCTAR.gz'"
+   "$PGMNAME: Compressing distribution file into '../$DISTDOCTAR.gz'"
 rm -f $DISTDOCTAR.gz
 gzip $DISTDOCTAR
 if test ! -r $DISTDOCTAR.gz
@@ -160,12 +166,10 @@ then
 fi
 
 chmod 0444 $DISTDOCTAR.gz
-cd harmony/bootJVM
+cd bootJVM
 
 chmod -R +w doc.ORIG
 mv doc.ORIG doc
-
-DistConfigUnPrep
 
 DistDocUnPrep
 
@@ -174,7 +178,7 @@ DistUnPrep
 echo ""
 echo "$PGMNAME: Documentation distribution tar file created:"
 echo ""
-ls -l ../../$DISTDOCTAR.gz
+ls -l ../$DISTDOCTAR.gz
 echo ""
 
 ###################################################################
