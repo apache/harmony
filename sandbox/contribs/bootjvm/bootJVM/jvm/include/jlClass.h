@@ -68,7 +68,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -92,6 +94,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -101,7 +104,9 @@
 /**********************************************************************/
 #ifdef JLCLASS_LOCAL_DEFINED
 
-ARCH_COPYRIGHT_APACHE(jlClass, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jlClass, h,
+"$URL$",
+"$Id$");
 
 /**********************************************************************/
 #else /* JLCLASS_LOCAL_DEFINED */
@@ -147,11 +152,13 @@ typedef enum
 
 /*!
  * @brief JNI hook to @link #jlClass_isArray() isArray()@endlink
+ *
  */
 extern jboolean jlClass_isArray(jvm_object_hash objhash);
 
 /*!
  * @brief JNI hook to @link #jlClass_isPrimative() isPrimative()@endlink
+ *
  */
 extern jboolean jlClass_isPrimative(jvm_object_hash objhash);
 
@@ -161,7 +168,9 @@ extern jboolean jlClass_isPrimative(jvm_object_hash objhash);
 /*!
  * @name Connection to local native method tables.
  *
- * @brief These manifest constant code fragments are designed to be
+ * @brief Manifest constant code fragments.
+ *
+ * These code fragments are designed to be
  * inserted directly into locations in
  * @link jvm/src/native.c native.c@endlink without any other
  * modification to that file except a @e single entry to actually
@@ -173,6 +182,7 @@ extern jboolean jlClass_isPrimative(jvm_object_hash objhash);
 /*!
  * @brief Complete list of local native method ordinals
  * for @c @b java.lang.Class
+ *
  */
 #define NATIVE_TABLE_JLCLASS \
     case JLCLASS_NMO_ISARRAY:    \
@@ -181,6 +191,7 @@ extern jboolean jlClass_isPrimative(jvm_object_hash objhash);
 /*!
  * @brief Table of local native methods and their descriptors
  * for @c @b java.lang.Class
+ *
  */
 #define NATIVE_TABLE_JLCLASS_ORDINALS                      \
     {                                                      \
@@ -202,6 +213,7 @@ extern jboolean jlClass_isPrimative(jvm_object_hash objhash);
 /*!
  * @brief @c @b (jint) local native method ordinal table
  * for @c @b java.lang.Class
+ *
  */
 #define NATIVE_TABLE_JLCLASS_JINT     \
     case JLCLASS_NMO_ISARRAY:         \

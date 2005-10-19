@@ -66,7 +66,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -90,6 +92,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -100,7 +103,9 @@
 /**********************************************************************/
 #ifdef JLOBJECT_LOCAL_DEFINED
 
-ARCH_COPYRIGHT_APACHE(jlObject, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jlObject, h,
+"$URL$",
+"$Id$");
 
 /**********************************************************************/
 #else /* JLOBJECT_LOCAL_DEFINED */
@@ -165,16 +170,16 @@ ARCH_COPYRIGHT_APACHE(jlObject, h, "$URL$ $Id$");
  * @attention  See comments about @c @b jobject and @c @b jclass in
  *             the local definition of @b jvm_class_index.
  *
- * @todo In the JVM spec, an object reference seems to look like an
- *       arbitrary integer token.  However, looking at the JNI header
- *       file for the Solaris JDK 1.4.2_06 implementation, it appears
- *       to be a pointer to an empty structure.  The apparent purpose
- *       of this definition is to have a @e completely generic
- *       definition of use by any implementation.  @b HOWEVER, there
- *       is a problem with this:  What happens when the implementation
- *       is ported to a 64-bit hardware runtime environment?  All
- *       pointers change from 32 bits (namely, from
- *       @c @b sizeof(jint)) to 64 bits (namely,
+ * @todo HARMONY-6-jvm-jlObject.h-1 In the JVM spec, an object reference
+ *       seems to look like an arbitrary integer token.  However,
+ *       looking at the JNI header file for the Solaris JDK 1.4.2_06
+ *       implementation, it appears to be a pointer to an empty
+ *       structure.  The apparent purpose of this definition is to
+ *       have a @e completely generic definition of use by any
+ *       implementation.  @b HOWEVER, there is a problem with this:
+ *       What happens when the implementation is ported to a 64-bit
+ *       hardware runtime environment?  All pointers change from
+         32 bits (namely, from @c @b sizeof(jint)) to 64 bits (namely,
  *       @c @b sizeof(jlong)), taking a second 32-bit word.
  *       This can have @e significant implications for code, and not
  *       only for the JNI interface.  This needs some detailed scrutiny
@@ -182,7 +187,7 @@ ARCH_COPYRIGHT_APACHE(jlObject, h, "$URL$ $Id$");
  *       properly compensates for this situtation or declares it a
  *       non-issue.
  *
- * @note As an aside, and in addition to the above @todo item, the
+ * @note As an aside, and in addition to the above @@todo item, the
  *       consider that many GC implementations use a variation
  *       of "copying garbage collection" (sometimes with adjectives
  *       in front, such as "generational copying garbage collection,"
@@ -208,15 +213,17 @@ typedef jobject jvm_object_hash;
  * @link jvm/src/jvmcfg.h jvmcfg.h@endlink. 
  *
  * @attention As long as this type definition is the same width or
- * narrower than the local definition of @b jvm_object_hash,  all
- * code will connect the JNI and JVM environments properly.  Some
- * Java implementations may consider @c @b jobject to be an ordinal,
- * some may consider it to be an array index, some may consider it
- * to be a pointer.  If @c @b jclass is compatible with such definition,
- * then everything should work fine.  The compiler will provide the
- * necessary width adjustments without loss of any significant digits.
- * @e Therefore, notice that this data type @e cannot be defined as
- * being any @e wider than @c @b jobject and @b jvm_object_hash.
+ *            narrower than the local definition of @b jvm_object_hash,
+ *            all code will connect the JNI and JVM environments
+ *            properly.  Some Java implementations may consider
+ *            @c @b jobject to be an ordinal, some may consider it to
+ *            be an array index, some may consider it to be a pointer.
+ *            If @c @b jclass is compatible with such definition,
+ *            then everything should work fine.  The compiler will
+ *            provide the necessary width adjustments without loss of
+ *            any significant digits. @e Therefore, notice that this
+ *            data type @e cannot be defined as being any @e wider than
+ *            @c @b jobject and @b jvm_object_hash.
  */
 typedef jclass  jvm_class_index;
 
@@ -301,7 +308,9 @@ extern jvoid jlObject_waittimed(jvm_object_hash objhashcurr,
 /*!
  * @name Connection to local native method tables.
  *
- * @brief These manifest constant code fragments are designed to be
+ * @brief Manifest constants code fragments.
+ *
+ * These code fragments are designed to be
  * inserted directly into locations in
  * @link jvm/src/native.c native.c@endlink without any other
  * modification to that file except a @e single entry to actually
@@ -314,6 +323,7 @@ extern jvoid jlObject_waittimed(jvm_object_hash objhashcurr,
 /*!
  * @brief Complete list of local native method ordinals
  * for @c @b java.lang.Object
+ *
  */
 #define NATIVE_TABLE_JLOBJECT     \
     case JLOBJECT_NMO_GETCLASS:   \
@@ -324,6 +334,7 @@ extern jvoid jlObject_waittimed(jvm_object_hash objhashcurr,
 /*!
  * @brief Table of local native methods and their descriptors
  * for @c @b java.lang.Object
+ *
  */
 #define NATIVE_TABLE_JLOBJECT_ORDINALS                                \
     {                                                                 \
@@ -344,6 +355,7 @@ extern jvoid jlObject_waittimed(jvm_object_hash objhashcurr,
 /*!
  * @brief @c @b (jvoid) local native method ordinal table
  * for @c @b java.lang.Object
+ *
  */
 #define NATIVE_TABLE_JLOBJECT_JVOID     \
     case JLOBJECT_NMO_WAIT4EVER:        \
@@ -352,6 +364,7 @@ extern jvoid jlObject_waittimed(jvm_object_hash objhashcurr,
 /*!
  * @brief @c @b (jobject) local native method ordinal table
  * for @c @b java.lang.Object
+ *
  */
 #define NATIVE_TABLE_JLOBJECT_JOBJECT \
     case JLOBJECT_NMO_GETCLASS:
@@ -359,6 +372,7 @@ extern jvoid jlObject_waittimed(jvm_object_hash objhashcurr,
 /*!
  * @brief @c @b (jint) local native method ordinal table
  * for @c @b java.lang.Object
+ *
  */
 #define NATIVE_TABLE_JLOBJECT_JINT \
     case JLOBJECT_NMO_HASHCODE:

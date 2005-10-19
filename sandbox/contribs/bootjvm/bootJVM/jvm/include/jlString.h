@@ -68,7 +68,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -92,6 +94,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -101,7 +104,9 @@
 /**********************************************************************/
 #ifdef JLSTRING_LOCAL_DEFINED
 
-ARCH_COPYRIGHT_APACHE(jlString, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jlString, h,
+"$URL$",
+"$Id$");
 
 /**********************************************************************/
 #else /* JLSTRING_LOCAL_DEFINED */
@@ -139,10 +144,12 @@ typedef enum
 /*
  * Add one function prototype below
  * for each local native method enumeration above:
+ *
  */
 
 /*!
  * @brief JNI hook to @link #jlString_intern() intern()@endlink
+ *
  */
 extern jvm_object_hash jlString_intern(jvm_object_hash objhash);
 
@@ -154,7 +161,9 @@ extern jvm_object_hash jlString_intern(jvm_object_hash objhash);
 /*!
  * @name Connection to local native method tables.
  *
- * @brief These manifest constant code fragments are designed to be
+ * @brief Manifest constant code fragments.
+ *
+ * These code fragments are designed to be
  * inserted directly into locations in
  * @link jvm/src/native.c native.c@endlink without any other
  * modification to that file except a @e single entry to actually
@@ -166,6 +175,7 @@ extern jvm_object_hash jlString_intern(jvm_object_hash objhash);
 /*!
  * @brief Complete list of local native method ordinals
  * for @c @b java.lang.String
+ *
  */
 #define NATIVE_TABLE_JLSTRING \
     case JLSTRING_NMO_INTERN:
@@ -173,6 +183,7 @@ extern jvm_object_hash jlString_intern(jvm_object_hash objhash);
 /*!
  * @brief Table of local native methods and their descriptors
  * for @c @b java.lang.String
+ *
  */
 #define NATIVE_TABLE_JLSTRING_ORDINALS                                 \
     {                                                                  \
@@ -192,6 +203,7 @@ extern jvm_object_hash jlString_intern(jvm_object_hash objhash);
 /*!
  * @brief @c @b (jobject) local native method ordinal table
  * for @c @b java.lang.String
+ *
  */
 #define NATIVE_TABLE_JLSTRING_JOBJECT \
     case JLSTRING_NMO_INTERN:

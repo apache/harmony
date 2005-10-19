@@ -71,7 +71,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -95,6 +97,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -104,7 +107,9 @@
 /**********************************************************************/
 #ifdef JLTHREAD_LOCAL_DEFINED
 
-ARCH_COPYRIGHT_APACHE(jlThread, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jlThread, h,
+"$URL$",
+"$Id$");
 
 /**********************************************************************/
 #else /* JLTHREAD_LOCAL_DEFINED */
@@ -208,38 +213,45 @@ typedef enum
 /*
  * Add one function prototype below
  * for each local native method enumeration above:
+ *
  */
 
 /*!
  * @brief JNI hook to @link #jlThread_currentThread()
    currentThread()@endlink
+ *
  */
 extern
     jvm_object_hash jlThread_currentThread(jvm_class_index clsidxTHR);
 
 /*!
  * @brief JNI hook to @link #jlThread_yield() yield()@endlink
+ *
  */
 extern jvoid jlThread_yield(jvm_class_index clsidxTHR);
 
 /*!
  * @brief JNI hook to @link #jlThread_interrupt() interrupt()@endlink
+ *
  */
 extern jvoid jlThread_interrupt(jvm_object_hash objhashthis);
 
 /*!
  *@brief JNI hook to @link #jlThread_interrupted() interrupted()@endlink
+ *
  */
 extern jboolean jlThread_interrupted(jvm_object_hash objhashTHR);
 
 /*!
  * @brief JNI hook to
  * @link #jlThread_isInterrupted() isInterrupted()@endlink
+ *
  */
 extern jboolean jlThread_isInterrupted(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_sleep() sleep()@endlink
+ *
  */
 extern jboolean jlThread_sleep(jvm_class_index clsidxTHR,
                                jlong           sleeptime_milliseconds);
@@ -247,6 +259,7 @@ extern jboolean jlThread_sleep(jvm_class_index clsidxTHR,
 /*!
  * @brief JNI hook to
  * @link #jlThread_sleep_nanos() sleep_nanos()@endlink
+ *
  */
 extern jboolean jlThread_sleep_nanos(jvm_class_index clsidxTHR,
                                      jlong       sleeptime_milliseconds,
@@ -254,11 +267,13 @@ extern jboolean jlThread_sleep_nanos(jvm_class_index clsidxTHR,
 
 /*!
  * @brief JNI hook to @link #jlThread_join4ever() join4ever()@endlink
+ *
  */
 extern jvoid jlThread_join4ever(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_jointimed() jointimed()@endlink
+ *
  */
 extern jvoid jlThread_jointimed(jvm_object_hash objhashthis,
                                 jlong           sleeptime);
@@ -266,6 +281,7 @@ extern jvoid jlThread_jointimed(jvm_object_hash objhashthis,
 /*!
  * @brief JNI hook to
  * @link #jlThread_jointimed_nanos() jointimed_nanos()@endlink
+ *
  */
 extern jvoid jlThread_jointimed_nanos(jvm_object_hash objhashthis,
                                       jlong           sleeptime,
@@ -273,22 +289,26 @@ extern jvoid jlThread_jointimed_nanos(jvm_object_hash objhashthis,
 
 /*!
  * @brief JNI hook to @link #jlThread_jointimed() jointimed()@endlink
+ *
  */
 extern jboolean jlThread_isAlive(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_start() start()@endlink
+ *
  */
 extern jboolean jlThread_start(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to
  * @link #jlThread_countStackFrames() countStackFrames()@endlink
+ *
  */
 extern jint jlThread_countStackFrames(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_holdsLock() holdsLock()@endlink
+ *
  */
 extern jboolean jlThread_holdsLock(jvm_class_index clsidxTHR,
                                    jvm_object_hash objhashLOCK);
@@ -296,6 +316,7 @@ extern jboolean jlThread_holdsLock(jvm_class_index clsidxTHR,
 /*!
  * @brief JNI hook to
  * @link #jlThread_setPriority() setPriority()@endlink
+ *
  */
 extern jboolean jlThread_setPriority(jvm_object_hash objhashthis,
                                      jint             priority);
@@ -303,43 +324,51 @@ extern jboolean jlThread_setPriority(jvm_object_hash objhashthis,
 /*!
  * @brief JNI hook to
  * @link #jlThread_getPriority() getPriority()@endlink
+ *
  */
 extern jint jlThread_getPriority(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_destroy() destroy()@endlink
+ *
  */
 extern jboolean jlThread_destroy(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to
  * @link #jlThread_checkAccess() checkAccess()@endlink
+ *
  */
 extern jboolean jlThread_checkAccess(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_setDaemon() setDaemon()@endlink
+ *
  */
 extern jvoid jlThread_setDaemon(jvm_object_hash objhashthis,
                                 jboolean isdaemon);
 
 /*!
  * @brief JNI hook to @link #jlThread_isDaemon() isDaemon()@endlink
+ *
  */
 extern jboolean jlThread_isDaemon(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_stop() stop()@endlink
+ *
  */
 extern jvoid jlThread_stop(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_suspend() suspend()@endlink
+ *
  */
 extern jvoid jlThread_suspend(jvm_object_hash objhashthis);
 
 /*!
  * @brief JNI hook to @link #jlThread_resume() resume()@endlink
+ *
  */
 extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 
@@ -351,7 +380,9 @@ extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 /*!
  * @name Connection to local native method tables.
  *
- * @brief These manifest constant code fragments are designed to be
+ * @brief Manifest constant code fragments.
+ *
+ * These code fragments are designed to be
  * inserted directly into locations in
  * @link jvm/src/native.c native.c@endlink without any other
  * modification to that file except a @e single entry to actually
@@ -363,6 +394,7 @@ extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 /*!
  * @brief Complete list of local native method ordinals
  * for @c @b java.lang.Thread
+ *
  */
 #define NATIVE_TABLE_JLTHREAD           \
     case JLTHREAD_NMO_CURRENTTHREAD:    \
@@ -390,6 +422,7 @@ extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 /*!
  * @brief Table of local native methods and their descriptors
  * for @c @b java.lang.Thread
+ *
  */
 #define NATIVE_TABLE_JLTHREAD_ORDINALS                                 \
     {                                                                  \
@@ -433,6 +466,7 @@ extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 /*!
  * @brief @c @b (jvoid) local native method ordinal table
  * for @c @b java.lang.Thread
+ *
  */
 #define NATIVE_TABLE_JLTHREAD_JVOID     \
     case JLTHREAD_NMO_YIELD:            \
@@ -454,6 +488,7 @@ extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 /*!
  * @brief @c @b (jobject) local native method ordinal table
  * for @c @b java.lang.Thread
+ *
  */
 #define NATIVE_TABLE_JLTHREAD_JOBJECT   \
     case JLTHREAD_NMO_CURRENTTHREAD:
@@ -461,6 +496,7 @@ extern jvoid jlThread_resume(jvm_object_hash objhashthis);
 /*!
  * @brief @c @b (jint) local native method ordinal table
  * for @c @b java.lang.Thread
+ *
  */
 #define NATIVE_TABLE_JLTHREAD_JINT      \
     case JLTHREAD_NMO_INTERRUPTED:      \
