@@ -18,18 +18,20 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  * and was the basis for the ClassFile structure of this implementation.
  *
  *
- * @todo  Per spec section 5.4.1, need to verify the contents of
- *        the file read in before initializing the class, else
- *        throw @b VerifyError.
+ * @todo  HARMONY-6-jvm-classfile.c-1 Per spec section 5.4.1, need to
+ *        verify the contents of the file read in before initializing
+ *        the class, else throw @b VerifyError.
  *
- * @todo Need to verify which web document for the
- *       Java 5 class file definition is either "official",
+ * @todo HARMONY-6-jvm-classfile.c-2 Need to verify which web document
+ *       for the Java 5 class file definition is either "official",
  *       actually correct, or is the <em>de facto</em> standard.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -53,6 +55,7 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -60,14 +63,16 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(classfile, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(classfile, c,
+"$URL$",
+"$Id$");
 
 
 #include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
+/* #include <stdlib.h> */
+/* #include <string.h> */
+/* #include <unistd.h> */
+/* #include <sys/stat.h> */
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -106,12 +111,13 @@ ARCH_COPYRIGHT_APACHE(classfile, c, "$URL$ $Id$");
  * </li>
  * </ul>
  *
- * @todo  Need to take a hard look at the requirements
- *        for @c @b java.lang.Class and see if this is sufficient
- *        or even accurately implemented.
+ * @todo  HARMONY-6-jvm-classfile.c-3 Need to take a hard look at the
+ *        requirements for @c @b java.lang.Class and see if this is
+ *        sufficient or even accurately implemented.
  *
  *
- * @param  basetype   One of the primative base types BASETYPE_CHAR_x
+ * @param  basetype   One of the primative base type
+ *                    @link #BASETYPE_CHAR_B BASETYPE_CHAR_x@endlink
  *
  *
  * @returns (ClassFile *) to heap-allocated area, used throughtout life
@@ -120,10 +126,12 @@ ARCH_COPYRIGHT_APACHE(classfile, c, "$URL$ $Id$");
  */
 ClassFile *classfile_allocate_primative(jvm_basetype basetype)
 {
+    ARCH_FUNCTION_NAME(classfile_allocate_primative);
+
     /*!
      * @internal INITIALIZE TO ZEROES all fields so there are
-     * automatic @link #rnull rnull@endlink pointers in case of
-     * failure along the way.
+     *           automatic @link #rnull rnull@endlink pointers in case
+     *           of failure along the way.
      */
     ClassFile *pcfs = HEAP_GET_DATA(sizeof(ClassFile), rtrue);
 
@@ -140,7 +148,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
 
     /*!
      * @internal Since @c @b java.lang.Object is implied,
-     * don't need this slot.
+     *           don't need this slot.
      */
     pcfs->constant_pool[0] = (cp_info_dup *) rnull;
 
@@ -163,11 +171,17 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
     pci->name_index = 1; /* Index of Utf8 string of primative desc. */
 
 
-    pcfs->access_flags = ACC_SYNTHETIC; /*! @todo  Needs more thought */
+    pcfs->access_flags = ACC_SYNTHETIC; /*!
+                                         *  @todo
+                                         *  HARMONY-6-jvm-classfile.c-4
+                                         *  Needs more thought.
+                                         */
     pcfs->this_class = 2;   /* Index to class entry */
 
-                            /*! @todo  Is this assumption
-                                       valid/meaningful? */
+                            /*!
+                             * @todo  HARMONY-6-jvm-classfile.c-5 Is
+                             *         this assumption valid/meaningful?
+                             */
     pcfs->super_class = 0;  /* No superclass, imply java.lang.Object */
 
     pcfs->interfaces_count = 0;
@@ -191,7 +205,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  * @def ALLOC_CP_INFO()
  *
  * @brief Allocate a cp_info_dup structure containing any generic
- * type of constant_pool entry.
+ * type of @c @b constant_pool entry.
  *
  * Allocate space from heap, populate from class file data,
  * and fill in initial pad bytes.
@@ -199,8 +213,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  *
  * @param spec_typedef   Structure @link #CONSTANT_Class_info
                          CONSTANT_xxx_info@endlink type definition
- *                       of one of the constant_pool types.
- *
+ *                       of one of the @c @b constant_pool types.
  *
  * @param binding_struct Name of local binding structure @link
                          #CONSTANT_Class_info.LOCAL_Class_binding
@@ -217,7 +230,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
                                                                        \
     cf_item_size = sizeof(spec_typedef)-sizeof(struct binding_struct); \
     pcpd = HEAP_GET_METHOD(misc_adj + sizeof(spec_typedef), rfalse);   \
-    memcpy(((rbyte *) pcpd) + misc_adj,pcpbytes,cf_item_size);         \
+    portable_memcpy(((rbyte *) pcpd) + misc_adj,pcpbytes,cf_item_size);\
                                                                        \
     pcpd->empty[0] = FILL_INFO_DUP0;                                   \
     pcpd->empty[1] = FILL_INFO_DUP1;                                   \
@@ -246,19 +259,22 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  * @param binding_struct Structure LOCAL_field_binding or
  *                       LOCAL_method_binding for appropriate
  *                       @b spec_typedef type definition.
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
  */
 
-#define ALLOC_CF_ITEM(spec_typedef, pbytes, pcfsi, binding_struct) \
-    cf_item_size = sizeof(spec_typedef) -                          \
-                   sizeof(struct binding_struct) -                 \
-                   sizeof(attribute_info_dup **);                  \
-    pcfsi = HEAP_GET_METHOD(sizeof(spec_typedef), rfalse);  \
-    memcpy(((rbyte *) pcfsi),pbytes,cf_item_size);/*Extra ;*/
+#define ALLOC_CF_ITEM(spec_typedef, pbytes, pcfsi, binding_struct)     \
+    cf_item_size = sizeof(spec_typedef) -                              \
+                   sizeof(struct binding_struct) -                     \
+                   sizeof(attribute_info_dup **);                      \
+    pcfsi = HEAP_GET_METHOD(sizeof(spec_typedef), rfalse);             \
+    portable_memcpy(((rbyte *) pcfsi),pbytes,cf_item_size);/*Extra ;*/
 
 /*!
- * @name Range check of constant_pool indices.
+ * @name Range check of @c @b constant_pool indices.
  *
- * @brief Range check constant_pool @b cpidx against max index,
+ * @brief Range check @c @b constant_pool @c @b cpidx against max index,
  * with/without typed pointer.
  *
  * (Testing <b><code>cpidx < 0</code></b> is not checked,
@@ -270,7 +286,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  *
  * @param pcfs  ClassFile area to be checked
  *
- * @param cpidx constant_pool index to be checked
+ * @param cpidx @c @b constant_pool index to be checked
  *
  * @param msg   Error message to display at failure
  *
@@ -316,12 +332,12 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  * which access it, such as the fully qualified class names,
  * the code area, etc.
  *
- * @todo Need a @e much better way to free partially built class
- *       structure when an error occurs.  The current scheme is
- *       only piecemeal and @e will leave orphaned memory blocks
- *       lying around when something is freed that has @e the
- *       pointer to it, case in point, the constant_pool[] table
- *       when freeing the main ClassFile structure block on error.
+ * @todo HARMONY-6-jvm-classfile.c-6 Need a @e much better way to free
+ *       partially built class structure when an error occurs.  The
+ *       current scheme is only piecemeal and @e will leave orphaned
+ *       memory blocks lying around when something is freed that has
+ *       @e the pointer to it, case in point, the @c @b constant_pool[]
+ *       table when freeing the main ClassFile structure block on error.
  *       The partial solutions of adding heap pointer parameters to
  *       LOAD_SYSCALL_FAILURE() and GENERIC_FAILURExxx() macros
  *       is not useful here since so @e many allocations are done
@@ -343,6 +359,8 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
 
 ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 {
+    ARCH_FUNCTION_NAME(classfile_loadclassdata);
+
     rint misc_adj; /* For ALLOC_xxx macros */
 
 
@@ -373,7 +391,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     /*
      * Need default value until field is loaded.  Set default
-     * to "no class".  Spec also says that this constant_pool
+     * to "no class".  Spec also says that this @c @b constant_pool
      * index implies <code>java.lang.Object<code>.
      */
     pcfs->this_class = jvm_class_index_null;
@@ -397,13 +415,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
      */
     pcfs->magic = GETRI4(pu4);
 
-    /*
-     * Perform little-endian byte swapping,
-     * where appropriate (NOP otherwise)
-     */
-
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "magic=%08x",
               pcfs->magic);
 
@@ -426,12 +439,13 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     pcfs->minor_version = GETRS2(pu2);
 
-    MACHINE_JSHORT_SWAP(pcfs->minor_version);
-
-    /* LOAD_SYSCALL_FAILURE( what needs checking here?, "minor"); */
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-7
+     *       LOAD_SYSCALL_FAILURE( what needs checking here?, "minor");
+     */
 
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "minor=%d",
               pcfs->minor_version);
 
@@ -448,7 +462,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     pcfs->major_version = GETRS2(pu2++);
 
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "major=%d",
               pcfs->major_version);
 
@@ -474,7 +488,10 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                          rnull);
 
 
-    /*! @todo  Throw @b UnsupportedClassVersionError for bad versions */
+    /*!
+     * @todo  HARMONY-6-jvm-classfile.c-8
+     *         Throw @b UnsupportedClassVersionError for bad versions
+     */
 
     /*****************************************************************/
     /* Get constant_pool_count                                       */
@@ -482,7 +499,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     pcfs->constant_pool_count = GETRS2(pu2++);
 
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "cp count=%d",
               pcfs->constant_pool_count);
 
@@ -491,7 +508,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
 
     /*****************************************************************/
-    /* Create constant pool index, then load up constant pool        */
+    /* Create constant pool index, then load up constant_pool        */
     /*****************************************************************/
 
     jvm_constant_pool_index cpidx;
@@ -502,7 +519,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
      * Map the indices in the class file to point to actual
      * constant pool enties via a pointer lookup table.
      *
-     * Make constant_pool[] large enough for 0th element as well
+     * Make @c @b constant_pool[] large enough for 0th element as well
      * as defined element (the @c @b java.lang.Object per spec).
      * This is simply a convenience for future access without doing
      * an <b><code>x - 1</code></b> calculation.  Therefore, fill
@@ -522,8 +539,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
         (cp_info_dup *) rnull;
 
     /*
-     * Iterate through class file's constant_pool and fill in
-     * the constant_pool[] pointer array for normal use.
+     * Iterate through class file's @c @b constant_pool and fill in
+     * the @c @b constant_pool[] pointer array for normal use.
      */
     for (cpidx = CONSTANT_CP_START_INDEX;
          cpidx < pcfs->constant_pool_count + CONSTANT_CP_START_INDEX -1;
@@ -537,14 +554,13 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
          * Look up structure size, perform in-place byte swap
          * for little-endian architectures.
          */
-         
+
         switch (((cp_info *) pcpbytes)->tag)
         {
             case CONSTANT_Class:
-            
                 ALLOC_CP_INFO(CONSTANT_Class_info,
                               LOCAL_Class_binding);
-                                                           
+
                 CP_ITEM_SWAP_U2(CONSTANT_Class_info, name_index);
 
                 CPTYPEIDX_RANGE_CHECK(CONSTANT_Class_info,
@@ -791,10 +807,10 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                                        rfalse);
 
                 /* Copy structure, including @b empty bytes */
-                memcpy(((rbyte *)pcpd) +
-                           sizeof(u1) * CP_INFO_NUM_EMPTIES,
-                       pcpbytes,
-                       cf_item_size);
+                portable_memcpy(((rbyte *)pcpd) +
+                                sizeof(u1) * CP_INFO_NUM_EMPTIES,
+                                pcpbytes,
+                                cf_item_size);
                 pcpd->empty[0] = FILL_INFO_DUP0;
                 pcpd->empty[1] = FILL_INFO_DUP1;
                 pcpd->empty[2] = FILL_INFO_DUP2;
@@ -807,9 +823,9 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                 CP_ITEM_SWAP_U2(CONSTANT_Utf8_info, length);
 
                 /* Copy UTF string itself (No byte reversal needed.) */
-                memcpy(PTR_THIS_CP_Utf8(pcpd)->bytes,
-                       ((CONSTANT_Utf8_info *) pcpbytes)->bytes,
-                       tmplenutf);
+                portable_memcpy(PTR_THIS_CP_Utf8(pcpd)->bytes,
+                               ((CONSTANT_Utf8_info *) pcpbytes)->bytes,
+                                tmplenutf);
 
                 /*
                  * Adjust for variable length UTF8 string in source bfr
@@ -824,7 +840,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
             default:
                 /*!
-                 * @todo  Need better and more complete heap free here
+                 * @todo  HARMONY-6-jvm-classfile.c-9 Need better and
+                 *        more complete heap free here
                  */
 
                 /* This pointer came from HEAP_GET_METHOD() */
@@ -832,7 +849,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
                 GENERIC_FAILURE1_PTR(rtrue,
                                      DMLNORM,
-                                     "classfile_loadclassdata", 
+                                     arch_function_name, 
                                      "Invalid CP tag %d",
                                      (((cp_info *) pcpbytes)->tag),
                                      ClassFile,
@@ -841,7 +858,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
         } /* switch ... */
 
-        /* Point to storage area for this constant_pool[] item */
+        /* Point to storage area for this @c @b constant_pool[] item */
         pcfs->constant_pool[cpidx] = pcpd;
 
         /* Now point past this CONSTANT_Xxxxxx_info area */
@@ -854,7 +871,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Get access_flags                                              */
     /*****************************************************************/
 
-    /* Point past the constant_pool[] area */
+    /* Point past the @c @b constant_pool[] area */
     MAKE_PU2(pu2, pcpbytes);
 
     pcfs->access_flags = GETRS2(pu2++);
@@ -868,10 +885,14 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     MACHINE_JSHORT_SWAP(pcfs->access_flags);
 
-    /* LOAD_SYSCALL_FAILURE(what needs checking here?,"access flags");*/
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-10
+     *       LOAD_SYSCALL_FAILURE(what needs checking here?,
+     *                            "access flags");
+     */
 
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "access %04x",
               pcfs->access_flags);
 
@@ -882,7 +903,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     pcfs->this_class = GETRS2(pu2++);
 
     /*!
-     * @todo Need to free constant_pool[0..n] also if failure
+     * @todo HARMONY-6-jvm-classfile.c-11 Need to
+     *       free @c @b constant_pool[0..n] also if failure
      */
     CPIDX_RANGE_CHECK(pcfs, pcfs->this_class, "this class");
 
@@ -896,7 +918,11 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->super_class = GETRS2(pu2++);
 
-    /* LOAD_SYSCALL_FAILURE(what needs checking here?,"access flags");*/
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-12
+     *       LOAD_SYSCALL_FAILURE(what needs checking here?,
+     *                            "access flags");
+     */
 
     cfmsgs_typemsg("super", pcfs, pcfs->super_class);
 
@@ -905,14 +931,15 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->interfaces_count = GETRS2(pu2++);
 
- 
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "intfc count=%d",
               pcfs->interfaces_count);
 
-    /*
-     LOAD_SYSCALL_FAILURE(what needs checking here?,"interfaces_count");
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-13
+     *       LOAD_SYSCALL_FAILURE(what needs checking here?,
+     *                            "interfaces_count");
      */
 
     if (0 == pcfs->interfaces_count)
@@ -932,7 +959,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
         /*
          * Iterate through class file's interfaces[] array and
-         * fill in the constant_pool[] references for normal use.
+         * fill in the @c @b constant_pool[] references for normal use.
          */
         jvm_interface_index ifidx;
         for (ifidx = 0; ifidx < pcfs->interfaces_count; ifidx++)
@@ -954,7 +981,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
             {
                 HEAP_FREE_METHOD(pcfs->interfaces);
                 /*!
-                 * @todo HEAP_FREE_METHOD(pcfs->constan_pool[0..n]);
+                 * @todo HARMONY-6-jvm-classfile.c-14
+                 *       HEAP_FREE_METHOD(pcfs->constan_pool[0..n]);
                  */
                 HEAP_FREE_METHOD(pcfs);
             }
@@ -962,7 +990,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
             GENERIC_FAILURE1_PTR((CONSTANT_Class !=
                                                   CP_TAG(pcfs,cfifidx)),
                                  DMLNORM,
-                                 "classfile_loadclassdata",
+                                 arch_function_name,
                                  "Invalid interface tag %d",
                                  CP_TAG(pcfs, cfifidx),
                                  ClassFile,
@@ -991,11 +1019,14 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     pcfs->fields_count = GETRS2(pu2++);
 
- 
-    /* LOAD_SYSCALL_FAILURE(what needs checking here?,"fields_count");*/
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-15
+     *       LOAD_SYSCALL_FAILURE(what needs checking here?,
+     *                            "fields_count");
+     */
 
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "flds count=%d",
               pcfs->fields_count);
 
@@ -1011,7 +1042,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
         pcfs->fields = (field_info **) rnull;
     }
     else
-    {    	
+    {
         jvm_field_index fldidx;
 
         /*
@@ -1102,8 +1133,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                             pcfs,
                             &pcfs->fields[fldidx]->attributes[atridx],
                             (attribute_info *) pfbytes);
-     
-               LOAD_SYSCALL_FAILURE((rnull == pfbytes),
+
+                    LOAD_SYSCALL_FAILURE((rnull == pfbytes),
                                          "load field attribute",
                                          rnull,
                                          rnull);
@@ -1120,6 +1151,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     } /* if pcfs->fields */
 
+
     /*****************************************************************/
     /* Get method_count                                              */
     /*****************************************************************/
@@ -1127,13 +1159,16 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Point past end of fields area */
     MAKE_PU2(pu2, pfbytes);
 
-    /*LOAD_SYSCALL_FAILURE(what needs checking here?,"methods count");*/
- 
- 
     pcfs->methods_count =  GETRS2(pu2++);
 
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-16
+     *       LOAD_SYSCALL_FAILURE(what needs checking here?,
+     *                            "methods count");
+     */
+
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "meth count=%d",
               pcfs->methods_count);
 
@@ -1219,6 +1254,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
             pcfs->methods[mthidx]
                     ->LOCAL_method_binding.nmordJVM =
                                      jvm_native_method_ordinal_null;
+
 
             /*
              * Map the indices in the class file to point to actual
@@ -1327,12 +1363,16 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Point past end of methods area */
     MAKE_PU2(pu2, pmbytes);
 
-    /*LOAD_SYSCALL_FAILURE(what needs checking here?,"methods count");*/
-   
     pcfs->attributes_count = GETRS2(pu2++);
 
+    /*!
+     * @todo HARMONY-6-jvm-classfile.c-17
+     *       LOAD_SYSCALL_FAILURE(what needs checking here?,
+     *                            "methods count");
+     */
+
     sysDbgMsg(DMLNORM,
-              "classfile_loadclassdata",
+              arch_function_name,
               "att cnt=%d",
               pcfs->attributes_count);
 
@@ -1385,7 +1425,10 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     } /* if pcfs->methods_count else */
 
 
-   /*! @todo Throw @b VerifyError for classes w/ questionable contents*/
+   /*!
+    * @todo HARMONY-6-jvm-classfile.c-18
+    *       Throw @b VerifyError for classes w/ questionable contents
+    */
 
     /* Class file structures are now fully loaded from class file data*/
 
@@ -1400,13 +1443,17 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
  *
  * @param  pcfs   Pointer to a ClassFile structure with all its pieces
  *
+ *
  * @returns @link #rvoid rvoid@endlink Whether it succeeds or fails,
  *          returning anything does not make much sense.  This is
  *          similar to @c @b free(3) not returning anything even
  *          when a bad pointer was passed in.
+ *
  */ 
 rvoid classfile_unloadclassdata(ClassFile *pcfs)
 {
+    ARCH_FUNCTION_NAME(classfile_unloadclassdata);
+
     if (rnull == pcfs)
     { 
         return; /* Nothing to do if @link #rnull rnull@endlink pointer*/
@@ -1421,7 +1468,8 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
      * Deallocate in the reverse order of allocation to eliminate
      * @e any chance for @link #rnull rnull@endlink pointer.  Do
      * file attributes first (last entry to first), then method
-     * attributes, methods, field attributes, fields, and constant_pool.
+     * attributes, methods, field attributes, fields, and
+     * @c @b constant_pool.
      */
 
     if ((0 < pcfs->attributes_count) && (rnull != pcfs->attributes))
@@ -1580,7 +1628,7 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
 #define READ_SYSCALL_FAILURE(expr, msg)            \
     GENERIC_FAILURE_PTR((expr),                    \
                         DMLMIN,                    \
-                        "classfile_readclassfile", \
+                        arch_function_name,        \
                         msg,                       \
                         rvoid,                     \
                         rnull,                     \
@@ -1613,9 +1661,11 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
  */
 u1 *classfile_readclassfile(rchar *filename)
 {
+    ARCH_FUNCTION_NAME(classfile_readclassfile);
+
     off_t filesize = 0;
 
-    struct stat statbfr;
+    rvoid *statbfr; /* Portability library does (struct stat) part */
 
     rvoid *pclassfile_image;
 
@@ -1624,30 +1674,34 @@ u1 *classfile_readclassfile(rchar *filename)
     /*
      * Chk if file is available and read its stat info, esp file size
      */
-    int rc = stat(filename, &statbfr);
-    READ_SYSCALL_FAILURE(0 > rc, "statbfr");
+    statbfr = portable_stat(filename);
+
+    READ_SYSCALL_FAILURE(rnull == statbfr, "statbfr");
+
+    rlong get_st_size = portable_stat_get_st_size(statbfr);
+    HEAP_FREE_DATA(statbfr);
 
     /*
      * Allocate enough space for entire class file to be
      * Read into memory at once.
      */
 
-    pclassfile_image = (rvoid *) HEAP_GET_DATA(statbfr.st_size, rfalse);
+    pclassfile_image = (rvoid *) HEAP_GET_DATA(get_st_size, rfalse);
 
     /* Now go open the file and read it */
-    fd = open(filename, O_RDONLY);
+    fd = portable_open(filename, O_RDONLY);
     READ_SYSCALL_FAILURE(0 > fd, "file open");
 
     /* Read the whole file in at once and close it. */
-    filesize = read(fd, pclassfile_image, statbfr.st_size);
+    filesize = portable_read(fd, pclassfile_image, get_st_size);
     READ_SYSCALL_FAILURE(0 > filesize, "file read");
 
-    close(fd);
+    portable_close(fd);
 
     /* Make sure stat() and read() have the same size */
-    GENERIC_FAILURE_PTR((filesize != statbfr.st_size),
+    GENERIC_FAILURE_PTR((filesize != get_st_size),
                         DMLNORM,
-                        "classfile_readclassfile", 
+                        arch_function_name, 
                         "Incomplete file read",
                         rvoid,
                         pclassfile_image,
@@ -1664,7 +1718,7 @@ u1 *classfile_readclassfile(rchar *filename)
  * load up one class file from it.
  *
  * If a valid JAR file is read, return pointer to memory area containing
- * the JAva class image of the startup class that was specified in Jar
+ * the Java class image of the startup class that was specified in Jar
  * Manifest file.  In the future, all classes in the JAR file will
  * be available for loading  from the temporary disk area via
  * @b CLASSPATH.
@@ -1672,7 +1726,9 @@ u1 *classfile_readclassfile(rchar *filename)
  */
 u1 *classfile_readjarfile(rchar *filename)
 {
-    struct stat statbfr;
+    ARCH_FUNCTION_NAME(classfile_readjarfile);
+
+    rvoid *statbfr; /* Portability library does (struct stat) part */
 
     rchar *jarparm = HEAP_GET_DATA(JVMCFG_SCRIPT_MAX, rfalse);
 
@@ -1680,24 +1736,37 @@ u1 *classfile_readjarfile(rchar *filename)
 
     rchar *jarscript = HEAP_GET_DATA(JVMCFG_SCRIPT_MAX, rfalse);
 
-    /*! @todo  Need a version of this that works on MS Windows */
+    /*!
+     * @todo  HARMONY-6-jvm-classfile.c-19 Need a version of this that
+     *        works on MS Windows and on CygWin w/ ALT_ (\\) path spec.
+     */
 
     /*
      * Make sure to have an @e absolute path name to @b filename
      * since it may be relative and the @c @b jar command
      * used @c @b chdir
      */
+/* #ifdef CONFIG_CYGWIN
+       ** 
+        * Need to account for \path\name as well as C:\path\name forms
+        * plus CygWin's /path/name form
+        **
+       if ((JVMCFG_PATHNAME_DELIMITER_CHAR     == filename[0]) ||
+           (JVMCFG_PATHNAME_ALT_DELIMITER_CHAR == filename[0]))
+   #else
+*/
     if (JVMCFG_PATHNAME_DELIMITER_CHAR == filename[0])
+/* #endif */
     {
-        strcpy(jarparm, filename);
+        portable_strcpy(jarparm, filename);
     }
     else
     {
         /*!
-         * @todo  Check `pwd` overflow and @link #rnull rnull@endlink
-         *        returned
+         * @todo  HARMONY-6-jvm-classfile.c-20 Check `pwd` overflow
+         *        and @link #rnull rnull@endlink returned
          */
-        getwd(pwd);
+        portable_getwd(pwd);
 
         sprintfLocal(jarparm,
                      "%s%c%s",
@@ -1718,11 +1787,11 @@ u1 *classfile_readjarfile(rchar *filename)
                  pjvm->java_home,
                  jarparm);
 
-    int rc = system(jarscript);
+    int rc = portable_system(jarscript);
 
     if (0 != rc)
     {
-        sysErrMsg("classfile_readjarfile",
+        sysErrMsg(arch_function_name,
                   "Cannot extract data from JAR file %s",
                   jarparm);
         exit_jvm(EXIT_CLASSPATH_JAR);
@@ -1736,15 +1805,13 @@ u1 *classfile_readjarfile(rchar *filename)
                  JVMCFG_PATHNAME_DELIMITER_CHAR,
                  JVMCFG_JARFILE_MANIFEST_FILENAME);
 
-    rc = stat(jarscript, &statbfr);
-
 
     /* Read manifest file and locate starting class name */
     rchar *mnfstartclass = manifest_get_main(jarscript);
 
     if (rnull == mnfstartclass)
     {
-        sysErrMsg("classfile_readjarfile",
+        sysErrMsg(arch_function_name,
                   "Cannot locate start class in JAR file %s",
                   jarparm);
         exit_jvm(EXIT_CLASSPATH_JAR);
@@ -1760,22 +1827,22 @@ u1 *classfile_readjarfile(rchar *filename)
                  tmparea_get(),
                  JVMCFG_PATHNAME_DELIMITER_CHAR);
 
-    int dirlen = strlen(start_class_tmpfile);
-    strcat(pwd, mnfstartclass);
+    int dirlen = portable_strlen(start_class_tmpfile);
+    portable_strcat(pwd, mnfstartclass);
 
     (rvoid) classpath_external2internal_classname_inplace(&pwd[dirlen]);
 
-    int alllen = strlen(start_class_tmpfile);
+    int alllen = portable_strlen(start_class_tmpfile);
     start_class_tmpfile[alllen] = JVMCFG_EXTENSION_DELIMITER_CHAR;
     start_class_tmpfile[alllen + 1] = '\0';
-    strcat(pwd, CLASSFILE_EXTENSION_DEFAULT);
+    portable_strcat(pwd, CLASSFILE_EXTENSION_DEFAULT);
 
-    rc = stat(start_class_tmpfile, &statbfr);
+    statbfr = portable_stat(start_class_tmpfile);
 
     /* Complain if class in manifest was not found in JAR file */
-    if (0 != rc)
+    if (rnull == statbfr)
     {
-        sysErrMsg("classfile_readjarfile",
+        sysErrMsg(arch_function_name,
            "Cannot locate start class '%s' in manifest for JAR file %s",
                   mnfstartclass,
                   jarparm);
