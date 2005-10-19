@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #!
-# @file /home/dlydick/harmony/bootJVM/build.sh
+# @file /home/dlydick/harmony/bootjvm/bootJVM/build.sh
 #
 # @brief Build Boot JVM.
 #
@@ -28,16 +28,20 @@
 #            jni/src/harmony/generic/0.0/build.sh@endlink
 #
 #
-# @todo  The entire project should also have 'gmake' support.  It
-#        would be a simple thing to add/change the 'config/*' roster
-#        files with @link config.sh config.sh@endlink to support this.
+# @todo  HARMONY-6-build.sh-1 The entire project should also have
+#        'gmake' support.  It would be a simple thing to add/change the
+#        'config/*' roster files with @link config.sh config.sh@endlink
+#        to support this.
 #
-# @todo  A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-build-sh-2  A Windows .BAT version of this script
+#        needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -61,6 +65,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
