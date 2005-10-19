@@ -3,7 +3,8 @@
 #!
 # @file ./dist-src.sh
 #
-# @brief Distribute Boot JVM source package.
+# @brief Distribute Boot JVM source package, with and without \
+# documentation package.
 #
 # Clean up all build targets so that only source remains.
 # Then create pre-formatted documentation for installation
@@ -23,12 +24,15 @@
 #             This will ensure immediate access to them by
 #             Eclipse users without having to change anything.
 #
-# @todo A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-dist-src.sh-1 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -52,6 +56,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -103,6 +108,9 @@ fi
 # rebuild documentation in _all_ formats, archive it, and
 # then delete it.  Package the result in final 'tar' file.
 #
+DistChkReleaseLevel
+
+DistChkTarget
 
 DistPrep
 
@@ -134,66 +142,127 @@ DistDocPrep
 echo ""
 echo "$PGMNAME: Setting directory permissions"
 umask 022
-chmod 0755 `find . -type d -print`
+chmod 0755 `find . -type d -print | egrep -v "/\.svn"`
 
 echo ""
 echo "$PGMNAME: Setting source file permissions"
-chmod 0644 `find . -type f -name \*.c -print`
-chmod 0644 `find . -type f -name \*.h -print`
-chmod 0644 `find . -type f -name \*.java -print`
-chmod 0755 `find . -type f -name \*.sh -print`
-chmod 0644 `find . -type f -name \*.dox -print`
-chmod 0644 [ILR]*
-chmod 0644 `find . -type f -name .\?\?\* -print`
+chmod 0644 `find . -type f -name \*.c -print | egrep -v "/\.svn"`
+chmod 0644 `find . -type f -name \*.h -print | egrep -v "/\.svn"`
+chmod 0644 `find . -type f -name \*.java -print | egrep -v "/\.svn"`
+chmod 0755 `find . -type f -name \*.sh -print | egrep -v "/\.svn"`
+chmod 0644 `find . -type f -name \*.dox -print | egrep -v "/\.svn"`
+chmod 0644 [A-Z]*
+chmod 0644 `find . -type f -name .\?\?\* -print | egrep -v "/\.svn"`
 
 DistTargetBuild dox
 
-DistDocTar
+# Time stamp all files together
+TMPTIMESTAMPFILE=${TMPDIR:-/tmp}/tmp.$PGMNAME.$$
+rm -f $TMPTIMESTAMPFILE
+touch $TMPTIMESTAMPFILE
 
-chmod +w `find . -print`
-touch `find . -print`
+# Itemize all files and symbolic links, less SVN administrative areas
+for f in `find . -type f -print | egrep -v "/\.svn"`
+do
+    # Any file that complains here is not listed in the known file types
+    touch -r $TMPTIMESTAMPFILE $f
+done
+rm -f $TMPTIMESTAMPFILE
+
+DistDocTar
 
 DistDocUnPrep
 
 DistConfigPrep
 
 echo ""
-echo "$PGMNAME: Creating distribution file '../../$DISTSRCTAR'"
+echo "$PGMNAME: Creating distribution file '../$DISTSRCDOCTAR'"
 
-cd ../..
-rm -f $DISTSRCTAR
-tar cf $DISTSRCTAR harmony/bootJVM
-if test ! -r $DISTSRCTAR
+cd ..
+ln -s bootJVM $TARGET_HOME
+
+rm -f $DISTSRCDOCTAR $DISTSRCDOCTAR.gz
+
+# Itemize all files and symbolic links, less SVN administrative areas
+SRCTARCFCMD=`(find bootJVM -type l -print; \
+              find bootJVM -type f -print) |\
+              egrep -v "/\.svn|$PREFMTDOCSTAR" | \
+              sed "s/^bootJVM/$TARGET_HOME/" | \
+              sort`
+
+tar cf $DISTSRCDOCTAR $SRCTARCFCMD $TARGET_HOME/$PREFMTDOCSTAR.gz
+if test ! -r $DISTSRCDOCTAR
 then
     echo ""
-    echo "$PGMNAME: Directory `cd ../..; pwd` is not writable."
+    echo "$PGMNAME: Cannot locate '../$DISTSRCDOCTAR'."
+    echo "$PGMNAME: Directory `cd ..; pwd` is probably not writable."
     echo "$PGMNAME: Please make it writable and try again."
     exit 5
 fi
 
 echo ""
 echo \
-   "$PGMNAME: Compressing distribution file into '../../$DISTSRCTAR.gz'"
+   "$PGMNAME: Compressing distribution file into '../$DISTSRCDOCTAR.gz'"
+gzip $DISTSRCDOCTAR
+if test ! -r $DISTSRCDOCTAR.gz
+then
+    echo ""
+    echo "$PGMNAME: Cannot compress into '$DISTSRCDOCTAR.gz'"
+    exit 6
+fi
+
+chmod 0444 $DISTSRCDOCTAR.gz
+
+echo ""
+echo "$PGMNAME: Creating distribution file '../$DISTSRCTAR'"
+
+rm -f $DISTSRCTAR $DISTSRCTAR.gz
+
+#
+# Temporarily remove documentation package, create distribution file,
+# and restore it.
+#
+rm -f $TARGET_HOME/$PREFMTDOCSTAR.gz
+
+# Itemize all files and symbolic links, less SVN administrative areas
+tar cf $DISTSRCTAR $SRCTARCFCMD
+cat $DISTSRCDOCTAR.gz | gunzip | tar xf - $TARGET_HOME/$PREFMTDOCSTAR.gz
+
+if test ! -r $DISTSRCTAR
+then
+    echo ""
+    echo "$PGMNAME: Cannot locate '../$DISTSRCTAR'."
+    echo "$PGMNAME: Directory `cd ..; pwd` is probably not writable."
+    echo "$PGMNAME: Please make it writable and try again."
+    exit 7
+fi
+
+echo ""
+echo \
+   "$PGMNAME: Compressing distribution file into '../$DISTSRCTAR.gz'"
 rm -f $DISTSRCTAR.gz
 gzip $DISTSRCTAR
 if test ! -r $DISTSRCTAR.gz
 then
     echo ""
     echo "$PGMNAME: Cannot compress into '$DISTSRCTAR.gz'"
-    exit 6
+    exit 8
 fi
 
 chmod 0444 $DISTSRCTAR.gz
-cd harmony/bootJVM
+
+rm $TARGET_HOME
+cd bootJVM
 
 DistConfigUnPrep
 
 DistUnPrep
 
 echo ""
-echo "$PGMNAME: Source distribution tar file created:"
+echo "$PGMNAME: Source distribution tar files created:"
 echo ""
-ls -l ../../$DISTSRCTAR.gz
+ls -l ../$DISTSRCTAR.gz
+ls -l ../$DISTSRCDOCTAR.gz
 echo ""
 
 ###################################################################
