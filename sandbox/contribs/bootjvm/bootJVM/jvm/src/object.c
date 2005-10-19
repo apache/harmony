@@ -9,7 +9,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -33,6 +35,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -40,7 +43,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(object, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(object, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -65,11 +70,13 @@ ARCH_COPYRIGHT_APACHE(object, c, "$URL$ $Id$");
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid object_init()
 {
+    ARCH_FUNCTION_NAME(object_init);
+
     object_new_setup(jvm_object_hash_null);
 
     pjvm->object_allocate_last = jvm_object_hash_null;
@@ -118,6 +125,8 @@ rvoid object_run_method(jvm_class_index   clsidx,
                         rchar            *mthdesc,
                         jvm_thread_index  thridx)
 {
+    ARCH_FUNCTION_NAME(object_run_method);
+
     /* Must specify a valid thread */
     if (jvm_thread_index_null == thridx)
     {
@@ -180,7 +189,7 @@ rvoid object_run_method(jvm_class_index   clsidx,
 
         Code_attribute *pca =
             (Code_attribute *)
-            &pcfs->methods[mthidx]->attributes[codeatridx];
+            &pcfs->methods[mthidx]->attributes[codeatridx]->ai;
 
         PUSH_FRAME(thridx, pca->max_locals);
         PUT_PC_IMMEDIATE(thridx,
@@ -201,7 +210,7 @@ rvoid object_run_method(jvm_class_index   clsidx,
         if (rfalse == opcode_run(thridx, rfalse))
         {
             /* Problem running error class, so quit */
-            sysErrMsg("opcode_load_run_throwable",
+            sysErrMsg(arch_function_name,
                       "Cannot run method %s%s",
                       mthname,
                       mthdesc);
@@ -244,6 +253,8 @@ rvoid object_run_method(jvm_class_index   clsidx,
  */
 rvoid object_new_setup(jvm_object_hash objhash)
 {
+    ARCH_FUNCTION_NAME(object_new_setup);
+
     /*
      * Declare slot in use, but not initialized.
      * (Redundant for most situations where
@@ -322,6 +333,8 @@ rvoid object_new_setup(jvm_object_hash objhash)
  */
 static jvm_object_hash object_allocate_slot(rboolean tryagain)
 {
+    ARCH_FUNCTION_NAME(object_allocate_slot);
+
     /* Search for a free object table slot */
     jvm_object_hash objhash =
         (JVMCFG_MAX_OBJECTS == pjvm->object_allocate_last)
@@ -520,7 +533,7 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  *                      @link #rtrue rtrue@endlink.
  *
  *
- * @returns  Object hash value of allocation.  Throw error if no slots.
+ * @returns Object hash value of allocation.  Throw error if no slots.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -541,6 +554,8 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                                     rboolean         run_init_,
                                     jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(object_instance_new);
+
     /* Locate an empty slot */
     jvm_object_hash objhash = object_allocate_slot(rtrue);
 
@@ -622,7 +637,10 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                       arraylength[0] * sizeof(jvm_object_hash),
                       rtrue)
 
-                /*! @todo  case needs testing: 0 == arraylength[0] */
+                    /*!
+                     * @todo  HARMONY-6-jvm-object.c-1 case needs
+                     *         testing: 0 == arraylength[0]
+                     */
                 : (rvoid *) rnull;
         }
         else
@@ -836,10 +854,21 @@ jvm_object_hash object_instance_new(rushort          special_obj,
  *
  * @returns @link #rvoid rvoid@endlink
  *
+ *
+ * @bug HARMONY-6-object.c-1001 During the invocation of
+ *      @link #object_run_method() object_run_method()@endlink,
+ *      a @b SIGSEGV occurs, seemingly on a valid Code_attribute.
+ *      Has that somehow been freed due to @link #GC_RUN()
+        GC_RUN@endlink during the @link #class_shutdown_1()
+        class_shutdown_1()@endlink just recently?  Or is there
+ *      a wild pointer somewhere?
+ *
  */
 rvoid object_instance_finalize(jvm_object_hash objhash,
                                jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(object_instance_finalize);
+
     jvm_class_index clsidx = OBJECT_OBJECT_LINKAGE(objhash)->clsidx;
 
     jvm_method_index mthidx =
@@ -886,12 +915,14 @@ rvoid object_instance_finalize(jvm_object_hash objhash,
  * @param  objhash   Object hash of object to unload its class data
  *
  *
- * @returns  @link #rtrue rtrue@endlink if another object is using
- *           this class file, otherwise @link #rfalse rfalse@endlink.
+ * @returns @link #rtrue rtrue@endlink if another object is using
+ *          this class file, otherwise @link #rfalse rfalse@endlink.
  *
  */ 
 rboolean object_locate_pcfs(jvm_object_hash objhash)
 {
+    ARCH_FUNCTION_NAME(object_locate_pcfs);
+
     jvm_object_hash objhashSCAN;
 
     ClassFile *pcfs = OBJECT_OBJECT_LINKAGE(objhash)->pcfs;
@@ -964,25 +995,28 @@ rboolean object_locate_pcfs(jvm_object_hash objhash)
  *
  * @param    objhash  Object hash value of allocation.
  *
- * @param    rmref    @link #rtrue rtrue@endlink if @e object
+ * @param    rmref    @link #rtrue rtrue@endlink if @e objhash
  *                    references should be removed,
  *                    which is NOT SO during JVM shutdown.
  *                    Regardless of this value, @e class references
  *                    are always removed.
  *
  *
- * @returns  Same as input if slot was freed, else
- *           @link #jvm_object_hash_null jvm_object_hash_null@endlink.
+ * @returns Same as input if slot was freed, else
+ *          @link #jvm_object_hash_null jvm_object_hash_null@endlink.
  *
  */
 
 jvm_object_hash object_instance_delete(jvm_object_hash objhash,
                                        rboolean        rmref)
 {
+    ARCH_FUNCTION_NAME(object_instance_delete);
+
 #if 0
     /*!
-     * @todo  Should the @link #jvm_object_hash_null
-              jvm_object_hash_null@endlink object be undeleteable?
+     * @todo  HARMONY-6-jvm-object.c-2 Should the
+     *        @link #jvm_object_hash_null jvm_object_hash_null@endlink
+     *        object be undeleteable?
      */
     if (jvm_object_hash_null == objhash)
     { 
@@ -993,7 +1027,8 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
     if (OBJECT(objhash).status & OBJECT_STATUS_INUSE)
     {
         /*!
-         * @todo  Is the java.lang.Object.finalize() method (or
+         * @todo  HARMONY-6-jvm-object.c-3 Is the
+         *        java.lang.Object.finalize() method (or
          *        its subclass) invoked by the actual Java code
          *        when an object reference is removed?  Is this a
          *        GC function?  Where should this method be called
@@ -1129,11 +1164,13 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid object_shutdown()
 {
+    ARCH_FUNCTION_NAME(object_shutdown);
+
     jvm_object_hash objhash;
 
     for (objhash = jvm_object_hash_null;
@@ -1155,7 +1192,7 @@ rvoid object_shutdown()
         }
     }
 
-    /* This may result in a @e large garbage collection */
+    /*! @note This may result in a @e large garbage collection */
     GC_RUN(rfalse);
 
     /* Go clear out any remaining objects */
