@@ -15,7 +15,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -39,6 +41,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -46,12 +49,14 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(classpath, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(classpath, c,
+"$URL$",
+"$Id$");
 
 
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
+/* #include <string.h> */
+/* #include <stdlib.h> */
+/* #include <sys/stat.h> */
 
 #include "jvmcfg.h" 
 #include "cfmacros.h" 
@@ -88,13 +93,13 @@ ARCH_COPYRIGHT_APACHE(classpath, c, "$URL$ $Id$");
  * @returns @link #rvoid rvoid@endlink
  *
  *
- * @todo  Add proper searching for @c @b rt.jar file
- *        and @c @b Xbootclasspath .
+ * @todo  HARMONY-6-jvm-classpath.c-1 Add proper searching
+ *        for @c @b rt.jar file and @c @b Xbootclasspath .
  *        For the moment, they are defined in
  *        @link  config.h config.h@endlink as the
  *        @link #CONFIG_HACKED_RTJARFILE CONFIG_HACKED_RTJARFILE@endlink
- *        and
-  @link #CONFIG_HACKED_BOOTCLASSPATH CONFIG_HACKED_BOOTCLASSPATH@endlink
+ *        and @link #CONFIG_HACKED_BOOTCLASSPATH
+          CONFIG_HACKED_BOOTCLASSPATH@endlink
  *        pre-processor symbols and are commented in
  *        @link jvm/src/jvmcfg.h jvmcfg.h@endlink after this
  *        fashion.
@@ -105,6 +110,8 @@ static rint   classpath_list_len = 0;
 
 rvoid classpath_init()
 {
+    ARCH_FUNCTION_NAME(classpath_init);
+
     /* Initialize only once */
     if (rnull != classpath_list)
     {
@@ -119,24 +126,26 @@ rvoid classpath_init()
      * @b CLASSPATH, followed by potential
      * CONFIG_HACKED_xxx definitions.
      */
-    rchar *tmpclasspath;                    /* @b CLASSPATH dlm */
-    rint  tmpcplen = strlen(tmparea_get())   + sizeof(rchar)   +
-                     strlen(pjvm->classpath) + sizeof(rchar);
+    rchar *tmpclasspath;             /* @b CLASSPATH dlm */
+    rint tmpcplen =
+        portable_strlen(tmparea_get())   + sizeof(rchar)   +
+        portable_strlen(pjvm->classpath) + sizeof(rchar);
 
     /*
      * Compensate for CONFIG_HACKED_xxx definitions, handy development
      * hooks for when @b CLASSPATH is in question.
      */
 #ifdef CONFIG_HACKED_BOOTCLASSPATH
-                                                   /* @b CLASSPATH dlm*/
-    tmpcplen += strlen(CONFIG_HACKED_BOOTCLASSPATH) + sizeof(rchar);
+                                                 /* @b CLASSPATH dlm */
+    tmpcplen +=
+        portable_strlen(CONFIG_HACKED_BOOTCLASSPATH) + sizeof(rchar);
 #endif
 #ifdef CONFIG_HACKED_RTJARFILE
 
     /* For $JAVA_HOME/$CONFIG_HACKED_RTJARFILE */
-    tmpcplen += strlen(pjvm->java_home);
+    tmpcplen += portable_strlen(pjvm->java_home);
     tmpcplen += sizeof(rchar);
-    tmpcplen += strlen(CONFIG_HACKED_RTJARFILE)     + sizeof(rchar);
+    tmpcplen += portable_strlen(CONFIG_HACKED_RTJARFILE) +sizeof(rchar);
 #endif
     tmpcplen += sizeof(rchar);/* NUL byte, possibly 1 more than needed*/
 
@@ -153,39 +162,39 @@ rvoid classpath_init()
 @link #CONFIG_HACKED_BOOTCLASSPATH CONFIG_HACKED_BOOTCLASSPATH@endlink:
      * @link #CONFIG_HACKED_RTJARFILE CONFIG_HACKED_RTJARFILE@endlink
      */
-    strcpy(tmpclasspath, tmparea_get());
-    i = strlen(tmpclasspath);
+    portable_strcpy(tmpclasspath, tmparea_get());
+    i = portable_strlen(tmpclasspath);
     tmpclasspath[i] = CLASSPATH_ITEM_DELIMITER_CHAR;
     tmpclasspath[i + 1] = '\0';
 
-    strcat(tmpclasspath, pjvm->classpath);
+    portable_strcat(tmpclasspath, pjvm->classpath);
 
 #ifdef CONFIG_HACKED_BOOTCLASSPATH
-     i = strlen(tmpclasspath);
+     i = portable_strlen(tmpclasspath);
     tmpclasspath[i] = CLASSPATH_ITEM_DELIMITER_CHAR;
     tmpclasspath[i + 1] = '\0';
-    strcat(tmpclasspath, CONFIG_HACKED_BOOTCLASSPATH);
+    portable_strcat(tmpclasspath, CONFIG_HACKED_BOOTCLASSPATH);
 #endif
 #ifdef CONFIG_HACKED_RTJARFILE
-     i = strlen(tmpclasspath);
+     i = portable_strlen(tmpclasspath);
     tmpclasspath[i] = CLASSPATH_ITEM_DELIMITER_CHAR;
     tmpclasspath[i + 1] = '\0';
-    strcat(tmpclasspath, pjvm->java_home);
+    portable_strcat(tmpclasspath, pjvm->java_home);
 
-     i = strlen(tmpclasspath);
+     i = portable_strlen(tmpclasspath);
     tmpclasspath[i] = CLASSPATH_ITEM_DELIMITER_CHAR;
     tmpclasspath[i + 1] = '\0';
-    strcat(tmpclasspath, CONFIG_HACKED_RTJARFILE);
+    portable_strcat(tmpclasspath, CONFIG_HACKED_RTJARFILE);
 #endif
     HEAP_FREE_DATA(pjvm->classpath); /* May or may not be on heap */
     pjvm->classpath = tmpclasspath;  /* Keep for duration of pgm run */
     
 
-    /* WARNING!  NON-STANDARD TERMINATION CONDITION <= VERSUS < */
-    for (i = 0, pathcount = 0; i <= strlen(tmpclasspath); i++)
+    /* @warning  NON-STANDARD TERMINATION CONDITION <= VERSUS < */
+    for (i = 0, pathcount = 0; i <= portable_strlen(tmpclasspath); i++)
     {
         if ((CLASSPATH_ITEM_DELIMITER_CHAR == tmpclasspath[i]) ||
-            (i == strlen(tmpclasspath)))
+            (i == portable_strlen(tmpclasspath)))
         {
             pathcount++;
         }
@@ -199,15 +208,15 @@ rvoid classpath_init()
     rint  thislen;
     classpath_list_len = 0;
 
-    /* WARNING!  NON-STANDARD TERMINATION CONDITION <= VERSUS < */
+    /* @warning  NON-STANDARD TERMINATION CONDITION <= VERSUS < */
     for (i = 0, nextpath = tmpclasspath;
-         i <= strlen(tmpclasspath);
+         i <= portable_strlen(tmpclasspath);
          i++)
     {
 
         /* If found item delimiter OR END OF STRING (SEE ABOVE) */
         if ((CLASSPATH_ITEM_DELIMITER_CHAR == tmpclasspath[i]) ||
-            (i == strlen(tmpclasspath)))
+            (i == portable_strlen(tmpclasspath)))
         {
             /* calculate length of this @b CLASSPATH entry */
             thislen = (&tmpclasspath[i]) - nextpath;
@@ -236,9 +245,9 @@ rvoid classpath_init()
                 HEAP_GET_DATA(thislen + sizeof(rchar), rfalse);
 
             /* Store current @b CLASSPATH item, including final '\0' */
-            memcpy(classpath_list[classpath_list_len],
-                   nextpath, 
-                   thislen);
+            portable_memcpy(classpath_list[classpath_list_len],
+                            nextpath, 
+                            thislen);
             classpath_list[classpath_list_len][thislen] = '\0';
             classpath_list_len++;
 
@@ -268,18 +277,21 @@ rvoid classpath_init()
  *
  * @param  pclasspath  String from @b CLASSPATH list
  *
+ *
  * @returns @link #rtrue rtrue@endlink if string ends with
  *          @c @b .jar, @link #rfalse rfalse@endlink otherwise.
  *
  */
 rboolean classpath_isjar(rchar *pclasspath)
 {
+    ARCH_FUNCTION_NAME(classpath_isjar);
+
     rint len, jarlen;
 
-    /* Lengths of test string and of JAR extension (w/ name.ext dlm)*/
-    len = strlen(pclasspath);
-    jarlen = strlen(JVMCFG_EXTENSION_DELIMITER_STRING) +
-             strlen(CLASSFILE_EXTENSION_JAR);
+    /* Lengths of test string and of JAR extension (w/ name.ext dlm) */
+    len = portable_strlen(pclasspath);
+    jarlen = portable_strlen(JVMCFG_EXTENSION_DELIMITER_STRING) +
+             portable_strlen(CLASSFILE_EXTENSION_JAR);
 
     /* For VERY short @b CLASSPATH entries, it cannot be a JAR file */
     if (jarlen >= len)
@@ -295,9 +307,9 @@ rboolean classpath_isjar(rchar *pclasspath)
 
     /* Now go test JAR extension since delimiter is present */
     jarlen--;
-    if (0 == strncmp(&pclasspath[len - jarlen],
-                     CLASSFILE_EXTENSION_JAR,
-                     jarlen))
+    if (0 == portable_strncmp(&pclasspath[len - jarlen],
+                              CLASSFILE_EXTENSION_JAR,
+                              jarlen))
     {
         return(rtrue);
     }
@@ -311,7 +323,7 @@ rboolean classpath_isjar(rchar *pclasspath)
 
 /*!
  * @brief Convert class name format external to internal form.
- 
+ *
  * The external format is @c @b class.name.format , while the
  * internal format is @c @b class/name/format .
  * Result is unchanged if it is already in internal format.
@@ -325,21 +337,25 @@ rboolean classpath_isjar(rchar *pclasspath)
  *          Call HEAP_FREE_DATA() when finished with buffer.
  *
  */
-
 rchar *classpath_external2internal_classname(rchar *clsname)
 {
-    rint len = strlen(clsname);
+    ARCH_FUNCTION_NAME(classpath_external2internal_classname);
+
+    rint len = portable_strlen(clsname);
     rchar *rc = HEAP_GET_DATA(1 + len, rfalse); /* 1 + for NUL byte */
 
-    memcpy(rc, clsname, 1 + len); /* 1 + for NUL byte */
+    portable_memcpy(rc, clsname, 1 + len); /* 1 + for NUL byte */
 
     return(classpath_external2internal_classname_inplace(rc));
 
 } /* END of classpath_external2internal_classname() */
 
 
-/*
- * In-place version of classpath_externam2internal_classname():
+/*!
+ * @brief Convert <em>in place</em> class name format external
+ * to internal form.
+ *
+ * In-place version of classpath_external2internal_classname():
  * Takes an existing buffer and performs the conversion on it
  * @e without heap allocation.  Return the input buffer.
  *
@@ -353,8 +369,10 @@ rchar *classpath_external2internal_classname(rchar *clsname)
  */
 rchar *classpath_external2internal_classname_inplace(rchar *inoutbfr)
 {
+    ARCH_FUNCTION_NAME(classpath_external2internal_classname_inplace);
+
     rint i;
-    int len = strlen(inoutbfr);
+    int len = portable_strlen(inoutbfr);
 
     for (i = 0; i < len; i++)
     {
@@ -371,6 +389,76 @@ rchar *classpath_external2internal_classname_inplace(rchar *inoutbfr)
     return(inoutbfr);
 
 } /* END of classpath_external2internal_classname_inplace() */
+
+
+/*!
+ * @brief Adjust class name string for shell expansion artifacts.
+ *
+ * Insert a backslash character in front of the dollar sign of any
+ * inner class name so that shell expansion does not see the dollar
+ * sign as a special character representing a shell variable.  Unless
+ * this step is taken, such a shell variable, most likely non-existent,
+ * will effectively truncate the string before the dollar sign.
+ *
+ *
+ * @param pclass_location  Null-terminated string containing a fully
+ *                         qualified class name, typically a path into a
+ *                         JAR file.
+ *
+ *
+ * @returns buffer address @b outbfr.  When finished with this buffer,
+ *          return it to the heap with
+ *          @link #HEAP_FREE_DATA() HEAP_FREE_DATA@endlink.  Notice
+ *          that if a buffer has no dollar signs, this function
+ *          is equivalent to strcpy(3).
+ *
+ */
+rchar *classpath_inner_class_adjust(rchar *pclass_location)
+{
+    ARCH_FUNCTION_NAME(classpath_inner_class_adjust);
+
+    int len = portable_strlen(pclass_location);
+
+    rint cllen = (rint) len;
+    rint i, j;
+    rint numdollar = 0;
+
+#ifndef CONFIG_WINDOWS
+    for (i = 0; i < cllen; i++)
+    {
+        if (CLASSNAME_INNERCLASS_MARKER_CHAR == pclass_location[i])
+        {
+            numdollar++;
+        }
+    }
+#endif
+
+    rchar *outbfr = HEAP_GET_DATA(cllen + numdollar, rfalse);
+
+    /*
+     * @warning  NON-STANDARD TERMINATION CONDITION <= VERSUS <
+     *           (so that NUL byte gets copied without any
+     *           special consideration).
+     */
+    for (i = 0, j = 0; i <= cllen; /* Done in body of loop: i++ */ )
+    {
+        /* Windows platforms don't need these escapes */
+#ifndef CONFIG_WINDOWS
+        /* Insert escape character before dollar sign where found */
+        if (CLASSNAME_INNERCLASS_MARKER_CHAR == pclass_location[i])
+        {
+            outbfr[j++] = CLASSNAME_INNERCLASS_ESCAPE_CHAR;
+        }
+#endif
+
+        /* Copy next input character to output buffer */
+        outbfr[j++] = pclass_location[i++];
+    }
+
+    /* Return buffer expanded with escapes where needed */
+    return(outbfr);
+
+} /* END of classpath_inner_class_adjust() */
 
 
 /*!
@@ -406,16 +494,16 @@ rchar *classpath_external2internal_classname_inplace(rchar *inoutbfr)
  *          to distinguish between them.  Thus the usage is,
  *          Return @link #rnull rnull@endlink if no match.
  *
- *         @todo VM Spec section 5.3.1:  Throw 'NoClassDeffoundError'
- *               if no match.
+ * @todo HARMONY-6-jvm-classpath.c-2 VM Spec section 5.3.1:  Throw
+ *       @b NoClassDeffoundError if no match.
  *
- *         Notice that @b clsname must be specified with package
- *         designations using INTERNAL (slash) delimiter form of
- *         the path.  This is what is natively found in the class
- *         files.  Of course, no package name means the simple
- *         default package, that is, an unpackaged class having
- *         no <b><code>package some.package.name</code></b> statement
- *         in source.
+ *       Notice that @b clsname must be specified with package
+ *       designations using INTERNAL (slash) delimiter form of
+ *       the path.  This is what is natively found in the class
+ *       files.  Of course, no package name means the simple
+ *       default package, that is, an unpackaged class having
+ *       no <b><code>package some.package.name</code></b> statement
+ *       in source.
  *
  * @verbatim
                rchar *p = classpath_get_from_prchar(
@@ -439,8 +527,11 @@ rchar *classpath_external2internal_classname_inplace(rchar *inoutbfr)
 
 rchar *classpath_get_from_prchar(rchar *clsname)
 {
+    ARCH_FUNCTION_NAME(classpath_get_from_prchar);
+
+    rvoid *statbfr; /* Portability library does (struct stat) part */
+
     rint i;
-    struct stat statbfr;
     rchar *name;
     int baselen;
 
@@ -456,8 +547,8 @@ rchar *classpath_get_from_prchar(rchar *clsname)
         name = &clsname[1 + arraydims];
 
         /* Calc position of end-of-class delimiter */
-        rchar *pdlm = strchr(name, BASETYPE_CHAR_L_TERM);
-        baselen = strlen(name);
+        rchar *pdlm = portable_strchr(name, BASETYPE_CHAR_L_TERM);
+        baselen = portable_strlen(name);
 
         /* Should @e always be @link #rtrue rtrue@endlink */
         if (rnull != pdlm)
@@ -474,7 +565,7 @@ rchar *classpath_get_from_prchar(rchar *clsname)
          * array dimensions.
          */
         name = clsname;
-        baselen = strlen(name);
+        baselen = portable_strlen(name);
     }
 
     rchar *jarscript = HEAP_GET_DATA(JVMCFG_SCRIPT_MAX, rfalse);
@@ -492,21 +583,23 @@ rchar *classpath_get_from_prchar(rchar *clsname)
         if (rtrue == classpath_isjar(classpath_list[i]))
         {
             /* Convert input parm to internal form, append suffix */
-            strcpy(class_location, name);
-            clen = strlen(class_location);
+            portable_strcpy(class_location, name);
+            clen = portable_strlen(class_location);
             (rvoid) classpath_external2internal_classname_inplace(
                                                         class_location);
             class_location[clen] = JVMCFG_EXTENSION_DELIMITER_CHAR;
             class_location[clen + 1] = '\0';
-            strcat(class_location, CLASSFILE_EXTENSION_DEFAULT);
+            portable_strcat(class_location,
+                            CLASSFILE_EXTENSION_DEFAULT);
+
+            rchar *inner_class_location =
+                classpath_inner_class_adjust(class_location);
 
             /*!
              * @internal Build up JAR command using internal class name
-             * with suffix.  Make @e sure all files are writeable
-             * for final <b><code>rm -rf</code></b>.
+             *           with suffix.  Make @e sure all files are
+             *           writeable for final <b><code>rm -rf</code></b>.
              */
-             
-            
             sprintfLocal(jarscript,
                          JVMCFG_JARFILE_DATA_EXTRACT_SCRIPT,
                          tmparea_get(),
@@ -514,46 +607,74 @@ rchar *classpath_get_from_prchar(rchar *clsname)
                          pjvm->java_home,
                          JVMCFG_PATHNAME_DELIMITER_CHAR,
                          classpath_list[i],
-                         class_location);
+                         inner_class_location);
 
-#ifdef CONFIG_WINDOWS
+#if defined(CONFIG_WINDOWS) || defined(CONFIG_CYGWIN)
 
-           /*
-            *   gmj : awful hack - need to escape out every \ in paths
-            *   or it doesn't seem to get across into the batch file correctly
-            */
-		   rchar *fixscript = HEAP_GET_DATA(JVMCFG_SCRIPT_MAX, rfalse);
+            /*
+             * @todo HARMONY-6-jvm-classpath.c-3
+             *   gmj : awful hack - need to escape out every \ in paths
+             *   or it doesn't seem to get across into the batch file
+             *   correctly
+             */
+            rchar *fixscript = HEAP_GET_DATA(JVMCFG_SCRIPT_MAX, rfalse);
 
-           char *buffptr = fixscript;
-		   char *jarscriptPtr = jarscript;
-		              
-		   char c;
-           while((c = *jarscriptPtr++)) {
-           		*buffptr++ = c;
-           		
-	             if (c == '\\') 
-	             {
-	           	    *buffptr++ = '\\';
-	             } 
-           }
-           *buffptr = '\0';
-           
-           strcpy(jarscript, fixscript);
-           HEAP_FREE_DATA(fixscript);
-                        
+            char *buffptr = fixscript;
+            char *jarscriptPtr = jarscript;
+
+            char c;
+            while((c = *jarscriptPtr++))
+            {
+                *buffptr++ = c;
+
+#if defined(CONFIG_WINDOWS)
+                if (c == JVMCFG_PATHNAME_DELIMITER_CHAR)
+                {
+                    *buffptr++ = JVMCFG_PATHNAME_DELIMITER_CHAR;
+                }
+#endif
+#if defined(CONFIG_CYGWIN)
+                /*
+                 * CygWin can have both--
+                 *    such as C:\\path\\name/more/path/name
+                 */
+                if (c == JVMCFG_PATHNAME_ALT_DELIMITER_CHAR)
+                {
+                    *buffptr++ = JVMCFG_PATHNAME_ALT_DELIMITER_CHAR;
+                }
+#endif
+            }
+            *buffptr = '\0';
+
+            portable_strcpy(jarscript, fixscript);
+            HEAP_FREE_DATA(fixscript);
+
 #endif
 
-           int rc = system(jarscript);
+            HEAP_FREE_DATA(inner_class_location);
+
+            int rc = portable_system(jarscript);
 
             if (0 != rc)
             {
-                sysErrMsg("classpath_get_from_prchar",
+                sysErrMsg(arch_function_name,
                           "Cannot extract '%s' from JAR file %s",
-                          class_location,
+                          inner_class_location,
                           classpath_list[i]);
+
+                HEAP_FREE_DATA(class_location);
+                HEAP_FREE_DATA(jarscript);
+
                 exit_jvm(EXIT_CLASSPATH_JAR);
 /*NOTREACHED*/
             }
+
+            /*
+             * @todo  HARMONY-6-jvm-classpath.c-4 Make sure that this
+             *        sprintf/stat works with both CONFIG_WINDOWS and
+             *        CONFIG_CYGWIN.
+             *
+             */
 
             /* Location of extracted file */
             sprintfLocal(jarscript,
@@ -562,13 +683,14 @@ rchar *classpath_get_from_prchar(rchar *clsname)
                          JVMCFG_PATHNAME_DELIMITER_CHAR,
                          class_location);
 
-            rc = stat(jarscript, &statbfr);
+            statbfr = portable_stat(jarscript);
+            HEAP_FREE_DATA(statbfr);
 
             /*
              * If file was extracted, report result
              * in heap-allocated bfr
              */
-            if (0 == rc)
+            if (rnull != statbfr)
             {
                 HEAP_FREE_DATA(class_location);
 
@@ -579,15 +701,22 @@ rchar *classpath_get_from_prchar(rchar *clsname)
         }
         else
         {
+            /*
+             * @todo  HARMONY-6-jvm-classpath.c-4 Make sure that this
+             *        sprintf/stat works with both CONFIG_WINDOWS and
+             *        CONFIG_CYGWIN.
+             *
+             */
+
             /* Convert input parm to internal form */
             sprintfLocal(class_location,
                          "%s%c\0",
                          classpath_list[i],
                          JVMCFG_PATHNAME_DELIMITER_CHAR);
 
-            clen = strlen(class_location);
+            clen = portable_strlen(class_location);
 
-            strcat(class_location, name);
+            portable_strcat(class_location, name);
 
             /*
              * Convert input parm to internal format and append
@@ -604,15 +733,19 @@ rchar *classpath_get_from_prchar(rchar *clsname)
                                         JVMCFG_EXTENSION_DELIMITER_CHAR;
                 class_location[clen + baselen + 1] = '\0';
 
-                strcat(class_location, CLASSFILE_EXTENSION_DEFAULT);
+                portable_strcat(class_location,
+                                CLASSFILE_EXTENSION_DEFAULT);
             }
 
             /* Test for existence of valid class file */
-            int rc = stat(class_location, &statbfr);
+            statbfr = portable_stat(class_location);
+            HEAP_FREE_DATA(statbfr);
 
             /* If match found, report result in heap-allocated bfr */
-            if (0 == rc)
+            if (rnull != statbfr)
             {
+                HEAP_FREE_DATA(jarscript);
+
                 return(class_location);
             }
         }
@@ -620,6 +753,8 @@ rchar *classpath_get_from_prchar(rchar *clsname)
 
     /* Class not found in @b CLASSPATH */
     HEAP_FREE_DATA(class_location);
+    HEAP_FREE_DATA(jarscript);
+
     return((rchar *) rnull);
 
 } /* END of classpath_get_from_prchar() */
@@ -652,6 +787,8 @@ rchar *classpath_get_from_prchar(rchar *clsname)
 
 rchar *classpath_get_from_cp_entry_utf(cp_info_dup *clsname)
 {
+    ARCH_FUNCTION_NAME(classpath_get_from_cp_entry_utf);
+
     rchar *prchar_clsname = utf_utf2prchar(PTR_THIS_CP_Utf8(clsname));
 
     rchar *rc = classpath_get_from_prchar(prchar_clsname);
@@ -670,11 +807,13 @@ rchar *classpath_get_from_cp_entry_utf(cp_info_dup *clsname)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid classpath_shutdown()
 {
+    ARCH_FUNCTION_NAME(classpath_shutdown);
+
     rint i;
 
     for (i = 0; i < classpath_list_len; i++)
