@@ -5,7 +5,9 @@
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -30,6 +32,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 #
@@ -47,7 +50,7 @@
 # @note:   See also the documentation page named "Main Page" for an
 #          overview from the JVM spec section number perspective.
 #
-# @todo Need to verify which web document for the
+# @todo HARMONY-6-README-0 Need to verify which web document for the
 #       Java 5 class file definition is either "official",
 #       actually correct, or is the <em>de facto</em> standard.
 #
@@ -440,14 +443,22 @@ INSTALL  <---  * * *   START HERE * * *
 Instructions for installing the source code and building the
 binaries and the documentation.
 
+
 LICENSE
 -------
 The Apache Software Foundation license text used by the ASF
 for all software distributions.
 
+
+AUTHORS
+-------
+Names of contributors who have worked in this area of the project.
+
+
 README
 ------
 This file.
+
 
 bootjvm.dox
 dox_filter.sh
@@ -461,6 +472,7 @@ for filtering input files.  It is declared as the
 to properly format all files that are not explicitly '.c'
 or '.h' or '.java' source files.
 
+
 svnstat.sh
 ----------
 Sample script from Doxygen documentation to display the status of
@@ -470,6 +482,7 @@ test/.project
 test/.classpath
 ---------------
 Eclipse project files for the 'test' Java project.
+
 
 jvm/.project
 jvm/.cdtproject
@@ -497,11 +510,13 @@ Directory containing default value of BOOTCLASSPATH environment
 variable.  THIS ABSOLUTE PATH NAME IS COMPILED INTO SOURCE CODE
 AND WILL NEED TO ULTIMATELY BE PHASED OUT.
 
+
 config/
 -------
 Directory where all results from 'config.sh' are stored.  These
 files are used by the various shell scripts and by Doxygen to
 build various aspects of the project.
+
 
 jvm/bin
 main/bin
@@ -511,9 +526,11 @@ jni/src/harmony/generic/0.0/bin
 Output area respectively from 'jvm/build.sh', 'main/build.sh',
 'test/build.sh', and 'jni/src/harmony/generic/0.0/build.sh'.
 
+
 libjvm/lib
 ----------
 Output area from 'libjvm/build.sh'
+
 
 jni/bin
 -------
@@ -536,6 +553,7 @@ out of the project when these classes have been developed by the
 project team.  Whether or not replacements from the project are
 stored here is TBD.
 
+
 config/config.h
 ---------------
 Although the other files stored in the 'config' directory are not
@@ -545,6 +563,7 @@ file specifically can be used as a reference when running 'config.sh'
 again to remember what settings were configured.  It will be very
 obvious from that script as to which definitions here match the
 questions.
+
 
 jvm/bin/bootjvm
 main/bin/bootjvm
@@ -556,6 +575,7 @@ jni/src/harmony/generic/0.0/bin/*/*.class
 The output files respectively from the build of the 'jvm',
 'main', 'test', and 'jni/src/harmony/generic/0.0'
 project build.
+
 
 libjvm/lib/libjvm.a
 -------------------
@@ -583,10 +603,12 @@ file.  This file MUST be included by all source files in
 source files.  There needs to be an equivalent for the Java code
 written for these features (see to-do item in source).
 
+
 jvm/src/argv.c
 --------------
 Parse the JVM command line.  For easy help, call program
 with '-help' option.
+
 
 jvm/src/attribute.c
 jvm/src/attribute.h
@@ -594,6 +616,7 @@ jvm/src/attribute.h
 Handle class file attributes.  The type definition
 'jvm_attribute_index' is the key to properly using class file
 attributes.
+
 
 jvm/src/bytegames.c
 -------------------
@@ -603,19 +626,23 @@ from 1- or 2-byte addresses, etc.  (These last are due to use of
 structure packing, especially in parsing class file data and parsing
 virtual opcode operands).
 
+
 jvm/src/cfattrib.c
 ------------------
 Process the attibute fields of class file data.  Since attributes
 are a large and specialized area of the JVM spec class file
 definition, they have been broken out of 'classfile.c'.
 
+
 jvm/src/cfmacros.h
 ------------------
 Macros for navigating the class file structures of 'classfile.h'.
 
+
 jvm/src/cfmsgs.c
 ----------------
 Diagnostic messages for class file data.
+
 
 jvm/src/class.c
 jvm/src/class.h
@@ -634,6 +661,7 @@ have an object that contains its object-ish components.  This
 object is also implemented to satisfy the spec requirements that
 a class also have a class object.  See 'linkage.h' as to how to
 navigate between classes, objects, and threads.
+
 
 jvm/src/classfile.c
 jvm/src/classfile.h
@@ -683,9 +711,11 @@ jvm/src/classpath.h
 -------------------
 Manage and navigate CLASSPATH environment variable.
 
+
 jvm/src/classutil.c
 -------------------
 Utilities for handing real machine class structures.
+
 
 jvm/src/exit.c
 jvm/src/exit.h
@@ -699,6 +729,7 @@ are extremely useful in processing fatal error conditions and
 state machine conditions under which there is no valid return
 or repair of an invalid state or irreconcilable condition.
 
+
 jvm/src/field.c
 jvm/src/field.h
 ---------------
@@ -706,9 +737,11 @@ Handle Java virtual machine variables for both class static fields
 and object instance fields.  The type definitions 'jvm_field_index'
 and 'jvm_field_lookup_index' are the keys to properly using Java fields.
 
+
 jvm/src/gc.h
 ------------
 API for all garbage collection algorithms.
+
 
 jvm/src/gc_stub.c
 -----------------
@@ -719,9 +752,11 @@ body corporate should stand for all algorithms.  See 'heap_*.c'
 and header file 'heap.h' for an example of implementing
 multiple algorithms on a single API.
 
+
 jvm/src/heap.h
 --------------
 API for all heap management algorithms.
+
 
 jvm/src/heap_simple.c
 ---------------------
@@ -730,11 +765,13 @@ and free(3).  One option is presented to return an allocated
 area that has been initialized to zeroes, which is useful for
 structure initialization.
 
+
 jvm/src/heap_bimodal.c
 ----------------------
 An improvement over 'heap_simple.c' where a large memory block
 is allocated from whence come all allocations up to a certain
 size.  Beyond that, the 'heap_simple.c' algorithm is used.
+
 
 jvm/src/jrtypes.c
 jvm/src/jrtypes.h
@@ -748,10 +785,12 @@ pointers to _any_ data type, and may be used for either the 'C' or
 the Java domains.  Compiled constant definitions are found
 in 'jrtypes.c' also.
 
+
 jvm/src/jvalue.h
 ----------------
 Java data type aggregate for storage of class static field
 and object instance fields.  One type fits all.
+
 
 jvm/src/jvm.c
 jvm/src/jvm.h
@@ -762,6 +801,7 @@ storage in this code, and only sparing use of static (file scope)
 storage.  Most everything else is either found here, is a
 local variable, or is on the heap.  The code in 'jvm.c' initializes,
 runs, and shuts down the JVM.
+
 
 jvm/src/jvmcfg.c
 jvm/src/jvmcfg.h
@@ -775,19 +815,23 @@ low limits on data types, etc.  Compiled constant definitions are
 found in 'jvmcfg.c' also for NULL and BAD definitions for major
 typedefs.
 
+
 jvm/src/jvmclass.h
 ------------------
 Fully qualified class name strings (internal form) for a wide
 variety of classes needed by the JVM at run time.  Of special
 significance is a large number of error and exception classes.
 
+
 jvm/src/jvmregs.h
 -----------------
 Definition of JVM program counter, stack, and stack navigation.
 
+
 jvm/src/jvmutil.c
 -----------------
 Utilities for debug message levels, stack dumps, etc.
+
 
 jvm/src/linkage.c
 jvm/src/linkage.h
@@ -798,21 +842,25 @@ contains late binding linkage functions to link field references
 and method references from one class into their definitions in
 another class.
 
+
 jvm/src/main.c
 main/src/main.c (symbolic link to jvm/src/main.c)
 ---------------
 A sample main() entry point that calls the JVM from either a
 library archive or by direct object linkage.
 
+
 jvm/src/manifest.c
 ------------------
 Read and process selected properties from a JAR manifest file.
+
 
 jvm/src/method.c
 jvm/src/method.h
 ----------------
 Handle Java virtural machine methods.  The type definition
 'jvm_method_index' is the key to properly using Java methods.
+
 
 jvm/src/native.c
 jvm/src/native.h
@@ -822,6 +870,7 @@ methods (those with intimate knowledge of the inner workings of
 the JVM).  Local native methods may, but are not required to, use
 the JNI interface, but a significant shortcut is provided for more
 direct connection between them and the JVM.
+
 
 jvm/src/nts.c
 jvm/src/nts.h
@@ -841,6 +890,7 @@ implemented with the (CONSTANT_Utf8_info) type definition, particularly
 as related to Java class files; (3) Unicode strings, which consist of a
 (jchar)[] type array variable and a (u2) length variable.
 
+
 jvm/src/object.c
 jvm/src/object.h
 ----------------
@@ -853,18 +903,33 @@ unrelated and there would be only a few changes to some macros
 necessary to support that new implementation.  See 'linkage.h'
 for how to navigate between classes, objects, and threads.
 
+
 jvm/src/objectutil.c
 --------------------
 Utilities for Java objects.  Support for synchronize()
 and unsynchronize() is found here, namely, the object monitor
 locks.  Other utility functions may be placed here as appropriate.
 
+
 jvm/src/opcode.c
+jvm/src/opmacros.h
 jvm/src/opcode.h
-----------------
+------------------
 The JVM spec, version 2, section 9, operation code list is found
 in the header file directly as defined in the spec.  The code
-contains the JVM inner execution loop.
+contains the JVM inner execution loop.  The macros for most opcodes
+are found in 'opmacros.h'
+
+
+jvm/src/portable_jmp_buf.c
+jvm/src/portable_libc.c
+jvm/src/portable_libm.c
+jvm/src/portable.h
+--------------------------
+Generic implementation of system and library calls that should be
+platform- and compiler-independent.  Any dependencies should thus
+be isolated to these source files.
+
 
 jvm/src/stdio.c
 ---------------
@@ -876,6 +941,7 @@ structure packing and caused strange runtime errors and SIGSEGV on
 normal library calls.  Therefore, most standard I/O was gathered into
 this file, with the exception of 'manifest.c', which does not seem
 to have to problem.
+
 
 jvm/src/thread.c
 jvm/src/thread.h
@@ -890,6 +956,7 @@ and there would be only a few changes to some macros
 necessary to support that new implementation.  See 'linkage.h'
 for how to navigate between classes, objects, and threads.
 
+
 jvm/src/threadstate.c
 ---------------------
 Thread state machine individual states.
@@ -897,9 +964,11 @@ A lengthy narrative near the beginning of this file defines
 the JVM thread state machine, which is then implemented in 'jvm.c'
 by jvm_run().
 
+
 jvm/src/threadutil.c
 --------------------
 Utilities for normal operation of the thread state machine.
+
 
 jvm/src/timeslice.c
 -------------------
@@ -907,10 +976,12 @@ Real-time JVM time slice timer for limiting the amount of time
 that a thread may run (see also 'jvm.c' and 'opcode.c') before
 the next thread is given some time.
 
+
 jvm/src/tmparea.c
 -----------------
 Private disk storage area for running the JVM.  It is set up and
 torn down by this code and is referenced through a getter function.
+
 
 jvm/src/util.h
 --------------
@@ -959,6 +1030,7 @@ Sample segments of java.lang.* package that contain the
 native declarations in these classes.  (Not comprehensive
 either for each class or for the package.)
 
+
 jni/src/harmony/generic/0.0/include/java_lang_Object.h
 jni/src/harmony/generic/0.0/include/java_lang_Class.h
 jni/src/harmony/generic/0.0/include/java_lang_String.h
@@ -969,6 +1041,7 @@ Java source files in the java.lang.* package that contain the
 native declarations in these classes.  (Not comprehensive
 either for each class or for the package.)
 
+
 jni/src/harmony/generic/0.0/src/java_lang_Object.c
 jni/src/harmony/generic/0.0/src/java_lang_Class.c
 jni/src/harmony/generic/0.0/src/java_lang_String.c
@@ -978,6 +1051,7 @@ JNI source code that correspond to the 'src/java/lang' equivalent
 Java source files in the java.lang.* package that contain the
 implementation of the local native methods in these classes.
 (Not comprehensive either for each class or for the package.)
+
 
 jvm/include/jlObject.h
 jvm/include/jlClass.h
@@ -992,6 +1066,7 @@ _independent_ so there is NO coupling between an arbitrary
 JDK's JNI implementation and this JVM.  Please see comments
 in these header files for more information.
 
+
 jvm/src/jlObject.c
 jvm/src/jlClass.c
 jvm/src/jlString.c
@@ -1003,6 +1078,7 @@ referenced by the JNI target functions.  For example, the
 function java_lang_Class_isPrimative() in 'java_lang_Class.c'
 will at some point call the 'jlClass_isPrimative()' function
 in 'jlClass.c'.
+
 
 jni/src/harmony/generic/0.0/src/sampleJNImain.c
 -----------------------------------------------
@@ -1024,9 +1100,11 @@ Just what it says.  In order to run this main() method, however,
 requires a _fully_ functional JVM with most of the basic JNI in
 place.
 
+
 test/src/harmony/jvm/test/PkgHelloWorld.java
 --------------------------------------------
 The same "hello world" program, but in a package.
+
 
 test/src/harmony/jvm/test/MainArgs.java
 ---------------------------------------
@@ -1037,40 +1115,40 @@ A main() method that takes arguments from the command line.
 KNOWN ISSUES AND SUGGESTED TO-DO ITEMS
 ======================================
 
-(1) The default garbage collection algorithm is 'no collection'.
-This means that an algorithm must be written in order to sustain
-JVM execution with continuous heap availability.  Other heap
-implementations might also be written beyond the two that are
-supplied.
+(HARMONY-6-README-1) The default garbage collection algorithm is
+'no collection'.  This means that an algorithm must be written in
+order to sustain JVM execution with continuous heap availability.
+Other heap implementations might also be written beyond the two that
+are supplied.
 
-(2) Anonymous strings (without a class static field reference in
-(rclass) or an object instance reference in (robject) may not get
-completely unreferenced and deallocated, but could continue to
+(HARMONY-6-README-2) Anonymous strings (without a class static field
+reference in (rclass) or an object instance reference in (robject) may
+not get completely unreferenced and deallocated, but could continue to
 accumulate instance references.  Depending on the GC algorithm, this
 may or may not occur and/or may or may not present a problem over a
 very long JVM session where reference structures grow without bound
 or counts wrap around to zero.
 
-(3) There has been no attempt made to process any special values
-of floating point data, neither NAN, +/- infinity, overflow, or
-anything else.  The definitions per the class file spec are present,
-of course, but nothing has been done with them.  Special care should
-be taken in fprintf() statements-- like the sysDbgMsg() calls in
-'cfmsgs.c' -- to make sure that formats like "%lf" are followed and
-precise.  The same goes for 64-bit integers, (long long) in real
+(HARMONY-6-README-3) There has been no attempt made to process any
+special values of floating point data, neither NAN, +/- infinity,
+overflow, or anything else.  The definitions per the class file spec
+are present, of course, but nothing has been done with them.  Special
+care should be taken in fprintf() statements-- like the sysDbgMsg()
+calls in 'cfmsgs.c' -- to make sure that formats like "%lf" are followed
+and precise.  The same goes for 64-bit integers, (long long) in real
 machine and (jlong) in JVM, that formats like "%ld" are followed
 and precise.
 
-(4) All reading of JAR files uses the 'jar' utility provided in
-the $JAVA_HOME directory tree in '$JAVA_HOME/bin/jar'.  This will,
-of course, need to be enhanced to simply read the JAR files directly.
-To start with, the BOOTCLASSPATH could have them added to it as a
-part of 'config.sh', then invoked from the JVM.
+(HARMONY-6-README-4) All reading of JAR files uses the 'jar' utility
+provided in the $JAVA_HOME directory tree in '$JAVA_HOME/bin/jar'.
+This will, of course, need to be enhanced to simply read the JAR files
+directly.  To start with, the BOOTCLASSPATH could have them added to it
+as a part of 'config.sh', then invoked from the JVM.
 
-(5) The JNI interface in 'jni/src/harmony' contains only a cursory
-JNI implementation.  This will need to be filled out to the complete
-suite of native methods needed by java.lang.*.  The native side is
-found in 'jvm/include' for the 'jni/src/harmony' source
+(HARMONY-6-README-5) The JNI interface in 'jni/src/harmony' contains
+only a cursory JNI implementation.  This will need to be filled out to
+the complete suite of native methods needed by java.lang.*.  The native
+side is found in 'jvm/include' for the 'jni/src/harmony' source
 and header files, while the implementation is in the
 'jvm/src/jlClassNameXYZ.c' files (all beginning with 'jl' for
 "java/lang" followed by the actual class name).  For example,
@@ -1081,36 +1159,37 @@ are located in packages like 'java.io' and 'java.system' and
 will need to be extended to cover these system calls.
 See also item (28) below.
 
-(6) The JVM execution engine in particular will need through testing.
-It has been unit tested, of course, but good, solid integration
-testing is an excellent exercise for new contributors to learn the
-code, so this item has been specifically reserved for contributors
-for this purpose.
+(HARMONY-6-README-6) The JVM execution engine in particular will need
+through testing.  It has been unit tested, of course, but good, solid
+integration testing is an excellent exercise for new contributors to
+learn the $code, so this item has been specifically reserved for
+contributors for this purpose.
 
-(7) There is apparently a typographical error in the spec section
-4.5.7 describing 21-bit character encoding.  Therefore, this format
-has not been implemented pending proper resolution.  It probably is
-correct to assume that the spurious "-1" in the second byte of the
-first triple should say "(bits 20-16)" instead of "(bits 20-16)-1".
-However, this is presented as an exercise for contributors.
-
-(8) There are a plethora of comments marked "@todo xxx" all over the
-code.  In the Doxygen "Related Pages" section, they are gathered into
-one comprehensive list.  These items are presented as exercises for
+(HARMONY-6-README-7) There is apparently a typographical error in the
+spec section 4.5.7 describing 21-bit character encoding.  Therefore,
+this format has not been implemented pending proper resolution.  It
+probably is correct to assume that the spurious "-1" in the second byte
+of the first triple should say "(bits 20-16)" instead of
+"(bits 20-16)-1".  However, this is presented as an exercise for
 contributors.
 
-(9) The Solaris 32-bit implementation was chosen for development as a
-very generic development and runtime environment.  Testing partway
-through indicated that a transition to a 64-bit runtime environment
-could be compiled with little effort.  However, there will have to
-be some adjustments to get everything to work because that one test
-produced a SIGSEGV during JVM initialization, and its cause was not
+(HARMONY-6-README-8) There are a plethora of comments marked "@todo xxx"
+all over the code.  In the Doxygen "Related Pages" section, they are
+gathered into one comprehensive list.  These items are presented as
+exercises for contributors.
+
+(HARMONY-6-README-9) The Solaris 32-bit implementation was chosen for
+development as a very generic development and runtime environment.
+Testing partway through indicated that a transition to a 64-bit runtime
+environment could be compiled with little effort.  However, there will
+have to be some adjustments to get everything to work because that one
+test produced a SIGSEGV during JVM initialization, and its cause was not
 thoroughly explored.  Every effort has been made to anticipate 64-bit
 compilations, but that adjustment will need to be fully tested.
 
-(10) Every effort has been made to use _only_ standard Unix and
-Posix runtime library calls so the code could be ported to as many
-platforms as possible.  The first targets that come to mind are,
+(HARMONY-6-README-10) Every effort has been made to use _only_ standard
+Unix and Posix runtime library calls so the code could be ported to as
+many platforms as possible.  The first targets that come to mind are,
 of course, Linux, HP-UX, and AIX, with CygWin in mind also, with
 a few changes for system(3) scripts.  (*** The code intentionally
 does _NOT_ have the Windows version of some CONFIG_xxxx_SCRIPT
@@ -1118,22 +1197,22 @@ definitions so that the contributor will need to get it written,
 possibly put into a .BAT file, then invoked through the existing
 infrastructure in the code. ***)
 
-(11a) There are a number of places here and there in the code where a
-return value is not properly checked for having an error value, such
-as 'jvm_class_index_null' or 'jvm_attribute_index_bad'.  This
-is typically _not_ a throwable error condition, like from heap
-allocation or other error, but is an actual runtime condition
-that is returned.  After three full passes through the code,
-the error code structure has morphed significantly from a fully
-structured approach just to get the code started to a partial OO
+(HARMONY-6-README-11a) There are a number of places here and there in
+the code where a return value is not properly checked for having an
+error value, such as 'jvm_class_index_null' or
+'jvm_attribute_index_bad'.  This is typically _not_ a throwable error
+condition, like from heap allocation or other error, but is an actual
+runtime condition that is returned.  After three full passes through
+the code, the error code structure has morphed significantly from a
+fully structured approach just to get the code started to a partial OO
 approach, throwing errors through setjmp(3)/longjmp(3).  Someone
 needs to go through the code in its _entirety_ and find out where
 invalid results are intentionally returned instead of throwing an
 error and _make sure_ that the calling functions check those results
 properly.
 
-(11b) The same goes for input parameters in various places
-throughout the code for the following typedefs from 'jvmcfg.h':
+(HARMONY-6-README-11b) The same goes for input parameters in various
+places throughout the code for the following typedefs from 'jvmcfg.h':
     jvm_thread_index
     jvm_constant_pool_index
     jvm_interface_index
@@ -1188,11 +1267,11 @@ review of functions that pass these data types back _out_ will
 provide the inverse test.  Both are _mandatory_ for integrity
 of the runtime environment.
 
-(12) The threading algorithm uses a simple for() loop.  It could
-be easily generalized to using POSIX threads since there is already
-one POSIX thread started in the current code.  This thread would go
-away when and if such threading were implemented.  This thread is
-implemented in 'timeslice.c'.  It is a time slice real-time clock
+(HARMONY-6-README-12) The threading algorithm uses a simple for() loop.
+It could be easily generalized to using POSIX threads since there is
+already one POSIX thread started in the current code.  This thread
+would go away when and if such threading were implemented.  This thread
+is implemented in 'timeslice.c'.  It is a time slice real-time clock
 timer that sends SIGALRM every so often on a tick boundary.  This
 signal is connected to a handler that sets a flag in each live
 JVM thread and tells the JVM inner loop to quit after the current
@@ -1210,68 +1289,69 @@ would take place exclusively in 'thread.c'.  No other logic
 _anywhere_ should be affected in more than a minor way beyond the
 JVM outer look in 'jvm.c'.)
 
-(13) Commensurate with the above discussion on unwinding the JVM
-outer loop into a multi-threaded application is the discussion of
-write barriers.  THERE ARE ABSOLUTELY NO WRITE BARRIERS IN THIS
-DESIGN!!!  This is both for simplicity (per above reasons) and so
-that this _critical_ subject is given due consideration by the
+(HARMONY-6-README-13) Commensurate with the above discussion on
+unwinding the JVM outer loop into a multi-threaded application is the
+discussion of write barriers.  THERE ARE ABSOLUTELY NO WRITE BARRIERS
+IN THIS DESIGN!!!  This is both for simplicity (per above reasons) and
+so that this _critical_ subject is given due consideration by the
 whole team JVM architecture contributors.  This implementation
 makes no claims toward being an authority on such a vital and
 potentially sensitive subject.
 
-(14) The 'field_info' area of the class file definition supports
-the 'ConstantValue' attribute, but does not support 'Signature'.
-This needs to be added for conformance to JDK 5 requirements.
-It also should support 'Synthetic' and 'Deprecated'.  The definitions
-are present in 'classfile.h', they just need to get implemented.
-
-(15) The 'method_info' area of the class file definition supports
-the 'Code' and 'Exceptions' attributes, but does not support
+(HARMONY-6-README-14) The 'field_info' area of the class file definition
+supports the 'ConstantValue' attribute, but does not support
 'Signature'.  This needs to be added for conformance to JDK 5
+requirements.  It also should support 'Synthetic' and 'Deprecated'.
+The definitions are present in 'classfile.h', they just need to get
+implemented.
+
+(HARMONY-6-README-15) The 'method_info' area of the class file
+definition supports the 'Code' and 'Exceptions' attributes, but does not
+support 'Signature'.  This needs to be added for conformance to JDK 5
 requirements.  The definitions are present in 'classfile.h', they
 just need to get implemented.
 
-(16) When nearing the end of the initial development, I ran across
-what is probably a memory configuration limit on my Solaris platform,
-which I did not bother to track down, but rather worked around.  It
-seems that when calling malloc(3C) or malloc(3MALLOC), after 2,280
-malloc() allocations and 612 free() invocations, there is something
-under the covers that does a SIGSEGV, and it can happen in either
-routine.  I therefore extended the heap mechanism of 'heap_simple.c'
-to allocate a large number of slots of 'n' bytes for small allocations
-up to this size.  Everything else still uses malloc().  In this way,
-I was able to finish development on the JVM without arguing with heap
-allocation.  This implementation is found in 'heap_bimodal.c'.  (In
-other words, I will let the team fix it!)  Furthermore, I am not sure
-that the real project wants a static 'n + 1' MB data area just hanging
-around the runtime just because I did not take time to tune the system
-configuration!
+(HARMONY-6-README-16) When nearing the end of the initial development,
+I ran across what is probably a memory configuration limit on my Solaris
+platform, which I did not bother to track down, but rather worked
+around.  It seems that when calling malloc(3C) or malloc(3MALLOC),
+after 2,280 malloc() allocations and 612 free() invocations, there is
+something under the covers that does a SIGSEGV, and it can happen in
+either routine.  I therefore extended the heap mechanism of
+'heap_simple.c' to allocate a large number of slots of 'n' bytes for
+small allocations up to this size.  Everything else still uses malloc().
+In this way, I was able to finish development on the JVM without arguing
+with heap allocation.  This implementation is found in 'heap_bimodal.c'.
+(In other words, I will let the team fix it!)  Furthermore, I am not
+sure that the real project wants a static 'n + 1' MB data area just
+hanging around the runtime just because I did not take time to tune the
+system configuration!
 
-(17) In preparation for writing the actual JVM execution engine,
-the 'bytegames.c' utilities bytegames_getrl8() and bytegames_putrl8()
-and bytegames_swap8() and bytegames_mix8() were added.  The 'util.h'
-macros GETRL8() and PUTRL8() were likewise added.  Other ways of
-processing 64-bit values were obsoleted and the places where they were
-used have been replaced by these functions and macros.  This
-substitution needs to be more rigorously tested.  All places where
+(HARMONY-6-README-17) In preparation for writing the actual JVM
+execution engine, the 'bytegames.c' utilities bytegames_getrl8() and
+bytegames_putrl8() and bytegames_swap8() and bytegames_mix8() were
+added.  The 'util.h' macros GETRL8() and PUTRL8() were likewise added.
+Other ways of processing 64-bit values were obsoleted and the places
+where they were used have been replaced by these functions and macros.
+This substitution needs to be more rigorously tested.  All places where
 this substitution was made have been marked as commented-out code
 plus new functionality with a @todo item commenting it.
 
-(18) There needs to be an examination of heap usage to make _sure_
-that all instances of HEAP_GET_xxxx() eventually have a matching
-HEAP_FREE_xxxx() so there are no memory leaks.  The existing code
-has been carefully written to facilitate this requirement, but
+(HARMONY-6-README-18) There needs to be an examination of heap usage
+to make _sure_ that all instances of HEAP_GET_xxxx() eventually have a
+matching HEAP_FREE_xxxx() so there are no memory leaks.  The existing
+code has been carefully written to facilitate this requirement, but
 it has not been rigorously regression tested.  And since it is _well_
 known that memory leaks are a system integrator's worst nightmare,
 if the code is checked early on into the project, there will be
 nothing to lose sleep over later on.
 
-(19) A review of the non-local return logic in 'opcode.c' from threads
-that throw a java.lang.Error, java.lang.Exception, and
-java.lang.Throwable is in order.  Errors should kill the JVM, but
-Exceptions should allow it to proceed.  What about Throwables?
-The framework is in place for the project team to adjust to meet
-the JVM spec.  Also, make sure that simply creating a new class
+(HARMONY-6-README-19) A review of the non-local return logic in
+'opcode.c' from threads that throw a java.lang.Error,
+java.lang.Exception, and java.lang.Throwable is in order.  Errors should
+kill the JVM, but Exceptions should allow it to proceed.  What about
+Throwables?  The framework is in place for the project team to adjust
+to meet the JVM spec.  Also, make sure that simply creating a new class
 object, running its <init> method, and continuing with previous code
 or quitting is the right way to process the condition.  The existing
 logic is from heuristic observation of a JVM, but an examination of
@@ -1282,9 +1362,9 @@ in opcode_run() for exceptions thrown by Java virtual methods.  All
 handling of errors like java.lang.NoSuchMethodError is already taken
 care of.
 
-(20) The concept of the ThreadGroup is not implemented here (see JVM
-spec section 2.16).  This is given as an exercise to the project team.
-The default implementation consists _ONLY_ of the method
+(HARMONY-6-README-20) The concept of the ThreadGroup is not implemented
+here (see JVM spec section 2.16).  This is given as an exercise to the
+project team.  The default implementation consists _ONLY_ of the method
 java.lang.ThreadGroup.uncaughtException().  The rest of this class
 must be implemented.  This partial implementation may also need to
 go away at that time.  The basic reasoning for this is that the
@@ -1293,8 +1373,8 @@ any native methods.  Therefore, the whole of its functionality should
 likely be implemented in a Java class library and should typically
 behave properly without direct JVM core support.
 
-(21) The sequence of loading and initializing the three critical
-classes java.lang.Object, Class, and String in 'jvm_init()' is
+(HARMONY-6-README-21) The sequence of loading and initializing the three
+critical classes java.lang.Object, Class, and String in 'jvm_init()' is
 somewhat fragile and probably not really sustainable.  It might be
 that the best thing to do is to either make classlib-specific
 implementations of this initialization or to unload and reload these
@@ -1305,22 +1385,22 @@ logic is written and somewhat tested.  It needs to be firmed up.
 An exercise for the team.  Unloading and reloading support is already
 provided with class_static_delete() and class_reload().
 
-(22) The verification step (VM spec section 2.17.3) is given as an
-exercise for the project team.  This was done in the interest of time
-and the fact that there may be third-party packages that may do this
-nicely (BCEL?) without much further effort.
+(HARMONY-6-README-22) The verification step (VM spec section 2.17.3) is
+given as an exercise for the project team.  This was done in the
+interest of time and the fact that there may be third-party packages
+that may do this nicely (BCEL?) without much further effort.
 
-(23) The source code is documented using Doxygen in its normative
-state.  Although this tool can be _significantly_ contorted to perform
-documentation of almost _any_ file type due to its capability to hook
-into a user-specfied input filter, this implementation has done
-nothing outside of the usual bounds of the default product
-configuration.  With that said, there is _one_ small admission to make
-here:  Even though all of the code was written in ANSI 'C', the OO
-concept of throwing exceptions is intrinsically bound up with the
-runtime needs of a Java Virtual Machine.  Therefore, one _small_
-bending of the rules was permitted in the documentation-- use of the
-C++ documentation keyword '@throws' (also known as '@exception' and
+(HARMONY-6-README-23) The source code is documented using Doxygen in
+its normative state.  Although this tool can be _significantly_
+contorted to perform documentation of almost _any_ file type due to its
+capability to hook into a user-specfied input filter, this
+implementation has done nothing outside of the usual bounds of the
+default product configuration.  With that said, there is _one_ small
+admission to make here:  Even though all of the code was written in
+ANSI 'C', the OO concept of throwing exceptions is intrinsically bound
+up with the runtime needs of a Java Virtual Machine.  Therefore, one
+_small_ bending of the rules was permitted in the documentation-- use of
+the C++ documentation keyword '@throws' (also known as '@exception' and
 '@throw').  Functions that instantiate a java.lang.Throwable such as
 'Error' or 'Exception' (and/or their subclasses) use the following
 documentation syntax to present this behavioral feature to the
@@ -1365,9 +1445,9 @@ added feature of initiating an exception, after which exit_jvm()
 will be called with an appropriate exit code to shut down the JVM.
 
 
-(25) When using the Eclipse C/C++ plugin, be aware of a bug in
-that code:  Sometimes it loses its brains and wants to debug the
-test Java program instead of the C program.  Look at the Run menu's
+(HARMONY-6-README-24) When using the Eclipse C/C++ plugin, be aware of
+a bug in that code:  Sometimes it loses its brains and wants to debug
+the test Java program instead of the C program.  Look at the Run menu's
 Debug dialog (Run|Debug) and you will notice that under "C/C++ Local
 Application", the 'jvm' configuration is missing.  To correct
 this, simply click on "C/C++ Local Application" and then click "New":
@@ -1402,8 +1482,8 @@ Now click 'Apply' and 'Close'.  This should save it properly.
 Now it may be used normally.
 
 
-(24) A solid introductory project for someone is to go in to
-'cfmsgs.c' and write and equivalent to cfmsgs_show_constant_pool()
+(HARMONY-6-README-25) A solid introductory project for someone is to go
+in to 'cfmsgs.c' and write and equivalent to cfmsgs_show_constant_pool()
 for the field table and method table, suggested names being,
 cfmsgs_show_fields_table() and cfmsgs_show_methods_table().
 This method takes cfmsgs_typemsg() and displays each constant_pool[]
@@ -1418,59 +1498,61 @@ attribute, but there is nothing that can explicitly dump
 an entire attribute table for fields, methods, or the (single)
 class attribute table.
 
-(25) While working on the above 'cfmsgs.c' display routines,
-that same person should probably go in to classfile_loadclassdata()
-and clean up the numerous individual cfmsgs_typemsg() calls for
-inclusion in those routines.  A few should probably still be
-left in, such as 'cfmsgs_typemsg("this", pcfs, pcfs->this_class)'
-which reports the 'this_class' member, but this process was followed
-when writing cfmsgs_show_constant_pool() and it helped the readability
-of the output _immensely_ to get rid of 'ad hoc' debug messages.
+(HARMONY-6-README-26) While working on the above 'cfmsgs.c' display
+routines, that same person should probably go in to
+classfile_loadclassdata() and clean up the numerous individual
+cfmsgs_typemsg() calls for inclusion in those routines.  A few should
+probably still be left in, such as 'cfmsgs_typemsg("this", pcfs,
+pcfs->this_class)' which reports the 'this_class' member, but this
+process was followed when writing cfmsgs_show_constant_pool() and it
+helped the readability of the output _immensely_ to get rid of 'ad hoc'
+debug messages.
 
-(26) The debug message level (DML) values need to be completely
-overhauled for more effective use by developers.
+(HARMONY-6-README-27) The debug message level (DML) values need to be
+completely overhauled for more effective use by developers.
 
-(27) Does there need to be a tighter relationship between the
-declaration of a native method via ACC_NATIVE when the class file
-is loaded by classfile_loadclassdata() and the class resolution
-logic of the linkage_resolve/unresolve_class() methods?  What
-about with thread_class_load() and related startup code that runs a
-method?
+(HARMONY-6-README-28) Does there need to be a tighter relationship
+between the declaration of a native method via ACC_NATIVE when the
+class file is loaded by classfile_loadclassdata() and the class
+resolution logic of the linkage_resolve/unresolve_class() methods?
+What about with thread_class_load() and related startup code that
+runs a method?
 
-(28) Although there have been _several_ significant passes at
-desk-debugging 'threadstate.c' and 'threadutil.c' and in particular,
-'jlThread.c', the JVM thread state machine needs a rigorous pass at
-integration testing.  The java.lang.Thread methods of 'jlThread.c'
-and 'threadstate.c' are of particular concern, along with the hooks
-in 'timeslice.c'.  This testing has been left as an exercise
+(HARMONY-6-README-29) Although there have been _several_ significant
+passes at desk-debugging 'threadstate.c' and 'threadutil.c' and in
+particular, 'jlThread.c', the JVM thread state machine needs a rigorous
+pass at integration testing.  The java.lang.Thread methods of
+'jlThread.c' and 'threadstate.c' are of particular concern, along with
+the hooks in 'timeslice.c'.  This testing has been left as an exercise
 for the project team.  Someone who has completed their Sun
 Certified Java Developer certification and is good with skills
 in 'C' should be able to firm up this area of the code nicely.  See
 also item (5) above.
 
-(29) In like manner to (28) above, unit testing of object monitor
+(HARMONY-6-README-30) In like manner to (28) above, unit testing of object monitor
 locking has been left as an exercise for the project team.  Again,
 someone who has completed their Sun Certified Java Developer
 certification and is good with 'C' should be able to firm up
 this area of the code nicely.
 
-(30) The whole body of code needs to be reviewed for proper ordering
-of PUSH() and POP() macros for (jlong) and (jdouble) variables.
-The same goes for local variable access of the same.  The way it
-_should_ be done at this time is PUSH(MS), PUSH(LS) with corresponding
-POP(LS), POP(MS).  For local variables, var[n] := MS, var[n+1] := [LS].
-However, this needs proper scrutiny for completeness and correctness.
+(HARMONY-6-README-31) The whole body of code needs to be reviewed for
+proper ordering of PUSH() and POP() macros for (jlong) and (jdouble)
+variables.  The same goes for local variable access of the same.  The
+way it _should_ be done at this time is PUSH(MS), PUSH(LS) with
+corresponding POP(LS), POP(MS).  For local variables,
+var[n] := MS, var[n+1] := [LS].  However, this needs proper scrutiny
+for completeness and correctness.
 
-(31) A review needs to be made of the Eclipse project files.  In
-particular, do the C/C++ project settings need to be made independent
-of the workspace settings for compile, link, and library archiver
-options?  Do the Java project settings need to be made similarly
-independent?  Should there be a workspace provided in the distribution
-that has all these things set up?  Currently, the projects are a bit
-of a mixture of workspace and project settings.  The 'build.sh'
-scripts use a hard-coded set of GCC options that are derived from the
-Eclipse setup.  The 'config/*.gcc' and config/*.gccld' files reflect
-this for the C source.  The Java compilations in the 'build.sh'
+(HARMONY-6-README-32) A review needs to be made of the Eclipse project
+files.  In particular, do the C/C++ project settings need to be made
+independent of the workspace settings for compile, link, and library
+archiver options?  Do the Java project settings need to be made
+similarly independent?  Should there be a workspace provided in the
+distribution that has all these things set up?  Currently, the projects
+are a bit of a mixture of workspace and project settings.  The
+'build.sh' scripts use a hard-coded set of GCC options that are derived
+from the Eclipse setup.  The 'config/*.gcc' and config/*.gccld' files
+reflect this for the C source.  The Java compilations in the 'build.sh'
 scripts use the default Java compiler options.  Does there need to be
 a harmonization (sic) between the Eclipse and 'build.sh' settings?
 Should they be manually mantained in Eclipse and 'config.sh'?  These
@@ -1480,34 +1562,34 @@ build tool across the industry.  It would be a really good idea for
 use of 'gmake' to be reviewed.  It is used internally by Eclipse,
 but users should not be forced to use Eclipse just to get 'gmake'.
 
-(32) The inner loop of virtual instructions in opcode.c checks various
-items at run time such as ACC_STATIC and ACC_FINAL and other items
-that a class verifier should test.  This is done so that the code
-corresponds _directly_ with the definition of each instruction as
-described in JVM spec section 6.  Many of these these tests (namely,
-the examples above) should be moved to a byte code verifier because
-they will not change from the time that the class is loaded until it
-is unloaded. Obviously, checking them each time a virtual instruction
-is run is _not_ efficient at run time!  However, this implementation
-is meant also to teach the principles and requirements of virtual
-instructions, so the implementation of the JVM spec requirement was
-done in the inner loop in opcode_run() as a sort of reference
-implementation of each virtual instruction.
+(HARMONY-6-README-33) The inner loop of virtual instructions in
+'opcode.c' checks various items at run time such as ACC_STATIC and
+ACC_FINAL and other items that a class verifier should test.  This is
+done so that the code corresponds _directly_ with the definition of
+each instruction as described in JVM spec section 6.  Many of these
+these tests (namely, the examples above) should be moved to a byte code
+verifier because they will not change from the time that the class is
+loaded until it is unloaded. Obviously, checking them each time a
+virtual instruction is run is _not_ efficient at run time!  However,
+this implementation is meant also to teach the principles and
+requirements of virtual instructions, so the implementation of the JVM
+spec requirement was done in the inner loop in opcode_run() as a sort
+of reference implementation of each virtual instruction.
 
-(33) One very good exercise for project team members to learn this
-code will be to implement the exception logic as found in the
-exception attribute of the program counter, namely jvm_pc.excpatridx.
+(HARMONY-6-README-34) One very good exercise for project team members
+to learn this code will be to implement the exception logic as found in
+the exception attribute of the program counter,namely jvm_pc.excpatridx.
 This field is filled in correctly at method startup time, and there
 should be enough hooks in the structure of the code to implement it
 without much effort.  What will be worth it is the learning process.
 This logic will bear some strong similarities with LATE_CLASS_LOAD()
 and class_load_resolve_clinit() when not using the system thread.
 
-(34) It is similarly left as an exercise for the project team to
-locate a method in a superclass or an interface if it is not found
-in the current class.  Currently, a request is made for a method
-in the current class and a (jvm_method_index) is returned.  This is
-fine for JVM initialization when it is known which methods are
+(HARMONY-6-README-35) It is similarly left as an exercise for the
+project team to locate a method in a superclass or an interface if it
+is not found in the current class.  Currently, a request is made for a
+method in the current class and a (jvm_method_index) is returned.  This
+is fine for JVM initialization when it is known which methods are
 found where, but what _should_ happen in normal JVM runtime is that
 the INVOKEVIRTUAL, INVOKEINTERFACE, INVOKESTATIC, etc., should check
 if a method is in the current class.  If not, check superclasses
@@ -1517,8 +1599,8 @@ method, otherwise return 'rnull', the NULL pointer.  Class loading
 does search for superclasses, so look for uses of 'pcfs->super_class'
 or 'pcfs_recurse->super_class' for examples on how to do this.
 
-(35) In the documentation, the @def and @struct tags were used
-to introduce specific definition types.  This practice somehow
+(HARMONY-6-README-36) In the documentation, the @def and @struct tags
+were used to introduce specific definition types.  This practice somehow
 was not carried through to all definitions.  Similar cleanup should
 be done for the following tags:  @enum, @fn, @var, @typedef.  None
 of these were put in place, but would clean up the organization of
@@ -1541,14 +1623,14 @@ documentation.  Notice that constructions such as,
 will not need cleanup since the target link is not the same as the
 displayed text.
 
-(36) An excellent tutorial for learning how objects are created using
-non-default constructors is in jvm.c and class.c where string
-parameters are loaded in from the argv[] command line and from
-CONSTANT_String_info structures of the class file, respectively.
+(HARMONY-6-README-37) An excellent tutorial for learning how objects
+are created using non-default constructors is in jvm.c and class.c
+where string parameters are loaded in from the argv[] command line and
+from CONSTANT_String_info structures of the class file, respectively.
 A suggestion is made in jvm.c as to how to accomplish this.
 
-(37) After going back and forth as to whether or not a @throws
-condition that happens in a subroutine should also be reported
+(HARMONY-6-README-38) After going back and forth as to whether or not
+a @throws condition that happens in a subroutine should also be reported
 back up the line in the function that called it, the result is
 that sometimes it is reported and sometimes it is not.  This needs
 to be regularized.  It is recommended to _not_ report it in the
