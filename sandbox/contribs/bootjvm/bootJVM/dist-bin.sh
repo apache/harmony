@@ -24,11 +24,11 @@
 #             This will ensure immediate access to them by
 #             Eclipse users without having to change anything.
 #
-# @todo This script should probably support each and every CPU platform
-#       that implements this code instad of having just a single
-#       output location for each file.  However, that also involves
-#       changes to @link ./build.sh build.sh@endlink and
-#       @link ./clean.sh clean.sh@endlink and
+# @todo HARMONY-6-dist-bin.sh-1 This script should probably support each
+#       and every CPU platform that implements this code instad of
+#       having just a single output location for each file.  However,
+#       that also involves changes to @link ./build.sh build.sh@endlink
+#       and @link ./clean.sh clean.sh@endlink and
 #       @link ./common.sh common.sh@endlink, as well as
 #       @link ./config.sh config.sh@endlink.  This is left as an
 #       exercise for the project team.  For an example of such a
@@ -77,12 +77,15 @@
 # and so forth for the other deliverables.
 #
 #
-# @todo A Windows .BAT version of this script needs to be written
+# @todo  HARMONY-6-dist-bin.sh-2 A Windows .BAT version of this
+#        script needs to be written
 #
 #
 # @section Control
 #
-# \$URL$ \$Id$
+# \$URL$
+#
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -106,6 +109,7 @@
 # @date \$LastChangedDate$
 #
 # @author \$LastChangedBy$
+#
 #         Original code contributed by Daniel Lydick on 09/28/2005.
 #
 # @section Reference
@@ -138,107 +142,91 @@ trap "" 1 2 3 15
 #
 # Clean up everything and rebuild it.
 #
+DistChkReleaseLevel
+
+DistChkTarget
+
 ./clean.sh all
 
 DistPrep
 
-DistDocPrep
-
-DistTargetBuild all
-
-DistConfigPrep
+# Build everything but the documentation
+./build.sh jvm
+./build.sh libjvm
+./build.sh main
+./build.sh test
+./build.sh jni
 
 echo ""
 echo "$PGMNAME: Setting target directory permissions"
 umask 022
 chmod 0755 `find . -type d -print`
 
-# Use same target as source distribution for original docs,
-# that is, they will _not_ be changed.
-if test -d doc.ORIG
-then
-    chmod -R +w doc.ORIG
-    rm -rf doc.ORIG
-fi
-
-./doxunpatch.sh
-
-mv doc doc.ORIG
-
-TARGET_HOME="harmony/bootJVM-$CONFIG_RELEASE_LEVEL"
-cd ../..
-mv harmony/bootJVM $TARGET_HOME
+echo ""
+echo "$PGMNAME: Setting target file permissions"
+cd ..
+ln -s bootJVM $TARGET_HOME
 
 TARGET_FILELIST="$TARGET_HOME/jvm/bin/bootjvm \
                  $TARGET_HOME/libjvm/lib/libjvm.a \
                  $TARGET_HOME/main/bin/bootjvm \
                  $TARGET_HOME/jni/src/harmony/generic/0.0/bin/bootjvm"
 
-TARGET_DIRLIST="$TARGET_HOME/test/bin \
-                $TARGET_HOME/doc.ORIG"
+TARGET_DIRLIST="$TARGET_HOME/test/bin"
 
-echo ""
-echo "$PGMNAME: Setting target file permissions"
 chmod 0644 $TARGET_FILELIST
 
-TARGET_DIRFILELIST="`find $TARGET_HOME/test/bin -print`; \
-                    `find $TARGET_HOME/doc.ORIG -print`"
+TARGET_DIRFILELIST="`find $TARGET_HOME/test/bin -print`"
 
 # Time stamp all files together
-TMPTIMESTAMPFILE=${TMPDIR:-/tmp}/tmp.$PGMNAME.$$
+TMPTIMESTAMPFILE=${TMPDIR:-/tmp}/tmp.$PGMNAME.time.$$
 rm -f $TMPTIMESTAMPFILE
-touch TMPTIMESTAMPFILE
+touch $TMPTIMESTAMPFILE
 for f in $TARGET_FILELIST $TARGET_DIRFILELIST
 do
     chmod +w $f
-    touch -r TMPTIMESTAMPFILE $f
+    touch -r $TMPTIMESTAMPFILE $f
     chmod -w $f
 done
 rm -f $TMPTIMESTAMPFILE
 
 echo ""
-echo "$PGMNAME: Creating distribution file '../../$DISTBINTAR'"
+echo "$PGMNAME: Creating distribution file '../$DISTBINTAR'"
 
 rm -f $DISTBINTAR
 tar cf $DISTBINTAR $TARGET_FILELIST $TARGET_DIRLIST
-mv $TARGET_HOME harmony/bootJVM
+rm $TARGET_HOME
 
 if test ! -r $DISTBINTAR
 then
     echo ""
-    echo "$PGMNAME: Directory `cd ../..; pwd` is not writable."
+    echo "$PGMNAME: Cannot locate '../$DISTBINTAR'."
+    echo "$PGMNAME: Directory `cd ..; pwd` is probably not writable."
     echo "$PGMNAME: Please make it writable and try again."
-    exit 4
+    exit 5
 fi
 
 echo ""
 echo \
-   "$PGMNAME: Compressing distribution file into '../../$DISTBINTAR.gz'"
+   "$PGMNAME: Compressing distribution file into '../$DISTBINTAR.gz'"
 rm -f $DISTBINTAR.gz
 gzip $DISTBINTAR
 if test ! -r $DISTBINTAR.gz
 then
     echo ""
     echo "$PGMNAME: Cannot compress into '$DISTBINTAR.gz'"
-    exit 5
+    exit 6
 fi
 
 chmod 0444 $DISTBINTAR.gz
-cd harmony/bootJVM
-
-chmod -R +w doc.ORIG
-mv doc.ORIG doc
-
-DistConfigUnPrep
-
-DistDocUnPrep
+cd bootJVM
 
 DistUnPrep
 
 echo ""
 echo "$PGMNAME: Binary distribution tar file created:"
 echo ""
-ls -l ../../$DISTBINTAR.gz
+ls -l ../$DISTBINTAR.gz
 echo ""
 
 ###################################################################
