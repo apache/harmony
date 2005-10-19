@@ -6,7 +6,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -30,6 +32,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,10 +40,12 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(field, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(field, c,
+"$URL$",
+"$Id$");
 
 
-#include <strings.h>
+/* #include <strings.h> */
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -60,13 +65,13 @@ ARCH_COPYRIGHT_APACHE(field, c, "$URL$ $Id$");
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  *
  * @returns field table index of this field in class or
@@ -87,6 +92,8 @@ jvm_field_index field_find_by_cp_entry(jvm_class_index  clsidx,
                                        cp_info_dup     *fldname,
                                        cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_find_by_cp_entry);
+
     /* Prohibit invalid parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -141,6 +148,8 @@ jvm_field_index field_find_by_cp_entry(jvm_class_index  clsidx,
 rboolean field_index_is_class_static(jvm_class_index clsidx,
                                      jvm_field_index fldidx)
 {
+    ARCH_FUNCTION_NAME(field_index_is_class_static);
+
     /* Prohibit invalid parameter */
     if (jvm_field_index_bad == fldidx)
     {
@@ -175,13 +184,14 @@ rboolean field_index_is_class_static(jvm_class_index clsidx,
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
+ *
  *
  * @returns @link #rtrue rtrue@endlink if this field is a class static
  *          field, otherwise @link #rfalse rfalse@endlink.
@@ -191,6 +201,8 @@ rboolean field_name_is_class_static(jvm_class_index  clsidx,
                                     cp_info_dup     *fldname,
                                     cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_name_is_class_static);
+
     return(field_index_is_class_static(
                clsidx,
                field_find_by_cp_entry(clsidx, fldname, flddesc)));
@@ -216,6 +228,8 @@ rboolean field_name_is_class_static(jvm_class_index  clsidx,
 rboolean field_index_is_object_instance(jvm_class_index clsidx,
                                         jvm_field_index fldidx)
 {
+    ARCH_FUNCTION_NAME(field_index_is_object_instance);
+
     /* Prohibit invalid parameter */
     if (jvm_field_index_bad == fldidx)
     {
@@ -250,13 +264,13 @@ rboolean field_index_is_object_instance(jvm_class_index clsidx,
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  *
  * @returns @link #rtrue rtrue@endlink if this field is an object
@@ -267,6 +281,8 @@ rboolean field_name_is_object_instance(jvm_class_index   clsidx,
                                        cp_info_dup     *fldname,
                                        cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_name_is_object_instance);
+
     return(field_index_is_object_instance(
                clsidx,
                field_find_by_cp_entry(clsidx, fldname, flddesc)));
@@ -293,6 +309,8 @@ jvm_field_lookup_index
     field_index_get_class_static_lookup(jvm_class_index  clsidx,
                                         jvm_field_index fldidx)
 {
+    ARCH_FUNCTION_NAME(field_index_get_class_static_lookup);
+
     /* Prohibit invalid parameter */
     if (jvm_field_index_bad == fldidx)
     {
@@ -327,13 +345,14 @@ jvm_field_lookup_index
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
+ *
  *
  * @returns class static field lookup index of located field, otherwise
  *          @link #jvm_field_index_bad jvm_field_index_bad@endlink.
@@ -344,6 +363,8 @@ jvm_field_lookup_index
                                        cp_info_dup     *fldname,
                                        cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_name_get_class_static_lookup);
+
     return(field_index_get_class_static_lookup(
                clsidx,
                field_find_by_cp_entry(clsidx, fldname, flddesc)));
@@ -372,6 +393,8 @@ jvm_field_lookup_index
     field_index_get_object_instance_lookup(jvm_class_index  clsidx,
                                            jvm_field_index fldidx)
 {
+    ARCH_FUNCTION_NAME(field_ndex_get_object_instance_lookup);
+
     /* Prohibit invalid parameter */
     if (jvm_field_index_bad == fldidx)
     {
@@ -406,13 +429,13 @@ jvm_field_lookup_index
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  *
  * @returns object instance field lookup index of located field,
@@ -425,6 +448,8 @@ jvm_field_lookup_index
                                           cp_info_dup     *fldname,
                                           cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_name_get_object_instance_lookup);
+
     return(field_index_get_object_instance_lookup(
                clsidx,
                field_find_by_cp_entry(clsidx, fldname, flddesc)));
@@ -451,6 +476,8 @@ jvm_field_lookup_index
 jvalue *field_index_get_class_static_pjvalue(jvm_class_index  clsidx,
                                              jvm_field_index fldidx)
 {
+    ARCH_FUNCTION_NAME(field_index_get_class_static_pjvalue);
+
     /* Prohibit invalid parameter */
     if (jvm_field_index_bad == fldidx)
     {
@@ -484,13 +511,13 @@ jvalue *field_index_get_class_static_pjvalue(jvm_class_index  clsidx,
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  *
  * @returns pointer to class static field data, otherwise
@@ -501,6 +528,8 @@ jvalue *field_name_get_class_static_pjvalue(jvm_class_index  clsidx,
                                             cp_info_dup     *fldname,
                                             cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_name_get_class_static_pjvalue);
+
     return(field_index_get_class_static_pjvalue(
                clsidx,
                field_find_by_cp_entry(clsidx, fldname, flddesc)));
@@ -526,6 +555,8 @@ jvalue *field_name_get_class_static_pjvalue(jvm_class_index  clsidx,
 jvalue *field_index_get_object_instance_pjvalue(jvm_object_hash objhash,
                                                 jvm_field_index fldidx)
 {
+    ARCH_FUNCTION_NAME(field_index_get_object_instance_pjvalue);
+
     jvm_class_index clsidx = OBJECT_CLASS_LINKAGE(objhash)->clsidx;
 
     jvm_field_lookup_index oifldidx;
@@ -556,13 +587,13 @@ jvalue *field_index_get_object_instance_pjvalue(jvm_object_hash objhash,
  *
  *
  * @param  objhash           Object hash of object whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  *
  * @returns Pointer to object instance field data, otherwise
@@ -573,6 +604,8 @@ jvalue *field_name_get_object_instance_pjvalue(jvm_object_hash  objhash,
                                                cp_info_dup     *fldname,
                                                cp_info_dup     *flddesc)
 {
+    ARCH_FUNCTION_NAME(field_name_get_object_instance_pjvalue);
+
     return(field_index_get_object_instance_pjvalue(
                objhash,
                field_find_by_cp_entry(
@@ -593,7 +626,6 @@ jvalue *field_name_get_object_instance_pjvalue(jvm_object_hash  objhash,
  *
  * @param  fldidx            Field index in class of field to be stored.
  *
- *
  * @param  _jvalue           Data to be stored.
  *
  *
@@ -607,6 +639,8 @@ jvm_field_index
                                          jvm_field_index  fldidx,
                                          jvalue          *_jvalue)
 {
+    ARCH_FUNCTION_NAME(field_index_put_class_static_pjvalue);
+
     /* Prohibit invalid parameter */
     if (jvm_field_index_bad == fldidx)
     {
@@ -625,9 +659,10 @@ jvm_field_index
         if (fldidx ==
             (CLASS(clsidx).class_static_field_lookup)[csflidx])
         {
-            memcpy(&CLASS(clsidx).class_static_field_data[csflidx],
-                   _jvalue,
-                   sizeof(jvalue));
+            portable_memcpy(
+                &CLASS(clsidx).class_static_field_data[csflidx],
+                _jvalue,
+                sizeof(jvalue));
             return(fldidx);
         }
     }
@@ -644,13 +679,13 @@ jvm_field_index
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             stored.
+ *                           stored.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  * @param  _jvalue           Data to be stored.
  *
@@ -666,6 +701,8 @@ jvm_field_index
                                         cp_info_dup     *flddesc,
                                         jvalue          *_jvalue)
 {
+    ARCH_FUNCTION_NAME(field_name_put_class_static_pjvalue);
+
     return(field_index_put_class_static_pjvalue(
                clsidx,
                field_find_by_cp_entry(clsidx,
@@ -698,6 +735,8 @@ jvm_field_index
                                             jvm_field_index  fldidx,
                                             jvalue          *_jvalue)
 {
+    ARCH_FUNCTION_NAME(field_index_put_object_instance_pjvalue);
+
     jvm_class_index clsidx = OBJECT_CLASS_LINKAGE(objhash)->clsidx;
 
     jvm_field_lookup_index oifldidx;
@@ -712,9 +751,10 @@ jvm_field_index
         if (fldidx ==
             (CLASS(clsidx).object_instance_field_lookup)[oifldidx])
         {
-           memcpy(&OBJECT(objhash).object_instance_field_data[oifldidx],
-                   _jvalue,
-                   sizeof(jvalue));
+           portable_memcpy(
+                &OBJECT(objhash).object_instance_field_data[oifldidx],
+                _jvalue,
+                sizeof(jvalue));
             return(fldidx);
         }
     }
@@ -731,13 +771,13 @@ jvm_field_index
  *
  *
  * @param  objhash           Object hash of object whose field is to be
- *                             located.
+ *                           located.
  *
- * @param  fldname           UTF8 constant_pool entry of name of field
- *                             in class.
+ * @param  fldname           UTF8 @c @b constant_pool entry of name of
+ *                           field in class.
  *
- * @param  flddesc           UTF8 constant_pool entry of description of
- *                             field type.
+ * @param  flddesc           UTF8 @c @b constant_pool entry of
+ *                           description of field type.
  *
  * @param  _jvalue           Data to be stored.
  *
@@ -753,6 +793,8 @@ jvm_field_index
                                            cp_info_dup     *flddesc,
                                            jvalue          *_jvalue)
 {
+    ARCH_FUNCTION_NAME(field_name_put_object_instance_pjvalue);
+
     return(field_index_put_object_instance_pjvalue(
                objhash,
                field_find_by_cp_entry(

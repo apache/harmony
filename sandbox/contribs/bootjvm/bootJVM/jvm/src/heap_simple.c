@@ -19,7 +19,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -43,6 +45,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -50,12 +53,14 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(heap_simple, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(heap_simple, c,
+"$URL$",
+"$Id$");
 
 #if defined(CONFIG_HEAP_TYPE_SIMPLE) || defined(CONFIG_COMPILE_ALL_OPTIONS)
 
 #include <errno.h>
-#include <stdlib.h>
+/* #include <stdlib.h> */
 
 #include "jvmcfg.h"
 #include "exit.h"
@@ -75,11 +80,13 @@ ARCH_COPYRIGHT_APACHE(heap_simple, c, "$URL$ $Id$");
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_init_simple()
 {
+    ARCH_FUNCTION_NAME(heap_init_simple);
+
     ; /* Nothing to do in this methodology */
 
     /* Declare this module initialized */
@@ -150,11 +157,14 @@ static rlong heap_free_count   = 0;
  *         if other allocation error@endlink.
  *
  */
-static rvoid *heap_get_common_simple(int size, rboolean clrmem_flag)
+static rvoid *heap_get_common_simple(rint size, rboolean clrmem_flag)
 {
-    rvoid *rc;
+    ARCH_FUNCTION_NAME(heap_get_comon_simple);
 
-    rc = malloc(size);
+    rvoid *rc;
+    int sizelocal = (int) size;
+
+    rc = portable_malloc(sizelocal);
 
     /*
      * If specific errors are returned, GC could free up some heap,
@@ -168,7 +178,7 @@ static rvoid *heap_get_common_simple(int size, rboolean clrmem_flag)
             case ENOMEM:
             case EAGAIN:
                 GC_RUN(rtrue);
-                rc = malloc(size);
+                rc = portable_malloc(sizelocal);
 
                 if (rnull == rc)
                 {
@@ -216,7 +226,7 @@ static rvoid *heap_get_common_simple(int size, rboolean clrmem_flag)
         rbyte *pb = (rbyte *) rc;
 
         int i;
-        for (i = 0; i < size; i++)
+        for (i = 0; i < sizelocal; i++)
         {
             pb[i] = '\0';
         }
@@ -267,8 +277,10 @@ static rvoid *heap_get_common_simple(int size, rboolean clrmem_flag)
  *         if other allocation error@endlink.
  *
  */
-rvoid *heap_get_method_simple(int size, rboolean clrmem_flag)
+rvoid *heap_get_method_simple(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_method_simple);
+
     return(heap_get_common_simple(size, clrmem_flag));
 
 } /* END of heap_get_method_simple() */
@@ -309,8 +321,10 @@ rvoid *heap_get_method_simple(int size, rboolean clrmem_flag)
  *
  *
  */
-rvoid *heap_get_stack_simple(int size, rboolean clrmem_flag)
+rvoid *heap_get_stack_simple(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_stack_simple);
+
     return(heap_get_common_simple(size, clrmem_flag));
 
 } /* END of heap_get_stack_simple() */
@@ -351,8 +365,10 @@ rvoid *heap_get_stack_simple(int size, rboolean clrmem_flag)
  *
  *
  */
-rvoid *heap_get_data_simple(int size, rboolean clrmem_flag)
+rvoid *heap_get_data_simple(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_data_simple);
+
     return(heap_get_common_simple(size, clrmem_flag));
 
 } /* END of heap_get_data_simple() */
@@ -380,13 +396,17 @@ rvoid *heap_get_data_simple(int size, rboolean clrmem_flag)
  */
 static rvoid heap_free_common_simple(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_common_simple);
+
+    void *pheap_block_local = (void *) pheap_block;
+
     /* Ignore @link #rnull rnull@endlink pointer */
-    if (rnull != pheap_block)
+    if (rnull != pheap_block_local)
     {
         /* Free larger requests */
         heap_free_count++;
 
-        free(pheap_block);
+        portable_free(pheap_block_local);
     }
 
     return;
@@ -415,6 +435,8 @@ static rvoid heap_free_common_simple(rvoid *pheap_block)
  */
 rvoid heap_free_method_simple(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_method_simple);
+
     heap_free_common_simple(pheap_block);
 
 } /* END of heap_free_method_simple() */
@@ -436,6 +458,8 @@ rvoid heap_free_method_simple(rvoid *pheap_block)
  */
 rvoid heap_free_stack_simple(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_stack_simple);
+
     heap_free_common_simple(pheap_block);
 
 } /* END of heap_free_stack_simple() */
@@ -457,6 +481,8 @@ rvoid heap_free_stack_simple(rvoid *pheap_block)
  */
 rvoid heap_free_data_simple(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_data_simple);
+
     heap_free_common_simple(pheap_block);
 
 } /* END of heap_free_data_simple() */
@@ -485,9 +511,12 @@ rvoid heap_free_data_simple(rvoid *pheap_block)
  */
 int  heap_get_error_simple(rvoid *badptr)
 {
-    int rc;
+    ARCH_FUNCTION_NAME(heap_get_error_simple);
 
-    if (rnull == badptr)
+    int rc;
+    void *badptrlocal = (void *) badptr;
+
+    if (rnull == badptrlocal)
     {
         rc = heap_last_errno;
         heap_last_errno = ERROR0;
@@ -510,11 +539,13 @@ int  heap_get_error_simple(rvoid *badptr)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_shutdown_simple()
 {
+    ARCH_FUNCTION_NAME(heap_shutdown_simple);
+
     heap_last_errno = ERROR0;
 
     /* Declare this module uninitialized */

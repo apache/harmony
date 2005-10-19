@@ -14,7 +14,7 @@
  * design of @c @b longjmp(3), which will force
  * @link #EXIT_LONGJMP_ARGERROR EXIT_LONGJMP_ARGERROR@endlink instead.
  *
- * @link #exit_init() exit_init()@endlink must be invoked at a
+ * @link #EXIT_INIT() EXIT_INIT()@endlink must be invoked at a
  * higher level than where @link #pjvm pjvm@endlink is used to
  * access anything, namely, @c @b pjvm->xxx since the
  * main JVM structure cannot be initialized at the same time
@@ -22,7 +22,7 @@
  * It typically will be armed at the very entry to the JVM and
  * will never be re-armed since it is global in its scope of coverage.
  *
- * @link #exit_exception_setup() exit_exception_setup()@endlink
+ * @link #EXIT_EXCEPTION_SETUP() EXIT_EXCEPTION_SETUP()@endlink
  * has similar requirements.  However, since it is involved more
  * closely with @link #jvm_init() jvm_init()@endlink, it is typically
  * invoked at the beginning of that function.  Once initialization
@@ -33,7 +33,7 @@
  * JVMCLASS_JAVA_LANG_LINKAGEERROR@endlink subclasses through
  * the virtual execution engine before shutting down the JVM.
  *
- * @link #exit_end_thread_setup() exit_end_thread_setup()@endlink
+ * @link #OPCODE_END_THREAD_SETUP() OPCODE_END_THREAD_SETUP()@endlink
  * is not so much an error handler as a simplification of the JVM
  * inner loop execution in @link #opcode_run() opcode_run()@endlink
  * that eliminates the need for two of the tests needed for continuing
@@ -46,7 +46,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -70,6 +72,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -77,11 +80,12 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(exit, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(exit, c,
+"$URL$",
+"$Id$");
 
 
-#include <setjmp.h>
-
+#define PORTABLE_JMP_BUF_VISIBLE
 #include "jvmcfg.h"
 #include "classfile.h"
 #include "jvm.h"
@@ -104,6 +108,8 @@ ARCH_COPYRIGHT_APACHE(exit, c, "$URL$ $Id$");
  */
 rchar *exit_get_name(exit_code_enum code)
 {
+    ARCH_FUNCTION_NAME(exit_get_name);
+
     switch(code)
     {
         case EXIT_MAIN_OKAY:        return(EXIT_MAIN_OKAY_DESC);
@@ -137,18 +143,9 @@ rchar *exit_get_name(exit_code_enum code)
 } /* END of exit_get_name() */
 
 
-/*! 
- * Handler linkage for fatal errors.  Does not need global visibility,
- * just needs file scope.
- */
-static jmp_buf exit_general_failure;
+/* Moved to portability library:  static jmp_buf exit_general_failure;*/
 
-
-/*!
- * Handler linkage for @b LinkageError.  Does not need global
- * visibility, just needs file scope.
- */
-static jmp_buf exit_LinkageError;
+/* Moved to portability library:  static jmp_buf exit_LinkageError; */
 
 
 /*!
@@ -168,61 +165,32 @@ jvm_thread_index exit_LinkageError_thridx;
 
 
 /*!
- * @brief Global handler setup for fatal JVM errors-- implements
- * @c @b setjmp(3).
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * @returns From normal setup, integer @link
-            #EXIT_MAIN_OKAY EXIT_MAIN_OKAY@endlink.  Otherwise,
- *          return error code from @link #exit_jvm() exit_jvm()@endlink,
- *          typically using a code found in
- *          @link jvm/src/exit.h exit.h@endlink
- */
-
-int exit_init()
-{
-    /* Return point from @c @b longjmp(3) as declared in exit_jvm() */
-    return(setjmp(exit_general_failure));
-
-} /* END of exit_init() */
-
-
-
-/*!
- * @brief Global handler setup for fatal
+ * @brief Global handler setup (part 1) for fatal
  * @link jvm_init() jvm_init()@endlink errors and other
  * @c @b java.lang.Throwable events-- implements
  * @c @b setjmp(3).
  *
  *
- * Use this function to arm handler for throwing
- * @c @b java.lang.Error and @c @b java.lang.Exception
- * throwable events.
+ * This function @e must be used in conjunction with
+ * @link EXIT_EXCEPTION_SETUP() EXIT_EXCEPTION_SETUP()@endlink
+ * to properly arm handler for throwing @c @b java.lang.Error and
+ * @c @b java.lang.Exception throwable events.
  *
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- * @returns From normal setup, integer
- *          @link #EXIT_MAIN_OKAY EXIT_MAIN_OKAY@endlink.
- *          Otherwise, return
- *          @link #exit_code_enum exit code enumeration@endlink from
- *          @link #exit_jvm() exit_jvm()@endlink.
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 
-int exit_exception_setup(rvoid)
+rvoid exit_exception_setup(rvoid)
 {
+    ARCH_FUNCTION_NAME(exit_exception_setup);
 
     exit_LinkageError_subclass = (rchar *) rnull;
     exit_LinkageError_thridx   = jvm_thread_index_null;
 
-    /*
-     * Return point from @c @b longjmp(3) as declared
-     * in @link #exit_throw_exception() exit_throw_exception()@endlink
-     */
-    return(setjmp(exit_LinkageError));
+    return;
 
 } /* END of exit_exception_setup() */
 
@@ -271,9 +239,10 @@ int exit_exception_setup(rvoid)
              JVMCLASS_JAVA_LANG_VERIFYERROR@endlink </li>
  * </ul>
  *
+ *
  * @returns non-local state restoration from setup via @c @b setjmp(3)
- *          as stored in @link
-            #exit_LinkageError exit_LinkageError@endlink
+ *          as stored in @link #portable_exit_LinkageError
+            portable_exit_LinkageError@endlink
  *          buffer by @link #exit_init() exit_init()@endlink
  *          in @link #jvm_init() jvm_init()@endlink before any of
  *          these errors could occur. All code invoking this
@@ -286,13 +255,15 @@ int exit_exception_setup(rvoid)
 
 rvoid exit_throw_exception(exit_code_enum rcenum, rchar *preason)
 {
+    ARCH_FUNCTION_NAME(exit_throw_exception);
+
     /* Report error class to handler */
     exit_LinkageError_subclass = preason;
     exit_LinkageError_thridx   = CURRENT_THREAD;
 
     /* Returns to @c @b setjmp(3) */
     int rc = (int) rcenum;
-    longjmp(exit_LinkageError, rc);
+    PORTABLE_LONGJMP(&portable_exit_LinkageError, rc);
 /*NOTREACHED*/
 
 } /* END of exit_throw_exception() */
@@ -306,20 +277,23 @@ rvoid exit_throw_exception(exit_code_enum rcenum, rchar *preason)
  *
  *
  * @returns non-local state restoration from setup via @c @b setjmp(3)
- *          above as stored in @link
-            #exit_general_failure exit_general_failure@endlink.
+ *          above as stored in @link #portable_exit_general_failure
+            portable_exit_general_failure@endlink.
  *          All code invoking this function should use the
  *          standard @c @b lint(1) comment for "code not reached" as
  *          shown after the @c @b longjmp(3) function call in
  *          the source code of this function:
  *          <b>/</b><b>*NOTREACHED*</b><b>/</b>
+ *
  */
 
 rvoid exit_jvm(exit_code_enum rcenum)
 {
+    ARCH_FUNCTION_NAME(exit_jvm);
+
     /* Returns to @c @b setjmp(3) as declared in exit_jvm() */
     int rc = (int) rcenum;
-    longjmp(exit_general_failure, rc);
+    PORTABLE_LONGJMP(&portable_exit_general_failure, rc);
 /*NOTREACHED*/
 
 } /* END of exit_jvm() */

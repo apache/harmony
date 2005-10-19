@@ -7,7 +7,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -31,6 +33,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -38,13 +41,14 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(tmparea, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(tmparea, c,
+"$URL$",
+"$Id$");
 
  
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
+/* #include <stdlib.h> */
+/* #include <string.h> */
+/* #include <unistd.h> */
 
 #include "jvmcfg.h"
 #include "exit.h"
@@ -59,7 +63,7 @@ ARCH_COPYRIGHT_APACHE(tmparea, c, "$URL$ $Id$");
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 static rchar *env_tmpdir = CHEAT_AND_USE_NULL_TO_INITIALIZE;
@@ -68,8 +72,19 @@ static rchar tmparea[100];
 
 rvoid tmparea_init(char **argv)
 {
-    struct stat statbfr;
-    char *argv0name = strrchr(argv[0], JVMCFG_PATHNAME_DELIMITER_CHAR);
+    ARCH_FUNCTION_NAME(tmparea_init);
+
+    rvoid *statbfr; /* Portability library does (struct stat) part */
+    char *argv0name = portable_strrchr(argv[0],
+                                       JVMCFG_PATHNAME_DELIMITER_CHAR);
+
+#ifdef CONFIG_CYGWIN
+    if (rnull == argv0name)
+    {
+        argv0name = portable_strrchr(argv[0],
+                                    JVMCFG_PATHNAME_ALT_DELIMITER_CHAR);
+    }
+#endif
 
     if (rnull != argv0name)
     {
@@ -80,9 +95,9 @@ rvoid tmparea_init(char **argv)
         argv0name = argv[0];
     }
 
-    int pid = getpid();
+    int pid = portable_getpid();
 
-    env_tmpdir = getenv("TMPDIR");
+    env_tmpdir = portable_getenv(JVMCFG_ENVIRONMENT_VARIABLE_TMPDIR);
 
     if (rnull == env_tmpdir)
     {
@@ -93,17 +108,19 @@ rvoid tmparea_init(char **argv)
                  "%s%ctmp.%s.%d",
                  env_tmpdir,
                  JVMCFG_PATHNAME_DELIMITER_CHAR,
-                 "bootJVM", /* @todo fix gmj : argv0name, */
+                 argv0name,
                  pid);
-                 
-    int rc = mkdir(tmparea, 0755); /* Could use <sys/stat.h> constants*/
+
+    /* Could use <sys/stat.h> constants for directory creation mode */
+    (rvoid) portable_mkdir(tmparea, 0755);
 
     /* Verify existence of directory */
-    rc = stat(tmparea, &statbfr);
+    statbfr = portable_stat(tmparea);
+    HEAP_FREE_DATA(statbfr);
 
-    if (0 != rc)
+    if (rnull == statbfr)
     {
-        sysErrMsg("tmparea_init",
+        sysErrMsg(arch_function_name,
                   "Cannot create temp directory %s",
                   tmparea);
         exit_jvm(EXIT_TMPAREA_MKDIR);
@@ -129,6 +146,8 @@ rvoid tmparea_init(char **argv)
  */
 const rchar *tmparea_get()
 {
+    ARCH_FUNCTION_NAME(tmparea_get);
+
     return((const rchar *) tmparea);
 
 } /* END of tmparea_get() */
@@ -141,11 +160,13 @@ const rchar *tmparea_get()
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid tmparea_shutdown(rvoid)
 {
+    ARCH_FUNCTION_NAME(tmparea_shutdown);
+
 
 /* Normal method requires directory to be empty:
  *
@@ -153,7 +174,7 @@ rvoid tmparea_shutdown(rvoid)
  *
  *  if (0 != rc)
  *  {
- *      sysErrMsg("tmparea_shutdown",
+ *      sysErrMsg(arch_function_name,
  *                "Cannot remove temp directory %s",
  *                tmparea);
  *      exit_jvm(EXIT_TMPAREA_RMDIR);
@@ -162,28 +183,29 @@ rvoid tmparea_shutdown(rvoid)
  *
  */
 
-    struct stat statbfr;
+    rvoid *statbfr; /* Portability library does (struct stat) part */
 
 /* Since there will be temp files here, cheat just a @e little bit: */
 
 
     rchar *rmscript =        /* format spec %s make strlen longer than
                                 it needs to be, but it is benign */
-        HEAP_GET_DATA(strlen(JVMCFG_TMPAREA_REMOVE_SCRIPT) +
-                          strlen(tmparea) +
+        HEAP_GET_DATA(portable_strlen(JVMCFG_TMPAREA_REMOVE_SCRIPT) +
+                          portable_strlen(tmparea) +
                           sizeof(rchar) /* NUL byte */,
                       rfalse);
 
     sprintfLocal(rmscript, JVMCFG_TMPAREA_REMOVE_SCRIPT, tmparea);
 
-    int rc = system(rmscript);
+    /* int rc = */ portable_system(rmscript);
 
     /* Verify missing directory */
-    rc = stat(tmparea, &statbfr);
+    statbfr = portable_stat(tmparea);
+    HEAP_FREE_DATA(statbfr);
 
-    if (0 == rc)
+    if (rnull != statbfr)
     {
-        sysErrMsg("tmparea_shutdown",
+        sysErrMsg(arch_function_name,
                   "Cannot remove temp directory %s",
                   tmparea);
         exit_jvm(EXIT_TMPAREA_RMDIR);

@@ -27,7 +27,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -51,6 +53,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -58,11 +61,13 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(argv, c ,"$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(argv, c,
+"$URL$",
+"$Id$");
 
 
-#include <stdlib.h>
-#include <string.h>
+/* #include <stdlib.h> */
+/* #include <string.h> */
 
 #include "jvmcfg.h" 
 #include "classfile.h" 
@@ -101,6 +106,7 @@ ARCH_COPYRIGHT_APACHE(argv, c ,"$URL$ $Id$");
  * main_pgm_name -show
  *               -version
  *               -copyright
+ *               -license
  *               -help
  * @endcode
  *
@@ -115,13 +121,23 @@ ARCH_COPYRIGHT_APACHE(argv, c ,"$URL$ $Id$");
  *
  *
  * @param argc    Number of arguments on command line
+ *
  * @param argv    Argument vector from the command line
+ *
  * @param envp    Environment pointer from command line environ
  *
+ *
  * @returns @link #rvoid rvoid@endlink
+ *
  */
 rvoid argv_init(int argc, char **argv, char **envp)
 {
+    ARCH_FUNCTION_NAME(argv_init);
+
+    rint     argclocal = (rint)     argc;
+    rchar ** argvlocal = (rchar **) argv;
+    rchar ** envplocal = (rchar **) envp;
+
     rchar *chkjh;  chkjh =  (rchar *) rnull;
     rchar *chkcp;  chkcp =  (rchar *) rnull;
     rchar *chkbcp; chkbcp = (rchar *) rnull;
@@ -130,14 +146,22 @@ rvoid argv_init(int argc, char **argv, char **envp)
     pjvm->startclass = (rchar *) rnull;
 
     /* Save off startup parameters, incl. pgm name (argv0) */
-    pjvm->argc = argc;
-    pjvm->argv = argv;
-    pjvm->envp = envp;
+    pjvm->argc = argclocal;
+    pjvm->argv = argvlocal;
+    pjvm->envp = envplocal;
 
     /* Extract program name from path, defaulting to whole invocation */
-    pjvm->argv0 = argv[0];
-    pjvm->argv0name = strrchr(pjvm->argv0,
-                              JVMCFG_PATHNAME_DELIMITER_CHAR);
+    pjvm->argv0 = argvlocal[0];
+    pjvm->argv0name = portable_strrchr(pjvm->argv0,
+                                       JVMCFG_PATHNAME_DELIMITER_CHAR);
+#ifdef CONFIG_CYGWIN
+    if (rnull == pjvm->argv0name)
+    {
+        pjvm->argv0name = portable_strrchr(pjvm->argv0,
+                                    JVMCFG_PATHNAME_ALT_DELIMITER_CHAR);
+    }
+#endif
+
     if (rnull != pjvm->argv0name)
     {
         pjvm->argv0name++;
@@ -152,9 +176,9 @@ rvoid argv_init(int argc, char **argv, char **envp)
      * @p @b BOOTCLASSPATH from environment (could do this with
      * @b envp, but @c @b getenv(3) is easier).
      */
-    chkjh  = getenv(JVMCFG_ENVIRONMENT_VARIABLE_JAVA_HOME);
-    chkcp  = getenv(JVMCFG_ENVIRONMENT_VARIABLE_CLASSPATH);
-    chkbcp = getenv(JVMCFG_ENVIRONMENT_VARIABLE_BOOTCLASSPATH);
+    chkjh  = portable_getenv(JVMCFG_ENVIRONMENT_VARIABLE_JAVA_HOME);
+    chkcp  = portable_getenv(JVMCFG_ENVIRONMENT_VARIABLE_CLASSPATH);
+    chkbcp = portable_getenv(JVMCFG_ENVIRONMENT_VARIABLE_BOOTCLASSPATH);
 
     /*
      * Look in command line, scan WHOLE command line for
@@ -164,33 +188,37 @@ rvoid argv_init(int argc, char **argv, char **envp)
     rint  i;
     rint show_flag = rfalse;
 
-    for (i = 1; i < argc; i++)
+    for (i = 1; i < argclocal; i++)
     {
         /*
          * Options that terminate program execution
          */
-        if (0 == strcmp(JVMCFG_COMMAND_LINE_HELP_PARM, argv[i]))
+        if (0 == portable_strcmp(JVMCFG_COMMAND_LINE_HELP_PARM,
+                                 argvlocal[i]))
         {
             argv_helpmsg();
             exit_jvm(EXIT_ARGV_HELP);
 /*NOTREACHED*/
         }
         else
-        if (0 == strcmp(JVMCFG_COMMAND_LINE_LICENSE_PARM, argv[i]))
+        if (0 == portable_strcmp(JVMCFG_COMMAND_LINE_LICENSE_PARM,
+                                 argvlocal[i]))
         {
             argv_licensemsg();
             exit_jvm(EXIT_ARGV_LICENSE);
 /*NOTREACHED*/
         }
         else
-        if (0 == strcmp(JVMCFG_COMMAND_LINE_VERSION_PARM, argv[i]))
+        if (0 == portable_strcmp(JVMCFG_COMMAND_LINE_VERSION_PARM,
+                                 argvlocal[i]))
         {
             argv_versionmsg();
             exit_jvm(EXIT_ARGV_VERSION);
 /*NOTREACHED*/
         }
         else
-        if (0 == strcmp(JVMCFG_COMMAND_LINE_COPYRIGHT_PARM, argv[i]))
+        if (0 == portable_strcmp(JVMCFG_COMMAND_LINE_COPYRIGHT_PARM,
+                                 argvlocal[i]))
         {
             argv_copyrightmsg();
             exit_jvm(EXIT_ARGV_COPYRIGHT);
@@ -200,7 +228,8 @@ rvoid argv_init(int argc, char **argv, char **envp)
         /*
          * Reporting options
          */
-        if (0 == strcmp(JVMCFG_COMMAND_LINE_SHOW_PARM, argv[i]))
+        if (0 == portable_strcmp(JVMCFG_COMMAND_LINE_SHOW_PARM,
+                                 argvlocal[i]))
         {
             /* Display command line parms after parsing */
             show_flag = rtrue;
@@ -211,44 +240,54 @@ rvoid argv_init(int argc, char **argv, char **envp)
          * Options that affect program execution,
          * not including JVM arguments (below).
          */
-        if ((0 == strcmp(JVMCFG_JAVA_HOME_ABBREV_PARM, argv[i])) ||
-            (0 == strcmp(JVMCFG_JAVA_HOME_MID_PARM,    argv[i])) ||
-            (0 == strcmp(JVMCFG_JAVA_HOME_FULL_PARM,   argv[i])))
+        if ((0 == portable_strcmp(JVMCFG_JAVA_HOME_ABBREV_PARM,
+                                                       argvlocal[i])) ||
+            (0 == portable_strcmp(JVMCFG_JAVA_HOME_MID_PARM,
+                                                       argvlocal[i])) ||
+            (0 == portable_strcmp(JVMCFG_JAVA_HOME_FULL_PARM,
+                                                       argvlocal[i])))
         {
-            if (argc - 1 > i)
+            if (argclocal - 1 > i)
             {
-                chkjh = argv[i + 1];
+                chkjh = argvlocal[i + 1];
                 i++;
             }
         }
         else
-        if ((0 == strcmp(JVMCFG_CLASSPATH_ABBREV_PARM, argv[i])) ||
-            (0 == strcmp(JVMCFG_CLASSPATH_FULL_PARM, argv[i])))
+        if ((0 == portable_strcmp(JVMCFG_CLASSPATH_ABBREV_PARM,
+                                  argvlocal[i])) ||
+            (0 == portable_strcmp(JVMCFG_CLASSPATH_FULL_PARM,
+                                  argvlocal[i])))
         {
-            if (argc - 1 > i)
+            if (argclocal - 1 > i)
             {
-                chkcp = argv[i + 1];
+                chkcp = argvlocal[i + 1];
                 i++;
             }
         }
         else
-        if ((0 == strcmp(JVMCFG_BOOTCLASSPATH_ABBREV_PARM, argv[i])) ||
-            (0 == strcmp(JVMCFG_BOOTCLASSPATH_FULL_PARM, argv[i])))
+        if ((0 == portable_strcmp(JVMCFG_BOOTCLASSPATH_ABBREV_PARM,
+                                  argvlocal[i])) ||
+            (0 == portable_strcmp(JVMCFG_BOOTCLASSPATH_FULL_PARM,
+                                  argvlocal[i])))
         {
-            if (argc - 1 > i)
+            if (argclocal - 1 > i)
             {
-                chkbcp = argv[i + 1];
+                chkbcp = argvlocal[i + 1];
                 i++;
             }
         }
         else
-        if ((0 == strcmp(JVMCFG_DEBUGMSGLEVEL_ABBREV_PARM, argv[i])) ||
-            (0 == strcmp(JVMCFG_DEBUGMSGLEVEL_MID_PARM,    argv[i])) ||
-            (0 == strcmp(JVMCFG_DEBUGMSGLEVEL_FULL_PARM,   argv[i])))
+        if ((0 == portable_strcmp(JVMCFG_DEBUGMSGLEVEL_ABBREV_PARM,
+                                                       argvlocal[i])) ||
+            (0 == portable_strcmp(JVMCFG_DEBUGMSGLEVEL_MID_PARM,
+                                                       argvlocal[i])) ||
+            (0 == portable_strcmp(JVMCFG_DEBUGMSGLEVEL_FULL_PARM,
+                                                       argvlocal[i])))
         {
-            if (argc - 1 > i)
+            if (argclocal - 1 > i)
             {
-                rint chkdml = atol(argv[i + 1]);
+                rint chkdml = portable_atol(argvlocal[i + 1]);
 
                 if ((DMLOFF == chkdml) ||
                     ((DMLMIN <= chkdml) && (DMLMAX >= chkdml)))
@@ -256,13 +295,13 @@ rvoid argv_init(int argc, char **argv, char **envp)
                     jvmutil_set_dml(chkdml);
 
                  /* sysDbgMsg(DMLMIN, */
-                    sysErrMsg("argv_init",
+                    sysErrMsg(arch_function_name,
                               "debug message level %d",
                               chkdml);
                 }
                 else
                 {
-                    sysErrMsg("argv_init",
+                    sysErrMsg(arch_function_name,
                            "invalid debug message level %d.  Ignored",
                               chkdml);
                 }
@@ -275,11 +314,12 @@ rvoid argv_init(int argc, char **argv, char **envp)
          * Java class to run (terminates option scanning),
          * either JAR or class file.
          */
-        if (0 == strcmp(JVMCFG_JARFILE_STARTCLASS_PARM, argv[i]))
+        if (0 == portable_strcmp(JVMCFG_JARFILE_STARTCLASS_PARM,
+                                 argvlocal[i]))
         {
-            if (argc - 1 > i)
+            if (argclocal - 1 > i)
             {
-                pjvm->startjar = argv[i + 1];
+                pjvm->startjar = argvlocal[i + 1];
                 i++;
                 i++;
             }
@@ -289,7 +329,7 @@ rvoid argv_init(int argc, char **argv, char **envp)
         else
         {
             /* If not a -xxxxx token, it must be the startup class */
-            pjvm->startclass = argv[i];
+            pjvm->startclass = argvlocal[i];
             i++;
 
             break; /* End of token parsing.  Quit for() loop */
@@ -304,14 +344,14 @@ rvoid argv_init(int argc, char **argv, char **envp)
 
     /* Add 1 NUL byte at the end, initialize to zeroes (NUL) */
     pjvm->argcj = 0;
-    pjvm->argvj = HEAP_GET_DATA(sizeof(rchar *) * ( 1 + argc - i),
+    pjvm->argvj = HEAP_GET_DATA(sizeof(rchar *) * ( 1 + argclocal - i),
                                 rtrue);
 
     /*
      * If any @b argv parms left, load them into
      * @c @b pjvm->argvj
      */
-    if (i < argc)
+    if (i < argclocal)
     {
         /*
          * Keep scanning @c @b argv[] , only initialization
@@ -320,17 +360,17 @@ rvoid argv_init(int argc, char **argv, char **envp)
 
         /* @warning  NON-STANDARD TERMINATION CONDITION <= VERSUS < */
         rint j;
-        for (j = 0; i <= argc; i++, j++)
+        for (j = 0; i <= argclocal; i++, j++)
         {
             /* Done when all @b argv is scanned and NUL byte added */
-            if (i == argc)
+            if (i == argclocal)
             {
                 pjvm->argvj[j] = (rchar *) rnull;
                 break;
             }
 
             pjvm->argcj++;
-            pjvm->argvj[j] = argv[i];
+            pjvm->argvj[j] = argvlocal[i];
         }
     }
 
@@ -343,10 +383,12 @@ rvoid argv_init(int argc, char **argv, char **envp)
     if (rnull != chkjh)
     {
         /* Copy '\0' byte also*/
-        pjvm->java_home = HEAP_GET_DATA(sizeof(rchar) + strlen(chkjh),
-                                        rfalse);
+        pjvm->java_home =
+          HEAP_GET_DATA(sizeof(rchar) + portable_strlen(chkjh), rfalse);
 
-        memcpy(pjvm->java_home, chkjh, sizeof(rchar) + strlen(chkjh));
+        portable_memcpy(pjvm->java_home,
+                        chkjh,
+                        sizeof(rchar) + portable_strlen(chkjh));
     }
 
     /* Try to get a valid @b CLASSPATH even if not found elsewhere */
@@ -358,10 +400,13 @@ rvoid argv_init(int argc, char **argv, char **envp)
     if (rnull != chkcp)
     {
         /* Copy '\0' byte also */
-        pjvm->classpath = HEAP_GET_DATA(sizeof(rchar) + strlen(chkcp),
-                                        rfalse);
+        pjvm->classpath =
+            HEAP_GET_DATA(sizeof(rchar) + portable_strlen(chkcp),
+                          rfalse);
 
-        memcpy(pjvm->classpath, chkcp, sizeof(rchar) + strlen(chkcp));
+        portable_memcpy(pjvm->classpath,
+                        chkcp, 
+                        sizeof(rchar) + portable_strlen(chkcp));
     }
 #ifdef JVMCFG_HARDCODED_TEST_CLASSPATH
     pjvm->classpath = JVMCFG_HARDCODED_TEST_CLASSPATH;
@@ -381,13 +426,12 @@ rvoid argv_init(int argc, char **argv, char **envp)
     if (rnull != chkbcp)
     {
         /* Copy '\0' byte also */
-        pjvm->bootclasspath = HEAP_GET_DATA(sizeof(rchar) +
-                                                strlen(chkbcp),
-                                            rfalse);
+        pjvm->bootclasspath =
+          HEAP_GET_DATA(sizeof(rchar) + portable_strlen(chkbcp),rfalse);
 
-        memcpy(pjvm->bootclasspath,
-               chkbcp,
-               sizeof(rchar) + strlen(chkbcp));
+        portable_memcpy(pjvm->bootclasspath,
+                        chkbcp,
+                        sizeof(rchar) + portable_strlen(chkbcp));
     }
 
     /* Show summary of what command line resoved into */
@@ -414,11 +458,13 @@ rvoid argv_init(int argc, char **argv, char **envp)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid argv_versionmsg(rvoid)
 {
+    ARCH_FUNCTION_NAME(argv_versionmsg);
+
     fprintfLocalStdout("%s\n", CONFIG_RELEASE_LEVEL);
 
     return;
@@ -433,11 +479,13 @@ rvoid argv_versionmsg(rvoid)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid argv_copyrightmsg(rvoid)
 {
+    ARCH_FUNCTION_NAME(argv_copyrightmsg);
+
     fprintfLocalStdout("\n%s:  %s, version %s\n%s\n\n",
                        CONFIG_PROGRAM_NAME,
                        CONFIG_PROGRAM_DESCRIPTION,
@@ -456,11 +504,13 @@ rvoid argv_copyrightmsg(rvoid)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid argv_licensemsg(rvoid)
 {
+    ARCH_FUNCTION_NAME(argv_licensemsg);
+
     argv_copyrightmsg();
     fprintfLocalStdout("%s\n\n", ARCH_LICENSE_TEXT_APACHE);
 
@@ -478,11 +528,13 @@ rvoid argv_licensemsg(rvoid)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid argv_helpmsg(rvoid)
 {
+    ARCH_FUNCTION_NAME(argv_helpmsg);
+
     argv_copyrightmsg();
 
     fprintfLocalStdout(
@@ -615,11 +667,13 @@ rvoid argv_helpmsg(rvoid)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid argv_showmsg(rvoid)
 {
+    ARCH_FUNCTION_NAME(argv_showmsg);
+
     fprintfLocalStdout("JAVA_HOME=%s\n", pjvm->java_home);
 
     fprintfLocalStdout("CLASSPATH=%s\n", pjvm->classpath);
@@ -672,11 +726,13 @@ rvoid argv_showmsg(rvoid)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid argv_shutdown(rvoid)
 {
+    ARCH_FUNCTION_NAME(argv_shutdown);
+
     HEAP_FREE_DATA(pjvm->bootclasspath);
     pjvm->bootclasspath = (rchar *) rnull;
 
@@ -692,7 +748,7 @@ rvoid argv_shutdown(rvoid)
         HEAP_FREE_DATA(pjvm->argvj[argidx]);
     }
     HEAP_FREE_DATA(pjvm->argvj);
-    pjvm->argvj = (char **) rnull;
+    pjvm->argvj = (rchar **) rnull;
 
     /* Declare this module uninitialized */
     jvm_argv_initialized = rfalse;

@@ -45,7 +45,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -69,6 +71,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -76,13 +79,15 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(heap_bimodal, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(heap_bimodal, c,
+"$URL$",
+"$Id$");
 
 #if defined(CONFIG_HEAP_TYPE_BIMODAL) || defined(CONFIG_COMPILE_ALL_OPTIONS)
 
 
 #include <errno.h>
-#include <stdlib.h>
+/* #include <stdlib.h> */
 
 #include "jvmcfg.h"
 #include "exit.h"
@@ -143,20 +148,24 @@ static rbyte *pheap_slot;
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *        @return @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_init_bimodal()
 {
+    ARCH_FUNCTION_NAME(heap_init_bimodal);
+
     rlong heapidx;
 
     /* Set up slot flags */
     pheap_slot_in_use =
-        malloc(sizeof(rboolean) * HEAP_NUMBER_OF_SLOTS);
+        (rboolean *) portable_malloc(sizeof(rboolean) * 
+                                     HEAP_NUMBER_OF_SLOTS);
 
     if (rnull == pheap_slot_in_use)
     {
-        sysErrMsg("heap_init", "Cannot allocate slot flag storage");
+        sysErrMsg(arch_function_name,
+                  "Cannot allocate slot flag storage");
         exit_jvm(EXIT_HEAP_ALLOC);
 /*NOTREACHED*/
     }
@@ -171,16 +180,15 @@ rvoid heap_init_bimodal()
 
 
     /* Set up slot storage itself, do not need to initialize */
-    pheap_slot =
-        malloc(sizeof(rbyte) *
-        HEAP_SLOT_SIZE *
-        HEAP_NUMBER_OF_SLOTS);
+    pheap_slot = (rbyte *) (portable_malloc(sizeof(rbyte) *
+                                            HEAP_SLOT_SIZE *
+                                            HEAP_NUMBER_OF_SLOTS));
 
     if (rnull == pheap_slot)
     {
-        free(pheap_slot_in_use);
+        portable_free(pheap_slot_in_use);
 
-        sysErrMsg("heap_init", "Cannot allocate slot storage");
+        sysErrMsg(arch_function_name, "Cannot allocate slot storage");
         exit_jvm(EXIT_HEAP_ALLOC);
 /*NOTREACHED*/
     }
@@ -264,13 +272,13 @@ static rlong slot_free_count   = 0;
  *                     return it with its existing contents.
  *
  *
- * @return (@link #rvoid rvoid@endlink *) to allocated area.
- *         This pointer may be cast to any desired data type.  If
- *         size of zero bytes is requested, return
- *         @link #rnull rnull@endlink and let caller croak
- *         on @b SIGSEGV.  If no memory is available
- *         or some OS system call error happened, throw error,
- *         but do @e not return.
+ * @returns (@link #rvoid rvoid@endlink *) to allocated area.
+ *          This pointer may be cast to any desired data type.  If
+ *          size of zero bytes is requested, return
+ *          @link #rnull rnull@endlink and let caller croak
+ *          on @b SIGSEGV.  If no memory is available
+ *          or some OS system call error happened, throw error,
+ *          but do @e not return.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -282,12 +290,15 @@ static rlong slot_free_count   = 0;
  *         if other allocation error@endlink.
  *
  */
-static rvoid *heap_get_common_simple_bimodal(int size,
+static rvoid *heap_get_common_simple_bimodal(rint size,
                                              rboolean clrmem_flag)
 {
-    rvoid *rc;
+    ARCH_FUNCTION_NAME(heap_get_common_simple_bimodal);
 
-    rc = malloc(size);
+    rvoid *rc;
+    int sizelocal = (int) size;
+
+    rc = portable_malloc(sizelocal);
 
     /*
      * If specific errors are returned, GC could free up some heap,
@@ -301,7 +312,7 @@ static rvoid *heap_get_common_simple_bimodal(int size,
             case ENOMEM:
             case EAGAIN:
                 GC_RUN(rtrue);
-                rc = malloc(size);
+                rc = portable_malloc(sizelocal);
 
                 if (rnull == rc)
                 {
@@ -349,7 +360,7 @@ static rvoid *heap_get_common_simple_bimodal(int size,
         rbyte *pb = (rbyte *) rc;
 
         int i;
-        for (i = 0; i < size; i++)
+        for (i = 0; i < sizelocal; i++)
         {
             pb[i] = '\0';
         }
@@ -397,13 +408,13 @@ static rvoid *heap_get_common_simple_bimodal(int size,
  *                       return it with its existing contents.
  *
  *
- * @return (@link #rvoid rvoid@endlink *) to allocated area.
- *         This pointer may be cast to any desired data type.  If
- *         size of zero bytes is requested, return
- *         @link #rnull rnull@endlink and let caller croak
- *         on @b SIGSEGV.  If no memory is available
- *         or some OS system call error happened, throw error,
- *         but do @e not return.
+ * @returns (@link #rvoid rvoid@endlink *) to allocated area.
+ *          This pointer may be cast to any desired data type.  If
+ *          size of zero bytes is requested, return
+ *          @link #rnull rnull@endlink and let caller croak
+ *          on @b SIGSEGV.  If no memory is available
+ *          or some OS system call error happened, throw error,
+ *          but do @e not return.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -415,8 +426,12 @@ static rvoid *heap_get_common_simple_bimodal(int size,
  *         if other allocation error@endlink.
  *
  */
-static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
+static rvoid *heap_get_common_bimodal(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_common_bimodal);
+
+    int sizelocal = (int) size;
+
     rvoid *rc; /* Separate LOCATE_SLOT calc. from return() for debug */
     rc = (rvoid *) rnull;
 
@@ -424,7 +439,7 @@ static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
      * Return rnull pointer when zero size requested.
      * Let caller fix that problem.
      */
-    if (0 == size)
+    if (0 == sizelocal)
     {
         return((rvoid *) rnull);
     }
@@ -433,7 +448,7 @@ static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
 
 
     /* Use pre-allocated area for small requests */
-    if (HEAP_SLOT_SIZE >= size)
+    if (HEAP_SLOT_SIZE >= sizelocal)
     {
         /* Mark last allocated-- faster than always starting at 0 */
         static rlong heapidxLAST = HEAP_NUMBER_OF_SLOTS - 1;
@@ -477,7 +492,7 @@ static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
                     rbyte *pb = (rbyte *) rc;                      \
                                                                    \
                     rint i;                                        \
-                    for (i = 0; i < size; i++)                     \
+                    for (i = 0; i < sizelocal; i++)                \
                     {                                              \
                         pb[i] = '\0';                              \
                     }                                              \
@@ -513,7 +528,7 @@ static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
     }
     else
     {
-        return(heap_get_common_simple_bimodal(size, clrmem_flag));
+        return(heap_get_common_simple_bimodal(sizelocal, clrmem_flag));
     }
 /*NOTREACHED*/
     return((rvoid *) rnull); /* Satisfy compiler */
@@ -541,13 +556,13 @@ static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
  *                       not (@link #rfalse rfalse@endlink)
  *
  *
- * @return (@link #rvoid rvoid@endlink *) to allocated area.
- *         This pointer may be cast to any desired data type.  If
- *         size of zero bytes is requested, return
- *         @link #rnull rnull@endlink and let
- *         caller croak on @b SIGSEGV.  If no memory is available
- *         or some OS system call error happened, throw error,
- *         but do @e not return.
+ * @returns (@link #rvoid rvoid@endlink *) to allocated area.
+ *          This pointer may be cast to any desired data type.  If
+ *          size of zero bytes is requested, return
+ *          @link #rnull rnull@endlink and let
+ *          caller croak on @b SIGSEGV.  If no memory is available
+ *          or some OS system call error happened, throw error,
+ *          but do @e not return.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -559,8 +574,10 @@ static rvoid *heap_get_common_bimodal(int size, rboolean clrmem_flag)
  *         if other allocation error@endlink.
  *
  */
-rvoid *heap_get_method_bimodal(int size, rboolean clrmem_flag)
+rvoid *heap_get_method_bimodal(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_method_bimodal);
+
     return(heap_get_common_bimodal(size, clrmem_flag));
 
 } /* END of heap_get_method_bimodal() */
@@ -581,13 +598,13 @@ rvoid *heap_get_method_bimodal(int size, rboolean clrmem_flag)
  *                       not (@link #rfalse rfalse@endlink)
  *
  *
- * @return (@link #rvoid rvoid@endlink *) to allocated area.
- *         This pointer may be cast to any desired data type.  If
- *         size of zero bytes is requested, return
- *         @link #rnull rnull@endlink and let
- *         caller croak on @b SIGSEGV.  If no memory is available
- *         or some OS system call error happened, throw error,
- *         but do @e not return.
+ * @returns (@link #rvoid rvoid@endlink *) to allocated area.
+ *          This pointer may be cast to any desired data type.  If
+ *          size of zero bytes is requested, return
+ *          @link #rnull rnull@endlink and let
+ *          caller croak on @b SIGSEGV.  If no memory is available
+ *          or some OS system call error happened, throw error,
+ *          but do @e not return.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -601,8 +618,10 @@ rvoid *heap_get_method_bimodal(int size, rboolean clrmem_flag)
  *
  *
  */
-rvoid *heap_get_stack_bimodal(int size, rboolean clrmem_flag)
+rvoid *heap_get_stack_bimodal(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_stack_bimodal);
+
     return(heap_get_common_bimodal(size, clrmem_flag));
 
 } /* END of heap_get_stack_bimodal() */
@@ -623,13 +642,13 @@ rvoid *heap_get_stack_bimodal(int size, rboolean clrmem_flag)
  *                       not (@link #rfalse rfalse@endlink)
  *
  *
- * @return (@link #rvoid rvoid@endlink *) to allocated area.
- *         This pointer may be cast to any desired data type.  If
- *         size of zero bytes is requested, return
- *         @link #rnull rnull@endlink and let
- *         caller croak on @b SIGSEGV.  If no memory is available
- *         or some OS system call error happened, throw error,
- *         but do @e not return.
+ * @returns (@link #rvoid rvoid@endlink *) to allocated area.
+ *          This pointer may be cast to any desired data type.  If
+ *          size of zero bytes is requested, return
+ *          @link #rnull rnull@endlink and let
+ *          caller croak on @b SIGSEGV.  If no memory is available
+ *          or some OS system call error happened, throw error,
+ *          but do @e not return.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_OUTOFMEMORYERROR
@@ -643,8 +662,10 @@ rvoid *heap_get_stack_bimodal(int size, rboolean clrmem_flag)
  *
  *
  */
-rvoid *heap_get_data_bimodal(int size, rboolean clrmem_flag)
+rvoid *heap_get_data_bimodal(rint size, rboolean clrmem_flag)
 {
+    ARCH_FUNCTION_NAME(heap_get_data_bimodal);
+
     return(heap_get_common_bimodal(size, clrmem_flag));
 
 } /* END of heap_get_data_bimodal() */
@@ -665,30 +686,34 @@ rvoid *heap_get_data_bimodal(int size, rboolean clrmem_flag)
                         heap_get_XXX_bimodal()@endlink functions.
  *
  *
- * @return @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  *
  */
 static rvoid heap_free_common_bimodal(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_common_bimodal);
+
+    void *pheap_block_local = (void *) pheap_block;
+
     /* Ignore @link #rnull rnull@endlink pointer */
-    if (rnull != pheap_block)
+    if (rnull != pheap_block_local)
     {
         /*
          * Free pre-allocated area from deallocation of
          * small requests, all of which were allocated
          * in this block
          */
-        if ((((rbyte *) &pheap_slot[0]) <= ((rbyte *) pheap_block))
+        if ((((rbyte *) &pheap_slot[0]) <= ((rbyte *)pheap_block_local))
             &&
             (((rbyte *)
               &pheap_slot[sizeof(rbyte)  *
                           HEAP_SLOT_SIZE *
                           HEAP_NUMBER_OF_SLOTS]) >
-                                           ((rbyte *) pheap_block)))
+                                         ((rbyte *) pheap_block_local)))
         {
             rlong heapidx =
-                (((rbyte *) pheap_block) - &pheap_slot[0]) /
+                (((rbyte *) pheap_block_local) - &pheap_slot[0]) /
                 HEAP_SLOT_SIZE;
    
             pheap_slot_in_use[heapidx] = rfalse;
@@ -703,7 +728,7 @@ static rvoid heap_free_common_bimodal(rvoid *pheap_block)
             /* Free larger requests */
             heap_free_count++;
 
-            free(pheap_block);
+            portable_free(pheap_block_local);
 
             return;
         }
@@ -729,11 +754,13 @@ static rvoid heap_free_common_bimodal(rvoid *pheap_block)
                         heap_get_method_bimodal()@endlink
  *
  *
- * @return @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_free_method_bimodal(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_method_bimodal);
+
     heap_free_common_bimodal(pheap_block);
 
 } /* END of heap_free_method_bimodal() */
@@ -749,11 +776,13 @@ rvoid heap_free_method_bimodal(rvoid *pheap_block)
                         heap_get_stack_bimodal()@endlink
  *
  *
- * @return @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_free_stack_bimodal(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_stack_bimodal);
+
     heap_free_common_bimodal(pheap_block);
 
 } /* END of heap_free_stack_bimodal() */
@@ -769,11 +798,13 @@ rvoid heap_free_stack_bimodal(rvoid *pheap_block)
                         heap_get_data_bimodal()@endlink
  *
  *
- * @return @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_free_data_bimodal(rvoid *pheap_block)
 {
+    ARCH_FUNCTION_NAME(heap_free_data_bimodal);
+
     heap_free_common_bimodal(pheap_block);
 
 } /* END of heap_free_data_bimodal() */
@@ -802,9 +833,12 @@ rvoid heap_free_data_bimodal(rvoid *pheap_block)
  */
 int  heap_get_error_bimodal(rvoid *badptr)
 {
-    int rc;
+    ARCH_FUNCTION_NAME(heap_get_error_bimodal);
 
-    if (rnull == badptr)
+    int rc;
+    void *badptrlocal = (void *) badptr;
+
+    if (rnull == badptrlocal)
     {
         rc = heap_last_errno;
         heap_last_errno = ERROR0;
@@ -827,11 +861,13 @@ int  heap_get_error_bimodal(rvoid *badptr)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *        @return @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid heap_shutdown_bimodal()
 {
+    ARCH_FUNCTION_NAME(heap_shutdown_bimodal);
+
     heap_last_errno = ERROR0;
 
     /* Declare this module uninitialized */

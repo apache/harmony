@@ -6,7 +6,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -30,6 +32,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,12 +40,14 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(manifest, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(manifest, c,
+"$URL$",
+"$Id$");
 
 
-#include <stdio.h>
-#include <ctype.h>
-#include <strings.h>
+/* #include <stdio.h> */
+/* #include <ctype.h> */
+/* #include <strings.h> */
 
 #include "jvmcfg.h"
 #include "heap.h" 
@@ -71,12 +76,15 @@ ARCH_COPYRIGHT_APACHE(manifest, c, "$URL$ $Id$");
   
    @endverbatim
  *
- * @todo  Although such a continuation is supported by the JAR file,
- * this implementation does not support it (yet).  With this
- * restriction, the if only one single space separates the name of
- * the attribute and the class name, then since a line may be up
- * to 72 characters long (that is JVMCFG_JARFILE_MANIFEST_LINE_MAX
- * characters), then the class name may be 61 characters long.
+ * @todo  HARMONY-6-jvm-manifest.c-1 Although such a continuation
+ *        is supported by the JAR file, this implementation does
+ *        not support it (yet).  With this restriction, the
+ *        if only one single space separates the name of the
+ *        attribute and the class name, then since a line may be
+ *        up to 72 characters long (that is
+ *        @link #JVMCFG_JARFILE_MANIFEST_LINE_MAX
+          JVMCFG_JARFILE_MANIFEST_LINE_MAX@endlink characters), then
+ *        the class name may be 61 characters long.
  *
  *
  * @param  mnfname   JAR manifest file name, /absolute/path/name
@@ -89,7 +97,11 @@ ARCH_COPYRIGHT_APACHE(manifest, c, "$URL$ $Id$");
  */
 rchar *manifest_get_main(rchar *mnfname)
 {
-    FILE *mf = fopen(mnfname, "r");
+    ARCH_FUNCTION_NAME(manifest_get_main);
+
+    rvoid *mf;  /* Portability library does (FILE) part */
+
+    mf = portable_fopen(mnfname, "r");
 
     if (rnull == mf)
     {
@@ -98,18 +110,19 @@ rchar *manifest_get_main(rchar *mnfname)
 
     rchar *mnfdata = HEAP_GET_DATA(JVMCFG_STDIO_BFR, rfalse);
 
-    int mclen =  strlen(JVMCFG_JARFILE_MANIFEST_MAIN_CLASS);
+    int mclen =  portable_strlen(JVMCFG_JARFILE_MANIFEST_MAIN_CLASS);
 
     /* Read until end of file or match located */
-    while (mnfdata == (rchar *) fgets(mnfdata, JVMCFG_STDIO_BFR, mf))
+    while (mnfdata ==
+           (rchar *) portable_fgets(mnfdata, JVMCFG_STDIO_BFR, mf))
     {
         /*
          * Scan for ^Main-Class: attribute name (text starting
          * at beginnin of line)
          */
-        if (0 != strncmp(mnfdata,
-                         JVMCFG_JARFILE_MANIFEST_MAIN_CLASS,
-                         mclen))
+        if (0 != portable_strncmp(mnfdata,
+                                  JVMCFG_JARFILE_MANIFEST_MAIN_CLASS,
+                                  mclen))
         {
             continue;
         }
@@ -121,10 +134,10 @@ rchar *manifest_get_main(rchar *mnfname)
          * This will be the start of the class name.
          */
         rint i;
-        for (i = mclen; i < strlen(mnfdata); i++)
+        for (i = mclen; i < portable_strlen(mnfdata); i++)
         {
             /* if <b>white space</b> is rfalse */
-            if (0 == isspace((int) mnfdata[i]))
+            if (0 == portable_isspace((int) mnfdata[i]))
             {
                 break; /* Found first non-white-space character */
             }
@@ -138,17 +151,17 @@ rchar *manifest_get_main(rchar *mnfname)
          * This will be the end of the class name.
          */
         rint j;
-        for (j = i; j < strlen(mnfdata); j++)
+        for (j = i; j < portable_strlen(mnfdata); j++)
         {
             /* if <b>white space</b> is @link #rtrue rtrue@endlink */
-            if (0 != isspace((int) mnfdata[j]))
+            if (0 != portable_isspace((int) mnfdata[j]))
             {
                 break;  /* Found first white-space character */
             }
         }
         /* If nothing else, the \n at end of line is white space */
 
-        fclose(mf);
+        portable_fclose(mf);
 
         /* Allocate space for non-empty class name plus NUL byte */
         rchar *mnfresult;
@@ -163,21 +176,21 @@ rchar *manifest_get_main(rchar *mnfname)
             /* Do not process empty class name, declare error instead */
             HEAP_FREE_DATA(mnfdata);
 
-            sysErrMsg("manifest_get_main",
+            sysErrMsg(arch_function_name,
                       "Missing class name in manifest file %s",
                       mnfname);
             exit_jvm(EXIT_MANIFEST_JAR);
 /*NOTREACHED*/
         }
 
-        memcpy(mnfresult, &mnfdata[i], j - i);
+        portable_memcpy(mnfresult, &mnfdata[i], j - i);
         mnfresult[j - i] = '\0';
 
         HEAP_FREE_DATA(mnfdata);
         return(mnfresult);
     }
 
-    fclose(mf);
+    portable_fclose(mf);
 
     HEAP_FREE_DATA(mnfdata);
 

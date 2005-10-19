@@ -11,7 +11,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -35,6 +37,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -42,7 +45,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(main, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(main, c,
+"$URL$",
+"$Id$");
 
 
 #include <stdlib.h>
@@ -72,6 +77,8 @@ ARCH_COPYRIGHT_APACHE(main, c, "$URL$ $Id$");
  */
 int main(int argc, char **argv, char **envp)
 {
+    ARCH_FUNCTION_NAME(main);
+
     /* Run the JVM and retrieve its return code */
     int rc = jvm(argc, argv, envp);
 

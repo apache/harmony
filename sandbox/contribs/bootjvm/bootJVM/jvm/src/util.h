@@ -32,6 +32,12 @@
  * 
  *     @link jvm/src/nts.c nts.c@endlink
  *
+ *     @link jvm/src/portable_libc.c portable_libc.c@endlink
+ *
+ *     @link jvm/src/portable_libm.c portable_libm.c@endlink
+ *
+ *     @link jvm/src/portable_jmp_buf.c portable_jmp_buf.c@endlink
+ *
  *     @link jvm/src/unicode.c unicode.c@endlink
  *
  *     @link jvm/src/utf.c utf.c@endlink
@@ -39,7 +45,30 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
+ *
+ * Copyright 2005 The Apache Software Foundation
+ * or its licensors, as applicable.
+ *
+ * Licensed under the Apache License, Version 2.0 ("the License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ *     @link jvm/src/unicode.c unicode.c@endlink
+ *
+ *     @link jvm/src/utf.c utf.c@endlink
+ *
+ *
+ * @section Control
+ *
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -63,13 +92,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(util, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(util, h,
+"$URL$",
+"$Id$");
 
 
 /* Prototypes for functions in 'bytegames.c' */
@@ -97,13 +129,15 @@ extern rvoid bytegames_split_jdouble(jdouble  splitdouble,
                                      jint    *msword,
                                      jint    *lsword);
 /*!
- * @todo  Make sure GETRI4() works with -m64 compilations (64-bit ptrs)
+ * @todo  HARMONY-6-jvm-util.h-1 Make sure GETRI4() works
+ *        with -m64 compilations (64-bit ptrs)
  *
- * @todo  Make sure GETRL8() works with -m64 compilations (64-bit ptrs)
+ * @todo  HARMONY-6-jvm-util.h-2 Make sure GETRL8() works
+ *        with -m64 compilations (64-bit ptrs)
  *
  *
- * @internal See @link jvm/src/arch.h arch.h@endlink for the
- * origin of architecture-specific @c @b \#define's as used below:
+ * @internal See @link jvm/src/arch.h arch.h@endlink for the origin
+ *           of architecture-specific @c @b \#define's as used below:
  *
  */
 #ifdef ARCH_ODD_ADDRESS_SIGSEGV
@@ -112,9 +146,9 @@ extern rvoid bytegames_split_jdouble(jdouble  splitdouble,
 #define GETRL8(ptr) bytegames_getrl8(ptr)
 #else
 #ifdef ARCH_BIG_ENDIAN
-#define GETRS2(ptr) (*(signed rushort *) ptr)
-#define GETRI4(ptr) (*(signed ruint   *) ptr)
-#define GETRL8(ptr) (*(signed rulong  *) ptr)
+#define GETRS2(ptr) (*(rushort *) (ptr))
+#define GETRI4(ptr) (*(ruint   *) (ptr))
+#define GETRL8(ptr) (*(rulong  *) (ptr))
 #else
 #define GETRS2(ptr) bytegames_getrs2(ptr)
 #define GETRI4(ptr) bytegames_getri4(ptr)
@@ -143,8 +177,8 @@ extern rvoid bytegames_split_jdouble(jdouble  splitdouble,
 
 /*!
  * @internal Big endian architectures do not need to swap anything
- * since the JVM spec declares its (short) and (int) structures
- * as big endian.
+ *           since the JVM spec declares its (short) and (int)
+ *           structures as big endian.
  *
  */
 
@@ -164,10 +198,10 @@ extern rvoid bytegames_split_jdouble(jdouble  splitdouble,
 
 #ifndef I_AM_STDIO_C
 extern rvoid sysDbgMsg(jvm_debug_level_enum dml,
-                       rchar *fn,
+                       const rchar *fn,
                        rchar *fmt,
                        ...);
-extern rvoid sysErrMsg(rchar *fn, rchar *fmt, ...);
+extern rvoid sysErrMsg(const rchar *fn, rchar *fmt, ...);
 extern rvoid sysErrMsgBfrFormat(rchar *bfr, rchar *fn, rchar *fmt, ...);
 extern rvoid sprintfLocal(rchar *bfr, rchar *fmt, ...);
 extern rvoid fprintfLocalStderr(rchar *fmt, ...);
@@ -176,10 +210,10 @@ extern rvoid fprintfLocalStdout(rchar *fmt, ...);
 
 /*!
  * @internal <b>DO NOT</b> (!) define prototypes for
- * _printfLocal() or _fprintfLocal() or _sprintfLocal().
- * They are meant to promote use of printfLocal() and
- * fprintfLocal() and sprintfLocal() instead, so let
- * compile warnings help.
+ *           _printfLocal() or _fprintfLocal() or _sprintfLocal().
+ *           They are meant to promote use of printfLocal() and
+ *           fprintfLocal() and sprintfLocal() instead, so let
+ *           compile warnings help.
  *
  */
 

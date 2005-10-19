@@ -13,7 +13,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -37,6 +39,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -44,10 +47,12 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(nts, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(nts, c,
+"$URL$",
+"$Id$");
 
 
-#include <string.h>
+/* #include <string.h> */
 
 #include "jvmcfg.h" 
 #include "cfmacros.h"
@@ -62,9 +67,9 @@ ARCH_COPYRIGHT_APACHE(nts, c, "$URL$ $Id$");
  * @param    inbfr   String (rchar *) string
  *
  *
- * @returns  UTF8 structure containing length and rchar bfr (plus tag),
- *           but return in (cp_info_dup) for full proper word alignment.
- *           When done with the data, call HEAP_FREE_DATA() on it.
+ * @returns UTF8 structure containing length and rchar bfr (plus tag),
+ *          but return in (cp_info_dup) for full proper word alignment.
+ *          When done with the data, call HEAP_FREE_DATA() on it.
  *
  *    @c @b rc-\>bytes      UTF8 version of @b inbfr string
  *
@@ -74,7 +79,9 @@ ARCH_COPYRIGHT_APACHE(nts, c, "$URL$ $Id$");
 
 cp_info_dup *nts_prchar2utf(rchar *inbfr)
 {
-    jshort len = strlen(inbfr);
+    ARCH_FUNCTION_NAME(nts_prchar2utf);
+
+    jshort len = portable_strlen(inbfr);
 
     /*
      * Allocate enough heap space for output string, but within the
@@ -95,7 +102,7 @@ cp_info_dup *nts_prchar2utf(rchar *inbfr)
     pcpui->tag = CONSTANT_Utf8;
     pcpui->length = len;
 
-    memcpy((jubyte *) pcpui->bytes, inbfr, len);
+    portable_memcpy((jubyte *) pcpui->bytes, inbfr, len);
 
     rc->empty[0] = FILL_INFO_DUP0;
     rc->empty[1] = FILL_INFO_DUP1;
@@ -131,11 +138,13 @@ cp_info_dup *nts_prchar2utf(rchar *inbfr)
 
 jshort nts_prchar2unicode(rchar *inbfr, jchar *outbfr)
 {
+    ARCH_FUNCTION_NAME(nts_prchar2unicode);
+
     jshort charcnvcount;
 
     jchar inbfrcnv;
 
-    jshort len = strlen(inbfr);
+    jshort len = portable_strlen(inbfr);
 
     
     for (charcnvcount = 0; charcnvcount < len; charcnvcount++)
@@ -166,11 +175,11 @@ jshort nts_prchar2unicode(rchar *inbfr, jchar *outbfr)
  * @param    arraydims Number of array dimensions
  *
  *
- * @returns  UTF8 structure containing length and rchar bfr (plus tag),
- *           but return in (cp_info_dup) for full proper word alignment.
- *           When done with the data, call HEAP_FREE_DATA() on it.
- *           With @b inbfr of @c @b some/path/name/filename,
- *           the result will be, with 3 array dimensions:
+ * @returns UTF8 structure containing length and rchar bfr (plus tag),
+ *          but return in (cp_info_dup) for full proper word alignment.
+ *          When done with the data, call HEAP_FREE_DATA() on it.
+ *          With @b inbfr of @c @b some/path/name/filename,
+ *          the result will be, with 3 array dimensions:
  *
  * @verbatim
 
@@ -193,7 +202,9 @@ jshort nts_prchar2unicode(rchar *inbfr, jchar *outbfr)
 cp_info_dup *nts_prchar2utf_classname(rchar         *inbfr,
                                       jvm_array_dim  arraydims)
 {
-    jshort inbfrlen = strlen(inbfr);
+    ARCH_FUNCTION_NAME(nts_prchar2utf_classname);
+
+    jshort inbfrlen = portable_strlen(inbfr);
 
     /*
      * Allocate enough heap space for output string, but within the
@@ -233,7 +244,7 @@ cp_info_dup *nts_prchar2utf_classname(rchar         *inbfr,
     pcpui->bytes[utfidx] = BASETYPE_CHAR_L;
     utfidx++;
 
-    memcpy((jubyte *) &pcpui->bytes[utfidx], inbfr, inbfrlen);
+    portable_memcpy((jubyte *) &pcpui->bytes[utfidx], inbfr, inbfrlen);
 
     rc->empty[0] = FILL_INFO_DUP0;
     rc->empty[1] = FILL_INFO_DUP1;
@@ -272,8 +283,8 @@ cp_info_dup *nts_prchar2utf_classname(rchar         *inbfr,
  * @param    inbfr   (rchar *) string.
  *
  *
- * @returns  Number of array dimensions in string.  For example,
- *           this string contains three array dimensions:
+ * @returns Number of array dimensions in string.  For example,
+ *          this string contains three array dimensions:
  *
  * @verbatim
 
@@ -290,6 +301,8 @@ cp_info_dup *nts_prchar2utf_classname(rchar         *inbfr,
 
 jvm_array_dim nts_get_prchar_arraydims(rchar *inbfr)
 {
+    ARCH_FUNCTION_NAME(nts_get_prchar_arraydims);
+
     /* Make return code wider than max to check overflow */
     u4 rc = 0;
 
@@ -323,13 +336,15 @@ jvm_array_dim nts_get_prchar_arraydims(rchar *inbfr)
  * @param    inbfr   (rchar *) string.
  *
  *
- * @returns  @link #rtrue rtrue@endlink if this is an array
- *           specfication, else @link #rfalse rfalse@endlink.
+ * @returns @link #rtrue rtrue@endlink if this is an array
+ *          specfication, else @link #rfalse rfalse@endlink.
  *
  */
 
 rboolean nts_prchar_isarray(rchar *inbfr)
 {
+    ARCH_FUNCTION_NAME(nts_prchar_isarray);
+
     return((BASETYPE_CHAR_ARRAY == (u1) inbfr[0]) ? rtrue : rfalse);
 
 } /* END of nts_prchar_isarray() */
@@ -361,6 +376,8 @@ rboolean nts_prchar_isarray(rchar *inbfr)
 
 rboolean nts_prchar_isprimativeformatted(rchar *src)
 {
+    ARCH_FUNCTION_NAME(nts_isprimativeformatted);
+
     jvm_array_dim arraydims = nts_get_prchar_arraydims(src);
 
     /*
@@ -407,6 +424,8 @@ rboolean nts_prchar_isprimativeformatted(rchar *src)
 
 rboolean nts_prchar_isclassformatted(rchar *src)
 {
+    ARCH_FUNCTION_NAME(nts_isclassformatted);
+
     u2 idx;
     rint rc = rfalse;
 
@@ -426,7 +445,7 @@ rboolean nts_prchar_isclassformatted(rchar *src)
      * nothing else matters and string cannot be formatted.
      */
     u1 *pbytes = src;
-    int len    = strlen(src);
+    int len    = portable_strlen(src);
 
     for (idx = 0; idx < len; idx++)
     {
@@ -487,7 +506,9 @@ rboolean nts_prchar_isclassformatted(rchar *src)
 
 rchar *nts_prchar2prchar_unformatted_classname(rchar *inbfr)
 {
-    int inbfrlen            = strlen(inbfr);
+    ARCH_FUNCTION_NAME(nts_prchar2prcahr_unformatted_classname);
+
+    int inbfrlen            = portable_strlen(inbfr);
     rint isfmt              = nts_prchar_isclassformatted(inbfr);
     jvm_array_dim arraydims = nts_get_prchar_arraydims(inbfr);
     rchar *psemi;
@@ -496,7 +517,7 @@ rchar *nts_prchar2prchar_unformatted_classname(rchar *inbfr)
 
     if (rtrue == isfmt)
     {
-        psemi = strchr(inbfr, BASETYPE_CHAR_L_TERM);
+        psemi = portable_strchr(inbfr, BASETYPE_CHAR_L_TERM);
         psemi--;
 
         allocsize = inbfrlen -   /* Input data size */
@@ -519,7 +540,7 @@ rchar *nts_prchar2prchar_unformatted_classname(rchar *inbfr)
     rchar *rc = HEAP_GET_DATA(allocsize, rfalse);
 
     /* Extract input class name from input buffer, add null char */
-    memcpy(rc, &inbfr[startposn], allocsize);
+    portable_memcpy(rc, &inbfr[startposn], allocsize);
     rc[allocsize - sizeof(u1)] = '\0';
 
     return(rc);

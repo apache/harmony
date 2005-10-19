@@ -23,7 +23,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -47,13 +49,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(heap, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(heap, h,
+"$URL$",
+"$Id$");
 
 #ifdef CONFIG_HEAP_TYPE_SIMPLE
 /*!
@@ -107,9 +112,9 @@ ARCH_COPYRIGHT_APACHE(heap, h, "$URL$ $Id$");
 extern rvoid HEAP_INIT(rvoid);
 extern rvoid HEAP_SHUTDOWN(rvoid);
 
-extern rvoid *HEAP_GET_METHOD(int size, rboolean clrmem_flag);
-extern rvoid *HEAP_GET_STACK(int size, rboolean clrmem_flag);
-extern rvoid *HEAP_GET_DATA(int size, rboolean clrmem_flag);
+extern rvoid *HEAP_GET_METHOD(rint size, rboolean clrmem_flag);
+extern rvoid *HEAP_GET_STACK(rint size, rboolean clrmem_flag);
+extern rvoid *HEAP_GET_DATA(rint size, rboolean clrmem_flag);
 
 extern rvoid HEAP_FREE_METHOD(rvoid *heap_block);
 extern rvoid HEAP_FREE_STACK(rvoid *heap_block);

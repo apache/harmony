@@ -20,14 +20,16 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  * and was the basis for the ClassFile structure of this implementation.
  *
  *
- * @todo Need to verify which web document for the
+ * @todo HARMONY-6-jvm-jvm.h-1 Need to verify which web document for the
  *       Java 5 class file definition is either "official",
  *       actually correct, or is the <em>de facto</em> standard.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -51,17 +53,19 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(jvm, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jvm, h,
+"$URL$",
+"$Id$");
 
 
 #include <pthread.h> /* For mutex(3THR) functions */
-#include <setjmp.h>  /* For jmp_buf structure for setjmp(3)/longjmp(3)*/
 
 #include "jvalue.h"
 #include "class.h"
@@ -82,20 +86,20 @@ typedef struct
      */
 
     /* Command line parms */
-    int    argc;      /**< Direct copy of main(argc,,) */
-    char **argv;      /**< Direct copy of main(,argv,) */
-    char **envp;      /**< Direct copy of main(,,envp) */
+    rint    argc;     /**< Direct copy of main(argc,,) */
+    rchar **argv;     /**< Direct copy of main(,argv,) */
+    rchar **envp;     /**< Direct copy of main(,,envp) */
 
     /* Slices of command line parms */
-    char *argv0;      /**< Program name, @p @b argv[0] in 'C',
+    rchar *argv0;     /**< Program name, @p @b argv[0] in 'C',
                            $0 in @b sh */
 
-    char *argv0name;  /**< Program name argv0,but without path
+    rchar *argv0name; /**< Program name argv0,but without path
                            component*/
 
-    int    argcj;     /**< Index of argv[] passed to JVM main(). */
+    rint   argcj;     /**< Index of argv[] passed to JVM main(). */
 
-    char **argvj;     /**< Portion of argv[] passed to JVM main().
+    rchar **argvj;    /**< Portion of argv[] passed to JVM main().
                        * Should @b never be @link #rnull rnull@endlink,
                        * but zero args will have argvj[0] as
                        * @link #rnull rnull@endlink, which always
@@ -129,12 +133,14 @@ typedef struct
                        * as a producer-consumer item of a single
                        * @c @b volatile byte.
                        *
-                       * @todo  Verify this is okay.  The @link
-                         rthread#sleeptime rthread.sleeptime@endlink
-                       * item is a multi-byte integer, and so could be
-                       * unsafe if not mutexed.  (It is still made
-                       * @c @b volatile just to raise the
-                       * awareness of users to this issue.)
+                       * @todo  HARMONY-6-jvm-jvm.h-2 Verify this is
+                       *        okay.  The @link
+                                rthread#sleeptime
+                                rthread.sleeptime@endlink item is a
+                       *        multi-byte integer, and so could be
+                       *        unsafe if not mutexed.  (It is still
+                       *        made @c @b volatile just to raise the
+                       *        awareness of users to this issue.)
                        */
 
     rbyte unused2[3]; /**< 4-byte alignment */
