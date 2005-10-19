@@ -6,7 +6,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -30,6 +32,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,11 +40,13 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(method, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(method, c,
+"$URL$",
+"$Id$");
 
 
-#include <stdlib.h>
-#include <strings.h>
+/* #include <stdlib.h> */
+/* #include <strings.h> */
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -56,18 +61,19 @@ ARCH_COPYRIGHT_APACHE(method, c, "$URL$ $Id$");
 
 /*!
  * @brief Locate the method_info index for a normal method in a class
- * using a constant_pool entry to the name and description of
+ * using a @c @b constant_pool entry to the name and description of
  * the method.
  *
  *
  * @param  clsidx            Class index of class whose method is to be
- *                             located.
+ *                           located.
  *
- * @param  mthname           UTF8 constant_pool entry of name of method
- *                             in class.
+ * @param  mthname           UTF8 @c @b constant_pool entry of name of
+ *                           method in class.
  *
- * @param  mthdesc           UTF8 constant_pool entry of description of
- *                             method parameters and return type.
+ * @param  mthdesc           UTF8 @c @b constant_pool entry of
+ *                           description of method parameters and
+ *                           return type.
  *
  *
  * @returns method table index of this method in class or
@@ -87,6 +93,8 @@ jvm_method_index method_find_by_cp_entry(jvm_class_index  clsidx,
                                          cp_info_dup     *mthname,
                                          cp_info_dup     *mthdesc)
 {
+    ARCH_FUNCTION_NAME(method_find_by_cp_entry);
+
     /* Prohibit invalid parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -159,6 +167,8 @@ jvm_method_index
                           rchar           *mthname,
                           rchar           *mthdesc)
 {
+    ARCH_FUNCTION_NAME(method_find_by_prchar);
+
     cp_info_dup *pcip_mthname = nts_prchar2utf(mthname);
     cp_info_dup *pcip_mthdesc = nts_prchar2utf(mthdesc);
 
@@ -172,13 +182,14 @@ jvm_method_index
 
 } /* END of method_find_by_prchar() */
 
+
 /*!
  * @brief Extract method return type from descriptor
  *
  *
  * @param clsidx      Class table index of method to examine.
  *
- * @param mthdescidx  Class file constant_pool index of method
+ * @param mthdescidx  Class file @c @b constant_pool index of method
  *                    descriptor to examine.  This entry must be a
  *                    CONSTANT_Utf8_info string containing the
  *                    descriptor of an unqualified method name.
@@ -192,6 +203,8 @@ jvm_method_index
 jvm_basetype method_return_type(jvm_class_index         clsidx,
                                 jvm_constant_pool_index mthdescidx)
 {
+    ARCH_FUNCTION_NAME(method_return_type);
+
     cp_info_dup        *pcpd;
     CONSTANT_Utf8_info *pcpd_Utf8;
 
@@ -224,14 +237,235 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
     }
 
     /*!
-     * @todo  Should this throw a @b VerifyError instead?
-     *        Is it better to let caller do this?
+     * @todo  HARMONY-6-jvm-method.c-1 Should this throw a
+     *        @b VerifyError instead? Is it better to let
+     *        caller do this?
      */
 
     /* Error, something else found */
     return((jvm_basetype) LOCAL_BASETYPE_ERROR);
 
 } /* END of method_return_type() */
+
+
+/*!
+ * @brief Calculate size of method parameter blocks from descriptor.
+ *
+ * This size is represented in terms of @link #jint jint@endlink words
+ * of JVM stack space.  This information is typically used when
+ * creating a stack frame for a virtual method call to compare against
+ * that method's local variable requirements, which must be equal or
+ * greater than the parameter block requirements.  (Otherwise a
+ * @b VerifyError occurs.)
+ *
+ * @param clsidx       Class table index of method to examine.
+ *
+ * @param mthdescidx   Class file @c @b constant_pool index of method
+ *                     descriptor to examine.  This entry must be a
+ *                     CONSTANT_Utf8_info string containing the
+ *                     descriptor of an unqualified method name.
+ *
+ * @param access_flags The @link #ACC_PUBLIC ACC_xxx@endlink access
+ *                     flags for this method.
+ *
+ *
+ * @returns Number of @link #jint jint@endlink words of JVM stack space
+ *          required for parameters to method @c @b mthdescidx.
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
+ *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
+ *         if a malformed descriptor is parsed@endlink.
+ *
+ */
+rint method_parm_size(jvm_class_index         clsidx,
+                      jvm_constant_pool_index mthdescidx,
+                      u2                      access_flags)
+{
+    ARCH_FUNCTION_NAME(method_parm_size);
+
+    cp_info_dup        *pcpd;
+    CONSTANT_Utf8_info *pcpd_Utf8;
+
+    pcpd =CLASS_OBJECT_LINKAGE(clsidx)->pcfs->constant_pool[mthdescidx];
+    pcpd_Utf8 = PTR_THIS_CP_Utf8(pcpd);
+
+    rboolean find_open_paren;
+    find_open_paren = rtrue;
+
+    rboolean find_class_close;
+    find_class_close = rfalse;
+
+    /*!
+     * @internal Adjust output length if the method is not a
+     *           a @c @b static method to account for the
+     *           object's @c @b this object hash as the first
+     *           word on the stack for the method call.
+     */
+    rint rc = (ACC_STATIC & access_flags)
+              ? ((0 * sizeof(jvm_object_hash)) / sizeof(jint))
+              : ((1 * sizeof(jvm_object_hash)) / sizeof(jint));
+
+    rboolean find_array_type;
+    find_array_type = rfalse;
+
+    u2 idx;
+           /* Last char will be result:/ - 1/ except 'Lsome/class;' */
+    for(idx = 0; idx < pcpd_Utf8->length - 1; idx++)
+    {
+        /* Skip past class/path/name until closing semicolon */
+        if (rtrue == find_class_close)
+        {
+            if (BASETYPE_CHAR_L_TERM == pcpd_Utf8->bytes[idx])
+            {
+                find_class_close = rfalse;
+            }
+
+            /* Go on to next character, whether or not end of class */
+            continue;
+        }
+
+        /* Scan for parm list opening, next char starts parm block */
+        if (rtrue == find_open_paren)
+        {
+            /* If open paren found, start scanning descriptor */
+            if (METHOD_CHAR_OPEN_PARM == pcpd_Utf8->bytes[idx])
+            {
+                /*
+                 * If anything precedes the open paren,
+                 * something is wrong
+                 */
+                if (0 != idx)
+                {
+                    exit_throw_exception(EXIT_JVM_METHOD,
+                                        JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+                }
+
+                find_open_paren = rfalse;
+            }
+
+            continue;
+        }
+
+        /* Done if close paren, being end of descriptor */
+        if (METHOD_CHAR_CLOSE_PARM == pcpd_Utf8->bytes[idx])
+        {
+            /* Something is profoundly wrong if any condition is true */
+            if ((rtrue == find_open_paren) ||
+                (rtrue == find_class_close) ||
+                (rtrue == find_array_type))
+            {
+                exit_throw_exception(EXIT_JVM_METHOD,
+                                     JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+            }
+
+            /* Return normally if everything was parsed properly */
+            return(rc);
+        }
+
+        /* Scan for parm list closure, next char is return type */
+        switch (pcpd_Utf8->bytes[idx])
+        {
+            case BASETYPE_CHAR_B:
+            case BASETYPE_CHAR_C:
+            case BASETYPE_CHAR_I:
+            case BASETYPE_CHAR_S:
+            case BASETYPE_CHAR_Z:
+                if (rtrue == find_array_type)
+                {
+                    rc += sizeof(jvm_object_hash) / sizeof(jint);
+
+                    find_array_type = rfalse;
+                }
+                else
+                {
+                    rc += sizeof(jint) / sizeof(jint);
+                }
+                break;
+
+            case BASETYPE_CHAR_D:
+                if (rtrue == find_array_type)
+                {
+                    rc += sizeof(jvm_object_hash) / sizeof(jint);
+
+                    find_array_type = rfalse;
+                }
+                else
+                {
+                    rc += sizeof(jdouble) / sizeof(jint);
+                }
+                break;
+
+            case BASETYPE_CHAR_F:
+                if (rtrue == find_array_type)
+                {
+                    rc += sizeof(jvm_object_hash) / sizeof(jint);
+
+                    find_array_type = rfalse;
+                }
+                else
+                {
+                    rc += sizeof(jfloat) / sizeof(jint);
+                }
+                break;
+
+            case BASETYPE_CHAR_J:
+                if (rtrue == find_array_type)
+                {
+                    rc += sizeof(jvm_object_hash) / sizeof(jint);
+
+                    find_array_type = rfalse;
+                }
+                else
+                {
+                    rc += sizeof(jlong) / sizeof(jint);
+                }
+                break;
+
+            case BASETYPE_CHAR_L:
+                if (rtrue == find_array_type)
+                {
+                    find_array_type = rfalse;
+
+                }
+
+                rc += sizeof(jvm_object_hash) / sizeof(jint);
+
+                /* Start scanning for end of class name */
+                find_class_close = rtrue;
+
+                break;
+
+            case BASETYPE_CHAR_ARRAY:
+
+                /*
+                 * Type token will be a reference.
+                 * Notice that it does not matter how many
+                 * array dimensions are found, the result is
+                 * still going to be a reference.
+                 */
+                find_array_type = rtrue;
+
+                break;
+
+            default:
+                /* No more slots, cannot continue */
+                exit_throw_exception(EXIT_JVM_METHOD,
+                                     JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+        }
+    }
+
+    /* Something is profoundly wrong if closing paren was not found */
+    exit_throw_exception(EXIT_JVM_METHOD,
+                         JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+
+    return((jint) 0); /* Satisfy compiler */
+
+} /* END of method_parm_size() */
 
 
 /* EOF */

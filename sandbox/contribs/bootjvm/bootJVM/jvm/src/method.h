@@ -9,7 +9,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -33,13 +35,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(method, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(method, h,
+"$URL$",
+"$Id$");
 
 
 /*!
@@ -55,8 +60,8 @@ ARCH_COPYRIGHT_APACHE(method, h, "$URL$ $Id$");
  * the class and @p @b mthidx for the method table entry in that class.
  *
  * @param clsidx  Class table index into the global
- * @link #rjvm.class rjvm.class[]@endlink array (via
- * @link #pjvm pjvm->class[]@endlink).
+ *                @link #rjvm.class rjvm.class[]@endlink array (via
+ *                @link #pjvm pjvm->class[]@endlink).
  * 
  * @param mthidx  Index into method table for this class.
  * 
@@ -81,6 +86,9 @@ extern jvm_method_index method_find_by_prchar(jvm_class_index  clsidx,
 extern jvm_basetype method_return_type(jvm_class_index      clsidx,
                                     jvm_constant_pool_index mthdescidx);
 
+extern rint method_parm_size(jvm_class_index         clsidx,
+                             jvm_constant_pool_index mthdescidx,
+                             u2                      access_flags);
 #endif /* _method_h_included_ */
 
 /* EOF */
