@@ -8,10 +8,10 @@
 <builder superClass="cdt.managedbuild.target.gnu.builder.lib.debug" id="cdt.managedbuild.target.gnu.builder.lib.debug.103413262" name="Gnu Make.lib"/>
 <tool superClass="cdt.managedbuild.tool.gnu.c.compiler.lib.debug" id="cdt.managedbuild.tool.gnu.c.compiler.lib.debug.649102944" name="GCC C Compiler">
 <option superClass="gnu.c.compiler.option.include.paths" id="gnu.c.compiler.option.include.paths.1956164695" name="Include paths (-I)" valueType="includePath">
-<listOptionValue value="/home/dlydick/harmony/bootJVM/config" builtIn="false"/>
-<listOptionValue value="/home/dlydick/harmony/bootJVM/jvm/include" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/config" builtIn="false"/>
+<listOptionValue value="/home/dlydick/harmony/bootjvm/bootJVM/jvm/include" builtIn="false"/>
 </option>
-<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.706680930" name="Other flags" value="-c -fmessage-length=0 -fpack-struct -m32" valueType="string"/>
+<option superClass="gnu.c.compiler.option.misc.other" id="gnu.c.compiler.option.misc.other.706680930" name="Other flags" value="-c -fmessage-length=0 -m32" valueType="string"/>
 <option superClass="gnu.c.compiler.option.misc.ansi" id="gnu.c.compiler.option.misc.ansi.1123496589" name="Support ANSI programs (-ansi)" value="true" valueType="boolean"/>
 </tool>
 <tool superClass="cdt.managedbuild.tool.gnu.cpp.compiler.lib.debug" id="cdt.managedbuild.tool.gnu.cpp.compiler.lib.debug.2058711594" name="GCC C++ Compiler"/>
