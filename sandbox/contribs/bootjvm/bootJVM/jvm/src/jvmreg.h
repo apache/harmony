@@ -16,7 +16,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -40,13 +42,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(jvmreg, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jvmreg, h,
+"$URL$",
+"$Id$");
 
 /*!
  * @brief Program counter.
@@ -56,8 +61,9 @@ ARCH_COPYRIGHT_APACHE(jvmreg, h, "$URL$ $Id$");
  * class, method, attribute of code area, and offset in the
  * code array.
  *
- * @todo  Does an @p @b arraydims item need to be added for processing
- *        of array classes, or is the scalar concept sufficient in code?
+ * @todo  HARMONY-6-jvm-jvmreg.h-1 Does an @p @b arraydims item need
+ *        to be added for processing of array classes, or is the
+ *        scalar concept sufficient in code?
  */
 typedef struct
 {
@@ -133,7 +139,7 @@ typedef u2 jvm_exception_index_table_index;
 
 /*!
  * @warning WATCH OUT! When invoking POP_GC() you are working with a
- * partially torn down frame, so can't use this macro:
+ *          partially torn down frame, so can't use this macro:
  */
 #define JVMREG_STACK_MIN_FRAME_HEIGHT (JVMREG_STACK_GC_HEIGHT + \
                                     JVMREG_STACK_FP_HEIGHT + \
@@ -158,7 +164,7 @@ typedef u2 jvm_exception_index_table_index;
 
 
 /*!
- * @name Reading and writing to the stack pointer.
+ * @name Reading and writing the stack pointer.
  *
  * @brief Load/store values from/to the stack pointer itself, 
  * not stack memory it points to.
@@ -193,12 +199,12 @@ typedef u2 jvm_exception_index_table_index;
  * @param thridx  Thread index of thread whose stack it to
  *                be manipulated.
  *
- * @param value   (jint) value to store into stack location.
+ * @param value   (@link #jint jint@endlink) value to store into
+ *                stack location.
  *
  *
  * @returns The @b GET_SP() macros return a (jint) value from
- *          the stack, the others
- *          return @link #rvoid rvoid@endlink.
+ *          the stack, the others return @link #rvoid rvoid@endlink.
  *
  */
 
@@ -212,6 +218,15 @@ typedef u2 jvm_exception_index_table_index;
 
 /*!
  * @brief Write a word at given depth in stack.
+ *
+ * @warning The @c @b value parameter @e must be of
+ *          type @link #jint jint@endlink.  It will
+ *          be cast as such in order to fit, but if
+ *          it is a @link #jfloat jfloat@endlink or
+ *          wider than this, the wrong value @e will
+ *          be stored without compiler or run-time
+ *          notification.
+ *
  */
 #define PUT_SP_WORD(thridx, idx, value) \
     STACK(thridx, GET_SP(thridx) - idx) = (jint) (value)
@@ -220,7 +235,7 @@ typedef u2 jvm_exception_index_table_index;
 
 
 /*!
- * @name Reading and writing to the stack pointer.
+ * @name Reading and writing the frame pointer.
  *
  * @brief Load/store values from/to the frame pointer.
  *
@@ -228,7 +243,8 @@ typedef u2 jvm_exception_index_table_index;
  * @param thridx  Thread index of thread whose frame pointer
  *                is to be referenced.
  *
- * @param value   (jvm_sp) value to store into frame pointer.
+ * @param value   (@link #jvm_sp jvm_sp@endlink) value to store
+ *                into frame pointer.
  *
  *
  * @returns The @b GET_FP() macros return a (jvm_sp) value of
@@ -368,13 +384,13 @@ typedef u2 jvm_exception_index_table_index;
  * it is cast here as a simple @link #rvoid rvoid@endlink pointer so as
  * to support all of them.
  *
- * @todo  Verify that the 64-bit real pointer
+ * @todo  HARMONY-6-jvm-jvmreg.h-2 Verify that the 64-bit real pointer
  *        calculations work properly for @b PUSH_GC() and @b POP_GC()
  *        (namely, where use fo JVMREG_STACK_GC_HEIGHT is involved)
  *
  * @warning WATCH OUT! When invoking @b POP_GC() you are working with a
- * partially torn down frame, so can't use standard macros
- * to calculate stack offsets!
+ *          partially torn down frame, so can't use standard macros
+ *          to calculate stack offsets!
  *
  *
  * @param thridx  Thread index of thread whose stack pointer
@@ -415,7 +431,8 @@ typedef u2 jvm_exception_index_table_index;
  * @param thridx  Thread index of thread whose stack pointer
  *                is to be referenced.
  *
- * @param value   (jint) value to change stack pointer by.
+ * @param value   (@link #jint jint@endlink) value to change
+ *                stack pointer by.
  *
  *
  * @returns @link #rvoid rvoid@endlink
@@ -446,6 +463,11 @@ typedef u2 jvm_exception_index_table_index;
  *
  * @returns (jvm_sp) stack offset value of requested item.
  *
+ * @todo  HARMONY-6-jvm-jvmreg.h-3 Verify that
+ *        @link #JVMREG_FRAME_CURRENT_LOCAL_VAR_AREA()
+          JVMREG_FRAME_CURRENT_LOCAL_VAR_AREA()@endlink does not
+ *        need a '+1' addition.
+ *
  */
 
 /*@{ */ /* Begin grouped definitions */
@@ -459,7 +481,9 @@ typedef u2 jvm_exception_index_table_index;
 #define JVMREG_FRAME_PREVIOUS_FP(thridx) \
     (GET_FP(thridx) + JVMREG_STACK_FP_OFFSET)
 
-#define JVMREG_FRAME_CURRENT_SCRATCH_AREA(thridx) GET_FP(thridx)
+#define JVMREG_FRAME_CURRENT_LOCAL_VAR_AREA(thridx) \
+    (GET_FP(thridx) /* + 1 */ - \
+     STACK(thridx, JVMREG_FRAME_CURRENT_LOCAL_STORAGE_SIZE(thridx)))
 
 /*@} */ /* End of grouped definitions */
 
@@ -475,26 +499,32 @@ typedef u2 jvm_exception_index_table_index;
  * @param _thridx      Thread index of thread whose stack pointer
  *                     is to be referenced.
  *
- * @param _source      (jvm_pc) value to be loaded
+ * @param _source      (@link #jvm_pc jvm_pc@endlink) value to be loaded
  *                     into program counter.
  *
- * @param _clsidx      (jvm_class_index) value to be loaded
+ * @param _clsidx      (@link #jvm_class_index jvm_class_index@endlink)
+ *                     value to be loaded into program counter class
+ *                     index
+ *
+ * @param _mthidx      (@link #jvm_method_index
+                       jvm_method_index@endlink) value to be loaded
  *                     into program counter class index
  *
- * @param _mthidx      (jvm_method_index) value to be loaded
+ * @param _codeatridx  (@link #jvm_attribute_index
+                       jvm_attribute_index@endlink) value to be loaded
  *                     into program counter class index
  *
- * @param _codeatridx  (jvm_attribute_index) value to be loaded
+ * @param _excpatridx  (@link #jvm_attribute_index
+                       jvm_attribute_index@endlink) value to be loaded
  *                     into program counter class index
  *
- * @param _excpatridx  (jvm_attribute_index) value to be loaded
+ * @param _excpatridx  (@link #jvm_attribute_index
+                       jvm_attribute_index@endlink) value to be loaded
  *                     into program counter class index
  *
- * @param _excpatridx  (jvm_attribute_index) value to be loaded
- *                     into program counter class index
- *
- * @param _offset      (jvm_pc_offset) value to be loaded
- *                     into program counter class index
+ * @param _offset      (@link #jvm_pc_offset jvm_pc_offset@endlink)
+ *                     value to be loaded into program counter class
+ *                     index
  *
  * @param _field       Field from program counter to extract.
  *
@@ -556,7 +586,6 @@ typedef u2 jvm_exception_index_table_index;
 /*!
  * @name Location of the old program counter in the current stack frame.
  *
- * @warning  Notice NEGATIVE INDEX used to address the stack frame.
  */
 
 /*@{ */ /* Begin grouped definitions */
@@ -629,11 +658,11 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @param thridx  Thread table index of class to locate for
- * current program counter.
+ *                current program counter.
  *
  *
  * @returns address of ClassFile structure containing code at
- * current program counter on this thread.
+ *          current program counter on this thread.
  *
  */
 #define THIS_PCFS(thridx) \
@@ -647,19 +676,22 @@ typedef u2 jvm_exception_index_table_index;
  * counter on a given thread.
  *
  *
- * @param thridx  Thread table index of attribute to locate for
- * current program counter.
+ * @param thridx    Thread table index of attribute to locate for
+ *                  current program counter.
  *
  * @param pc_member jvm_pc member index in current program counter to
- * pick out and examine.
+ *                  pick out and examine.
  *
  *
  * @returns Plain attribute address (no special attribute type)
- * of an attribute in method area of the current program counter
- * on this thread, or @link #rnull rnull@endlink if a @b BAD attribute .
+ *          of an attribute in method area of the current program
+ *          counter on this thread, or @link #rnull rnull@endlink if
+ *          a @b BAD attribute .
  *
- * @todo Watch out for when @p @b codeatridx is a BAD index, namely
- * @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
+ *
+ * @todo HARMONY-6-jvm-jvmreg.h-4 Watch out for when @p @b codeatridx
+ *       is a BAD index, namely
+ *       @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
  *
  */
 #define DEREFERENCE_PC_GENERIC_ATTRIBUTE(thridx, pc_member) \
@@ -678,11 +710,11 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @param thridx  Thread table index of @b Exceptions attribute to
- * locate for current program counter.
+ *                locate for current program counter.
  *
  *
  * @returns Address of @b Exceptions attribute in method area of
- * the current program counter on this thread.
+ *          the current program counter on this thread.
  *
  */
 #define DEREFERENCE_PC_EXCEPTIONS_ATTRIBUTE(thridx) \
@@ -698,12 +730,12 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @param thridx  Thread table index of @b Code attribute to locate for
- * current program counter.
+ *                current program counter.
  *
  *
  * @returns Address of @b Code attribute in method area of
- * the current program counter on this thread, or
- * @link #rnull rnull@endlink if not present in class file.
+ *          the current program counter on this thread, or
+ *          @link #rnull rnull@endlink if not present in class file.
  *
  */
 #define DEREFERENCE_PC_CODE_ATTRIBUTE(thridx) \
@@ -722,7 +754,7 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @returns address of program counter in this thread table, or
- * @link #rnull rnull@endlink if not present in class file.
+ *          @link #rnull rnull@endlink if not present in class file.
  *
  */
 #define DEREFERENCE_PC_EXCEPTION_TABLE(thridx) \
@@ -737,11 +769,11 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @param thridx  Thread table index of opcode to locate for
- * current program counter.
+ *                current program counter.
  *
  *
  * @returns Real machine address of @e first opcode in current
- * program counter on this thread.
+ *          program counter on this thread.
  *
  */
 #define DEREFERENCE_PC_CODE_BASE(thridx) \
@@ -756,11 +788,11 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @param thridx  Thread table index of opcode to locate for
- * current program counter.
+ *                current program counter.
  *
  *
  * @returns Real machine address of @e current opcode in current
- * program counter on this thread.
+ *          program counter on this thread.
  *
  */
 #define DEREFERENCE_PC_CODE_CURRENT_OPCODE(thridx) \
@@ -787,21 +819,21 @@ typedef u2 jvm_exception_index_table_index;
   
    @endverbatim
  *
- * During @b PUSH_FRAME(n), there are a@b n words of local storage
+ * During @b PUSH_FRAME(n), there are @b n words of local storage
  * allocated for JVM method scratch area, where @b n >= 0, up to
  * the maximum stack size less the top few words:
  *
  * @verbatim
   
-   new SP -->  [PC of next JVM instruction]           ... high address
+   new SP -->  [PC of next JVM instruction]           ... higher address
                [old FP]                                     ...
                [GC pointer for this NEW frame]              ...
                [value 'n', size of LS (local storage) area beneath]
-   new FP -->  [local 0]                                    ...
-               [local 1]                                    ...
-               [local 2]                                    ...
+   new FP -->  [local n-1]                                  ...
                  ...                                        ...
-               [local n-1]                                  ...
+               [local 2]                                    ...
+               [local 1]                                    ...
+               [local 0]                                    ...
   
    --- end of NEW frame ---
   
@@ -809,7 +841,7 @@ typedef u2 jvm_exception_index_table_index;
                  ...                                        ...
                [scratch]                                    ...
                [top of previous frame]                      ...
-   old FP ->   [locals of previous frame]             ... low address
+   old FP ->   [locals of previous frame]             ... lower address
   
    --- end of OLD frame ---
   
@@ -832,6 +864,30 @@ typedef u2 jvm_exception_index_table_index;
  *
  *
  * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * @note The original layout of the local variable area was from
+ *       <b><code>FP[0]</code></b> to
+ *       <b><code>FP[0 - n + 1]</code></b>.  However, that would
+ *       mean that in order to perform a virtual method call, the
+ *       method's parameter block of @c @b p parameters would
+ *       have to be popped off the JVM stack, stored somewhere, a
+ *       new frame of @c @b n locals built with
+ *       @link #PUSH_FRAME() PUSH_FRAME@endlink, and the parm block
+ *       put into the local variables.  Even if the frame was built
+ *       with <b><code>n - p</code></b> locals on top of that block,
+ *       it would @e still have to be reversed so that
+ *       <b><code>parm[0]</code></b> would reside in
+ *       <b><code>FP[0]</code></b>. This overhead can be avoided by
+ *       reversing the order of the local variable index to correspond
+ *       directly to the parameters as they are found on the stack
+ *       at @link #PUSH_FRAME PUSH_FRAME@endlink time.  This will
+ *       correspond to the first @c @b p of the @c @b n local
+ *       variables, where <b><code>n \>= p + m</code></b> at all times.
+ *       Remember that for static methods, <b><code>m := 0</code></b>,
+ *       namely, no @c @b this object hash is supplied, but for object
+ *       instance methods, <b><code>m := 1</code></b> for the @c @b this
+ *       object hash.
  *
  */
 
@@ -863,24 +919,6 @@ typedef u2 jvm_exception_index_table_index;
  * Accesses are @e always as (jint), casting is performed
  * outside of these macros.
  *
- * @todo  This implementation is being changed to point local variable
- * zero to the _last_ word of the local variable area instead of the
- * _first_ word.  This will create a run-time tradeoff between reversing
- * the stack frame for method calls and a slightly longer expression
- * needed to access local variables.  The former (current way) makes
- * for a somewhat more complex method invocation procedure, while the
- * latter (to be done) provides an easy method invocation with a bit
- * more work to access locals.  The following warning notice will go
- * away when this is done:
- *
- * NOTICE THE INDEX IS ***NEGATIVE*** in this implementation!
- * This allows FP to use constant values to each and every element of
- * the frame, including a constant value to point to the @e first of
- * the local variables.  By inverting the frame to have the locals on
- * top, this same thing could be done and the FP could point either
- * to its corresponding inverse location or to the first word of the
- * frame above the old stack contents.
- *
  *
  * @param thridx  Thread index of thread whose stack pointer
  *                is to be referenced.
@@ -899,18 +937,19 @@ typedef u2 jvm_exception_index_table_index;
  * @brief Read a local variable from the stack frame
  *
  * @note For (jlong) and (jdouble) local variables, there are
- * @e two accesses required per JVM spec to retrieve the two
- * (jint) words of such a data type.  Use bytegames_combine_long()
- * and bytegames_combine_double(), respectively, to combine the
- * two words into a single variable.  The parameters may be
- * read directly from the stack frame with this macro.
+ *       @e two accesses required per JVM spec to retrieve the two
+ *       (jint) words of such a data type.  Use bytegames_combine_long()
+ *       and bytegames_combine_double(), respectively, to combine the
+ *       two words into a single variable.  The parameters may be
+ *       read directly from the stack frame with this macro.
  *
  *
  * @returns (jint) value of a local variable in the stack frame.
  *
  */
 #define GET_LOCAL_VAR(thridx, frmidx) \
-    ((jint) (STACK(thridx, GET_FP(thridx) - frmidx)))
+    ((jint) (STACK(thridx, \
+                 JVMREG_FRAME_CURRENT_LOCAL_VAR_AREA(thridx) + frmidx)))
 
 /*!
  * @brief Cast a @link #GET_LOCAL_VAR() GET_LOCAL_VAR()@endlink
@@ -936,18 +975,19 @@ typedef u2 jvm_exception_index_table_index;
  *
  */
 #define JINT_ADDRESS_LOCAL_VAR(thridx, frmidx) \
-    ((jint *) &STACK(thridx, GET_FP(thridx) - frmidx))
+    ((jint *) &STACK(thridx, \
+                  JVMREG_FRAME_CURRENT_LOCAL_VAR_AREA(thridx) + frmidx))
 
 
 /*!
  * @brief Write a local variable from the stack frame
  *
  * @note For (jlong) and (jdouble) local variables, there are
- * @e two accesses required per JVM spec to store the two
- * (jint) words of such a data type.  Use bytegames_split_long()
- * and bytegames_split_double(), respectively, to split
- * a single variable into its two words.  The parameters may be
- * written directly into the stack frame with this macro.
+ *       @e two accesses required per JVM spec to store the two
+ *       (jint) words of such a data type.  Use bytegames_split_long()
+ *       and bytegames_split_double(), respectively, to split
+ *       a single variable into its two words.  The parameters may be
+ *       written directly into the stack frame with this macro.
  *
  *
  * @returns (jint) value of a local variable in the stack frame.
