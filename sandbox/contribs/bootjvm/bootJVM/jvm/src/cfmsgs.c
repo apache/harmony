@@ -10,7 +10,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -34,6 +36,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -41,7 +44,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(cfmsgs, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(cfmsgs, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -51,23 +56,27 @@ ARCH_COPYRIGHT_APACHE(cfmsgs, c, "$URL$ $Id$");
 
 
 /*!
- * @brief Display details of what an constant_pool entry contains.
+ * @brief Display details of what an @c @b constant_pool entry contains.
  *
  * @param  fn     Function name message for sysErrMsg()
  *
- * @param  pcfs   ClassFile structure containing constant_pool info
+ * @param  pcfs   ClassFile structure containing @c @b constant_pool
+ *                info
  *
- * @param  cpidx  Index into constant_pool[] to report
+ * @param  cpidx  Index into @c @b constant_pool[] to report
  *
  *
  * @returns @link #rvoid rvoid@endlink  The @c @b pcfs->constant_pool
  *          must be valid for this to produce any meaningful results.
+ *
  */
 
 rvoid cfmsgs_typemsg(rchar *fn,
                      ClassFile *pcfs,
                      jvm_constant_pool_index cpidx)
 {
+    ARCH_FUNCTION_NAME(cfmsgs_typemsg);
+
     u4      *pu4, *pu4h, *pu4l;
     rulong  *prl8;
     rdouble *prd8;
@@ -80,7 +89,10 @@ rvoid cfmsgs_typemsg(rchar *fn,
 
     if (CONSTANT_CP_DEFAULT_INDEX == cpidx)
     {
-        /*! @todo  Widen pointer format logic for 64-bit pointers */
+        /*!
+         * @todo  HARMONY-6-jvm-cfmsgs.c-1 Widen pointer format
+         *         logic for 64-bit pointers
+         */
         sysDbgMsg(DMLNORM,
                   fn,
                   "NULL index (%d) into constant_pool 0x%08x\n",
@@ -383,12 +395,18 @@ rvoid cfmsgs_typemsg(rchar *fn,
  *                          ((julong) *pu4l));
  */
 
-/*! @todo  Above logic works, 64-bitlogic below needs testing: */
+/*!
+ * @todo  HARMONY-6-jvm-cfmsgs.c-2 Above logic works, 64-bit
+ *        logic below needs testing:
+ */
             /* LS word always follows MS word */
             prl8 = (rulong *) pu4h;
             vall = (jlong) GETRL8(prl8);
 
-            /*! @todo  Make format string properly reflect 64-bit int */
+            /*!
+             * @todo  HARMONY-6-jvm-cfmsgs.c-3 Make format string
+             *        properly reflect 64-bit int
+             */
             sysDbgMsg(DMLNORM, fn, "%s Long value=%ld", msg_hdr, vall);
             break;
 
@@ -411,7 +429,10 @@ rvoid cfmsgs_typemsg(rchar *fn,
  *                          ((julong) *pu4l));
  */
 
-/*! @todo  Above logic works, 64-bit logic below needs testing: */
+/*!
+ * @todo  HARMONY-6-jvm-cfmsgs.c-4 Above logic works, 64-bit logic
+ *        below needs testing:
+ */
             /* LS word always follows MS word */
             prd8 = (rdouble *) pu4h;
             vald = (jdouble) GETRL8((rulong *) prd8);
@@ -499,10 +520,12 @@ rvoid cfmsgs_typemsg(rchar *fn,
  */
 rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
 {
+    ARCH_FUNCTION_NAME(cfmsgs_show_constant_pool);
+
     jvm_constant_pool_index cpidx;
 
     /*
-     * Rehearse contents of constant_pool (Wait until AFTER the
+     * Rehearse contents of @c @b constant_pool (Wait until AFTER the
      * @link ClassFile.this_class this_class@endlink item is located
      * so that the message prints the class name instead of a
      * default @b "unknown" for the class name.
@@ -523,28 +546,32 @@ rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
  *
  * @param  fn     Function name message for sysErrMsg()
  *
- * @param  pcfs    ClassFile to dump contents
+ * @param  pcfs   ClassFile to dump contents
  *
  * @param  atr    Pointer to an attribute area.  WARNING:  This
- *                  pointer MUST be 4-byte aligned to suppress
- *                  @b SIGSEGV.  Such logic is already taken care
- *                  of by virtue of it being an (attribute_info_dup *)
- *                  type instead of as (attribute_info *).  This
- *                  processing happens in cfattrib_loadattribute()
- *                  after reading an attribute from the class file
- *                  and storing it into the heap, which is properly
- *                  aligned.
+ *                pointer MUST be 4-byte aligned to suppress
+ *                @b SIGSEGV.  Such logic is already taken care
+ *                of by virtue of it being an (attribute_info_dup *)
+ *                type instead of as (attribute_info *).  This
+ *                processing happens in cfattrib_loadattribute()
+ *                after reading an attribute from the class file
+ *                and storing it into the heap, which is properly
+ *                aligned.
+ *
  *
  * @returns @link #rvoid rvoid@endlink The
- *          @c @b atr->ai.attribute_index constant_pool entry
+ *          @c @b atr->ai.attribute_index @c @b constant_pool entry
  *          must be valid for this to produce any meaningful
  *          results.
+ *
  */
 
 rvoid cfmsgs_atrmsg(rchar *fn,
                     ClassFile *pcfs,
                     attribute_info_dup *atr)
 {
+    ARCH_FUNCTION_NAME(cfmsgs_atrmsg);
+
     u4      *pu4, *pu4h, *pu4l;
     rulong  *prl8;
     rdouble *prd8;
@@ -584,8 +611,8 @@ rvoid cfmsgs_atrmsg(rchar *fn,
             switch((int) CP_TAG(pcfs, cpidx))
             {
 /*!
- * @todo  Verify (jlong) retrieval of @c @b bytes for
- * both -m32 and -m64 compilations.
+ * @todo  HARMONY-6-jvm-cfmsgs.c-5 Verify (jlong) retrieval
+ *        of @c @b bytes for both -m32 and -m64 compilations.
  */
                 case CONSTANT_Long:
 
@@ -608,14 +635,20 @@ rvoid cfmsgs_atrmsg(rchar *fn,
  *                                  ((julong) *pu4l));
  */
 
-/*! @todo  Above logic works, logic below needs testing: */
+/*!
+ * @todo  HARMONY-6-jvm-cfmsgs.c-6 Above logic works, logic
+ *        below needs testing:
+ */
                     /* LS word always follows MS word */
                     prl8 = (rulong *) pu4h;
                     vall = (jlong) GETRL8(prl8);
 
 
-                    /*! @todo  Make format string properly
-                              reflect 64-bit (rlong)/(jlong) */
+                    /*!
+                     * @todo  HARMONY-6-jvm-cfmsgs.c-7 Make format
+                     *        string properly reflect 64-bit
+                     *        (rlong)/(jlong)
+                     */
                     sysDbgMsg(DMLNORM,
                               fn, "%s %s long=%ld",
                               msg_hdr,
@@ -624,8 +657,8 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                     break;
 
 /*!
- * @todo  Verify (jfloat) retrieval of @c @b bytes for
- * both -m32 and -m64 compilations.
+ * @todo  HARMONY-6-jvm-cfmsgs.c-8 Verify (jfloat) retrieval
+ *        of @c @b bytes for both -m32 and -m64 compilations.
  */
                 case CONSTANT_Float:
 
@@ -642,8 +675,8 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                     break;
 
 /*!
- * @todo  Verify (jdouble) retrieval of @c @b bytes for
- * both -m32 and -m64 compilations.
+ * @todo  HARMONY-6-jvm-cfmsgs.c-9 Verify (jdouble) retrieval
+ *        of @c @b bytes for both -m32 and -m64 compilations.
  */
                 case CONSTANT_Double:
 
@@ -665,14 +698,21 @@ rvoid cfmsgs_atrmsg(rchar *fn,
  *                                     (JBITS * sizeof(u4))) |
  *                                    ((julong) *pu4l));
  */
-/*! @todo  Above logic works, 64-bit logic below needs testing: */
+
+/*!
+ * @todo  HARMONY-6-jvm-cfmsgs.c-10 Above logic works, 64-bit
+ *         logic below needs testing:
+ */
                     /* LS word always follows MS word */
                     prd8 = (rdouble *) pu4h;
                     vald = (jdouble) GETRL8((rulong *) prd8);
 
 
-                    /*! @todo  Make format string properly
-                               reflect 64-bit (double)/(jdouble) */
+                    /*!
+                     * @todo  HARMONY-6-jvm-cfmsgs.c-11 Make format
+                     *        string properly reflect 64-bit
+                     *        (double)/(jdouble)
+                     */
                     sysDbgMsg(DMLNORM,
                               fn, "%s %s double=%ld",
                               msg_hdr,
@@ -681,8 +721,8 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                     break;
 
 /*!
- * @todo  Verify (jint) retrieval of @c @b bytes for
- * both -m32 and -m64 compilations.
+ * @todo  HARMONY-6-jvm-cfmsgs.c-12 Verify (jint) retrieval
+ *        of @c @b bytes for both -m32 and -m64 compilations.
  */
                 case CONSTANT_Integer:
 

@@ -3,18 +3,21 @@
  *
  * @brief Native implementation of @c @b java.lang.Thread
  *
- * @todo  Perform intelligent check on input parameter
- *        @b objhash range for all functions.
+ * @todo  HARMONY-6-jvm-jlThread.c-1 Perform intelligent check on
+ *        input parameter @b objhash range for all functions.
  *
- * @todo  In real life, the @b objhashthis values and @b clsidxthis
- *        values will be valid or these functions could not be
- *        invoked since these data types are @e mandatory for
- *        referencing them.  This probably means that the parameter
- *        valididty checking could probably be relaxed.
+ * @todo  HARMONY-6-jvm-jlThread.c-2 In real life, the @b objhashthis
+ *        values and @b clsidxthis values will be valid or these
+ *        functions could not be invoked since these data types
+ *        are @e mandatory for referencing them.  This probably
+ *        means that the parameter valididty checking could probably
+ *        be relaxed.
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -38,6 +41,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -45,7 +49,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jlThread, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jlThread, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -94,15 +100,17 @@ ARCH_COPYRIGHT_APACHE(jlThread, c, "$URL$ $Id$");
  *
  *
  * @note These @c @b java.lang.Thread methods are unusual in that
- * they does not require a @c @b jobject (in parlance of this
- * implementation, a @link #jvm_object_hash jvm_object_hash@endlink)
- * to run because they are declared as @c @b static methods.  As
- * implemented here, the usual @b objhashthis parameter is therefore
- * replaced by * @b clsidxthis.  The thread context is located in
- * @link #CURRENT_THREAD CURRENT_THREAD@endlink.
+ *       they does not require a @c @b jobject (in parlance of this
+ *       implementation, a
+ *       @link #jvm_object_hash jvm_object_hash@endlink)
+ *       to run because they are declared as @c @b static methods.  As
+ *       implemented here, the usual @b objhashthis parameter is
+ *       therefore replaced by @b clsidxthis.  The thread context is
+ *       located in @link #CURRENT_THREAD CURRENT_THREAD@endlink.
  *
  *
- * @todo Make sure thread interruption logic below here is working.
+ * @todo HARMONY-6-jvm-jlThread.c-3 Make sure thread interruption
+ *       logic below here is working.
  *
  */
 
@@ -117,6 +125,8 @@ ARCH_COPYRIGHT_APACHE(jlThread, c, "$URL$ $Id$");
 jvoid jlThread_sleep(jvm_class_index clsidxthis,
                      jlong           sleeptime_milliseconds)
 {
+    ARCH_FUNCTION_NAME(jlThread_sleep);
+
     /* Current thread always assumed valid */
     jvm_thread_index thridx = CURRENT_THREAD;
 
@@ -141,6 +151,8 @@ jvoid jlThread_sleep_nanos(jvm_class_index clsidxthis,
                            jlong           sleeptime_milliseconds,
                            jint            sleeptime_nanoseconds)
 {
+    ARCH_FUNCTION_NAME(jlThread_sleep_nanos);
+
     /* Do nothing with @b sleeptime_nanoseconds */
 
     jlThread_sleep(clsidxthis, sleeptime_milliseconds);
@@ -177,14 +189,17 @@ jvoid jlThread_sleep_nanos(jvm_class_index clsidxthis,
  * @param  sleeptime_nanoseconds   Number of nanoseconds to wait on join
  *                                 in addition to the milliseconds.
  *
+ *
  * @returns @link #jvoid jvoid@endlink
+ *
  *
  * @throws JVMCLASS_JAVA_LANG_INTERRUPTEDEXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_INTERRUPTEDEXCEPTION
            if another thread had interrupted this thread@endlink.
  *
  *
- * @todo Make sure thread interruption logic below here is working.
+ * @todo HARMONY-6-jvm-jlThread.c-4 Make sure thread interruption
+ *       logic below here is working.
  *
  */
 
@@ -197,6 +212,8 @@ jvoid jlThread_sleep_nanos(jvm_class_index clsidxthis,
 
 jvoid jlThread_join4ever(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_join4ever);
+
     /* Current thread always assumed valid */
     jvm_thread_index thridxthis = CURRENT_THREAD;
 
@@ -220,6 +237,8 @@ jvoid jlThread_join4ever(jvm_object_hash objhashthis)
 jvoid jlThread_jointimed(jvm_object_hash objhashthis,
                          jlong           sleeptime)
 {
+    ARCH_FUNCTION_NAME(jlThread_jointimed);
+
     /* Current thread always assumed valid */
     jvm_thread_index thridxthis = CURRENT_THREAD;
 
@@ -247,6 +266,8 @@ jvoid jlThread_jointimed_nanos(jvm_object_hash objhashthis,
                                jlong           sleeptime,
                                jint            sleeptime_nanoseconds)
 {
+    ARCH_FUNCTION_NAME(jlThread_jointimed_nanos);
+
     /* Do nothing with @b sleeptime_nanoseconds */
 
     jlThread_jointimed(objhashthis, sleeptime);
@@ -265,12 +286,13 @@ jvoid jlThread_jointimed_nanos(jvm_object_hash objhashthis,
  * as the first parameter.
  *
  * @note These @c @b java.lang.Thread methods are unusual in that
- * they does not require a @c @b jobject (in parlance of this
- * implementation, a @link #jvm_object_hash jvm_object_hash@endlink)
- * to run because they are declared as @c @b static methods.  As
- * implemented here, the usual @b objhashthis parameter is therefore
- * replaced by * @b clsidxthis.  The thread context is located in
- * @link #CURRENT_THREAD CURRENT_THREAD@endlink.
+ *       they does not require a @c @b jobject (in parlance of this
+ *       implementation, a
+ *       @link #jvm_object_hash jvm_object_hash@endlink)
+ *       to run because they are declared as @c @b static methods.  As
+ *       implemented here, the usual @b objhashthis parameter is
+ *       therefore replaced by @b clsidxthis.  The thread context is
+ *       located in @link #CURRENT_THREAD CURRENT_THREAD@endlink.
  *
  */
 
@@ -294,6 +316,8 @@ jvoid jlThread_jointimed_nanos(jvm_object_hash objhashthis,
 
 jvm_object_hash jlThread_currentThread(jvm_class_index clsidxthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_currentThread);
+
     /* Current thread always assumed valid */
     return(THREAD(CURRENT_THREAD).thread_objhash);
 
@@ -315,6 +339,8 @@ jvm_object_hash jlThread_currentThread(jvm_class_index clsidxthis)
  */
 jboolean jlThread_yield(jvm_class_index clsidxthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_yield);
+
     /* Current thread always assumed valid */
     jvm_thread_index thridx = CURRENT_THREAD;
 
@@ -337,9 +363,9 @@ jboolean jlThread_yield(jvm_class_index clsidxthis)
  * Status is @b CLEARED by this method after testing it.
  *
  * @note <b>This is a static method and has no need of a
- * @c @b this object hash.  Therefore, the first
- * parameter is @e not an object hash, but the first
- * application parameter itself.</b>
+ *       @c @b this object hash.  Therefore, the first
+ *       parameter is @e not an object hash, but the first
+ *       application parameter itself.</b>
  *
  *
  * @param  clsidxthis  Class table index of the class of
@@ -348,12 +374,14 @@ jboolean jlThread_yield(jvm_class_index clsidxthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread has been interrupted,
- * else @link #jfalse jfalse@endlink.
+ *          else @link #jfalse jfalse@endlink.
  *
  */
 
 jboolean jlThread_interrupted(jvm_class_index clsidxthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_interrupted);
+
     /* Current thread always assumed valid */
     jvm_thread_index thridx = CURRENT_THREAD;
 
@@ -383,7 +411,7 @@ jboolean jlThread_interrupted(jvm_class_index clsidxthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if this thread holds the
- * object's monitor lock, else @link #jfalse jfalse@endlink.
+ *          object's monitor lock, else @link #jfalse jfalse@endlink.
  *
  * @throws JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
@@ -394,6 +422,8 @@ jboolean jlThread_interrupted(jvm_class_index clsidxthis)
 jboolean jlThread_holdsLock(jvm_class_index clsidxthis,
                             jvm_object_hash objhashLOCK)
 {
+    ARCH_FUNCTION_NAME(jlThread_holdsLock);
+
     if (jvm_object_hash_null == objhashLOCK)
     {
         /*
@@ -448,7 +478,7 @@ jboolean jlThread_holdsLock(jvm_class_index clsidxthis,
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread could be modified, else
- * throw @b SecurityException.
+ *          throw @b SecurityException.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
@@ -459,6 +489,8 @@ jboolean jlThread_holdsLock(jvm_class_index clsidxthis,
 
 jboolean jlThread_interrupt(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_interrupt);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -492,12 +524,14 @@ jboolean jlThread_interrupt(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread has been interrupted,
- * else @link #jfalse jfalse@endlink.
+ *          else @link #jfalse jfalse@endlink.
  *
  */
 
 jboolean jlThread_isInterrupted(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_isInterrupted);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -528,10 +562,11 @@ jboolean jlThread_isInterrupted(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread is in use and
- * not @b NEW and neither @b COMPLETE (transient) nor @b DEAD,
- * else @link #jfalse jfalse@endlink.
+ *          not @b NEW and neither @b COMPLETE (transient) nor @b DEAD,
+ *          else @link #jfalse jfalse@endlink.
  *
- * @todo  CAVEAT:  Should this thread eventually get reallocated as
+ * @todo  HARMONY-6-jvm-jlThread.c-5 CAVEAT:  Should this thread
+ *        eventually get reallocated as
  *        @link #rjvm.thread_new_last pjvm->thread_new_last@endlink
  *        wraps around after @link #JVMCFG_MAX_THREADS
           JVMCFG_MAX_THREADS@endlink more new threads, this function
@@ -543,6 +578,8 @@ jboolean jlThread_isInterrupted(jvm_object_hash objhashthis)
 
 jboolean jlThread_isAlive(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_isAlive);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -577,7 +614,7 @@ jboolean jlThread_isAlive(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread could be started,
- * else @link #jfalse jfalse@endlink.
+ *          else @link #jfalse jfalse@endlink.
  *
  * @throws JVMCLASS_JAVA_LANG_INTERRUPTEDEXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_INTERRUPTEDEXCEPTION
@@ -587,6 +624,8 @@ jboolean jlThread_isAlive(jvm_object_hash objhashthis)
 
 jboolean jlThread_start(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_start);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -626,6 +665,8 @@ jboolean jlThread_start(jvm_object_hash objhashthis)
 
 jint jlThread_countStackFrames(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_countStackFrames);
+
     jint rc = 0;
 
     if ((rfalse == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) ||
@@ -676,6 +717,7 @@ jint jlThread_countStackFrames(jvm_object_hash objhashthis)
  *          @link #jtrue jtrue@endlink,
  *          else @link #jfalse jfalse@endlink.
  *
+ *
  * @throws JVMCLASS_JAVA_LANG_ILLEGALARGUMENTEXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_ILLEGALARGUMENTEXCEPTION
            if the requested thread priorty is out of range@endlink.
@@ -684,13 +726,16 @@ jint jlThread_countStackFrames(jvm_object_hash objhashthis)
  *         @link #JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
            if this thread cannot have its priority modified@endlink.
  *
- * @todo Add logic to detect @b SecurityException.
+ * @todo HARMONY-6-jvm-jlThread.c-6 Add logic to detect
+ *       @b SecurityException.
  *
  */
 
 jboolean jlThread_setPriority(jvm_object_hash objhashthis,
                               jint             priority)
 {
+    ARCH_FUNCTION_NAME(jlThread_setPriority);
+
     if ((THREAD_PRIORITY_MIN > priority) ||
         (THREAD_PRIORITY_MAX < priority))
     {
@@ -746,6 +791,8 @@ jboolean jlThread_setPriority(jvm_object_hash objhashthis,
 
 jint jlThread_getPriority(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_getPriority);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -775,8 +822,8 @@ jint jlThread_getPriority(jvm_object_hash objhashthis)
  * @c @b java.lang.Thread.destroy(Runnable) ,
  * but will initially be done here.
  *
- * @todo  Should this be implemented? Some JDK's probably don't
- *        implement it any more.
+ * @todo  HARMONY-6-jvm-jlThread.c-7 Should this be implemented?
+ *        Some JDK's probably don't implement it any more.
  *
  *
  * @param  objhashthis  Object table hash of @c @b this object.
@@ -789,6 +836,8 @@ jint jlThread_getPriority(jvm_object_hash objhashthis)
 
 jboolean jlThread_destroy(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_destroy);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -817,8 +866,8 @@ jboolean jlThread_destroy(jvm_object_hash objhashthis)
  *
  * This method will @e always give permission in this JVM.
  *
- * @todo  A smart java.lang.SecurityManager will take
- *        care of this matter.
+ * @todo  HARMONY-6-jvm-jlThread.c-8 A smart java.lang.SecurityManager
+ *        will take care of this matter.
  *
  *
  * @param  objhashthis  Object table hash of @c @b this object.
@@ -831,12 +880,15 @@ jboolean jlThread_destroy(jvm_object_hash objhashthis)
  *         @link #JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
        if current thread is not permitted to modify this thread@endlink.
  *
- * @todo Add logic to detect @b SecurityException beyond passing in
- * an invalid @b objhashthis.
+ * @todo HARMONY-6-jvm-jlThread.c-9 Add logic to detect
+ *       @b SecurityException beyond passing in
+ *       an invalid @b objhashthis.
  *
  */
 jboolean jlThread_checkAccess(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_checkAccess);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -862,9 +914,10 @@ jboolean jlThread_checkAccess(jvm_object_hash objhashthis)
  * @brief Native implementation
  * of <code>java.lang.Thread.setDaemon()<code>
  *
- * @todo  See notes elsewhere about implementation of the ISDAEMON bit.
- *        This concept must be implemented in the JVM structures so as
- *        to know when to quit (no non-daemon threads running, that is,
+ * @todo  HARMONY-6-jvm-jlThread.c-10 See notes elsewhere about
+ *        implementation of the ISDAEMON bit.  This concept must
+ *        be implemented in the JVM structures so as to know
+ *        when to quit (no non-daemon threads running, that is,
  *        no user threads running).  Currently, it is a status bit in
  *        the @link rthread#status rthread.status@endlink structure
  *        named
@@ -887,7 +940,7 @@ jboolean jlThread_checkAccess(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if could make the change,
- * else throw @b SecurityException.
+ *          else throw @b SecurityException.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_ILLEGALTHREADSTATEEXCEPTION
@@ -900,17 +953,21 @@ jboolean jlThread_checkAccess(jvm_object_hash objhashthis)
            if current thread cannot change this thread@endlink.
  *
  *
- * @todo Review jvm_init() code for setting up threads before there
- *       is a @c @b setjmp(3) handler for @c @b setDaemon() exceptions.
+ * @todo HARMONY-6-jvm-jlThread.c-11 Review jvm_init() code for
+ *       setting up threads before there is a @c @b setjmp(3) handler
+ *       for @c @b setDaemon() exceptions.
  *
- * @todo Add logic to detect @b SecurityException beyond passing in
- * an invalid @b objhashthis.
+ * @todo HARMONY-6-jvm-jlThread.c-12 Add logic to detect
+ *       @b SecurityException beyond passing in an invalid
+ *       @b objhashthis.
  *
  */
 
 jvoid jlThread_setDaemon(jvm_object_hash objhashthis,
                         jboolean        isdaemon)
 {
+    ARCH_FUNCTION_NAME(jlThread_setDaemon);
+
     if ((rfalse == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) ||
         (rfalse == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -954,7 +1011,8 @@ jvoid jlThread_setDaemon(jvm_object_hash objhashthis,
  * @brief Native implementation
  * of @c @b java.lang.Thread.isDaemon()
  *
- * @todo  See notes elsewhere about implementation of the ISDAEMON bit.
+ * @todo  HARMONY-6-jvm-jlThread.c-13 See notes elsewhere about
+ *        implementation of the @b ISDAEMON bit.
  *
  *
  * @param  objhashthis  Object table hash of @c @b this object.
@@ -967,6 +1025,8 @@ jvoid jlThread_setDaemon(jvm_object_hash objhashthis,
 
 jboolean jlThread_isDaemon(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_isDaemon);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -989,13 +1049,15 @@ jboolean jlThread_isDaemon(jvm_object_hash objhashthis)
  * @brief Native implementation
  * of @c @b java.lang.Thread.setName()
  *
- * @todo  Needs work to convert java.lang.String into
- *        (rthread).name (written @e long before @b String code).
+ * @todo  HARMONY-6-jvm-jlThread.c-14 Needs work to convert
+ *        java.lang.String into (rthread).name (written
+ *        @e long before @b String code).
  *
  *
  * @param  objhashthis  Object table hash of @c @b this object.
  *
- *         name    Null-terminated string containing new thread name
+ *         name         Null-terminated string containing new
+ *                      thread name
  *
  *
  * @returns @link #jvoid jvoid@endlink
@@ -1004,6 +1066,8 @@ jboolean jlThread_isDaemon(jvm_object_hash objhashthis)
 jvoid jlThread_setName(jvm_object_hash  objhashthis,
                        rchar           *newname)
 {
+    ARCH_FUNCTION_NAME(jlThread_setName);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -1024,8 +1088,9 @@ jvoid jlThread_setName(jvm_object_hash  objhashthis,
  * @brief Native implementation
  * of @c @b java.lang.Thread.getName()
  *
- * @todo  Needs work to convert java.lang.String into
- *        (rthread).name (written @e long before @b String code).
+ * @todo  HARMONY-6-jvm-jlThread.c-15 Needs work to convert
+ *        java.lang.String into (rthread).name (written
+ *        @e long before @b String code).
  *
  *
  * @param  objhashthis  Object table hash of @c @b this object.
@@ -1036,6 +1101,8 @@ jvoid jlThread_setName(jvm_object_hash  objhashthis,
  */
 jvm_object_hash jlThread_getName(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_getName);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -1070,20 +1137,23 @@ jvm_object_hash jlThread_getName(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread could be modified,
- * else throw @b SecurityException
+ *          else throw @b SecurityException
  *
  *
  * @throws JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
            if current thread cannot change this thread@endlink.
  *
- * @todo Add logic to detect @b SecurityException beyond passing in
- * an invalid @b objhashthis.
+ * @todo HARMONY-6-jvm-jlThread.c-16 Add logic to detect
+ *       @b SecurityException beyond passing in
+ *       an invalid @b objhashthis.
  *
  */
 
 jvoid jlThread_stop(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_stop);
+
     if ((rfalse == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) ||
         (rfalse == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -1151,20 +1221,23 @@ jvoid jlThread_stop(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread could be modified,
- * else throw @b SecurityException.
+ *          else throw @b SecurityException.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
            if could not suspend thread@endlink.
  *
- * @todo Add logic to detect @b SecurityException beyond passing in
- * an invalid @b objhashthis.
+ * @todo HARMONY-6-jvm-jlThread.c-17 Add logic to
+ *       detect @b SecurityException beyond passing in
+ *       an invalid @b objhashthis.
  *
  */
 
 jvoid jlThread_suspend(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_suspend);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
@@ -1215,20 +1288,23 @@ jvoid jlThread_suspend(jvm_object_hash objhashthis)
  *
  *
  * @returns @link #jtrue jtrue@endlink if thread could be modified,
- * else throw @b SecurityException.
+ *          else throw @b SecurityException.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_SECURITYEXCEPTION
            if could not suspend thread@endlink.
  *
- * @todo Add logic to detect @b SecurityException beyond passing in
- * an invalid @b objhashthis.
+ * @todo HARMONY-6-jvm-jlThread.c-18 Add logic to
+ *       detect @b SecurityException beyond passing in
+ *       an invalid @b objhashthis.
  *
  */
 
 jvoid jlThread_resume(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlThread_resume);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))

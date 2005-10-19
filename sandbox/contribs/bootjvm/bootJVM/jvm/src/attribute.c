@@ -6,7 +6,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -30,6 +32,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,7 +40,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(attribute, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(attribute, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -49,7 +54,7 @@ ARCH_COPYRIGHT_APACHE(attribute, c, "$URL$ $Id$");
 
 
 /*!
- * @brief Locate an attribute by constant_pool entry for a field,
+ * @brief Locate an attribute by @c @b constant_pool entry for a field,
  * method, or class.  The attribute pointer passed in is valid for
  * all three types.
  *
@@ -60,8 +65,9 @@ ARCH_COPYRIGHT_APACHE(attribute, c, "$URL$ $Id$");
  *
  * @param  patr     Attribute array for a field, method, or class.
  *
- * @param  atrname  UTF8 constant_pool entry of name of attribute in
- *                    field, method, or class.
+ *
+ * @param  atrname  UTF8 @c @b constant_pool entry of name of attribute
+ *                  in field, method, or class.
  *
  *
  * @returns Attribute table index ofthie attribute or
@@ -75,6 +81,8 @@ static jvm_attribute_index attribute_name_common_find(
                                attribute_info_dup **patr,
                                cp_info_dup         *atrname)
 {
+    ARCH_FUNCTION_NAME(attribute_name_common_find);
+
     /* Search for match of attribute array against requested name */
     jvm_attribute_index atridx;
 
@@ -108,9 +116,9 @@ static jvm_attribute_index attribute_name_common_find(
  * @param  patr     Attribute array for a field, method, or class.
  *
  * @param  atrenum  Attribute enumeration (from
- *                    @link jvm/src/classfile.h classfile.h@endlink)
- *                    for attribute of field, method, or class to locate
- *                    (e.g. LOCAL_CODE_ATTRIBUTE).
+ *                  @link jvm/src/classfile.h classfile.h@endlink)
+ *                  for attribute of field, method, or class to locate
+ *                  (e.g. LOCAL_CODE_ATTRIBUTE).
  *
  *
  * @returns Attribute table index ofthie attribute or
@@ -124,6 +132,8 @@ static jvm_attribute_index attribute_enum_common_find(
                                attribute_info_dup       **patr,
                                classfile_attribute_enum   atrenum)
 {
+    ARCH_FUNCTION_NAME(attribute_enum_common_find);
+
     /* Search for match of attribute array against requested enum */
     jvm_attribute_index atridx;
 
@@ -144,22 +154,22 @@ static jvm_attribute_index attribute_enum_common_find(
 
 
 /*!
- * @brief Locate by constant_pool entry the attribute_info index for an
- * attribute in a field attribute area.
+ * @brief Locate by @c @b constant_pool entry the attribute_info index
+ * for an attribute in a field attribute area.
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             searched for an attribute.
+ *                           searched for an attribute.
  *
  * @param  fldidx            Field index of field to search.
  *
- * @param  atrname           UTF8 constant_pool entry of name of
- *                             attribute name to locate.
+ * @param  atrname           UTF8 @c @b constant_pool entry of name of
+ *                           attribute name to locate.
  *
  *
  * @returns attribute table index of this attribute in field, or
  *        @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
- *         if not found.
+ *          if not found.
  *
  */
 jvm_attribute_index
@@ -167,6 +177,8 @@ jvm_attribute_index
                                         jvm_field_index  fldidx,
                                         cp_info_dup     *atrname)
 {
+    ARCH_FUNCTION_NAME(attribute_find_in_field_by_cp_entry);
+
     /* Prohibit invalid class parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -197,13 +209,14 @@ jvm_attribute_index
  *
  *
  * @param  clsidx            Class index of class whose field is to be
- *                             searched for an attribute.
+ *                           searched for an attribute.
  *
  * @param  fldidx            Field index of field to search.
  *
  * @param  atrenum           @link #classfile_attribute_enum
                              LOCAL_xxxx_ATTRIBUTE@endlink enumeration of
  *                           attribute to locate.
+ *
  *
  * @returns attribute table index of this attribute in field, or
  *        @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
@@ -215,6 +228,8 @@ jvm_attribute_index
                                     jvm_field_index          fldidx,
                                     classfile_attribute_enum atrenum)
 {
+    ARCH_FUNCTION_NAME(attribute_find_in_field_by_enum);
+
     /* Prohibit invalid class parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -239,17 +254,18 @@ jvm_attribute_index
 
 
 /*!
- * @brief Locate by constant_pool entry the attribute_info index for
- * an attribute in a method attribute area.
+ * @brief Locate by @c @b constant_pool entry the attribute_info index
+ * for an attribute in a method attribute area.
  *
  *
  * @param  clsidx            Class index of class whose method is to be
- *                             searched for an attribute.
+ *                           searched for an attribute.
  *
  * @param  mthidx            Method index of method to search.
  *
- * @param  atrname           UTF8 constant_pool entry of name of
- *                             attribute name to locate.
+ * @param  atrname           UTF8 @c @b constant_pool entry of name of
+ *                           attribute name to locate.
+ *
  *
  * @returns attribute table index of this attribute in method, or
  *        @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
@@ -261,6 +277,8 @@ jvm_attribute_index
                                          jvm_method_index  mthidx,
                                          cp_info_dup      *atrname)
 {
+    ARCH_FUNCTION_NAME(attribute_find_in_method_by_cp_entry);
+
     /* Prohibit invalid class parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -291,13 +309,14 @@ jvm_attribute_index
  *
  *
  * @param  clsidx            Class index of class whose method is to be
- *                             searched for an attribute.
+ *                           searched for an attribute.
  *
  * @param  mthidx            Method index of method to search.
  *
  * @param  atrenum           @link #classfile_attribute_enum
                              LOCAL_xxxx_ATTRIBUTE@endlink enumeration of
  *                           attribute to locate.
+ *
  *
  * @returns attribute table index of this attribute in method, or
  *        @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
@@ -309,6 +328,8 @@ jvm_attribute_index
                                      jvm_method_index         mthidx,
                                      classfile_attribute_enum atrenum)
 {
+    ARCH_FUNCTION_NAME(attribute_find_in_method_by_enum);
+
     /* Prohibit invalid class parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -333,15 +354,16 @@ jvm_attribute_index
 
 
 /*!
- * @brief Locate by constant_pool entry the attribute_info index for
- * an attribute in a class attribute area.
+ * @brief Locate by @c @b constant_pool entry the attribute_info index 
+ * for an attribute in a class attribute area.
  *
  *
  * @param  clsidx            Class index of class be searched for an
- *                             attribute.
+ *                           attribute.
  *
- * @param  atrname           UTF8 constant_pool entry of name of
- *                             attribute name to locate.
+ * @param  atrname           UTF8 @c @b constant_pool entry of name of
+ *                           attribute name to locate.
+ *
  *
  * @returns attribute table index of this attribute in class, or
  *        @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
@@ -352,6 +374,8 @@ jvm_attribute_index
     attribute_find_in_class_by_cp_entry(jvm_class_index  clsidx,
                                         cp_info_dup     *atrname)
 {
+    ARCH_FUNCTION_NAME(attribute_find_in_class_by_cp_entry);
+
     /* Prohibit invalid class parameter */
     if (jvm_class_index_null == clsidx)
     {
@@ -376,11 +400,12 @@ jvm_attribute_index
  *
  *
  * @param  clsidx            Class index of class whose method is to be
- *                             searched for an attribute.
+ *                           searched for an attribute.
  *
  * @param  atrenum           @link #classfile_attribute_enum
                              LOCAL_xxxx_ATTRIBUTE@endlink enumeration of
  *                           attribute to locate.
+ *
  *
  * @returns attribute table index of this attribute in class, or
  *        @link #jvm_attribute_index_bad jvm_attribute_index_bad@endlink
@@ -391,6 +416,8 @@ jvm_attribute_index
     attribute_find_in_class_by_enum(jvm_class_index          clsidx,
                                     classfile_attribute_enum atrenum)
 {
+    ARCH_FUNCTION_NAME(attribute_find_in_class_by_enum);
+
     /* Prohibit invalid class parameter */
     if (jvm_class_index_null == clsidx)
     {

@@ -32,7 +32,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -56,13 +58,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(class, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(class, h,
+"$URL$",
+"$Id$");
 
 
 #include "object.h"
@@ -76,10 +81,11 @@ ARCH_COPYRIGHT_APACHE(class, h, "$URL$ $Id$");
  * them using the @p @b clsidx index.
  *
  * @param clsidx  Class table index into the global
- * @link #rjvm.class rjvm.class[]@endlink array (via
- * @link #pjvm pjvm->class[]@endlink).
+ *                @link #rjvm.class rjvm.class[]@endlink array (via
+ *                @link #pjvm pjvm->class[]@endlink).
  * 
  * @returns pointer to a class slot
+ * 
  */
 #define CLASS(clsidx) pjvm->class[clsidx]
 

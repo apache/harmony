@@ -17,7 +17,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -41,13 +43,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(exit, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(exit, h,
+"$URL$",
+"$Id$");
 
 
 /*!
@@ -147,19 +152,63 @@ typedef enum
 /*@} */ /* End of grouped definitions */
 
 
+/*!
+ * @brief Global handler setup for fatal JVM errors-- implements
+ * @c @b setjmp(3).
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * @returns From normal setup, integer @link
+            #EXIT_MAIN_OKAY EXIT_MAIN_OKAY@endlink.  Otherwise,
+ *          return error code from @link #exit_jvm() exit_jvm()@endlink,
+ *          typically using a code found in
+ *          @link jvm/src/exit.h exit.h@endlink
+ *
+ * @attention See comments in @link jvm/src/portable_jmp_buf.c
+              portable_jmp_buf.c@endlink as to why this @e cannot
+ *            be a function call.
+ *
+ */
+#define EXIT_INIT() PORTABLE_SETJMP(&portable_exit_general_failure)
+
+
+/*!
+ * @brief Global handler setup (part 2) for fatal
+ * @link jvm_init() jvm_init()@endlink errors and other
+ * @c @b java.lang.Throwable events-- implements
+ * @c @b setjmp(3).
+ *
+ *
+ * This macro @e must be used in conjunction with
+ * @link exit_exception_setup() exit_exception_setup()@endlink
+ * to properly arm handler for throwing @c @b java.lang.Error and
+ * @c @b java.lang.Exception throwable events.
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * @returns From normal setup, integer
+ *          @link #EXIT_MAIN_OKAY EXIT_MAIN_OKAY@endlink.
+ *          Otherwise, return
+ *          @link #exit_code_enum exit code enumeration@endlink from
+ *          @link #exit_jvm() exit_jvm()@endlink.
+ *
+ */
+#define EXIT_EXCEPTION_SETUP() \
+    PORTABLE_SETJMP(&portable_exit_LinkageError)
+
+
 /* Prototypes for functions in 'exit.c' */
 extern int exit_init(rvoid);
 
 extern rchar *exit_get_name(exit_code_enum code);
 
-extern rchar *exit_LinkageError_subclass;
-extern jvm_thread_index exit_LinkageError_thridx;
-extern int exit_exception_setup(rvoid);
+extern rchar            *exit_LinkageError_subclass;
+extern jvm_thread_index  exit_LinkageError_thridx;
+extern rvoid             exit_exception_setup(rvoid);
 
 extern rvoid exit_throw_exception(exit_code_enum rc, rchar *preason);
-
-extern int   exit_end_thread_setup(rvoid);
-extern rvoid exit_end_thread_test(jvm_thread_index thridx);
 
 extern rvoid exit_jvm(exit_code_enum rc);
 

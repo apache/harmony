@@ -7,17 +7,20 @@
  *
  *
  * @internal Due to the fact that the implementation of the Java class
- * and the supporting rclass structure is deeply embedded in the core
- * of the development of this software, this file has contents
- * that come and go during development.  Some functions get
- * staged here before deciding where they @e really go; some
- * are interim functions for debugging, some were glue that eventually
- * went away.  Be careful to remove prototypes to such functions
- * from the appropriate header file.
+ *           and the supporting rclass structure is deeply embedded in
+ *           the core of the development of this software, this file
+ *           has contents that come and go during development.  Some
+ *           functions get staged here before deciding where they
+ *           @e really go; some are interim functions for debugging,
+ *           some were glue that eventually went away.  Be careful to
+ *           remove prototypes to such functions from the appropriate
+ *           header file.
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -41,6 +44,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -48,7 +52,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(classutil, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(classutil, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"

@@ -15,7 +15,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -39,6 +41,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -48,7 +51,9 @@
 
 /* Prototypes for functions in 'utf.c' */
 
-ARCH_COPYRIGHT_APACHE(utf, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(utf, h,
+"$URL$",
+"$Id$");
 
 extern jshort utf_utf2unicode(CONSTANT_Utf8_info *utf_inbfr,
                               jchar              *outbfr);

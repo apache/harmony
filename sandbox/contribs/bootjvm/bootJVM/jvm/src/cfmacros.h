@@ -9,7 +9,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -33,24 +35,27 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
+"$URL$",
+"$Id$");
 
 #include "heap.h"
 
 /*!
  * @name Typed constant_pool pointers
  *
- * @brief Convert generic constant_pool[] entry into a
+ * @brief Convert generic @c @b constant_pool[] entry into a
  * @link #CONSTANT_Class_info CONSTANT_xxxxx_info@endlink typed pointer,
  * stripping off the generic prefix bytes.
  *
- * Adjust a generic constant_pool entry (cp_info_dup *)
+ * Adjust a generic @c @b constant_pool entry (cp_info_dup *)
  * into its corresponding
  * @link #CONSTANT_Class_info CONSTANT_xxxxx_info@endlink typed pointer
  * by changing the pointer to point not to the beginning of the
@@ -67,7 +72,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  * @see ARCH_ODD2_ADDRESS_SIGSEGV
  *
  *
- * @param pcpinfodup Pointer to a constant_pool entry, typically
+ * @param pcpinfodup Pointer to a @c @b constant_pool entry, typically
  *                   @c @b &pcfs->constant_pool[n]
  *
  *
@@ -118,7 +123,8 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  * @name General navigation and parsing macros.
  *
  * @param  pcfs   ClassFile pointer to a fully parsed class data area
- * @param  cpidx  Index into its constant_pool[] array.
+ *
+ * @param  cpidx  Index into its @c @b constant_pool[] array.
  *
  */
 
@@ -126,11 +132,11 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
 
 /*!
  * @brief Report the (cp_info *) of the address of the
- * class file @p @b pcfs constant_pool entry at this
+ * class file @p @b pcfs @c @b constant_pool entry at this
  * index @p @b cpidx.
  *
  *
- * @returns(cp_info *) to a constant_pool[cpidx]
+ * @returns(cp_info *) to a @c @b constant_pool[cpidx]
  *
  */
 #define PTR_CP_ENTRY(pcfs, cpidx) (&(pcfs->constant_pool[cpidx])->cp)
@@ -138,10 +144,10 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
 
 /*!
  * @brief Report the (u1) tag value of the class file @p @b pcf
- * constant_pool entry at this index @p @b cpidx.
+ * @c @b constant_pool entry at this index @p @b cpidx.
  *
  *
- * @returns (u1) tag value of entry at constant_pool[cpidx]
+ * @returns (u1) tag value of entry at @c @b constant_pool[cpidx]
  *
  */
 #define CP_TAG(pcfs, cpidx)  ((PTR_CP_ENTRY(pcfs, cpidx))->tag)
@@ -152,8 +158,8 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  * start of @link cp_info#info info@endlink field as a (u1 *).
  *
  *
- * @returns address or contents of something in a constant_pool[] entry,
- *          see above description.
+ * @returns address or contents of something in a @c @b constant_pool[]
+ *          entry, see above description.
  */
 #define PTR_CP_INFO(pcfs, cpidx) \
     ((u1 *) (&PTR_CP_ENTRY(pcfs, cpidx)->info))
@@ -196,9 +202,11 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  *
  * @param  pcfs   ClassFile pointer to a fully parsed class data area
  *
- * @param  cpidx  Index into its constant_pool[] array.
+ * @param  cpidx  Index into its @c @b constant_pool[] array.
  *
- * @returns Pointer to a constant_pool[cpidx], variously typed as above.
+ *
+ * @returns Pointer to a @c @b constant_pool[cpidx], variously typed as
+ *          above.
  *
  */
 
@@ -220,7 +228,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
 /*!
  * @name UTF string manipulation macros.
  *
- * @brief Probe CONSTANT_Utf8_info constant_pool entries for
+ * @brief Probe CONSTANT_Utf8_info @c @b constant_pool entries for
  * field data and addresses.
  *
  * Return information about (CONSTANT_Utf8_info) entry, namely:
@@ -228,8 +236,8 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  * <ul>
  *
  * <li>
- * Pointing to constant_pool entry of THIS @p @b pcfs and @p @b cpidx,
- *       being a (CONSTANT_Utf8_info) string:
+ * Pointing to @c @b constant_pool entry of THIS @p @b pcfs
+ *       and @p @b cpidx, being a (CONSTANT_Utf8_info) string:
  * <ul> 
  * <li>
  *     PTR_CP_THIS()            Pointer to whole (CONSTANT_Utf8_info)
@@ -281,7 +289,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  *
  * <li>
  * ONE level of indirection, specifically using type
- *     (CONSTANT_Class_info) as the constant_pool entry type.
+ *     (CONSTANT_Class_info) as the @c @b constant_pool entry type.
  *
  * <ul>
  *
@@ -308,10 +316,10 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  *
  * <li>
  * TWO levels of indirection, namely, this @p @b pcfs and @p @b cpidx
- *                point to a (type) constant_pool entry whose
- *                @p @b strname_idx field contains a constant_pool
- *                index to a (CONSTANT_Class_info) entry.
- *                Obtain info about the (CONSTANT_Utf8_info)
+ *                point to a @c @b (type) @c @b constant_pool entry
+ *                whose @p @b strname_idx field contains a
+ *                @c @b constant_pool index to a (CONSTANT_Class_info)
+ *                entry. Obtain info about the (CONSTANT_Utf8_info)
  *                entry which is named by that (CONSTANT_Class_info)
  *                entry's @p @b name_index field, that is, the name
  *                of the class:
@@ -357,14 +365,16 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  * @param  pcfs        ClassFile pointer to a fully parsed class
  *                       data area
  *
- * @param  cpidx       Index into its constant_pool[] array.
+ * @param  cpidx       Index into its @c @b constant_pool[] array.
  *
- * @param  strname_idx Field name of indirect constant_pool pointed
- *                       to by @p @b pcfs and @p @b cpidx.  The index
- *                       found here is the index containing the UTF
- *                       string. (@b CP1_xxx and @b CP2_xxx macros only)
+ * @param  strname_idx Field name of indirect @c @b constant_pool
+ *                       pointed to by @p @b pcfs and @p @b cpidx.
+ *                       The index found here is the index containing
+ *                       the UTF string. (@c @b CP1_xxx and
+ *                       @c @b CP2_xxx macros only)
  *
- * @returns (cp_info *) to a constant_pool[cpidx]
+ *
+ * @returns (cp_info *) to a @c @b constant_pool[cpidx]
  *
  */
 
@@ -372,8 +382,8 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
 
 /*******************************************************************
  *
- * Pointing to constant_pool entry of THIS @p @b pcfs and @p @b cpidx,
- * being a (CONSTANT_Utf8_info) string.
+ * Pointing to @c @b constant_pool entry of THIS @p @b pcfs and
+ * @p @b cpidx, being a (CONSTANT_Utf8_info) string.
  *
  */
 #define PTR_CP_THIS(pcfs, cpidx)  \
@@ -406,8 +416,8 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
 /*******************************************************************
  *
  * --- ONE level of indirection, but specifically for manipulating
- *               (CONSTANT_Class_info) slot in constant_pool.
- *               @p @b pcfs and @b cpidx refer to such a class info
+ *               (CONSTANT_Class_info) slot in @c @b constant_pool.
+ *               @p @b pcfs and @c @b cpidx refer to such a class info
  *               slot.
  */
 #define PTR_CP1_CLASS_NAME(pcfs, cpidx) \
@@ -694,7 +704,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
     }                                                       \
     GENERIC_FAILURE_PTR(expr,                               \
                         DMLMIN,                             \
-                        "classfile_loadclassdata",          \
+                        arch_function_name,                 \
                         msg,                                \
                         ClassFile,                          \
                         rnull,                              \
@@ -708,7 +718,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
     }                                                              \
     GENERIC_FAILURE_PTR(expr,                                      \
                         DMLMIN,                                    \
-                        "cfattrib_loadattribute",                  \
+                        arch_function_name,                        \
                         msg,                                       \
                         u1,                                        \
                         rnull,                                     \
@@ -724,12 +734,13 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  *
  * @brief Inline the logic to swap bytes on multi-byte elements.
  *
- * This is only meaningful on ARCH_LITTLE_ENDIAN architectures.
+ * This is only meaningful on
+ * @link #ARCH_LITTLE_ENDIAN ARCH_LITTLE_ENDIAN@endlink architectures.
  * (Notice that if @p @b member does not match the pointer's
  * type, there @e will be a compile warning or error.)
  *
  *
- * @param  type   Which constant_pool type, CONSTANT_xxx_info,
+ * @param  type   Which @c @b constant_pool type, CONSTANT_xxx_info,
  *                  that will be used as (type *) to reference members.
  * @param  member Member of (CONSTANT_xxx_info *) to be manipulated.
  *
@@ -738,19 +749,20 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  *
  *
  * @attention The following variables area must be defined for the
- * CP_ITEM_SWAP_U2() and CP_ITEM_SWAP_U2 macros to work:
+ *            CP_ITEM_SWAP_U2() and CP_ITEM_SWAP_U2 macros to work:
  * @verbatim
       u2 *pcpu2;
       u4 *pcpu4;
    @endverbatim
  *
  *
- * @todo  There needs to be logic implemented that can determine
- *        whether or not a particular field has been byte swapped
- *        in case a constant pool reference is made to an entry
- *        that was previously byte swapped.  This has NOT been
- *        done for this ioriginal implementation because it is
- *        on a Solaris 9 machine, which is big endian.
+ * @todo  HARMONY-6-jvm-cfmacros.h-1 There needs to be logic
+ *        implemented that can determine whether or not a particular
+ *        field has been byte swapped in case a constant pool
+ *        reference is made to an entry that was previously byte
+ *        swapped.  This has NOT been done for this original
+ *        implementation because it is on a Solaris 9 machine,
+ *        which is big endian.
  *
  */
 
@@ -766,7 +778,7 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
     MACHINE_JINT_SWAP_PTR(pcpu4)
 
 #else
-/* CONFIG_BIG_ENDIAN: big endian architectures have nothing to do */
+/* ARCH_BIG_ENDIAN: big endian architectures have nothing to do */
 
 #define CP_ITEM_SWAP_U2(type, member)
 #define CP_ITEM_SWAP_U4(type, member)
@@ -812,19 +824,19 @@ ARCH_COPYRIGHT_APACHE(cfmacros, h, "$URL$ $Id$");
  * @see ARCH_ODD4_ADDRESS_SIGSEGV
  * @see ARCH_ODD2_ADDRESS_SIGSEGV
  *
- * @todo WATCH OUT!  When changing CP_INFO_NUM_EMPTIES or
- *       ATTRIBUTE_INFO_NUM_EMPTIES, beware of not having
- *       he right number of @c @b struct->empty[x]=FILL
+ * @todo HARMONY-6-jvm-cfmacros.h-2 WATCH OUT!  When changing
+ *       CP_INFO_NUM_EMPTIES or ATTRIBUTE_INFO_NUM_EMPTIES, beware
+ *       of not having he right number of @c @b struct->empty[x]=FILL
  *       lines in the cp_info_dup and attribute_info_dup assignments!
  *       Could eliminate these, but they are useful for
  *       debugging.
  *
- * @todo 4-byte unused fields are meaningful only for 64-bit
- *       implementations.
+ * @todo HARMONY-6-jvm-cfmacros.h-3 4-byte unused fields are meaningful
+ *       only for 64-bit implementations.
  *
- * @todo For 64-bit compilations, these fill patterns may need
- *       to be expanded to support 8-byte alignments for some
- *       architectures.  For 32-bit compilations, nothing needs
+ * @todo HARMONY-6-jvm-cfmacros.h-4 For 64-bit compilations, these fill
+ *       patterns may need to be expanded to support 8-byte alignments
+ *       for some architectures.  For 32-bit compilations, nothing needs
  *       to be done. (Verify if this is so.) Remember that the
  *       @b WORDSIZE64 configuration macro is used to
  *       distinguish this mode of compilation.  (See

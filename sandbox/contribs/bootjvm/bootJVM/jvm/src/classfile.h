@@ -37,14 +37,16 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  * and was the basis for the ClassFile structure of this implementation.
  *
  *
- * @todo Need to verify which web document for the
- *       Java 5 class file definition is either "official",
+ * @todo HARMONY-6-jvm-classfile.h-1 Need to verify which web document
+ *       for the Java 5 class file definition is either "official",
  *       actually correct, or is the <em>de facto</em> standard.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -68,20 +70,32 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(classfile, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(classfile, h,
+"$URL$",
+"$Id$");
 
-/*
- *  classfile code depends on packed structures.  Change from 
- *  global project-wide -fpack-struct to local for the 
- *  structures that need it
+/*!
+ * @internal Class file structures and code depend on packed structures.
+ *           Change from global project-wide -fpack-struct (GCC version
+ *           of structure packing option) to localized pragma for the
+ *           structures that need it.
+ *
+ * @todo HARMONY-6-jvm-classfile.h-2 Need to look through class file
+ *       code and remove dependency on structure packing in the way
+ *       the code is written.  The macros from
+ *       @link jvm/src/classfile.c classfile.c@endlink that are a
+ *       good place to start are
+ *       @link ALLOC_CP_INFO() ALLOC_CP_INFO@endlink and
+ *       @link ALLOC_CF_ITEM() ALLOC_CF_ITEM@endlink.
+ *
  */
-
 #pragma pack(1)
 
 /*!
@@ -110,7 +124,7 @@ typedef struct
 
 
 /*!
- * @brief constant_pool entry.
+ * @brief @c @b constant_pool entry.
  *
  * See spec section 4.5.
  *
@@ -239,11 +253,12 @@ typedef struct
                        * the @link #ACC_PUBLIC ACC_xxx@endlink
                        * definitions */
 
-    u2 name_index;    /**< Index into constant_pool of UTF8 string
+    u2 name_index;    /**< Index into @c @b constant_pool of UTF8 string
                        *   containing the name of this field */
 
-    u2 descriptor_index; /**< Index into constant_pool of UTF8 string
-                          * containing the descriptor of this field */
+    u2 descriptor_index; /**< Index into @c @b constant_pool of UTF8
+                          * string containing the descriptor of this
+                          * field */
 
     u2 attributes_count; /**< Size of @p @b attributes */
 
@@ -273,8 +288,8 @@ typedef struct
      * part of the JVM spec itself, but an implementation detail.
      *
      * @internal An @p @b oiflagJVM boolean is not needed since
-     * @p @b access_flags above contains this information
-     * in the @link #ACC_STATIC ACC_STATIC@endlink bit.
+     *           @p @b access_flags above contains this information
+     *           in the @link #ACC_STATIC ACC_STATIC@endlink bit.
      *
      */
     struct LOCAL_field_binding
@@ -320,11 +335,12 @@ typedef struct
                        * the @link #ACC_PUBLIC ACC_xxx@endlink
                        * definitions */
 
-    u2 name_index;    /**< Index into constant_pool of UTF8 string
+    u2 name_index;    /**< Index into @c @b constant_pool of UTF8 string
                        *   containing the name of this method */
 
-    u2 descriptor_index; /**< Index into constant_pool of UTF8 string
-                          * containing the descriptor of this method */
+    u2 descriptor_index; /**< Index into @c @b constant_pool of UTF8
+                          * string containing the descriptor of this
+                          * method */
 
 
     u2 attributes_count; /**< Size of @p @b attributes */
@@ -443,12 +459,11 @@ typedef struct
 
     u2 major_version; /**< Major class file version number */
 
-    u2 constant_pool_count; /**< Size of @p @b constant_pool plus one
+    u2 constant_pool_count; /**< Size of @c @b constant_pool plus one
                        * (which represents the unrepresented
                        * @c @b java.lang.Object ).  Index zero
-                       * of @p @b constant_pool is this unrepresented
-                       * slot, and
-                       * @c @b constant_pool[0] is a NULL
+                       * of @c @b constant_pool is this unrepresented
+                       * slot, and @c @b constant_pool[0] is a NULL
                        * pointer.
                        */
 
@@ -473,7 +488,7 @@ typedef struct
                        * the @link #ACC_PUBLIC ACC_xxx@endlink
                        * definitions */
 
-    u2 this_class;    /**< @b constant_pool index of the class of
+    u2 this_class;    /**< @c @b constant_pool index of the class of
                        * the @c @b this pointer, namely,
                        * what is the name of this selfsame class as
                        * found here in the class file. */
@@ -642,6 +657,12 @@ and Interface Names
 
 #define CLASSNAME_INTERNAL_DELIMITER_CHAR   '/'
 #define CLASSNAME_INTERNAL_DELIMITER_STRING "/"
+
+#define CLASSNAME_INNERCLASS_MARKER_CHAR   '$'
+#define CLASSNAME_INNERCLASS_MARKER_STRING "$"
+
+#define CLASSNAME_INNERCLASS_ESCAPE_CHAR   '\\'
+#define CLASSNAME_INNERCLASS_ESCAPE_STRING "\\"
 
 /*@} */ /* End of grouped definitions */
 
@@ -1029,10 +1050,12 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
+         *
          */
     } LOCAL_String_binding;
 
@@ -1068,10 +1091,12 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
+         *
          */
     } LOCAL_Integer_binding;
 
@@ -1096,35 +1121,74 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
          */
     } LOCAL_Float_binding;
 
 } CONSTANT_Float_info;
 
-#ifdef CONFIG_WORDWIDTH64
-#define SPFTYPE_INT  unsigned int /**< 32-bit value */
-#else
-#define SPFTYPE_INT  unsigned int /**< 32-bit value */
-#endif
+/*@} */ /* End of grouped definitions */
 
-/*
- * Representation of special case single-precision floating point
- * numbers
+/*!
+ * @name Representation of special case single-precision
+ * floating point numbers
+ *
  */
+/*@{ */ /* Begin grouped definitions */
 
-#define FLOAT_POSITIVE_INFINITY    0x7f800000
-#define FLOAT_NEGATIVE_INFINITY    0xff800000
+#define JINT_LARGEST_POSITIVE     ((juint) 0x7fffffff)
+#define JINT_LARGEST_NEGATIVE     ((juint) 0x80000000)
 
-#define FLOAT_IS_NAN(sfpval)                       \
-    (((0x7f800001 <= (SPFTYPE_INT) sfpval) &&    \
-      (0x7fffffff >= (SPFTYPE_INT) sfpval))      \
-                                                || \
-     ((0xff800001 <= (SPFTYPE_INT) sfpval) &&    \
-      (0xffffffff >= (SPFTYPE_INT) sfpval)))
+
+/*!
+ * @todo HARMONY-6-jvm-classfile.h-3 Need to verify the proper
+ *       values of single-precision floating point positive zero
+ *       and negative zero.
+ *
+ */
+#define JFLOAT_POSITIVE_ZERO      ((juint) 0x00000000)
+#define JFLOAT_NEGATIVE_ZERO      ((juint) 0x80000000)
+
+
+#define JFLOAT_POSITIVE_INFINITY  ((juint) 0x7f800000)
+#define JFLOAT_NEGATIVE_INFINITY  ((juint) 0xff800000)
+
+
+#define JFLOAT_NAN_RANGE1_MIN ((juint) 0x7f800001)
+#define JFLOAT_NAN_RANGE1_MAX ((juint) 0x7fffffff)
+
+#define JFLOAT_NAN_RANGE2_MIN ((juint) 0xff800001)
+#define JFLOAT_NAN_RANGE2_MAX ((juint) 0xffffffff)
+
+
+/*!
+ * @brief Determine if a single-precision floating point number
+ * is a @b NAN case, not a number.
+ *
+ * The parameter must be a @link #jlong jlong@endlink representation
+ * of a @link #jfloat jfloat@endlink value as forcibly converted
+ * using @link #FORCE_JINT() FORCE_JINT()@endlink.
+ *
+ *
+ * @param forced_jint  @link #jlong jlong@endlink representation of a
+ *                     single-precision floating point number, per
+ *                     above instructions.
+ *
+ *
+ * @returns non-zero if @c @b forced_jint is a single-precision
+ *          floating point @b NAN value, not a number.  Zero otherwise.
+ *
+ */
+#define JFLOAT_IS_NAN(forced_jint)                          \
+    (((JFLOAT_NAN_RANGE1_MIN <= (juint) (forced_jint)) &&    \
+      (JFLOAT_NAN_RANGE1_MAX >= (juint) (forced_jint)))      \
+                                                         || \
+     ((JFLOAT_NAN_RANGE2_MIN <= (juint) (forced_jint)) &&    \
+      (JFLOAT_NAN_RANGE2_MAX >= (juint) (forced_jint))))
 
 /*@} */ /* End of grouped definitions */
 
@@ -1156,10 +1220,11 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
          */
     } LOCAL_Long_binding;
 
@@ -1185,37 +1250,83 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
          */
     } LOCAL_Double_binding;
 
 } CONSTANT_Double_info;
 
-#ifdef CONFIG_WORDWIDTH64
-#define DPFTYPE_LONG unsigned long      /**< 64-bit value */
-#define DPFTYPE_INT  unsigned int       /**< 32-bit value */
-#else
-#define DPFTYPE_LONG unsigned long long /**< 64-bit value */
-#define DPFTYPE_INT  unsigned int       /**< 32-bit value */
-#endif
+/*@} */ /* End of grouped definitions */
 
-/*
- * Representation of special case double-precision floating point
- * numbers
+/*!
+ * @name Representation of special case double-precision
+ * floating point numbers
+ *
+ * @note In order to keep GCC from complaining, 'warning' integer
+ *       constant is too large for "long" type', these constants
+ *       have been presented as expressions instead.  It seems
+ *       that (long long) constants must be 32-bit values for
+ *       32-bit compilations, but arithmetic may be done on
+ *       those expressions without harm.
+ *
  */
+/*@{ */ /* Begin grouped definitions */
 
-#define DOUBLE_POSITIVE_INFINITY   0x7ff0000000000000L
-#define DOUBLE_NEGATIVE_INFINITY   0xfff0000000000000L
+#define JLONG_LARGEST_POSITIVE ((((julong) 0x7fffffff) << 32) | \
+                                                   0xffffffff)
+#define JLONG_LARGEST_NEGATIVE  (((julong) 0x80000000) << 32)
 
-#define DOUBLE_IS_NAN(dfpval)                                   \
-    (((0x7ff00000000000001 <= (DPFTYPE_LONG) dfpval) &&   \
-      (0x7fffffffffffffffL >= (DPFTYPE_LONG) dfpval))  || \
-                                                                \
-     ((0xfff0000000000001L <= (DPFTYPE_INT) dfpval) &&        \
-      (0xffffffffffffffffL >= (DPFTYPE_INT) dfpval)))
+
+/*!
+ * @todo HARMONY-6-jvm-classfile.h-4 Need to verify the proper
+ *       values of double-precision floating point positive zero
+ *       and negative zero.
+ *
+ */
+#define JDOUBLE_POSITIVE_ZERO      (((julong) 0x00000000) << 32)
+#define JDOUBLE_NEGATIVE_ZERO      (((julong) 0x80000000) << 32)
+
+
+#define JDOUBLE_POSITIVE_INFINITY  (((julong) 0x7ff00000) << 32)
+#define JDOUBLE_NEGATIVE_INFINITY  (((julong) 0xfff00000) << 32)
+
+
+#define JDOUBLE_NAN_RANGE1_MIN ((((julong) 0x7ff00000) << 32) | 1)
+#define JDOUBLE_NAN_RANGE1_MAX ((((julong) 0x7fffffff) << 32) | \
+                                                   0xffffffff)
+
+#define JDOUBLE_NAN_RANGE2_MIN ((((julong) 0xfff00000) << 32) | 1)
+#define JDOUBLE_NAN_RANGE2_MAX ((((julong) 0xffffffff) << 32) | \
+                                                   0xffffffff)
+
+/*!
+ * @brief Determine if a double-precision floating point number
+ * is a @b NAN case, not a number.
+ *
+ * The parameter must be a @link #jlong jlong@endlink representation
+ * of a @link #jdouble jdouble@endlink value as forcibly converted
+ * using @link #FORCE_JLONG() FORCE_JLONG()@endlink.
+ *
+ *
+ * @param forced_jlong @link #jlong jlong@endlink representation of a
+ *                     double-precision floating point number, per
+ *                     above instructions
+ *
+ *
+ * @returns non-zero if @c @b dpfjlong is a double-precision floating
+ *          point @b NAN value, not a number.  Zero otherwise.
+ *
+ */
+#define JDOUBLE_IS_NAN(forced_jlong)                          \
+    (((JDOUBLE_NAN_RANGE1_MIN <= (julong) forced_jlong) &&    \
+      (JDOUBLE_NAN_RANGE1_MAX >= (julong) forced_jlong))   || \
+                                                              \
+     ((JDOUBLE_NAN_RANGE2_MIN <= (julong) forced_jlong) &&    \
+      (JDOUBLE_NAN_RANGE2_MAX >= (julong) forced_jlong)))
 
 /*@} */ /* End of grouped definitions */
 
@@ -1247,10 +1358,11 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
          */
     } LOCAL_NameAndType_binding;
 
@@ -1308,8 +1420,8 @@ typedef struct
  * </ul>
  *
  *
- * @todo: Clarify the hextuple-byte UTF-16 encoding requirements, per
- *        above commentary.
+ * @todo HARMONY-6-jvm-classfile.h-5 Clarify the hextuple-byte UTF-16
+ *       encoding requirements, per above commentary.
  *
  */
 
@@ -1437,10 +1549,11 @@ typedef struct
     {
         /*!
          * @internal There is not late binding for this structure.
-         * However, to maintain compatibility with the
-         * @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink macro
-         * in @link jvm/src/classfile.c classfile.c@endlink,
-         * this empty structure is provided.
+         *           However, to maintain compatibility with the
+         *           @link #ALLOC_CP_INFO() ALLOC_CP_INFO()@endlink
+         *           macro in @link jvm/src/classfile.c
+                     classfile.c@endlink, this empty structure
+         *           is provided.
          */
     } LOCAL_Utf8_binding;
 
@@ -2343,7 +2456,7 @@ typedef struct
 /*@{ */ /* Begin grouped definitions */
 
 #define CODE_CONSTRAINT_CODE_LENGTH_MIN 1 /**< Array size bounds,bytes*/
-#define CODE_CONSTRAINT_CODE_LENGTH_MAX 65535
+#define CODE_CONSTRAINT_CODE_LENGTH_MAX 0xffff /**< Maximum PC value */
 
 #define CODE_CONSTRAINT_START_PC        0   /**< Start PC location */
 
@@ -2545,8 +2658,9 @@ extern rvoid cfmsgs_atrmsg(rchar *fn,
                            ClassFile *pcfs,
                            attribute_info_dup *atr);
 
-/*
- * restore packing
+/*!
+ * @internal Remove effects of packing pragma on structure packing
+ *
  */
 #pragma pack()
 

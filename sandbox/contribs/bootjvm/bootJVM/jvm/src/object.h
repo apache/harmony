@@ -49,7 +49,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -73,13 +75,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(object, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(object, h,
+"$URL$",
+"$Id$");
 
 
 /*
@@ -95,11 +100,12 @@ ARCH_COPYRIGHT_APACHE(object, h, "$URL$ $Id$");
  * them using the @p @b objhash index.
  *
  * @param objhash  Object table index into the global
- * @link #rjvm.object rjvm.object[]@endlink array (via
- * @link #pjvm pjvm->object[]@endlink).
+ *                 @link #rjvm.object rjvm.object[]@endlink array (via
+ *                 @link #pjvm pjvm->object[]@endlink).
  * 
  * 
  * @returns pointer to a object slot
+ * 
  */
 #define OBJECT(objhash) pjvm->object[objhash]
 

@@ -7,7 +7,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -31,6 +33,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -38,7 +41,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jvmutil, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jvmutil, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h" 
@@ -89,12 +94,15 @@ ARCH_COPYRIGHT_APACHE(jvmutil, c, "$URL$ $Id$");
  *
  * @param  level     New level to set.
  *
+ *
  * @returns @link #rvoid rvoid@endlink
  *
  */
 
 rvoid jvmutil_set_dml(jvm_debug_level_enum level)
 {
+    ARCH_FUNCTION_NAME(jvmutil_set_dml);
+
     pjvm->debug_message_level = level;
 
 } /* END of jvmutil_set_dml() */
@@ -107,11 +115,13 @@ rvoid jvmutil_set_dml(jvm_debug_level_enum level)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns current debug message verbosity
+ * @returns current debug message verbosity
  *
  */
 jvm_debug_level_enum jvmutil_get_dml()
 {
+    ARCH_FUNCTION_NAME(jvmutil_get_dml);
+
     return(pjvm->debug_message_level);
 
 } /* END of jvmutil_get_dml() */
@@ -129,8 +139,8 @@ jvm_debug_level_enum jvmutil_get_dml()
  * in the stack frame.
  *
  * @attention These routines are @e not intended as a replacement
- * for the normal routine
- * <b><code>java.lang.Throwable.printStackTrace()</code></b> !!!
+ *            for the normal routine
+ *         <b><code>java.lang.Throwable.printStackTrace()</code></b> !!!
  *
  * @param  thridx      Thread table index of thread to show
  *
@@ -149,10 +159,10 @@ jvm_debug_level_enum jvmutil_get_dml()
  * @returns @link #rvoid rvoid@endlink
  *
  *
- * @todo  This function needs unit testing.
+ * @todo  HARMONY-6-jvm-jvmutil.c-1 This function needs unit testing.
  *
- * @todo  Add line numbers to output.  Sample output might look like
- *        this (when line numbers are added):
+ * @todo  HARMONY-6-jvm-jvmutil.c-2 Add line numbers to output.  Sample
+ *        output might look like this (when line numbers are added):
  *
  * @verbatim
  * Exception in thread "main" java.lang.NullPointerException
@@ -174,6 +184,8 @@ static rvoid jvmutil_print_stack_common(jvm_thread_index  thridx,
                                         rboolean          showdetails,
                                         rboolean          showlocals)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_stack_common);
+
     /* Print header if one is passed in, else skip */
     if (rnull != pheader)
     {
@@ -254,18 +266,21 @@ static rvoid jvmutil_print_stack_common(jvm_thread_index  thridx,
 
                  star_len_src, star_len_src,
                  srcname,
-                 0 /*! @todo  Get line numbers */);
+                 0 /*! @todo  HARMONY-6-jvm-jvmutil.c-3 Get line
+                              numbers */);
 
         /*
          * Fill in frame details and local variables
          */
         if (rtrue == showdetails)
         {
-            /*! @todo Show details of stack frame */
+            /*! @todo HARMONY-6-jvm-jvmutil.c-4 Show details
+                      of stack frame */
 
             if (rtrue == showlocals)
             {
-                /*! @todo Show local variables in stack frame */
+                /*! @todo HARMONY-6-jvm-jvmutil.c-5 Show local
+                          variables in stack frame */
             }
         }
 
@@ -282,6 +297,8 @@ static rvoid jvmutil_print_stack_common(jvm_thread_index  thridx,
  */
 rvoid jvmutil_print_stack(jvm_thread_index thridx, rchar *pheader)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_stack);
+
     jvmutil_print_stack_common(thridx, pheader, rfalse, rfalse);
 
 } /* END of jvmutil_print_stack() */
@@ -294,6 +311,8 @@ rvoid jvmutil_print_stack(jvm_thread_index thridx, rchar *pheader)
 rvoid jvmutil_print_stack_details(jvm_thread_index  thridx,
                                   rchar            *pheader)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_stack_details);
+
     jvmutil_print_stack_common(thridx, pheader, rtrue, rfalse);
 
 } /* END of jvmutil_print_stack_details() */
@@ -306,6 +325,8 @@ rvoid jvmutil_print_stack_details(jvm_thread_index  thridx,
 rvoid jvmutil_print_stack_locals(jvm_thread_index  thridx,
                                  rchar            *pheader)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_stack_locals);
+
     jvmutil_print_stack_common(thridx, pheader, rtrue, rtrue);
 
 } /* END of jvmutil_print_stack_locals() */
@@ -318,6 +339,8 @@ rvoid jvmutil_print_stack_locals(jvm_thread_index  thridx,
 static rvoid jvmutil_print_errtype_stack(jvm_thread_index  thridx,
                                          rchar            *errtype)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_errtype_stack);
+
     rchar *pheader = HEAP_GET_DATA(JVMCFG_STDIO_BFR, rfalse);
 
     jvm_class_index clsidx =
@@ -356,6 +379,8 @@ static rvoid jvmutil_print_errtype_stack(jvm_thread_index  thridx,
  */
 rvoid jvmutil_print_error_stack(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_error_stack);
+
     jvmutil_print_errtype_stack(thridx, "Error");
 
 } /* END of jvmutil_print_error_stack() */
@@ -368,6 +393,8 @@ rvoid jvmutil_print_error_stack(jvm_thread_index thridx)
  */
 rvoid jvmutil_print_exception_stack(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(jvmutil_print_exception_stack);
+
     jvmutil_print_errtype_stack(thridx, "Exception");
 
 } /* END of jvmutil_print_exception_stack() */

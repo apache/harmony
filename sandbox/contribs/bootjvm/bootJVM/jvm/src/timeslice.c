@@ -3,6 +3,12 @@
  *
  * @brief JVM one millisecond time slice timer.
  *
+ * @attention This file contains data structures and functionality
+ *            found nowhere else in the project.  It is inherently
+ *            platform-specific and porting to different platforms
+ *            must be done carefully so that nothing breaks on the
+ *            existing implementations.
+ *
  * The @link rjvm.timeslice_expired pjvm->timeslice_expired@endlink
  * flag is set by the periodic @b SIGALRM herein and tested in the JVM
  * virtual instruction inner loop to decide when a thread has finished
@@ -23,7 +29,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -47,6 +55,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -54,18 +63,24 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(timeslice, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(timeslice, c,
+"$URL$",
+"$Id$");
 
 
 #include <unistd.h>
 #include <signal.h>
+#if defined(CONFIG_WINDOWS) || defined(CONFIG_CYGWIN)
 #include <sys/time.h>
+#endif 
 
 #define _REENTRANT
 #include <pthread.h>
 
 #ifndef CONFIG_WINDOWS
+#ifndef CONFIG_CYGWIN
 #include <thread.h> /* WATCH OUT!  /usr/include, not application .h */
+#endif
 #endif
 
 #include "jvmcfg.h"
@@ -88,11 +103,13 @@ static pthread_t posix_thread_id;
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid timeslice_init()
 {
+    ARCH_FUNCTION_NAME(timeslice_init);
+
     /* Time slice has not expired */
     pjvm->timeslice_expired = rfalse;
 
@@ -109,7 +126,7 @@ rvoid timeslice_init()
 
     if (0 != rc)
     {
-        sysErrMsg("timeslice_init", "Cannot start timer");
+        sysErrMsg(arch_function_name, "Cannot start timer");
         exit_jvm(EXIT_TIMESLICE_START);
 /*NOTREACHED*/
     }
@@ -128,8 +145,7 @@ rvoid timeslice_init()
  *
  *
  * @param  thridx   Thread index of thread to read its 
- *                  @link rthread#sleeptime sleeptime@endlink
- *                  value
+ *                  @link rthread#sleeptime sleeptime@endlink value
  *
  *
  * @returns remaining sleep time, in timer ticks
@@ -137,6 +153,8 @@ rvoid timeslice_init()
  */
 jlong timeslice_get_thread_sleeptime(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(timeslice_get_thread_sleeptime);
+
     jlong rc;
 
     /* Lock out the @e world while retrieving any thread's sleep time */
@@ -167,7 +185,7 @@ static struct itimerval timeslice_period;
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  *
  * @warning Eclipse users need to remember that setting a combination
@@ -191,6 +209,8 @@ static struct itimerval timeslice_period;
 
 static void timeslice_tick(/* void --GCC won't allow this declaration*/)
 {
+    ARCH_FUNCTION_NAME(timeslice_tick);
+
     /* Suppress SIGALRM until finished with this handler */
     signal(SIGALRM, SIG_IGN);
 
@@ -200,7 +220,7 @@ static void timeslice_tick(/* void --GCC won't allow this declaration*/)
         if (JVMCFG_TIMESLICE_DEBUG_REPORT_MIN_SECONDS <=
             timeslice_period.it_interval.tv_sec)
         {
-            sysDbgMsg(DML9, "timeslice_tick", "tick");
+            sysDbgMsg(DML9, arch_function_name, "tick");
         }
     }
 
@@ -234,6 +254,8 @@ static void timeslice_tick(/* void --GCC won't allow this declaration*/)
  */
 void *timeslice_run(void *dummy)
 {
+    ARCH_FUNCTION_NAME(timeslice_run);
+
     /* Start timer and make its first tick one period from now */
     timeslice_period.it_interval.tv_sec =
                                         JVMCFG_TIMESLICE_PERIOD_SECONDS;
@@ -260,7 +282,7 @@ void *timeslice_run(void *dummy)
 
         if (0 != rc)
         {
-            sysErrMsg("timeslice_run", "Cannot start interval timer");
+            sysErrMsg(arch_function_name,"Cannot start interval timer");
             exit_jvm(EXIT_TIMESLICE_START);
 /*NOTREACHED*/
         }
@@ -278,15 +300,16 @@ void *timeslice_run(void *dummy)
 
     while(rtrue)
     {
-    	/*
-    	 *  gmj : I think that yield() is solaris only
-    	 */
-
-        #ifdef CONFIG_WINDOWS    
-        	/* do something useful */
-        #else		 
-	        yield();
-	    #endif
+        /*!
+         * @todo HARMONY-6-jvm-timeslice.c-1 gmj : I think that
+         *       yield( is solaris only
+         *
+         */
+#if defined(CONFIG_WINDOWS) || defined(CONFIG_CYGWIN)
+        /* do something useful */
+#else
+        yield();
+#endif
     }
 
 /*NOTREACHED*/
@@ -302,18 +325,23 @@ void *timeslice_run(void *dummy)
  * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
- *       @returns @link #rvoid rvoid@endlink
+ * @returns @link #rvoid rvoid@endlink
  *
  */
 rvoid timeslice_shutdown(rvoid)
 {
+    ARCH_FUNCTION_NAME(timeslice_shutdown);
+
     /* Suppress SIGALRM so future tick does not happen AT ALL */
     signal(SIGALRM, SIG_IGN);
 
     /* Ignore error */
     pthread_cancel(posix_thread_id);
 
-    /*! @todo Is this necessary at JVM shutdown time? */
+    /*!
+     * @todo HARMONY-6-jvm-timeslice.c-2 Is this necessary at
+     *       JVM shutdown time?
+     */
     /* pthread_mutex_destroy(&pjvm->sleeplock); */
 
     /* Declare this module uninitialized */

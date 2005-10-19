@@ -14,10 +14,16 @@
  * HAS IT COMPILED.  (You may get unexplainable @b SIGSEGV
  * errors otherwise.)
  *
+ * At the end of the initial development cycle, a suite of files
+ * called @b portable_*.c were developed to isolate @e all @b system(2)
+ * calls and @b library(3) functions to they are all compiled in a
+ * same way independent of the application code.
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -41,6 +47,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -48,7 +55,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(stdio, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(stdio, c,
+"$URL$",
+"$Id$");
 
 
 #include <stdio.h>
@@ -93,8 +102,10 @@ ARCH_COPYRIGHT_APACHE(stdio, c, "$URL$ $Id$");
 
 /*@{ */ /* Begin grouped definitions */
 
-int sysDbgMsg(rint dml, rchar *fn, rchar *fmt, ...)
+int sysDbgMsg(rint dml, const rchar *fn, rchar *fmt, ...)
 {
+    ARCH_FUNCTION_NAME(sysDbgMsg);
+
     /* Display @e nothing if debug messages are disabled */
     if (rfalse == JVMCFG_DEBUG_MESSAGE_ENABLE)
     {
@@ -127,8 +138,10 @@ int sysDbgMsg(rint dml, rchar *fn, rchar *fmt, ...)
 } /* END of sysDbgMsg() */
 
 
-int sysErrMsg(rchar *fn, rchar *fmt, ...)
+int sysErrMsg(const rchar *fn, rchar *fmt, ...)
 {
+    ARCH_FUNCTION_NAME(sysErrMsg);
+
     rchar extfmt[JVMCFG_STDIO_BFR]; /* WARNING!  On the stack! */
 
     /* Load up format string w/ user specification */
@@ -150,6 +163,8 @@ int sysErrMsg(rchar *fn, rchar *fmt, ...)
 
 int sysErrMsgBfrFormat(rchar *bfr, rchar *fn, rchar *fmt, ...)
 {
+    ARCH_FUNCTION_NAME(sysErrMsgBfrFormat);
+
     rchar extfmt[JVMCFG_STDIO_BFR]; /* WARNING!  On the stack! */
 
     /* Load up format string w/ user specification */
@@ -225,6 +240,8 @@ int sysErrMsgBfrFormat(rchar *bfr, rchar *fn, rchar *fmt, ...)
 
 int fprintfLocalStdout(rchar *fmt, ...)
 {
+    ARCH_FUNCTION_NAME(fprintfLocalStdout);
+
     LOCAL_FPRINTF(stdout);
 
 } /* END of fprintfLocalStdout() */
@@ -232,12 +249,16 @@ int fprintfLocalStdout(rchar *fmt, ...)
 
 int fprintfLocalStderr(rchar *fmt, ...)
 {
+    ARCH_FUNCTION_NAME(fprintfLocalStderr);
+
     LOCAL_FPRINTF(stderr);
 
 } /* END of fprintfLocalStderr() */
 
 int sprintfLocal(rchar *bfr, rchar *fmt, ...)
 {
+    ARCH_FUNCTION_NAME(sprintfLocal);
+
     LOCAL_SPRINTF;
 
 } /* END of sprintfLocal() */
@@ -275,21 +296,27 @@ int sprintfLocal(rchar *bfr, rchar *fmt, ...)
 
 int _printfLocal(const rchar *fmt, ...)
 {
-    return(sysErrMsg("_printfLocal",
+    ARCH_FUNCTION_NAME(_printfLocal);
+
+    return(sysErrMsg(arch_function_name,
                      "Please use 'printfLocal' function instead"));
 
 } /* END of _printfLocal() */
     
 int _fprintfLocal(FILE *fp,  const rchar *fmt, ...)
 {
-    return(sysErrMsg("_fprintfLocal",
+    ARCH_FUNCTION_NAME(_fprintfLocal);
+
+    return(sysErrMsg(arch_function_name,
                      "Please use 'fprintfLocal' function instead"));
 
 } /* END of _fprintfLocal() */
 
 int _sprintfLocal(rchar *bfr, const rchar *fmt, ...)
 {
-    return(sysErrMsg("_sprintfLocal",
+    ARCH_FUNCTION_NAME(_sprintfLocal);
+
+    return(sysErrMsg(arch_function_name,
                      "Please use 'sprintfLocal' function instead"));
 
 } /* END of _sprintfLocal() */

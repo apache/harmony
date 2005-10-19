@@ -9,7 +9,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -33,6 +35,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -40,7 +43,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jrtypes, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jrtypes, c,
+"$URL$",
+"$Id$");
 
 
 /*!

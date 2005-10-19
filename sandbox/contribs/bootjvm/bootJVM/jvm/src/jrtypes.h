@@ -53,21 +53,23 @@
  *       found in its @c @b some.java.class.with.native.methods
  *       directory.  For example, the Java class
  *       @c @b java.lang.Object has its Java source file stored
- *    in @link jni/src/harmony/generic/0.0/src/java/lang/Object.java
-   jni/src/vendor/product/version/src/java/lang/Object.java@endlink,
- *        with its native support found in the 'C' source file
- *      @link jni/src/harmony/generic/0.0/src/java_lang_Object.c
-  jni/src/vendor/product/version/src/java_lang_Object.c@endlink.
- *        The JNI header used to access this native
- *        @c @b java.lang.Object code is found in the related
- *        @b include directory as
- *      @link jni/src/harmony/generic/0.0/include/java_lang_Object.h
-  jni/src/vendor/product/version/include/java_lang_Object.h@endlink.
+ *       in @link jni/src/harmony/generic/0.0/src/java/lang/Object.java
+       jni/src/vendor/product/version/src/java/lang/Object.java@endlink,
+ *       with its native support found in the 'C' source file
+ *       @link jni/src/harmony/generic/0.0/src/java_lang_Object.c
+         jni/src/vendor/product/version/src/java_lang_Object.c@endlink.
+ *       The JNI header used to access this native
+ *       @c @b java.lang.Object code is found in the related
+ *       @b include directory as
+ *       @link jni/src/harmony/generic/0.0/include/java_lang_Object.h
+      jni/src/vendor/product/version/include/java_lang_Object.h@endlink.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -91,13 +93,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(jrtypes, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(jrtypes, h,
+"$URL$",
+"$Id$");
 
 
 /*!
@@ -340,8 +345,8 @@ typedef void             rvoid;    /**< Real machine
 
 /*!
  * @internal Destroy any pre-existing version (or even conflicting
- * versions) of several common symbols, then define them explicitly
- * for this compile environment.
+ *           versions) of several common symbols, then define them
+ *           explicitly for this compile environment.
  */
 #ifdef NULL
 #undef NULL
@@ -371,19 +376,20 @@ typedef void             rvoid;    /**< Real machine
 
 /*@{ */ /* Begin grouped definitions */
 
-#define TRUE  DO_NOT_USE_TRUE  /**< Please use either @link #rtrue
+#define TRUE  PLEASE_DO_NOT_USE_TRUE /**< Please use either @link #rtrue
                                     rtrue@endlink for real machine
                                     @c @b TRUE cases or @link #jtrue
                                     jtrue@endlink for Java virtual
                                     machine @c @b TRUE cases */ 
 
-#define FALSE DO_NOT_USE_FALSE /**< Please use either @link #rfalse
-                                    rfalse@endlink for real machine
-                                    @c @b FALSE cases or @link #jfalse
-                                    jfalse@endlink for Java virtual
-                                    machine @c @b FALSE cases */ 
+#define FALSE PLEASE_DO_NOT_USE_FALSE /**< Please use either
+                                     @link #rfalse rfalse@endlink for
+                                    real machine @c @b FALSE cases or
+                                    @link #jfalse jfalse@endlink for
+                                    Java virtual machine @c @b FALSE
+                                    cases */ 
 
-#define NULL  DO_NOT_USE_NULL  /**< Please use @link #rnull
+#define NULL  PLEASE_DO_NOT_USE_NULL  /**< Please use @link #rnull
                                     rnull@endlink for real machine
                                     @c @b NULL cases or @link #jnull
                                     jnull@endlink for Java virtual

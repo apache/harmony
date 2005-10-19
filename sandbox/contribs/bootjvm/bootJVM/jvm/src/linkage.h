@@ -29,7 +29,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -53,13 +55,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(linkage, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(linkage, h,
+"$URL$",
+"$Id$");
 
 
 /*!
@@ -88,6 +93,7 @@ ARCH_COPYRIGHT_APACHE(linkage, h, "$URL$ $Id$");
  * @param  objhash    Object hash of object for which to locate its
  *                    class table entry.
  *
+ *
  * @returns (jvm_table_linkage *) to object table class linkage entry
  *
  */
@@ -109,7 +115,8 @@ ARCH_COPYRIGHT_APACHE(linkage, h, "$URL$ $Id$");
  *
  *
  * @returns @link #rtrue rtrue@endlink if this thread index indicates
- * a valid thread table slot, otherwise @link #rfalse rfalse@endlink.
+ *          a valid thread table slot, otherwise
+ *          @link #rfalse rfalse@endlink.
  *
  */
 #define VERIFY_THREAD_LINKAGE(thridx)                            \
@@ -169,8 +176,9 @@ ARCH_COPYRIGHT_APACHE(linkage, h, "$URL$ $Id$");
  *                               class object.
  *
  * @note  This macro will return @link #rnull rnull@endlink if the
- * object in this slot is not a <b><code>java.lang.Thread</code></b>
- * object and one which indexes a valid thread.
+ *        object in this slot is not a
+ *        <b><code>java.lang.Thread</code></b> object and one
+ *        which indexes a valid thread.
  *
  */
 #define OBJECT_THREAD_LINKAGE(objhash)                                 \
@@ -192,8 +200,8 @@ ARCH_COPYRIGHT_APACHE(linkage, h, "$URL$ $Id$");
  *
  *
  * @returns @link #rtrue rtrue@endlink if this object hash indicates
- * a valid thread linkage and a thread table slot, otherwise
- * @link #rfalse rfalse@endlink.
+ *          a valid thread linkage and a thread table slot, otherwise
+ *          @link #rfalse rfalse@endlink.
  *
  */
 #define VERIFY_OBJECT_THREAD_LINKAGE(objhash)   \

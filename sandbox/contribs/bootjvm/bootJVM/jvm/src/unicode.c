@@ -20,7 +20,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -44,6 +46,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -51,7 +54,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(unicode, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(unicode, c,
+"$URL$",
+"$Id$");
 
 
 #include <string.h>
@@ -73,10 +78,10 @@ ARCH_COPYRIGHT_APACHE(unicode, c, "$URL$ $Id$");
  * @param[out] outbfr  UTF8 byte string
  *
  *
- * @returns  UTF8 structure containing length and character buffer (plus
- *           tag), but return in (cp_info_dup) for full proper word
- *           alignment. When done with the data, call HEAP_FREE_DATA()
- *           on it.
+ * @returns UTF8 structure containing length and character buffer (plus
+ *          tag), but return in (cp_info_dup) for full proper word
+ *          alignment. When done with the data, call HEAP_FREE_DATA()
+ *          on it.
  *
  *    @c @b rc-\>bytes    UTF8 version of @b inbfr string in @b outbfr
  *
@@ -90,6 +95,8 @@ ARCH_COPYRIGHT_APACHE(unicode, c, "$URL$ $Id$");
 
 cp_info_dup *unicode_cnv2utf(jchar *inbfr, jshort length)
 {
+    ARCH_FUNCTION_NAME(unicode_cnv2utf);
+
     jshort bytecnvcount = 0;
     jshort unicodecnvcount;
     jubyte *outbfr;
@@ -253,6 +260,8 @@ cp_info_dup *unicode_cnv2utf(jchar *inbfr, jshort length)
  */
 jshort unicode_strcmp(jchar *s1, u2 l1, jchar *s2, u2 l2)
 {
+    ARCH_FUNCTION_NAME(unicode_strcmp);
+
     /* Compare shortest common run length */
     rint cmplen = (l1 < l2) ? l1 : l2;
 

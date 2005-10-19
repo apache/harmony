@@ -14,7 +14,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -38,6 +40,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -45,7 +48,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(linkage, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(linkage, c,
+"$URL$",
+"$Id$");
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -91,6 +96,8 @@ ARCH_COPYRIGHT_APACHE(linkage, c, "$URL$ $Id$");
 rboolean linkage_resolve_class(jvm_class_index clsidx,
                                rboolean        find_registerNatives)
 {
+    ARCH_FUNCTION_NAME(linkage_resolve_class);
+
     if (jvm_class_index_null == clsidx)
     {
         /*!
@@ -124,7 +131,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
     rboolean class_fully_linked = rtrue;
 
     /*
-     * Scan through constant_pool, resolving any missing items
+     * Scan through @c @b constant_pool, resolving any missing items
      * that might now be available.
      */
 
@@ -314,8 +321,9 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                           PTR_THIS_CP_Utf8(pfldesc_dup);
 
                         /*!
-                         * @todo What needs to happen when base type
-                         *       is BASETYPE_ARRAY or BASETYPE_ERROR
+                         * @todo HARMONY-6-jvm-linkage.c-1 What needs
+                         *       to happen when base type is
+                         *       BASETYPE_ARRAY or BASETYPE_ERROR
                          *       or BASETYPE_VOID?
                          */
                         pcpd_Fieldref
@@ -528,8 +536,9 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                             atridxFIND = jvm_attribute_index_native;
 
                             /*!
-                             * @todo Should this instance permit
-                             *       use of @b find_registerNatives
+                             * @todo HARMONY-6-jvm-linkage.c-2 Should
+                             *       this instance permit use
+                             *       of @b find_registerNatives
                              *       since interaces are not a part
                              *       of the JVM startup, just a few
                              *       foundational classes?  Should
@@ -626,7 +635,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
             default:
                 GENERIC_FAILURE1_VALUE(rtrue,
                                        DMLNORM,
-                                       "linkage_resolve_class",
+                                       arch_function_name,
                                        "Invalid CP tag %d",
                                        CP_TAG(pcfs, cpidx),
                                        rfalse,
@@ -666,6 +675,8 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
 
 rboolean linkage_unresolve_class(jvm_class_index clsidx)
 {
+    ARCH_FUNCTION_NAME(linkage_unresolve_class);
+
     if (jvm_class_index_null == clsidx)
     {
         /*
@@ -872,7 +883,7 @@ rboolean linkage_unresolve_class(jvm_class_index clsidx)
             default:
                 GENERIC_FAILURE1_VALUE(rtrue,
                                        DMLNORM,
-                                       "linkage_rmresolve_class",
+                                       arch_function_name,
                                        "Invalid CP tag %d",
                                        CP_TAG(pcfs, cpidx),
                                        rfalse,

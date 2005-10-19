@@ -11,18 +11,21 @@
  *
  *
  * @internal Due to the fact that the implementation of the Java object
- * and the supporting robject structure is deeply embedded in the core
- * of the development of this software, this file has contents
- * that come and go during development.  Some functions get
- * staged here before deciding where they @e really go; some
- * are interim functions for debugging, some were glue that eventually
- * went away.  Be careful to remove prototypes to such functions
- * from the appropriate header file.
+ *           and the supporting robject structure is deeply embedded in
+ *           the core of the development of this software, this file
+ *           has contents that come and go during development.  Some
+ *           functions get staged here before deciding where they
+ *           @e really go; some are interim functions for debugging,
+ *           some were glue that eventually went away.  Be careful to
+ *           remove prototypes to such functions from the appropriate
+ *           header file.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -46,6 +49,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -53,7 +57,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(objectutil, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(objectutil, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -82,10 +88,12 @@ ARCH_COPYRIGHT_APACHE(objectutil, c, "$URL$ $Id$");
  *          otherwise @link #rfalse rfalse@endlink.
  *
  *
- * @todo Make sure @b IllegalMonitorStateException logic covers all
+ * @todo HARMONY-6-jvm-objectutil.c-1 Make sure
+ *       @b IllegalMonitorStateException logic covers all
  *       possibilities or needs to be removed.
  *
- * @todo Make sure thread interruption logic below here is working.
+ * @todo HARMONY-6-jvm-objectutil.c-2 Make sure thread interruption
+ *       logic below here is working.
  *
  * @throws JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
  *         @link #JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
@@ -102,6 +110,8 @@ if current thread cannot possibly own the object's monitor lock@endlink,
 rboolean objectutil_synchronize(jvm_object_hash  objhashthis,
                                 jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(objectutil_synchronize);
+
 #if 0
     /* If this thread cannot possibly own the object's monitor lock */
     if (some_condition)
@@ -203,7 +213,8 @@ rboolean objectutil_synchronize(jvm_object_hash  objhashthis,
  * @returns @link #rvoid rvoid@endlink
  *
  *
- * @todo Make sure thread interruption logic below here is working.
+ * @todo HARMONY-6-jvm-objectutil.c-3 Make sure thread interruption
+ *       logic below here is working.
  *
  *
  * @throws JVMCLASS_JAVA_LANG_ILLEGALMONITORSTATEEXCEPTION
@@ -214,11 +225,16 @@ rboolean objectutil_synchronize(jvm_object_hash  objhashthis,
 rvoid objectutil_unsynchronize(jvm_object_hash  objhashthis,
                                jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(objectutil_unsynchronize);
+
     /* Requested object must be in use and not null */
     if ((!(OBJECT_STATUS_INUSE & OBJECT(objhashthis).status))     ||
         (OBJECT_STATUS_NULL & OBJECT(objhashthis).status))
     {
-        /*! @todo Should the not INUSE condition cause INTERNALERROR? */
+        /*!
+         * @todo HARMONY-6-jvm-objectutil.c-4 Should the not INUSE
+         *       condition cause INTERNALERROR?
+         */
 
         thread_throw_exception(CURRENT_THREAD,
                                THREAD_STATUS_THREW_EXCEPTION,
@@ -265,12 +281,15 @@ rvoid objectutil_unsynchronize(jvm_object_hash  objhashthis,
  * @param  thridx       Thread table index of a thread requesting
  *                      to release this object's monitor lock.
  *
+ *
  * @returns the result of threadstate_request_release()
  *
  */
 rboolean objectutil_release(jvm_object_hash  objhashthis,
                            jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(objectutil_release);
+
     /* Preserve MLOCK object's hash for transition to next states */
     THREAD(thridx).locktarget = objhashthis;
 

@@ -3,19 +3,22 @@
  *
  * @brief Native implementation of @c @b java.lang.Object
  *
- * @todo  Perform intelligent check on input parameter
- *        @b objhash range for all functions.
+ * @todo  HARMONY-6-jvm-jlObject.c-1 Perform intelligent check on
+ *        input parameter @b objhash range for all functions.
  *
- * @todo  In real life, the @b objhashthis values and @b clsidxthis
- *        values will be valid or these functions could not be
- *        invoked since these data types are @e mandatory for
- *        referencing them.  This probably means that the parameter
- *        valididty checking could probably be relaxed.
+ * @todo  HARMONY-6-jvm-jlObject.c-2 In real life, the @b objhashthis
+ *        values and @b clsidxthis values will be valid or these
+ *        functions could not be invoked since these data types
+ *        are @e mandatory for referencing them.  This probably
+ *        means that the parameter valididty checking could probably
+ *        be relaxed.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -39,6 +42,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -46,7 +50,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jlObject, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jlObject, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -63,12 +69,13 @@ ARCH_COPYRIGHT_APACHE(jlObject, c, "$URL$ $Id$");
  * as the first parameter.
  *
  * @note These @c @b java.lang.Object methods are unusual in that
- * they does not require a @c @b jobject (in parlance of this
- * implementation, a @link #jvm_object_hash jvm_object_hash@endlink)
- * to run because they are declared as @c @b static methods.  As
- * implemented here, the usual @b objhashthis parameter is therefore
- * replaced by * @b clsidxthis.  The thread context is located in
- * @link #CURRENT_THREAD CURRENT_THREAD@endlink.
+ *       they does not require a @c @b jobject (in parlance of this
+ *       implementation, a
+ *       @link #jvm_object_hash jvm_object_hash@endlink)
+ *       to run because they are declared as @c @b static methods.  As
+ *       implemented here, the usual @b objhashthis parameter is
+ *       therefore replaced by @b clsidxthis.  The thread context is
+ *       located in @link #CURRENT_THREAD CURRENT_THREAD@endlink.
  *
  */
 
@@ -101,6 +108,8 @@ ARCH_COPYRIGHT_APACHE(jlObject, c, "$URL$ $Id$");
  */
 jvm_object_hash jlObject_getClass(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlObject_getClass);
+
     return(
         CLASS(OBJECT_CLASS_LINKAGE(objhashthis)->clsidx).class_objhash);
 
@@ -120,6 +129,8 @@ jvm_object_hash jlObject_getClass(jvm_object_hash objhashthis)
  */
 jvm_object_hash jlObject_hashCode(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlObject_hashCode);
+
     return(objhashthis);
 
 } /* END of jlObject_hashCode() */
@@ -160,7 +171,8 @@ jvm_object_hash jlObject_hashCode(jvm_object_hash objhashthis)
        if current thread does not own the object's monitor lock@endlink.
  *
  *
- * @todo Make sure thread interruption logic below here is working.
+ * @todo HARMONY-6-jvm-jlObject.c-3 Make sure thread interruption
+ *       logic below here is working.
  *
  */
 
@@ -173,6 +185,8 @@ jvm_object_hash jlObject_hashCode(jvm_object_hash objhashthis)
 
 jvoid jlObject_wait4ever(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlObject_wait4ever);
+
     if (((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
          (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))   &&
@@ -207,6 +221,8 @@ jvoid jlObject_wait4ever(jvm_object_hash objhashthis)
 jvoid jlObject_waittimed(jvm_object_hash objhashthis,
                          jlong           sleeptime)
 {
+    ARCH_FUNCTION_NAME(jlObject_waittimed);
+
     if (((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
          (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))   &&
@@ -244,18 +260,25 @@ jvoid jlObject_waittimed(jvm_object_hash objhashthis,
  *
  * @returns object hash of object clone.
  *
- *          @todo then need to throw SecurityException in
- *          outer JVM loop when @link #jfalse jfalse@endlink.
+ *
+ * @todo HARMONY-6-jvm-jlObject.c-4 then need to throw
+ *       @b SecurityException in outer JVM loop when
+ *       @link #jfalse jfalse@endlink.
  *
  */
 
 jvm_object_hash jlObject_clone(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlObject_clone);
+
     if ((rtrue == VERIFY_OBJECT_THREAD_LINKAGE(objhashthis)) &&
         (rtrue == VERIFY_THREAD_LINKAGE(
                       OBJECT_THREAD_LINKAGE(objhashthis)->thridx)))
     {
-        /* @todo Need to finish this implementation */
+        /*!
+         * @todo HARMONY-6-jvm-jlObject.c-5 Need to finish
+         *       this implementation
+         */
 
         return(jvm_object_hash_null);
     }

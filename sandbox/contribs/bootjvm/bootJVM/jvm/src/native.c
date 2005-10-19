@@ -318,7 +318,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -342,6 +344,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -349,7 +352,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(native, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(native, c,
+"$URL$",
+"$Id$");
 
 #include "jvmcfg.h"
 #include "classfile.h"
@@ -519,8 +524,9 @@ ARCH_COPYRIGHT_APACHE(native, c, "$URL$ $Id$");
  *
  * @returns @link #rvoid rvoid@endlink
  *
- * @todo Perform value set conversion here for native methods
- *       and elsewhere for virtual methods.
+ *
+ * @todo HARMONY-6-jvm-native.c-1 Perform value set conversion here
+ *       for native methods and elsewhere for virtual methods.
  *
  */
 #define POP_JFLOAT(thridx) \
@@ -556,8 +562,9 @@ ARCH_COPYRIGHT_APACHE(native, c, "$URL$ $Id$");
  *
  * @returns @link #rvoid rvoid@endlink
  *
- * @todo Perform value set conversion here for native methods
- *       and elsewhere for virtual methods.
+ *
+ * @todo HARMONY-6-jvm-native.c-2 Perform value set conversion here
+ *       for native methods and elsewhere for virtual methods.
  *
  */
 #define POP_JDOUBLE(thridx) \
@@ -599,6 +606,8 @@ static
     rvoid native_run_local_return_jvoid(jvm_native_method_ordinal nmord,
                                         jvm_thread_index         thridx)
 {
+    ARCH_FUNCTION_NAME(native_run_local_return_jvoid);
+
     POP_SCRATCHPAD_JVM;
     POP_SCRATCHPAD_JINT;
     POP_SCRATCHPAD_JLONG;
@@ -701,6 +710,8 @@ static jvm_object_hash
     native_run_local_return_jobject(jvm_native_method_ordinal nmord,
                                     jvm_thread_index         thridx)
 {
+    ARCH_FUNCTION_NAME(native_run_local_return_jobject);
+
     jvm_object_hash rc;
 
     POP_SCRATCHPAD_JVM;
@@ -749,6 +760,8 @@ static
     jint native_run_local_return_jint(jvm_native_method_ordinal nmord,
                                       jvm_thread_index         thridx)
 {
+    ARCH_FUNCTION_NAME(native_run_local_return_jint);
+
     jint rc;
 
     POP_SCRATCHPAD_JVM;
@@ -888,6 +901,8 @@ static jfloat
     native_run_local_return_jfloat(jvm_native_method_ordinal nmord,
                                    jvm_thread_index         thridx)
 {
+    ARCH_FUNCTION_NAME(native_run_local_return_jfloat);
+
     jfloat rc;
 
     /* POP_SCRATCHPAD_JVM; */
@@ -922,6 +937,8 @@ static
     jlong native_run_local_return_jlong(jvm_native_method_ordinal nmord,
                                         jvm_thread_index         thridx)
 {
+    ARCH_FUNCTION_NAME(native_run_local_return_jlong);
+
     jlong rc;
     jint rcms, rcls;
 
@@ -961,6 +978,8 @@ static jdouble
     native_run_local_return_jdouble(jvm_native_method_ordinal nmord,
                                     jvm_thread_index         thridx)
 {
+    ARCH_FUNCTION_NAME(native_run_local_return_jdouble);
+
     jdouble rc;
     jint rcms, rcls;
 
@@ -999,12 +1018,13 @@ static jdouble
  * methods.
  *
  * @internal  Although this function is invoked from
- * @link #native_locate_local_method()
-          native_locate_local_method()@endlink, the real purpose
- * is fulfilled at compile time by verifying that there is a
- * completely unique set of ordinals across all classes.  Invoking
- * it at run time adds to this integrity by verifying that a
- * native method invocation is using an ordinal that actually exists.
+ *            @link #native_locate_local_method()
+              native_locate_local_method()@endlink, the real purpose
+ *            is fulfilled at compile time by verifying that there is a
+ *            completely unique set of ordinals across all classes.
+ *            Invoking it at run time adds to this integrity by
+ *            verifying that a native method invocation is using an
+ *            ordinal that actually exists.
  *
  *
  * @param nmord   Ordinal number definition of local native method.
@@ -1023,6 +1043,8 @@ static jdouble
 static rvoid native_verify_ordinal_definition(
                                         jvm_native_method_ordinal nmord)
 {
+    ARCH_FUNCTION_NAME(native_verify_ordinal_definition);
+
     switch(nmord)
     {
         /*
@@ -1145,13 +1167,13 @@ typedef struct
    NATIVE_TABLE_JLxxxxx_ORDINALS@endlink.  This suite is entered
  * here for processing by the local native method logic.
  *
- * @see jvm/include/jlClass.h
+ * @see @link jvm/include/jlClass.h jvm/include/jlClass.h@endlink
  *
- * @see jvm/include/jlObject.h
+ * @see @link jvm/include/jlObject.h jvm/include/jlObject.h@endlink
  *
- * @see jvm/include/jlString.h
+ * @see @link jvm/include/jlString.h jvm/include/jlString.h@endlink
  *
- * @see jvm/include/jlThread.h
+ * @see @link jvm/include/jlThread.h jvm/include/jlThread.h@endlink
  *
  */
 native_local_method_map native_local_method_list[NLML_MAX_CLASSES] =
@@ -1189,16 +1211,16 @@ native_local_method_map native_local_method_list[NLML_MAX_CLASSES] =
  *
  * @param pcfs        ClassFile pointer of a class referencing a
  *                    native method, local or otherwise.  The following
- *                    constant_pool indices are all relative to this
- *                    ClassFile.
+ *                    @c @b constant_pool indices are all relative to
+ *                    this ClassFile.
  *
- * @param clsnameidx  constant_pool index in @b pcfs of class name to
- *                    locate in class table.
+ * @param clsnameidx  @c @b constant_pool index in @b pcfs of class name
+ *                    to locate in class table.
  *
- * @param mthnameidx  constant_pool index in @b pcfs of method name to
- *                    locate in @b clsnameidx.
+ * @param mthnameidx  @c @b constant_pool index in @b pcfs of method
+ *                    name to locate in @b clsnameidx.
  *
- * @param mthdescidx  constant_pool index in @b pcfs of method
+ * @param mthdescidx  @c @b constant_pool index in @b pcfs of method
  *                    description with method name @b mthnameidx
  *                    to locate in @b clsnameidx.
  *
@@ -1227,6 +1249,8 @@ jvm_native_method_ordinal
                                jvm_constant_pool_index mthdescidx,
                                rboolean            find_registerNatives)
 {
+    ARCH_FUNCTION_NAME(native_locate_local_mathod);
+
     rint nmoclsnameidx;
     rint nmomthnameidx;
 
@@ -1347,13 +1371,13 @@ jvm_native_method_ordinal
  *
  * @param clsidx     Class table index of native method to invoke.
  *
- * @param mthnameidx Class file constant_pool index of name of native
- *                   method to invoke.  This entry must be a
+ * @param mthnameidx Class file @c @b constant_pool index of name of
+ *                   native method to invoke.  This entry must be a
  *                   CONSTANT_Utf8_info string containing an
  *                   unqualified method name.
  *
- * @param mthdescidx Class file constant_pool index of descriptor of
- *                   method to invoke.  This entry must be a
+ * @param mthdescidx Class file @c @b constant_pool index of descriptor
+ *                   of method to invoke.  This entry must be a
  *                   CONSTANT_Utf8_info string containing the
  *                   descriptor of an unqualified method name.
  *
@@ -1368,6 +1392,8 @@ rvoid native_run_method(jvm_thread_index          thridx,
                         jvm_constant_pool_index   mthnameidx,
                         jvm_constant_pool_index   mthdescidx)
 {
+    ARCH_FUNCTION_NAME(native_run_method);
+
     /*!
      * Verify that this local native method ordinal is both
      * unique and complete.
@@ -1381,8 +1407,9 @@ rvoid native_run_method(jvm_thread_index          thridx,
          */
         case JVMCFG_JLOBJECT_NMO_NULL:
             /*!
-             * @todo Invoke the full JNI interface for this method at
-             *       this place.  Additional parameters will be needed.
+             * @todo HARMONY-6-jvm-native.c-3 Invoke the full JNI
+             *       interface for this method at this place.
+             *       Additional parameters will be needed.
              *
              * Currently, the JNI interface is stubbed out here.
              * The implementation goes something like this:
@@ -1493,8 +1520,8 @@ rvoid native_run_method(jvm_thread_index          thridx,
 
                 default:
                 /*!
-                 * @todo  Which is the better error, @b VerifyError
-                 *        or @b NoSuchMethodError ?
+                 * @todo  HARMONY-6-jvm-native.c-4 Which is the better
+                 *       error, @b VerifyError or @b NoSuchMethodError ?
                  */
                 exit_throw_exception(EXIT_JVM_METHOD,
                                      JVMCLASS_JAVA_LANG_VERIFYERROR);

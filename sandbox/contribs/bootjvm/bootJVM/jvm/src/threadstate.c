@@ -286,7 +286,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -310,6 +312,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -317,7 +320,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(threadstate, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(threadstate, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -427,6 +432,7 @@ ARCH_COPYRIGHT_APACHE(threadstate, c, "$URL$ $Id$");
  *                          explicitly stated if this state change is
  *                          unconditional.
  *
+ *
  * @returns @link #rtrue rtrue@endlink if state change was permitted,
  *          otherwise @link #rfalse rfalse@endlink.
  *
@@ -527,10 +533,10 @@ ARCH_COPYRIGHT_APACHE(threadstate, c, "$URL$ $Id$");
  * See tables above for full description.
  *
  * 
- * @todo  Need to find a way (per spec section 5.3.5) to throw
- *        a java.lang.LinkageError and/or java.lang.ClassFormatError
- *        for bad classfile representations.  Also major/minor versions
- *        mismatch should throw
+ * @todo  HARMONY-6-jvm-threadstate.c-1 Need to find a way (per spec
+ *        section 5.3.5) to throw a java.lang.LinkageError and/or
+ *        java.lang.ClassFormatError for bad classfile representations.
+ *        Also major/minor versions mismatch should throw
  *        java/class/UnsupportedClassVersion error.
  *
  *
@@ -538,7 +544,7 @@ ARCH_COPYRIGHT_APACHE(threadstate, c, "$URL$ $Id$");
  *
  *
  * @returns @link #rtrue rtrue@endlink if all activities were
- * successful, else @link #rfalse rfalse@endlink.
+ *          successful, else @link #rfalse rfalse@endlink.
  *
  */
 
@@ -555,6 +561,8 @@ ARCH_COPYRIGHT_APACHE(threadstate, c, "$URL$ $Id$");
  */
 rboolean threadstate_request_new(jvm_thread_index thridx)
 {
+            ARCH_FUNCTION_NAME(threadstate_request_new);
+
     STATE_REQUEST(NEW, (rtrue));
     STATE_END(rtrue);
 }
@@ -566,6 +574,8 @@ rboolean threadstate_request_new(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_new(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_new);
+
     STATE_ACTIVATE(NEW);
     STATE_END(rtrue);
 }
@@ -579,6 +589,8 @@ rboolean threadstate_activate_new(jvm_thread_index thridx)
  */
 rboolean threadstate_process_new(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_new);
+
     STATE_PROCESS(NEW);
     STATE_END(rtrue);
 }
@@ -594,6 +606,8 @@ rboolean threadstate_process_new(jvm_thread_index thridx)
 
 rboolean threadstate_request_start(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_start);
+
     STATE_REQUEST(START, (THREAD_STATE_NEW == THIS_STATE(thridx)));
     STATE_END(rtrue);
 }
@@ -605,6 +619,8 @@ rboolean threadstate_request_start(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_start(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_start);
+
     STATE_ACTIVATE(START);
     STATE_END(rtrue);
 }
@@ -618,6 +634,8 @@ rboolean threadstate_activate_start(jvm_thread_index thridx)
  */
 rboolean threadstate_process_start(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_start);
+
     STATE_PROCESS(START);
 
     /* ... Process activities for this thread state here ... */
@@ -636,6 +654,8 @@ rboolean threadstate_process_start(jvm_thread_index thridx)
  */
 rboolean threadstate_request_runnable(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_runnable);
+
     STATE_REQUEST(RUNNABLE, 
                   ((THREAD_STATE_START     == THIS_STATE(thridx)) ||
                    (THREAD_STATE_RUNNING   == THIS_STATE(thridx)) ||
@@ -651,6 +671,8 @@ rboolean threadstate_request_runnable(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_runnable(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_runnable);
+
     STATE_ACTIVATE(RUNNABLE);
     STATE_END(rtrue);
 }
@@ -666,6 +688,8 @@ rboolean threadstate_activate_runnable(jvm_thread_index thridx)
  */
 rboolean threadstate_process_runnable(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_runnable);
+
     STATE_PROCESS(RUNNABLE);
     STATE_END(rtrue);
 }
@@ -686,6 +710,8 @@ rboolean threadstate_process_runnable(jvm_thread_index thridx)
  */
 rboolean threadstate_request_running(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_running);
+
     STATE_REQUEST(RUNNING,
                   (THREAD_STATE_RUNNABLE == THIS_STATE(thridx)));
     STATE_END(rtrue);
@@ -698,6 +724,8 @@ rboolean threadstate_request_running(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_running(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_running);
+
     STATE_ACTIVATE(RUNNING);
     STATE_END(rtrue);
 }
@@ -715,6 +743,8 @@ rboolean threadstate_activate_running(jvm_thread_index thridx)
  */
 rboolean threadstate_process_running(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_running);
+
     STATE_PROCESS(RUNNING);
 
    STATE_END(opcode_run(CURRENT_THREAD, rtrue));
@@ -739,6 +769,8 @@ rboolean threadstate_process_running(jvm_thread_index thridx)
  */
 rboolean threadstate_request_complete(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_complete);
+
     STATE_REQUEST(COMPLETE,
                   ((THREAD_STATE_NEW      == THIS_STATE(thridx)) ||
                    (THREAD_STATE_RUNNING  == THIS_STATE(thridx)) ||
@@ -754,6 +786,8 @@ rboolean threadstate_request_complete(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_complete(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_complete);
+
     STATE_ACTIVATE(COMPLETE);
     STATE_END(rtrue);
 }
@@ -767,6 +801,8 @@ rboolean threadstate_activate_complete(jvm_thread_index thridx)
  */
 rboolean threadstate_process_complete(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_complete);
+
     STATE_PROCESS(COMPLETE);
     STATE_END(threadstate_request_dead(thridx));
 }
@@ -787,6 +823,8 @@ rboolean threadstate_process_complete(jvm_thread_index thridx)
  */
 rboolean threadstate_request_blockingevent(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_blockingevent);
+
     STATE_REQUEST(BLOCKINGEVENT,
                   ((THREAD_STATE_RUNNING  == THIS_STATE(thridx)) ||
                    (THREAD_STATE_BADLOGIC == THIS_STATE(thridx))));
@@ -800,6 +838,8 @@ rboolean threadstate_request_blockingevent(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_blockingevent(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_blockingevent);
+
     STATE_ACTIVATE(BLOCKINGEVENT);
     STATE_END(rtrue);
 }
@@ -813,6 +853,8 @@ rboolean threadstate_activate_blockingevent(jvm_thread_index thridx)
  */
 rboolean threadstate_process_blockingevent(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_blockingevent);
+
     STATE_PROCESS(BLOCKINGEVENT);
 
     STATE_END(threadstate_request_blocked(thridx));
@@ -828,6 +870,8 @@ rboolean threadstate_process_blockingevent(jvm_thread_index thridx)
  */
 rboolean threadstate_request_blocked(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_blocked);
+
     STATE_REQUEST(BLOCKED,
                   (THREAD_STATE_BLOCKINGEVENT == THIS_STATE(thridx)));
     STATE_END(rtrue);
@@ -840,6 +884,8 @@ rboolean threadstate_request_blocked(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_blocked(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_blocked);
+
     STATE_ACTIVATE(BLOCKED);
     STATE_END(rtrue);
 }
@@ -853,6 +899,8 @@ rboolean threadstate_activate_blocked(jvm_thread_index thridx)
  */
 rboolean threadstate_process_blocked(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_blocked);
+
     STATE_PROCESS(BLOCKED);
     STATE_END(rtrue);
 }
@@ -868,6 +916,8 @@ rboolean threadstate_process_blocked(jvm_thread_index thridx)
  */
 rboolean threadstate_request_unblocked(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_unblocked);
+
     STATE_REQUEST(UNBLOCKED,
                   (THREAD_STATE_UNBLOCKED == THIS_STATE(thridx)));
     STATE_END(rtrue);
@@ -880,6 +930,8 @@ rboolean threadstate_request_unblocked(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_unblocked(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_unblocked);
+
     STATE_ACTIVATE(UNBLOCKED);
     STATE_END(rtrue);
 }
@@ -893,6 +945,8 @@ rboolean threadstate_activate_unblocked(jvm_thread_index thridx)
  */
 rboolean threadstate_process_unblocked(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_unblocked);
+
     STATE_PROCESS(UNBLOCKED);
 
     STATE_END(threadstate_request_runnable(thridx));
@@ -909,6 +963,8 @@ rboolean threadstate_process_unblocked(jvm_thread_index thridx)
  */
 rboolean threadstate_request_synchronized(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_synchronized);
+
     STATE_REQUEST(SYNCHRONIZED,
                   (THREAD_STATE_RUNNING == THIS_STATE(thridx)));
     STATE_END(rtrue);
@@ -921,6 +977,8 @@ rboolean threadstate_request_synchronized(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_synchronized(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_synchronized);
+
     STATE_ACTIVATE(SYNCHRONIZED);
     STATE_END(rtrue);
 }
@@ -934,6 +992,8 @@ rboolean threadstate_activate_synchronized(jvm_thread_index thridx)
  */
 rboolean threadstate_process_synchronized(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_synchronized);
+
     STATE_PROCESS(SYNCHRONIZED);
 
     STATE_END(threadstate_request_lock(thridx));
@@ -950,6 +1010,8 @@ rboolean threadstate_process_synchronized(jvm_thread_index thridx)
  */
 rboolean threadstate_request_release(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_release);
+
     STATE_REQUEST(RELEASE,
                   (THREAD_STATE_RUNNING == THIS_STATE(thridx)));
     STATE_END(rtrue);
@@ -962,6 +1024,8 @@ rboolean threadstate_request_release(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_release(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_release);
+
     STATE_ACTIVATE(RELEASE);
 
     STATE_END(rtrue);
@@ -979,6 +1043,8 @@ rboolean threadstate_activate_release(jvm_thread_index thridx)
  */
 rboolean threadstate_process_release(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_release);
+
     STATE_PROCESS(RELEASE);
 
     jvm_object_hash locktarget = THREAD(thridx).locktarget;
@@ -1019,6 +1085,8 @@ rboolean threadstate_process_release(jvm_thread_index thridx)
  */
 rboolean threadstate_request_wait(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_wait);
+
     STATE_REQUEST(WAIT, (THREAD_STATE_RELEASE == THIS_STATE(thridx)));
 
     STATE_END(rtrue);
@@ -1031,6 +1099,8 @@ rboolean threadstate_request_wait(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_wait(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_wait);
+
     STATE_ACTIVATE(WAIT);
 
     STATE_END(rtrue);
@@ -1045,6 +1115,8 @@ rboolean threadstate_activate_wait(jvm_thread_index thridx)
  */
 rboolean threadstate_process_wait(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_wait);
+
     STATE_PROCESS(WAIT);
 
     STATE_END(rtrue);
@@ -1061,6 +1133,8 @@ rboolean threadstate_process_wait(jvm_thread_index thridx)
  */
 rboolean threadstate_request_notify(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_notify);
+
     STATE_REQUEST(NOTIFY, (THREAD_STATE_WAIT == THIS_STATE(thridx)));
 
     STATE_END(rtrue);
@@ -1073,6 +1147,8 @@ rboolean threadstate_request_notify(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_notify(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_notify);
+
     STATE_ACTIVATE(NOTIFY);
 
     STATE_END(rtrue);
@@ -1087,6 +1163,8 @@ rboolean threadstate_activate_notify(jvm_thread_index thridx)
  */
 rboolean threadstate_process_notify(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_notify);
+
     STATE_PROCESS(NOTIFY);
 
     STATE_END(threadstate_request_lock(thridx));
@@ -1103,6 +1181,8 @@ rboolean threadstate_process_notify(jvm_thread_index thridx)
  */
 rboolean threadstate_request_lock(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_lock);
+
     STATE_REQUEST(LOCK,
                   ((THREAD_STATE_SYNCHRONIZED == THIS_STATE(thridx)) ||
                    (THREAD_STATE_NOTIFY       == THIS_STATE(thridx))));
@@ -1116,6 +1196,8 @@ rboolean threadstate_request_lock(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_lock(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_lock);
+
     STATE_ACTIVATE(LOCK);
 
     STATE_END(rtrue);
@@ -1136,6 +1218,8 @@ rboolean threadstate_activate_lock(jvm_thread_index thridx)
  */
 rboolean threadstate_process_lock(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_lock);
+
     STATE_PROCESS(LOCK);
 
     /*
@@ -1173,6 +1257,8 @@ rboolean threadstate_process_lock(jvm_thread_index thridx)
  */
 rboolean threadstate_request_acquire(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_acquire);
+
     STATE_REQUEST(ACQUIRE, (THREAD_STATE_LOCK == THIS_STATE(thridx)));
 
     STATE_END(rtrue);
@@ -1185,6 +1271,8 @@ rboolean threadstate_request_acquire(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_acquire(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_acquire);
+
     STATE_ACTIVATE(ACQUIRE);
 
     STATE_END(rtrue);
@@ -1199,6 +1287,8 @@ rboolean threadstate_activate_acquire(jvm_thread_index thridx)
  */
 rboolean threadstate_process_acquire(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_acquire);
+
     STATE_PROCESS(ACQUIRE);
 
     STATE_END(threadstate_request_runnable(thridx));
@@ -1215,6 +1305,8 @@ rboolean threadstate_process_acquire(jvm_thread_index thridx)
  */
 rboolean threadstate_request_dead(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_dead);
+
     STATE_REQUEST(DEAD, (THREAD_STATE_COMPLETE == THIS_STATE(thridx)));
 
     STATE_END(rtrue);
@@ -1227,6 +1319,8 @@ rboolean threadstate_request_dead(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_dead(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_dead);
+
     STATE_ACTIVATE(DEAD);
 
     STATE_END(rtrue);
@@ -1250,6 +1344,8 @@ rboolean threadstate_activate_dead(jvm_thread_index thridx)
  */
 rboolean threadstate_process_dead(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_dead);
+
     STATE_PROCESS(DEAD);
 
     STATE_END(thread_die(thridx));
@@ -1270,6 +1366,8 @@ rboolean threadstate_process_dead(jvm_thread_index thridx)
  */
 rboolean threadstate_request_badlogic(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_request_badlogic);
+
     STATE_REQUEST(BADLOGIC, (rtrue));
 
     STATE_END(rtrue);
@@ -1282,6 +1380,8 @@ rboolean threadstate_request_badlogic(jvm_thread_index thridx)
  */
 rboolean threadstate_activate_badlogic(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_activate_badlogic);
+
     STATE_ACTIVATE(BADLOGIC);
 
     STATE_END(rtrue);
@@ -1300,6 +1400,8 @@ rboolean threadstate_activate_badlogic(jvm_thread_index thridx)
  */
 rboolean threadstate_process_badlogic(jvm_thread_index thridx)
 {
+    ARCH_FUNCTION_NAME(threadstate_process_badlogic);
+
     STATE_PROCESS(BADLOGIC);
 
     STATE_END(rtrue);

@@ -6,7 +6,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -30,6 +32,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -37,7 +40,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jlClass, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jlClass, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -53,12 +58,13 @@ ARCH_COPYRIGHT_APACHE(jlClass, c, "$URL$ $Id$");
  * as the first parameter.
  *
  * @note These @c @b java.lang.Class methods are unusual in that
- * they does not require a @c @b jobject (in parlance of this
- * implementation, a @link #jvm_object_hash jvm_object_hash@endlink)
- * to run because they are declared as @c @b static methods.  As
- * implemented here, the usual @b objhashthis parameter is therefore
- * replaced by * @b clsidxthis.  The thread context is located in
- * @link #CURRENT_THREAD CURRENT_THREAD@endlink.
+ *       they does not require a @c @b jobject (in parlance of this
+ *       implementation, a
+ *       @link #jvm_object_hash jvm_object_hash@endlink) to run because
+ *       they are declared as @c @b static methods.  As implemented
+ *       here, the usual @b objhashthis parameter is therefore
+ *       replaced by @b clsidxthis.  The thread context is located in
+ *       @link #CURRENT_THREAD CURRENT_THREAD@endlink.
  *
  */
 
@@ -92,6 +98,8 @@ ARCH_COPYRIGHT_APACHE(jlClass, c, "$URL$ $Id$");
 
 jboolean jlClass_isArray(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlClass_isArray);
+
     jvm_class_index clsidx = OBJECT_CLASS_LINKAGE(objhashthis)->clsidx;
 
     if (jvm_class_index_null == clsidx)
@@ -121,6 +129,8 @@ jboolean jlClass_isArray(jvm_object_hash objhashthis)
 
 jboolean jlClass_isPrimative(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlClass_isPrimative);
+
     jvm_class_index clsidx = OBJECT_CLASS_LINKAGE(objhashthis)->clsidx;
 
     if (jvm_class_index_null == clsidx)

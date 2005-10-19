@@ -3,13 +3,21 @@
  *
  * @brief Native implementation of @c @b java.lang.String
  *
- * @todo  Perform intelligent check on input parameter
- *        @b objhash range for all functions.
+ * @todo  HARMONY-6-jvm-jlString.c-1 Perform intelligent check on
+ *        input parameter @b objhash range for all functions.
+ *
+ * @todo  HARMONY-6-jvm-jlString.c-2 Need to write a function that
+ *        searches all java.lang.String objects when creating one
+ *        and return object hash of any existing string that
+ *        has @e exactly the same contents so as to @e never
+ *        duplicate strings and thus meet spec requirements.
  *
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -33,6 +41,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -40,7 +49,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(jlString, c, "$URL$ $Id$");
+ARCH_SOURCE_COPYRIGHT_APACHE(jlString, c,
+"$URL$",
+"$Id$");
 
 
 #include "jvmcfg.h"
@@ -55,12 +66,13 @@ ARCH_COPYRIGHT_APACHE(jlString, c, "$URL$ $Id$");
  * as the first parameter.
  *
  * @note These @c @b java.lang.String methods are unusual in that
- * they does not require a @c @b jobject (in parlance of this
- * implementation, a @link #jvm_object_hash jvm_object_hash@endlink)
- * to run because they are declared as @c @b static methods.  As
- * implemented here, the usual @b objhashthis parameter is therefore
- * replaced by * @b clsidxthis.  The thread context is located in
- * @link #CURRENT_THREAD CURRENT_THREAD@endlink.
+ *       they does not require a @c @b jobject (in parlance of this
+ *       implementation, a
+ *       @link #jvm_object_hash jvm_object_hash@endlink)
+ *       to run because they are declared as @c @b static methods.  As
+ *       implemented here, the usual @b objhashthis parameter is
+ *       therefore replaced by @b clsidxthis.  The thread context is
+ *       located in @link #CURRENT_THREAD CURRENT_THREAD@endlink.
  *
  */
 
@@ -94,12 +106,14 @@ ARCH_COPYRIGHT_APACHE(jlString, c, "$URL$ $Id$");
 
 jvm_object_hash jlString_intern(jvm_object_hash objhashthis)
 {
+    ARCH_FUNCTION_NAME(jlString_intern);
+
     if (jvm_object_hash_null == objhashthis)
     { 
         return(jvm_object_hash_null);
     }
 
-    /*! @todo  Is this correct? */
+    /*! @todo  HARMONY-6-jvm-jlString.c-3 Is this correct? */
     return(objhashthis);
 
 } /* END of jlString_intern() */

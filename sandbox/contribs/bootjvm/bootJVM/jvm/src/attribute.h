@@ -9,7 +9,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -33,13 +35,16 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(attribute, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(attribute, h,
+"$URL$",
+"$Id$");
 
 
 extern jvm_attribute_index attribute_find_in_field_by_cp_entry(
