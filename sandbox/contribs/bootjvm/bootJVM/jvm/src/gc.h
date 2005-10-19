@@ -15,9 +15,25 @@
  * symbol definition.
  *
  *
+ * @todo HARMONY-6-jvm-gc.h-1 Since each thread has an object
+ *       associated with it, would it be a better design to add
+ *       definitions for @c @b GC_THREAD_NEW,
+ *       @c @b GC_ STACK_MKREF_FROM_JVM, @c @b GC_THREAD_RMREF_FROM_JVM,
+ *       and @c @b GC_THREAD_DELETE that work like the
+ *       @link #GC_STACK_NEW GC_STACK_xxx@endlink set instead of
+ *       co-opting the @link #GC_OBJECT_MKREF_FROM_OBJECT
+ *       GC_OBJECT_xxREF_FROM_OBJECT@endlink set?  It probably works
+ *       fine, but the first parm thereto is always "from" a null
+ *       object since the source is in the
+ *       @link #rthread rthread@endlink table instead of the
+ *       @link #robject robject@endlink table.
+ *
+ *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -41,6 +57,7 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
@@ -48,7 +65,9 @@
  */
 
 #include "arch.h"
-ARCH_COPYRIGHT_APACHE(gc, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(gc, h,
+"$URL$",
+"$Id$");
 
 #ifdef CONFIG_GC_TYPE_STUB
 /*!
