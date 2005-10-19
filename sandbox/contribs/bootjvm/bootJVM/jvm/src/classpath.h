@@ -41,7 +41,9 @@
  *
  * @section Control
  *
- * \$URL$ \$Id$
+ * \$URL$
+ *
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -65,20 +67,23 @@
  * @date \$LastChangedDate$
  *
  * @author \$LastChangedBy$
+ *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
  * @section Reference
  *
  */
 
-ARCH_COPYRIGHT_APACHE(classpath, h, "$URL$ $Id$");
+ARCH_HEADER_COPYRIGHT_APACHE(classpath, h,
+"$URL$",
+"$Id$");
 
 
 /*!
  * @brief Delimiter betwen members of @b CLASSPATH string
  *
  */
-#ifdef CONFIG_WINDOWS
+#if defined(CONFIG_WINDOWS) || defined(CONFIG_CYGWIN)
 #define CLASSPATH_ITEM_DELIMITER_CHAR       ';'
 
 #else
