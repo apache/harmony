@@ -82,25 +82,38 @@ Apache Harmony BootJVM Source Installation Procedure
     directory has been removed, either explicitly or via
     an Eclipse 'clean' operation on the 'jni' project.
 
-6.  To produce a source-only distribution, run 'dist-src.sh'.  The
-    release levelof this distribution will be the same as found in
-    'config/config.h' when 'config.sh' was last run.  If the release
-    number is to be different than that, please run 'config.sh' again
-    and rebuild the whole project, then run the distribution script
-    again.
+6.  The 'dist-*.sh' scripts were originally supplied as a way
+    of getting this project contributed into the ASF.  ASF policy
+    states that no .tar.gz or other distributable type files
+    should be checked in to the SVN repository since all results
+    may be constructed from source, given the proper tools.  These
+    scripts are retained, but only for the convenience of
+    developers.  (Please read step 7 with this in mind.)  In
+    the future, they may possibly be employed as a part of
+    what becomes that actual project release process, but that
+    is yet to be determined.
 
-7.  To produce a binary-only distribution, run 'dist-bin.sh'.  The
-    release level of this distribution will be the same as found in
-    'config/config.h' when 'config.sh' was last run.  If the release
-    number is to be different than that, please run 'config.sh' again
-    and rebuild the whole project, then run the distribution script
-    again.
+7.  (a) To produce a source-only and source-plus-docs distribution,
+    package run 'dist-src.sh'.  The release levelof this distribution
+    will be the same as found in 'config/config.h' when 'config.sh'
+    was last run.  This value is typically originated from the file
+    './RELEASE_LEVEL'.  If the release number is to be different than
+    that, please run 'config.sh' again and rebuild the whole project,
+    then run the distribution script again.  (The administration of
+    the './RELEASE_LEVEL' file is yet to be determined.)
+
+    (b) To produce a documentation distribution package,
+    run 'dist-doc.sh'.
+
+    (c) To produce a binary-only distributio package,
+    run 'dist-bin.sh'.
 
 8.  Due to a Doxygen constraint concerning files with the same
     name that are found in different directories, there are three
     shell scripts in the top level directory that have absolute path
     names in their "@file" declaration.  Please change these to your
-    install area so that the documentation compiles without errors.
+    install area so that the documentation compiles without errors,
+    but please do _not_ check in this adjustment to SVN.
     The file names are: ./build.sh and ./clean.sh and ./common.sh .
     The author apologizes for any inconvenience that this may cause.
     If you know of a better way around this constraint, please speak up.
