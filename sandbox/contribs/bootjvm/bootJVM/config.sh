@@ -140,6 +140,14 @@ chmod -w $0 ./echotest.sh
 
 . ./echotest.sh
 
+# Read release level, if found
+if test -f RELEASE_LEVEL
+then
+    RELEASE_LEVEL=`cat RELEASE_LEVEL`
+else
+    RELEASE_LEVEL=""
+fi
+
 # `dirname $0` for shells without that utility
 PGMDIR=`expr "${0:-.}/" : '\(/\)/*[^/]*//*$'  \| \
              "${0:-.}/" : '\(.*[^/]\)//*[^/][^/]*//*$' \| .`
@@ -485,66 +493,104 @@ echo "the CPU.  Further questions inform the compiler and linker"
 echo "about which options to use for selected modular features"
 echo "such as heap allocation and garbage collection."
 echo ""
-while true
-do
-    echo ""
-    echo "  The release level is configured as:  MAJOR.MINOR.PATCHLEVEL"
-    echo "  where each part of the tuple is"
-    echo "  a numeric value of up to four digits."
-    echo "  The only time it is important is"
-    echo "  when a release is being made, at"
-    echo "  which time the  tuple assigned by"
-    echo "  the project management committee"
-    echo "  must be used."
-    echo ""
-    $echon "  Enter the numeric MAJOR revision level:      $echoc"
-    read RELEASE_MAJOR
+$echon "more... $echoc"
+read dummy
 
-    case $RELEASE_MAJOR in
-        [0-9] | [0-9][0-9] | [0-9][0-9][0-9] | [0-9][0-9][0-9][0-9] ) ;;
-        *)     echo ""
-               echo "Please use a numeric value for the MAJOR field"
-               echo ""
-               continue;;
+echo ""
+echo "The release level is configured as:  MAJOR.MINOR.PATCHLEVEL"
+echo "where each part of the tuple is"
+echo "a numeric value of up to four digits."
+echo "It is important when a release or"
+echo "distribution is being made, at which"
+echo "time the tuple assigned by the project"
+echo "management committee must be used."
+echo "It is recommended to use the pre-defined"
+echo "value unless you are currently performing"
+echo "this activity."
+echo ""
+echo "The default release level is defined in"
+echo "the './RELEASE_LEVEL' file."
+echo ""
+
+if test -z "$RELEASE_LEVEL"
+then
+    echo "  This file does not exist at this time."
+else
+    echo \
+"The current 'MAJOR.MINOR.PATCHLEVEL' value is:   '$RELEASE_LEVEL'"
+    echo ""
+    $echon "Do you wish to use this value?  [y,n] $echoc"
+    read usedfltrellvl
+
+    case $usedfltrellvl in
+        y|ye|yes|Y|YE|YES) ;;
+        *)  while true
+            do
+
+                echo ""
+                $echon \
+                 "  Enter the numeric MAJOR revision level:      $echoc"
+                read RELEASE_MAJOR
+
+                case $RELEASE_MAJOR in
+                    [0-9] | [0-9][0-9] | [0-9][0-9][0-9] | \
+                    [0-9][0-9][0-9][0-9] ) ;;
+
+                    *)     echo ""
+                           echo \
+                        "Please use a numeric value for the MAJOR field"
+                           echo ""
+                           continue;;
+                esac
+
+                # Strip leading zeroes
+                RELEASE_MAJOR=`expr 0 + $RELEASE_MAJOR`
+
+                echo ""
+                $echon \
+                 "  Enter the numeric MINOR revision level:      $echoc"
+                read RELEASE_MINOR
+
+                case $RELEASE_MINOR in
+                    [0-9] | [0-9][0-9] | [0-9][0-9][0-9] | \
+                    [0-9][0-9][0-9][0-9] ) ;;
+
+                    *)     echo ""
+                           echo \
+                        "Please use a numeric value for the MINOR field"
+                           echo ""
+                           continue;;
+                esac
+
+                # Strip leading zeroes
+                RELEASE_MINOR=`expr 0 + $RELEASE_MINOR`
+
+                echo ""
+                $echon \
+                 "  Enter the numeric PATCHLEVEL revision level: $echoc"
+                read RELEASE_PATCHLEVEL
+
+                case $RELEASE_PATCHLEVEL in
+                    [0-9] | [0-9][0-9] | [0-9][0-9][0-9] | \
+                    [0-9][0-9][0-9][0-9] ) ;;
+
+                    *)     echo ""
+                           echo \
+                   "Please use a numeric value for the PATCHLEVEL field"
+                           echo ""
+                           continue;;
+                esac
+
+                # Strip leading zeroes
+                RELEASE_PATCHLEVEL=`expr 0 + $RELEASE_PATCHLEVEL`
+
+                # Valid tuple of three numbers entered
+       RELEASE_LEVEL="$RELEASE_MAJOR.$RELEASE_MINOR.$RELEASE_PATCHLEVEL"
+                break
+            done
+            ;;
     esac
-
-    # Strip leading zeroes
-    RELEASE_MAJOR=`expr 0 + $RELEASE_MAJOR`
-
-    echo ""
-    $echon "  Enter the numeric MINOR revision level:      $echoc"
-    read RELEASE_MINOR
-
-    case $RELEASE_MINOR in
-        [0-9] | [0-9][0-9] | [0-9][0-9][0-9] | [0-9][0-9][0-9][0-9] ) ;;
-        *)     echo ""
-               echo "Please use a numeric value for the MINOR field"
-               echo ""
-               continue;;
-    esac
-
-    # Strip leading zeroes
-    RELEASE_MINOR=`expr 0 + $RELEASE_MINOR`
-
-    echo ""
-    $echon "  Enter the numeric PATCHLEVEL revision level: $echoc"
-    read RELEASE_PATCHLEVEL
-
-    case $RELEASE_PATCHLEVEL in
-        [0-9] | [0-9][0-9] | [0-9][0-9][0-9] | [0-9][0-9][0-9][0-9] ) ;;
-        *)     echo ""
-              echo "Please use a numeric value for the PATCHLEVEL field"
-               echo ""
-               continue;;
-    esac
-
-    # Strip leading zeroes
-    RELEASE_PATCHLEVEL=`expr 0 + $RELEASE_PATCHLEVEL`
-
-    # Valid tuple of three numbers entered
-    RELEASE_LEVEL="$RELEASE_MAJOR.$RELEASE_MINOR.$RELEASE_PATCHLEVEL"
-    break
-done
+fi
 
 echo "---"
 echo "Valid release level: $RELEASE_LEVEL"
@@ -627,6 +673,49 @@ echo "---"
 echo \
 "Valid architecture:  CPU=$cputype  Word=$wordwidth bits OS=$osname"
 
+
+# Verify platform-specific JDK header file directory
+    case $osname in
+        solaris) OSNAME=SOLARIS;;
+        linux)   OSNAME=LINUX;;
+        windows) OSNAME=WINDOWS;;
+        cygwin)  OSNAME=CYGWIN;;
+        *)       echo ""
+                 echo "Operating system '$osname' invalid"
+                 echo ""
+                 continue;;
+    esac
+
+
+echo ""
+echo ""
+echo "  Operating system-specific JDK header file sub-directory."
+echo ""
+echo "  This will be found under $JAVA_HOME/include"
+echo ""
+JDKlist=`list=""; \
+         (cd $JAVA_HOME/include; \
+         for dir in *; do if test -d $dir; then echo $dir; fi; done) | \
+         (while read dir; do list="$list $dir"; done; echo $list)`
+while true
+do
+    echo ""
+    $echon "  Select [$JDKlist] $echoc"
+    read osJDKdir
+
+    if test -n "$osJDKdir" -a -d $JAVA_HOME/include/$osJDKdir
+    then
+        break
+    fi
+
+    echo "Directory not found: $JAVA_HOME/include/$osJDKdir"
+    echo ""
+    continue
+done
+
+echo "---"
+echo \
+"Valid operating system-specific JDK header file directory:  $osJDKdir"
 
 echo ""
 echo "$PGMNAME:  Choose a heap allocation method:"
@@ -1038,10 +1127,11 @@ case $prefmtdocs in
   echo "$PGMNAME:  Pre-formatted documents not found: $PREFMTDOCSTAR.gz"
             echo ""
             echo "This probably means that you installed from a"
-            echo "distribution containing only source, namely from"
-            echo "a 'bootJVM-src-x.y.z.tar.gz' file.  The documentation"
-            echo "may be found in both the 'bootJVM-doc-x.y.z.tar.gz'"
-            echo "and the 'bootJVM-srcdoc-x.y.z.tar.gz' distributions."
+            echo "distribution containing only source, namely from SVN"
+            echo "or from a 'bootJVM-src-x.y.z.tar.gz' file. The"
+            echo "documentation may be found in both the"
+            echo "'bootJVM-doc-x.y.z.tar.gz'" and in the
+            echo "'bootJVM-srcdoc-x.y.z.tar.gz' distributions."
             echo "This latter also contains the source distribution."
             echo ""
             echo "The documentation can be generated from the source"
@@ -1485,14 +1575,14 @@ echo " * See the License for the specific language governing permissions"
 
 chmod -w $CFGH
 
-
-# Always pack structures, support static copyright info strings
+# Set up include path for the current tree, the configuration,
+# the JVM tree, and the JDK tree.
 INCLUDE_PATHS="\
   -Iinclude \
   -I$PGMDIR/config \
   -I$PGMDIR/jvm/include \
   -I$JAVA_HOME/include \
-  -I$JAVA_HOME/include/$osname"
+  -I$JAVA_HOME/include/$osJDKdir"
 
 CONSTANT_GCC_OPTIONS="-O0 -g3 -Wall -fmessage-length=0 -ansi"
 
