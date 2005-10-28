@@ -23,9 +23,9 @@
  *
  * @section Control
  *
- * \$URL: https://svn.apache.org/repos/asf/incubator/harmony/enhanced/trunk/sandbox/contribs/bootjvm/bootJVM/jvm/src/gc_refcount.c $
+ * \$URL$
  *
- * \$Id: gc_refcount.c 326482 2005-10-19 08:44:42Z dlydick $
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -44,11 +44,11 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  *
- * @version \$LastChangedRevision: 326482 $
+ * @version \$LastChangedRevision$
  *
- * @date \$LastChangedDate: 2005-10-19 03:44:42 -0500 (Wed, 19 Oct 2005) $
+ * @date \$LastChangedDate$
  *
- * @author \$LastChangedBy: dlydick $
+ * @author \$LastChangedBy$
  *
  *         Original code contributed by Daniel Lydick on 09/28/2005.
  *
@@ -58,8 +58,8 @@
 
 #include "arch.h"
 ARCH_SOURCE_COPYRIGHT_APACHE(gc_refcount, c,
-"$URL: https://svn.apache.org/repos/asf/incubator/harmony/enhanced/trunk/sandbox/contribs/bootjvm/bootJVM/jvm/src/gc_refcount.c $",
-"$Id: gc_refcount.c 326482 2005-10-19 08:44:42Z dlydick $");
+"$URL$",
+"$Id$");
 
 #if defined(CONFIG_GC_TYPE_REFCOUNT) || defined(CONFIG_COMPILE_ALL_OPTIONS)
 
