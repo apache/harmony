@@ -259,7 +259,7 @@ clean::
 	$(CLEAN_SILENT)-rmdir $(BINDIR)
 
 veryclean::
-	for d in $(CLSDIR) $(LIBDIR) $(BINDIR); \
+	$(CLEAN_SILENT)for d in $(CLSDIR) $(LIBDIR) $(BINDIR); \
 		do if test -d $$d/.; then chmod -R +w $$d; fi; done
 	$(CLEAN_SILENT)-rm -rf $(CLSDIR) $(LIBDIR) $(BINDIR)
 
@@ -308,7 +308,7 @@ endif
 	$(CLEAN_SILENT)-rmdir $(BINDIR)
 
 veryclean::
-	if test -d $(BINDIR); then chmod -R +w $(BINDIR); fi
+	$(CLEAN_SILENT)if test -d $(BINDIR); then chmod -R +w $(BINDIR); fi
 	$(CLEAN_SILENT)-rm -rf $(BINDIR)
 
 endif # BIN_TARGET
@@ -344,7 +344,7 @@ clean::
 	$(CLEAN_SILENT)-rmdir $(LIBDIR)
 
 veryclean::
-	if test -d $(LIBDIR); then chmod -R +w $(LIBDIR); fi
+	$(CLEAN_SILENT)if test -d $(LIBDIR); then chmod -R +w $(LIBDIR); fi
 	$(CLEAN_SILENT)-rm -rf $(LIBDIR)
 
 endif # LIB_TARGET
