@@ -465,8 +465,8 @@
  *
  * Several directories are provided within the source tree.  Each one
  * provides one component of the project.  These are referenced in
- * @link ./config.sh config.sh@endlink and @link ./build.sh
-   build.sh@endlink by these same names, and are also used in the
+ * @link ./config.sh ./config.sh@endlink and @link ./Makefile
+   ./Makefile@endlink by these same names, and are also used in the
  * built-in bug tracking numbers described below.  These component
  * and directory names are:
  *
@@ -732,8 +732,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(jvm, c,
 
 
 #include <signal.h>
-/* #include <strings.h> */
-/* #include <unistd.h> */
 
 #define PORTABLE_JMP_BUF_VISIBLE
 #include "jvmcfg.h" 

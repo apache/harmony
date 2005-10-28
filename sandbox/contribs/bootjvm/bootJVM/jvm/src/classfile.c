@@ -69,10 +69,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(classfile, c,
 
 
 #include <fcntl.h>
-/* #include <stdlib.h> */
-/* #include <string.h> */
-/* #include <unistd.h> */
-/* #include <sys/stat.h> */
 
 #include "jvmcfg.h"
 #include "cfmacros.h"
@@ -410,7 +406,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
      * to be 2-byte aligned! (See getrs2() in
      * @link jvm/src/bytegames.c bytegames.c@endlink
      * and ARCH_ODD_ADDRESS_SIGSEGV in
-     * @link jvm/src/arch.h arch.h@endlink
+     * @link jvm/include/arch.h arch.h@endlink
      * for details.)
      */
     pcfs->magic = GETRI4(pu4);
