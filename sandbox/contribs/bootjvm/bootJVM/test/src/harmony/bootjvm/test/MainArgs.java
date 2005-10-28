@@ -41,12 +41,20 @@
 
 package harmony.bootjvm.test;
 
+import org.apache.harmony.Copyright.*;
+
 /*!
  * @brief Test ability of main() to recognize args[] array.
  *
  */
 public class MainArgs
 {
+    /* Please see 'jvm/include/arch.h' for corresponding 'C' defns */
+    private static final String copyright =
+"\0$URL$ " +
+"$Id$ " +
+        org.apache.harmony.Copyright.copyrightText;
+
 
     public static void main(String[] args)
     {

@@ -42,12 +42,19 @@
 
 package harmony.bootjvm.test;
 
+import org.apache.harmony.Copyright.*;
+
 /*!
  * @brief Simple hello world program, but in a package.
  *
  */
 public class PkgHelloWorld
 {
+    /* Please see 'jvm/include/arch.h' for corresponding 'C' defns */
+    private static final String copyright =
+"\0$URL$ " +
+"$Id$ " +
+        org.apache.harmony.Copyright.copyrightText;
 
     public static void main(String[] args)
     {
