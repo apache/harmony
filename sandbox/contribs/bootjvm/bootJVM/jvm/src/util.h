@@ -136,7 +136,7 @@ extern rvoid bytegames_split_jdouble(jdouble  splitdouble,
  *        with -m64 compilations (64-bit ptrs)
  *
  *
- * @internal See @link jvm/src/arch.h arch.h@endlink for the origin
+ * @internal See @link jvm/include/arch.h arch.h@endlink for the origin
  *           of architecture-specific @c @b \#define's as used below:
  *
  */
