@@ -47,8 +47,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(thread, c,
 
 
  
-/* #include <strings.h> */
-
 #define PORTABLE_JMP_BUF_VISIBLE
 #include "jvmcfg.h"
 #include "cfmacros.h"

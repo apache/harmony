@@ -45,10 +45,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(manifest, c,
 "$Id$");
 
 
-/* #include <stdio.h> */
-/* #include <ctype.h> */
-/* #include <strings.h> */
-
 #include "jvmcfg.h"
 #include "heap.h" 
 #include "exit.h"

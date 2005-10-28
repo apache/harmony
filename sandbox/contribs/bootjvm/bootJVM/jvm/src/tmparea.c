@@ -46,10 +46,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(tmparea, c,
 "$Id$");
 
  
-/* #include <stdlib.h> */
-/* #include <string.h> */
-/* #include <unistd.h> */
-
 #include "jvmcfg.h"
 #include "exit.h"
 #include "heap.h" 

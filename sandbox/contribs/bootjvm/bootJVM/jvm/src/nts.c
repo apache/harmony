@@ -52,8 +52,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(nts, c,
 "$Id$");
 
 
-/* #include <string.h> */
-
 #include "jvmcfg.h" 
 #include "cfmacros.h"
 #include "classfile.h"

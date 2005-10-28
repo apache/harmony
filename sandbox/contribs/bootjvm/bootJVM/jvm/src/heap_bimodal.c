@@ -87,7 +87,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(heap_bimodal, c,
 
 
 #include <errno.h>
-/* #include <stdlib.h> */
 
 #include "jvmcfg.h"
 #include "exit.h"

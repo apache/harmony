@@ -54,10 +54,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(classpath, c,
 "$Id$");
 
 
-/* #include <string.h> */
-/* #include <stdlib.h> */
-/* #include <sys/stat.h> */
-
 #include "jvmcfg.h" 
 #include "cfmacros.h" 
 #include "classfile.h" 

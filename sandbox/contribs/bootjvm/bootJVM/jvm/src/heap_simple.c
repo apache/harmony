@@ -60,7 +60,6 @@ ARCH_SOURCE_COPYRIGHT_APACHE(heap_simple, c,
 #if defined(CONFIG_HEAP_TYPE_SIMPLE) || defined(CONFIG_COMPILE_ALL_OPTIONS)
 
 #include <errno.h>
-/* #include <stdlib.h> */
 
 #include "jvmcfg.h"
 #include "exit.h"
