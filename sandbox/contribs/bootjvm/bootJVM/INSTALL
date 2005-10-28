@@ -52,11 +52,11 @@ Apache Harmony BootJVM Source Installation Procedure
 
 2.  Run 'config.sh' and answer the questions to create a
     valid compilation and runtime environment and optionally build
-    the configured components for the first time (via 'build.sh cfg').
+    the configured components for the first time (via 'make cfg').
 
-3.  Run 'build.sh cfg' thereafter to compile all configured
-    components.  Run 'build.sh all' to compile all components,
-    regardless of those configured.  Run 'build.sh help' for a
+3.  Run 'make cfg' thereafter to compile all configured
+    components.  Run 'make all' to compile all components,
+    regardless of those configured.  Run 'make help' for a
     list of build options.  Results are stored in:
 
         jvm/bin/bootjvm
@@ -68,8 +68,8 @@ Apache Harmony BootJVM Source Installation Procedure
         doc/*
 
 
-4.  Run 'clean.sh' to remove compiled output, with the same
-    arguments as for 'build.sh'.
+4.  Run 'make clean' to remove compiled output with some smarts,
+    or 'make veryclean' for unconditional cleaning.
 
 5.  Project files for Eclipse have also been provided
     for those who wish to use the Eclipse IDE.  Although
@@ -110,13 +110,14 @@ Apache Harmony BootJVM Source Installation Procedure
 
 8.  Due to a Doxygen constraint concerning files with the same
     name that are found in different directories, there are three
-    shell scripts in the top level directory that have absolute path
+    Makefiles in the top level directory that have absolute path
     names in their "@file" declaration.  Please change these to your
     install area so that the documentation compiles without errors,
     but please do _not_ check in this adjustment to SVN.
-    The file names are: ./build.sh and ./clean.sh and ./common.sh .
+    The file names are: 'Makefile' and 'MakeSetup' and 'MakeRules' .
     The author apologizes for any inconvenience that this may cause.
     If you know of a better way around this constraint, please speak up.
+    (See also comments in 'roster.sh'.)
 
 9.  Show the run time help menu by running either
     'jvm/bin/bootjvm -help' or 'main/bin/bootjvm -help'.
