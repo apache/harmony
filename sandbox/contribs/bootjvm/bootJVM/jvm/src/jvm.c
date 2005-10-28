@@ -493,22 +493,51 @@
  * </li>
  * <li><b>jni:</b></li>       Source code for a sample JNI shared
  *                            library
- *        <code><b>jni/harmony/generic/0.0/lib/bootjni.so</b></code>
- *                            for linking with JNI code, but needs the
- *                            build directives to be functional, as it
- *                            currently links statically with a main()
- *                            into a binary just like @c @b jvm .
+ *        <code><b>jni/src/harmony/generic/0.0/lib/bootjvm.so</b></code>
+ *                            for linking with JNI code (currently only
+ *                            a staticly linked binary file
+ *                           <code><b>bin/bootjvm</b></code>), but needs
+ *                            the build directives to be functional, as
+ *                            it currently links statically with a
+ *                            main() into a binary just like @c @b jvm .
  *                            This directory contains a tree for JNI
  *                            implementations from any supplier that
  *                            wants to support the Harmony project.
  *                            Currently, there is one JNI implementation
  *                            here, found in
- *                            @c @b jni/src/harmony/generic/0.0 .
+ *                     <code><b>jni/src/harmony/generic/0.0</b></code> .
+ *                            The source Java classes are compiled
+ *                            into the directory
+ *           <code><b>jni/src/harmony/generic/0.0/lib/classes</b></code>
+ *                            and corresponding Java archive in
+ *       <code><b>jni/src/harmony/generic/0.0/bin/bootjvm.jar</b></code>
  *
  * </li>
- * <li><b>test:</b></li>      Builds numerous Java test classes in
- *                            @c @b test/bin for driving
- *                            development work.
+ * <li><b>test:</b></li>      Builds numerous Java test classes compiled
+ *                            into @c @b test/lib/classes and archived
+ *                            into the corresponding Java archive
+ *                            <code><b>test/bin/boottest.jar</b></code>,
+ *                            used for driving development work.
+ *
+ * </li>
+ * <li><b>org:</b></li>       Not built directly, but referenced by Java
+ *                            code for package @c @b org.apache.harmony
+ *                            referencing the class @link
+                              org/apache/harmony/Copyright.java
+                              Copyright@endlink in support of the
+ *                            @link getsvndata.sh getsvndata.sh@endlink
+ *                            administrative script, which makes SVN
+ *                            revision information available at
+ *                            run-time for tracking compilation
+ *                            integrity and run-time feature sets.
+ *                            This is equivalent to the functionality
+ *                            of the 'C' header file
+ *                            @link jvm/include/arch.h
+                              jvm/include/arch.h@endlink as found
+ *                            in the macro @link
+                              #ARCH_SOURCE_COPYRIGHT_APACHE()
+                              ARCH_SOURCE_COPYRIGHT_APACHE()@endlink
+ *                            found in every 'C' source and header file.
  *
  * </li>
  * </ul>
