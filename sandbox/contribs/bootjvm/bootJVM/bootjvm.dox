@@ -161,7 +161,7 @@ EXCLUDE_PATTERNS       =
 # with such work, re-enable this
 # parameter and rebuild all docs.
 #
-INPUT_FILTER           = dox_filter.sh
+INPUT_FILTER           = dox-filter.sh
 
 # FILTER_PATTERNS      =
 FILTER_SOURCE_FILES    = YES

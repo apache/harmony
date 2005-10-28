@@ -6,10 +6,11 @@
 # @brief Distribute Boot JVM documentation package.
 #
 # Make @e sure to have performed the final build by running
-# @link ./clean.sh clean.sh all@endlink followed by
-# @link ./build.sh build.sh all@endlink.  This will guarantee
-# that everything compiles clean and may be installed and
-# run on all platforms of this CPU type.
+# @link ./Makefile make veryclean@endlink followed by
+# @link ./Makefile make all@endlink (both in the top level
+# directory).  This will guarantee that everything compiles
+# clean and may be installed and run on all platforms of
+# this CPU type.
 #
 # Use @link ./dist-src.sh dist-src.sh@endlink to distribute
 # the source package.
@@ -17,7 +18,7 @@
 # Use @link ./dist-bin.sh dist-bin.sh@endlink to distribute
 # the binary package.
 #
-# @see @link ./common.sh ./common.sh@endlink
+# @see @link ./dist-common.sh ./dist-common.sh@endlink
 #
 # @attention  Make @e sure that all Eclipse project files are in
 #             the "open" state when creating a distribution.
@@ -75,7 +76,7 @@
 #
 . echotest.sh
 
-. common.sh
+. dist-common.sh
 
 MSG80="This script must NOT be interrupted.  Last chance to stop it..."
 $echon "$PGMNAME:  $MSG80" $echoc
@@ -94,7 +95,7 @@ DistChkReleaseLevel
 
 DistChkTarget
 
-./clean.sh all
+make veryclean
 
 DistPrep
 

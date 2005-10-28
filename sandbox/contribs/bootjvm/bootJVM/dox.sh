@@ -27,8 +27,8 @@
 #       solved by adjusting the <b>doxygen.css</b> (the default
 #       @b .css file) or supplying one that is customized for
 #       the project or perhaps just for old NetScape browsers.
-#       The scripts @link ./doxpatch.sh doxpatch.sh@endlink and
-#       @link ./doxunpatch.sh doxunpatch.sh@endlink that support
+#       The scripts @link ./dox-patch.sh dox-patch.sh@endlink and
+#       @link ./dox-unpatch.sh dox-unpatch.sh@endlink that support
 #       the interim solution might also be used in support of the
 #       proper solution if an "original" and a "patched" version of
 #       the style sheet exists in the HTML output directory.
@@ -105,7 +105,7 @@
 #
 # Script setup
 #
-. commondox.sh
+. dox-common.sh
 . config/config_build_steps.sh
 
 ########################################################################
@@ -186,7 +186,7 @@ ENDIAN_FILTER="${ENDIAN_LITTLE}|${ENDIAN_BIG}"
 ########################################################################
 #
 # Warnings about preprocessor symbols that are present only when
-# 'config/config.h' or 'jvm/src/arch.h' generate them.
+# 'config/config.h' or 'jvm/include/arch.h' generate them.
 #
 ODD1="$DOC4UNKNOWN ARCH_ODD2_ADDRESS_SIGSEGV"
 ODD2="${UNABLE2RESOLVE}#ARCH_ODD2_ADDRESS_SIGSEGV"

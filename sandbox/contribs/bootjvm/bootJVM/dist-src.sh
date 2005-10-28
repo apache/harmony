@@ -17,7 +17,7 @@
 # the documentation package.
 #
 #
-# @see @link ./common.sh ./common.sh@endlink
+# @see @link ./dist-common.sh ./dist-common.sh@endlink
 #
 # @attention  Make @e sure that all Eclipse project files are in
 #             the "open" state when creating a distribution.
@@ -74,7 +74,7 @@
 #
 . echotest.sh
 
-. common.sh
+. dist-common.sh
 
 MSG80="This script must NOT be interrupted.  Last chance to stop it..."
 $echon "$PGMNAME:  $MSG80" $echoc
@@ -91,8 +91,8 @@ trap "" 1 2 3 15
 #
 # Notice that each JNI implmementation will have its own directory
 # tree with its own scripts and its own 'bin' directory, while Eclipse
-# generates the directory in question, which 'clean.sh jni' does not
-# clean up.
+# generates the directory in question, which 'make -C jni/src clean'
+# does not clean up.
 #
 if test -d jni/bin
 then
@@ -135,7 +135,7 @@ fi
 echo ""
 echo "$PGMNAME: Cleaning out all binaries"
 
-./clean.sh all
+make veryclean
 
 DistDocPrep
 

@@ -1,17 +1,27 @@
 #!/bin/sh
 #
 #!
-# @file /home/dlydick/harmony/bootjvm/bootJVM/common.sh
+# @file /home/dlydick/harmony/bootjvm/bootJVM/dist-common.sh
 #
-# @brief Common code for @link ./build.sh build.sh@endlink and
-# @link ./clean.sh clean.sh@endlink and
+# @brief Common code for
 # @link ./dist-src.sh dist-src.sh@endlink and
 # @link ./dist-bin.sh dist-bin.sh@endlink and
 # @link ./dist-doc.sh dist-doc.sh@endlink.
 #
-# This script is common to @link ./build.sh build.sh@endlink and
-# @link ./clean.sh clean.sh@endlink and is not designed to do
+# This script is common to several scripts and is not designed to do
 # anything on its own.
+#
+# @note Originally, the build scripts @c @b build.sh and @c @b clean.sh
+#       were used to build this project.  This was a matter of
+#       expediency, knowing full well that a need for @c @b Makefiles
+#       would not be too far away.  Both of those scripts also used
+#       this common inclusion, but their functions, being superceded
+#       by @c @b Makefiles , have been removed, leaving only the
+#       distribution functions.
+#
+# @todo HARMONY-6-dist-common.sh-1  Combine all distribution functions
+#       into a single @c @b dist.sh script and move this logic
+#       into that script, eliminating this file.
 #
 # All source code compiled according to selections from
 # @link ./config.sh config.sh@endlink.  This may or may not include
@@ -27,6 +37,14 @@
 #                  code from @b jvm/src (less
 #                  @link jvm/src/main.c main.c@endlink) and
 #                  archive it into @b libjvm/lib/libjvm.a </li>
+#                  (Note:  Due to the fact that @b libjvm/src is a
+#                  symbolic link to @b jvm/src , this functionality
+#                  is @e only performed here by the Eclipse project
+#                  files.  When using @c @b make for normal building,
+#                  @b jvm/src is the actual directory, but its
+#                  @link jvm/src/Makefile Makefile@endlink is set up
+#                  to compile both a library and a binary.  See
+#                  @link ./Makefile ./Makefile@endlink for details.)
 #
 # <li>@b main:     Sample @link main/src/main.c main()@endlink
 #                  program.  This program is currently not a unique
@@ -52,77 +70,42 @@
 # <li>@b dox:      Documentation of source code in @b jvm directory
 # </ul>
 #
-# Each of these directories contains a @b build.sh script.  In addition
-# to these, an Eclipse project file is available in each for use with
-# the Eclipse C/C++ plugin, so this entire directory tree may be
-# imported wholesale into an Eclipse workspace and used without
+# Each of these directories contains a @c @b Makefile build script.
+# In addition to these, an Eclipse project file is available in each
+# for use with the Eclipse C/C++ plugin, so this entire directory tree
+# may be imported wholesale into an Eclipse workspace and used without
 # changes.  (Eclipse 3.0.2 generated these files.)  Notice that
 # the Eclipse setup does not build the documentation set.  This must
-# be done manually with the top-level 'build.sh dox'.
+# be done manually with the top-level 'make dox'.
 #
-# @attention For Eclipse uses, be aware that the configuration
-# options stored by @link config.sh config.sh@endlink into
-# <b><code>config/config_*.gcc*</code></b> are @e not directly
-# available to Eclipse and @e must be manually entered there
-# after they are established by @link ./config.sh config.sh@endlink.
-# They should be entered in the project build parameters for
-# C/C++ in the miscellaneous parameters section.  For example,
-# @b -m32 and @b -m64 .  For a command line GCC invocation,
-# the following is a convenient way to incorporate the options:
+# @attention For Eclipse uses, be aware that the <b>\$(LFLAGS)</b>
+# compile options must be the same as found in
+# @link ./MakeRules ./MakeRules@endlink.  These are unfortunately
+# @e not directly available to Eclipse and @e must be manually
+# verified there-- also check that the compiler <b>\$(CC)</b> and
+# archiver <b>\$(AR)</b> and linker <b>$(LN)</b> are correctly
+# specified in both placed.  They should be entered in the project
+# build parameters for C/C++ in the miscellaneous parameters section.
+#  For example,
+# @b -m32 and @b -m64 .
 #
-# @verbatim
-#
-#   $ gcc `cat ../config/config_opts_always.gcc` \
-#         `cat ../config/config_opts_usually.gcc` -c filename.c ...
-#
-# @endverbatim
-#
-# Notice that this script may be run instead of or as well as an
+# Notice that @c @b make may be run instead of or as well as an
 # Eclipse build.  There is only a slight difference as to
 # where the compiled object files are stored, but the binaries
 # and library archives are stored in the same place for both
-# methods.
+# methods.  However, @e never use Eclipse for release and
+# distribution builds since @c @b make is the "official" release
+# method, as it were.
 #
 #
-# @see @link ./build.sh ./build.sh@endlink
+# @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./clean.sh ./clean.sh@endlink
+# @see @link ./MakeSetup ./MakeSetup@endlink
 #
-# @see @link jvm/build.sh jvm/build.sh@endlink
-#
-# @see @link libjvm/build.sh libjvm/build.sh@endlink
-#
-# @see @link main/build.sh main/build.sh@endlink
-#
-# @see @link test/build.sh test/build.sh@endlink
-#
-# @see @link jni/src/harmony/generic/0.0/build.sh
-#            jni/src/harmony/generic/0.0/build.sh@endlink
-#
-# @see @link jvm/clean.sh jvm/clean.sh@endlink
-#
-# @see @link libjvm/clean.sh libjvm/clean.sh@endlink
-#
-# @see @link main/clean.sh main/clean.sh@endlink
-#
-# @see @link test/clean.sh test/clean.sh@endlink
-#
-# @see @link jni/src/harmony/generic/0.0/clean.sh
-#            jni/src/harmony/generic/0.0/clean.sh@endlink
-#
-# @see @link jvm/common.sh jvm/common.sh@endlink
-#
-# @see @link libjvm/common.sh libjvm/common.sh@endlink
-#
-# @see @link main/common.sh main/common.sh@endlink
-#
-# @see @link test/common.sh test/common.sh@endlink
-#
-# @see @link jni/src/harmony/generic/0.0/common.sh
-#            jni/src/harmony/generic/0.0/common.sh@endlink
+# @see @link ./MakeRules ./MakeRules@endlink
 #
 #
-# @todo  HARMONY-6-common.sh-1 A Windows .BAT version of this
+# @todo  HARMONY-6-dist-common.sh-2 A Windows .BAT version of this
 #        script needs to be written
 #
 #
@@ -179,154 +162,6 @@ PGMDIR=`cd $PGMDIR; pwd`
 
 # `basename $0` for shells without that utility
 PGMNAME=`expr "/${0:-.}" : '\(.*[^/]\)/*$' : '.*/\(..*\)'`
-
-###################################################################
-#
-# Check compilation options
-#
-Usage ()
-{
-    (
-   OPTLIST="{cfg | all | jvm | libjvm | main | test | jni | dox | help}"
-        echo "Usage:  $0 $OPTLIST"
-        echo ""
-echo "where  cfg   Build what was configured by the 'config.sh' script"
-        echo "       all    Build/clean everything"
-        echo "       jvm    Build/clean main JVM development area"
-        echo "       libjvm Build/clean static JVM library"
-        echo "       main   Build/clean JVM binary"
-       echo "       test   Build/clean test classes for JVM development"
-        echo "       jni    Build/clean JNI library and sample binary"
-        echo "       dox    Build/clean documentation"
-        echo "       help   Display this message"
-        echo ""
-    ) 1>&2
-    exit 10
-}
-
-BUILD_ALL=0
-BUILD_JVM=0
-BUILD_LIB=0
-BUILD_MAIN=0
-BUILD_TEST=0
-BUILD_JNI=0
-BUILD_DOX=0
-
-BUILD_DIST=0
-
-case $1 in
-    cfg)    if test 1 -eq $CONFIG_BUILD_ALLCODE;  then BUILD_ALL=1;  fi
-            if test 1 -eq $CONFIG_BUILD_JVM;      then BUILD_JVM=1;  fi
-            if test 1 -eq $CONFIG_BUILD_LIB;      then BUILD_LIB=1;  fi
-            if test 1 -eq $CONFIG_BUILD_MAIN;     then BUILD_MAIN=1; fi
-            if test 1 -eq $CONFIG_BUILD_TEST;     then BUILD_TEST=1; fi
-            if test 1 -eq $CONFIG_BUILD_JNI;      then BUILD_JNI=1;  fi
-            if test 1 -eq $CONFIG_BUILD_DOX;      then BUILD_DOX=1;  fi
-            ;;
-    all)    BUILD_ALL=1
-            BUILD_JVM=1
-            BUILD_LIB=1
-            BUILD_MAIN=1
-            BUILD_TEST=1
-            BUILD_JNI=1
-            BUILD_DOX=1
-            ;;
-    jvm)    BUILD_JVM=1;;
-    libjvm) BUILD_LIB=1;;
-    main)   BUILD_MAIN=1;;
-    test)   BUILD_TEST=1;;
-    jni)    BUILD_JNI=1;;
-    dox)    BUILD_DOX=1;;
-
-    *)      # These scripts ave their own Usage tests
-            case $PGMNAME in
-                dist-src.sh | dist-bin.sh | dist-doc.sh)
-                    # CONFIG_RELEASE_LEVEL contains release level,
-                    # and no other parameterization is needed
-                    BUILD_DIST=1
-                    ;;
-                *)  if test -z "$1"
-                    then
-                        $0 cfg
-                        exit $?
-                    fi
-                    Usage
-                    ;;
-            esac
-            ;;
-esac
-
-###################################################################
-#
-# Build binary from source code
-#
-rc=0
-
-# All scripts except distribution scripts use this logic:
-if test 0 -eq $BUILD_DIST
-then
-    if test 1 -eq $BUILD_JVM
-    then
-        echo "$PGMNAME jvm"
-        cd jvm
-        $PGMNAME
-        rc=$?
-        cd ..
-    fi
-
-    if test 1 -eq $BUILD_LIB
-    then
-        echo "$PGMNAME libjvm"
-        cd libjvm
-        $PGMNAME
-        rc1=$?
-        if test 0 -eq $rc; then rc=$rc1; fi
-        cd ..
-    fi
-
-    if test 1 -eq $BUILD_MAIN
-    then
-        echo "$PGMNAME main"
-        cd main
-        $PGMNAME
-        rc1=$?
-        if test 0 -eq $rc; then rc=$rc1; fi
-        cd ..
-    fi
-
-    if test 1 -eq $BUILD_TEST
-    then
-        echo "$PGMNAME test"
-        cd test
-        $PGMNAME
-        rc1=$?
-        if test 0 -eq $rc; then rc=$rc1; fi
-        cd ..
-    fi
-
-    if test 1 -eq $BUILD_JNI
-    then
-        echo "$PGMNAME jni/src/harmony/generic/0.0"
-        cd jni/src/harmony/generic/0.0
-        $PGMNAME
-        rc1=$?
-        if test 0 -eq $rc; then rc=$rc1; fi
-        cd ../../../../..
-    fi
-
-    if test 1 -eq $BUILD_DOX
-    then
-        echo "$PGMNAME dox"
-        case $PGMNAME in
-            build.sh) dox.sh;;
-            clean.sh) undox.sh;;
-        esac
-        rc1=$?
-        if test 0 -eq $rc; then rc=$rc1; fi
-    fi
-
-    exit $rc
-fi
 
 ###################################################################
 #
@@ -458,7 +293,7 @@ DistTargetBuild ()
 {
     echo ""
     echo \
-"$PGMNAME: Creating documentation in _all_ formats via 'build.sh $1'"
+"$PGMNAME: Creating documentation in _all_ formats via 'make $1'"
     # Make SURE the output area is clean
     SUPPRESS_DOXYGEN_VERYCLEAN=
     export SUPPRESS_DOXYGEN_VERYCLEAN
@@ -467,10 +302,10 @@ DistTargetBuild ()
     CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X=YES
     export CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X
 
-    ./build.sh $1
+    make $1
 
     # Set initial state to unpatched
-    ./doxunpatch.sh
+    ./dox-unpatch.sh
 }
 
 DistDocTar ()
@@ -486,7 +321,7 @@ DistDocUnPrep ()
 {
     echo ""
     echo "$PGMNAME: Removing temporary documentation set"
-    ./clean.sh dox
+    make undox
     rm -f $CDSD
     mv ${CDSD}.ORIG $CDSD 
 }

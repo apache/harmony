@@ -74,6 +74,17 @@
 #
 ########################################################################
 #
+# Script setup
+#
+# `dirname $0` for shells without that utility
+PGMDIR=`expr "${0:-.}/" : '\(/\)/*[^/]*//*$'  \| \
+             "${0:-.}/" : '\(.*[^/]\)//*[^/][^/]*//*$' \| .`
+PGMDIR=`cd $PGMDIR; pwd`
+
+. $PGMDIR/config/config_build_steps.sh
+
+########################################################################
+#
 # Check script syntax
 #
 if test 0 -eq $#
@@ -89,7 +100,10 @@ fi
 DOLLAR='$'
 SEARCHFOR="^\\\$URL: |^\\\$HeadURL: "
 
-strings $* | egrep "$SEARCHFOR" | sort -u | cut -f2,6 -d' '
+strings $* | sed "s,$CONFIG_REPOSITORY,," | \
+             egrep "$SEARCHFOR" | \
+             sort -u | \
+             cut -f2,6 -d' '
 
 ########################################################################
 #

@@ -1,8 +1,8 @@
 #!/bin/sh
 #!
-# @file ./doxpatch.sh
+# @file ./dox-unpatch.sh
 #
-# @brief Install CSS patch in HTML documentation that supports
+# @brief Remove CSS patch in HTML documentation that supports
 # NetScape 4.7x HTML browser.
 #
 # A patch is needed to work around the cascading style sheet issue in
@@ -20,16 +20,16 @@
 # When configured, the cascading style sheet @c @b doc/html/doxygen.css
 # has two copies made when @link ./dox.sh dox.sh@endlink is run.
 # A symbolic link by the original name points to the patched copy
-# originally. @link ./doxunpatch.sh doxunpatch@endlink can use it
-# to revert back to the unpatched copy.  This script moves the symbolic
+# originally, which this script can use to revert back to the unpatched
+# copy.  @link ./dox-patch.sh dox-patch@endlink can move the symbolic
 # link to the patched copy that suppresses processing that causes
 # the problem.  The down side of this approach is that other formatting
 # may not be quite right, but at least the blocks in question are
 # readable.
 #
-# @see doxunpatch.sh
+# @see dox-patch.sh
 #
-# @todo  HARMONY-6-doxpatch.sh-1 A Windows .BAT version of this
+# @todo  HARMONY-6-dox-unpatch.sh-1 A Windows .BAT version of this
 #        script needs to be written
 #
 #
@@ -77,7 +77,7 @@
 #
 # Script setup
 #
-. commondox.sh
+. dox-common.sh
 . config/config_build_steps.sh
 
 ########################################################################
@@ -94,7 +94,7 @@ else
     then
         rm -f $CSS_FILE
 
-        ln -s $CSS_FILE_PATCHED_NAME $CSS_FILE
+        ln -s $CSS_FILE_ORIG $CSS_FILE
     fi
 fi
 

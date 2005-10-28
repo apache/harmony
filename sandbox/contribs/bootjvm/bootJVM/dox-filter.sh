@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #!
-# @file ./dox_filter.sh
+# @file ./dox-filter.sh
 #
 # @brief Convince Doxygen to parse files other than source code
 # as part of documentation set.
@@ -27,7 +27,7 @@
 # please refer to @link ./LICENSE LICENSE@endlink.
 #
 #
-# @todo  HARMONY-6-dox_filter.sh-1 A Windows .BAT version of this
+# @todo  HARMONY-6-dox-filter.sh-1 A Windows .BAT version of this
 #        script needs to be written
 #
 #
@@ -65,7 +65,7 @@
 # @section Reference
 #
 #/ /* 
-# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
 # Use the above open comment to force termination of parsing
 # since it is not a Doxygen-style 'C' comment.)
@@ -99,12 +99,15 @@ then
 else
     case $FILENAME in
         AUTHORS | INSTALL | LICENSE | README) convertit=2;;
+        RELEASE_LEVEL)                        convertit=3;;
+        Makefile | MakeSetup | MakeRules)     convertit=4;;
         *);;
     esac
 fi
 
 case $convertit in
-    0) cat $1;;
+    0 | 3)
+       cat $1;;
 
     1) # Read file, strip /bin/sh line, convert comments
        cat $1 | \
@@ -113,7 +116,8 @@ case $convertit in
        sed 's,^#!,/*!,;s,^#/, */,;s,^#, *,'
        ;;
 
-    2) # Read file, convert whole file of which only
+    2 | 4)
+       # Read file, convert whole file of which only
        # header areas need to contain comments.
        cat $1 | \
        sed 's,^#!,/*!,;s,^#/, */,;s,^#, *,'

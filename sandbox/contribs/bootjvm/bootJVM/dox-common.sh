@@ -1,6 +1,6 @@
 #!/bin/sh
 #!
-# @file ./commondox.sh
+# @file ./dox-common.sh
 #
 # @brief Common code for @link ./dox.sh dox.sh@endlink and
 # @link ./undox.sh undox.sh@endlink.
@@ -10,7 +10,7 @@
 # anything on its own.
 #
 #
-# @todo  HARMONY-6-commondox.sh-1 A Windows .BAT version of this
+# @todo  HARMONY-6-dox-common.sh-1 A Windows .BAT version of this
 #        script needs to be written
 #
 #

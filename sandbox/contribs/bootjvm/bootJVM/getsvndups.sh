@@ -72,6 +72,17 @@
 #
 ########################################################################
 #
+# Script setup
+#
+# `dirname $0` for shells without that utility
+PGMDIR=`expr "${0:-.}/" : '\(/\)/*[^/]*//*$'  \| \
+             "${0:-.}/" : '\(.*[^/]\)//*[^/][^/]*//*$' \| .`
+PGMDIR=`cd $PGMDIR; pwd`
+
+. $PGMDIR/config/config_build_steps.sh
+
+########################################################################
+#
 # Check script syntax
 #
 if test 0 -eq $#
@@ -93,7 +104,10 @@ TMPFILE1=${TMPDIR:-/tmp}/tmp.1.$$
 TMPFILE2=${TMPDIR:-/tmp}/tmp.2.$$
 rm -f $TMPFILE1 $TMPFILE2
 
-strings $* | egrep "$SEARCHFOR" | sort -u | cut -f2,6 -d' ' > $TMPFILE1
+strings $* | sed "s,$CONFIG_REPOSITORY,," | \
+             egrep "$SEARCHFOR" | \
+             sort -u | \
+             cut -f2,6 -d' ' > $TMPFILE1
 
 cut -f1 -d' ' $TMPFILE1 > $TMPFILE2
 

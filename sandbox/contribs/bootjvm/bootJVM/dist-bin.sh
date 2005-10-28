@@ -6,8 +6,8 @@
 # @brief Distribute Boot JVM binary package, including documentation.
 #
 # Make @e sure to have performed the final build by running
-# @link ./clean.sh clean.sh all@endlink followed by
-# @link ./build.sh build.sh all@endlink.  This will guarantee
+# @link ./Makefile make veryclean@endlink followed by
+# @link ./Makefile make all@endlink.  This will guarantee
 # that everything compiles clean and may be installed and
 # run on all platforms of this CPU type.
 #
@@ -17,7 +17,7 @@
 # Use @link ./dist-doc.sh dist-doc.sh@endlink to distribute
 # the documentation package.
 #
-# @see @link ./common.sh ./common.sh@endlink
+# @see @link ./dist-common.sh ./dist-common.sh@endlink
 #
 # @attention  Make @e sure that all Eclipse project files are in
 #             the "open" state when creating a distribution.
@@ -25,20 +25,19 @@
 #             Eclipse users without having to change anything.
 #
 # @todo HARMONY-6-dist-bin.sh-1 This script should probably support each
-#       and every CPU platform that implements this code instad of
+#       and every CPU platform that implements this code instead of
 #       having just a single output location for each file.  However,
-#       that also involves changes to @link ./build.sh build.sh@endlink
-#       and @link ./clean.sh clean.sh@endlink and
-#       @link ./common.sh common.sh@endlink, as well as
+#       that also involves changes to
+#       @link ./MakeRules ./MakeRules@endlink, as well as
 #       @link ./config.sh config.sh@endlink.  This is left as an
 #       exercise for the project team.  For an example of such a
 #       multi-host script, consider that the original development was
 #       done on a Solaris platform.  Such distribution should be built
-#       using @link ./clean.sh ./clean.sh all@endlink followed by
-#       @link ./build.sh ./build.sh all@endlink and should contain
-#       all formats of documentation.  If no CPU-specific directory
-#       level were implemented, result should look like the current
-#       distribution:
+#       using @link ./Makefile make veryclean@endlink followed by
+#       @link ./Makefile make all@endlink (both in the top level
+#       directory) and should contain all formats of documentation.
+#       If no CPU-specific directory level were implemented, result
+#       should look like the current distribution:
 #
 # <ul>
 #
@@ -127,7 +126,7 @@
 #
 . echotest.sh
 
-. common.sh
+. dist-common.sh
 
 MSG80="This script must NOT be interrupted.  Last chance to stop it..."
 $echon "$PGMNAME:  $MSG80" $echoc
@@ -146,16 +145,16 @@ DistChkReleaseLevel
 
 DistChkTarget
 
-./clean.sh all
+make veryclean
 
 DistPrep
 
 # Build everything but the documentation
-./build.sh jvm
-./build.sh libjvm
-./build.sh main
-./build.sh test
-./build.sh jni
+make jvm
+make libjvm
+make main
+make test
+make jni
 
 echo ""
 echo "$PGMNAME: Setting target directory permissions"
