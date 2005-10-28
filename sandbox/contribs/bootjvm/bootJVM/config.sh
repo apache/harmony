@@ -22,7 +22,7 @@
 # <b>(4)</b> Startup Library (bootclasspath) Java classes
 # </li>
 # <li>
-# <b>(5)</b> Source code build-- Invokes 'build.sh', which may be
+# <b>(5)</b> Source code build-- Invokes 'make' which may be
 #                         used for all further compilations.
 # </li>
 # </ul>
@@ -218,10 +218,10 @@ echo "with the C/C++ documentation tool called Doxygen."
 echo ""
 echo "Over the course of the development cycle, you may add or delete"
 echo "source files:  Java source, C source, C headers, perhaps shell"
-echo "scripts.  When this is done, the 'build.sh' scripts will"
-echo "automatically pick up the changes after this script is run."
-echo "The changes will be made available to the 'doxygen' and 'gcc'"
-echo "as coordinated by the 'config/config_roster*' files, and"
+echo "scripts.  When this is done, the 'make' process will autmatically"
+echo "pick up the changes after this script is run.  The changes"
+echo "will be made available to the 'doxygen' and 'gcc' as"
+echo "coordinated by the 'config/config_roster*' files, and"
 echo "without assistance required from users."
 echo ""
 echo "The 'README' file in this directory contains much useful"
@@ -232,20 +232,45 @@ read dummy
 echo ""
 echo "This project was originally developed on a Solaris 9 platform."
 echo "All C code was originally compiled there with the GCC C compiler."
-echo "Your GCC compiler is located in"
+echo "Your GCC compiler is located in:"
 echo ""
 echo "\$ which gcc"
 which gcc
 echo ""
-echo "If not found, the source be located at www.gnu.org.  Please use"
-echo "version 3.3.2 or newer.  There are also compiled binary editions"
-echo "of GCC available from numerous hardware vendors and/or their"
-echo "user groups."
+echo "Please use version 3.3.2 or newer."
 echo ""
 $echon "ready... $echoc"
 read dummy
 echo ""
-echo "The 'build.sh dox' facility extracts the documentation from the"
+echo "The project is built with GNU 'make'.  It is found in:"
+echo ""
+echo "\$ which make"
+which make
+echo ""
+echo "Please use version 3.80 or newer.  If one or both of these"
+echo "programs is not installed, the source may be located at"
+echo "www.gnu.org.  There are also compiled binary editions of"
+echo "the GNU programs 'gcc' and 'make'  available from numerous"
+echo "hardware vendors and/or their user groups."
+echo ""
+$echon "ready... $echoc"
+read dummy
+echo ""
+echo "The 'C' source code for the project may have its dependencies"
+echo "checked at compilation time by the common utility 'makedepend."
+echo ""
+echo "\$ which makedepend"
+which makedepend
+echo ""
+echo "This is commonly available on many platforms and is available"
+echo "in several versions, all of which accomplish the same task."
+echo "Its absence will not interfere with correct compilation, but"
+echo "a message may appear warning that is is missing."
+echo ""
+$echon "ready... $echoc"
+read dummy
+echo ""
+echo "The 'make dox' facility extracts the documentation from the"
 echo "source code using 'doxygen'.  On your system, it is located in:"
 echo ""
 echo "\$ which doxygen"
@@ -278,13 +303,13 @@ echo "for other access methods."
 echo ""
 echo "This documentation may also be derived from the source code at"
 echo "any time by invoking the top-level project build option"
-echo "'build.sh dox' or 'build.sh all'."
+echo "'make dox' or 'make all'."
 echo ""
 echo "Developers working only on documentation may wish to _not_"
 echo "install it, while most others may wish to do so for a starting"
 echo "point for their work.  (Remember that documentation of source"
 echo "files, functions, data types, and data structures is all part"
-echo "of the development process.  Running 'build.sh dox' will refresh"
+echo "of the development process.  Running 'make dox' will refresh"
 echo "the documentation suite with your current work.)"
 echo ""
 $echon "more... $echoc"
@@ -292,7 +317,7 @@ read dummy
 echo ""
 echo "Once installed in the 'doc' directory, this information will"
 echo "promptly be moved to a 'doc.ORIG' directory as a read-only"
-echo "reference that is not changed during 'build.sh' operations."
+echo "reference that is not changed during 'make' operations."
 echo "All documentation builds write their output to the 'doc'"
 echo "directory, leaving 'doc.ORIG' untouched.  If you will be"
 echo "regularly working with documentation changes, or if you do"
@@ -718,6 +743,31 @@ echo \
 "Valid operating system-specific JDK header file directory:  $osJDKdir"
 
 echo ""
+echo "$PGMNAME:  Choose a compiler"
+echo ""
+echo "            gcc--   Uses GNU 'C' compiler"
+echo "            other-- Use anything not on this list, default 'gcc'"
+
+while true
+do
+    echo ""
+    $echon "C compiler: [gcc,other] $echoc"
+    read ccompiler
+
+    case $ccompiler in
+        gcc)     CCOMPILER="GCC";;
+        other)   CCOMPILER="OTHER";;
+
+        *)       echo ""
+                 echo "C compiler '$ccompiler' invalid"
+                 echo ""
+                 continue;;
+    esac
+    break
+done
+
+
+echo ""
 echo "$PGMNAME:  Choose a heap allocation method:"
 echo ""
 echo "            simple-- Uses malloc(3) and free(3) only"
@@ -836,11 +886,11 @@ echo "---------------------------------------------------------"
 echo ""
 echo "The code may be partitioned into several components and built"
 echo "either all at once and/or by its various parts.  The top-level"
-echo "build script has these same options, and using 'build.sh cfg'"
+echo "build script has these same options, and using 'make cfg'"
 echo "will build what is requested here in addition to individual"
-echo "selections.  The default option is 'build.sh cfg'.  Choosing"
+echo "selections.  The default option is 'make cfg'.  Choosing"
 echo "'all' declares that all components are to be built by the"
-echo "default build option 'build.sh cfg'."
+echo "default build option 'make cfg'."
 echo ""
 $echon "more... $echoc"
 read dummy
@@ -868,7 +918,7 @@ echo "A suggested combination for test case writers is 'jvm' and 'test'"
 echo "for creating the JVM in a binary and adding test cases."
 echo ""
 
-SHOULDBUILD="Should 'build.sh' construct"
+SHOULDBUILD="Should 'make' construct"
 MSG80ALL="all:  $SHOULDBUILD the entire code tree?"
 MSG80JVM="jvm:  $SHOULDBUILD the main develoment area?"
 MSG80LIB="lib:  $SHOULDBUILD the static JVM library?"
@@ -892,12 +942,10 @@ do
 
     case $buildall in
         y|ye|yes|Y|YE|YES)
-           BUILD_ALLCODE=1
+           # All 'BUILD_xxx' vars are set to 1 above
            ;;
 
         n|no|N|NO)
-           BUILD_ALLCODE=0
-
            echo  ""
            $echon "$MSG80JVM [y,n] $echoc"
            read buildjvm
@@ -959,7 +1007,7 @@ echo "pre-formatted documentation installed into 'doc.ORIG'.  When"
 echo "generated, it gets stored into the 'doc' directory without regard"
 echo "for previous contents.  It may be generated either through the"
 echo "pre-configured build process (per above question) or by direct"
-echo "action from the top-level build command 'build.sh dox'.  When"
+echo "action from the top-level build command 'make dox'.  When"
 echo "time comes to generate documentation, there are several formats"
 echo "available.  Most options may be used in combination to yield only"
 echo "the desired formats.  Choosing 'all' configures every format."
@@ -1020,7 +1068,7 @@ done
 
 
 
-SHOULDBUILD="Should 'build.sh dox' build"
+SHOULDBUILD="Should 'make dox' build"
 MSG80ALL="all:    $SHOULDBUILD docs in every format?"
 MSG80HTML="html:   $SHOULDBUILD HTML format docs (doc/html) ?"
 MSG80LATEX="latex:  $SHOULDBUILD Latex info format docs (doc/latex) ?"
@@ -1097,7 +1145,7 @@ done
 echo ""
 
 echo ""
-MSG80="the configured components after configuration?"
+MSG80="the configured components after configuration"
 $echon "Do you wish to build ${MSG80}? [y,n] $echoc"
 read buildnow
 echo ""
@@ -1135,7 +1183,7 @@ case $prefmtdocs in
             echo "This latter also contains the source distribution."
             echo ""
             echo "The documentation can be generated from the source"
-            echo "itself using 'build.sh dox' at any time."
+            echo "itself using 'make dox' at any time."
             echo ""
             $echon "ready... $echoc"
             read dummy
@@ -1201,6 +1249,10 @@ esac
 #
 # (Phase 2 did setup and run all above.)
 #
+if test -d config/.
+then
+    chmod -R +w config/.
+fi
 rm -rf config
 if test -d config/.
 then
@@ -1502,6 +1554,30 @@ echo " * See the License for the specific language governing permissions"
     echo "#define CONFIG_HACKED_BOOTCLASSPATH \"$PGMDIR/bootclasspath\""
     echo ""
 
+  if test -z "$CCOMPILER"
+  then
+    echo ""
+    echo "/*!"
+    echo " * @internal There is no C compiler configured"
+    echo " *"
+    echo " */"
+  else
+    echo ""
+    echo "/*!"
+    echo " * @def CONFIG_CCOMPILER_$CCOMPILER"
+    echo " * @brief C Compiler"
+    echo " *"
+    echo " * This value may be @b gcc or @b other."
+    echo " *"
+    echo " * @b gcc means use GNU C compiler"
+    echo " *"
+    echo " * @b other means use the default as specified in"
+    echo " *          @link ./MakeRules ./MakeRules@endlink"
+    echo " *"
+    echo " */"
+    echo "#define CONFIG_CCOMPILER_$CCOMPILER"
+  fi
+
   if test -z "$HEAPALLOC"
   then
     echo ""
@@ -1577,244 +1653,27 @@ chmod -w $CFGH
 
 # Set up include path for the current tree, the configuration,
 # the JVM tree, and the JDK tree.
-INCLUDE_PATHS="\
-  -Iinclude \
-  -I$PGMDIR/config \
-  -I$PGMDIR/jvm/include \
-  -I$JAVA_HOME/include \
-  -I$JAVA_HOME/include/$osJDKdir"
+JAVA_INCLUDE_PATHS="-I$(JAVA_HOME)/include \
+  -I$(JAVA_HOME)/include/$osJDKdir"
 
-CONSTANT_GCC_OPTIONS="-O0 -g3 -Wall -fmessage-length=0 -ansi"
-
-ALWAYS_REQUIRED_GCC_OPTIONS="\
-  -m$WORDWIDTH \
-  $INCLUDE_PATHS \
-  $CONSTANT_GCC_OPTIONS"
-
-ALWAYS_REQUIRED_GCCLD_OPTIONS="-m$WORDWIDTH -lpthread -lm"
-
-# Formerly needed:            -fpack-struct   ... Try to NEVER need it!
-USUALLY_REQUIRED_GCC_OPTIONS=""
-
-COAG="config/config_opts_always.gcc"
-(
-    echo "$ALWAYS_REQUIRED_GCC_OPTIONS"
-
-) > $COAG
-
-chmod -w $COAG
-
-COUG="config/config_opts_usually.gcc"
-(
-    echo "$USUALLY_REQUIRED_GCC_OPTIONS"
-
-) > $COUG
-
-chmod -w $COUG
-
-LOAG="config/config_opts_always.gccld"
-(
-    echo "$ALWAYS_REQUIRED_GCCLD_OPTIONS"
-
-) > $LOAG
-
-chmod -w $LOAG
-
-USEDOX="for 'dox.sh'"
-USEDOXBLD="for 'dox.sh' and 'build.sh'"
-USEBLDCLN="for 'build.sh' and 'clean.sh'"
-
-CRCD="config/config_roster_c.dox"
-(
-    echo "#"
-    echo "# Roster of source files $USEDOXBLD"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT=\\"
-    for f in `ls -1 jvm/src/*.c`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CRCD
-
-chmod -w $CRCD
-
-CRHD="config/config_roster_h.dox"
-(
-    echo "#"
-    echo "# Roster of header files $USEDOX"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT+=\\"
-    echo "    config/config.h \\"
-    for f in main/src/main.c `ls -1 jvm/src/*.h`
-    do
-        echo "    $f \\"
-    done
-
-    for f in `ls -1 jvm/include/*.h`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CRHD
-
-chmod -w $CRHD
-
-CJCD="config/config_roster_jni_c.dox"
-(
-    echo "#"
-    echo "# Roster of JNI sample C source files $USEDOXBLD"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT+=\\"
-    for f in `ls -1 jni/src/harmony/generic/0.0/src/*.c`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CJCD
-
-chmod -w $CJCD
-
-CJHD="config/config_roster_jni_h.dox"
-(
-    echo "#"
-    echo "# Roster of JNI sample C header files $USEDOX"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT+=\\"
-    for f in `ls -1 jni/src/harmony/generic/0.0/include/*.h`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CJHD
-
-chmod -w $CJHD
-
-CJJD="config/config_roster_jni_java.dox"
-(
-    echo "#"
-    echo "# Roster of JNI sample Java source files $USEDOXBLD"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT+=\\"
-    for f in \
-        `find jni/src/harmony/generic/0.0/src -name \*.java -print`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CJJD
-
-chmod -w $CJJD
-
-CTJD="config/config_roster_test_java.dox"
-(
-    echo "#"
-    echo "# Roster of test Java source files $USEDOXBLD"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT+=\\"
-    for f in \
-        `find test/src -name \*.java -print`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CTJD
-
-chmod -w $CTJD
-
-CUSD="config/config_roster_sh.dox"
-(
-    echo "#"
-    echo "# Roster of shell scripts $USEDOX"
-    echo "#"
-    echo "# Auto-generated by $PGMNAME"
-    echo "# on $THISDATE:"
-    echo "# DO NOT MODIFY!"
-    echo "#"
-    echo "INPUT+=\\"
-    # Have ./*.sh listed _LAST_ due to Doxygen bug that points
-    # reference to them off to last `basename X` in list.
-    # Unfortunately, this bug also produces blank documentation,
-    # but at least the annotations are present and point to the
-    # right page. The bug has something to do with multiple files
-    # named 'build.sh' et al and having one of these in the top-level
-    # directory.  It wants more path name clarification, but does
-    # not seem to like even absolute path names.  The other scripts
-    # in the top-level directory are properly parsed.
-    #
-    # Notice that 'jvm/*.sh' have the relative path prefix './' attached
-    # to the front of the @@file directive.  This is to avoid an
-    # interesting sensitivity in Doxygen that got confused between
-    # 'jvm/filename.sh' and 'libjvm/filename.sh' and failed to produce
-    # the "File List" entry for the 'jvm/*.sh' files in question,
-    # namely its build scripts.  By marking them './jvm/build.sh' et al,
-    # this behavior went away.  This same comment may be found in each
-    # of those scripts.
-    #
-    # Even with them listed last, the '@ f i l e' directive still
-    # must have an absolute path name for the documentation to
-    # be properly parsed.
-    #
-    for f in `ls -1 */build.sh */clean.sh */common.sh; \
-              ls -1 jni/src/*/*/*/build.sh; \
-              ls -1 jni/src/*/*/*/clean.sh; \
-              ls -1 jni/src/*/*/*/common.sh; \
-              ls -1 $PGMDIR/[A-Z]*; \
-              ls -1 $PGMDIR/*.sh`
-    do
-        echo "    $f \\"
-    done
-    echo ""
-    echo "# EOF"
-
-) > $CUSD
-
-chmod -w $CUSD
+USEDOX="for 'dox.sh' and 'gmake dox'"
+USEBLDCLN="for 'gmake all' and 'gmake clean'"
 
 CBSD="config/config_build_steps.sh"
+CBSM="config/config_build_steps.mak"
 (
     echo "#"
-    echo "# Code build steps configured by user $USEBLDCLN"
+    echo "# Code build steps configured by user"
+    echo "# $USEBLDCLN"
     echo "#"
     echo "# Auto-generated by $PGMNAME"
     echo "# on $THISDATE:"
     echo "# DO NOT MODIFY!"
+    echo "#"
+) | tee $CBSD > $CBSM
+(
+    echo "CONFIG_REPOSITORY=\"https://svn.apache.org/repos/asf/incubator/harmony/enhanced/trunk/sandbox/contribs/bootjvm/\""
+    echo "export CONFIG_REPOSITORY"
     echo "#"
     echo "CONFIG_WORDWIDTH=\"$wordwidth\""
     echo "export CONFIG_WORDWIDTH"
@@ -1828,7 +1687,18 @@ CBSD="config/config_build_steps.sh"
     echo "CONFIG_RELEASE_LEVEL=\"$RELEASE_LEVEL\""
     echo "export CONFIG_RELEASE_LEVEL"
     echo "#"
-    echo "CONFIG_BUILD_ALLCODE=$BUILD_ALLCODE"
+    echo \
+      "CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X=$BUILD_HTML_ADJ_NETSCAPE47X"
+    echo "export CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X"
+    echo "#"
+) >> $CBSD
+(
+    echo "CONFIG_WORDWIDTH=$wordwidth"
+    echo "#"
+    echo "JAVA_INCLUDE_PATHS:=$JAVA_INCLUDE_PATHS"
+    echo "#"
+) >> $CBSM
+(
     echo "CONFIG_BUILD_JVM=$BUILD_JVM"
     echo "CONFIG_BUILD_LIB=$BUILD_LIB"
     echo "CONFIG_BUILD_MAIN=$BUILD_MAIN"
@@ -1836,15 +1706,13 @@ CBSD="config/config_build_steps.sh"
     echo "CONFIG_BUILD_JNI=$BUILD_JNI"
     echo "CONFIG_BUILD_DOX=$BUILD_DOX"
     echo "#"
- echo "CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X=$BUILD_HTML_ADJ_NETSCAPE47X"
-    echo "#"
     echo "# EOF"
+) | tee -a $CBSD >> $CBSM
 
-) > $CBSD
-
-chmod -w $CBSD
+chmod -w $CBSD $CBSM
 
 CDSD="config/config_dox_setup.dox"
+CDSM="config/config_dox_setup.mak"
 (
     echo "#"
     echo "# documentation build steps configured by user $USEDOX"
@@ -1863,9 +1731,20 @@ CDSD="config/config_dox_setup.dox"
     echo ""
     echo "# EOF"
 
-) > $CDSD
+) | tee $CDSD > $CDSM
 
-chmod -w $CDSD
+chmod -w $CDSD $CDSM
+
+(
+    roster.sh
+    echo "$PGMNAME:  Compile configuration:         $CFGH"
+    echo "$PGMNAME:  Code build steps:              $CBSD"
+    echo "                                           $CBSM"
+    echo "$PGMNAME:  Documentation build steps:     $CDSD"
+    echo "                                           $CDSM"
+    echo ""
+) | more
+
 
 #############################
 #
@@ -2073,74 +1952,8 @@ fi
 
 #############################
 #
-# END set up 'bootclasspath' directory.  Now report config results:
+# END set up 'bootclasspath' directory.
 #
-(
-    BLDS="build.sh ... in selected locations"
-    CLNS="clean.sh ... in selected locations"
-    CMNS="common.sh ... in selected locations"
-
-    echo ""
-
-    # Change to 'if true' if auto-generated file result printout desired
-    if false
-    then
-        echo "Auto-generated compile header definitions:"
-        echo ""
-        echo "---"
-        cat $CFGH
-        echo "---"
-        echo ""
-        echo "Auto-generated compiler invocation options:"
-        echo "    "
-        echo "--- GCC options always required:"
-        cat $COAG
-        echo "--- GCC options usually required:"
-        cat $COUG
-        echo "--- GCC linker options always required:"
-        cat $LOAG
-        echo "--- Source files:"
-        cat $CRCD
-        echo "--- Header files"
-        cat $CRHD
-        echo "--- JNI sample C source files:"
-        cat $CJCD
-        echo "--- JNI sample C header files:"
-        cat $CJHD
-        echo "--- JNI sample Java source files:"
-        cat $CJJD
-        echo "--- Test Java source files:"
-        cat $CTJD
-        echo "--- utility shell scripts"
-        cat $CUSD
-        echo "--- code build steps"
-        cat $CBSD
-        echo "--- documentation build steps"
-        cat $CDSD
-        echo "--- project build steps"
-    else
-        echo "$PGMNAME:  Compile configuration:         $CFGH"
-        echo "$PGMNAME:  GCC options always used:       $COAG"
-        echo "$PGMNAME:  GCC options usually used:      $COUG"
-        echo "$PGMNAME:  GCC linker opts (always):      $LOAG"
-        echo "$PGMNAME:  Source files:                  $CRCD"
-        echo "$PGMNAME:  Header files:                  $CRHD"
-        echo "$PGMNAME:  Sample JNI C source files:     $CJCD"
-        echo "$PGMNAME:  Sample JNI C header files:     $CJHD"
-        echo "$PGMNAME:  Sample JNI Java source files:  $CJJD"
-        echo "$PGMNAME:  Test Java source files:        $CTJD"
-        echo "$PGMNAME:  Utility shell scripts:         $CUSD"
-        echo "$PGMNAME:  Code build steps:              $CBSD"
-        echo "$PGMNAME:  Documentation build steps:     $CDSD"
-    fi
-
-    echo "$PGMNAME:  Build scripts:                 $BLDS"
-    echo "$PGMNAME:  Clean build scripts:           $CLNS"
-    echo "$PGMNAME:  Common build scripts:          $CMNS"
-    echo ""
-) | more
-
-
 echo ""
 $echon "$PGMNAME: Starting to build... $echoc"
 sleep 3
@@ -2156,7 +1969,7 @@ echo  "$PGMNAME:  Building configured components"
 echo ""
 echo "$PGMNAME:  Cleaning out entire tree of anything left over"
 echo ""
-./clean.sh all
+make clean
 rc=$?
 
 
@@ -2165,7 +1978,7 @@ case $buildnow in
         echo ""
         echo "$PGMNAME:  Building configured components"
         echo ""
-        ./build.sh cfg
+        make cfg
         rc=$?
         ;;
     *)  ;;
