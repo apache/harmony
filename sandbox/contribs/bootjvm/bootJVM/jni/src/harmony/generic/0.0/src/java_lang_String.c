@@ -51,6 +51,12 @@
  *
  */
 
+#include "arch.h"
+ARCH_SOURCE_COPYRIGHT_APACHE(java_lang_String, c,
+"$URL$",
+"$Id$");
+
+
 #include <jni.h>
 #include "java_lang_String.h"
 #include "jlString.h"
@@ -73,13 +79,15 @@ extern "C" {
 JNIEXPORT void JNICALL
     Java_java_lang_String_registerNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_String_registerNatives);
+
    /* Contents to be determined */
 }
 
 
 /*!
  * @brief Native implementation
- * of @c @b java.lang.String.registerNatives()
+ * of @c @b java.lang.String.unregisterNatives()
  *
  * @verbatim
    Class:     java_lang_String
@@ -91,6 +99,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_String_unregisterNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_String_unregisterNatives);
+
    /* Contents to be determined */
 }
 
@@ -109,6 +119,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jstring JNICALL
     Java_java_lang_String_intern(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_String_intern);
+
     return(jlString_intern(jo));
 }
 

@@ -47,6 +47,8 @@
 
 package java.lang;
 
+import org.apache.harmony.Copyright.*;
+
 /*!
  * @brief Java class definition of @c @b java.lang.Thread,
  * the JVM thread model implementation class.
@@ -60,6 +62,12 @@ package java.lang;
  */
 public class Thread
 {
+    /* Please see 'jvm/include/arch.h' for corresponding 'C' defns */
+    private static final String copyright =
+"\0$URL$ " +
+"$Id$ " +
+        org.apache.harmony.Copyright.copyrightText;
+
     /*!
      * @brief Native definition
      * for @c @b java.lang.Thread.registerNatives()

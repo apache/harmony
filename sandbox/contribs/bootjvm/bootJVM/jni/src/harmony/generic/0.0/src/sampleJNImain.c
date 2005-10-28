@@ -55,6 +55,11 @@
  *
  */
 
+#include "arch.h"
+ARCH_SOURCE_COPYRIGHT_APACHE(sampleJNImain, c,
+"$URL$",
+"$Id$");
+
 #include <stdlib.h>
 #include <jni.h>
 
@@ -73,6 +78,8 @@ jboolean boolean_value = JNI_FALSE;
 
 int main(int argc, char **argv, char **envp)
 {
+    ARCH_FUNCTION_NAME(sampleJNImain /* or simply: main */ );
+
     JNIEnv *penv = &env;
 
     /* Register natives for all appropriate classes */

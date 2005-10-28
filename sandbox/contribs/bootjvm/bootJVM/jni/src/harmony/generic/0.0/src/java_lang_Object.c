@@ -51,6 +51,12 @@
  *
  */
 
+#include "arch.h"
+ARCH_SOURCE_COPYRIGHT_APACHE(java_lang_Object, c,
+"$URL$",
+"$Id$");
+
+
 #include <jni.h>
 #include "java_lang_Object.h"
 #include "jlObject.h"
@@ -73,6 +79,8 @@ extern "C" {
 JNIEXPORT void JNICALL
     Java_java_lang_Object_registerNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Object_registerNatives);
+
    /* Contents to be determined */
 }
 
@@ -91,6 +99,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Object_unregisterNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Object_unregisterNatives);
+
    /* Contents to be determined */
 }
 
@@ -109,6 +119,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jobject JNICALL
     Java_java_lang_Object_getClass(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Object_getClass);
+
     return(jlObject_getClass(jo));
 }
 
@@ -127,6 +139,8 @@ JNIEXPORT jobject JNICALL
 JNIEXPORT jint JNICALL
     Java_java_lang_Object_hashCode(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Object_hashCode);
+
     return(jlObject_hashCode(jo));
 }
 
@@ -145,6 +159,8 @@ JNIEXPORT jint JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Object_wait(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Object_wait);
+
     jlObject_wait4ever(jo);
 
     return;
@@ -165,6 +181,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Object_wait__J(JNIEnv *env, jobject jo, jlong jl)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Object_wait__J);
+
     jlObject_waittimed(jo, jl);
 
     return;

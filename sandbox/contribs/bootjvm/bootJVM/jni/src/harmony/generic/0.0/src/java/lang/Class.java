@@ -49,6 +49,8 @@
 
 package java.lang;
 
+import org.apache.harmony.Copyright.*;
+
 /*!
  * @brief Java class definition of @c @b java.lang.Class, a
  * class that describes the class features of any Java object.
@@ -61,6 +63,12 @@ package java.lang;
  */
 public class Class
 {
+    /* Please see 'jvm/include/arch.h' for corresponding 'C' defns */
+    private static final String copyright =
+ "\0$URL$ " +
+ "$Id$ " +
+        org.apache.harmony.Copyright.copyrightText;
+
     /*!
      * @brief Native definition
      * for @c @b java.lang.Class.registerNatives()

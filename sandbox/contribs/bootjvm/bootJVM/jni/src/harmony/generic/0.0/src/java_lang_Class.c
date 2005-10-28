@@ -51,6 +51,12 @@
  *
  */
 
+#include "arch.h"
+ARCH_SOURCE_COPYRIGHT_APACHE(java_lang_Class, c,
+"$URL$",
+"$Id$");
+
+
 #include <jni.h>
 #include "java_lang_Class.h"
 #include "jlClass.h"
@@ -69,6 +75,8 @@
 JNIEXPORT void JNICALL
     Java_java_lang_Class_registerNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Class_registerNatives);
+
    /* Contents to be determined */
 }
 
@@ -87,6 +95,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Class_unregisterNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Class_unregisterNatives);
+
    /* Contents to be determined */
 }
 
@@ -105,6 +115,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Class_isArray(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Class_isArray);
+
     return(jlClass_isArray(jo));
 }
 
@@ -123,6 +135,8 @@ JNIEXPORT jboolean JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Class_isPrimitive(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Class_isPrimitive);
+
     return(jlClass_isPrimative(jo));
 }
 

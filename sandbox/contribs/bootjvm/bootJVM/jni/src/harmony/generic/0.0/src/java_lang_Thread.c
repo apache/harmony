@@ -51,6 +51,12 @@
  *
  */
 
+#include "arch.h"
+ARCH_SOURCE_COPYRIGHT_APACHE(java_lang_Thread, c,
+"$URL$",
+"$Id$");
+
+
 #include <jni.h>
 #include "java_lang_Thread.h"
 #include "jlThread.h"
@@ -73,6 +79,8 @@ extern "C" {
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_registerNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_registerNatives);
+
    /* Contents to be determined */
 }
 
@@ -91,6 +99,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_unregisterNatives(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_unregisterNatives);
+
    /* Contents to be determined */
 }
 
@@ -109,6 +119,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jobject JNICALL
     Java_java_lang_Thread_currentThread(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_currentThread);
+
     return(jlThread_currentThread(jc));
 }
 
@@ -127,6 +139,8 @@ JNIEXPORT jobject JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_yield(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_yield);
+
     return(jlThread_yield(jc));
 }
 
@@ -145,6 +159,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_interrupt(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_interrupt);
+
     return(jlThread_interrupt(jo));
 }
 
@@ -163,6 +179,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Thread_interrupted(JNIEnv *env, jclass jc)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_interrupted);
+
     return(jlThread_interrupted(jc));
 }
 
@@ -181,6 +199,8 @@ JNIEXPORT jboolean JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Thread_isInterrupted(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_isInterrupted);
+
     return(jlThread_isInterrupted(jo));
 }
 
@@ -199,6 +219,8 @@ JNIEXPORT jboolean JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_sleep__J(JNIEnv *env, jclass jc, jlong jl)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_sleep__J);
+
     jlThread_sleep(jc, jl);
 
     return;
@@ -222,6 +244,8 @@ JNIEXPORT void JNICALL
                                     jlong jl,
                                     jint ji)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_sleep__JI);
+
     jlThread_sleep_nanos(jc, jl, ji);
 
     return;
@@ -242,6 +266,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL Java_java_lang_Thread_join(JNIEnv *env,
                                                   jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_join);
+
     jlThread_join4ever(jo);
 
     return;
@@ -262,6 +288,8 @@ JNIEXPORT void JNICALL Java_java_lang_Thread_join(JNIEnv *env,
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_join__J(JNIEnv *env, jobject jo, jlong jl)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_join__J);
+
     jlThread_jointimed(jo, jl);
 
     return;
@@ -285,6 +313,8 @@ JNIEXPORT void JNICALL
                                    jlong jl,
                                    jint ji)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_join__JI);
+
     jlThread_jointimed_nanos(jo, jl, ji);
 
     return;
@@ -305,6 +335,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Thread_isAlive(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_isAlive);
+
     return(jlThread_isAlive(jo));
 }
 
@@ -323,6 +355,8 @@ JNIEXPORT jboolean JNICALL
 JNIEXPORT void JNICALL Java_java_lang_Thread_start(JNIEnv *env,
                                                    jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_start);
+
     jlThread_start(jo);
 
     return;
@@ -347,6 +381,8 @@ JNIEXPORT void JNICALL Java_java_lang_Thread_start(JNIEnv *env,
 JNIEXPORT jint JNICALL
     Java_java_lang_Thread_countStackFrames(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_countStackFrames);
+
     return(jlThread_countStackFrames(jo));
 }
 
@@ -365,6 +401,8 @@ JNIEXPORT jint JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Thread_holdsLock(JNIEnv *env, jclass jc, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_holdsLock);
+
     return(jlThread_holdsLock(jc, jo));
 }
 
@@ -383,6 +421,8 @@ JNIEXPORT jboolean JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_setPriority(JNIEnv *env, jobject jo, jint ji)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_setPriority);
+
     jlThread_setPriority(jo, ji);
 
     return;
@@ -403,6 +443,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jint JNICALL
     Java_java_lang_Thread_getPriority(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_getPriority);
+
     return(jlThread_getPriority(jo));
 }
 
@@ -421,6 +463,8 @@ JNIEXPORT jint JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_destroy(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_destroy);
+
     jlThread_destroy(jo);
 
     return;
@@ -441,6 +485,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_checkAccess(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_checkAccess);
+
     jlThread_checkAccess(jo);
 
     return;
@@ -463,6 +509,8 @@ JNIEXPORT void JNICALL
                                     jobject jo,
                                     jboolean jb)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_setDaemon);
+
     jlThread_setDaemon(jo, jb);
 
     return;
@@ -483,6 +531,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT jboolean JNICALL
     Java_java_lang_Thread_isDaemon(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_isDaemon);
+
     return(jlThread_isDaemon(jo));
 }
 
@@ -505,6 +555,8 @@ JNIEXPORT jboolean JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_stop(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_stop);
+
     return(jlThread_stop(jo));
 }
 
@@ -527,6 +579,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_suspend(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_suspend);
+
     return(jlThread_suspend(jo));
 }
 
@@ -549,6 +603,8 @@ JNIEXPORT void JNICALL
 JNIEXPORT void JNICALL
     Java_java_lang_Thread_resume(JNIEnv *env, jobject jo)
 {
+    ARCH_FUNCTION_NAME(Java_java_lang_Thread_resume);
+
     return(jlThread_resume(jo));
 }
 

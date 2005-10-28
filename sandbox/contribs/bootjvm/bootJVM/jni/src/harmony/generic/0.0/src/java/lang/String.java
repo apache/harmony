@@ -47,6 +47,8 @@
 
 package java.lang;
 
+import org.apache.harmony.Copyright.*;
+
 /*!
  * @brief Java class definition of @c @b java.lang.String,
  * the Java pseudo-primative class for defining and manipulating
@@ -61,6 +63,12 @@ package java.lang;
  */
 public class String
 {
+    /* Please see 'jvm/include/arch.h' for corresponding 'C' defns */
+    private static final String copyright =
+"\0$URL$ " +
+"$Id$ " +
+        org.apache.harmony.Copyright.copyrightText;
+
     /*!
      * @brief Native definition
      * for @c @b java.lang.String.registerNatives()
