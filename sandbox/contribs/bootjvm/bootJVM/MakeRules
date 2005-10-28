@@ -308,7 +308,7 @@ endif
 	$(CLEAN_SILENT)-rmdir $(BINDIR)
 
 veryclean::
-	if test -d $(BINDIR); then chmod -R +w $(BINDIR); fi; done
+	if test -d $(BINDIR); then chmod -R +w $(BINDIR); fi
 	$(CLEAN_SILENT)-rm -rf $(BINDIR)
 
 endif # BIN_TARGET
@@ -344,7 +344,7 @@ clean::
 	$(CLEAN_SILENT)-rmdir $(LIBDIR)
 
 veryclean::
-	if test -d $(LIBDIR); then chmod -R +w $(LIBDIR); fi; done
+	if test -d $(LIBDIR); then chmod -R +w $(LIBDIR); fi
 	$(CLEAN_SILENT)-rm -rf $(LIBDIR)
 
 endif # LIB_TARGET
