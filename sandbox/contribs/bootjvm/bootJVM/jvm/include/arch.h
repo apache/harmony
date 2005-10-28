@@ -12,22 +12,6 @@
  * present them for normative use by the compiler.  Also global
  * constant strings for several purposes.
  *
- * Define critical symbols as tested below.
- * This is done by the @link ./config.sh config.sh@endlink script.
- *
- * <b>DO NOT FORGET</b> to use the GCC options found
- * in @b ../config/confopts.gcc on the GCC command
- * line!  This can be done as,
- * @verbatim
-
-       $ gcc `cat ../config/config_opts_always.gcc` \
-             `cat ../config/config_opts_usually.gcc` \
-             -otheropts -c filename.c ...
-  
-       $ gcc `cat ../config/config_opts_always.gccld` \
-             ... *.o -o targetbinary
-
-   @endverbatim
  *
  * @todo HARMONY-6-jvm-arch.h-1 There needs to be a Java equivalent
  *       written for the macros @link #ARCH_COPYRIGHT_TEXT_APACHE
