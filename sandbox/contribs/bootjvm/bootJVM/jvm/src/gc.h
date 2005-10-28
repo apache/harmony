@@ -118,6 +118,55 @@ ARCH_HEADER_COPYRIGHT_APACHE(gc, h,
 #endif
 
 
+#ifdef CONFIG_GC_TYPE_REFCOUNT
+/*!
+ * @name Reference counter garbage collection model definitions
+ *
+ * @brief Expand the @b GC_xxx() macros into the simple heap model as
+ * implemented by @link jvm/src/gc_refcount.c gc_refcount.c@endlink.
+ *
+ * Each garbage collection algorithm will have a section just
+ * like this here in this file so that these macros will expand
+ * to point to the API as implemented by that algoritm.  For
+ * some examples as to how this is done for other modules,
+ * please refer to @link jvm/src/heap.h heap.h@endlink .
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+#define GC_INIT gc_init_refcount
+#define GC_RUN  gc_run_refcount
+
+#define GC_CLASS_NEW                gc_class_new_refcount
+#define GC_CLASS_RELOAD             gc_class_reload_refcount
+
+#define GC_CLASS_MKREF_FROM_CLASS   gc_class_mkref_from_class_refcount
+#define GC_CLASS_MKREF_FROM_OBJECT  gc_class_mkref_from_object_refcount
+#define GC_CLASS_RMREF_FROM_CLASS   gc_class_rmref_from_class_refcount
+#define GC_CLASS_RMREF_FROM_OBJECT  gc_class_rmref_from_object_refcount
+#define GC_CLASS_FIELD_MKREF        gc_class_field_mkref_refcount
+#define GC_CLASS_FIELD_RMREF        gc_class_field_rmref_refcount
+#define GC_CLASS_DELETE             gc_class_delete_refcount
+
+#define GC_OBJECT_NEW               gc_object_new_refcount
+#define GC_OBJECT_MKREF_FROM_CLASS  gc_object_mkref_from_class_refcount
+#define GC_OBJECT_MKREF_FROM_OBJECT gc_object_mkref_from_object_refcount
+#define GC_OBJECT_RMREF_FROM_CLASS  gc_object_rmref_from_class_refcount
+#define GC_OBJECT_RMREF_FROM_OBJECT gc_object_rmref_from_object_refcount
+#define GC_OBJECT_FIELD_MKREF       gc_object_field_mkref_refcount
+#define GC_OBJECT_FIELD_RMREF       gc_object_field_rmref_refcount
+#define GC_OBJECT_DELETE            gc_object_delete_refcount
+
+#define GC_STACK_NEW                gc_stack_new_refcount
+#define GC_STACK_MKREF_FROM_JVM     gc_stack_mkref_from_jvm_refcount
+#define GC_STACK_RMREF_FROM_JVM     gc_stack_rmref_from_jvm_refcount
+#define GC_STACK_DELETE             gc_stack_delete_refcount
+
+/*@} */ /* End of grouped definitions */
+#endif
+
+
 /* Prototypes for functions in 'gc_XXX.c' */
 
 extern rvoid GC_INIT(rvoid);

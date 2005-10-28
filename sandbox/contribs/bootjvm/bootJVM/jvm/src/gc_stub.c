@@ -8,7 +8,8 @@
  * a memory allocation and garbage collection design for the project.
  *
  * This is the first of hopefully a number of garbage collection
- * schemes.  Others should be named @b gc_somename.c .
+ * schemes.  Others should be named @b gc_somename.c and should
+ * be configured into @link ./config.sh ./config.sh@endlink.
  *
  * The common header file @link jvm/src/gc.h gc.h@endlink defines
  * the prototypes for all garbage collection implementations by way
