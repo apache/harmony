@@ -1,35 +1,17 @@
-#!/bin/sh
 #
 #!
-# @file /home/dlydick/harmony/bootjvm/bootJVM/clean.sh
+# @file ./test/src/Makefile
 #
-# @brief Remove build of Boot JVM.
+# @brief Build JVM test classes
 #
-# Remove a build of a component of the project.  This either means to
-# remove compiled object code and either remove a static library
-# archive file or a linked binary, or to remove generated documentation.
+# (Please refer to @link ./roster.sh roster.sh@endlink as to why
+# the <b>@@file</b> directive is constructed the way that it is.)
 #
-# The main body of logic for this script is found in
-# @link common.sh common.sh@endlink.
+# @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./build.sh ./build.sh@endlink
+# @see @link ./MakeSetup ./MakeSetup@endlink
 #
-# @see @link ./common.sh ./common.sh@endlink
-#
-# @see @link jvm/clean.sh jvm/clean.sh@endlink
-#
-# @see @link libjvm/clean.sh libjvm/clean.sh@endlink
-#
-# @see @link main/clean.sh main/clean.sh@endlink
-#
-# @see @link test/clean.sh test/clean.sh@endlink
-#
-# @see @link jni/src/harmony/generic/0.0/clean.sh
-#            jni/src/harmony/generic/0.0/clean.sh@endlink
-#
-#
-# @todo  HARMONY-6-clean.sh-1 A Windows .BAT version of this script
-#        needs to be written
+# @see @link ./MakeRules ./MakeRules@endlink
 #
 #
 # @section Control
@@ -61,8 +43,6 @@
 #
 # @author \$LastChangedBy$
 #
-#         Original code contributed by Daniel Lydick on 09/28/2005.
-#
 # @section Reference
 #
 #/ /* 
@@ -74,14 +54,25 @@
 #
 ###################################################################
 #
-# Invoke common code.
+# Create the 'boottest.jar' Java class library archive
 #
-. common.sh
+
+# Set up directory knowledge and basic structure
+TOPDIR=../..
+include $(TOPDIR)/MakeSetup
+
+# Roster of Java source files
+include $(CFGDIR)/config_roster_test_java.mak
+
+# Target to build
+JAR_TARGET=$(BINDIR)/boottest.$(JAVA_ARCHIVE)
+
+# Build rules
+include $(TOPDIR)/MakeRules
+
+# Default rule
+all:: $(JAR_TARGET)
 
 ###################################################################
-#
-# Done.
-#
-
 #
 # EOF

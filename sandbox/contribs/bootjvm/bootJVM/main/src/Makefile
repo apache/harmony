@@ -1,27 +1,17 @@
-#!/bin/sh
 #
 #!
-# @file jni/src/harmony/generic/0.0/clean.sh
+# @file ./main/src/Makefile
 #
-# @brief Remove build of sample JNI subset, showing how to reference
-#              the local native methods, but using the full
-#              JNI mechanism.
+# @brief Build JVM using main program entry point and library archive
 #
-# @see @link jni/src/harmony/generic/0.0/build.sh
-#            jni/src/harmony/generic/0.0/build.sh@endlink
+# (Please refer to @link ./roster.sh roster.sh@endlink as to why
+# the <b>@@file</b> directive is constructed the way that it is.)
 #
-# @see @link jni/src/harmony/generic/0.0/common.sh
-#            jni/src/harmony/generic/0.0/common.sh@endlink
+# @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./build.sh ./build.sh@endlink
+# @see @link ./MakeSetup ./MakeSetup@endlink
 #
-# @see @link ./clean.sh ./clean.sh@endlink
-#
-# @see @link ./common.sh ./common.sh@endlink
-#
-#
-# @todo  HARMONY-6-jni-clean.sh-1 A Windows .BAT version of this
-#        script needs to be written
+# @see @link ./MakeRules ./MakeRules@endlink
 #
 #
 # @section Control
@@ -53,8 +43,6 @@
 #
 # @author \$LastChangedBy$
 #
-#         Original code contributed by Daniel Lydick on 09/28/2005.
-#
 # @section Reference
 #
 #/ /* 
@@ -66,23 +54,32 @@
 #
 ###################################################################
 #
-# Script setup
+# Create the 'bootjvm' binary
 #
-. common.sh
+
+# Set up directory knowledge and basic structure
+TOPDIR=../..
+include $(TOPDIR)/MakeSetup
+
+# Roster of C source files and C header files
+C_SOURCES=main.c
+BIN_OBJECTS=$(BINDIR)/main.o
+
+# Target to build
+BIN_TARGET=$(BINDIR)/bootjvm$(DOT_BIN_EXTENSION)
+
+# Additional include paths, before main list
+PRE_INCLUDE_PATHS:=-I$(TOPDIR)/jvm/src
+
+# Pick up JVM library
+LLFLAGS:=-ljvm
+
+# Build rules
+include $(TOPDIR)/MakeRules
+
+# Default rule
+all:: $(BIN_TARGET)
 
 ###################################################################
-#
-# Remove output area.
-#
-chmod -R +w $TARGET_DIRECTORY
-rm -rf $TARGET_DIRECTORY
-rc=$?
-
-###################################################################
-#
-# Done.
-#
-exit $rc
-
 #
 # EOF

@@ -1,24 +1,17 @@
-#!/bin/sh
 #
 #!
-# @file libjvm/clean.sh
+# @file ./jni/src/harmony/generic/0.0/src/Makefile
 #
-# @brief Remove build of JVM code as a static library
+# @brief Build Harmony generic JNI area
 #
+# (Please refer to @link ./roster.sh roster.sh@endlink as to why
+# the <b>@@file</b> directive is constructed the way that it is.)
 #
-# @see @link libjvm/build.sh libjvm/build.sh@endlink
+# @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link libjvm/common.sh libjvm/common.sh@endlink
+# @see @link ./MakeSetup ./MakeSetup@endlink
 #
-# @see @link ./build.sh ./build.sh@endlink
-#
-# @see @link ./clean.sh ./clean.sh@endlink
-#
-# @see @link ./common.sh ./common.sh@endlink
-#
-#
-# @todo  HARMONY-6-libjvm-clean.sh-1 A Windows .BAT version of this
-#        script needs to be written
+# @see @link ./MakeRules ./MakeRules@endlink
 #
 #
 # @section Control
@@ -50,8 +43,6 @@
 #
 # @author \$LastChangedBy$
 #
-#         Original code contributed by Daniel Lydick on 09/28/2005.
-#
 # @section Reference
 #
 #/ /* 
@@ -63,24 +54,33 @@
 #
 ###################################################################
 #
-# Script setup
+# Create the 'bootjvm' binary and 'bootjvm.jar' class archive
 #
-. common.sh
+
+# Set up directory knowledge and basic structure
+TOPDIR=../../../../../..
+include $(TOPDIR)/MakeSetup
+
+# Roster of C source files and C header files
+include $(CFGDIR)/config_roster_jni_c.mak
+include $(CFGDIR)/config_roster_jni_h.mak
+
+# Roster of Java source files
+include $(CFGDIR)/config_roster_jni_java.mak
+
+# Pick up JVM library
+LLFLAGS:=-ljvm
+
+# Targets to build
+JAR_TARGET=$(BINDIR)/bootjvm.$(JAVA_ARCHIVE)
+BIN_TARGET=$(BINDIR)/bootjvm$(DOT_BIN_EXTENSION)
+
+# Build rules
+include $(TOPDIR)/MakeRules
+
+# Default rule
+all:: $(BIN_TARGET) $(JAR_TARGET)
 
 ###################################################################
-#
-# Remove output area.
-#
-chmod -R +w $TARGET_DIRECTORY
-rm -rf $TARGET_DIRECTORY
-rc=$?
-
-
-###################################################################
-#
-# Done.
-#
-exit $rc
-
 #
 # EOF

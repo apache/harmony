@@ -1,25 +1,12 @@
-#!/bin/sh
 #
 #!
-# @file test/clean.sh
+# @file ./MakeSetup
 #
-# @brief Remove build of Java test programs for exercising various parts
-# of the JVM
+# @brief Setup and configuration of all Makefiles
 #
+# @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link test/build.sh test/build.sh@endlink
-#
-# @see @link test/common.sh test/common.sh@endlink
-#
-# @see @link ./build.sh ./build.sh@endlink
-#
-# @see @link ./clean.sh ./clean.sh@endlink
-#
-# @see @link ./common.sh ./common.sh@endlink
-#
-#
-# @todo  HARMONY-6-test-clean.sh-1 A Windows .BAT version of this
-#        script needs to be written
+# @see @link ./MakeRules ./MakeRules@endlink
 #
 #
 # @section Control
@@ -51,8 +38,6 @@
 #
 # @author \$LastChangedBy$
 #
-#         Original code contributed by Daniel Lydick on 09/28/2005.
-#
 # @section Reference
 #
 #/ /* 
@@ -64,23 +49,54 @@
 #
 ###################################################################
 #
-# Script setup
+# Makefile setup
 #
-. common.sh
+
+########################
+#
+# Default target
+#
+all::
+
+PWD=$(shell pwd)
+
+########################
+#
+# Base name of this directory and of parent directory
+#
+DIRNAME:=$(shell expr $(PWD) : '\(.*[^/]\)/*$' : '.*/\(..*\)')
+PROJECTNAME:=
+
+ifeq ("src","$(DIRNAME)")
+PROJECTNAME:=$(shell expr $(PWD)/ : '\(/\)/*[^/]*//*$' \| $(PWD)/ \
+                                  : '\(.*[^/]\)//*[^/][^/]*//*$' )
+endif
+
+########################
+#
+# Names of source and target directories
+#
+CFGDIR=$(TOPDIR)/config
+
+INCDIR=../include
+BINDIR=../bin
+LIBDIR=../lib
+
+CLSDIR=$(LIBDIR)/classes
+LIBJVM_LIBDIR=../../libjvm/lib
+
+########################
+#
+# Disallow default build rules
+#
+.SUFFIXES:
+
+########################
+#
+# List of which projects are configured, plus crucial compile options
+#
+include $(TOPDIR)/config/config_build_steps.mak
 
 ###################################################################
-#
-# Remove output area.
-#
-chmod -R +w $TARGET_DIRECTORY
-rm -rf $TARGET_DIRECTORY
-rc=$?
-
-###################################################################
-#
-# Done.
-#
-exit $rc
-
 #
 # EOF
