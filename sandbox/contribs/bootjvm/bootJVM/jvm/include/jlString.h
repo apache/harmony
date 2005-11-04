@@ -119,6 +119,36 @@ ARCH_HEADER_COPYRIGHT_APACHE(jlString, h,
 /**********************************************************************/
 
 /*!
+ * @name Object instance field definitions from java.lang.String
+ *
+ * @brief Fields correlating to the critical string fields of
+ * @link jni/src/harmony/generic/0.0/src/java/lang/String.java
+   jni/src/harmony/generic/0.0/src/java/lang/String.java@endlink
+ * are defined for 'C' compilation here.
+ *
+ * @warning  This introduces coupling into the JNI implementation.
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+#define JLSTRING_CRITICAL_FIELD_VALUE     0 /**< Place holder for
+                                             *   string 'value' field
+                                             */
+
+#define JLSTRING_CRITICAL_FIELD_LENGTH    1 /**< Place holder for
+                                             *   string 'length' field
+                                             */
+
+#define JLSTRING_CRITICAL_NUM_FIELDS      2 /**< Number of critical
+                                             *   fields in class file
+                                             */
+
+/*@} */ /* End grouped definitions */
+
+/**********************************************************************/
+
+/*!
  * @name Unified set of prototypes for functions
  * in @link jvm/src/jlString.c jlString.c@endlink
  *

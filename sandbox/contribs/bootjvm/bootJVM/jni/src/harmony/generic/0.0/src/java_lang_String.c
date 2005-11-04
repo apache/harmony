@@ -61,6 +61,22 @@ ARCH_SOURCE_COPYRIGHT_APACHE(java_lang_String, c,
 #include "java_lang_String.h"
 #include "jlString.h"
 
+/*!
+ * @internal Force agreement and alignment of fields
+ *
+ */
+#if 0 != JLSTRING_CRITICAL_FIELD_VALUE
+#error Critical java.lang.String 'value' field number mismatch
+#endif
+
+#if 1 != JLSTRING_CRITICAL_FIELD_LENGTH
+#error Critical java.lang.String 'length' field number mismatch
+#endif
+
+#if 2 != JLSTRING_CRITICAL_NUM_FIELDS
+#error Critical java.lang.String number of fields mismatch
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

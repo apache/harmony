@@ -9,6 +9,17 @@
  * should be stored in a shared archive along with the other classes
  * of this Java package's native methods.
  *
+ * An important item here is the storage location of the string's
+ * data char[] array.  It is needed in order to complete
+ * @link #object_utf8_string_lookup()
+   object_utf8_string_lookup()@endlink and other string routines.
+ *
+ * @see @link jvm/src/object.c jvm/src/object.c@endlink
+ *
+ * @see @link jvm/include/jlString.h jvm/include/jlString.h@endlink
+ *
+ * @see @link jvm/src/native.c jvm/src/native.c@endlink
+ *
  *
  * @section Control
  *
@@ -63,11 +74,39 @@ import org.apache.harmony.Copyright.*;
  */
 public class String
 {
+/******** BEGIN:  DO NOT CHANGE THE ORDER OF THESE FIELD DEFINITIONS! */
+
+
     /* Please see 'jvm/include/arch.h' for corresponding 'C' defns */
     private static final String copyright =
 "\0$URL$ " +
 "$Id$ " +
         org.apache.harmony.Copyright.copyrightText;
+        /**< Class static variable field index 0 (not critical) */
+
+    /*!
+     * @warning <b>DO NOT CHANGE THE POSITION OR ORDER OF THESE
+     *          DECLARATIONS!</b>
+     *
+     *          This is @e required for proper operation of the native
+     *          interface and of the core string contents loading in
+     *          @link #object_instance_new()
+                object_instance_new()@endlink as defined in
+     *          @link jvm/include/jlString.h
+                jvm/include/jlString.h@endlink and
+     *          @link jvm/src/native.c jvm/src/native.c@endlink.
+     *
+     * @todo HARMONY-6-jni-String.java-1 Verify that this order is
+     *       actually what is laid down in the compilation of this
+     *       class.  @e Hopefully, it is not compiler-dependent.
+     *
+     */
+
+    private char value[]; /**< Object instance variable field index 0 */
+
+    private int length; /**< Object instance variable field index 1 */
+
+/******** END: DO NOT CHANGE THE ORDER OF THESE FIELD DEFINITIONS! ****/
 
     /*!
      * @brief Native definition
