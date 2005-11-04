@@ -12,15 +12,10 @@
  * present them for normative use by the compiler.  Also global
  * constant strings for several purposes.
  *
+ * For Java source files, information is found
+ * in @link org/apache/harmony/Copyright.java
+   org/apache/harmony/Copyright.java@endlink.
  *
- * @todo HARMONY-6-jvm-arch.h-1 There needs to be a Java equivalent
- *       written for the macros @link #ARCH_COPYRIGHT_TEXT_APACHE
-         ARCH_COPYRIGHT_TEXT_APACHE@endlink, @link
-         #ARCH_LICENSE_TEXT_APACHE ARCH_LICENSE_TEXT_APACHE@endlink,
- *       @link #ARCH_HEADER_COPYRIGHT_APACHE()
-         ARCH_HEADER_COPYRIGHT_APACHE()@endlink
- *       and @link #ARCH_SOURCE_COPYRIGHT_APACHE()
-         ARCH_SOURCE_COPYRIGHT_APACHE()@endlink
  *
  * @section Control
  *
@@ -534,6 +529,10 @@ ARCH_HEADER_COPYRIGHT_APACHE(arch, h,
 #define ARCH_ODD_ADDRESS_SIGSEGV
 #endif
 #endif
+
+/* Prototypes for functions in 'jvm.c' */
+
+extern int jvm(int argc, char **argv, char **envp);
 
 #endif /* _arch_h_included_ */
 
