@@ -160,6 +160,16 @@ rvoid class_init()
 
     pjvm->class_allocate_last = jvm_class_index_null;
 
+    pjvm->class_java_lang_Object = jvm_class_index_null;
+
+    pjvm->class_primative_char   = jvm_class_index_null;
+
+    pjvm->class_java_lang_Class  = jvm_class_index_null;
+
+    pjvm->class_java_lang_String = jvm_class_index_null;
+
+    pjvm->class_java_lang_Thread = jvm_class_index_null;
+
     /* Declare this module initialized */
     jvm_class_initialized = rtrue;
 
@@ -328,7 +338,8 @@ static jvm_class_index class_allocate_slot(rboolean tryagain)
  *
  * @param  arraylength  Array of length @b arraydims containing the
  *                      length of array in each of those dimensions.
- *                      E.g., @b arraydims is 4 for new X[7][3][9][2]
+ *                      E.g., @b arraydims is 4 for
+ *                      <code><b>new X[7][3][9][2]</b></code>
  *                      so this parameter will be a 4-element array
  *                      containing the numbers {7, 3, 9, 2}
  *
@@ -414,7 +425,8 @@ jvm_class_index class_static_new(rushort          special_cls,
                                       arraydims,
                                       arraylength,
                                       rfalse,
-                                      jvm_thread_index_null);
+                                      jvm_thread_index_null,
+                                      (CONSTANT_Utf8_info *) rnull);
 
         /*
          * Mark as a primative class, @c @b \<clinit\> done
@@ -441,7 +453,8 @@ jvm_class_index class_static_new(rushort          special_cls,
                                       arraydims,
                                       arraylength,
                                       rfalse,
-                                      jvm_thread_index_null);
+                                      jvm_thread_index_null,
+                                      (CONSTANT_Utf8_info *) rnull);
 
         CLASS(clsidx).status |= CLASS_STATUS_ARRAY;
 
@@ -484,7 +497,8 @@ jvm_class_index class_static_new(rushort          special_cls,
                                       arraydims,
                                       arraylength,
                                       rfalse,
-                                      jvm_thread_index_null);
+                                      jvm_thread_index_null,
+                                      (CONSTANT_Utf8_info *) rnull);
 
         /* Delay loading field data until after @b objhash is known */
         CLASS(clsidx).class_static_field_data =
@@ -497,6 +511,37 @@ jvm_class_index class_static_new(rushort          special_cls,
      */
     CLASS(clsidx).class_objhash = objhash;
     (rvoid) GC_OBJECT_MKREF_FROM_CLASS(clsidx, objhash);
+
+    /*
+     * Mark class if it is one of the startup classes
+     */
+    if (0 == utf_prchar_classname_strcmp(JVMCLASS_JAVA_LANG_OBJECT,
+                                         pcfs,
+                                         pcfs->this_class))
+    {
+        pjvm->class_java_lang_Object = clsidx;
+    }
+    else
+    if (0 == utf_prchar_classname_strcmp(JVMCLASS_JAVA_LANG_CLASS,
+                                         pcfs,
+                                         pcfs->this_class))
+    {
+        pjvm->class_java_lang_Class = clsidx;
+    }
+    else
+    if (0 == utf_prchar_classname_strcmp(JVMCLASS_JAVA_LANG_STRING,
+                                         pcfs,
+                                         pcfs->this_class))
+    {
+        pjvm->class_java_lang_String = clsidx;
+    }
+    else
+    if (0 == utf_prchar_classname_strcmp(JVMCLASS_JAVA_LANG_THREAD,
+                                         pcfs,
+                                         pcfs->this_class))
+    {
+        pjvm->class_java_lang_Thread = clsidx;
+    }
 
     /* normal class definition */
     CLASS(clsidx).status &= ~CLASS_STATUS_NULL;
@@ -712,6 +757,29 @@ jvm_class_index class_static_delete(jvm_class_index clsidx,
 
     if (CLASS(clsidx).status & CLASS_STATUS_INUSE)
     {
+        /*
+         * Unmark class if it was a startup class
+         */
+        if (clsidx == pjvm->class_java_lang_Object)
+        {
+            pjvm->class_java_lang_Object = jvm_class_index_null;
+        }
+        else
+        if (clsidx == pjvm->class_java_lang_Class)
+        {
+            pjvm->class_java_lang_Class = jvm_class_index_null;
+        }
+        else
+        if (clsidx == pjvm->class_java_lang_String)
+        {
+            pjvm->class_java_lang_String = jvm_class_index_null;
+        }
+        else
+        if (clsidx == pjvm->class_java_lang_Thread)
+        {
+            pjvm->class_java_lang_Thread = jvm_class_index_null;
+        }
+
         /*!
          * @todo HARMONY-6-jvm-class.c-5 Determine what to do, if
          *       anything, when rfalse is returned from
@@ -1685,13 +1753,11 @@ static
                  switch(CP_TAG(pcfs, constantvalue_index))
                  {
                      case CONSTANT_Long:
-                         pu4h = &PTR_CP_ENTRY_TYPE(
-                                     CONSTANT_Long_info,
+                         pu4h = &PTR_CP_ENTRY_LONG(
                                      pcfs,
                                      constantvalue_index)->high_bytes;
 
-                         pu4l = &PTR_CP_ENTRY_TYPE(
-                                     CONSTANT_Long_info,
+                         pu4l = &PTR_CP_ENTRY_LONG(
                                      pcfs,
                                      constantvalue_index)->low_bytes;
 
@@ -1719,8 +1785,7 @@ static
                          break;
 
                      case CONSTANT_Float:
-                         pu4 = &PTR_CP_ENTRY_TYPE(
-                                    CONSTANT_Float_info,
+                         pu4 = &PTR_CP_ENTRY_FLOAT(
                                     pcfs,
                                     constantvalue_index)
                                 ->bytes;
@@ -1731,12 +1796,10 @@ static
                          break;
 
                      case CONSTANT_Double:
-                         pu4h = &PTR_CP_ENTRY_TYPE(
-                                     CONSTANT_Long_info,
+                         pu4h = &PTR_CP_ENTRY_LONG(
                                      pcfs,
                                      constantvalue_index)->high_bytes;
-                         pu4l = &PTR_CP_ENTRY_TYPE(
-                                     CONSTANT_Long_info,
+                         pu4l = &PTR_CP_ENTRY_LONG(
                                      pcfs,
                                      constantvalue_index)->low_bytes;
 
@@ -1765,15 +1828,25 @@ static
                          break;
 
                      case CONSTANT_Integer:
-                         pu4 = &PTR_CP_ENTRY_TYPE(
-                                    CONSTANT_Integer_info,
+                         pu4 = &PTR_CP_ENTRY_INTEGER(
                                     pcfs,
                                     constantvalue_index)
                                 ->bytes;
 
                          vali = (jint) *pu4;
 
-                         /*
+                         /*!
+                          * @todo HARMONY-6-jvm-class.c-18 This may be
+                          *       a @e very bad assumption!  Verify that
+                          *       casting method is valid in all
+                          *       situations.  What is implied is that
+                          *       since the value is stored as a (jint),
+                          *       then all other accesses reference the
+                          *       (jint) and then cast it to other
+                          *       shorter types.  This @e may have
+                          *       portability implications, which is
+                          *       the main concern.
+                          *
                           * Casting to shorter types, namely
                           * (jshort), (jchar), (jbyte), and
                           * (jboolean), is done during field
@@ -1786,39 +1859,38 @@ static
 
                      case CONSTANT_String:
                          /*!
-                          * @todo HARMONY-6-jvm-class.c-17 Load up this
-                          *       string into a @c @b java.lang.String
-                          *       using the source from
+                          * @internal <em>DO NOT</em> do this until the
+                          *           class initialization is complete
+                          *           for @c @b java.lang.String or the
+                          *           results may be arbitrary or even
+                          *           fatal.  A well-formed class
+                          *           library will not attempt such an
+                          *           operation.  The probable result
+                          *           for a malformed class library
+                          *           will probably result in a null
+                          *           pointer core dump here:
                           *
-                          *       <b><code> pcfs->constant_pool
-                                         [PTR_CP_ENTRY_TYPE(
-                                              CONSTANT_String_info,
-                                              pcfs,
-                                              constantvalue_index)
-                                          ->string_index]</code></b>
                           *
-                          *       But do not store directly into,
-                          *
-                          *      <b><code>val._jstring = ... </code></b>
-                          *
-                          *       Instead, store the resulting object
-                          *       hash from the algorithm shown in
-                          *       @link #jvm_init() jvm_init()@endlink
-                          *       where the @link #main() main()@endlink
-                          *       parameter @c @b argv[] array is loaded
-                          *       into the Java edition of the same.
-                          *       The pseudocode for this operation is
-                          *       shown there.
-                          *
-                          *       <em>DO NOT</em> do this until the
-                          *       class initialization is complete for
-                          *       @c @b java.lang.String or the results
-                          *       may be arbitrary or even fatal.  A
-                          *       well-formed class library will not
-                          *       attempt such an operation.
+                          * @todo HARMONY-6-jvm-class.c-19 This invoca
+                          *       invocation needs better unit testing
+                          *       with real data.
                           *
                           */
-
+                         val._jstring =
+                             object_instance_new(OBJECT_STATUS_STRING,
+                                 CLASS_OBJECT_LINKAGE(
+                                    pjvm->class_java_lang_String)->pcfs,
+                                 pjvm->class_java_lang_String,
+                                 LOCAL_CONSTANT_NO_ARRAY_DIMS,
+                                 (jint *) rnull,
+                                 rfalse,
+                                 jvm_thread_index_null,
+                                 PTR_THIS_CP_Utf8(
+                                   pcfs
+                                     ->constant_pool
+                                       [PTR_CP_ENTRY_STRING(pcfs,
+                                                    constantvalue_index)
+                                          ->string_index]));
 
                          /*
                           * DO NOT do GC_OBJECT_MKREF(val._jstring)
