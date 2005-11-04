@@ -5,6 +5,9 @@
  *
  * Contains the copyright text needed for all Java programs.
  *
+ * For 'C' source and header files, information is found
+ * in @link jvm/include/arch.h jvm/include/arch.h@endlink.
+ *
  *
  * @section Control
  *
