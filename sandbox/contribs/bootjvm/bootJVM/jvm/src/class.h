@@ -124,17 +124,13 @@ typedef struct
                                       * being initialized. */
 /******************************************************************/
 
-/****** Next 2 bits same for class and object *********************/
+/****** Next 3 bits same for class and object *********************/
 #define CLASS_STATUS_GCREQ    0x0004 /**< Class may be garbage
                                           collected. */
 #define CLASS_STATUS_ARRAY    0x0008 /**< Class is an array type where
                                           @p @b arraydims contains
                                           number of dimensions */
-/******************************************************************/
-
-/****** Next 5 bits unique between class and object except: *******/
-
-#define CLASS_STATUS_REFERENCE 0x0080 /**< Class variable is a
+#define CLASS_STATUS_REFERENCE 0x0010 /**< Class static variable is a
                                        * reference.  This is the
                                        * @e same definition as for
                                        * @link #OBJECT_STATUS_REFERENCE
@@ -147,12 +143,15 @@ typedef struct
                                        * frame, where the GC algorithm
                                        * implements it.
                                        */
-
 /******************************************************************/
 
-/****** Next 4 bits unique between class and object ***************/
-#define CLASS_STATUS_PRIMATIVE 0x0200 /**< Primative for
-                                      @c @b java.lang.Class */
+/****** Next 9 bits unique between class and object ***************/
+#define CLASS_STATUS_0020     0x0020 /**< not used */
+#define CLASS_STATUS_0040     0x0040 /**< not used */
+#define CLASS_STATUS_PRIMATIVE 0x0080 /**< Primative for
+                                      *   @c @b java.lang.Class */
+#define CLASS_STATUS_0100     0x0100 /**< not used */
+#define CLASS_STATUS_0200     0x0200 /**< not used */
 #define CLASS_STATUS_LINKED   0x0400 /**< Class linkages completed */
 #define CLASS_STATUS_DOCLINIT 0x0800 /**< Class loaded,
                                       * needs @c @b \<clinit\> */
@@ -294,9 +293,21 @@ extern jvalue          *class_get_object_instance_field_data(
                                         jvm_object_hash  objhash,
                                               ClassFile *pcfs);
 
+
 /* Prototypes for functions in 'classutil.c' */
-extern jvm_class_index classutil_jobject2clsidx(jvm_object_hash
-                                                               objhash);
+
+extern rboolean classutil_subclass_of(jvm_class_index clsidx1,
+                                      jvm_class_index clsidx2);
+
+extern rboolean classutil_implements_interface(jvm_class_index clsidx1,
+                                               jvm_class_index clsidx2);
+
+extern rboolean classutil_superinterface_of(jvm_class_index clsidx1,
+                                            jvm_class_index clsidx2);
+
+extern rboolean
+      classutil_interface_implemented_by_arrays(jvm_class_index clsidx);
+
 #endif /* _class_h_included_ */
 
 
