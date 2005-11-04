@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #!
-# @file /home/dlydick/harmony/bootjvm/bootJVM/dist-common.sh
+# @file support/dist-common.sh
 #
 # @brief Common code for
 # @link ./dist-src.sh dist-src.sh@endlink and
@@ -19,9 +19,9 @@
 #       by @c @b Makefiles , have been removed, leaving only the
 #       distribution functions.
 #
-# @todo HARMONY-6-dist-common.sh-1  Combine all distribution functions
-#       into a single @c @b dist.sh script and move this logic
-#       into that script, eliminating this file.
+# @todo HARMONY-6-support-dist-common.sh-1  Combine all distribution
+#       functions into a single @c @b dist.sh script and move this
+#       logic into that script, eliminating this file.
 #
 # All source code compiled according to selections from
 # @link ./config.sh config.sh@endlink.  This may or may not include
@@ -80,10 +80,10 @@
 #
 # @attention For Eclipse uses, be aware that the <b>\$(LFLAGS)</b>
 # compile options must be the same as found in
-# @link ./MakeRules ./MakeRules@endlink.  These are unfortunately
-# @e not directly available to Eclipse and @e must be manually
-# verified there-- also check that the compiler <b>\$(CC)</b> and
-# archiver <b>\$(AR)</b> and linker <b>$(LN)</b> are correctly
+# @link support/MakeRules support/MakeRules@endlink.  These are
+# unfortunately @e not directly available to Eclipse and @e must be
+# manually verified there-- also check that the compiler <b>\$(CC)</b>
+# and archiver <b>\$(AR)</b> and linker <b>$(LN)</b> are correctly
 # specified in both placed.  They should be entered in the project
 # build parameters for C/C++ in the miscellaneous parameters section.
 #  For example,
@@ -100,13 +100,13 @@
 #
 # @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./MakeSetup ./MakeSetup@endlink
+# @see @link support/MakeSetup support/MakeSetup@endlink
 #
-# @see @link ./MakeRules ./MakeRules@endlink
+# @see @link support/MakeRules support/MakeRules@endlink
 #
 #
-# @todo  HARMONY-6-dist-common.sh-2 A Windows .BAT version of this
-#        script needs to be written
+# @todo  HARMONY-6-support-dist-common.sh-2 A Windows .BAT version
+#        of this script needs to be written
 #
 #
 # @section Control

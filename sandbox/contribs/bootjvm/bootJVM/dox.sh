@@ -105,7 +105,7 @@
 #
 # Script setup
 #
-. dox-common.sh
+. support/dox-common.sh
 . config/config_build_steps.sh
 
 ########################################################################
@@ -321,7 +321,7 @@ SED_OUT_PATTERN="PRE.fragment_PATCHED_BY_DOX_SH"
 
 if test "YES" != "$CONFIG_BUILD_HTML_ADJUST_NETSCAPE47X"
 then
-    doxygen bootjvm.dox 2>&1 | egrep -v "${DOXYGEN_FILTER}"
+    doxygen support/bootjvm.dox 2>&1 | egrep -v "${DOXYGEN_FILTER}"
 else
     # Only meaningful if "GENERATE_HTML=YES" in directive file
 
@@ -332,7 +332,7 @@ else
 
         rm -f $CSS_FILE
 
-        doxygen bootjvm.dox 2>&1 | egrep -v "${DOXYGEN_FILTER}"
+        doxygen support/bootjvm.dox 2>&1 | egrep -v "${DOXYGEN_FILTER}"
 
         mv $CSS_FILE $CSS_FILE_ORIG
 

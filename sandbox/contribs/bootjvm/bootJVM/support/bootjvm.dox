@@ -1,6 +1,6 @@
 ########################################################################
 #
-# bootjvm.dox
+# support/bootjvm.dox
 #
 # Doxygen setup and controls for Apache Harmony 'bootJVM' project.
 #
@@ -138,12 +138,13 @@ WARN_NO_PARAMDOC       = YES
 @INCLUDE = config/config_roster_jni_h.dox
 @INCLUDE = config/config_roster_jni_java.dox
 @INCLUDE = config/config_roster_test_java.dox
+@INCLUDE = config/config_roster_org_java.dox
 @INCLUDE = config/config_roster_sh.dox
 
 
 #################################
 # FILE_PATTERNS        =     # Explicitly specify files with INPUT=
-# FILE_VERSION_FILTER  = svnstat.sh # Per doc recommendation
+# FILE_VERSION_FILTER  = support/svnstat.sh # Per doc recommendation
 RECURSIVE              = NO
 #################################
 EXCLUDE                =
@@ -161,7 +162,7 @@ EXCLUDE_PATTERNS       =
 # with such work, re-enable this
 # parameter and rebuild all docs.
 #
-INPUT_FILTER           = dox-filter.sh
+INPUT_FILTER           = support/dox-filter.sh
 
 # FILTER_PATTERNS      =
 FILTER_SOURCE_FILES    = YES

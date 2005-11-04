@@ -1,6 +1,6 @@
 #!/bin/sh
 #!
-# @file ./dox-common.sh
+# @file support/dox-common.sh
 #
 # @brief Common code for @link ./dox.sh dox.sh@endlink and
 # @link ./undox.sh undox.sh@endlink.
@@ -10,8 +10,8 @@
 # anything on its own.
 #
 #
-# @todo  HARMONY-6-dox-common.sh-1 A Windows .BAT version of this
-#        script needs to be written
+# @todo  HARMONY-6-support-dox-common.sh-1 A Windows .BAT version of
+#        this script needs to be written
 #
 #
 # @section Control
@@ -58,7 +58,7 @@
 #
 # Doxygen configuration file.  Parse out keywords from this file.
 #
-DOXYFILE=bootjvm.dox
+DOXYFILE=support/bootjvm.dox
 
 ########################################################################
 #

@@ -1,13 +1,13 @@
 #!/bin/sh
 #
 #!
-# @file ./dox-filter.sh
+# @file support/dox-filter.sh
 #
 # @brief Convince Doxygen to parse files other than source code
 # as part of documentation set.
 #
-# This script is invoked from with @b doxygen via @b bootjvm.dox as
-# the @b INPUT_FILTER value.
+# This script is invoked from with @b doxygen via @b support/bootjvm.dox
+# as the @b INPUT_FILTER value.
 #
 # For shell scripts, strip non-comments and convert shell comments
 # beginning in column 1 from (<b>^#</b>) to (<b> *</b>).  These appear
@@ -27,7 +27,7 @@
 # please refer to @link ./LICENSE LICENSE@endlink.
 #
 #
-# @todo  HARMONY-6-dox-filter.sh-1 A Windows .BAT version of this
+# @todo  HARMONY-6-support-dox-filter.sh-1 A Windows .BAT version of this
 #        script needs to be written
 #
 #
@@ -106,7 +106,7 @@ else
 fi
 
 case $convertit in
-    0 | 3)
+    0)
        cat $1;;
 
     1) # Read file, strip /bin/sh line, convert comments
@@ -116,7 +116,7 @@ case $convertit in
        sed 's,^#!,/*!,;s,^#/, */,;s,^#, *,'
        ;;
 
-    2 | 4)
+    2 | 3 | 4)
        # Read file, convert whole file of which only
        # header areas need to contain comments.
        cat $1 | \

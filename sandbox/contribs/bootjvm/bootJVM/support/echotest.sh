@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #!
-# @file ./echotest.sh
+# @file support/echotest.sh
 #
 # @brief Generic replacement for <b><code>echo -n</code></b>
 #
@@ -13,7 +13,7 @@
 # It should work on any flavor of BASH, Korn, and Bourne shells.
 # A stand-alone invocation does nothing, but is benign.
 #
-# Loaded where needed as:  <b><code>. ./echotest.sh</code></b>
+# Loaded where needed as:  <b><code>. support/echotest.sh</code></b>
 #
 # Invoke as:
 #<b><code>$echon "Print a line without a final newline$echoc"</code></b>

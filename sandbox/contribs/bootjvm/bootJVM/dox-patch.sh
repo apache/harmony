@@ -77,7 +77,7 @@
 #
 # Script setup
 #
-. dox-common.sh
+. support/dox-common.sh
 . config/config_build_steps.sh
 
 ########################################################################

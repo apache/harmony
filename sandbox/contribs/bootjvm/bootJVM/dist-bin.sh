@@ -17,7 +17,7 @@
 # Use @link ./dist-doc.sh dist-doc.sh@endlink to distribute
 # the documentation package.
 #
-# @see @link ./dist-common.sh ./dist-common.sh@endlink
+# @see @link ./support/dist-common.sh support/dist-common.sh@endlink
 #
 # @attention  Make @e sure that all Eclipse project files are in
 #             the "open" state when creating a distribution.
@@ -28,7 +28,7 @@
 #       and every CPU platform that implements this code instead of
 #       having just a single output location for each file.  However,
 #       that also involves changes to
-#       @link ./MakeRules ./MakeRules@endlink, as well as
+#       @link support/MakeRules support/MakeRules@endlink, as well as
 #       @link ./config.sh config.sh@endlink.  This is left as an
 #       exercise for the project team.  For an example of such a
 #       multi-host script, consider that the original development was
@@ -124,9 +124,9 @@
 #
 # Script setup.
 #
-. echotest.sh
+. support/echotest.sh
 
-. dist-common.sh
+. support/dist-common.sh
 
 MSG80="This script must NOT be interrupted.  Last chance to stop it..."
 $echon "$PGMNAME:  $MSG80" $echoc

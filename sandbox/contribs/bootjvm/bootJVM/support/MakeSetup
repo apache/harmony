@@ -1,12 +1,12 @@
 #
 #!
-# @file ./MakeSetup
+# @file support/MakeSetup
 #
 # @brief Setup and configuration of all Makefiles
 #
 # @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./MakeRules ./MakeRules@endlink
+# @see @link support/MakeRules support/MakeRules@endlink
 #
 #
 # @section Control
@@ -62,21 +62,16 @@ PWD=$(shell pwd)
 
 ########################
 #
-# Base name of this directory and of parent directory
+# Base name of this directory
 #
-DIRNAME:=$(shell expr $(PWD) : '\(.*[^/]\)/*$' : '.*/\(..*\)')
-PROJECTNAME:=
-
-ifeq ("src","$(DIRNAME)")
-PROJECTNAME:=$(shell expr $(PWD)/ : '\(/\)/*[^/]*//*$' \| $(PWD)/ \
-                                  : '\(.*[^/]\)//*[^/][^/]*//*$' )
-endif
+DIRNAME:=$(shell expr $(PWD) : '\(.*[^/]\)/*$$' : '.*/\(..*\)')
 
 ########################
 #
 # Names of source and target directories
 #
 CFGDIR=$(TOPDIR)/config
+DOCDIR=$(TOPDIR)/doc
 
 INCDIR=../include
 BINDIR=../bin
@@ -84,6 +79,14 @@ LIBDIR=../lib
 
 CLSDIR=$(LIBDIR)/classes
 LIBJVM_LIBDIR=../../libjvm/lib
+
+########################
+#
+# Support Eclipse version of target directories in 'clean' rules
+#
+ECLIPSE_BINDIR=$(BINDIR)/src
+ECLIPSE_LIBDIR=$(LIBDIR)/src
+ECLIPSE_LIBJVM_LIBDIR=$(LIBJVM_LIBDIR)/src
 
 ########################
 #

@@ -1,13 +1,14 @@
 #!/bin/sh
 #
 #!
-# @file ./svnstat.sh
+# @file support/svnstat.sh
 #
 # @brief Per doxygen @b config.html recommendation for
 # FILE_VERSION_FILTER
 #
-# @todo HARMONY-6-svnstat.sh-1 The @c @b sed(1) command as documented
-#       is not valid.  See also @@bug entry HARMONY-6-svnstat.sh-1001.
+# @todo HARMONY-6-support-svnstat.sh-1 The @c @b sed(1) command as
+#       documented is not valid.  See also @@bug entry
+#       HARMONY-6-support-svnstat.sh-1001.
 #
 # @verbatim
 #
@@ -50,10 +51,10 @@
 #
 # @section Reference
 #
-# @bug HARMONY-6-svnstat.sh-1001 The @c @b sed(1) string recommended in
-#      the Doxygen narrative needs fixing.  It is reported here
-#      verbatim, but it is possible that the number of backslash
-#      characters is not correct.
+# @bug HARMONY-6-support-svnstat.sh-1001 The @c @b sed(1) string
+#      recommended in the Doxygen narrative needs fixing.  It is
+#      reported here verbatim, but it is possible that the number
+#      of backslash characters is not correct.
 #
 #/ /* 
 # (Use  #! and #/ with dox_filter.sh to fool Doxygen into

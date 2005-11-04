@@ -1,12 +1,12 @@
 #
 #!
-# @file ./MakeRules
+# @file support/MakeRules
 #
 # @brief Rules for building targets
 #
 # @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./MakeSetup ./MakeSetup@endlink
+# @see @link support/MakeSetup support/MakeSetup@endlink
 #
 #
 # @section Control
@@ -160,9 +160,25 @@ INCLUDES:= \
 
 ########################
 #
-# Create header file dependency list
+# Start 'C' utility rules with empty rule.
+# Do nothing for these rules unless 'C' sources are defined.
+# If defined, additional actions are also defined.
 #
-DEPEND=.depend
+depend::
+nodepend::
+tags::
+
+########################
+#
+# Create header file dependency list.
+# Notice that the $(DEPEND_FILE) file cannot
+# reside in $(BINDIR) or $(LIBDIR) since
+# some directories have targets in both,
+# thus making this file's proper location
+# ambiguous.  Therefore, leave it in the
+# _same_ directory as its invoking Makefile.
+#
+DEPEND_FILE=.depend
 ifneq (,$(BIN_TARGET))
 DEPDIR=$(BINDIR)
 endif
@@ -170,37 +186,72 @@ ifneq (,$(LIB_TARGET))
 DEPDIR=$(LIBDIR)
 endif
 
-TOUCHDEPEND=touch $(DEPEND)
-MAKEDEPEND:=makedepend -f$(DEPEND) $(INCLUDES) -p$(DEPDIR)/ \
-  $(C_SOURCES) $(C_HEADERS)
+TOUCHDEPEND=touch $(DEPEND_FILE)
+MAKEDEPEND:=makedepend -f$(DEPEND_FILE) $(INCLUDES) -p$(DEPDIR)/ \
+  $(C_SOURCES)
+
+########################
+#
+# Build 'C' source and header file tags for 'vi'.
+# Other editor utilties are welcome here, but
+# please _add_ to this function, do not replace it.
+#
+# Note: 'tags' is the default tag file name for 'ctags'
+#
+CTAGS=ctags
+CTAGS_FILE=tags
+
+########################
+#
+# Start of additional definitions when 'C' sources are defined
+# There will be a corresponding end of block later.
+#
+ifneq (,$(C_SOURCES))
 
 ########################
 #
 # Unconditionally build dependencies for directories with 'C' sources.
 # Ignore request for other directory types.
 #
+
 depend::
-ifneq (,$(C_SOURCES))
 	$(CC_SILENT)$(TOUCHDEPEND)
 	$(CC_SILENT)-$(MAKEDEPEND)
 
--include $(DEPEND)
+nodepend::
+	$(CC_SILENT)rm -f $(DEPEND_FILE)
+
+-include $(DEPEND_FILE)
+
+########################
+#
+# Unconditionally build editor tag file $(CTAGS_FILE).
+#
+tags::
+	$(CC_SILENT)-$(CTAGS) -f $(CTAGS_FILE) $(C_SOURCES) $(C_HEADERS)
 
 ########################
 #
 # Automatically build dependencies if not present
 #
 all::
-ifeq (,$(wildcard $(DEPEND)))
+ifeq (,$(wildcard $(DEPEND_FILE)))
 	$(CC_SILENT)@$(TOUCHDEPEND)
 	$(CC_SILENT)@-$(MAKEDEPEND)
 
 endif # DEPEND
+
+########################
+#
+# End of additional definitions when 'C' sources are defined.
+#
 endif # C_SOURCES
 
 
 clean veryclean::
-	$(CLEAN_SILENT)rm -f $(DEPEND) $(DEPEND).bak
+	$(CLEAN_SILENT)rm -f core \
+		$(DEPEND_FILE) $(DEPEND_FILE).bak core \
+		$(CTAGS_FILE)
 
 ###################################################################
 #
@@ -232,16 +283,16 @@ $(JAR_TARGET):: $(JAVA_SOURCES)
 # are up to date or not.
 #
 $(JAR_TARGET):: $(JAVA_SOURCES)
-ifeq (,$(wildcard $(LIBDIR)))
+#ifeq (,$(wildcard $(LIBDIR)))
 	@if test ! -d $(LIBDIR); then mkdir $(LIBDIR); fi
-endif
-ifeq (,$(wildcard $(CLSDIR)))
+#endif
+#ifeq (,$(wildcard $(CLSDIR)))
 	@if test ! -d $(CLSDIR); then mkdir $(CLSDIR); fi
-endif
-ifeq (,$(wildcard $(BINDIR)))
-	@if test ! -d $(BINDIR); then mkdir $(BINDIR); fi
-endif
+#endif
 	$(JAVAC_SILENT)$(JAVAC) $(JFLAGS) $(JJFLAGS) $^
+#ifeq (,$(wildcard $(BINDIR)))
+	@if test ! -d $(BINDIR); then mkdir $(BINDIR); fi
+#endif
 	$(JAVAC_SILENT)$(JAR) $(JARCMD) $@ -C $(CLSDIR) .
 
 # Assume that 'rmdir' works on an empty directory-- there should
@@ -283,10 +334,10 @@ endif
 #
 # Compile sources into linkable objects
 #
-$(BINDIR)/%.$(C_OBJECT): %.$(C_SOURCE)
-ifeq (,$(wildcard $(BINDIR)))
+$(BINDIR)/%.$(C_OBJECT):: %.$(C_SOURCE)
+#ifeq (,$(wildcard $(BINDIR)))
 	@if test ! -d $(BINDIR); then mkdir $(BINDIR); fi
-endif
+#endif
 	$(CC_SILENT)$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
 
 #
@@ -304,7 +355,7 @@ ifneq (,$(wildcard main.$(C_SOURCE)))
 	$(CLEAN_SILENT)rm -f $(BINDIR)/main.$(C_OBJECT)
 endif
 	$(CLEAN_SILENT)rm -f $(BIN_OBJECTS) $(BIN_TARGET)
-	@rm -rf $(BINDIR)/src
+	@rm -rf $(ECLIPSE_BINDIR)
 	$(CLEAN_SILENT)-rmdir $(BINDIR)
 
 veryclean::
@@ -325,9 +376,9 @@ LIB_OBJECTS=$(patsubst %.$(C_SOURCE),$(LIBDIR)/%.$(C_OBJECT),$(C_SOURCES))
 # Compile sources into archivable objects
 #
 $(LIBDIR)/%.$(C_OBJECT): %.$(C_SOURCE)
-ifeq (,$(wildcard $(LIBDIR)))
+#ifeq (,$(wildcard $(LIBDIR)))
 	@if test ! -d $(LIBDIR); then mkdir $(LIBDIR); fi
-endif
+#endif
 	$(CC_SILENT)$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
 
 #
@@ -340,7 +391,7 @@ $(LIB_TARGET): $(LIB_OBJECTS)
 # _never_ be anything there that 'make' did not put there.
 clean::
 	$(CLEAN_SILENT)rm -f $(LIB_OBJECTS) $(LIB_TARGET)
-	@rm -rf $(LIBDIR)/src
+	@rm -rf $(ECLIPSE_LIBDIR)
 	$(CLEAN_SILENT)-rmdir $(LIBDIR)
 
 veryclean::
@@ -354,7 +405,7 @@ endif # LIB_TARGET
 # Rules that really only operate at the top level,
 # placed at other levels for convenience.
 #
-roster dox undox::
+roster doc dox undox::
 	$(MAKE) -C $(TOPDIR) $@
 
 ###################################################################
