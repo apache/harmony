@@ -60,6 +60,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(object, c,
 #include "native.h"
 #include "opcode.h"
 #include "utf.h"
+#include "unicode.h"
 #include "util.h"
 
 
@@ -231,6 +232,79 @@ rvoid object_run_method(jvm_class_index   clsidx,
     return;
 
 } /* END of object_run_method() */
+
+
+/*!
+ * @brief Look up java.lang.String of this value.
+ *
+ * If a java.lang.String with this value already exists,
+ * return its object hash, otherwise 
+ * @link #jvm_object_hash_null jvm_object_hash_null@endlink.
+ *
+ * @param  utf8string  UTF8 representation of Unicode string to
+ *                     locate in object table.
+ *
+ *
+ * @returns @link #jvm_object_hash jvm_object_hash@endlink of a
+ *          java.lang.String that contains this string value, otherwise
+ *          @link #jvm_object_hash_null jvm_object_hash_null@endlink.
+ *
+ *
+ * @todo  HARMONY-6-jvm-object.c-5 Needs better unit testing.
+ *
+ */
+jvm_object_hash
+    object_utf8_string_lookup(CONSTANT_Utf8_info *utf8string)
+{
+    ARCH_FUNCTION_NAME(object_utf8_string_lookup);
+
+    if (rnull == utf8string)
+    {
+        return(jvm_object_hash_null);
+    }
+
+    jvm_class_index clsidx =
+        class_find_by_prchar(JVMCLASS_JAVA_LANG_STRING);
+
+    /* Should @e never be the case after JVM initialization */
+    if (jvm_object_hash_null == clsidx)
+    {
+        return(jvm_object_hash_null);
+    }
+
+    /* Unicode representation will @e always be same or less than UTF */
+    jchar *punicode = HEAP_GET_DATA(utf8string->length * sizeof(jchar),
+                                    rfalse);
+
+    jshort len_unicode = utf_utf2unicode(utf8string, punicode);
+
+    jvm_object_hash objhash;
+
+    for (objhash = JVMCFG_FIRST_OBJECT;
+         objhash < JVMCFG_MAX_OBJECTS;
+         objhash++)
+    {
+        if ((OBJECT(objhash).status & OBJECT_STATUS_INUSE) &&
+            (OBJECT(objhash).status & OBJECT_STATUS_STRING))
+        {
+             jvm_object_hash array_objhash = 
+                OBJECT(objhash)
+                  .object_instance_field_data
+                    [native_jlString_critical_field_value]._jobjhash;
+
+             if (0 == unicode_strcmp(punicode,
+                                     len_unicode,
+                                     OBJECT(array_objhash).arraydata,
+                                  OBJECT(array_objhash).arraylength[0]))
+             {
+                return(objhash);
+             }
+        }
+    }/* for objhash */
+
+    return(jvm_object_hash_null);
+
+} /* END of object_utf8_string_lookup() */
 
 
 /*!
@@ -407,7 +481,7 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  * optionally run its @c @b \<init\> method with default
  * parameters (none).
  *
- * The following four mutually exclusive variations are available using
+ * The following five mutually exclusive variations are available using
  * @b special_obj modifier:
  *
  * <ul>
@@ -417,6 +491,11 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  * <li><b>OBJECT_STATUS_THREAD</b>: Treat the object instance creation
  *                                  as a normal object, but mark it as a
  *                                  @c @b java.lang.Thread .
+ * </li>
+ *
+ * <li><b>OBJECT_STATUS_STRING</b>: Treat the object instance creation
+ *                                  as a normal object, but mark it as a
+ *                                  @c @b java.lang.String .
  * </li>
  *
  * <li><b>OBJECT_STATUS_CLASS</b>:  Treat the object instance creation
@@ -487,6 +566,12 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  *                                              @c @b java.lang.Thread .
  * </li>
  *
+ * <li>         @link #OBJECT_STATUS_STRING OBJECT_STATUS_STRING@endlink
+ *                                              This is a normal object,
+ *                                              and it is an instance of
+ *                                              @c @b java.lang.String .
+ * </li>
+ *
  * <li>         @link #OBJECT_STATUS_CLASS OBJECT_STATUS_CLASS@endlink
  *                                             create new class object
  *                                             instead of class instance
@@ -520,6 +605,9 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  *                      in the first dimension, meaning no data in the
  *                    object's @link robject#arraydata arraydata@endlink
  *                       member (@link #rnull rnull@endlink instead).
+ *                       This pointer @e must have been created by
+ *                       HEAP_GET_DATA() and it will be freed by
+ *                       HEAP_FREE_DATA() when the object is deleted.
  *
  * @param   run_init_   When @link #rtrue rtrue@endlink, run the
  *                      object's @c @b \<init\> method with default
@@ -528,9 +616,17 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  *
  * @param   thridx      Thread table index associated with this
  *                      @c @b java.lang.Thread object.
- *                      Meaningful only when OBJECT_STATUS_THREAD is
+ *                      Meaningful only @b when OBJECT_STATUS_THREAD is
  *                      set or when @b run_init_ is
  *                      @link #rtrue rtrue@endlink.
+ *
+ * @param   utf8string  UTF8 string data associated with this
+ *                      @c @b java.lang.String object.
+ *                      Meaningful only when OBJECT_STATUS_STRING is
+ *                      set.  @c @b run_init_ is meaningless when
+ *                      this parameter is used.  When this parameter
+ *                      is not used, it should be set to
+ *                      @link #rnull rnull@endlink.
  *
  *
  * @returns Object hash value of allocation.  Throw error if no slots.
@@ -552,9 +648,23 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                                     jvm_array_dim    arraydims,
                                     jint            *arraylength,
                                     rboolean         run_init_,
-                                    jvm_thread_index thridx)
+                                    jvm_thread_index thridx,
+                                    CONSTANT_Utf8_info *utf8string)
 {
     ARCH_FUNCTION_NAME(object_instance_new);
+
+    if (OBJECT_STATUS_STRING & special_obj)
+    {
+        /* Check existing string of these identical contents */
+        jvm_object_hash existing_string =
+            object_utf8_string_lookup(utf8string);
+
+        /* Done if this string already exists */
+        if (jvm_object_hash_null != existing_string)
+        {
+            return(existing_string);
+        }
+    }
 
     /* Locate an empty slot */
     jvm_object_hash objhash = object_allocate_slot(rtrue);
@@ -708,7 +818,8 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                         arraydims - 1,
                         &arraylength[1],
                         run_init_,
-                        thridx);
+                        thridx,
+                        (CONSTANT_Utf8_info *) rnull);
 
                 /*
                  * Add this object to this dimension's array and
@@ -740,6 +851,16 @@ jvm_object_hash object_instance_new(rushort          special_obj,
              * which is simply a status bit set on a normal object.
              */
             OBJECT(objhash).status |= OBJECT_STATUS_THREAD;
+            OBJECT(objhash).table_linkage.thridx = thridx;
+        }
+        else
+        if (OBJECT_STATUS_STRING & special_obj)
+        {
+            /*
+             * Mark slot as being a @c @b java.lang.String,
+             * which is simply a status bit set on a normal object.
+             */
+            OBJECT(objhash).status |= OBJECT_STATUS_STRING;
             OBJECT(objhash).table_linkage.thridx = thridx;
         }
 
@@ -790,13 +911,19 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                           ptl->pcfs,
                           ptl->pcfs->this_class))
                     ? OBJECT_STATUS_THREAD
-                    : OBJECT_STATUS_EMPTY,
+                    : (0 == utf_prchar_classname_strcmp(
+                          JVMCLASS_JAVA_LANG_STRING,
+                          ptl->pcfs,
+                          ptl->pcfs->this_class))
+                        ? OBJECT_STATUS_STRING
+                        : OBJECT_STATUS_EMPTY,
                 ptl->pcfs,
                 clsidxsuper,
                 LOCAL_CONSTANT_NO_ARRAY_DIMS,
                 (jint *) rnull,
                 run_init_,
-                thridx);
+                thridx,
+                utf8string);
 
         (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(
                     objhash,
@@ -819,17 +946,66 @@ jvm_object_hash object_instance_new(rushort          special_obj,
         return(objhash);
     }
 
-    object_run_method(clsidx,
-                      CONSTANT_UTF8_INSTANCE_CONSTRUCTOR,
-                  CONSTANT_UTF8_INSTANCE_CONSTRUCTOR_DESCRIPTOR_DEFAULT,
-                      thridx);
+    if (OBJECT_STATUS_STRING & special_obj)
+    {
+        /*!
+         * @todo  HARMONY-6-jvm-object.c-4 Need to write the code
+         *        that loads the string data from @c @b stlen and 
+         *        @c @b utf8string into the string object itself.
+         *        This should probably be accomplished with
+         *        the byte array constructor:
+         *        String(byte[] bytes, int offset,int length)
+         */
+        jint *numchars = HEAP_GET_DATA(1 * sizeof(jint), rfalse);
+
+        numchars[0] = utf8string->length;
+
+        jvm_object_hash array_objhash =
+            object_instance_new(OBJECT_STATUS_EMPTY,
+                                CLASS_OBJECT_LINKAGE(
+                                    pjvm->class_primative_char)->pcfs,
+                                pjvm->class_primative_char,
+                                1,
+                                numchars,
+                                rfalse,
+                                thridx,
+                                (CONSTANT_Utf8_info *) rnull);
+
+        /* Store UTF8 string into Unicode array buffer */
+        utf_utf2unicode(utf8string, OBJECT(array_objhash).arraydata);
+
+        /*
+         * Manually stuff java.lang.String hooks into hard-coded field
+         * positions.
+         */
+        OBJECT(objhash)
+          .object_instance_field_data
+            [native_jlString_critical_field_value]._jobjhash =
+                                     /* Could say '_jarray' here */
+                                                          array_objhash;
+
+        OBJECT(objhash)
+          .object_instance_field_data
+            [native_jlString_critical_field_length]._jint =
+                                                     utf8string->length;
+
+        /* Initiate first reference */
+        (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(objhash, array_objhash);
+    }
+    else
+    {
+        object_run_method(clsidx,
+            CONSTANT_UTF8_INSTANCE_CONSTRUCTOR,
+            CONSTANT_UTF8_INSTANCE_CONSTRUCTOR_DESCRIPTOR_DEFAULT,
+            thridx);
+    }
 
     /*
      * Declare this object instance as being referenced,
      * but not here.  The calling function must perform
      * this task.
      */
-    /* (rvoid) GC_OBJECT_MKREF(objhash); */
+    /* (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(objhash); */
 
 
     /* Done running @c @b \<init\> method, so quit */
@@ -1073,7 +1249,7 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
             if (rnull != OBJECT(objhash).arraylength)
             {
                 HEAP_FREE_DATA(OBJECT(objhash).arraylength);
-                /* OBJECT(objhash).arraylength   = (jint *) rnull; */
+                OBJECT(objhash).arraylength   = (jint *) rnull;
             }
         }
 
