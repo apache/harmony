@@ -136,14 +136,14 @@
 #
 # Script setup
 #
-chmod -w $0 ./echotest.sh
+chmod -w $0 support/echotest.sh
 
-. ./echotest.sh
+. support/echotest.sh
 
 # Read release level, if found
 if test -f RELEASE_LEVEL
 then
-    RELEASE_LEVEL=`cat RELEASE_LEVEL`
+    RELEASE_LEVEL=`cat RELEASE_LEVEL | egrep -v "^#"`
 else
     RELEASE_LEVEL=""
 fi
@@ -805,7 +805,7 @@ echo \
 while true
 do
     echo ""
-    $echon "Garbage collection method: [stub,other] $echoc"
+    $echon "Garbage collection method: [stub,refcount,other] $echoc"
     read gcmethod
 
     case $gcmethod in
@@ -923,7 +923,7 @@ echo ""
 
 SHOULDBUILD="Should 'make' construct"
 MSG80ALL="all:  $SHOULDBUILD the entire code tree?"
-MSG80JVM="jvm:  $SHOULDBUILD the main develoment area?"
+MSG80JVM="jvm:  $SHOULDBUILD the main development area?"
 MSG80LIB="lib:  $SHOULDBUILD the static JVM library?"
 MSG80MAIN="main: $SHOULDBUILD the sample main() program?"
 MSG80TEST="test: $SHOULDBUILD the Java test code area?"
@@ -1573,7 +1573,7 @@ echo " * See the License for the specific language governing permissions"
     echo " * @b gcc means use GNU C compiler"
     echo " *"
     echo " * @b other means use the default as specified in"
-    echo " *          @link ./MakeRules ./MakeRules@endlink"
+    echo " *          @link support/MakeRules support/MakeRules@endlink"
     echo " *"
     echo " */"
     echo "#define CONFIG_CCOMPILER_$CCOMPILER"
@@ -1738,15 +1738,13 @@ CDSM="config/config_dox_setup.mak"
 
 chmod -w $CDSD $CDSM
 
-(
-    roster.sh
-    echo "$PGMNAME:  Compile configuration:         $CFGH"
-    echo "$PGMNAME:  Code build steps:              $CBSD"
-    echo "                                           $CBSM"
-    echo "$PGMNAME:  Documentation build steps:     $CDSD"
-    echo "                                           $CDSM"
-    echo ""
-) | more
+roster.sh
+echo "$PGMNAME:  Compile configuration:                $CFGH"
+echo "$PGMNAME:  Code build steps:                     $CBSD"
+echo "                                                  $CBSM"
+echo "$PGMNAME:  Documentation build steps:            $CDSD"
+echo "                                                  $CDSM"
+echo ""
 
 
 #############################
