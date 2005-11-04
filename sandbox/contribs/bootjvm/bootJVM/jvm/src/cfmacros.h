@@ -193,6 +193,26 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * </li>
  *
  * <li>
+ *     PTR_CP_ENTRY_INTEGER()  (CONSTANT_Integer_info *)
+ * </li>
+ *
+ * <li>
+ *     PTR_CP_ENTRY_FLOAT()    (CONSTANT_Float_info *)
+ * </li>
+ *
+ * <li>
+ *     PTR_CP_ENTRY_LONG()     (CONSTANT_Long_info *)
+ * </li>
+ *
+ * <li>
+ *     PTR_CP_ENTRY_DOUBLE()   (CONSTANT_Double_info *)
+ * </li>
+ *
+ * <li>
+ *     PTR_CP_ENTRY_STRING()   (CONSTANT_String_info *)
+ * </li>
+ *
+ * <li>
  *     PTR_CP_ENTRY_UTF8()     (CONSTANT_Utf8_info *)
  * </li>
  * </ul>
@@ -217,6 +237,21 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
 
 #define PTR_CP_ENTRY_CLASS(pcfs, cpidx)  \
    ((CONSTANT_Class_info *) PTR_CP_ENTRY(pcfs, cpidx))
+
+#define PTR_CP_ENTRY_INTEGER(pcfs, cpidx)  \
+   ((CONSTANT_Integer_info *) PTR_CP_ENTRY(pcfs, cpidx))
+
+#define PTR_CP_ENTRY_FLOAT(pcfs, cpidx)  \
+   ((CONSTANT_Float_info *) PTR_CP_ENTRY(pcfs, cpidx))
+
+#define PTR_CP_ENTRY_LONG(pcfs, cpidx)  \
+   ((CONSTANT_Long_info *) PTR_CP_ENTRY(pcfs, cpidx))
+
+#define PTR_CP_ENTRY_DOUBLE(pcfs, cpidx)  \
+   ((CONSTANT_Double_info *) PTR_CP_ENTRY(pcfs, cpidx))
+
+#define PTR_CP_ENTRY_STRING(pcfs, cpidx)  \
+   ((CONSTANT_String_info *) PTR_CP_ENTRY(pcfs, cpidx))
 
 #define PTR_CP_ENTRY_UTF8(pcfs, cpidx)  \
    ((CONSTANT_Utf8_info *) PTR_CP_ENTRY(pcfs, cpidx))
