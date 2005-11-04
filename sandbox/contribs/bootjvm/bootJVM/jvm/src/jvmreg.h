@@ -199,19 +199,21 @@ typedef u2 jvm_exception_index_table_index;
  * @param thridx  Thread index of thread whose stack it to
  *                be manipulated.
  *
+ * @param idx     Index into stack from SP of this thread's stack.
+ *
  * @param value   (@link #jint jint@endlink) value to store into
  *                stack location.
  *
- *
- * @returns The @b GET_SP() macros return a (jint) value from
- *          the stack, the others return @link #rvoid rvoid@endlink.
- *
+ * @param cast    Data type (cast) for return value
  */
 
 /*@{ */ /* Begin grouped definitions */
 
 /*!
  * @brief Read a word at given depth in stack.
+ *
+ * @returns word at @c @b idx as requested (cast) data type.
+ *
  */
 #define GET_SP_WORD(thridx, idx, cast) \
     ((cast) (STACK(thridx, GET_SP(thridx) - idx)))
@@ -227,9 +229,47 @@ typedef u2 jvm_exception_index_table_index;
  *          be stored without compiler or run-time
  *          notification.
  *
+ * @returns @link #rvoid rvoid@endlink
+ *
  */
 #define PUT_SP_WORD(thridx, idx, value) \
     STACK(thridx, GET_SP(thridx) - idx) = (jint) (value)
+
+/*!
+ * @brief Read a word at given frame pointer offset in stack.
+ *
+ * This macro is typically used to read parts of the stack frame
+ * <em>not including</em> the local variable area.  Therefore,
+ * the index is @e positive, unlike @link #GET_SP_WORD()
+   GET_SP_WORD@endlink.
+ *
+ * @returns word at @c @b idx as requested (cast) data type.
+ *
+ */
+#define GET_FP_WORD(thridx, idx, cast) \
+    ((cast) (STACK(thridx, GET_FP(thridx) + idx)))
+
+/*!
+ * @brief Write a word at given frame pointer offset in stack.
+ *
+ * This macro is typically used to read parts of the stack frame
+ * <em>not including</em> the local variable area.  Therefore,
+ * the index is @e positive, unlike @link #PUT_SP_WORD()
+   PUT_SP_WORD@endlink.
+ *
+ * @warning The @c @b value parameter @e must be of
+ *          type @link #jint jint@endlink.  It will
+ *          be cast as such in order to fit, but if
+ *          it is a @link #jfloat jfloat@endlink or
+ *          wider than this, the wrong value @e will
+ *          be stored without compiler or run-time
+ *          notification.
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ */
+#define PUT_FP_WORD(thridx, idx, value) \
+    STACK(thridx, GET_FP(thridx) + idx) = (jint) (value)
 
 /*@} */ /* End of grouped definitions */
 
