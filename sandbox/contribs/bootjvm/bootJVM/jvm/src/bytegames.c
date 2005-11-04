@@ -104,9 +104,11 @@ typedef union
  */
 typedef union
 {
-    ruint _ruival;  /**< Real unsigned int representation */
+    ruint  _ruival;  /**< Real unsigned int representation */
 
-    juint _juival;  /**< Java unsigned int representation */
+    juint  _juival;  /**< Java unsigned int representation */
+
+    jfloat _jfval;   /**< Java float representation */
 
     struct
     {
@@ -141,9 +143,9 @@ typedef union
 
     rdouble _rdval;   /**< Real double representation */
 
-    rulong  _julval;  /**< Java unsigned long long representation */
+    julong  _julval;  /**< Java unsigned long long representation */
 
-    rdouble _jdval;   /**< Java double representation */
+    jdouble _jdval;   /**< Java double representation */
 
     struct
     {
