@@ -453,6 +453,11 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
     {
         if (rtrue == jvm_completely_initialized)
         {
+            /*
+             * Don't examine pjvm->class_java_lang_Thread because that
+             * gets set @e after the class is loaded, whereas here
+             * a runtime test for loadability is implicit.
+             */
             jvm_class_index clsidxTHR =
                 class_find_by_prchar(JVMCLASS_JAVA_LANG_THREAD);
 
@@ -483,7 +488,8 @@ static jvm_thread_index thread_new_common(jvm_thread_index    thridx,
                                     LOCAL_CONSTANT_NO_ARRAY_DIMS,
                                     (jint *) rnull,
                                     rtrue,
-                                    thridx);
+                                    thridx,
+                                    (CONSTANT_Utf8_info *) rnull);
 
             THREAD(thridx).thread_objhash = objhashTHR;
             (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(jvm_object_hash_null,
