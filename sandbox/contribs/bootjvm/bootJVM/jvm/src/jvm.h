@@ -198,6 +198,21 @@ typedef struct
                                           * allocated by
                                           * class_static_new() */
 
+    jvm_class_index class_java_lang_Object; /**< Class slot occupied
+                                             * by java.lang.Object */
+
+    jvm_class_index class_primative_char;   /**< Class slot occupied
+                                             * by (char) */
+
+    jvm_class_index class_java_lang_Class;  /**< Class slot occupied
+                                             * by java.lang.Class */
+
+    jvm_class_index class_java_lang_String; /**< Class slot occupied
+                                             * by java.lang.String */
+
+    jvm_class_index class_java_lang_Thread; /**< Class slot occupied
+                                             * by java.lang.Thread */
+
 
     rclass class[JVMCFG_MAX_CLASSES]; /**< Table of java.lang.Class
                                        * structures.  Indexed by
@@ -244,8 +259,6 @@ extern rvoid jvm_manual_thread_run(jvm_thread_index  thridx,
                                    rchar            *clsname,
                                    rchar            *mthname,
                                    rchar            *mthdesc);
-
-extern rint jvm(int argc, char **argv, char **envp);
 
 #endif /* _jvm_h_included_ */
 
