@@ -66,9 +66,14 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvmclass, h,
  * (as JAVA_LANG_CLASS_LIST="Object Void String...").
  *
  * Although
+ * <b><code>java.io.Serializable</code></b> is not part
+ * of <b><code>java.lang</code></b>, it use also used
+ * internally by the JVM and so is listed here.
+ *
  * <b><code>java.nio.channels.ClosedByInterruptException</code></b>
  * is not part of <b><code>java.lang</code></b>, it use also used
  * internally by the JVM and so is listed here.
+ *
  */
 
 /*@{ */ /* Begin grouped definitions */
@@ -158,6 +163,14 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvmclass, h,
                       "java/lang/NullPointerException"
 #define JVMCLASS_JAVA_LANG_SECURITYEXCEPTION \
                       "java/lang/SecurityException"
+#define JVMCLASS_JAVA_LANG_CLASSCASTEXCEPTION \
+                      "java/lang/ClassCastException"
+
+#define JVMCLASS_JAVA_LANG_CLONEABLE \
+                      "java/lang/Cloneable"
+
+#define JVMCLASS_JAVA_IO_SERIALIZABLE \
+                      "java/io/Serializable"
 
 #define JVMCLASS_JAVA_NIO_CHANNELS_CLOSEDBYINTERRUPTEXCEPTION \
                       "java/nio/channels/ClosedByInterruptException"
