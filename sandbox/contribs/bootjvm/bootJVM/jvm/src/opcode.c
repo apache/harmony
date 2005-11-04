@@ -320,9 +320,9 @@ rboolean opcode_calling_java_lang_linkageerror =
  * followed by its @c @b \<init\> method with default parameters.
  *
  * This function must @e not be called until
- * @c @b java.lang.Object , @c @b java.lang.Class,
- * @c @b java.lang.String , @c @b java.lang.Throwable
- * @c @b java.lang.Error have been loaded and initialized.
+ * @c @b java.lang.Object , @c @b java.lang.Class ,
+ * @c @b java.lang.String , @c @b java.lang.Throwable ,
+ * and @c @b java.lang.Error have been loaded and initialized.
  *
  * There is @e no attempt to enforce which classes may be invoked
  * by this handler.  It is assumed that the caller will @e only
@@ -498,7 +498,8 @@ rvoid opcode_load_run_throwable(rchar            *pThrowableEvent,
                             LOCAL_CONSTANT_NO_ARRAY_DIMS,
                             (jint *) rnull,
                             rtrue,
-                            thridx);
+                            thridx,
+                            (CONSTANT_Utf8_info *) rnull);
 
     /*!
      * @internal Both mark and unmark object so it
@@ -706,7 +707,7 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
              */
 
             /*
-             * Set FP lower boundary so Java @c @b return
+             * Set FP lower boundary so Java @c @b RETURN
              * instruction does not keep going after handler, check if
              * @c @b java.lang.ThreadGroup.uncaughtException()
              * is there, and run it.
@@ -764,7 +765,7 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
             else
             {
                 Code_attribute *pca = (Code_attribute *)
-                         &pcfs->methods[mthidx]->attributes[codeatridx];
+                    &pcfs->methods[mthidx]->attributes[codeatridx];
                 PUSH_FRAME(thridx, pca->max_locals);
                 PUT_PC_IMMEDIATE(thridx,
                                  clsidx,
@@ -838,7 +839,7 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
              *
              * When loading the error class, process its
              * @c @b \<clinit\> on any available thread, but process
-             * its @C @b \<init\> on @e this thread so thread will be
+             * its @c @b \<init\> on @e this thread so thread will be
              * done running after it has been processed (due to FP
              * change).
              */
@@ -868,19 +869,21 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
         } /* if nonlocal_rc */
 
     } /* if nonlocal_rc */
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /* BEGIN GIANT SWITCH STATEMENT if(){}else{while(){switch()}} **/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
     else
     {
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /* BEGIN GIANT SWITCH STATEMENT if(){}else{while(){switch()}} */
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+
+
         /*
          * Run inner JVM execution loop.
          */
@@ -890,8 +893,11 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
          * and its key associations
          */
         jvm_pc             *pc    = THIS_PC(thridx);
-        ClassFile          *pcfs  = THIS_PCFS(thridx);
-        jvm_virtual_opcode *pcode = DEREFERENCE_PC_CODE_BASE(thridx);
+
+        /* Load new class file context, incl. method context for PC */
+        ClassFile          *pcfs;
+        jvm_virtual_opcode *pcode;
+        LOAD_METHOD_CONTEXT;
 
         /* Scratch area for operand resolution */
         rboolean           iswide;
@@ -903,6 +909,8 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
         u4                 op1u4;   /* Operand 1 as a (u4) */
         rboolean           rbool1;  /* Conditional instruction status */
 
+        u4                *pu4;     /* Operand as a (u4 *) */
+
         jbyte              jbtmp;   /* Opcode (jbyte) scratch area */
         jchar              jctmp;   /* Opcode (jchar) scratch area */
         jshort             jstmp;   /* Opcode (jshort) scratch area */
@@ -910,6 +918,8 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
         jint               jitmp2;  /* Opcode (jint) scratch area 2 */
         jint               jitmp3;  /* Opcode (jint) scratch area 3 */
         jint               jitmp4;  /* Opcode (jint) scratch area 4 */
+        jint               jitmp5;  /* Opcode (jint) scratch area 5 */
+        jvm_pc_offset      jptmp;   /* Opcode (jvm_pc_offset) scratch */
         jlong              jltmp1;  /* Opcode (jlong) scratch area 1 */
         jlong              jltmp2;  /* Opcode (jlong) scratch area 2 */
         jfloat             jftmp1;  /* Opcode (jfloat) scratch area 1 */
@@ -930,10 +940,12 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
 
         field_info              *pfld;
         method_info             *pmth;
+        Code_attribute          *pca;
 
         ClassFile              *pcfsmisc;
         u2                      cpidxmisc;
         jvm_class_index         clsidxmisc;
+        jvm_class_index         clsidxmisc2;
         jvm_method_index        mthidxmisc;
         jvm_object_hash         objhashmisc;
         jvm_field_lookup_index  fluidxmisc;
@@ -1053,18 +1065,103 @@ case OPCODE_11_SIPUSH:
     break;
 
 case OPCODE_12_LDC:
-    /*! @todo HARMONY-6-jvm-opcode.c-11 Write this opcode */
-    STUB;
-    break;
-
 case OPCODE_13_LDC_W:
-    /*! @todo HARMONY-6-jvm-opcode.c-12 Write this opcode */
-    STUB;
+/*! @todo HARMONY-6-jvm-opcode.c-122 Needs unit testing with real data*/
+    switch(opcode)
+    {
+        case OPCODE_12_LDC:
+            GET_U1_OPERAND(op1u1);
+            jitmp1 = (juint) op1u1; /* Play sign extension games */
+            break;
+
+        case OPCODE_13_LDC_W:
+            GET_U2_OPERAND(op1u2);
+            jitmp1 = (juint) op1u2; /* Play sign extension games */
+            break;
+    }
+
+    /* Treat all three 32-bit types the same except for constant_pool */
+    switch (CP_TAG(pcfs, jitmp1))
+    {
+        case CONSTANT_Integer:
+            MAKE_PU4(pu4, &PTR_CP_ENTRY_INTEGER(pcfs, jitmp1)->bytes);
+            jitmp2 = GETRI4(pu4);
+            PUSH(thridx, jitmp2);
+            break;
+
+        case CONSTANT_Float:
+            MAKE_PU4(pu4, &PTR_CP_ENTRY_FLOAT(pcfs, jitmp1)->bytes);
+            jitmp2 = GETRI4(pu4); /* Don't need to do type conversions*/
+            PUSH(thridx, jitmp2);
+            break;
+
+        case CONSTANT_String:
+            objhashmisc =
+                object_instance_new(
+                    OBJECT_STATUS_STRING,
+               CLASS_OBJECT_LINKAGE(pjvm->class_java_lang_String)->pcfs,
+                    pjvm->class_java_lang_String,
+                    LOCAL_CONSTANT_NO_ARRAY_DIMS,
+                    (rvoid *) rnull,
+                    rfalse,
+                    thridx,
+                    PTR_CP_ENTRY_UTF8(pcfs,
+                                      PTR_CP_ENTRY_STRING(pcfs,
+                                                          jitmp1)
+                      ->string_index));
+            PUSH(thridx, (jint) objhashmisc);
+            break;
+
+        default:
+            /* No other CP_TAG() is legal for this opcode */
+            thread_throw_exception(thridx,
+                                   THREAD_STATUS_THREW_ERROR,
+                                   JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+    }
+
     break;
 
 case OPCODE_14_LDC2_W:
-    /*! @todo HARMONY-6-jvm-opcode.c-13 Write this opcode */
-    STUB;
+/*! @todo HARMONY-6-jvm-opcode.c-123 Needs unit testing with real data*/
+    GET_U2_OPERAND(op1u2);
+    jitmp1 = (juint) op1u2; /* Play sign extension games */
+
+    /* Treat all three 32-bit types the same except for constant_pool */
+    switch (CP_TAG(pcfs, jitmp1))
+    {
+        case CONSTANT_Long:
+            MAKE_PU4(pu4, &PTR_CP_ENTRY_LONG(pcfs, jitmp1)->high_bytes);
+            jitmp2 = GETRI4(pu4);
+            MAKE_PU4(pu4, &PTR_CP_ENTRY_LONG(pcfs, jitmp1)->low_bytes);
+            jitmp3 = GETRI4(pu4);
+
+            /* Just move words around, don't interpret w/ type cnv */
+            PUSH(thridx, jitmp2);
+            PUSH(thridx, jitmp3);
+            break;
+
+        case CONSTANT_Double:
+            MAKE_PU4(pu4, &PTR_CP_ENTRY_DOUBLE(pcfs, 
+                                               jitmp1)->high_bytes);
+            jitmp2 = GETRI4(pu4);
+            MAKE_PU4(pu4, &PTR_CP_ENTRY_DOUBLE(pcfs,
+                                               jitmp1)->low_bytes);
+            jitmp3 = GETRI4(pu4);
+
+            /* Just move words around, don't interpret w/ type cnv */
+            PUSH(thridx, jitmp2);
+            PUSH(thridx, jitmp3);
+            break;
+
+        default:
+            /* No other CP_TAG() is legal for this opcode */
+            thread_throw_exception(thridx,
+                                   THREAD_STATUS_THREW_ERROR,
+                                   JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+    }
+
     break;
 
 case OPCODE_15_ILOAD:
@@ -1231,7 +1328,10 @@ case OPCODE_32_AALOAD:
     VERIFY_OBJECT_HASH(jotmp1);
     VERIFY_ARRAY_REFERENCE(jotmp1, BASETYPE_CHAR_L, jitmp1);
 
-    /*! @internal Careful!  Use of 'jotmp1' as both rvalue and lvalue!*/
+    /*!
+     * @internal Careful!  Use of 'jotmp1' as both rvalue and lvalue!
+     *
+     */
     jotmp1 = ((jvm_object_hash *) OBJECT(jotmp1).arraydata)[jitmp1];
     jitmp1 = (jint) jotmp1;
     PUSH(thridx, jitmp1);
@@ -2034,20 +2134,23 @@ case OPCODE_94_LCMP:
 
 case OPCODE_95_FCMPL:
 case OPCODE_96_FCMPG:
+ /*! @todo HARMONY-6-jvm-opcode.c-117 Needs unit testing w/ real data */
     POP(thridx, jftmp2, jfloat);
     POP(thridx, jftmp1, jfloat);
 
     jitmp2 = FORCE_JINT(jftmp2);
     jitmp1 = FORCE_JINT(jftmp1);
     if (JFLOAT_IS_NAN(jitmp1) || JFLOAT_IS_NAN(jitmp2))
-    { 
-        if (OPCODE_96_FCMPG == opcode)
+    {
+        switch(opcode)
         {
-            jitmp1 = (jint) 1;
-        }
-        else
-        {
-            jitmp1 = (jint) -1;
+            case OPCODE_95_FCMPL:
+                jitmp1 = (jint) -1;
+                break;
+
+            case OPCODE_96_FCMPG:
+                jitmp1 = (jint) 1;
+                break;
         }
     }
     else
@@ -2064,6 +2167,7 @@ case OPCODE_96_FCMPG:
 
 case OPCODE_97_DCMPL:
 case OPCODE_98_DCMPG:
+ /*! @todo HARMONY-6-jvm-opcode.c-118 Needs unit testing w/ real data */
     POP(thridx, jitmp2, jint);
     POP(thridx, jitmp1, jint);
     jdtmp2 = bytegames_combine_jdouble(jitmp1, jitmp2);
@@ -2076,13 +2180,15 @@ case OPCODE_98_DCMPG:
     jltmp1 = FORCE_JLONG(jdtmp1);
     if (JDOUBLE_IS_NAN(jltmp1) || JDOUBLE_IS_NAN(jltmp2))
     { 
-        if (OPCODE_98_DCMPG == opcode)
+        switch(opcode)
         {
-            jitmp1 = (jint) 1;
-        }
-        else
-        {
+            case OPCODE_97_DCMPL:
             jitmp1 = (jint) -1;
+            break;
+
+            case OPCODE_98_DCMPG:
+            jitmp1 = (jint) 1;
+            break;
         }
     }
     else
@@ -2103,6 +2209,7 @@ case OPCODE_9B_IFLT:
 case OPCODE_9C_IFGE:
 case OPCODE_9D_IFGT:
 case OPCODE_9E_IFLE:
+ /*! @todo HARMONY-6-jvm-opcode.c-119 Needs unit testing w/ real data */
     GET_U2_OPERAND(op1u2);
 
     POP(thridx, jitmp1, jint);
@@ -2138,6 +2245,7 @@ case OPCODE_A1_IF_ICMPLT:
 case OPCODE_A2_IF_ICMPGE:
 case OPCODE_A3_IF_ICMPGT:
 case OPCODE_A4_IF_ICMPLE:
+ /*! @todo HARMONY-6-jvm-opcode.c-120 Needs unit testing w/ real data */
     GET_U2_OPERAND(op1u2);
 
     POP(thridx, jitmp2, jint);
@@ -2162,7 +2270,7 @@ case OPCODE_A4_IF_ICMPLE:
 
     if (rtrue == rbool1)
     {
-                              /* size of opcode   size of operand */
+                              /* size of opcode + size of operand */
         LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
     }
 
@@ -2170,26 +2278,29 @@ case OPCODE_A4_IF_ICMPLE:
 
 case OPCODE_A5_IF_ACMPEQ:
 case OPCODE_A6_IF_ACMPNE:
+ /*! @todo HARMONY-6-jvm-opcode.c-121 Needs unit testing w/ real data */
     GET_U2_OPERAND(op1u2);
 
     POP(thridx, jotmp2, jvm_object_hash);
     POP(thridx, jotmp1, jvm_object_hash);
 
-    if (OPCODE_A5_IF_ACMPEQ)
+    switch(opcode)
     {
-        if (jotmp1 == jotmp2)
-        {
-                                  /* size of opcode   size of operand */
-            LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
-        }
-    }
-    else
-    {
-        if (jotmp1 != jotmp2)
-        {
-                                  /* size of opcode   size of operand */
-            LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
-        }
+        case OPCODE_A5_IF_ACMPEQ:
+            if (jotmp1 == jotmp2)
+            {
+                                     /* size of opcode  + operand*/
+                LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
+            }
+            break;
+
+        case OPCODE_A6_IF_ACMPNE:
+            if (jotmp1 != jotmp2)
+            {
+                                     /* size of opcode  + operand*/
+                LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
+            }
+            break;
     }
 
     break;
@@ -2197,7 +2308,7 @@ case OPCODE_A6_IF_ACMPNE:
 case OPCODE_A7_GOTO:
     GET_U2_OPERAND(op1u2);
 
-                          /* size of opcode   size of operand */
+                          /* size of opcode + size of operand */
     LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
     break;
 
@@ -2230,46 +2341,127 @@ case OPCODE_A9_RET:
     break;
 
 case OPCODE_AA_TABLESWITCH:
-    STUB;
+ /*! @todo HARMONY-6-jvm-opcode.c-124 Needs unit testing w/ real data */
+    SWITCH_PAD_PC;
+
+    /* Retrieve 'default' table switch value */
+    MAKE_PU4(pu4, &pcode[pc->offset]);
+    jitmp1 = GETRI4(pu4);
+    pu4++;
+
+    /* Retrieve 'low' table switch value */
+    jitmp2 = GETRI4(pu4);
+    pu4++;
+
+    /* Retrieve 'high' table switch value */
+    jitmp3 = GETRI4(pu4);
+    pu4++;
+
+    /* Retrieve switch table 'index' operand */
+    POP(thridx, jitmp5, jint);
+
+    /*
+     * If operand out of range, select default offset
+     * (currently in 'jitmp1'), else index the table
+     * for target offset.
+     */
+    if ((jitmp5 >= jitmp2) && (jitmp5 <= jitmp3))
+    {
+        /* 'pu4' now points to 'jump offsets' area of opcode */
+        jitmp1 = pu4[jitmp5 - jitmp2];
+        MACHINE_JINT_SWAP(jitmp1);
+    }
+    pc->offset = jptmp + jitmp1;
     break;
 
 case OPCODE_AB_LOOKUPSWITCH:
-    /*! @todo HARMONY-6-jvm-opcode.c-53 Write this opcode */
-    STUB;
+ /*! @todo HARMONY-6-jvm-opcode.c-125 Needs unit testing w/ real data */
+    SWITCH_PAD_PC;
+
+    /* Retrieve 'default' table switch value */
+    MAKE_PU4(pu4, &pcode[pc->offset]);
+    jitmp1 = GETRI4(pu4);
+    pu4++;
+
+    /* Retrieve 'npairs' table switch value */
+    jitmp2 = GETRI4(pu4);
+    pu4++;
+
+    /* Retrieve lookup table 'key' operand */
+    POP(thridx, jitmp5, jint);
+
+    /* 'pu4' now points to 'match-offset pairs' area of opcode */
+
+    /*!
+     * @todo HARMONY-6-jvm-opcode.c-126 On the @b ASSUMPTION that
+     *       the 'match-offset pairs' are stored with the 'match'
+     *       as the @e first @link #u4 u4@endlink value and the
+     *       'offset' as the @e second @link #u4 u4@endlink value,
+     *       then the following @c @b for() loop should be correct.
+     *       If these values are stored the other way around,
+     *       then the @c @b pu4[] indices need to be swapped.
+     *
+     */
+#define LOOKUPSWITCH_MATCH_INDEX  0
+#define LOOKUPSWITCH_OFFSET_INDEX 1
+
+    /* Scan lookup table (if 'npairs' is 0, no for() loop iterations) */
+    rbool1 = rfalse;
+    for (jitmp3 = 0; jitmp3 < jitmp2; jitmp3++)
+    {
+        /* Compare against 'match' value */
+
+        /* 2 = 1 match (u4) + 1 offset (u4), 0+ means first word */
+        jitmp4 = pu4[LOOKUPSWITCH_MATCH_INDEX + 2 * jitmp3];
+        MACHINE_JINT_SWAP(jitmp4);
+
+        /* Done if match found */
+        if (jitmp4 == jitmp5)
+        {
+            /* 2 = 1 match (u4) + 1 offset (u4), 1+ means second word */
+            jitmp4 = pu4[LOOKUPSWITCH_OFFSET_INDEX + 2 * jitmp3];
+            MACHINE_JINT_SWAP(jitmp4);
+
+            /* Match found, new PC offset loaded */
+            pc->offset = jptmp + jitmp4;
+            rbool1 = rtrue;
+            break;
+        }
+    }
+
+    /* Select default if match with 'key' operand not found */
+    if (rfalse == rbool1)
+    {
+        pc->offset = jptmp + jitmp1;
+    }
     break;
 
 case OPCODE_AC_IRETURN:
-    /*! @todo HARMONY-6-jvm-opcode.c-54 Write this opcode */
-    STUB;
-    opcode_end_thread_test(thridx, &opcode_end_thread_nonlocal_return);
-    break;
-
-    /*! @todo HARMONY-6-jvm-opcode.c-55 Write this opcode */
 case OPCODE_AD_LRETURN:
-    STUB;
-    opcode_end_thread_test(thridx, &opcode_end_thread_nonlocal_return);
-    break;
-    /*! @todo HARMONY-6-jvm-opcode.c-56 Write this opcode */
-
 case OPCODE_AE_FRETURN:
-    STUB;
-    opcode_end_thread_test(thridx, &opcode_end_thread_nonlocal_return);
-    /*! @todo HARMONY-6-jvm-opcode.c-57 Write this opcode */
-    break;
-
 case OPCODE_AF_DRETURN:
-    STUB;
-    /*! @todo HARMONY-6-jvm-opcode.c-58 Write this opcode */
-    opcode_end_thread_test(thridx, &opcode_end_thread_nonlocal_return);
-    break;
-
 case OPCODE_B0_ARETURN:
-    /*! @todo HARMONY-6-jvm-opcode.c-59 Write this opcode */
-    STUB;
-    opcode_end_thread_test(thridx, &opcode_end_thread_nonlocal_return);
-    break;
-
 case OPCODE_B1_RETURN:
+ /*! @todo HARMONY-6-jvm-opcode.c-128 Needs unit testing w/ real data */
+
+    /* Pop return code from this method's operand stack */
+    switch(opcode)
+    {
+        case OPCODE_AC_IRETURN:
+        case OPCODE_AE_FRETURN:
+        case OPCODE_B0_ARETURN:
+            POP(thridx, jitmp1, jint);
+            break;
+
+        case OPCODE_AD_LRETURN:
+        case OPCODE_AF_DRETURN:
+            POP(thridx, jitmp1, jint);
+            POP(thridx, jitmp2, jint);
+            break;
+
+        case OPCODE_B1_RETURN:
+            break;
+    }
 
     CALCULATE_METHOD_INFO_FROM_PC;
 
@@ -2286,18 +2478,44 @@ case OPCODE_B1_RETURN:
     /*!
      * @todo  HARMONY-6-jvm-opcode.c-60 Implement test for same
      *        number of locks/unlocks per JVM spec section 8.13.
+     *        This applies to @e all of the @c @b xRETURN opcodes.
      */
 
     POP_FRAME(thridx);
-/*
-... Don't forget to set these to old method:
-        pcfs  = THIS_PCFS(thridx);
-        pcode = DEREFERENCE_PC_CODE_BASE(thridx);
-*/
+
+    /*!
+     * @todo  HARMONY-6-jvm-opcode.c-127 Value set conversion is
+     *        @e not performed on floating point values at return time.
+     */
+
+    /* Push return code onto calling method's operand stack */
+    switch(opcode)
+    {
+        case OPCODE_AC_IRETURN:
+        case OPCODE_AE_FRETURN:
+        case OPCODE_B0_ARETURN:
+            PUSH(thridx, jitmp1);
+            break;
+
+        case OPCODE_AD_LRETURN:
+        case OPCODE_AF_DRETURN:
+            PUSH(thridx, jitmp2);
+            PUSH(thridx, jitmp1);
+            break;
+
+        case OPCODE_B1_RETURN:
+            break;
+    }
+
     opcode_end_thread_test(thridx, &opcode_end_thread_nonlocal_return);
+
+    /* Restore class and method context of old method */
+    LOAD_METHOD_CONTEXT;
+
     break;
 
 case OPCODE_B2_GETSTATIC:
+    case_opcode_b4_getfield:
 
     /* Retrieve the @c @b constant_pool (u2) operand */
     GET_U2_OPERAND(op1u2);
@@ -2308,21 +2526,46 @@ case OPCODE_B2_GETSTATIC:
     /* calc clsidxmisc and pcpd and pcpd_Fieldref */
     CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(op1u2);
 
-    /* Must be a valid reference to a method */
+    /* Must be a valid reference to a field */
     CHECK_VALID_FIELDLOOKUPIDX(fluidxmisc);
 
-    /* Must be a static field */
-    CHECK_STATIC_FIELD;
+    switch (opcode)
+    {
+        case OPCODE_B2_GETSTATIC:
+            /* Must be a static field */
+            CHECK_STATIC_FIELD;
 
-    /* If it is a final field, it must be in the current class */
-    CHECK_FINAL_FIELD_CURRENT_CLASS;
+            /*!
+             * @todo HARMONY-6-jvm-opcode.c-131 Does this check for
+             *       final field also apply to an object instance
+             *       field, or is it for class static fields only?
+             */
 
-    /* Retrieve data from the static field now */
-    GETSTATIC;
+            /* If it is a final field, it must be in the current class*/
+            CHECK_FINAL_FIELD_CURRENT_CLASS;
 
+            /* Retrieve data from the class static field now */
+            GETSTATIC;
+            break;
+
+        case OPCODE_B4_GETFIELD:
+            /*!
+             * @todo HARMONY-6-jvm-opcode.c-132 Needs unit
+             *       testing w/ real data
+             */
+
+            /* Must be an object instance field */
+            CHECK_INSTANCE_FIELD;
+
+            /* Retrieve data from the object instance field now */
+            POP(thridx, jotmp1, jvm_object_hash);
+            GETFIELD(jotmp1);
+            break;
+    }
     break;
 
 case OPCODE_B3_PUTSTATIC:
+    case_opcode_b5_putfield:
 
     /* Retrieve the @c @b constant_pool (u2) operand */
     GET_U2_OPERAND(op1u2);
@@ -2333,29 +2576,49 @@ case OPCODE_B3_PUTSTATIC:
     /* calc clsidxmisc and pcpd and pcpd_Fieldref */
     CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(op1u2);
 
-    /* Must be a valid reference to a method */
+    /* Must be a valid reference to a field */
     CHECK_VALID_FIELDLOOKUPIDX(fluidxmisc);
 
-    /* Must be a static field */
-    CHECK_STATIC_FIELD;
+    switch (opcode)
+    {
+        case OPCODE_B3_PUTSTATIC:
+            /* Must be a static field */
+            CHECK_STATIC_FIELD;
 
-    /* If it is a final field, it must be in the current class */
-    CHECK_FINAL_FIELD_CURRENT_CLASS;
+            /*!
+             * @todo HARMONY-6-jvm-opcode.c-133 Does this check for
+             *       final field also apply to an object instance
+             *       field, or is it for class static fields only?
+             */
 
-    /* Store data into the static field now */
-    PUTSTATIC;
+            /* If it is a final field, it must be in the current class*/
+            CHECK_FINAL_FIELD_CURRENT_CLASS;
 
+            /* Store data into the static field now */
+            PUTSTATIC;
+            break;
+
+        case OPCODE_B5_PUTFIELD:
+            /*!
+             * @todo HARMONY-6-jvm-opcode.c-134 Needs unit
+             *       testing w/ real data
+             */
+
+            /* Must be an object instance field */
+            CHECK_INSTANCE_FIELD;
+
+            /* Store data into the object instance field now */
+            POP(thridx, jotmp1, jvm_object_hash);
+            PUTFIELD(jotmp1);
+            break;
+    }
     break;
 
 case OPCODE_B4_GETFIELD:
-    /*! @todo HARMONY-6-jvm-opcode.c-61 Write this opcode */
-    STUB;
-    break;
+    goto case_opcode_b4_getfield;
 
 case OPCODE_B5_PUTFIELD:
-    /*! @todo HARMONY-6-jvm-opcode.c-62 Write this opcode */
-    STUB;
-    break;
+    goto case_opcode_b5_putfield;
 
 case OPCODE_B6_INVOKEVIRTUAL:
     /*! @todo HARMONY-6-jvm-opcode.c-63 Write this opcode */
@@ -2401,18 +2664,18 @@ case OPCODE_B8_INVOKESTATIC:
                           CLASS(clsidxmisc).class_objhash,
                           CURRENT_THREAD))
         {
-                       /* size of opcode      size of operand */
-            pc->offset -= sizeof(u1)     +    sizeof(u2);
+                            /* size of opcode +    size of operand */
+            pc->offset -= (    sizeof(u1)     +    sizeof(u2)         );
             break;
         }
     }
 
+    cpidxmisc        = pcpd_Methodref->name_and_type_index;
+    pcpd             = pcfs->constant_pool[cpidxmisc];
+    pcpd_NameAndType = PTR_THIS_CP_NameAndType(pcpd);
+
     if (ACC_NATIVE & pmth->access_flags)
     {
-        cpidxmisc        = pcpd_Methodref->name_and_type_index;
-        pcpd             = pcfs->constant_pool[cpidxmisc];
-        pcpd_NameAndType = PTR_THIS_CP_NameAndType(pcpd);
-
         native_run_method(CURRENT_THREAD,
                           pcpd_Methodref
                             ->LOCAL_Methodref_binding
@@ -2423,12 +2686,58 @@ case OPCODE_B8_INVOKESTATIC:
     }
     else
     {
-        ; /* Start up Java code */
-/*
-... Don't forget to set these to new method:
-        pcfs  = THIS_PCFS(thridx);
-        pcode = DEREFERENCE_PC_CODE_BASE(thridx);
-*/
+        /*!
+         * @internal Start up Java code.  Instead of using POP() to
+         *           retrieve parameters and load them into the stack
+         *           frame of the invoked method, simply reference
+         *           the first parameter (bottom of the operand stack)
+         *           as local variable 0 and build a stack frame above
+         *           the pushed parameters.  (This will entail changing
+         *           the size of the requested frame by this block size
+         *           followed by a simple adjustment to the number of
+         *           local variables that are reported in the stack
+         *           frame.)
+         *
+         */
+        jitmp1 = method_parm_size(clsidxmisc, 
+                                  pcpd_NameAndType->descriptor_index,
+                                  pmth->access_flags);
+
+        jvm_attribute_index codeatridx =
+                         pcfsmisc
+                           ->methods[mthidxmisc]
+                             ->LOCAL_method_binding.codeatridxJVM;
+
+        pca = (Code_attribute *)
+                &pcfsmisc->methods[mthidxmisc]->attributes[codeatridx];
+
+        /* If less local storage than parameters, somebody goofed */
+        if (pca->max_locals < jitmp1)
+        {
+            thread_throw_exception(thridx,
+                                   THREAD_STATUS_THREW_ERROR,
+                                   JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+        }
+
+        /* Build stack frame with parameters in place as local vars */
+        PUSH_FRAME(thridx, pca->max_locals - jitmp1);
+
+        /* Load target program counter */
+        PUT_PC_IMMEDIATE(thridx,
+                         clsidxmisc,
+                         mthidxmisc,
+                         codeatridx,
+                         pcfsmisc
+                           ->methods[mthidxmisc]
+                             ->LOCAL_method_binding.excpatridxJVM,
+                         CODE_CONSTRAINT_START_PC);
+
+        /* Store proper local var size now */
+        PUT_FP_WORD(thridx, JVMREG_STACK_LS_OFFSET, pca->max_locals);
+
+        /* Set class and method context to point to new method */
+        LOAD_METHOD_CONTEXT;
     }
     break;
 
@@ -2458,6 +2767,19 @@ case OPCODE_BB_NEW:
     /* Create new object from this class */
     special_obj_misc = OBJECT_STATUS_EMPTY;
 
+    if (0 == utf_prchar_classname_strcmp(JVMCLASS_JAVA_LANG_STRING,
+                                         pcfsmisc,
+                                         pcfsmisc->this_class))
+    {
+        special_obj_misc |= OBJECT_STATUS_STRING;
+
+        /*
+         * @internal Notice that 'utf8string' parameter will
+         *           be unused here since the @c @b \<init\> method
+         *           will be used to set them later.
+         */
+    }
+    else
     if (0 == utf_prchar_classname_strcmp(JVMCLASS_JAVA_LANG_THREAD,
                                          pcfsmisc,
                                          pcfsmisc->this_class))
@@ -2469,10 +2791,11 @@ case OPCODE_BB_NEW:
         object_instance_new(special_obj_misc,
                             pcfsmisc,
                             clsidxmisc,
-                            0,
+                            LOCAL_CONSTANT_NO_ARRAY_DIMS,
                             (rvoid *) rnull,
                             rfalse,
-                            thridx);
+                            thridx,
+                            (CONSTANT_Utf8_info *) rnull);
 
     /* Store result to stack */
     PUSH(thridx, (jint) objhashmisc);
@@ -2503,7 +2826,7 @@ case OPCODE_BD_ANEWARRAY:
     CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(op1u2);
 
     /* Retrieve 'count' operand from TOS */
-    POP(thridx, jitmp1, jint  );
+    POP(thridx, jitmp1, jint);
 
     /* Cannot have negative number of array elements (zero is okay) */
     if (0 > jitmp1)
@@ -2519,7 +2842,7 @@ case OPCODE_BD_ANEWARRAY:
     /*!
      * @todo HARMONY-6-jvm-opcode.c-68 Should this be simply
      *       the unconditional clause only? or is
-     *       the 'if' statement needed?
+     *       the @c @b if statement needed?
      */
 #if 1
     special_obj_misc = OBJECT_STATUS_ARRAY;
@@ -2556,13 +2879,15 @@ case OPCODE_BD_ANEWARRAY:
                             /*!
                              * @todo:  HARMONY-6-jvm-opcode.c-70 Is
                              *         'rfalse' correct?  Probably,
-                             *         because \<init\> is typically
-                             *         called after object creation,
-                             *         but this needs to be verified.
+                             *         because @c @b \<init\> is
+                             *         typically called after object
+                             *         creation, but this needs to be
+                             *         verified.
                              */
                             rfalse,
 
-                            thridx);
+                            thridx,
+                            (CONSTANT_Utf8_info *) rnull);
 
     /* Store result to stack */
     PUSH(thridx, (jint) objhashmisc);
@@ -2580,29 +2905,266 @@ case OPCODE_BF_ATHROW:
     break;
 
 case OPCODE_C0_CHECKCAST:
-    /*! @todo HARMONY-6-jvm-opcode.c-73 Write this opcode */
-    STUB;
-    break;
-
 case OPCODE_C1_INSTANCEOF:
-    /*! @todo HARMONY-6-jvm-opcode.c-74 Write this opcode */
-    STUB;
+ /*! @todo HARMONY-6-jvm-opcode.c-130 Needs unit testing w/ real data */
+
+    /*
+     * Retrieve the @c @b constant_pool (u2) operand.
+     * The spec refers to this as an 'objectref' of type 'S'
+     */
+    GET_U2_OPERAND(op1u2);
+
+    /*
+     * Locate or load class being requested.
+     * The spec refers to this as type 'T'
+     */
+    clsidxmisc2 =
+        class_load_from_cp_entry_utf(pcfs->constant_pool[op1u2],
+                                     rfalse,
+                                     (jint *) rnull);
+
+    /* Retrieve object reference to examine */
+    POP(thridx, jotmp1, jvm_object_hash);
+
+    /* Initialize result code, then go test INSTANCEOF conditions */
+    jitmp2 = 0;
+
+    if (jvm_object_hash_null == jotmp1)
+    {
+
+        switch(opcode)
+        {
+            case OPCODE_C0_CHECKCAST:
+
+                jitmp2 = 1; /* No failure */
+                break;
+
+            case OPCODE_C1_INSTANCEOF:
+
+                /* Nothing to do, just PUSH() result below*/
+                break;
+        }
+    }
+    else
+    if (OBJECT(jotmp1).status &
+        (OBJECT_STATUS_NULL | OBJECT_STATUS_GCREQ))
+    {
+        /* Sorry, this is not a valie object */
+        thread_throw_exception(thridx,
+                               THREAD_STATUS_THREW_ERROR,
+                               JVMCLASS_JAVA_LANG_VERIFYERROR);
+/*NOTREACHED*/
+    }
+    else
+    {
+        clsidxmisc = OBJECT_CLASS_LINKAGE(jotmp1)->clsidx;
+
+        pcfsmisc   = OBJECT_CLASS_LINKAGE(jotmp1)->pcfs;
+
+        /*
+         * If S is a class representing the array type SC[], that is,
+         * an array of components of type SC, then:
+         */
+        if (CLASS(clsidxmisc).status & CLASS_STATUS_ARRAY)
+        {
+            pcfsmisc = CLASS_OBJECT_LINKAGE(clsidxmisc2)->pcfs;
+
+            /*
+             * If T is an array type TC[], that is, an array of
+             * components of type TC, then one of the following
+             * must be true:
+             */
+            if (CLASS(clsidxmisc2).status & CLASS_STATUS_ARRAY)
+            {
+                /*
+                 * TC and SC are the same primative type (sec 2.4.1).
+                 */
+                if ((CLASS(clsidxmisc).status & CLASS_STATUS_PRIMATIVE)
+                    &&
+                    (CLASS(clsidxmisc2).status & CLASS_STATUS_PRIMATIVE)
+                    &&
+                    (clsidxmisc2 == clsidxmisc))
+                {
+                    jitmp2 = 1;
+                }
+                else
+                /*!
+                 * @todo HARMONY-6-jvm-opcode.c-129 Resolve the
+                 *       VM spec language differences and change
+                 *       code for conformity if needed.
+                 *
+                 * @internal Slightly different spec statements here.
+                 *           It is @e assumed that they mean the same
+                 *           thing since @e all other algorithmic
+                 *           comments are identical on these two
+                 *           operation code:
+                 *
+                 * <ul><li>@b CHECKCAST opcode:
+                 * TC and SC are reference types (sec 2.4.6), and
+                 * type SC can be cast to TC by recursive application
+                 * of these rules.
+                 *
+                 * </li>
+                 *
+                 * <li>@b INSTANCEOF opcode:
+                 * TC and SC are reference types (sec 2.4.6), and
+                 * type SC can be cast to TC by these runtime rules.
+                 *
+                 * </li></ul>
+                 *
+                 */
+                if (
+                  (!(CLASS(clsidxmisc).status & CLASS_STATUS_PRIMATIVE))
+                    &&
+                (!(CLASS(clsidxmisc2).status & CLASS_STATUS_PRIMATIVE)))
+                {
+                       /* class S is a T */
+                   if ((rtrue ==
+                        classutil_subclass_of(clsidxmisc,clsidxmisc2))
+                       ||
+                       /* class S implements interface T */
+                       (rtrue ==
+                        classutil_implements_interface(clsidxmisc,
+                                                       clsidxmisc2))
+                       ||
+                       /* interface T is a superinterface of S */
+                       (rtrue ==
+                        classutil_superinterface_of(clsidxmisc2,
+                                                    clsidxmisc)))
+                    {
+                        jitmp2 = 1;
+                    }
+                }
+            }
+            else
+            /*
+             * If T is an interface type, T must be one of the
+             * interfaces implemented by arrays (sec 2.15)
+             */
+            if (pcfsmisc->access_flags & ACC_INTERFACE)
+            {
+                if (rtrue ==
+                  classutil_interface_implemented_by_arrays(clsidxmisc))
+                {
+                    jitmp2 = 1;
+                }
+            }
+            else
+            /*
+             * If T is a class type, then T must be java.lang.Object
+             * (sec 2.4.7)
+             */
+            {
+                if (clsidxmisc2 == pjvm->class_java_lang_Object)
+                {
+                    jitmp2 = 1;
+                }
+            }
+        }
+        else
+        /*
+         * If S is an interface type, then:
+         */
+        if (pcfsmisc->access_flags & ACC_INTERFACE)
+        {
+            pcfsmisc = CLASS_OBJECT_LINKAGE(clsidxmisc2)->pcfs;
+
+            /*
+             * If T is an interface type, then T must be the same
+             * interface as S, or a super interface of S (sec 2.13.2).
+             */
+            if (pcfsmisc->access_flags & ACC_INTERFACE)
+            {
+                if (rtrue == classutil_superinterface_of(clsidxmisc2,
+                                                         clsidxmisc))
+                {
+                    jitmp2 = 1;
+                }
+            }
+            else
+            /*
+             * If T is a class type, then T must be java.lang.Object
+             * (sec 2.4.7).
+             */
+            {
+                if (clsidxmisc2 == pjvm->class_java_lang_Object)
+                {
+                    jitmp2 = 1;
+                }
+            }
+        }
+        else
+        /*
+         * If S is an ordinary (noarray) class, then:
+         */
+        {
+            pcfsmisc = CLASS_OBJECT_LINKAGE(clsidxmisc2)->pcfs;
+
+            /*
+             * If T is an interface type, then S must implement
+             * (sec 2.13) interface T.
+             */
+            if (pcfsmisc->access_flags & ACC_INTERFACE)
+            {
+                if (rtrue ==
+                    classutil_implements_interface(clsidxmisc,
+                                                   clsidxmisc2))
+                {
+                    jitmp2 = 1;
+                }
+            }
+            else
+            /*
+             * If T is a class type, then S must be the same class
+             * (sec 2.8.1) as T or a subclass of T.
+             */
+            {
+                if (rtrue ==
+                    classutil_subclass_of(clsidxmisc, clsidxmisc2))
+                {
+                    jitmp2 = 1;
+                }
+            }
+        }
+    }
+
+    /* Process the result differently for each opcode */
+    switch(opcode)
+    {
+        case OPCODE_C0_CHECKCAST:
+            /* Throw exception if 'objectref' is not an instance of T */
+            if (0 == jitmp2)
+            {
+                thread_throw_exception(thridx,
+                                       THREAD_STATUS_THREW_EXCEPTION,
+                                 JVMCLASS_JAVA_LANG_CLASSCASTEXCEPTION);
+/*NOTREACHED*/
+            }
+            break;
+
+        case OPCODE_C1_INSTANCEOF:
+            /* Push result code onto stack  */
+            PUSH(thridx, jitmp2);
+            break;
+    }
     break;
 
 case OPCODE_C2_MONITORENTER:
-    /*! @todo HARMONY-6-jvm-opcode.c-75 Write this opcode */
-    STUB;
+    POP(thridx, jotmp1, jvm_object_hash);
+
+    (rvoid) objectutil_synchronize(jotmp1, CURRENT_THREAD);
     break;
 
 case OPCODE_C3_MONITOREXIT:
-    /*! @todo HARMONY-6-jvm-opcode.c-76 Write this opcode */
-    STUB;
+    POP(thridx, jotmp1, jvm_object_hash);
+
+    (rvoid) objectutil_unsynchronize(jotmp1, CURRENT_THREAD);
     break;
 
 case OPCODE_C4_WIDE:
     /*!
      * @todo HARMONY-6-jvm-opcode.c-77 Test this opcode and
-     *       those that reference @c @b iswide
+     *       those that reference @c @b iswide for operand size.
      */
     iswide = rtrue;  /* Will be read then cleared by other opcodes */
     break;
@@ -2622,7 +3184,7 @@ case OPCODE_C7_IFNONNULL:
     {
         if (jvm_object_hash_null == jotmp1)
         {
-                                  /* size of opcode   size of operand */
+                                  /* size of opcode + size of operand */
             LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
         }
     }
@@ -2630,7 +3192,7 @@ case OPCODE_C7_IFNONNULL:
     {
         if (jvm_object_hash_null != jotmp1)
         {
-                                  /* size of opcode   size of operand */
+                                  /* size of opcode + size of operand */
             LOAD_TARGET_PC_OFFSET(op1u2, sizeof(u1) + sizeof(u2));
         }
     }
@@ -2640,7 +3202,7 @@ case OPCODE_C7_IFNONNULL:
 case OPCODE_C8_GOTO_W:
     GET_U4_OPERAND(op1u4);
 
-                          /* size of opcode   size of operand */
+                          /* size of opcode + size of operand */
     LOAD_TARGET_PC_OFFSET(op1u4, sizeof(u1) + sizeof(u4));
     break;
 
@@ -2758,21 +3320,22 @@ case OPCODE_FF_IMPDEP2:
 /* Renew indentation... */
 
             } /* while ... */
+
         } /* if nonlocal_thread_return else */
 
-    } /* if nonlocal_rc else */
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /* END OF GIANT SWITCH STATEMENT if(){}else{while(){switch()}}*/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
+        /**************************************************************/
 
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /* END OF GIANT SWITCH STATEMENT if(){}else{while(){switch()}}**/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
-    /***************************************************************/
+    } /* if nonlocal_rc else */
 
     /* If the timer ticked, clear flag and process next thread */
     if((rtrue == check_timeslice) && (rtrue == pjvm->timeslice_expired))
@@ -2783,7 +3346,7 @@ case OPCODE_FF_IMPDEP2:
     /*
      * If frame is empty, thread is done running, but if
      * @link #rthread.fp_end_program fp_end_program@endlink is being
-     * used to control, say, a \<cliinit\> of a
+     * used to control, say, a \<clinit\> of a
      * @link #LATE_CLASS_LOAD() LATE_CLASS_LOAD@endlink, the thread is
      * still doing something even when the end-of-program indication
      * has occurred.  See also
@@ -2830,8 +3393,8 @@ case OPCODE_FF_IMPDEP2:
     }
 
     /*
-     * Move unhandled condition (@b nonlocal_rc)
-     * and "thread is finished running" (@b nonlocal_thread_return)
+     * Move unhandled condition (@c @b nonlocal_rc)
+     * and "thread is finished running" (@c @b nonlocal_thread_return)
      * conditions to the @b COMPLETE state, otherwise everything
      * ran fine and thread is still in the @b RUNNING state.
      */
