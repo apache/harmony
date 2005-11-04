@@ -434,6 +434,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     MAKE_PU2(pu2, pu4);
 
     pcfs->minor_version = GETRS2(pu2);
+    pu2++;                   /* calc offset to next field in file data*/
 
     /*!
      * @todo HARMONY-6-jvm-classfile.c-7
@@ -445,8 +446,6 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
               "minor=%d",
               pcfs->minor_version);
 
-    pu2++;                   /* calc offset to next field in file data*/
-
 
     /*****************************************************************/
     /* Get major class file version                                  */
@@ -455,7 +454,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Can optimize along the way-- pu2 already points here */
     /* MAKE_PU2(pu2, pu2); */
 
-    pcfs->major_version = GETRS2(pu2++);
+    pcfs->major_version = GETRS2(pu2);
+    pu2++;
 
     sysDbgMsg(DMLNORM,
               arch_function_name,
@@ -492,7 +492,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     /* Get constant_pool_count                                       */
     /*****************************************************************/
-    pcfs->constant_pool_count = GETRS2(pu2++);
+    pcfs->constant_pool_count = GETRS2(pu2);
+    pu2++;
 
     sysDbgMsg(DMLNORM,
               arch_function_name,
@@ -870,7 +871,9 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Point past the @c @b constant_pool[] area */
     MAKE_PU2(pu2, pcpbytes);
 
-    pcfs->access_flags = GETRS2(pu2++);
+    pcfs->access_flags = GETRS2(pu2);
+    pu2++;
+
     /*
      * Strip out all other @link #ACC_PUBLIC ACC_xxx@endlink bits, per
      * spec
@@ -896,7 +899,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     /* Get this_class                                                */
     /*****************************************************************/
-    pcfs->this_class = GETRS2(pu2++);
+    pcfs->this_class = GETRS2(pu2);
+    pu2++;
 
     /*!
      * @todo HARMONY-6-jvm-classfile.c-11 Need to
@@ -912,7 +916,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     /* Get super_class                                               */
     /*****************************************************************/
-    pcfs->super_class = GETRS2(pu2++);
+    pcfs->super_class = GETRS2(pu2);
+    pu2++;
 
     /*!
      * @todo HARMONY-6-jvm-classfile.c-12
@@ -925,7 +930,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     /* Create interfaces index, then load up interfaces array        */
     /*****************************************************************/
-    pcfs->interfaces_count = GETRS2(pu2++);
+    pcfs->interfaces_count = GETRS2(pu2);
+    pu2++;
 
     sysDbgMsg(DMLNORM,
               arch_function_name,
@@ -961,7 +967,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
         for (ifidx = 0; ifidx < pcfs->interfaces_count; ifidx++)
         {
             /* Retrieve next interface index from class file area */
-            jvm_interface_index cfifidx = GETRS2(pu2++);
+            jvm_interface_index cfifidx = GETRS2(pu2);
+            pu2++;
 
             /* Range check the index value */
             CPIDX_RANGE_CHECK(pcfs,
@@ -1013,7 +1020,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /*****************************************************************/
     /* Get field_count                                               */
     /*****************************************************************/
-    pcfs->fields_count = GETRS2(pu2++);
+    pcfs->fields_count = GETRS2(pu2);
+    pu2++;
 
     /*!
      * @todo HARMONY-6-jvm-classfile.c-15
@@ -1155,7 +1163,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Point past end of fields area */
     MAKE_PU2(pu2, pfbytes);
 
-    pcfs->methods_count =  GETRS2(pu2++);
+    pcfs->methods_count =  GETRS2(pu2);
+    pu2++;
 
     /*!
      * @todo HARMONY-6-jvm-classfile.c-16
@@ -1359,7 +1368,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
     /* Point past end of methods area */
     MAKE_PU2(pu2, pmbytes);
 
-    pcfs->attributes_count = GETRS2(pu2++);
+    pcfs->attributes_count = GETRS2(pu2);
+    pu2++;
 
     /*!
      * @todo HARMONY-6-jvm-classfile.c-17
