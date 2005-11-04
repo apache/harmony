@@ -28,6 +28,15 @@
  *       @link #rthread rthread@endlink table instead of the
  *       @link #robject robject@endlink table.
  *
+ * @todo HARMONY-6-jvm-gc.h-2 For both classes and objects, the whole
+ *       body of code needs to be examined for cases that examine
+ *       the CLASS().status and OBJECT().status (respectively) fields
+ *       and constrain the comparisons to make @e that they ignore
+ *       CLASS_STATUS_NULL/OBJECT_STATUS_NULL slots and to likewise
+ *       ignore CLASS_STATUS_GCREQ/OBJECT_STATUS_GCREQ.  This is done
+ *       in @link #opcode_run() opcode_run()@endlink in the
+ *       @c @b OPCODE_C1_INSTANCEOF opcode as a first sample.
+ *
  *
  * @section Control
  *

@@ -268,8 +268,9 @@ rchar *utf_utf2prchar(CONSTANT_Utf8_info *src)
 
 
 /*!
- * @brief Compare two strings of any length, and potentially neither
- * null-terminated, that is, could be a UTF string.
+ * @brief Completely generic string comparison of two strings of any
+ * length, and potentially neither null-terminated, that is, could 
+ * be a UTF string, or even an arbitrary character string structure.
  *
  * If strings are of equal length, this function is equivalent
  * to @c @b strcmp(3).  If not of equal length, result is like
