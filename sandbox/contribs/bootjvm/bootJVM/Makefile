@@ -27,9 +27,9 @@
 # getting the initial code base written.
 #
 #
-# @see @link ./MakeSetup ./MakeSetup@endlink
+# @see @link support/MakeSetup support/MakeSetup@endlink
 #
-# @see @link ./MakeRules ./MakeRules@endlink
+# @see @link support/MakeRules support/MakeRules@endlink
 #
 # @see @link jvm/src/Makefile jvm/src/Makefile@endlink
 #
@@ -39,6 +39,11 @@
 #
 # @see @link jni/src/harmony/generic/0.0/src/Makefile jni/src/harmony/generic/0.0/src/Makefile@endlink
 #
+#
+# @todo HARMONY-6-Makefile-1 Get $(DOCDIR) dependencies working so
+#       that if no source files have changed (are newer than either
+#       $(DOCDIR) or $(MAKEDOX) subdirectories), then do not rebuild
+#       documentation.
 #
 # @section Control
 #
@@ -83,6 +88,9 @@
 # Makefile setup
 #
 
+# Targets that are command line parms, but not file or directory names:
+.PHONY:: cfg all clean veryclean jvm libjvm main jni test dox undox help
+
 #
 # The default rule for the top level is 'cfg' instead of 'all'
 # (that all other Makefiles use as the default rule).
@@ -90,7 +98,7 @@
 cfg::
 
 TOPDIR=.
-include $(TOPDIR)/MakeSetup
+include $(TOPDIR)/support/MakeSetup
 
 #
 # Disable subdirectory warnings if desired
@@ -102,29 +110,47 @@ NPD=--no-print-directory
 #
 # Target specifications.
 #
-OPTLIST1=cfg | all | clean | veryclean
+OPTLIST1=cfg
 
-cfg::
 ifeq (1,$(CONFIG_BUILD_JVM))
+cfg::
 	$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null all
+clean::
+	$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null clean
 endif
 ifeq (1,$(CONFIG_BUILD_LIB))
+cfg::
 	$(MAKE) $(NPD) -C jvm/src LIBJVM=non-null all
+clean::
+	$(MAKE) $(NPD) -C jvm/src LIBJVM=non-null clean
 endif
 ifeq (1,$(CONFIG_BUILD_MAIN))
+cfg::
 	$(MAKE) $(NPD) -C main/src all
+clean::
+	$(MAKE) $(NPD) -C main/src clean
 endif
 ifeq (1,$(CONFIG_BUILD_JNI))
+cfg::
 	$(MAKE) $(NPD) -C jni/src/harmony/generic/0.0/src all
+clean::
+	$(MAKE) $(NPD) -C jni/src/harmony/generic/0.0/src clean
 endif
 ifeq (1,$(CONFIG_BUILD_TEST))
+cfg::
 	$(MAKE) $(NPD) -C test/src all
+clean::
+	$(MAKE) $(NPD) -C test/src clean
 endif
 ifeq (1,$(CONFIG_BUILD_DOX))
+cfg::
 	$(MAKE) $(NPD) dox
+clean::
+	$(MAKE) $(NPD) undox
 endif
 
-all clean veryclean::
+OPTLIST2=all | clean | veryclean
+all veryclean::
 	-$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null LIBJVM=non-null $@
 	-$(MAKE) $(NPD) -C main/src $@
 	-$(MAKE) $(NPD) -C jni/src/harmony/generic/0.0/src $@
@@ -133,17 +159,11 @@ all clean veryclean::
 all::
 	-$(MAKE) $(NPD) dox
 
-ifeq (1,$(CONFIG_BUILD_DOX))
-clean::
-	-$(MAKE) $(NPD) undox
-endif
-
 veryclean::
 	-$(MAKE) $(NPD) undox
 
 
-
-OPTLIST2=jvm | libjvm | main | jni | test
+OPTLIST3=jvm | libjvm | main | jni | test
 
 jvm::
 	$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null all
@@ -158,47 +178,74 @@ test::
 
 
 
-OPTLIST3=dox | undox | help
+OPTLIST4=dox | undox | help
 
 include config/config_dox_setup.mak
 
+# Build documentation only if at least one format is configured
 MAKEDOX:=
 ifeq (YES,$(GENERATE_HTML))
-MAKEDOX:=$(MAKEDOX) doc/html
+MAKEDOX:=$(MAKEDOX) $(DOCDIR)/html
 endif
 ifeq (YES,$(GENERATE_LATEX))
-MAKEDOX:=$(MAKEDOX) doc/latex
+MAKEDOX:=$(MAKEDOX) $(DOCDIR)/latex
 endif
 ifeq (YES,$(GENERATE_RTF))
-MAKEDOX:=$(MAKEDOX) doc/rtf
+MAKEDOX:=$(MAKEDOX) $(DOCDIR)/rtf
 endif
 ifeq (YES,$(GENERATE_MAN))
-MAKEDOX:=$(MAKEDOX) doc/man
+MAKEDOX:=$(MAKEDOX) $(DOCDIR)/man
 endif
 ifeq (YES,$(GENERATE_XML))
-MAKEDOX:=$(MAKEDOX) doc/xml
+MAKEDOX:=$(MAKEDOX) $(DOCDIR)/xml
 endif
-
-.PHONY:: dox
 
 ifeq (,$(MAKEDOX))
 
 # Nothing to do for documentation
 dox::
 
-else
-# To unconditionally build documentation, simply run 'dox.sh' by itself
-# or run 'make clean' first.
+else # MAKEDOX
+
+# List all sources (run 'make roster' if update is needed)
+DOX_SOURCES:=
+-include config/config_roster_c.mak
+DOX_SOURCES:=$(DOX_SOURCES) $(addprefix jvm/src/,$(C_SOURCES))
+-include config/config_roster_h.mak
+DOX_SOURCES:=$(DOX_SOURCES) $(addprefix jvm/src/,$(C_HEADERS))
+-include config/config_roster_jni_c.mak
+DOX_SOURCES:=$(DOX_SOURCES) $(addprefix jni/src/harmony/generic/0.0/src/,$(C_SOURCES))
+-include config/config_roster_jni_h.mak
+DOX_SOURCES:=$(DOX_SOURCES) $(addprefix jni/src/harmony/generic/0.0/src/,$(C_HEADERS))
+-include config/config_roster_jni_java.mak
+DOX_SOURCES:=$(DOX_SOURCES) $(addprefix jni/src/harmony/generic/0.0/src/,$(JAVA_SOURCES))
+-include config/config_roster_test_java.mak
+DOX_SOURCES:=$(DOX_SOURCES) $(addprefix jvm/src/,$(JAVA_SOURCES))
+
+# Clear out variables from include files
+C_SOURCES:=
+C_HEADERS:=
+JAVA_SOURCES:=
+
+#
+# To unconditionally build documentation, simply
+# run 'dox.sh' by itself or run 'make veryclean' first.
+#
+# Otherwise, a simple 'make' will _only_ build documentation
+# if it was configured by 'config.sh', and then only the
+# output formats configured.  (The output formats will
+# _still_ have to be configured when running the
+# stand-alone script.)
 #
 
-dox:: ./doc
+.PHONY:: $(DOX_SOURCES)
 
-./doc:: $(MAKEDOX)
+dox:: $(DOCDIR)
+
+$(DOCDIR):: $(DOX_SOURCES)
 	dox.sh
 
-$(MAKEDOX)::
-
-endif
+endif # MAKEDOX
 
 undox::
 	undox.sh
@@ -208,29 +255,32 @@ roster::
 
 help::
 	@echo ""
-	@echo "Usage:  $(MAKE) $(OPTLIST1) |"
-	@echo "             $(OPTLIST2) |"
-	@echo "             $(OPTLIST3)"
+	@echo "Usage:  $(MAKE) $(OPTLIST2) |"
+	@echo "             $(OPTLIST1) | $(OPTLIST3) |"
+	@echo "             $(OPTLIST4)"
 	@echo ""
-	@echo "where  cfg       Build what was configured by 'config.sh'"
-	@echo "       all       Build everything (*)"
-	@echo "       clean     Smart cleanup (*)"
-	@echo "       veryclean Unconditional cleanup (*)"
+	@echo "where  all       Build everything (default rule)"
+	@echo "       dox       Build documentation (only)"
+	@echo "       clean     Smart cleanup"
+	@echo "       veryclean Unconditional cleanup"
 	@echo ""
-	@echo "       jvm       Build main JVM development area"
-	@echo "       libjvm    Build static JVM library"
-	@echo "       main      Build JVM binary from main() and static library"
-	@echo "       test      Build test classes for JVM development"
-	@echo "       jni       Build JNI classes and shared object library"
+	@echo "(*)(+) cfg       Build what was configured by 'config.sh'"
+	@echo "   (+) jvm       Build JVM main development area"
+	@echo "   (+) libjvm    Build JVM static library"
+	@echo "   (+) main      Build binary from main() and static library"
+	@echo "   (+) test      Build test classes for JVM development"
+	@echo "   (+) jni       Build JNI classes and shared object library"
 	@echo "                   (but currently the same binary as 'main')"
 	@echo ""
-	@echo "       dox       Build documentation (*)"
-	@echo "       undox     Clean documentation (*)"
-	@echo "       roster    Change the file roster (*)"
+	@echo "       undox     Clean documentation (only)"
+	@echo "   (-) depend    Build dependencies (done by 'all' also)"
+	@echo "   (-) nodepend  Clean dependencies (done by 'clean' also)"
+	@echo "   (-) tags      Build vi(1) editor tag file"
+	@echo "       roster    Update the file roster to represent the"
+	@echo "                   current list of source and header files"
 	@echo "       help      Display this message"
 	@echo ""
-	@echo " (*) Works at any level, not just here at the top level"
-	@echo ""
+	@echo " Top level:  (+) only (-) never  (*) Default rule"
 
 ###################################################################
 #
