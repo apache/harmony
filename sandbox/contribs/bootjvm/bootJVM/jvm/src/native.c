@@ -1675,4 +1675,32 @@ rvoid native_run_method(jvm_thread_index          thridx,
 } /* END of native_run_method() */
 
 
+/*!
+ * @name Hooks into java.lang.String fields
+ *
+ * @brief Use hard-coded field positions in class file to
+ * recognize string array contents reference and length of array
+ *
+ * These global variables are loaded with constants from the JNI
+ * header files because those headers are @e never to @e ever be
+ * referenced from the core JVM code.  Only this file and the 
+ * actual JNI implementations should @e ever reference them.  Yet,
+ * these symbols, being crucial to JVM string operation, must be
+ * intrinsically related to the JNI implementation.  Hence this
+ * compromise.
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+rint native_jlString_critical_field_value =
+                                          JLSTRING_CRITICAL_FIELD_VALUE;
+
+rint native_jlString_critical_field_length = 
+                                         JLSTRING_CRITICAL_FIELD_LENGTH;
+
+rint native_jlString_critical_num_fields = JLSTRING_CRITICAL_NUM_FIELDS;
+
+/*@} */ /* End grouped definitions */
+
 /* EOF */

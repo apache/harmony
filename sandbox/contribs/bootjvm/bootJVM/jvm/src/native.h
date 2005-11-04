@@ -64,6 +64,10 @@ extern jvm_native_method_ordinal native_locate_local_method(
                                 jvm_constant_pool_index  mthdescidx,
                                 rboolean          find_registerNatives);
 
+extern rint native_jlString_critical_field_value;
+extern rint native_jlString_critical_field_length;
+extern rint native_jlString_critical_num_fields;
+
 #endif /* _native_h_included_ */
 
 /* EOF */
