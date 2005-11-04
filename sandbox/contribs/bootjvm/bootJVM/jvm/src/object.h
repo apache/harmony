@@ -166,7 +166,7 @@ typedef struct
 
 /*@{ */ /* Begin grouped definitions */
 
-/****** First 2 bits same for class, object, and thread ***********/
+/****** First 3 bits same for class, object, and thread ***********/
 #define OBJECT_STATUS_EMPTY  0x0000 /**< This slot is available
                                          for use */
 #define OBJECT_STATUS_INUSE  0x0001 /**< This slot contains an object */
@@ -176,22 +176,12 @@ typedef struct
                                      * slot now being initialized.) */
 /******************************************************************/
 
-/****** Next 2 bits same for class and object *********************/
-#define OBJECT_STATUS_ARRAY  0x0004 /**< Object is an array instead of
-                                         an object instance*/
-#define OBJECT_STATUS_GCREQ  0x0008 /**< Object may be garbage
+/****** Next 3 bits same for class and object *********************/
+#define OBJECT_STATUS_GCREQ  0x0004 /**< Object may be garbage
                                          collected */
-/******************************************************************/
-
-/****** Next 5 bits unique between class and object ***************/
-#define OBJECT_STATUS_CLASS  0x0020 /**< This object is a class
-                                         definition instead of an
-                                         object instance */
-#define OBJECT_STATUS_SUBARRAY 0x0020/**< This is a subset of an array,
-                                         that is, of smaller dimension*/
-#define OBJECT_STATUS_THREAD 0x0040 /**< Object is a
-                                         @c @b java/Lang/Thread */
-#define OBJECT_STATUS_REFERENCE 0x0080 /**< Object instance variable is
+#define OBJECT_STATUS_ARRAY  0x0008 /**< Object is an array instead of
+                                         an object instance*/
+#define OBJECT_STATUS_REFERENCE 0x0010 /**< Object instance variable is
                                         * a reference.  This is the
                                         * @e same definition as for
                                         * @link #CLASS_STATUS_REFERENCE
@@ -204,12 +194,24 @@ typedef struct
                                         * frame, where the GC algorithm
                                         * implements it.
                                         */
-#define OBJECT_STATUS_MLOCK  0x0100 /**< Object monitor locked by
-                                         @link #robject.mlock_thridx
-                                         mlock_thridx@endlink */
 /******************************************************************/
 
-/****** Next 4 bits unique between class and object ***************/
+/****** Next 9 bits unique between class and object ***************/
+#define OBJECT_STATUS_SUBARRAY 0x0020/**< This is a subset of an array,
+                                         that is, of smaller dimension*/
+#define OBJECT_STATUS_MLOCK  0x0040 /**< Object monitor locked by
+                                         @link #robject.mlock_thridx
+                                         mlock_thridx@endlink */
+#define OBJECT_STATUS_0080   0x0080 /**< not used */
+#define OBJECT_STATUS_CLASS  0x0100 /**< This object is a class
+                                         definition instead of an
+                                         object instance */
+#define OBJECT_STATUS_THREAD 0x0200 /**< Object is a
+                                         @c @b java/Lang/Thread */
+#define OBJECT_STATUS_STRING 0x0400 /**< Object is a
+                                         @c @b java/Lang/String */
+#define OBJECT_STATUS_0800   0x0800 /**< not used */
+#define OBJECT_STATUS_1000   0x1000 /**< not used */
 /******************************************************************/
 
 /****** Last 3 bits not used by class or object *******************/
@@ -232,6 +234,9 @@ typedef struct
                                    OBJECT_STATUS_ARRAY@endlink is set
                                  */
 
+    /*!
+     * @todo HARMONY-6-jvm-object.h-1 Is @c @b arraylength necessary?
+     */
     jint *arraylength;          /**< Length of array in @e each
                                  * dimension, from this one on down
                                  * to object instances.  Meaningful
@@ -342,6 +347,8 @@ typedef struct
 
 extern rvoid object_init(rvoid);
 extern rvoid object_shutdown(rvoid);
+extern jvm_object_hash object_utf8_string_lookup(CONSTANT_Utf8_info *
+                                                                string);
 extern rvoid object_new_setup(jvm_object_hash objhash);
 extern jvm_object_hash object_instance_new(rushort         special_obj,
                                            ClassFile       *pcfs,
@@ -349,7 +356,8 @@ extern jvm_object_hash object_instance_new(rushort         special_obj,
                                            jvm_array_dim    arraydims,
                                            jint            *arraylength,
                                            rboolean         run_init_,
-                                           jvm_thread_index thridx);
+                                           jvm_thread_index thridx,
+                                           CONSTANT_Utf8_info *string);
 extern rvoid object_instance_finalize(jvm_object_hash objhash,
                                       jvm_thread_index thridx);
 extern jvm_object_hash object_instance_delete(jvm_object_hash objhash,
