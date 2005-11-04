@@ -17,7 +17,7 @@
 # the documentation package.
 #
 #
-# @see @link ./dist-common.sh ./dist-common.sh@endlink
+# @see @link support/dist-common.sh support/dist-common.sh@endlink
 #
 # @attention  Make @e sure that all Eclipse project files are in
 #             the "open" state when creating a distribution.
@@ -72,9 +72,9 @@
 #
 # Script setup.
 #
-. echotest.sh
+. support/echotest.sh
 
-. dist-common.sh
+. support/dist-common.sh
 
 MSG80="This script must NOT be interrupted.  Last chance to stop it..."
 $echon "$PGMNAME:  $MSG80" $echoc

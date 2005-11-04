@@ -114,10 +114,10 @@ Apache Harmony BootJVM Source Installation Procedure
     names in their "@file" declaration.  Please change these to your
     install area so that the documentation compiles without errors,
     but please do _not_ check in this adjustment to SVN.
-    The file names are: 'Makefile' and 'MakeSetup' and 'MakeRules' .
-    The author apologizes for any inconvenience that this may cause.
-    If you know of a better way around this constraint, please speak up.
-    (See also comments in 'roster.sh'.)
+    The file names are: 'Makefile' and 'support/MakeSetup' and
+    'support/MakeRules' .  The author apologizes for any inconvenience
+    that this may cause.  If you know of a better way around this
+    constraint, please speak up.  (See also comments in 'roster.sh'.)
 
 9.  Show the run time help menu by running either
     'jvm/bin/bootjvm -help' or 'main/bin/bootjvm -help'.
