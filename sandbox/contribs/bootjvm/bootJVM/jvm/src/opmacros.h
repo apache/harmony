@@ -5,7 +5,7 @@
  *
  * Much of the JVM inner loop is repetitious, yet not so much so
  * that opcodes can simply be grouped together completely.  This set
- * of macros is used to implement almost all of the opcodes, typically
+ * of macros is used to implement almost all of the opcodes, sometimes
  * in their entirety.
  *
  *
@@ -51,13 +51,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
- * @name Macro support for inner loop opcodes.
+ * @name Operand retrieval macros.
  *
- * @brief Common operations that are used in numerous opcodes
- * are gathered here so as to improve accuracy of implementation
- * and simplify the code at the expense of explicit code constructions.
- * (Notice how many some of these macros are used to see why this
- * approach is recommended!)  Any debugging will fix the whole lot.
+ * @brief Fetch operand(s) for an opcode using these macros.
  *
  */
 
@@ -178,91 +174,155 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  
 
 /*!
- * @brief Verify that an object reference is within supported range,
- * is in use, and does not refer to a null object.
+ * @brief Retrieve 1- or 2-byte index, depending on @b WIDE context
  *
- * @param objhash  Object hash of an object reference from the JVM stack
+ * If came from a @b WIDE opcode, get 2-byte index as the operand
+ * for this opcode, otherwise, get 1-byte index as the operand.
+ * Then convert that value into a (@link #jint jint@endlink) for
+ * use as the index into the local variable array in the current
+ * stack frame.
  *
  *
- * @returns @link #rvoid rvoid@endlink
+ * @param jintvar  Any variable of type (@link #jint jint@endlink)
+ *
+ * @param ldadjust Integer zero (0) or one (1) to account for the added
+ *                 local variable slot used by (@link #jdouble
+                   jdouble@endlink) and (@link #jlong jlong@endlink)
+ *                 local variables.  Zero is for all single-word types,
+ *                 (@link #jbyte jbyte@endlink) through (@link #jint
+                   jint@endlink), where one is for these two other
+ *                 types.  This parameter is used to check that
+ *                 the @b jintvar index is not out of range, and this
+ *                 adjustment must be used to check for the second
+ *                 word of the last local variable in case it is of
+ *                 one of the two affected types.
  *
  *
- * @throws JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
- *         @link #JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
-           if object hash is to a null object@endlink.
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e iswide contains the state of whether or not the
+ *                    @b WIDE opcode immediately preceded this opcode.
+ * </li>
+ * </ul>
  *
- * @throws JVMCLASS_JAVA_LANG_INTERNALERROR
- *         @link #JVMCLASS_JAVA_LANG_INTERNALERROR
-           if object hash is out of bounds@endlink.
  *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(jintvar)
+ *                           Any @link #jint jint@endlink variable may
+ *                           be used.  It holds the resulting index.
+ * </li>
+ * <li>  @c @e op1u1 used for scratch storage when not using a
+ *                   @b WIDE index
+ * </li>
+ * <li>  @c @e op1u2 used for scratch storage when a @b WIDE index
+ *                   is being used.
+ * </li>
+ * <li>  @c @e iswide is reset to @link #rfalse rfalse@endlink after
+ *                    reading its current state.
+ * </li>
+ * </ul>
+ *
+ * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
+ *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
+           if requested local variable is out of bounds@endlink.
+ *
+ *
+ * @todo HARMONY-6-jvm-opmacros.h-6 Is @b VerifyError the proper
+ *       error to throw?  Or is there one more specific to this
+ *       problem?
  */
-#define VERIFY_OBJECT_HASH(objhash)                                    \
-    if (jvm_object_hash_null == objhash)                               \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_EXCEPTION,          \
-                              JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION);\
-/*NOTREACHED*/                                                         \
-    }                                                                  \
-    if ((JVMCFG_MAX_OBJECTS   <= objhash)                 ||           \
-        (!(OBJECT_STATUS_INUSE & OBJECT(objhash).status)) ||           \
-        (OBJECT_STATUS_NULL & OBJECT(objhash).status))                 \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                               JVMCLASS_JAVA_LANG_INTERNALERROR);      \
-/*NOTREACHED*/                                                         \
-    }
+#define GET_WIDE_OR_NORMAL_INDEX(jintvar, ldadjust)             \
+    if (rtrue == iswide)                                        \
+    {                                                           \
+        GET_U2_OPERAND(op1u2);                                  \
+        jintvar = (jint) (jushort) op1u2;                       \
+    }                                                           \
+    else                                                        \
+    {                                                           \
+        GET_U1_OPERAND(op1u1);                                  \
+        jintvar = (jint) (jubyte) op1u1;                        \
+    }                                                           \
+    /* Check index larger than number of local variables */     \
+    if (jintvar + ldadjust >=                                   \
+        STACK(thridx,                                           \
+              JVMREG_FRAME_CURRENT_LOCAL_STORAGE_SIZE(thridx))) \
+    {                                                           \
+        thread_throw_exception(thridx,                          \
+                               THREAD_STATUS_THREW_ERROR,       \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
+/*NOTREACHED*/                                                  \
+    }                                                           \
+    iswide = rfalse; /* Extra ; */
+
+
+/*@} */ /* End of grouped definitions */
 
 
 /*!
- * @brief Verify that an object reference is to a one-dimensional array
- * of a given primative type and is within array bounds.
+ * @name Type cast suppression macros.
  *
- * It is assumed that the object hash is valid, having been passed
- * through @link #VERIFY_OBJECT_HASH() VERIFY_OBJECT_HASH@endlink first.
- * 
- *
- * @param objhash  Object hash of an object reference from the JVM stack
- *
- * @param basetype A @link #BASETYPE_CHAR_B BASETYPE_CHAR_x@endlink
- *                 to verify that array is of this type.
- *
- * @param arridx   Index into array
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * @throws JVMCLASS_JAVA_LANG_ARRAYINDEXOUTOFBOUNDSEXCEPTION
- *         @link #JVMCLASS_JAVA_LANG_ARRAYINDEXOUTOFBOUNDSEXCEPTION
-           if index is not within limits of the array size@endlink.
- *
- * @throws JVMCLASS_JAVA_LANG_INTERNALERROR
- *         @link #JVMCLASS_JAVA_LANG_INTERNALERROR
-           if array is not of the expected type@endlink.
- *
- * @todo HARMONY-6-jvm-opmacros.h-1 Needs unit testing with some
- *       real data.
+ * @brief Most opcode functional operations assume a
+ * (@link #jint jint@endlink) data type, but some need to be typeless.
+ * Therefore, these macros are supplied to assist in moving data
+ * around without @e any change to the actual binary contents,
+ * regardless of the target data type.  This is effectively means a
+ * suppression of type casting.
  *
  */
-#define VERIFY_ARRAY_REFERENCE(objhash, basetype, arridx)              \
-    if ((!(OBJECT_STATUS_ARRAY & OBJECT(objhash).status))  ||          \
-        (basetype != OBJECT(objhash).arraybasetype)        ||          \
-        ( 1       != OBJECT(objhash).arraydims))                       \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                               JVMCLASS_JAVA_LANG_INTERNALERROR);      \
-/*NOTREACHED*/                                                         \
-    }                                                                  \
-    if (arridx >= OBJECT(objhash).arraylength[0])                      \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_EXCEPTION,          \
-                    JVMCLASS_JAVA_LANG_ARRAYINDEXOUTOFBOUNDSEXCEPTION);\
-/*NOTREACHED*/                                                         \
-    }
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Force conversion of any Java type variable
+ * of @c @b sizeof(jint) into a @link #jfloat jfloat@endlink
+ * variable, but without conversion of contents.
+ *
+ *
+ * This macro is typically used to move a
+ * @link #jint jint@endlink into a @link #jint jint@endlink
+ * word, but suppress type conversion between the
+ * source and destination variables.
+ *
+ * @warning For comments on the dangers of using this macro,
+ *          please refer to @link #FORCE_JINT() FORCE_JINT()@endlink.
+ *
+ *
+ * @param var_sizeofjint  Any 32-bit variable.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(var_sizeofjint)
+ *                           Any 32-bit variable
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns (jfloat) version of @b var_sizeofjint without conversion
+ *          of contents (such as jint-to-jfloat might want to do).
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @todo HARMONY-6-jvm-opmacros.h-4 A careful review of this macro
+ *       across different compilers is very much in order.
+ *
+ */
+#define FORCE_JFLOAT(var_sizeofjint) \
+    (*((jfloat *) ((jvoid *) &var_sizeofjint)))
 
 
 /*!
@@ -376,51 +436,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
- * @brief Force conversion of any Java type variable
- * of @c @b sizeof(jint) into a @link #jfloat jfloat@endlink
- * variable, but without conversion of contents.
- *
- *
- * This macro is typically used to move a
- * @link #jint jint@endlink into a @link #jint jint@endlink
- * word, but suppress type conversion between the
- * source and destination variables.
- *
- * @warning For comments on the dangers of using this macro,
- *          please refer to @link #FORCE_JINT() FORCE_JINT()@endlink.
- *
- *
- * @param var_sizeofjint  Any 32-bit variable.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(var_sizeofjint)
- *                           Any 32-bit variable
- * </li>
- * </ul>
- *
- *
- * @returns (jfloat) version of @b var_sizeofjint without conversion
- *          of contents (such as jint-to-jfloat might want to do).
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @todo HARMONY-6-jvm-opmacros.h-4 A careful review of this macro
- *       across different compilers is very much in order.
- *
- */
-#define FORCE_JFLOAT(var_sizeofjint) \
-    (*((jfloat *) ((jvoid *) &var_sizeofjint)))
-
-
-/*!
  * @brief Force nothing at all.  Used by
  * @link #SINGLE_ARITHMETIC_BINARY() SINGLE_ARITHMETIC_BINARY()@endlink
  * in support of non-floating point data types.  Floating point
@@ -454,632 +469,119 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 #define FORCE_NOTHING(any_var) (any_var)
 
 
+/*@} */ /* End of grouped definitions */
+
+
 /*!
- * @brief Binary arithmetic and logic operations for
- * single-precision words
+ * @name Reference variable verification macros.
  *
- * Perform add, subtract, multiply, divide, remainder, and, or, xor.
- * The word type is dependent on the types of the input parameters,
- * namely (@link #jint jint@endlink) and (@link #jfloat jfloat@endlink).
- * All sub-integer types use this version of the arithmetic macro.
- *
- *
- * @param var1        First of two integer/sub-integer operands
- *
- * @param var2        Second of two integer/sub-integer operands
- *
- * @param _OPERATOR_  One of:  + - * / % & | ^
- *
- * @param _FORCE_     One of: FORCE_JINT FORCE_NOTHING
- *
- *
- * @returns @link #rvoid rvoid@endlink
+ * @brief Verify some basic features of a particular object hash.
  *
  */
-#define SINGLE_ARITHMETIC_BINARY(var1, var2, _OPERATOR_, _FORCE_) \
-    POP(thridx, var1, jint);                                      \
-    POP(thridx, var2, jint);                                      \
-                                                                  \
-    var1 = var1 _OPERATOR_ var2;                                  \
-                                                                  \
-    PUSH(thridx, _FORCE_(var1)); /* Extra ; */
 
+/*@{ */ /* Begin grouped definitions */
 
 /*!
- * @brief Binary arithmetic and logic operations for
- * double-precision words
+ * @brief Verify that an object reference is to a one-dimensional array
+ * of a given primative type and is within array bounds.
  *
- * Perform add, subtract, multiply, divide, remainder,
- * and, or, xor.  The word type is dependent on the types
- * of the input parameters, namely (@link #jlong jlong@endlink) and
- * (@link #jdouble jdouble@endlink).
+ * It is assumed that the object hash is valid, having been passed
+ * through @link #VERIFY_OBJECT_HASH() VERIFY_OBJECT_HASH@endlink first.
+ * 
  *
+ * @param objhash  Object hash of an object reference from the JVM stack
  *
- * @param var1        First of two operands
+ * @param basetype A @link #BASETYPE_CHAR_B BASETYPE_CHAR_x@endlink
+ *                 to verify that array is of this type.
  *
- * @param var2        Second of two operands
- *
- * @param varint1     MS half of vars as @link #jint jint@endlink
- *
- * @param varint2     LS half of vars as @link #jint jint@endlink
- *
- * @param vartype     data type of @b var1 and @b var2
- *
- * @param _OPERATOR_  One of:  + - * / % & | ^
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- */
-#define DOUBLE_ARITHMETIC_BINARY(var1, var2, varint1, varint2, \
-                                 vartype, _OPERATOR_)          \
-    POP(thridx, varint2, jint);                                \
-    POP(thridx, varint1, jint);                                \
-    var1 = bytegames_combine_##vartype(varint1, varint2);      \
-                                                               \
-    POP(thridx, varint2, jint);                                \
-    POP(thridx, varint1, jint);                                \
-    var2 = bytegames_combine_##vartype(varint1, varint2);      \
-                                                               \
-    var1 = var1 _OPERATOR_ var2;                               \
-                                                               \
-    bytegames_split_##vartype(var1, &varint1, &varint2);       \
-    PUSH(thridx, varint1);                                     \
-    PUSH(thridx, varint2); /* Extra ; */
-
-
-/*!
- * @brief Retrieve 1- or 2-byte index, depending on @b WIDE context
- *
- * If came from a @b WIDE opcode, get 2-byte index as the operand
- * for this opcode, otherwise, get 1-byte index as the operand.
- * Then convert that value into a (@link #jint jint@endlink) for
- * use as the index into the local variable array in the current
- * stack frame.
- *
- *
- * @param jintvar  Any variable of type (@link #jint jint@endlink)
- *
- * @param ldadjust Integer zero (0) or one (1) to account for the added
- *                 local variable slot used by (@link #jdouble
-                   jdouble@endlink) and (@link #jlong jlong@endlink)
- *                 local variables.  Zero is for all single-word types,
- *                 (@link #jbyte jbyte@endlink) through (@link #jint
-                   jint@endlink), where one is for these two other
- *                 types.  This parameter is used to check that
- *                 the @b jintvar index is not out of range, and this
- *                 adjustment must be used to check for the second
- *                 word of the last local variable in case it is of
- *                 one of the two affected types.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e iswide contains the state of whether or not the
- *                    @b WIDE opcode immediately preceded this opcode.
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(jintvar)
- *                           Any @link #jint jint@endlink variable may
- *                           be used.  It holds the resulting index.
- * </li>
- * <li>  @c @e op1u1 used for scratch storage when not using a
- *                   @b WIDE index
- * </li>
- * <li>  @c @e op1u2 used for scratch storage when a @b WIDE index
- *                   is being used.
- * </li>
- * <li>  @c @e iswide is reset to @link #rfalse rfalse@endlink after
- *                    reading its current state.
- * </li>
- * </ul>
- *
- * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
- *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
-           if requested local variable is out of bounds@endlink.
- *
- *
- * @todo HARMONY-6-jvm-opmacros.h-6 Is @b VerifyError the proper
- *       error to throw?  Or is there one more specific to this
- *       problem?
- */
-#define GET_WIDE_OR_NORMAL_INDEX(jintvar, ldadjust)             \
-    if (rtrue == iswide)                                        \
-    {                                                           \
-        GET_U2_OPERAND(op1u2);                                  \
-        jintvar = (jint) (jushort) op1u2;                       \
-    }                                                           \
-    else                                                        \
-    {                                                           \
-        GET_U1_OPERAND(op1u1);                                  \
-        jintvar = (jint) (jubyte) op1u1;                        \
-    }                                                           \
-    /* Check index larger than number of local variables */     \
-    if (jintvar + ldadjust >=                                   \
-        STACK(thridx,                                           \
-              JVMREG_FRAME_CURRENT_LOCAL_STORAGE_SIZE(thridx))) \
-    {                                                           \
-        thread_throw_exception(thridx,                          \
-                               THREAD_STATUS_THREW_ERROR,       \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
-/*NOTREACHED*/                                                  \
-    }                                                           \
-    iswide = rfalse; /* Extra ; */
-
-/*!
- * @brief Calculate method_info pointer from program counter
- *
- * During the calculation, various scratch variables are
- * loaded and used to simplify the code.  The final result
- * is a (method_info *) stored the local variable @b pmth
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li>  @c @e clsidxmisc    Class index field from program counter
- * </li>
- * <li>  @c @e mthidxmisc    Method index field from program counter
- * </li>
- * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
- *                           referenced by program counter
- * </li>
- * <li>  @c @e pmth          Method pointer in classs file field from
- *                           class referenced by program counter
- * </li>
- * </ul>
- *
- */
-#define CALCULATE_METHOD_INFO_FROM_PC                    \
-    clsidxmisc = GET_PC_FIELD_IMMEDIATE(thridx, clsidx); \
-    mthidxmisc = GET_PC_FIELD_IMMEDIATE(thridx, mthidx); \
-    pcfsmisc   = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs; \
-    pmth       = METHOD(clsidxmisc, mthidxmisc)
-
-
-/*!
- * @brief Calculate ClassFile pointer from a class reference.
- *
- * During the calculation, various scratch variables are
- * loaded and used to simplify the code.  Two final results
- * include a (CONSTANT_Class_info *) stored in the local variable
- * @b pcpd_Class stored the local variable @b pcfsmisc
- * and a (CONSTANT_Class_info *) stored in the local variable
- * @b pcpd_Class
- *
- * @param clsnameidx  @c @b constant_pool index into class file of
- *                    current class (as indicated in the program
- *                    counter) that is a class reference entry.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(clsnameidx)
- *                           Any expression resolving to a
- *                           @c @b constant_pool index
- * </li>
- * <li>  @c @e pcfs->constant_pool  Examine a @c @b constant_pool entry
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
- * </li>
- * <li> @c @e pcpd_Class     @c @b pcpd as a CONSTANT_Class_info pointer
- * </li>
- * <li> @c @e clsidxmisc     Class index of fully bound class referenced
- *                           by @c @b pcpd_Class
- * </li>
- * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
- *                           referenced by @c @b clsidxmisc
- * </li>
- * </ul>
- *
- *
- */
-#define CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(clsnameidx)          \
-    pcpd       = pcfs->constant_pool[clsnameidx];                      \
-    pcpd_Class = PTR_THIS_CP_Class(pcpd);                              \
-    clsidxmisc = pcpd_Class->LOCAL_Class_binding.clsidxJVM;            \
-    if (jvm_class_index_null == clsidxmisc)                            \
-    {                                                                  \
-        /* Need local variable to avoid possible expansion confusion */\
-        jvm_constant_pool_index cpidxOLD = clsnameidx;                 \
-                                                                       \
-        /* If class is not loaded, go retrieve it by UTF8 class name */\
-        LATE_CLASS_LOAD(cpidxOLD);                                     \
-    }                                                                  \
-    pcfsmisc = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs; /* Extra ; */
-
-
-/*!
- * @brief Attempt to load a class that is not currently loaded.
- *
- *
- * @param clsnameidx  CONSTANT_Utf8_info @c @b constant_pool index
- *                    to class name
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(clsnameidx)
- *                           Any expression resolving to a
- *                           @c @b constant_pool index
- * </li>
- * </ul>
+ * @param arridx   Index into array
  *
  *
  * @returns @link #rvoid rvoid@endlink
  *
  *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry,
- *                           ultimately pointing to the entry containing
- *                           the name of the input @c @b clsnameidx
- * </li>
- * <li> @c @e pcpd_Class     @c @b pcpd as a CONSTANT_Class_info pointer
- * </li>
- * <li> @c @e pcpd_Utf8      @c @b pcpd as a CONSTANT_Utf8_info pointer
- * </li>
- * <li> @c @e prchar_clsname Null-terminated string version of class
- *                           name @c @b clsnameidx
- * </li>
- * <li> @c @e clsidxmisc     Class index of class named in
- *                           @c @b clsnamidx after it has been loaded.
- * </li>
- * </ul>
+ * @throws JVMCLASS_JAVA_LANG_ARRAYINDEXOUTOFBOUNDSEXCEPTION
+ *         @link #JVMCLASS_JAVA_LANG_ARRAYINDEXOUTOFBOUNDSEXCEPTION
+           if index is not within limits of the array size@endlink.
  *
+ * @throws JVMCLASS_JAVA_LANG_INTERNALERROR
+ *         @link #JVMCLASS_JAVA_LANG_INTERNALERROR
+           if array is not of the expected type@endlink.
  *
- * @throws JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR
- *         @link #JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR
-           if requested class cannot be located@endlink.
+ * @todo HARMONY-6-jvm-opmacros.h-1 Needs unit testing with some
+ *       real data.
  *
  */
-#define LATE_CLASS_LOAD(clsnameidx)                                  \
-                                                                     \
-    pcpd       = pcfs->constant_pool[clsnameidx]; /* Class name */   \
-    pcpd_Class = PTR_THIS_CP_Class(pcpd);                            \
-                                                  /* UTF8 string */  \
-    pcpd       = pcfs->constant_pool[pcpd_Class->name_index];        \
-    pcpd_Utf8  = PTR_THIS_CP_Utf8(pcpd);                             \
-                                                                     \
-    prchar_clsname = utf_utf2prchar(pcpd_Utf8);                      \
-                                                                     \
-    /* Try again to load class */                                    \
-    clsidxmisc = class_load_resolve_clinit(prchar_clsname,           \
-                                           CURRENT_THREAD,           \
-                                           rfalse,                   \
-                                           rfalse);                  \
-                                                                     \
-    HEAP_FREE_DATA(prchar_clsname);                                  \
-                                                                     \
-    /* If class is irretrievable, abort */                           \
-    if (jvm_class_index_null == clsidxmisc)                          \
-    {                                                                \
-        thread_throw_exception(thridx,                               \
-                               THREAD_STATUS_THREW_ERROR,            \
-                           JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR); \
-/*NOTREACHED*/                                                       \
-    }
-
-
-
-
-/*!
- * @brief Calculate method_info pointer from a method reference.
- *
- * During the calculation, various scratch variables are
- * loaded and used to simplify the code.  Two final results
- * include a (method_info *) stored the local variable @b pmth
- * and a (CONSTANT_Methodref_info *) stored in the local variable
- * @b pcpd_Methodref
- *
- * @param Methodref  @c @b constant_pool index into class file of
- *                   current class (as indicated in the program counter)
- *                   that is a method reference entry.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(Methodref)
- *                           Any expression resolving to a
- *                           @c @b constant_pool index
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
- * </li>
- * <li> @c @e pcpd_Methodref @c @b pcpd as a CONSTANT_Methodref_info
- *                           pointer
- * </li>
- * <li> @c @e clsidxmisc     Class index of fully bound class referenced
- *                           by @c @b pcpd_Methodref
- * </li>
- * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
- *                           referenced by @c @b clsidxmisc
- * </li>
- * <li>  @c @e pmth          method_info table entry referenced by
- *                           @c @b pcpd_Methodref
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
- *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
-           if requested method is not found in the class@endlink.
- *
- *
- */
-#define CALCULATE_METHOD_INFO_FROM_METHOD_REFERENCE(Methodref)         \
-    pcpd           = pcfs->constant_pool[Methodref];                   \
-    pcpd_Methodref = PTR_THIS_CP_Methodref(pcpd);                      \
-    clsidxmisc     = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;\
-    if (jvm_class_index_null == clsidxmisc)                            \
-    {                                                                  \
-        /* If class is not loaded, go retrieve it by UTF8 class name */\
-       LATE_CLASS_LOAD(pcpd_Methodref->class_index);                   \
-                                                                       \
-        /* Check if method exists in loaded class */                   \
-        clsidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;\
-        if (jvm_class_index_null == clsidxmisc)                        \
-        {                                                              \
-            thread_throw_exception(thridx,                             \
-                                   THREAD_STATUS_THREW_ERROR,          \
-                                JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
-/*NOTREACHED*/                                                         \
-        }                                                              \
-    }                                                                  \
-                                                                       \
-    mthidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.mthidxJVM;    \
-    if (jvm_method_index_bad == mthidxmisc)                            \
+#define VERIFY_ARRAY_REFERENCE(objhash, basetype, arridx)              \
+    if ((!(OBJECT_STATUS_ARRAY & OBJECT(objhash).status))  ||          \
+        (basetype != OBJECT(objhash).arraybasetype)        ||          \
+        ( 1       != OBJECT(objhash).arraydims))                       \
     {                                                                  \
         thread_throw_exception(thridx,                                 \
                                THREAD_STATUS_THREW_ERROR,              \
-                                JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
+                               JVMCLASS_JAVA_LANG_INTERNALERROR);      \
 /*NOTREACHED*/                                                         \
     }                                                                  \
-                                                                       \
-    pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
-    pmth           = pcfsmisc->methods[mthidxmisc]
-
-
-/*!
- * @brief Check for code attribute index in local method binding.
- *
- *
- * @param codeatridx  Code attribute index from a local method binding
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(codeatridx)
- *                           Any expression that resolves to an
- *                           attribute index
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
- *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
-      if requested class static field is not found in the class@endlink.
- *
- */
-#define CHECK_VALID_CODEATRIDX(codeatridx)                            \
-    if (jvm_attribute_index_bad == codeatridx)                        \
-    {                                                                 \
-        thread_throw_exception(thridx,                                \
-                               THREAD_STATUS_THREW_ERROR,             \
-                               JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
-/*NOTREACHED*/                                                        \
+    if (arridx >= OBJECT(objhash).arraylength[0])                      \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_EXCEPTION,          \
+                    JVMCLASS_JAVA_LANG_ARRAYINDEXOUTOFBOUNDSEXCEPTION);\
+/*NOTREACHED*/                                                         \
     }
 
 
 /*!
- * @brief Check if this method is a static method.
+ * @brief Verify that an object reference is within supported range,
+ * is in use, and does not refer to a null object.
  *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(u2var)
- *                           Receives operand contents
- * </li>
- * </ul>
+ * @param objhash  Object hash of an object reference from the JVM stack
  *
  *
  * @returns @link #rvoid rvoid@endlink
  *
  *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(u2var)
- *                           Receives operand contents
- * </li>
- * <li> @c @e pc->offset     Add @c @b sizeof(u2) to current value
- * </li>
- * </ul>
+ * @throws JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
+ *         @link #JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
+           if object hash is to a null object@endlink.
  *
- *
- * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
- *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
-           if requested method is an object instance method@endlink.
+ * @throws JVMCLASS_JAVA_LANG_INTERNALERROR
+ *         @link #JVMCLASS_JAVA_LANG_INTERNALERROR
+           if object hash is out of bounds@endlink.
  *
  */
-#define CHECK_STATIC_METHOD                                      \
-                                                                 \
-    /* Must be a static method */                                \
-    if (!(ACC_STATIC & pmth->access_flags))                      \
-    {                                                            \
-        thread_throw_exception(thridx,                           \
-                               THREAD_STATUS_THREW_ERROR,        \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
-/*NOTREACHED*/                                                   \
-    }
-
-
-/*!
- * @brief Check if this method is an object instance method.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e pmth          method_info table entry of current method
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
- *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
-           if requested method is a static method@endlink.
- *
- */
-#define CHECK_INSTANCE_METHOD                                    \
-                                                                 \
-    /* Must be an instance method */                             \
-    if (ACC_STATIC & pmth->access_flags)                         \
-    {                                                            \
-        thread_throw_exception(thridx,                           \
-                               THREAD_STATUS_THREW_ERROR,        \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
-/*NOTREACHED*/                                                   \
-    }
-
-
-/*!
- * @brief Check if this method is an @c @b abstract method,
- * that is, not having a concrete implementation.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e pmth          method_info table entry of current method
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
- *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
- if requested method is a method with a concrete implementatino@endlink.
- *
- */
-#define CHECK_ABSTRACT_METHOD                                          \
-                                                                       \
-    /* Must not be a concrete method */                                \
-    if (!(ACC_ABSTRACT & pmth->access_flags))                          \
+#define VERIFY_OBJECT_HASH(objhash)                                    \
+    CHECK_NOT_NULL_OBJECT_HASH(objhash);                               \
+    if ((JVMCFG_MAX_OBJECTS   <= objhash)                 ||           \
+        (!(OBJECT_STATUS_INUSE & OBJECT(objhash).status)) ||           \
+        (OBJECT_STATUS_NULL & OBJECT(objhash).status))                 \
     {                                                                  \
         thread_throw_exception(thridx,                                 \
                                THREAD_STATUS_THREW_ERROR,              \
-\
-/* What exception gets thrown here? Need "not" of InstantiationError */\
-\
-                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
+                               JVMCLASS_JAVA_LANG_INTERNALERROR);      \
 /*NOTREACHED*/                                                         \
     }
 
 
+/*@} */ /* End of grouped definitions */
+
+
 /*!
- * @brief Check if this method is a concrete method, that is,
- * not @c @b abstract .
+ * @name Data movement macros.
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Retrieve value by data type from either class static field or
+ * object instance field.
  *
  *
- * @b Parameters: @link #rvoid rvoid@endlink
+ * @param data_array_slot  Expression pointing to the class' or object's
+ *                         @b XXX_data[] array, namely a
+ *                         (@link #jvalue jvalue@endlink *).
+ *                         Typically a fixed set of two expressions.
  *
  *
  * <b>Local variables read:</b>
@@ -1088,824 +590,190 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           (input parameter to
  *                           @link #opcode_run opcode_run()@endlink)
  * </li>
- * <li>  @c @e pmth          method_info table entry of current method
+ * <li> @c @e macro_expansion_of(data_array_slot)
+ *                           Any @link #jvalue jvalue@endlink variable.
  * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
- *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
-           if requested method is an abstract method@endlink.
- *
- */
-#define CHECK_NOT_ABSTRACT_METHOD                                      \
-                                                                       \
-    /* Must not be an abstract method */                               \
-    if (ACC_ABSTRACT & pmth->access_flags)                             \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
-/*NOTREACHED*/                                                         \
-    }
-
-
-/*!
- * @brief Check if this object is from a concrete class, that is,
- * not from an @c @b abstract class.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e objhashmisc   Object table hash of current object
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
- *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
-           if requested object is an abstract object@endlink.
- *
- */
-#define CHECK_NOT_ABSTRACT_CLASS                                       \
-                                                                       \
-    /* Must not be from an abstract class */                           \
-    if (ACC_ABSTRACT &                                                 \
-        OBJECT_CLASS_LINKAGE(objhashmisc)->pcfs->access_flags)         \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
-/*NOTREACHED*/                                                         \
-    }
-
-
-/*!
- * @brief Check if this object is a scalar, that is, not an array.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e objhashmisc   Object table hash of current object
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
- *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
-           if requested method is an array object@endlink.
- *
- */
-#define CHECK_NOT_ARRAY_OBJECT                                         \
-                                                                       \
-    /* Must not be an array object */                                  \
-    if (OBJECT_STATUS_ARRAY &                                          \
-        CLASS(OBJECT_CLASS_LINKAGE(objhashmisc)->clsidx).status)       \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
-/*NOTREACHED*/                                                         \
-    }
-
-
-/*!
- * @brief Check if this object is from a normal class, that is,
- * not from an interface class.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e objhashmisc   Object table hash of current object
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
- *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
-           if requested object is from an interface class@endlink.
- *
- */
-#define CHECK_NOT_INTERFACE_CLASS                                      \
-                                                                       \
-    /* Must not be from an interface class */                          \
-    if (ACC_INTERFACE &                                                \
-        OBJECT_CLASS_LINKAGE(objhashmisc)->pcfs->access_flags)         \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
-/*NOTREACHED*/                                                         \
-    }
-
-
-/*!
- * @brief Calculate field_info pointer from a field reference.
- *
- * During the calculation, various scratch variables are
- * loaded and used to simplify the code.  Two final results
- * include a (field_info *) stored the local variable @b pfld
- * and a (CONSTANT_Fieldref_info *) stored in the local variable
- * @b pcpd_Fieldref
- *
- * @param Fieldref  @c @b constant_pool index into class file of current
- *                  class (as indicated in the program counter) that
- *                  is a method reference entry.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(Fieldref)
- *                           Any expression resolving to a
- *                           @c @b constant_pool index
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
- * </li>
- * <li> @c @e pcpd_Fieldref @c @b pcpd as a CONSTANT_Fieldref_info
- *                           pointer
- * </li>
- * <li> @c @e clsidxmisc     Class index of fully bound class referenced
- *                           by @c @b pcpd_Fieldref
- * </li>
- * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
- *                           referenced by @c @b clsidxmisc
- * </li>
- * <li>  @c @e pfld          field_info table entry referenced by
- *                           @c @b pcpd_Fieldref
- * </li>
- * <li>  @c @e fluidxmisc    Field lookup index of field from class
- *                           referenced by @c @b clsidxmisc
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
- *         @link #JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
-           if requested field is not found in the class@endlink.
- *
- */
-#define CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(Fieldref)            \
-    pcpd           = pcfs->constant_pool[Fieldref];                    \
-    pcpd_Fieldref = PTR_THIS_CP_Fieldref(pcpd);                        \
-    clsidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
-    if (jvm_class_index_null == clsidxmisc)                            \
-    {                                                                  \
-        /* If class is not loaded, go retrieve it by UTF8 class name */\
-        LATE_CLASS_LOAD(pcpd_Fieldref->class_index);                   \
-                                                                       \
-        /* Check if field exists in loaded class */                    \
-        clsidxmisc = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
-        if (jvm_class_index_null == clsidxmisc)                        \
-        {                                                              \
-            thread_throw_exception(thridx,                             \
-                                   THREAD_STATUS_THREW_ERROR,          \
-                                JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);  \
-/*NOTREACHED*/                                                         \
-        }                                                              \
-    }                                                                  \
-                                                                       \
-    fluidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.fluidxJVM;  \
-    if (jvm_field_index_bad == fluidxmisc)                             \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                                JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);  \
-/*NOTREACHED*/                                                         \
-    }                                                                  \
-                                                                       \
-    pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
-    fluidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.fluidxJVM;  \
-    pfld           = pcfsmisc                                          \
-                       ->fields[CLASS(clsidxmisc)                      \
-                                 .class_static_field_lookup[fluidxmisc]]
-
-
-/*!
- * @brief Check for field lookup index in local field binding.
- *
- *
- * @param fluidx  Field lookup index from a local field binding
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(fluidx)
- *                           Any expression resolving to a
- *                           field lookup index
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
- *         @link #JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
-      if requested class static field is not found in the class@endlink.
- *
- */
-#define CHECK_VALID_FIELDLOOKUPIDX(fluidx)                           \
-    if (jvm_field_lookup_index_bad == fluidx)                        \
-    {                                                                \
-        thread_throw_exception(thridx,                               \
-                               THREAD_STATUS_THREW_ERROR,            \
-                               JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR); \
-/*NOTREACHED*/                                                       \
-    }
-
-
-/*!
- * @brief Check if this field is a static field.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e pfld          field_info table entry of current field
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
- *         @link #JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
-           if requested field is an object instance field@endlink.
- *
- */
-#define CHECK_STATIC_FIELD                                       \
-                                                                 \
-    /* Must be a static field */                                 \
-    if (!(ACC_STATIC & pfld->access_flags))                      \
-    {                                                            \
-        thread_throw_exception(thridx,                           \
-                               THREAD_STATUS_THREW_ERROR,        \
-               JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR); \
-/*NOTREACHED*/                                                   \
-    }
-
-
-/*!
- * @brief Check if this field is an object instance field.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li>  @c @e pfld          field_info table entry of current field
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
- *         @link #JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
-           if requested method is a static field@endlink.
- *
- */
-#define CHECK_INSTANCE_FIELD                                     \
-                                                                 \
-    /* Must be an instance field */                              \
-    if (ACC_STATIC & pfld->access_flags)                         \
-    {                                                            \
-        thread_throw_exception(thridx,                           \
-                               THREAD_STATUS_THREW_ERROR,        \
-               JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR); \
-/*NOTREACHED*/                                                   \
-    }
-
-
-/*!
- * @brief Check if this field is a final field in the current class.
- *
- *
- * Determine if a final field is in the current class.  If so, fine,
- * but otherwise it is in a superclass.  This is an error.
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
- *                           field
- * </li>
- * <li>  @c @e pfld          field_info table entry of current field
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * @throws JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR
- *         @link #JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR
-           if requested field is final, but in a superclass@endlink.
- *
- */
-#define CHECK_FINAL_FIELD_CURRENT_CLASS                          \
-                                                                 \
-    {                                                            \
-        jvm_class_index clsidxTMP;                               \
-                                                                 \
-        GET_PC_FIELD(thridx, clsidxTMP, clsidx);                 \
-                                                                 \
-        /* A final field must _not_ be found in a superclass */  \
-        if ((ACC_FINAL & pfld->access_flags) &&                  \
-            (clsidxTMP != pcpd_Fieldref                          \
-                            ->LOCAL_Fieldref_binding.clsidxJVM)) \
-        {                                                        \
-            thread_throw_exception(thridx,                       \
-                                   THREAD_STATUS_THREW_ERROR,    \
-                       JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR);   \
-/*NOTREACHED*/                                                   \
-        }                                                        \
-    }
-
-
-/*!
- * @brief Check if this field requires two @link #jint jint@endlink
- * accesses or just one.
- *
- *
- * JVM stack operations and local variable accesses need to know
- * if the datum to be moved takes one @link #jint jint@endlink slot
- * or two.  Items of types @link #jlong jlong@endlink and
- * @link #jdouble jdouble@endlink take two such accesses, all others
- * take just one.
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
  * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
  *                           field
  * </li>
  * </ul>
  *
  *
- * @returns @link #rtrue rtrue@endlink if this field takes two
- *          accesses, otherwise @link #rfalse rfalse@endlink for
- *          smaller types.
+ * @returns @link #rvoid rvoid@endlink
  *
  *
  * <b>Local variables written:</b>
  * <ul>
- * <li> @c @e none
+ * <li> @c @e jitmp1         Used for intermediate
+ *                           @link #jint jint@endlink storage
+ * </li>
+ * <li> @c @e jitmp2         Used for intermediate
+ *                           @link #jint jint@endlink storage
  * </li>
  * </ul>
  *
+ *
+ * @see GETFIELD
+ *
+ * @see GETSTATIC
+ *
+ *
+ * @todo HARMONY-6-jvm-opmacros.h-11 The various type casting games
+ *       of integer/sub-integer and integer/float/double and
+ *       integer/objhash need to be carefully scrutinized for
+ *        correctness at run time.
+ *
+ * @todo HARMONY-6-jvm-opmacros.h-12 Is @B BASTYPE_CHAR_ARRAY a
+ *       legal case for @b GETSTATIC and @b GETFIELD ?
+ *
  */
-#define CHECK_TWO_ACCESSES                                         \
-                                                                   \
-    (((pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM ==      \
-       BASETYPE_CHAR_J)                                         || \
-      (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM ==      \
-       BASETYPE_CHAR_D))                                           \
-    ? rtrue                                                        \
-    : rfalse)
+#define GETDATA(data_array_slot)                                       \
+    switch (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM)       \
+    {                                                                  \
+        case BASETYPE_CHAR_B:                                          \
+            PUSH(thridx,                                               \
+                 (jint) data_array_slot._jbyte);                       \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_C:                                          \
+            PUSH(thridx,                                               \
+                (jint) data_array_slot._jchar);                        \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_D:                                          \
+            bytegames_split_jdouble(data_array_slot._jdouble,          \
+                                    &jitmp1,                           \
+                                    &jitmp2);                          \
+            /*                                                         \
+             * DO NOT push from a 64-bit word! @link #PUSH()           \
+               PUSH@endlink was only designed to operate on 32-bit     \
+             * data types.  Instead, use two instances.                \
+             */                                                        \
+            PUSH(thridx, jitmp1);                                      \
+            PUSH(thridx, jitmp2);                                      \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_F:                                          \
+            /*                                                         \
+             * DO NOT pop into a jfloat!  This will consider           \
+             * the source as an integer to be converted instead        \
+             * of a 32-bit floating point word stored in a 32-bit      \
+             * integer word on the stack.  Instead, use the            \
+             * FORCE_JFLOAT() macro to sustain contents across         \
+             * type boundaries.                                        \
+             */                                                        \
+            jitmp1 = FORCE_JINT(data_array_slot._jfloat);              \
+            PUSH(thridx, jitmp1);                                      \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_I:                                          \
+            PUSH(thridx,                                               \
+                 (jint) /* ... redundant */ data_array_slot._jint);    \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_J:                                          \
+            bytegames_split_jlong(data_array_slot._jlong,              \
+                                  &jitmp1,                             \
+                                  &jitmp2);                            \
+            /*                                                         \
+             * DO NOT push from a 64-bit word! @link #PUSH()           \
+               PUSH@endlink was only designed to operate on 32-bit     \
+             * data types.  Instead, use two instances.                \
+             */                                                        \
+            PUSH(thridx, jitmp1);                                      \
+            PUSH(thridx, jitmp2);                                      \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_L:                                          \
+            PUSH(thridx,                                               \
+                 (jint) data_array_slot._jobjhash);                    \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_S:                                          \
+            PUSH(thridx,                                               \
+                 (jint) data_array_slot._jshort);                      \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_Z:                                          \
+            PUSH(thridx,                                               \
+                 (jint) data_array_slot._jboolean);                    \
+            break;                                                     \
+                                                                       \
+        case BASETYPE_CHAR_ARRAY:                                      \
+            PUSH(thridx,                                               \
+                 (jint) data_array_slot._jarray);                      \
+            break;                                                     \
+                                                                       \
+        case LOCAL_BASETYPE_ERROR:                                     \
+        default:                                                       \
+            /* Something is @e very wrong if code gets here */         \
+            thread_throw_exception(thridx,                             \
+                                   THREAD_STATUS_THREW_ERROR,          \
+                                   JVMCLASS_JAVA_LANG_VERIFYERROR);    \
+/*NOTREACHED*/                                                         \
+            break;                                                     \
+    }
 
 
 /*!
- * @brief Check special cases of single-precision floating point numbers
- * as part of conversion to other formats.
+ * @brief Retrieve value by data type from object instance field.
  *
  *
- * The opcodes @b F2x where 'x' is long, double, or integer need to
- * perform testing on @b NAN cases and on positive and negative
- * infinity cases.
- *
- * @param jfloatvar      Single-precision floating point variable
- *                       as @link #jfloat jfloat@endlink to examine
- *
- * @param jintvar        Normal integer (size of single-precision
- *                       floating point) as @link #jlong jlong@endlink
- *                       scratch variable.
- *
- * @param resultvar      Result variable of any type
- *
- * @param resultNaN      Value for @c @b resultvar when @c @b jfloatvar
- *                       is a @b NAN case.
- *
- * @param resultPosZero  Value for @c @b resultvar when @c @b jfloatvar
- *                       is a positive zero.
- *
- * @param resultLargePos Largest positive integer that @c @b resultvar
- *                       can hold.
- *
- * @param resultNegZero  Value for @c @b resultvar when @c @b jfloatvar
- *                       is a negative zero.
- *
- * @param resultLargeNeg Largest negative integer that @c @b resultvar
- *                       can hold.
+ * @param objhash Object to manipulate
  *
  *
  * <b>Local variables read:</b>
  * <ul>
- * <li> @c @e macro_expansion_of(jfloatvar)
- *                           Any @link #jfloat jfloat@endlink variable.
- * </li>
- * </ul>
- *
- *
- * @returns into an @c @b else case to set @c @b resultvar when no
- *          special cases happened.  <b>This is the normal way that
- *          this macro should return except when the special cases
- *          actually occur, which should be rare</b>.
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(jintvar)
- *                           Any @link #jint jint@endlink variable.
- *                           Temporary scratch storage.
- * </li>
- * <li> @c @e macro_expansion_of(resultvar)
- *                           Any integer or floating-point variable
- *                           of any type.  Will end up with either the
- *                           special-case test result as provided by
- *                           @c @b resultNaN, @c @b resultPosZero,
- *                           @c @b resultLargePos, @c @b resultNegZero,
- *                           or @c @b resultLargeNeg.
- * </li>
- * </ul>
- *
- */
-#define IF_JFLOAT_SPECIAL_CASES(jfloatvar,                \
-                                jintvar,                  \
-                                resultvar,                \
-                                resultNaN,                \
-                                resultPosZero,            \
-                                resultLargePos,           \
-                                resultNegZero,            \
-                                resultLargeNeg)           \
-    jintvar = FORCE_JINT(jfloatvar);                      \
-    if (JFLOAT_IS_NAN(jintvar))                           \
-    {                                                     \
-        resultvar = resultNaN;                            \
-    }                                                     \
-    else                                                  \
-    if (JFLOAT_POSITIVE_ZERO == (juint) jintvar)          \
-    {                                                     \
-        resultvar = resultPosZero;                        \
-    }                                                     \
-    else                                                  \
-    if ((JFLOAT_POSITIVE_INFINITY == (juint) jintvar) ||  \
-        ((0.0 < jfloatvar) &&                             \
-         (((jfloat) resultLargePos) <= jfloatvar)))       \
-    {                                                     \
-        resultvar = resultLargePos;                       \
-    }                                                     \
-    else                                                  \
-    if (JFLOAT_NEGATIVE_ZERO == (juint) jintvar)          \
-    {                                                     \
-        resultvar = resultNegZero;                        \
-    }                                                     \
-    else                                                  \
-    if ((JFLOAT_NEGATIVE_INFINITY == (juint) jintvar) ||  \
-        ((0.0 > jfloatvar) &&                             \
-         ((0.0 - (jfloat) resultLargeNeg) >= jfloatvar))) \
-    {                                                     \
-        resultvar = resultLargeNeg;                       \
-    } /* Continue _directly_ with the final 'else' condition... */
-
-
-/*!
- * @brief Check special cases of double-precision floating point numbers
- * as part of conversion to other formats.
- *
- *
- * The opcodes @b D2x where 'x' is long, float, or integer need to
- * perform testing on @b NAN cases and on positive and negative
- * infinity cases.
- *
- * @param jdoublevar     Double-precision floating point variable
- *                       as @link #jdouble jdouble@endlink to examine
- *
- * @param jlongvar       Long integer (size of double-precision floating
- *                       point) as @link #jlong jlong@endlink scratch
- *                       variable.
- *
- * @param resultvar      Result variable of any type
- *
- * @param resultNaN      Value for @c @b resultvar when @c @b jfloatvar
- *                       is a @b NAN case.
- *
- * @param resultPosZero  Value for @c @b resultvar when @c @b jfloatvar
- *                       is a positive zero.
- *
- * @param resultLargePos Largest positive integer that @c @b resultvar
- *                       can hold.
- *
- * @param resultNegZero  Value for @c @b resultvar when @c @b jfloatvar
- *                       is a negative zero.
- *
- * @param resultLargeNeg Largest negative integer that @c @b resultvar
- *                       can hold.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(jdoublevar)
- *                           Any @link #jdouble jdouble@endlink variable
- * </li>
- * </ul>
- *
- *
- * @returns into an @c @b else case to set @c @b resultvar when no
- *          special cases happened.  <b>This is the normal way that
- *          this macro should return except when the special cases
- *          actually occur, which should be rare</b>.
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(jlongvar)
- *                           Any @link #jlong jlong@endlink variable.
- *                           Temporary scratch storage.
- * </li>
- * <li> @c @e macro_expansion_of(resultvar)
- *                           Any integer or floating-point variable
- *                           of any type.  Will end up with either the
- *                           special-case test result as provided by
- *                           @c @b resultNaN, @c @b resultPosZero,
- *                           @c @b resultLargePos, @c @b resultNegZero,
- *                           or @c @b resultLargeNeg.
- * </li>
- * </ul>
- *
- *
- */
-#define IF_JDOUBLE_SPECIAL_CASES(jdoublevar,                \
-                                 jlongvar,                  \
-                                 resultvar,                 \
-                                 resultNaN,                 \
-                                 resultPosZero,             \
-                                 resultLargePos,            \
-                                 resultNegZero,             \
-                                 resultLargeNeg)            \
-    jlongvar = FORCE_JLONG(jdoublevar);                     \
-    if (JDOUBLE_IS_NAN(jlongvar))                           \
-    {                                                       \
-        resultvar = resultNaN;                              \
-    }                                                       \
-    else                                                    \
-    if (JDOUBLE_POSITIVE_ZERO == (julong) jlongvar)         \
-    {                                                       \
-        resultvar = resultPosZero;                          \
-    }                                                       \
-    else                                                    \
-    if ((JDOUBLE_POSITIVE_INFINITY == (julong) jlongvar) || \
-        ((0.0 < jdoublevar) &&                              \
-         (((jdouble) resultLargePos) <= jdoublevar)))       \
-    {                                                       \
-        resultvar = resultLargePos;                         \
-    }                                                       \
-    else                                                    \
-    if (JDOUBLE_NEGATIVE_ZERO == (julong) jlongvar)         \
-    {                                                       \
-        resultvar = resultNegZero;                          \
-    }                                                       \
-    else                                                    \
-    if ((JDOUBLE_NEGATIVE_INFINITY == (julong) jlongvar) || \
-        ((0.0 > jdoublevar) &&                              \
-         ((0.0 - (jdouble) resultLargeNeg) >= jdoublevar))) \
-    {                                                       \
-        resultvar = resultLargeNeg;                         \
-    } /* Continue _directly_ with the final 'else' condition... */
-
-
-/*!
- * @brief Adjust program counter by a 2-byte relative offset value.
- *
- *
- * @param offset2var  Variable of type @link #u2 u2@endlink holding
- *                    destination offset to load into program counter.
- *
- * @param instrlen   Adjust offset by size of this virtual instruction
- *                   as specified in this expression.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(offsetvar)
- *                           Any @link #u2 u2@endlink variable.
- * </li>
+ * <li> @c @e macro_expansion_of(objhash)
+ *                           Any @link #jvm_object_hash
+                             jvm_object_hash@endlink variable.
  * </li>
  * </ul>
  *
  *
  * @returns @link #rvoid rvoid@endlink
  *
+ *
  * <b>Local variables written:</b>
  * <ul>
  * <li> @c @e none
  * </li>
  * </ul>
  *
+ * @todo HARMONY-6-jvm-opmacros.h-13 Needs unit testing with real data.
  *
  */
-#define LOAD_TARGET_PC_OFFSET(offset2var, instrlen)             \
-    /* This will create a signed value */                       \
-    pc->offset += (jvm_pc_offset)                               \
-                  ((jvm_pc_offset_actual_size) offset2var)      \
-                   - instrlen;                                  \
-                                                                \
-    /*!                                                         \
-     * @todo HARMONY-6-jvm-opmacros.h-7 Need to check           \
-     *       whether max PC value itself is legal, thus         \
-     *       whether comparison should be @b &lt; or @b &lt;=   \
-     *                                                          \
-     */                                                         \
-                                                                \
-    /*                                                          \
-     * Don't need a lower bound test since offset is unsigned   \
-     */                                                         \
-    if (CODE_CONSTRAINT_CODE_LENGTH_MAX < pc->offset)           \
-    {                                                           \
-        thread_throw_exception(thridx,                          \
-                               THREAD_STATUS_THREW_ERROR,       \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
-/*NOTREACHED*/                                                  \
-    }
+#define GETFIELD(objhash)                                           \
+    GETDATA(OBJECT(objhash).object_instance_field_data[fluidxmisc])
 
 
 /*!
- * @brief Adjust program counter by a 4-byte relative offset value.
+ * @brief Retrieve value by data type from class static field.
  *
  *
- * @param offset4var  Variable of type @link #u4 u4@endlink holding
- *                    destination offset to load into program counter.
- *
- * @param instrlen   Adjust offset by size of this virtual instruction
- *                   as specified in this expression.
+ * @b Parameters: @link #rvoid rvoid@endlink
  *
  *
  * <b>Local variables read:</b>
  * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(offset4var)
- *                           Any @link #u4 u4@endlink variable.
- * </li>
+ * <li> @c @e none
  * </li>
  * </ul>
  *
  *
  * @returns @link #rvoid rvoid@endlink
  *
+ *
  * <b>Local variables written:</b>
  * <ul>
  * <li> @c @e none
  * </li>
  * </ul>
  *
- *
  */
-#define LOAD_TARGET_PC_OFFSET_WIDE(offset4var, instrlen)        \
-    /* This will create a signed value */                       \
-    pc->offset += ((jvm_pc_offset) offset4var)                  \
-                   - instrlen;                                  \
-                                                                \
-    /*!                                                         \
-     * @todo HARMONY-6-jvm-opmacros.h-8 Need to check           \
-     *       whether max PC value itself is legal, thus         \
-     *       whether comparison should be @b &lt; or @b &lt;=   \
-     *                                                          \
-     */                                                         \
-                                                                \
-    /*                                                          \
-     * Don't need a lower bound test since offset is unsigned   \
-     */                                                         \
-    if (CODE_CONSTRAINT_CODE_LENGTH_MAX < pc->offset)           \
-    {                                                           \
-        thread_throw_exception(thridx,                          \
-                               THREAD_STATUS_THREW_ERROR,       \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
-/*NOTREACHED*/                                                  \
-    }
+#define GETSTATIC                                                  \
+    GETDATA(CLASS(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
+              .class_static_field_data[fluidxmisc])
 
 
 /*!
@@ -2062,45 +930,17 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
- * @brief Store out value by data type into class static field.
- *
- */
-#define PUTSTATIC                                                  \
-    PUTDATA(CLASS(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
-              .class_static_field_data[fluidxmisc])
-
-
-/*!
  * @brief Store out value by data type into object instance field.
  *
- */
-#define PUTFIELD                                                     \
-     PUTDATA(OBJECT(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
-               .object_instance_field_data[fluidxmisc])
-
-
-/*!
- * @brief Retrieve value by data type from either class static field or
- * object instance field.
  *
- *
- * @param data_array_slot  Expression pointing to the class' or object's
- *                         @b XXX_data[] array, namely a
- *                         (@link #jvalue jvalue@endlink *).
- *                         Typically a fixed set of two expressions.
+ * @param objhash Object to manipulate
  *
  *
  * <b>Local variables read:</b>
  * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(data_array_slot)
- *                           Any @link #jvalue jvalue@endlink variable.
- * </li>
- * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
- *                           field
+ * <li> @c @e macro_expansion_of(objhash)
+ *                           Any @link #jvm_object_hash
+                             jvm_object_hash@endlink variable.
  * </li>
  * </ul>
  *
@@ -2110,133 +950,350 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  * <b>Local variables written:</b>
  * <ul>
- * <li> @c @e jitmp1         Used for intermediate
- *                           @link #jint jint@endlink storage
+ * <li> @c @e none
  * </li>
- * <li> @c @e jitmp2         Used for intermediate
- *                           @link #jint jint@endlink storage
+ * </ul>
+ *
+ * @todo HARMONY-6-jvm-opmacros.h-14 Needs unit testing with real data.
+ *
+ */
+#define PUTFIELD(objhash)                                            \
+     PUTDATA(OBJECT(objhash).object_instance_field_data[fluidxmisc])
+
+
+/*!
+ * @brief Store out value by data type into class static field.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li> @c @e none
  * </li>
  * </ul>
  *
  *
- * @see GETFIELD
- *
- * @see GETSTATIC
+ * @returns @link #rvoid rvoid@endlink
  *
  *
- * @todo HARMONY-6-jvm-opmacros.h-11 The various type casting games
- *       of integer/sub-integer and integer/float/double and
- *       integer/objhash need to be carefully scrutinized for
- *        correctness at run time.
- *
- * @todo HARMONY-6-jvm-opmacros.h-12 Is @B BASTYPE_CHAR_ARRAY a
- *       legal case for @b GETSTATIC and @b GETFIELD ?
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
  *
  */
-#define GETDATA(data_array_slot)                                       \
-    switch (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM)       \
-    {                                                                  \
-        case BASETYPE_CHAR_B:                                          \
-            PUSH(thridx,                                               \
-                 (jint) data_array_slot._jbyte);                       \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_C:                                          \
-            PUSH(thridx,                                               \
-                (jint) data_array_slot._jchar);                        \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_D:                                          \
-            bytegames_split_jdouble(data_array_slot._jdouble,          \
-                                    &jitmp1,                           \
-                                    &jitmp2);                          \
-            /*                                                         \
-             * DO NOT push from a 64-bit word! @link #PUSH()           \
-               PUSH@endlink was only designed to operate on 32-bit     \
-             * data types.  Instead, use two instances.                \
-             */                                                        \
-            PUSH(thridx, jitmp1);                                      \
-            PUSH(thridx, jitmp2);                                      \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_F:                                          \
-            /*                                                         \
-             * DO NOT pop into a jfloat!  This will consider           \
-             * the source as an integer to be converted instead        \
-             * of a 32-bit floating point word stored in a 32-bit      \
-             * integer word on the stack.  Instead, use the            \
-             * FORCE_JFLOAT() macro to sustain contents across         \
-             * type boundaries.                                        \
-             */                                                        \
-            jitmp1 = FORCE_JINT(data_array_slot._jfloat);              \
-            PUSH(thridx, jitmp1);                                      \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_I:                                          \
-            PUSH(thridx,                                               \
-                 (jint) /* ... redundant */ data_array_slot._jint);    \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_J:                                          \
-            bytegames_split_jlong(data_array_slot._jlong,              \
-                                  &jitmp1,                             \
-                                  &jitmp2);                            \
-            /*                                                         \
-             * DO NOT push from a 64-bit word! @link #PUSH()           \
-               PUSH@endlink was only designed to operate on 32-bit     \
-             * data types.  Instead, use two instances.                \
-             */                                                        \
-            PUSH(thridx, jitmp1);                                      \
-            PUSH(thridx, jitmp2);                                      \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_L:                                          \
-            PUSH(thridx,                                               \
-                 (jint) data_array_slot._jobjhash);                    \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_S:                                          \
-            PUSH(thridx,                                               \
-                 (jint) data_array_slot._jshort);                      \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_Z:                                          \
-            PUSH(thridx,                                               \
-                 (jint) data_array_slot._jboolean);                    \
-            break;                                                     \
-                                                                       \
-        case BASETYPE_CHAR_ARRAY:                                      \
-            PUSH(thridx,                                               \
-                 (jint) data_array_slot._jarray);                      \
-            break;                                                     \
-                                                                       \
-        case LOCAL_BASETYPE_ERROR:                                     \
-        default:                                                       \
-            /* Something is @e very wrong if code gets here */         \
-            thread_throw_exception(thridx,                             \
-                                   THREAD_STATUS_THREW_ERROR,          \
-                                   JVMCLASS_JAVA_LANG_VERIFYERROR);    \
-/*NOTREACHED*/                                                         \
-            break;                                                     \
-    }
-
-
-/*!
- * @brief Retrieve value by data type from class static field.
- *
- */
-#define GETSTATIC                                                  \
-    GETDATA(CLASS(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
+#define PUTSTATIC                                                  \
+    PUTDATA(CLASS(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
               .class_static_field_data[fluidxmisc])
 
 
+/*@} */ /* End of grouped definitions */
+
+
 /*!
- * @brief Retrieve value by data type from object instance field.
+ * @name Arithmetic macros.
+ *
+ * @brief The arithmetic macros typically implement an entire
+ * arithmetic or logical operation that uses two operands.
+ * The single-operand (unary) arithmetic and logical operations are
+ * typically implemented more explicitly.
  *
  */
-#define GETFIELD                                                    \
-    GETDATA(OBJECT(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
-              .object_instance_field_data[fluidxmisc])
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Binary arithmetic and logic operations for
+ * double-precision words
+ *
+ * Perform add, subtract, multiply, divide, remainder,
+ * and, or, xor.  The word type is dependent on the types
+ * of the input parameters, namely (@link #jlong jlong@endlink) and
+ * (@link #jdouble jdouble@endlink).
+ *
+ *
+ * @param var1        First of two operands
+ *
+ * @param var2        Second of two operands
+ *
+ * @param varint1     MS half of vars as @link #jint jint@endlink
+ *
+ * @param varint2     LS half of vars as @link #jint jint@endlink
+ *
+ * @param vartype     data type of @b var1 and @b var2
+ *
+ * @param _OPERATOR_  One of:  + - * / % & | ^
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ */
+#define DOUBLE_ARITHMETIC_BINARY(var1, var2, varint1, varint2, \
+                                 vartype, _OPERATOR_)          \
+    POP(thridx, varint2, jint);                                \
+    POP(thridx, varint1, jint);                                \
+    var1 = bytegames_combine_##vartype(varint1, varint2);      \
+                                                               \
+    POP(thridx, varint2, jint);                                \
+    POP(thridx, varint1, jint);                                \
+    var2 = bytegames_combine_##vartype(varint1, varint2);      \
+                                                               \
+    var1 = var1 _OPERATOR_ var2;                               \
+                                                               \
+    bytegames_split_##vartype(var1, &varint1, &varint2);       \
+    PUSH(thridx, varint1);                                     \
+    PUSH(thridx, varint2); /* Extra ; */
+
+
+/*!
+ * @brief Binary arithmetic and logic operations for
+ * single-precision words
+ *
+ * Perform add, subtract, multiply, divide, remainder, and, or, xor.
+ * The word type is dependent on the types of the input parameters,
+ * namely (@link #jint jint@endlink) and (@link #jfloat jfloat@endlink).
+ * All sub-integer types use this version of the arithmetic macro.
+ *
+ *
+ * @param var1        First of two integer/sub-integer operands
+ *
+ * @param var2        Second of two integer/sub-integer operands
+ *
+ * @param _OPERATOR_  One of:  + - * / % & | ^
+ *
+ * @param _FORCE_     One of: FORCE_JINT FORCE_NOTHING
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ */
+#define SINGLE_ARITHMETIC_BINARY(var1, var2, _OPERATOR_, _FORCE_) \
+    POP(thridx, var1, jint);                                      \
+    POP(thridx, var2, jint);                                      \
+                                                                  \
+    var1 = var1 _OPERATOR_ var2;                                  \
+                                                                  \
+    PUSH(thridx, _FORCE_(var1)); /* Extra ; */
+
+
+/*@} */ /* End of grouped definitions */
+
+
+/*!
+ * @name Floating point arithmetic special case condition handler macros
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Check special cases of double-precision floating point numbers
+ * as part of conversion to other formats.
+ *
+ *
+ * The opcodes @b D2x where 'x' is long, float, or integer need to
+ * perform testing on @b NAN cases and on positive and negative
+ * infinity cases.
+ *
+ * @param jdoublevar     Double-precision floating point variable
+ *                       as @link #jdouble jdouble@endlink to examine
+ *
+ * @param jlongvar       Long integer (size of double-precision floating
+ *                       point) as @link #jlong jlong@endlink scratch
+ *                       variable.
+ *
+ * @param resultvar      Result variable of any type
+ *
+ * @param resultNaN      Value for @c @b resultvar when @c @b jfloatvar
+ *                       is a @b NAN case.
+ *
+ * @param resultPosZero  Value for @c @b resultvar when @c @b jfloatvar
+ *                       is a positive zero.
+ *
+ * @param resultLargePos Largest positive integer that @c @b resultvar
+ *                       can hold.
+ *
+ * @param resultNegZero  Value for @c @b resultvar when @c @b jfloatvar
+ *                       is a negative zero.
+ *
+ * @param resultLargeNeg Largest negative integer that @c @b resultvar
+ *                       can hold.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(jdoublevar)
+ *                           Any @link #jdouble jdouble@endlink variable
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns into an @c @b else case to set @c @b resultvar when no
+ *          special cases happened.  <b>This is the normal way that
+ *          this macro should return except when the special cases
+ *          actually occur, which should be rare</b>.
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(jlongvar)
+ *                           Any @link #jlong jlong@endlink variable.
+ *                           Temporary scratch storage.
+ * </li>
+ * <li> @c @e macro_expansion_of(resultvar)
+ *                           Any integer or floating-point variable
+ *                           of any type.  Will end up with either the
+ *                           special-case test result as provided by
+ *                           @c @b resultNaN, @c @b resultPosZero,
+ *                           @c @b resultLargePos, @c @b resultNegZero,
+ *                           or @c @b resultLargeNeg.
+ * </li>
+ * </ul>
+ *
+ *
+ */
+#define IF_JDOUBLE_SPECIAL_CASES(jdoublevar,                \
+                                 jlongvar,                  \
+                                 resultvar,                 \
+                                 resultNaN,                 \
+                                 resultPosZero,             \
+                                 resultLargePos,            \
+                                 resultNegZero,             \
+                                 resultLargeNeg)            \
+    jlongvar = FORCE_JLONG(jdoublevar);                     \
+    if (JDOUBLE_IS_NAN(jlongvar))                           \
+    {                                                       \
+        resultvar = resultNaN;                              \
+    }                                                       \
+    else                                                    \
+    if (JDOUBLE_POSITIVE_ZERO == (julong) jlongvar)         \
+    {                                                       \
+        resultvar = resultPosZero;                          \
+    }                                                       \
+    else                                                    \
+    if ((JDOUBLE_POSITIVE_INFINITY == (julong) jlongvar) || \
+        ((0.0 < jdoublevar) &&                              \
+         (((jdouble) resultLargePos) <= jdoublevar)))       \
+    {                                                       \
+        resultvar = resultLargePos;                         \
+    }                                                       \
+    else                                                    \
+    if (JDOUBLE_NEGATIVE_ZERO == (julong) jlongvar)         \
+    {                                                       \
+        resultvar = resultNegZero;                          \
+    }                                                       \
+    else                                                    \
+    if ((JDOUBLE_NEGATIVE_INFINITY == (julong) jlongvar) || \
+        ((0.0 > jdoublevar) &&                              \
+         ((0.0 - (jdouble) resultLargeNeg) >= jdoublevar))) \
+    {                                                       \
+        resultvar = resultLargeNeg;                         \
+    } /* Continue _directly_ with the final 'else' condition... */
+
+
+/*!
+ * @brief Check special cases of single-precision floating point numbers
+ * as part of conversion to other formats.
+ *
+ *
+ * The opcodes @b F2x where 'x' is long, double, or integer need to
+ * perform testing on @b NAN cases and on positive and negative
+ * infinity cases.
+ *
+ * @param jfloatvar      Single-precision floating point variable
+ *                       as @link #jfloat jfloat@endlink to examine
+ *
+ * @param jintvar        Normal integer (size of single-precision
+ *                       floating point) as @link #jlong jlong@endlink
+ *                       scratch variable.
+ *
+ * @param resultvar      Result variable of any type
+ *
+ * @param resultNaN      Value for @c @b resultvar when @c @b jfloatvar
+ *                       is a @b NAN case.
+ *
+ * @param resultPosZero  Value for @c @b resultvar when @c @b jfloatvar
+ *                       is a positive zero.
+ *
+ * @param resultLargePos Largest positive integer that @c @b resultvar
+ *                       can hold.
+ *
+ * @param resultNegZero  Value for @c @b resultvar when @c @b jfloatvar
+ *                       is a negative zero.
+ *
+ * @param resultLargeNeg Largest negative integer that @c @b resultvar
+ *                       can hold.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(jfloatvar)
+ *                           Any @link #jfloat jfloat@endlink variable.
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns into an @c @b else case to set @c @b resultvar when no
+ *          special cases happened.  <b>This is the normal way that
+ *          this macro should return except when the special cases
+ *          actually occur, which should be rare</b>.
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(jintvar)
+ *                           Any @link #jint jint@endlink variable.
+ *                           Temporary scratch storage.
+ * </li>
+ * <li> @c @e macro_expansion_of(resultvar)
+ *                           Any integer or floating-point variable
+ *                           of any type.  Will end up with either the
+ *                           special-case test result as provided by
+ *                           @c @b resultNaN, @c @b resultPosZero,
+ *                           @c @b resultLargePos, @c @b resultNegZero,
+ *                           or @c @b resultLargeNeg.
+ * </li>
+ * </ul>
+ *
+ */
+#define IF_JFLOAT_SPECIAL_CASES(jfloatvar,                \
+                                jintvar,                  \
+                                resultvar,                \
+                                resultNaN,                \
+                                resultPosZero,            \
+                                resultLargePos,           \
+                                resultNegZero,            \
+                                resultLargeNeg)           \
+    jintvar = FORCE_JINT(jfloatvar);                      \
+    if (JFLOAT_IS_NAN(jintvar))                           \
+    {                                                     \
+        resultvar = resultNaN;                            \
+    }                                                     \
+    else                                                  \
+    if (JFLOAT_POSITIVE_ZERO == (juint) jintvar)          \
+    {                                                     \
+        resultvar = resultPosZero;                        \
+    }                                                     \
+    else                                                  \
+    if ((JFLOAT_POSITIVE_INFINITY == (juint) jintvar) ||  \
+        ((0.0 < jfloatvar) &&                             \
+         (((jfloat) resultLargePos) <= jfloatvar)))       \
+    {                                                     \
+        resultvar = resultLargePos;                       \
+    }                                                     \
+    else                                                  \
+    if (JFLOAT_NEGATIVE_ZERO == (juint) jintvar)          \
+    {                                                     \
+        resultvar = resultNegZero;                        \
+    }                                                     \
+    else                                                  \
+    if ((JFLOAT_NEGATIVE_INFINITY == (juint) jintvar) ||  \
+        ((0.0 > jfloatvar) &&                             \
+         ((0.0 - (jfloat) resultLargeNeg) >= jfloatvar))) \
+    {                                                     \
+        resultvar = resultLargeNeg;                       \
+    } /* Continue _directly_ with the final 'else' condition... */
 
 
 /*@} */ /* End of grouped definitions */
@@ -2246,7 +1303,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * @name Validate a constant_pool entry in opcode inner loop.
  *
  */
-
 
 /*@{ */ /* Begin grouped definitions */
 
@@ -2356,5 +1412,1258 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 /*@} */ /* End of grouped definitions */
 
+
+/*!
+ * @name Class, method, field, and program counter support macros.
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Calculate ClassFile pointer from a class reference.
+ *
+ * During the calculation, various scratch variables are
+ * loaded and used to simplify the code.  Two final results
+ * include a (CONSTANT_Class_info *) stored in the local variable
+ * @b pcpd_Class stored the local variable @b pcfsmisc
+ * and a (CONSTANT_Class_info *) stored in the local variable
+ * @b pcpd_Class
+ *
+ * @param clsnameidx  @c @b constant_pool index into class file of
+ *                    current class (as indicated in the program
+ *                    counter) that is a class reference entry.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(clsnameidx)
+ *                           Any expression resolving to a
+ *                           @c @b constant_pool index
+ * </li>
+ * <li>  @c @e pcfs->constant_pool  Examine a @c @b constant_pool entry
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
+ * </li>
+ * <li> @c @e pcpd_Class     @c @b pcpd as a CONSTANT_Class_info pointer
+ * </li>
+ * <li> @c @e clsidxmisc     Class index of fully bound class referenced
+ *                           by @c @b pcpd_Class
+ * </li>
+ * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
+ *                           referenced by @c @b clsidxmisc
+ * </li>
+ * </ul>
+ *
+ *
+ */
+#define CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(clsnameidx)          \
+    pcpd       = pcfs->constant_pool[clsnameidx];                      \
+    pcpd_Class = PTR_THIS_CP_Class(pcpd);                              \
+    clsidxmisc = pcpd_Class->LOCAL_Class_binding.clsidxJVM;            \
+    if (jvm_class_index_null == clsidxmisc)                            \
+    {                                                                  \
+        /* Need local variable to avoid possible expansion confusion */\
+        jvm_constant_pool_index cpidxOLD = clsnameidx;                 \
+                                                                       \
+        /* If class is not loaded, go retrieve it by UTF8 class name */\
+        LATE_CLASS_LOAD(cpidxOLD);                                     \
+    }                                                                  \
+    pcfsmisc = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs; /* Extra ; */
+
+
+/*!
+ * @brief Calculate field_info pointer from a field reference.
+ *
+ * During the calculation, various scratch variables are
+ * loaded and used to simplify the code.  Two final results
+ * include a (field_info *) stored the local variable @b pfld
+ * and a (CONSTANT_Fieldref_info *) stored in the local variable
+ * @b pcpd_Fieldref
+ *
+ * @param Fieldref  @c @b constant_pool index into class file of current
+ *                  class (as indicated in the program counter) that
+ *                  is a method reference entry.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(Fieldref)
+ *                           Any expression resolving to a
+ *                           @c @b constant_pool index
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
+ * </li>
+ * <li> @c @e pcpd_Fieldref @c @b pcpd as a CONSTANT_Fieldref_info
+ *                           pointer
+ * </li>
+ * <li> @c @e clsidxmisc     Class index of fully bound class referenced
+ *                           by @c @b pcpd_Fieldref
+ * </li>
+ * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
+ *                           referenced by @c @b clsidxmisc
+ * </li>
+ * <li>  @c @e pfld          field_info table entry referenced by
+ *                           @c @b pcpd_Fieldref
+ * </li>
+ * <li>  @c @e fluidxmisc    Field lookup index of field from class
+ *                           referenced by @c @b clsidxmisc
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
+ *         @link #JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
+           if requested field is not found in the class@endlink.
+ *
+ */
+#define CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(Fieldref)            \
+    pcpd           = pcfs->constant_pool[Fieldref];                    \
+    pcpd_Fieldref = PTR_THIS_CP_Fieldref(pcpd);                        \
+    clsidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
+    if (jvm_class_index_null == clsidxmisc)                            \
+    {                                                                  \
+        /* If class is not loaded, go retrieve it by UTF8 class name */\
+        LATE_CLASS_LOAD(pcpd_Fieldref->class_index);                   \
+                                                                       \
+        /* Check if field exists in loaded class */                    \
+        clsidxmisc = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
+        if (jvm_class_index_null == clsidxmisc)                        \
+        {                                                              \
+            thread_throw_exception(thridx,                             \
+                                   THREAD_STATUS_THREW_ERROR,          \
+                                JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);  \
+/*NOTREACHED*/                                                         \
+        }                                                              \
+    }                                                                  \
+                                                                       \
+    fluidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.fluidxJVM;  \
+    if (jvm_field_index_bad == fluidxmisc)                             \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                                JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);  \
+/*NOTREACHED*/                                                         \
+    }                                                                  \
+                                                                       \
+    pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
+    fluidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.fluidxJVM;  \
+    pfld           = pcfsmisc                                          \
+                       ->fields[CLASS(clsidxmisc)                      \
+                                 .class_static_field_lookup[fluidxmisc]]
+
+
+/*!
+ * @brief Calculate method_info pointer from a method reference.
+ *
+ * During the calculation, various scratch variables are
+ * loaded and used to simplify the code.  Two final results
+ * include a (method_info *) stored the local variable @b pmth
+ * and a (CONSTANT_Methodref_info *) stored in the local variable
+ * @b pcpd_Methodref
+ *
+ * @param Methodref  @c @b constant_pool index into class file of
+ *                   current class (as indicated in the program counter)
+ *                   that is a method reference entry.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(Methodref)
+ *                           Any expression resolving to a
+ *                           @c @b constant_pool index
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
+ * </li>
+ * <li> @c @e pcpd_Methodref @c @b pcpd as a CONSTANT_Methodref_info
+ *                           pointer
+ * </li>
+ * <li> @c @e clsidxmisc     Class index of fully bound class referenced
+ *                           by @c @b pcpd_Methodref
+ * </li>
+ * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
+ *                           referenced by @c @b clsidxmisc
+ * </li>
+ * <li>  @c @e pmth          method_info table entry referenced by
+ *                           @c @b pcpd_Methodref
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
+ *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
+           if requested method is not found in the class@endlink.
+ *
+ *
+ */
+#define CALCULATE_METHOD_INFO_FROM_METHOD_REFERENCE(Methodref)         \
+    pcpd           = pcfs->constant_pool[Methodref];                   \
+    pcpd_Methodref = PTR_THIS_CP_Methodref(pcpd);                      \
+    clsidxmisc     = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;\
+    if (jvm_class_index_null == clsidxmisc)                            \
+    {                                                                  \
+        /* If class is not loaded, go retrieve it by UTF8 class name */\
+       LATE_CLASS_LOAD(pcpd_Methodref->class_index);                   \
+                                                                       \
+        /* Check if method exists in loaded class */                   \
+        clsidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;\
+        if (jvm_class_index_null == clsidxmisc)                        \
+        {                                                              \
+            thread_throw_exception(thridx,                             \
+                                   THREAD_STATUS_THREW_ERROR,          \
+                                JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
+/*NOTREACHED*/                                                         \
+        }                                                              \
+    }                                                                  \
+                                                                       \
+    mthidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.mthidxJVM;    \
+    if (jvm_method_index_bad == mthidxmisc)                            \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                                JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
+/*NOTREACHED*/                                                         \
+    }                                                                  \
+                                                                       \
+    pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
+    pmth           = pcfsmisc->methods[mthidxmisc]
+
+
+/*!
+ * @brief Calculate method_info pointer from program counter
+ *
+ * During the calculation, various scratch variables are
+ * loaded and used to simplify the code.  The final result
+ * is a (method_info *) stored the local variable @b pmth
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li>  @c @e clsidxmisc    Class index field from program counter
+ * </li>
+ * <li>  @c @e mthidxmisc    Method index field from program counter
+ * </li>
+ * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
+ *                           referenced by program counter
+ * </li>
+ * <li>  @c @e pmth          Method pointer in class file field from
+ *                           class referenced by program counter
+ * </li>
+ * </ul>
+ *
+ */
+#define CALCULATE_METHOD_INFO_FROM_PC                    \
+    clsidxmisc = GET_PC_FIELD_IMMEDIATE(thridx, clsidx); \
+    mthidxmisc = GET_PC_FIELD_IMMEDIATE(thridx, mthidx); \
+    pcfsmisc   = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs; \
+    pmth       = METHOD(clsidxmisc, mthidxmisc)
+
+
+/*!
+ * @brief Attempt to load a class that is not currently loaded.
+ *
+ *
+ * @param clsnameidx  CONSTANT_Utf8_info @c @b constant_pool index
+ *                    to class name
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(clsnameidx)
+ *                           Any expression resolving to a
+ *                           @c @b constant_pool index
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e pcpd           pointer to a @c @b constant_pool entry,
+ *                           ultimately pointing to the entry containing
+ *                           the name of the input @c @b clsnameidx
+ * </li>
+ * <li> @c @e pcpd_Class     @c @b pcpd as a CONSTANT_Class_info pointer
+ * </li>
+ * <li> @c @e pcpd_Utf8      @c @b pcpd as a CONSTANT_Utf8_info pointer
+ * </li>
+ * <li> @c @e prchar_clsname Null-terminated string version of class
+ *                           name @c @b clsnameidx
+ * </li>
+ * <li> @c @e clsidxmisc     Class index of class named in
+ *                           @c @b clsnamidx after it has been loaded.
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR
+ *         @link #JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR
+           if requested class cannot be located@endlink.
+ *
+ */
+#define LATE_CLASS_LOAD(clsnameidx)                                  \
+                                                                     \
+    pcpd       = pcfs->constant_pool[clsnameidx]; /* Class name */   \
+    pcpd_Class = PTR_THIS_CP_Class(pcpd);                            \
+                                                  /* UTF8 string */  \
+    pcpd       = pcfs->constant_pool[pcpd_Class->name_index];        \
+    pcpd_Utf8  = PTR_THIS_CP_Utf8(pcpd);                             \
+                                                                     \
+    prchar_clsname = utf_utf2prchar(pcpd_Utf8);                      \
+                                                                     \
+    /* Try again to load class */                                    \
+    clsidxmisc = class_load_resolve_clinit(prchar_clsname,           \
+                                           CURRENT_THREAD,           \
+                                           rfalse,                   \
+                                           rfalse);                  \
+                                                                     \
+    HEAP_FREE_DATA(prchar_clsname);                                  \
+                                                                     \
+    /* If class is irretrievable, abort */                           \
+    if (jvm_class_index_null == clsidxmisc)                          \
+    {                                                                \
+        thread_throw_exception(thridx,                               \
+                               THREAD_STATUS_THREW_ERROR,            \
+                           JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR); \
+/*NOTREACHED*/                                                       \
+    }
+
+
+/*!
+ * @brief Load crucial local variables that describe a virtual method
+ *
+ * Load the @c @b pcfs and @c @b pcode variables to point to the
+ * current class file and the current methods, respectively.
+ * This must be done upon entrance to the inner loop and upon
+ * execution of @c @b xxRETURN opcodes. 
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li>  @c @e pcfs points to class file for current class.
+ * </li>
+ * <li>  @c @e pcode points to first opcode in this method.
+ * </ul>
+ *
+ */
+#define LOAD_METHOD_CONTEXT                                 \
+    pcfs = THIS_PCFS(thridx);                               \
+    pcode = DEREFERENCE_PC_CODE_BASE(thridx); /* Extra ; */
+
+
+/*!
+ * @brief Adjust program counter by a 2-byte relative offset value.
+ *
+ *
+ * @param offset2var  Variable of type @link #u2 u2@endlink holding
+ *                    destination offset to load into program counter.
+ *
+ * @param instrlen   Adjust offset by size of this virtual instruction
+ *                   as specified in this expression.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(offsetvar)
+ *                           Any @link #u2 u2@endlink variable.
+ * </li>
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ */
+#define LOAD_TARGET_PC_OFFSET(offset2var, instrlen)             \
+    /* This will create a signed value */                       \
+    pc->offset += (jvm_pc_offset)                               \
+                  ((jvm_pc_offset_actual_size) offset2var)      \
+                   - instrlen;                                  \
+                                                                \
+    /*!                                                         \
+     * @todo HARMONY-6-jvm-opmacros.h-7 Need to check           \
+     *       whether max PC value itself is legal, thus         \
+     *       whether comparison should be @b &lt; or @b &lt;=   \
+     *                                                          \
+     */                                                         \
+                                                                \
+    /*                                                          \
+     * Don't need a lower bound test since offset is unsigned   \
+     */                                                         \
+    if (CODE_CONSTRAINT_CODE_LENGTH_MAX < pc->offset)           \
+    {                                                           \
+        thread_throw_exception(thridx,                          \
+                               THREAD_STATUS_THREW_ERROR,       \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
+/*NOTREACHED*/                                                  \
+    }
+
+
+/*!
+ * @brief Adjust program counter by a 4-byte relative offset value.
+ *
+ *
+ * @param offset4var  Variable of type @link #u4 u4@endlink holding
+ *                    destination offset to load into program counter.
+ *
+ * @param instrlen   Adjust offset by size of this virtual instruction
+ *                   as specified in this expression.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(offset4var)
+ *                           Any @link #u4 u4@endlink variable.
+ * </li>
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ */
+#define LOAD_TARGET_PC_OFFSET_WIDE(offset4var, instrlen)        \
+    /* This will create a signed value */                       \
+    pc->offset += ((jvm_pc_offset) offset4var)                  \
+                   - instrlen;                                  \
+                                                                \
+    /*!                                                         \
+     * @todo HARMONY-6-jvm-opmacros.h-8 Need to check           \
+     *       whether max PC value itself is legal, thus         \
+     *       whether comparison should be @b &lt; or @b &lt;=   \
+     *                                                          \
+     */                                                         \
+                                                                \
+    /*                                                          \
+     * Don't need a lower bound test since offset is unsigned   \
+     */                                                         \
+    if (CODE_CONSTRAINT_CODE_LENGTH_MAX < pc->offset)           \
+    {                                                           \
+        thread_throw_exception(thridx,                          \
+                               THREAD_STATUS_THREW_ERROR,       \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
+/*NOTREACHED*/                                                  \
+    }
+
+
+/*!
+ * @brief Calculate number of pad bytes added after table opcodes
+ *
+ * Skip several bytes in the program counter based on the LS 2 bits
+ * of the address of the @c @b OPCODE_AA_TABLESWITCH opcode, per
+ * comments in the JVM spec.  This is also relevant to the
+ * @c @b OPCODE_AB_LOOKUPSWITCH opcode.
+ *
+ *
+ * @internal  Concerning the number of pad bytes, per JVM spec:
+ *            "Immediately after the @e tableswitch opcode,
+ *            between 0 and 3 null bytes (zeroed bytes, not
+ *            the null object) are inserted as padding.  The
+ *            number of null bytes is chosen so that the following
+ *            byte begins at an address that is a multiple of
+ *            4 bytes from the start of the current method (the
+ *            opcode of its first instruction)."
+ *
+ *            Notice that in this design, each method @e always
+ *            starts at offset zero, namely at offset
+ *            @link #CODE_CONSTRAINT_START_PC
+              CODE_CONSTRAINT_START_PC@endlink.  Therefore, the
+ *            pad calculation can simply be done modulo 4, that is,
+ *            mod(sizeof(u4)).  Notice that this also meets the
+ *            constraint described in the note at the end of the
+ *            opcode description:
+ *
+ *            "The alignment required of the 4-byte operands of the
+ *            @e tableswitch instruction guarantees 4-byte alignment
+ *            of those operands if an only if the method that contains
+ *            the @e tableswitch starts onf a 4-byte boundary."
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pc offset.
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li>  @c @e jptmp stores offset of opcode by adjusting from
+ *                   @c @b pc->offset back to opcode address.
+ * </li>
+ * <li>  @c @e pc->offset loaded with address following padding.
+ * </ul>
+ *
+ */
+#define SWITCH_PAD_PC                              \
+    jptmp       = pc->offset - sizeof(u1);         \
+    pc->offset += (sizeof(u4) - sizeof(opcode));   \
+    pc->offset &= ~(sizeof(u4) - 1); /* Extra ; */
+
+
+/*@} */ /* End of grouped definitions */
+
+
+/*!
+ * @name Runtime validation macros.
+ *
+ * Some of these macros should have their functionality ultimately
+ * moved to a byte code verifier that evaluates the correctness
+ * of the compiled rendition of the source code, while others
+ * operate on conditions known only at run time.
+ *
+ */
+
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Check if this method is an @c @b abstract method,
+ * that is, not having a concrete implementation.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ if requested method is a method with a concrete implementatino@endlink.
+ *
+ */
+#define CHECK_ABSTRACT_METHOD                                          \
+                                                                       \
+    /* Must not be a concrete method */                                \
+    if (!(ACC_ABSTRACT & pmth->access_flags))                          \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+\
+/* What exception gets thrown here? Need "not" of InstantiationError */\
+\
+                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
+ * @brief Check if this field is a final field in the current class.
+ *
+ *
+ * Determine if a final field is in the current class.  If so, fine,
+ * but otherwise it is in a superclass.  This is an error.
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
+ *                           field
+ * </li>
+ * <li>  @c @e pfld          field_info table entry of current field
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR
+ *         @link #JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR
+           if requested field is final, but in a superclass@endlink.
+ *
+ */
+#define CHECK_FINAL_FIELD_CURRENT_CLASS                          \
+                                                                 \
+    {                                                            \
+        jvm_class_index clsidxTMP;                               \
+                                                                 \
+        GET_PC_FIELD(thridx, clsidxTMP, clsidx);                 \
+                                                                 \
+        /* A final field must _not_ be found in a superclass */  \
+        if ((ACC_FINAL & pfld->access_flags) &&                  \
+            (clsidxTMP != pcpd_Fieldref                          \
+                            ->LOCAL_Fieldref_binding.clsidxJVM)) \
+        {                                                        \
+            thread_throw_exception(thridx,                       \
+                                   THREAD_STATUS_THREW_ERROR,    \
+                       JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR);   \
+/*NOTREACHED*/                                                   \
+        }                                                        \
+    }
+
+
+/*!
+ * @brief Check if this field is an object instance field.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pfld          field_info table entry of current field
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
+ *         @link #JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
+           if requested method is a static field@endlink.
+ *
+ */
+#define CHECK_INSTANCE_FIELD                                     \
+                                                                 \
+    /* Must be an instance field */                              \
+    if (ACC_STATIC & pfld->access_flags)                         \
+    {                                                            \
+        thread_throw_exception(thridx,                           \
+                               THREAD_STATUS_THREW_ERROR,        \
+               JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR); \
+/*NOTREACHED*/                                                   \
+    }
+
+
+/*!
+ * @brief Check if this method is an object instance method.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
+ *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
+           if requested method is a static method@endlink.
+ *
+ */
+#define CHECK_INSTANCE_METHOD                                    \
+                                                                 \
+    /* Must be an instance method */                             \
+    if (ACC_STATIC & pmth->access_flags)                         \
+    {                                                            \
+        thread_throw_exception(thridx,                           \
+                               THREAD_STATUS_THREW_ERROR,        \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
+/*NOTREACHED*/                                                   \
+    }
+
+
+/*!
+ * @brief Check if this object is from a concrete class, that is,
+ * not from an @c @b abstract class.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e objhashmisc   Object table hash of current object
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+           if requested object is an abstract object@endlink.
+ *
+ */
+#define CHECK_NOT_ABSTRACT_CLASS                                       \
+                                                                       \
+    /* Must not be from an abstract class */                           \
+    if (ACC_ABSTRACT &                                                 \
+        OBJECT_CLASS_LINKAGE(objhashmisc)->pcfs->access_flags)         \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
+ * @brief Check if this method is a concrete method, that is,
+ * not @c @b abstract .
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+           if requested method is an abstract method@endlink.
+ *
+ */
+#define CHECK_NOT_ABSTRACT_METHOD                                      \
+                                                                       \
+    /* Must not be an abstract method */                               \
+    if (ACC_ABSTRACT & pmth->access_flags)                             \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
+ * @brief Check if this object is a scalar, that is, not an array.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e objhashmisc   Object table hash of current object
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+           if requested method is an array object@endlink.
+ *
+ */
+#define CHECK_NOT_ARRAY_OBJECT                                         \
+                                                                       \
+    /* Must not be an array object */                                  \
+    if (OBJECT_STATUS_ARRAY &                                          \
+        CLASS(OBJECT_CLASS_LINKAGE(objhashmisc)->clsidx).status)       \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
+ * @brief Check if this object is from a normal class, that is,
+ * not from an interface class.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e objhashmisc   Object table hash of current object
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+           if requested object is from an interface class@endlink.
+ *
+ */
+#define CHECK_NOT_INTERFACE_CLASS                                      \
+                                                                       \
+    /* Must not be from an interface class */                          \
+    if (ACC_INTERFACE &                                                \
+        OBJECT_CLASS_LINKAGE(objhashmisc)->pcfs->access_flags)         \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                               JVMCLASS_JAVA_LANG_INSTANTIATIONERROR); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
+ * @brief Check if this object hash is not a null object hash.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e objhashmisc   Object table hash of current object
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
+ *         @link #JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION
+           if object hash is to a null object@endlink.
+ *
+ */
+#define CHECK_NOT_NULL_OBJECT_HASH(objhash)                            \
+                                                                       \
+    /* Must not be a null object hash */                               \
+    if (jvm_object_hash_null == objhash)                               \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_EXCEPTION,          \
+                             JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
+ * @brief Check if this field is a static field.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pfld          field_info table entry of current field
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
+ *         @link #JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
+           if requested field is an object instance field@endlink.
+ *
+ */
+#define CHECK_STATIC_FIELD                                       \
+                                                                 \
+    /* Must be a static field */                                 \
+    if (!(ACC_STATIC & pfld->access_flags))                      \
+    {                                                            \
+        thread_throw_exception(thridx,                           \
+                               THREAD_STATUS_THREW_ERROR,        \
+               JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR); \
+/*NOTREACHED*/                                                   \
+    }
+
+
+/*!
+ * @brief Check if this method is a static method.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(u2var)
+ *                           Receives operand contents
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e macro_expansion_of(u2var)
+ *                           Receives operand contents
+ * </li>
+ * <li> @c @e pc->offset     Add @c @b sizeof(u2) to current value
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
+ *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
+           if requested method is an object instance method@endlink.
+ *
+ */
+#define CHECK_STATIC_METHOD                                      \
+                                                                 \
+    /* Must be a static method */                                \
+    if (!(ACC_STATIC & pmth->access_flags))                      \
+    {                                                            \
+        thread_throw_exception(thridx,                           \
+                               THREAD_STATUS_THREW_ERROR,        \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
+/*NOTREACHED*/                                                   \
+    }
+
+
+/*!
+ * @brief Check if this field requires two @link #jint jint@endlink
+ * accesses or just one.
+ *
+ *
+ * JVM stack operations and local variable accesses need to know
+ * if the datum to be moved takes one @link #jint jint@endlink slot
+ * or two.  Items of types @link #jlong jlong@endlink and
+ * @link #jdouble jdouble@endlink take two such accesses, all others
+ * take just one.
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
+ *                           field
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rtrue rtrue@endlink if this field takes two
+ *          accesses, otherwise @link #rfalse rfalse@endlink for
+ *          smaller types.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ */
+#define CHECK_TWO_ACCESSES                                         \
+                                                                   \
+    (((pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM ==      \
+       BASETYPE_CHAR_J)                                         || \
+      (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM ==      \
+       BASETYPE_CHAR_D))                                           \
+    ? rtrue                                                        \
+    : rfalse)
+
+
+/*!
+ * @brief Check for code attribute index in local method binding.
+ *
+ *
+ * @param codeatridx  Code attribute index from a local method binding
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(codeatridx)
+ *                           Any expression that resolves to an
+ *                           attribute index
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
+ *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
+      if requested class static field is not found in the class@endlink.
+ *
+ */
+#define CHECK_VALID_CODEATRIDX(codeatridx)                            \
+    if (jvm_attribute_index_bad == codeatridx)                        \
+    {                                                                 \
+        thread_throw_exception(thridx,                                \
+                               THREAD_STATUS_THREW_ERROR,             \
+                               JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
+/*NOTREACHED*/                                                        \
+    }
+
+
+/*!
+ * @brief Check for field lookup index in local field binding.
+ *
+ *
+ * @param fluidx  Field lookup index from a local field binding
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(fluidx)
+ *                           Any expression resolving to a
+ *                           field lookup index
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
+ *         @link #JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR
+      if requested class static field is not found in the class@endlink.
+ *
+ */
+#define CHECK_VALID_FIELDLOOKUPIDX(fluidx)                           \
+    if (jvm_field_lookup_index_bad == fluidx)                        \
+    {                                                                \
+        thread_throw_exception(thridx,                               \
+                               THREAD_STATUS_THREW_ERROR,            \
+                               JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR); \
+/*NOTREACHED*/                                                       \
+    }
+
+
+/*@} */ /* End of grouped definitions */
 
 /* EOF */
