@@ -357,15 +357,15 @@ Show a list of conflicting revisions using 'getsvndups.sh'.  Object
 files may not have conflicts, neither may library archives.  Linked
 binaries may or may not, depending on the particulars.
 
-echotest.sh
------------
+support/echotest.sh
+-------------------
 Generic script support for 'echo -n' feature for shells that do not
 support it natively.
 
 
 Makefile
-MakeSetup
-MakeRules
+support/MakeSetup
+support/MakeRules
 jvm/src/Makefile
 libjvm/src/Makefile
 main/src/Makefile
@@ -400,8 +400,8 @@ and @see directives, among others.
 
 dox.sh
 undox.sh
-dox-common.sh
--------------
+support/dox-common.sh
+---------------------
 The logic behind the documentation build using Doxygen.  The output
 is stored by 'dox.sh' into a 'doc' subdirectory at this level, while
 the 'undox.sh' removes it.  They share a common file 'dox-common.sh'.
@@ -412,8 +412,8 @@ non-null string.  See logic of 'dox.sh' for other comments.
 dist-src.sh
 dist-doc.sh
 dist-bin.sh
-dist-common.sh
---------------
+support/dist-common.sh
+----------------------
 Construct a source distribution and store it above the top of
 the directory tree in gzipped tar, where CONFIG_RELEASE_LEVEL is
 the release level defined the last time that 'config.sh' was run:
@@ -465,12 +465,12 @@ This file.
 RELEASE_LEVEL
 -------------
 Contains _only_ the release level string for the current project
-release.
+release, plus comments.
 
 
-bootjvm.dox
-dox-filter.sh
--------------
+support/bootjvm.dox
+support/dox-filter.sh
+---------------------
 'bootjvm.dox' is the Doxygen directive file used to create
 all project documentation,  invoked by 'dox.sh'.
 
@@ -481,8 +481,8 @@ to properly format all files that are not explicitly '.c'
 or '.h' or '.java' source files.
 
 
-svnstat.sh
-----------
+support/svnstat.sh
+------------------
 Sample script from Doxygen documentation to display the status of
 a file in SVN.  Not used in the project for any purpose.
 
@@ -1109,14 +1109,25 @@ requires a _fully_ functional JVM with most of the basic JNI in
 place.
 
 
-test/src/harmony/jvm/test/PkgHelloWorld.java
---------------------------------------------
+test/src/org/apache/harmony/jvm/test/PkgHelloWorld.java
+-------------------------------------------------------
 The same "hello world" program, but in a package.
 
 
-test/src/harmony/jvm/test/MainArgs.java
----------------------------------------
+test/src/org/apache/harmony/jvm/test/MainArgs.java
+--------------------------------------------------
 A main() method that takes arguments from the command line.
+
+
+BASELINE HARMONY JAVA CLASSES
+=============================
+Currently contains administrative classes, but may be extended
+in whatever directions necessary.
+
+org/apache/harmony/Copyright.java
+---------------------------------
+Contains text of Apache Harmony copyright message for use in
+all Java source files.
 
 
 
