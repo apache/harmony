@@ -9,9 +9,9 @@
 #
 # @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./MakeSetup ./MakeSetup@endlink
+# @see @link support/MakeSetup support/MakeSetup@endlink
 #
-# @see @link ./MakeRules ./MakeRules@endlink
+# @see @link support/MakeRules support/MakeRules@endlink
 #
 #
 # @section Control
@@ -59,7 +59,7 @@
 
 # Set up directory knowledge and basic structure
 TOPDIR=../..
-include $(TOPDIR)/MakeSetup
+include $(TOPDIR)/support/MakeSetup
 
 # Roster of Java source files
 include $(CFGDIR)/config_roster_test_java.mak
@@ -68,7 +68,7 @@ include $(CFGDIR)/config_roster_test_java.mak
 JAR_TARGET=$(BINDIR)/boottest.$(JAVA_ARCHIVE)
 
 # Build rules
-include $(TOPDIR)/MakeRules
+include $(TOPDIR)/support/MakeRules
 
 # Default rule
 all:: $(JAR_TARGET)

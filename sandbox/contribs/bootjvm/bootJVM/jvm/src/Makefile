@@ -35,9 +35,9 @@
 #
 # @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./MakeSetup ./MakeSetup@endlink
+# @see @link support/MakeSetup support/MakeSetup@endlink
 #
-# @see @link ./MakeRules ./MakeRules@endlink
+# @see @link support/MakeRules support/MakeRules@endlink
 #
 #
 # @section Control
@@ -109,7 +109,7 @@ endif
 
 # Set up directory knowledge and basic structure
 TOPDIR=../..
-include $(TOPDIR)/MakeSetup
+include $(TOPDIR)/support/MakeSetup
 
 # Roster of C source files and C header files
 include $(CFGDIR)/config_roster_c.mak
@@ -121,12 +121,13 @@ BIN_TARGET=$(BINDIR)/bootjvm$(DOT_BIN_EXTENSION)
 endif
 
 ifeq (1,$(MAKELIBJVM))
+LIBDIR:=$(LIBJVM_LIBDIR)
+ECLIPSE_LIBDIR:=$(ECLIPSE_LIBJVM_LIBDIR)
 LIB_TARGET=$(LIBDIR)/libjvm.$(AR_ARCHIVE)
-LIBDIR=$(LIBJVM_LIBDIR)
 endif
 
 # Build rules
-include $(TOPDIR)/MakeRules
+include $(TOPDIR)/support/MakeRules
 
 # Default rule (one or the other sources may be an empty string here)
 all:: $(BIN_TARGET) $(LIB_TARGET)

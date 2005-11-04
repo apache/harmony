@@ -9,9 +9,9 @@
 #
 # @see @link ./Makefile ./Makefile@endlink
 #
-# @see @link ./MakeSetup ./MakeSetup@endlink
+# @see @link support/MakeSetup support/MakeSetup@endlink
 #
-# @see @link ./MakeRules ./MakeRules@endlink
+# @see @link support/MakeRules support/MakeRules@endlink
 #
 #
 # @section Control
@@ -59,7 +59,7 @@
 
 # Set up directory knowledge and basic structure
 TOPDIR=../../../../../..
-include $(TOPDIR)/MakeSetup
+include $(TOPDIR)/support/MakeSetup
 
 # Roster of C source files and C header files
 include $(CFGDIR)/config_roster_jni_c.mak
@@ -76,7 +76,7 @@ JAR_TARGET=$(BINDIR)/bootjvm.$(JAVA_ARCHIVE)
 BIN_TARGET=$(BINDIR)/bootjvm$(DOT_BIN_EXTENSION)
 
 # Build rules
-include $(TOPDIR)/MakeRules
+include $(TOPDIR)/support/MakeRules
 
 # Default rule
 all:: $(BIN_TARGET) $(JAR_TARGET)
