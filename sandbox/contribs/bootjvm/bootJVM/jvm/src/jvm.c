@@ -540,6 +540,11 @@
  *                            found in every 'C' source and header file.
  *
  * </li>
+ * <li><b>support:</b></li>   Not built at all.  Contains shell script
+ *                            include files, Makefile include files,
+ *                            and similar utilities.
+ *
+ * </li>
  * </ul>
  *
  * With the exception of the Java test classes in @c @b test/src
@@ -714,9 +719,9 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  *            contribution, <b>HARMONY-6</b> in the Apache JIRA
  *            system, starts each item number, followed by its
  *            component, its source file, and its item number.
- *            Thus @@todo <b>HARMONY-jvm-opcode.c-3</b> refers to
+ *            Thus @@todo <b>HARMONY-jvm-jvm.c-3</b> refers to
  *            something in the 'jvm' directory, namely the source
- *            file 'opcode.c', item 3.  Once these initial
+ *            file 'jvm.c', item 3.  Once these initial
  *            items are resolved, this system is likely to become
  *            obsolete in favor of the Apache JIRA system.
  *
@@ -1287,17 +1292,18 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     jvm_class_index clsidx;
 
-    clsidx = class_load_from_prchar(
-                 JVMCLASS_JAVA_LANG_OBJECT,
-                 rtrue,  /* The startup classes have local bindings */
-                 (jint *) rnull);
+    clsidx = class_load_from_prchar(JVMCLASS_JAVA_LANG_OBJECT,
+                           /* The startup classes have local bindings */
+                                    rtrue,
+                                    (jint *) rnull);
 
 
     /********** Load primatives of all types *********/
 
     /* Loaded on system thread */
     if((jvm_class_index_null == class_load_primative(BASETYPE_CHAR_B))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_C))||
+       (jvm_class_index_null == (pjvm->class_primative_char  =
+                               class_load_primative(BASETYPE_CHAR_C)))||
        (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_D))||
        (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_F))||
        (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_I))||
@@ -1348,10 +1354,26 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
                                   rtrue);
     cfmsgs_show_constant_pool(CLASS_OBJECT_LINKAGE(clsidxSTRING)->pcfs);
 
-    (rvoid) class_load_resolve_clinit(JVMCLASS_JAVA_LANG_THREAD,
-                                      jvm_thread_index_null,
-                                      rtrue,
-                                      rtrue);
+    /*!
+     * @todo HARMONY-6-jvm-jvm.c-7 Locate the 'value' and 'length'
+     *       fields for this JVM's definition of java.lang.String.
+     *       Do this _only_ if using this JVM's definition!!!  It is
+     *       not guaranteed that other JDK's will call the internal
+     *       fields by these same names.  The current implementation
+     *       defaults to some compile-time definitions, but these are
+     *       @e never provably valid unless this JVM's definition of
+     *       java.lang.String is used anyway, so wean the source base
+     *       away from such shortcuts and do it correctly here:
+     */
+#ifndef CONFIG_HACKED_BOOTCLASSPATH
+#endif
+
+    jvm_class_index clsidxTHREAD =
+        class_load_resolve_clinit(JVMCLASS_JAVA_LANG_THREAD,
+                                  jvm_thread_index_null,
+                                  rtrue,
+                                  rtrue);
+    cfmsgs_show_constant_pool(CLASS_OBJECT_LINKAGE(clsidxTHREAD)->pcfs);
 
     /********** Load java.lang.String[] (1 dim array) */
 
@@ -1499,21 +1521,35 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     /********** Load java.lang.String[] args data *****/
 
-    clsidx = class_find_by_prchar(JVMCLASS_JAVA_LANG_STRING);
-
     jint *pjargc = HEAP_GET_DATA(1 * sizeof(jint), rfalse);
 
-    pjargc[0] = pjvm->argcj;
+    /*!
+     * @internal It is only possible to load command line parameters
+     *           if @e not "borrowing" the java.lang.String from a
+     *           pre-existing JDK.  The version from this source
+     *           base @e must be used to make this possible.
+     */
+    pjargc[0] =
+#ifdef CONFIG_HACKED_BOOTCLASSPATH
+                0    /* Not possible without built-in String*/
+#else
+                pjvm->argcj
+#endif
+                ;
 
     jvm_object_hash objhashjargs =
         object_instance_new(OBJECT_STATUS_ARRAY,
-                            CLASS_OBJECT_LINKAGE(clsidx)->pcfs,
-                            clsidx,
+                            CLASS_OBJECT_LINKAGE(
+                                    pjvm->class_java_lang_String)->pcfs,
+                            pjvm->class_java_lang_String,
                             1,
                             pjargc,
                             rfalse,
-                            jvm_thread_index_null);
+                            jvm_thread_index_null,
+                            (CONSTANT_Utf8_info *) rnull);
 
+
+#ifndef CONFIG_HACKED_BOOTCLASSPATH
     /*
      * Explicitly cast the untyped
      * @link robject#arraydata arraydata@endlink
@@ -1521,7 +1557,6 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
      */
     jvm_object_hash *pjargv = 
         (jvm_object_hash *) OBJECT(objhashjargs).arraydata;
-
 
     if (0 < pjvm->argcj)
     {
@@ -1532,53 +1567,37 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
         {
             pcharlen = portable_strlen(pjvm->argv[i]);
 
-            /*!
-             * @todo  HARMONY-6-jvm-jvm.c-5 Create a
-             *        @c @b java.lang.String as
-             *    <b><code>java.lang.String(byte[], int, int)</code></b>
-             *        where the call is made, as it were, to
-             *        <b><code>
-                      java.lang.String.\<init\>(pjvm->argv[i],
-                                                0,
-                                        portable_strlen(pjvm->argv[i]));
-                      </code></b>
-             *
-             *        The following @link #jvm_object_hash_null
-             *        jvm_object_hash_null@endlink will get replaced
-             *        by the actual object hash from this operation.
-             *        What really needs to happen is a function should
-             *        be written that pushes these arguments onto the
-             *        JVM stack for this thread and then loads this
-             *        constructor and runs it in a manner similar to
-             *        how jvm_manual_thread_run() does it.  In fact,
-             *        this function might be @e exactly what is
-             *        needed for this purpose.  Simply add some
-             *        parameters that represent the first and third
-             *        parameters to the @c @b java.lang.String.\<init\>
-             *        method and build up a stack frame accordingly.
-             *
-             * @note  This same requirement may be found in
-             *        @link #class_get_constant_field_attribute()
-             *        class_get_constant_field_attribute()@endlink
-             *        where CONSTANT_String_info needs to get loaded
-             *        from the class file into an object.
-             *
-             */
-            pjargv[i] = jvm_object_hash_null;
+            cp_info_dup *putfarg = nts_prchar2utf(pjvm->argvj[i]);
 
-            /* Uncomment for error checking when ready...
+            /*!
+             * @todo HARMONY-6-jvm-jvm.c-8 This invocation needs better
+             *       unit testing with real data.
+             */
+            pjargv[i] = object_instance_new(OBJECT_STATUS_STRING,
+                            CLASS_OBJECT_LINKAGE(
+                                    pjvm->class_java_lang_String)->pcfs,
+                            pjvm->class_java_lang_String,
+                            LOCAL_CONSTANT_NO_ARRAY_DIMS,
+                            (jint *) rnull,
+                            rfalse,
+                            jvm_thread_index_null,
+                            PTR_THIS_CP_Utf8(putfarg));
+
+            HEAP_FREE_DATA(putfarg);
+
             if (jvm_object_hash_null == pjargv[i])
             {
                 sysErrMsg(arch_function_name,
-                          "Cannot allocate String[] objects");
+                          "Cannot allocate String[] object");
                 exit_jvm(EXIT_JVM_OBJECT);
-**NOTREACHED** ... RE-comment at this same time!
+/*NOTREACHED*/
             }
              */
             (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(jvm_object_hash_null,
                                                 pjargv[i]);
         }
     }
+#endif
 
     /********** POP_FRAME()/-mod PC-/PUSH_FRAME() ****/
 
@@ -2038,15 +2057,29 @@ rvoid jvm_signal(int sig)
  * @brief Main entry point for this library implementing the
  * Java Virtural Machine.
  *
+ * The arguments are identical to those passed to a 'C' lanaguage
+ * @c @b main() program, and typically come directly from it.
  *
- * @b Parameters: @link #rvoid rvoid@endlink
+ * @param  argc  Number of elements in @c @b argv array, per
+ *               @c @b main() command line
+ *
+ * @param  argv  Array of arguments, per
+ *               @c @b main() command line
+ *
+ * @param  envp  Environment variable array, per
+ *               @c @b main() command line
  *
  *
- * @returns @link #rvoid rvoid@endlink
+ *
+ * @returns exit code from the @link #exit_jvm() exit(jvm()@endlink
+ *          encountered that initiated shutdown of the JVM.
+ *
+ *
+ * @see @link #main() main()@endlink
  *
  */
 
-rint jvm(int argc, char **argv, char **envp)
+int jvm(int argc, char **argv, char **envp)
 {
     ARCH_FUNCTION_NAME(jvm);
 
