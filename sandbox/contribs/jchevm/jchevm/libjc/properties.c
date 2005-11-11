@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: properties.c,v 1.17 2005/05/15 01:48:31 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -69,8 +69,8 @@ static const _jc_property _jc_fixed_properties[] = {
 { "jc.gen.inline.min.callee",		"3" },
 { "jc.gen.inline.verbose",		"false" },
 { "jc.include.line.numbers",		"true" },
-{ "jc.object.generation.enabled",	"true" },
-{ "jc.object.loader.enabled",		"true" },
+{ "jc.object.generation.enabled",	/* "true" */ "false" },
+{ "jc.object.loader.enabled",		/* "true" */ "false" },
 { "jc.without.classfiles",		"false" },
 { "jc.ignore.resolution.failures",	"false" },
 { "jc.resolve.native.directly",		"false" },
