@@ -1,3 +1,8 @@
+Changes in version 1.4.7:
+
+    - Fixed potential assertion failure in VMStackWalker.getClassContext().
+    - Upgrade to Classpath 0.19.
+
 Changes in version 1.4.6:
 
     - Added new command line flags -Xrnd, -Xnoln, and -Xobj.
@@ -192,4 +197,4 @@ Changes in version 1.0.1:
     - Allow Thread.setDaemon() to work setting even if thread is dead.
     - Fix race condition around method lookup table access.
 
-$Id: CHANGES,v 1.61 2005/07/23 15:31:05 archiecobbs Exp $
+$Id: CHANGES,v 1.63 2005/11/09 18:17:14 archiecobbs Exp $

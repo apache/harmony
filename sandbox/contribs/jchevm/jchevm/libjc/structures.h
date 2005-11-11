@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: structures.h,v 1.36 2005/05/24 01:09:38 archiecobbs Exp $
+ * $Id: structures.h,v 1.37 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #ifndef _STRUCTURES_H_
@@ -536,14 +536,14 @@ struct _jc_boot_types {
 	_jc_type	*ClassLoader;
 	_jc_type	*Cloneable;
 	_jc_type	*Constructor;
-	_jc_type	*DirectByteBufferImpl;
+	_jc_type	*ReadWrite;
 	_jc_type	*Error;
 	_jc_type	*Field;
 	_jc_type	*Generate;
 	_jc_type	*Method;
 	_jc_type	*Object;
 	_jc_type	*PhantomReference;
-	_jc_type	*RawData;
+	_jc_type	*Pointer;
 	_jc_type	*Reference;
 	_jc_type	*Serializable;
 	_jc_type	*SoftReference;
@@ -594,7 +594,7 @@ struct _jc_boot_methods {
 	}			Constructor;
 	struct {
 		_jc_method	*init;
-	}			DirectByteBufferImpl;
+	}			ReadWrite;
 	struct {
 		_jc_method	*init;
 	}			Field;
@@ -674,7 +674,7 @@ struct _jc_boot_fields {
 	}			Method;
 	struct {
 		_jc_field	*data;
-	}			RawData;
+	}			Pointer;
 	struct {
 		_jc_field	*queue;
 		_jc_field	*referent;

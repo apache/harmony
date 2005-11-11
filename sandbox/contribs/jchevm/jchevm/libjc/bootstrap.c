@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: bootstrap.c,v 1.16 2005/03/26 23:20:19 archiecobbs Exp $
+ * $Id: bootstrap.c,v 1.17 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -165,7 +165,7 @@ _jc_bootstrap_classes(_jc_env *env)
 	RESOLVE_FIELD(Throwable, cause, "Ljava/lang/Throwable;", 0);
 	RESOLVE_FIELD(Throwable, detailMessage, "Ljava/lang/String;", 0);
 	RESOLVE_FIELD(Throwable, vmState, "Ljava/lang/VMThrowable;", 0);
-	RESOLVE_FIELD(VMThrowable, vmdata, "[B", 0);
+	RESOLVE_FIELD(VMThrowable, vmdata, "Ljava/lang/Object;", 0);
 	for (i = 0; i < _JC_VMEXCEPTION_MAX; i++)
 		BOOTSTRAP_TYPE(_jc_vmex_names[i], vmex[i]);
 
@@ -178,7 +178,7 @@ _jc_bootstrap_classes(_jc_env *env)
 
 	/* Load more special classes */
 	BOOTSTRAP_TYPE(long_ptr ?
-	    "gnu/classpath/RawData64" : "gnu/classpath/RawData32", RawData);
+	    "gnu/classpath/Pointer64" : "gnu/classpath/Pointer32", Pointer);
 	BOOTSTRAP_TYPE("gnu/classpath/VMStackWalker", VMStackWalker);
 	BOOTSTRAP_TYPE("java/lang/Error", Error);
 	BOOTSTRAP_TYPE("java/lang/ClassLoader", ClassLoader);
@@ -196,7 +196,7 @@ _jc_bootstrap_classes(_jc_env *env)
 	BOOTSTRAP_TYPE("java/lang/reflect/Field", Field);
 	BOOTSTRAP_TYPE("java/lang/reflect/Method", Method);
 	BOOTSTRAP_TYPE("java/nio/Buffer", Buffer);
-	BOOTSTRAP_TYPE("java/nio/DirectByteBufferImpl", DirectByteBufferImpl);
+	BOOTSTRAP_TYPE("java/nio/DirectByteBufferImpl$ReadWrite", ReadWrite);
 	BOOTSTRAP_TYPE("[Ljava/lang/Class;", Class_array);
 	BOOTSTRAP_TYPE("[Ljava/lang/StackTraceElement;",
 	    StackTraceElement_array);
@@ -212,8 +212,8 @@ _jc_bootstrap_classes(_jc_env *env)
 	RESOLVE_CONSTRUCTOR(StackTraceElement,
 	    "(Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Z)V");
 	RESOLVE_CONSTRUCTOR(Constructor, "(Ljava/lang/Class;I)V");
-	RESOLVE_CONSTRUCTOR(DirectByteBufferImpl,
-	    "(Ljava/lang/Object;Lgnu/classpath/RawData;III)V");
+	RESOLVE_CONSTRUCTOR(ReadWrite,
+	    "(Ljava/lang/Object;Lgnu/classpath/Pointer;III)V");
 	RESOLVE_CONSTRUCTOR(Field, "(Ljava/lang/Class;Ljava/lang/String;I)V");
 	RESOLVE_CONSTRUCTOR(Method, "(Ljava/lang/Class;Ljava/lang/String;I)V");
 	RESOLVE_CONSTRUCTOR(String, "([C)V");
@@ -281,17 +281,17 @@ _jc_bootstrap_classes(_jc_env *env)
 	}
 
 	/* Find special fields */
-	RESOLVE_FIELD(Buffer, address, "Lgnu/classpath/RawData;", 0);
+	RESOLVE_FIELD(Buffer, address, "Lgnu/classpath/Pointer;", 0);
 	RESOLVE_FIELD(Buffer, cap, "I", 0);
 	RESOLVE_FIELD(ClassLoader, parent, "Ljava/lang/ClassLoader;", 0);
-	RESOLVE_FIELD(ClassLoader, vmdata, "J", 0);
+	RESOLVE_FIELD(ClassLoader, vmdata, "Ljava/lang/Object;", 0);
 	RESOLVE_FIELD(Constructor, clazz, "Ljava/lang/Class;", 0);
 	RESOLVE_FIELD(Constructor, slot, "I", 0);
 	RESOLVE_FIELD(Field, declaringClass, "Ljava/lang/Class;", 0);
 	RESOLVE_FIELD(Field, slot, "I", 0);
 	RESOLVE_FIELD(Method, declaringClass, "Ljava/lang/Class;", 0);
 	RESOLVE_FIELD(Method, slot, "I", 0);
-	RESOLVE_FIELD(RawData, data, long_ptr ? "J" : "I", 0);
+	RESOLVE_FIELD(Pointer, data, long_ptr ? "J" : "I", 0);
 	RESOLVE_FIELD(Reference, referent, "Ljava/lang/Object;", 0);
 	RESOLVE_FIELD(Reference, queue, "Ljava/lang/ref/ReferenceQueue;", 0);
 	RESOLVE_FIELD(String, value, "[C", 0);
@@ -307,16 +307,18 @@ _jc_bootstrap_classes(_jc_env *env)
 	RESOLVE_FIELD(Thread, vmThread, "Ljava/lang/VMThread;", 0);
 	RESOLVE_FIELD(ThreadGroup, root, "Ljava/lang/ThreadGroup;", 1);
 	RESOLVE_FIELD(VMThread, thread, "Ljava/lang/Thread;", 0);
-	RESOLVE_FIELD(VMThread, vmdata, "J", 0);
+	RESOLVE_FIELD(VMThread, vmdata, "Ljava/lang/Object;", 0);
 
 	/* Load java.lang.Class */
 	BOOTSTRAP_TYPE("java/lang/Class", Class);
-	RESOLVE_FIELD(Class, vmdata, "J", 0);
+	RESOLVE_FIELD(Class, vmdata, "Ljava/lang/Object;", 0);
 	RESOLVE_FIELD(Class, pd, "Ljava/security/ProtectionDomain;", 0);
 
-	/* Set initial lockwords for Object and Class */
+	/* Set initial lockwords for Object, Class, and Pointer */
 	_jc_initialize_lockword(env, vm->boot.types.Object, NULL);
 	_jc_initialize_lockword(env, vm->boot.types.Class,
+	    vm->boot.types.Object);
+	_jc_initialize_lockword(env, vm->boot.types.Pointer,
 	    vm->boot.types.Object);
 
 	/*

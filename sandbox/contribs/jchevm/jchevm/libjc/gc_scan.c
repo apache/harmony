@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: gc_scan.c,v 1.17 2005/03/20 23:06:10 archiecobbs Exp $
+ * $Id: gc_scan.c,v 1.18 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -668,8 +668,7 @@ do_normal_object:
 			_JC_ASSERT(!_JC_IN_HEAP(&vm->heap, obj));
 
 			/* Get class associated with this Class object */
-			type = _jc_get_vm_pointer(obj,
-			    vm->boot.fields.Class.vmdata);
+			type = *_JC_VMFIELD(vm, obj, Class, vmdata, _jc_type *);
 
 			/* Handle class' class loader */
 			if (!(loader = type->loader)->gc_mark)
@@ -808,8 +807,8 @@ do_exception_loader:
 			_jc_class_loader *cl_loader;
 
 			/* Get ClassLoader loader and normal object loader */
-			cl_loader = _jc_get_vm_pointer(obj,
-			    vm->boot.fields.ClassLoader.vmdata);
+			cl_loader = _jc_get_vm_pointer(vm,
+			    obj, vm->boot.fields.ClassLoader.vmdata);
 			loader = obj->type->loader;
 
 			/* Do both class loaders */
@@ -930,9 +929,14 @@ _jc_get_explicit_refs(_jc_env *env, _jc_type **types,
 {
 	_jc_jvm *const vm = env->vm;
 	int num_class_fields;
+	int vmdata_index;
 	int len = 0;
 	int i;
 	int j;
+
+	/* Get index of Class.vmdata so we can ignore it */
+	vmdata_index = vm->boot.fields.Class.vmdata->offset
+	    / (int)sizeof(_jc_word);
 
 	/* Get number of reference fields in a java.lang.Class object */
 	num_class_fields = vm->boot.types.Class->u.nonarray.num_virtual_refs;
@@ -946,8 +950,15 @@ _jc_get_explicit_refs(_jc_env *env, _jc_type **types,
 			_jc_object *const ref
 			    = ((_jc_object **)type->instance)[j];
 
+			/* Ignore null pointers */
 			if (ref == NULL)
 				continue;
+
+			/* Ignore Class.vmdata which is a native pointer! */
+			if (j == vmdata_index)
+				continue;
+
+			/* Add reference to the list */
 			if (list != NULL)
 				list[len] = ref;
 			len++;

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: reflect.c,v 1.25 2005/07/10 21:03:54 archiecobbs Exp $
+ * $Id: reflect.c,v 1.26 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -23,6 +23,68 @@
 /* Internal functions */
 static _jc_object	*_jc_get_reflected(_jc_env *env, _jc_method *constr,
 				_jc_type *type, const char *name, jint slot);
+
+/*
+ * Extract a pointer from a gnu.classpath.Pointer object which
+ * is referred to by the given field in the given object.
+ *
+ * If the field is null then NULL is returned.
+ */
+void *
+_jc_get_vm_pointer(_jc_jvm *vm, _jc_object *obj, _jc_field *field)
+{
+	_jc_object *pobj;
+
+	/* Sanity check */
+	_JC_ASSERT(obj != NULL && field != NULL);
+	_JC_ASSERT(_jc_subclass_of(obj, field->class));
+
+	/* Get reference to the Pointer object */
+	pobj = *((_jc_object **)((char *)obj + field->offset));
+	if (pobj == NULL)
+		return NULL;
+
+	/* Extract the contained pointer */
+	return *_JC_VMFIELD(vm, pobj, Pointer, data, void *);
+}
+
+/*
+ * Store a pointer into a field of type gnu.classpath.Pointer.
+ *
+ * Posts an exception on failure.
+ */
+jint
+_jc_set_vm_pointer(_jc_env *env, _jc_object *obj, _jc_field *field, void *ptr)
+{
+	_jc_jvm *const vm = env->vm;
+	_jc_object *pobj;
+
+	/* Sanity check */
+	_JC_ASSERT(obj != NULL && field != NULL);
+	_JC_ASSERT(_jc_subclass_of(obj, field->class));
+
+	/* Handle easy case */
+	if (ptr == NULL) {
+		pobj = NULL;
+		goto done;
+	}
+
+	/* Create a new Pointer object (if one doesn't already exist) */
+	pobj = *((_jc_object **)((char *)obj + field->offset));
+	if (pobj == NULL) {
+		if ((pobj = _jc_new_object(env,
+		    vm->boot.types.Pointer)) == NULL)
+			return JNI_ERR;
+	}
+
+	/* Store the pointer in the Pointer object */
+	*_JC_VMFIELD(vm, pobj, Pointer, data, void *) = ptr;
+
+done:
+	/* Set the Pointer in the object (after storing ptr within) */
+	*((_jc_object **)((char *)obj + field->offset)) = pobj;
+	return JNI_OK;
+}
 
 /*
  * Resolve a field declared in a specific class.
@@ -239,7 +301,7 @@ _jc_get_method(_jc_env *env, _jc_object *obj)
 
 	/* Locate declaring class */
 	cl = *_JC_VMFIELD(vm, obj, Method, declaringClass, _jc_object *);
-	type = _jc_get_vm_pointer(cl, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, cl, Class, vmdata, _jc_type *);
 	_JC_ASSERT(!_JC_FLG_TEST(type, ARRAY));
 
 	/* Locate method */
@@ -271,7 +333,7 @@ _jc_get_constructor(_jc_env *env, _jc_object *obj)
 
 	/* Locate declaring class */
 	cl = *_JC_VMFIELD(vm, obj, Constructor, clazz, _jc_object *);
-	type = _jc_get_vm_pointer(cl, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, cl, Class, vmdata, _jc_type *);
 	_JC_ASSERT(!_JC_FLG_TEST(type, ARRAY));
 
 	/* Locate constructor method */
@@ -302,7 +364,7 @@ _jc_get_field(_jc_env *env, _jc_object *obj)
 
 	/* Locate declaring class */
 	cl = *_JC_VMFIELD(vm, obj, Field, declaringClass, _jc_object *);
-	type = _jc_get_vm_pointer(cl, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, cl, Class, vmdata, _jc_type *);
 	_JC_ASSERT(!_JC_FLG_TEST(type, ARRAY));
 
 	/* Locate field */

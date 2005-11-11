@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: regen.sh,v 1.7 2005/03/26 03:25:44 archiecobbs Exp $
+# $Id: regen.sh,v 1.8 2005/11/09 18:14:21 archiecobbs Exp $
 
 #
 # Script to regenerate all the GNU auto* gunk.
@@ -61,5 +61,5 @@ if [ `uname -s` = 'FreeBSD' ]; then
 	export CPPFLAGS=-I/usr/local/include;
 fi
 
-./configure --enable-werror --enable-assertions
+./configure --enable-werror --enable-assertions --with-classpath=/usr/local/classpath
 

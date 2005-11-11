@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: load.c,v 1.7 2005/03/18 04:17:48 archiecobbs Exp $
+ * $Id: load.c,v 1.8 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -355,8 +355,8 @@ _jc_usercl_load_type(_jc_env *env, _jc_class_loader *loader, const char *name)
 		}
 
 		/* Extract pointer from Class.vmdata field */
-		type = _jc_get_vm_pointer(env->retval.l,
-		    vm->boot.fields.Class.vmdata);
+		type = *_JC_VMFIELD(vm, env->retval.l,
+		    Class, vmdata, _jc_type *);
 
 		/* Sanity check */
 		_JC_ASSERT((type->flags & (_JC_TYPE_ARRAY|_JC_TYPE_MASK))
@@ -441,8 +441,9 @@ _jc_create_class_instance(_jc_env *env, _jc_type *type)
 	/* Initialize new Class object */
 	type->instance = _jc_initialize_class_object(env, mem);
 
-	/* Set 'vmdata' pointer in Class object */
-	_jc_set_vm_pointer(type->instance, vm->boot.fields.Class.vmdata, type);
+	/* Set Class.vmdata to point to the type */
+	*((_jc_type **)((char *)type->instance
+	    + vm->boot.fields.Class.vmdata->offset)) = type;
 
 	/* Done */
 	return JNI_OK;
@@ -457,5 +458,41 @@ fail:
 
 	/* Done */
 	return JNI_ERR;
+}
+
+/*
+ * Find a type in a class loader's initiated types tree.
+ */
+_jc_type *
+_jc_find_type(_jc_env *env, _jc_class_loader *loader, const char *name)
+{
+	_jc_type_node node_key;
+	_jc_type_node *node;
+	_jc_type *type_key;
+
+	/*
+	 * Set up a fake type to use as the key for searching trees.
+	 * This works because 'name' is the only field in _jc_type
+	 * that is accessed when searching the splay trees.
+	 */
+	type_key = (_jc_type *)((char *)&name - _JC_OFFSETOF(_jc_type, name));
+	memset(&node_key, 0, sizeof(node_key));
+	node_key.type = type_key;
+
+	/* Lock loader */
+	_JC_MUTEX_LOCK(env, loader->mutex);
+
+	/* Search for type */
+	node = _jc_splay_find(&loader->initiated_types, &node_key);
+
+	/* Unlock loader */
+	_JC_MUTEX_UNLOCK(env, loader->mutex);
+
+	/* Return result */
+	if (node != NULL) {
+		_JC_ASSERT(node->type != NULL);
+		return node->type;
+	}
+	return NULL;
 }
 

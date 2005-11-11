@@ -24,9 +24,9 @@ Installation instructions for the JC virtual machine:
     Another "Java 2" compatible JVM installed, such as Sun's JDK,
     kaffe, SableVM, etc. This is needed during installation only.
 
-1. Install classpath-0.17. You can get it from
+1. Install classpath-0.19. You can get it from
 
-	ftp://ftp.gnu.org/pub/gnu/classpath/classpath-0.17.tar.gz
+	ftp://ftp.gnu.org/pub/gnu/classpath/classpath-0.19.tar.gz
 	FreeBSD: java/classpath
 	Debian: classpath
 
@@ -82,7 +82,7 @@ NOTES:
    any Classpath classes that differ will cause the corresponding
    C source files to be invalid, and such files will be automatically
    regenerated during the install process. The pre-generated source
-   files correspond to Classpath 0.17, configured with "--with-jikes
+   files correspond to Classpath 0.19, configured with "--with-jikes
    --prefix=/usr/local", and compiled by jikes 1.22.
 
    If you are using a different version of Classpath, built the
@@ -116,4 +116,4 @@ NOTES:
 2. See http://jcvm.sourceforge.net/share/jc/doc/jc.html#Running%20JC
    for tips on optimizing JC's performance.
 
-$Id: INSTALL,v 1.26 2005/07/23 15:31:05 archiecobbs Exp $
+$Id: INSTALL,v 1.27 2005/11/09 18:14:21 archiecobbs Exp $

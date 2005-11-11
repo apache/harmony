@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: gnu_classpath_VMStackWalker.c,v 1.4 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: gnu_classpath_VMStackWalker.c,v 1.5 2005/11/09 17:16:36 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -141,10 +141,10 @@ JCNI_gnu_classpath_VMStackWalker_getClassContext(_jc_env *env)
 	jboolean top;
 	int num;
 
+again:
 	/* Lock VM */
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
-again:
 	/* Crawl the Java stack and add Class objects for each method */
 	for (num = 0, top = JNI_TRUE, _jc_stack_crawl_first(env, &crawl);
 	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
@@ -164,6 +164,9 @@ again:
 		num++;
 	}
 
+	/* Unlock VM */
+	_JC_MUTEX_UNLOCK(env, vm->mutex);
+
 	/* Create array and loop back */
 	if (array == NULL) {
 		if ((array = (_jc_object_array *)_jc_new_array(env,
@@ -174,9 +177,6 @@ again:
 		goto again;
 	}
 	_JC_ASSERT(num == array->length);
-
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Done */
 	return array;

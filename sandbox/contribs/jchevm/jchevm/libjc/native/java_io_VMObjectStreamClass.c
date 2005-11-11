@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_io_VMObjectStreamClass.c,v 1.4 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: java_io_VMObjectStreamClass.c,v 1.5 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -36,7 +36,7 @@ JCNI_java_io_VMObjectStreamClass_hasClassInitializer(_jc_env *env,
 		_jc_post_exception(env, _JC_NullPointerException);
 		_jc_throw_exception(env);
 	}
-	type = _jc_get_vm_pointer(class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, class, Class, vmdata, _jc_type *);
 
 	/* Look for class initializer */
 	return _jc_get_declared_method(env, type, "<clinit>",

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: libjc.h,v 1.33 2005/07/10 21:03:54 archiecobbs Exp $
+ * $Id: libjc.h,v 1.34 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #ifndef _LIBJC_H_
@@ -321,6 +321,8 @@ extern _jc_type		*_jc_load_type2(_jc_env *env, _jc_class_loader *loader,
 				const char *name, size_t len);
 extern _jc_type		*_jc_load_primitive_type(_jc_env *env, int ptype);
 extern jint		_jc_create_class_instance(_jc_env *env, _jc_type *type);
+extern _jc_type		*_jc_find_type(_jc_env *env, _jc_class_loader *loader,
+				const char *name);
 
 /* lock.c */
 extern jint		_jc_lock_object(_jc_env *env, _jc_object *obj);
@@ -432,6 +434,10 @@ extern jint		_jc_digest_properties(_jc_env *vm);
 extern void		_jc_destroy_properties(_jc_jvm *vm);
 
 /* reflect.c */
+extern void		*_jc_get_vm_pointer(_jc_jvm *vm, _jc_object *obj,
+				_jc_field *field);
+extern jint		_jc_set_vm_pointer(_jc_env *env, _jc_object *obj,
+				_jc_field *field, void *ptr);
 extern _jc_field	*_jc_get_declared_field(_jc_env *env, _jc_type *type,
 				const char *name, const char *sig,
 				int is_static);

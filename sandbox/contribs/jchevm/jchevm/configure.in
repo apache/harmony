@@ -1,11 +1,11 @@
-# $Id: configure.in,v 1.56 2005/07/23 15:31:05 archiecobbs Exp $
+# $Id: configure.in,v 1.58 2005/11/09 18:17:14 archiecobbs Exp $
 
-AC_INIT([JC Virtual Machine], [1.4.6], [http://sourceforge.net/projects/jcvm], [jc])
+AC_INIT([JC Virtual Machine], [1.4.7], [http://sourceforge.net/projects/jcvm], [jc])
 AC_CONFIG_AUX_DIR(scripts)
 AM_INIT_AUTOMAKE
 dnl AM_MAINTAINER_MODE
 AC_PREREQ(2.57)
-AC_REVISION($Id: configure.in,v 1.56 2005/07/23 15:31:05 archiecobbs Exp $)
+AC_REVISION($Id: configure.in,v 1.58 2005/11/09 18:17:14 archiecobbs Exp $)
 AC_PREFIX_DEFAULT(/usr/local)
 AC_CONFIG_SRCDIR(libjc/libjc.h)
 AC_PROG_MAKE_SET
@@ -15,7 +15,7 @@ AC_SUBST(LIBRARY_VERSION, [1:1:0])
 AC_SUBST(SOOT_VERSION, [2.1.0])
 AC_SUBST(JASMIN_VERSION, [1.2])
 AC_SUBST(POLYGLOT_VERSION, [1.1.0])
-AC_SUBST(CLASSPATH_VERSION, [0.17])
+AC_SUBST(CLASSPATH_VERSION, [0.19])
 
 [JC_CFLAGS='-g -O3 -pipe -Wall -Waggregate-return -Wcast-align -Wchar-subscripts -Wcomment -Wformat -Wimplicit -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wno-long-long -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wswitch -Wtrigraphs -Wuninitialized -Wunused -Wwrite-strings']
 AC_SUBST(JC_CFLAGS)

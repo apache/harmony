@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: thread.c,v 1.14 2005/03/18 04:17:48 archiecobbs Exp $
+ * $Id: thread.c,v 1.15 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -172,7 +172,7 @@ _jc_thread_interrupt_instance(_jc_jvm *vm, _jc_object *instance)
 		goto done;
 
 	/* Get internal thread structure */
-	thread = _jc_get_vm_pointer(vmt, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, vmt, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 
@@ -539,7 +539,9 @@ _jc_thread_create_instance(_jc_env *env, _jc_object *group,
 		goto fail;
 
 	/* Set VMThread private data */
-	_jc_set_vm_pointer(*vtref, vm->boot.fields.VMThread.vmdata, env);
+	if (_jc_set_vm_pointer(env, *vtref,
+	    vm->boot.fields.VMThread.vmdata, env) != JNI_OK)
+	    	goto fail;
 
 	/* Invoke VMThread constructor */
 	if (_jc_invoke_nonvirtual(env, vm->boot.methods.VMThread.init,
@@ -945,7 +947,7 @@ _jc_free_thread(_jc_env **envp, int cachable)
 		vmt = *_JC_VMFIELD(vm, env->instance,
 		    Thread, vmThread, _jc_object *);
 		if (vmt != NULL) {
-			_jc_set_vm_pointer(vmt,
+			(void)_jc_set_vm_pointer(env, vmt,
 			   vm->boot.fields.VMThread.vmdata, NULL);
 		}
 	}

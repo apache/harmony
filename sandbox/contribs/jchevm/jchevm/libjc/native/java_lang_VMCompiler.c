@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_VMCompiler.c,v 1.2 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: java_lang_VMCompiler.c,v 1.3 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -37,7 +37,8 @@ JCNI_java_lang_VMCompiler_compileClass(_jc_env *env, _jc_object *cl)
 	}
 
 	/* Get type */
-	type = _jc_get_vm_pointer(cl, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, cl, Class, vmdata, _jc_type *);
+	_JC_ASSERT(type != NULL);
 
 	/* Generate ELF object */
 	if (_jc_generate_object(env, type->loader, type->name) != JNI_OK)

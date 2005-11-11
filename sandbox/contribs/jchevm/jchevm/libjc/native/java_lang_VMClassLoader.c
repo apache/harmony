@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_VMClassLoader.c,v 1.14 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: java_lang_VMClassLoader.c,v 1.15 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -134,6 +134,58 @@ JCNI_java_lang_VMClassLoader_loadClass(_jc_env *env,
 }
 
 /*
+ * static native Class findLoadedClass(ClassLoader, String)
+ */
+_jc_object * _JC_JCNI_ATTR
+JCNI_java_lang_VMClassLoader_findLoadedClass(_jc_env *env,
+	_jc_object *loader_obj, _jc_object *name_string)
+{
+	_jc_jvm *const vm = env->vm;
+	_jc_class_loader *loader;
+	size_t name_len;
+	_jc_type *type;
+	char *name;
+	char *s;
+
+	/* Get loader */
+	if (loader_obj == NULL)
+		loader = vm->boot.loader;
+	else {
+		_JC_ASSERT(_jc_subclass_of(loader_obj,
+		    env->vm->boot.types.ClassLoader));
+		if ((loader = _jc_get_loader(env, loader_obj)) == NULL)
+			_jc_throw_exception(env);
+	}
+
+	/* Check for null */
+	if (name_string == NULL) {
+		_jc_post_exception(env, _JC_NullPointerException);
+		_jc_throw_exception(env);
+	}
+
+	/* Convert name string to UTF-8 */
+	name_len = _jc_decode_string_utf8(env, name_string, NULL);
+	if ((name = _JC_STACK_ALLOC(env, name_len + 1)) == NULL) {
+		_jc_post_exception_info(env);
+		_jc_throw_exception(env);
+	}
+	_jc_decode_string_utf8(env, name_string, name);
+
+	/* Replace '.' -> '/' */
+	for (s = name; *s != '\0'; s++) {
+		if (*s == '.')
+			*s = '/';
+	}
+
+	/* Find type */
+	if ((type = _jc_find_type(env, loader, name)) == NULL)
+		return NULL;
+
+	/* Return type's Class instance */
+	return type->instance;
+}
+
+/*
  * static final native void resolveClass(Class)
  */
 void _JC_JCNI_ATTR
@@ -148,7 +200,7 @@ JCNI_java_lang_VMClassLoader_resolveClass(_jc_env *env, _jc_object *class)
 		_jc_throw_exception(env);
 	}
 	_JC_ASSERT(class->type == vm->boot.types.Class);
-	type = _jc_get_vm_pointer(class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, class, Class, vmdata, _jc_type *);
 
 	/* Link type */
 	if (_jc_resolve_type(env, type) != JNI_OK)

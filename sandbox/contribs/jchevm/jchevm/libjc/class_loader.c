@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: class_loader.c,v 1.12 2005/03/16 15:31:11 archiecobbs Exp $
+ * $Id: class_loader.c,v 1.13 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -47,7 +47,7 @@ _jc_get_loader(_jc_env *env, _jc_object *obj)
 	vm_locked = JNI_TRUE;
 
 	/* See if loader structure already exists */
-	if ((loader = _jc_get_vm_pointer(obj,
+	if ((loader = _jc_get_vm_pointer(vm, obj,
 	    vm->boot.fields.ClassLoader.vmdata)) != NULL)
 		goto done;
 
@@ -59,7 +59,11 @@ _jc_get_loader(_jc_env *env, _jc_object *obj)
 	loader->instance = obj;
 
 	/* Set the ClassLoader.vmdata field */
-	_jc_set_vm_pointer(obj, vm->boot.fields.ClassLoader.vmdata, loader);
+	if (_jc_set_vm_pointer(env, obj,
+	    vm->boot.fields.ClassLoader.vmdata, loader) != JNI_OK) {
+	    	_jc_destroy_loader(vm, &loader);
+	    	goto done;
+	}
 
 	/* Unlock VM */
 	_JC_MUTEX_UNLOCK(env, vm->mutex);

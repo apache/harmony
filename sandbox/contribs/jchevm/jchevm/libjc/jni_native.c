@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: jni_native.c,v 1.15 2005/05/19 22:52:00 archiecobbs Exp $
+ * $Id: jni_native.c,v 1.16 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -181,7 +181,7 @@ GetStaticObjectField(JNIEnv *jenv, jclass class, jfieldID field)
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);
 
 	/* Get class type */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 
 	/* Sanity check */
 	_JC_ASSERT(type == field->class);
@@ -214,7 +214,7 @@ GetStatic ## Type ## Field(JNIEnv *jenv, jclass class, jfieldID field)	\
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);		\
 									\
 	/* Get class type */						\
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);\
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);	\
 									\
 	/* Sanity check */						\
 	_JC_ASSERT(type == field->class);				\
@@ -253,7 +253,7 @@ SetStaticObjectField(JNIEnv *jenv, jclass class, jfieldID field, jobject value)
 	_JC_ASSERT(value == NULL || *value != NULL);
 
 	/* Get class type */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 
 	/* Sanity check */
 	_JC_ASSERT(type == field->class);
@@ -282,7 +282,7 @@ SetStatic ## Type ## Field(JNIEnv *jenv, jclass class,			\
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);		\
 									\
 	/* Get class type */						\
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);\
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);	\
 									\
 	/* Sanity check */						\
 	_JC_ASSERT(type == field->class);				\
@@ -743,7 +743,7 @@ GetEitherFieldID(JNIEnv *jenv, jclass class, const char *name,
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class info */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 
 	/* Initialize class */
 	if (_jc_initialize_type(env, type) != JNI_OK)
@@ -792,7 +792,7 @@ GetEitherMethodID(JNIEnv *jenv, jclass class,
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class info */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 
 	/* Initialize class */
 	if (_jc_initialize_type(env, type) != JNI_OK)
@@ -1531,7 +1531,7 @@ GetSuperclass(JNIEnv *jenv, jclass class)
 	_JC_ASSERT(class_obj->type == vm->boot.types.Class);
 
 	/* Get class type */
-	type = _jc_get_vm_pointer(class_obj, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, class_obj, Class, vmdata, _jc_type *);
 
 	/* Primitive types have no superclass */
 	if ((type->flags & _JC_TYPE_MASK) != _JC_TYPE_REFERENCE)
@@ -1580,9 +1580,8 @@ IsAssignableFrom(JNIEnv *jenv, jclass from_class, jclass to_class)
 	    && (*to_class)->type == vm->boot.types.Class);
 
 	/* Get class types */
-	from_type = _jc_get_vm_pointer(*from_class,
-	    vm->boot.fields.Class.vmdata);
-	to_type = _jc_get_vm_pointer(*to_class, vm->boot.fields.Class.vmdata);
+	from_type = *_JC_VMFIELD(vm, *from_class, Class, vmdata, _jc_type *);
+	to_type = *_JC_VMFIELD(vm, *to_class, Class, vmdata, _jc_type *);
 
 	/* Check if assignable to */
 	result = _jc_assignable_from(env, from_type, to_type);
@@ -1621,7 +1620,7 @@ IsInstanceOf(JNIEnv *jenv, jobject ref, jclass class)
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);
 
 	/* Get class type */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 
 	/* Check if instance of */
 	result = _jc_instance_of(env, obj, type);
@@ -1753,7 +1752,7 @@ AllocObject(JNIEnv *jenv, jclass class)
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class type */
-	type = _jc_get_vm_pointer(class_obj, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, class_obj, Class, vmdata, _jc_type *);
 	_JC_ASSERT((type->flags & _JC_TYPE_MASK) == _JC_TYPE_REFERENCE);
 
 	/* Instantiate new object */
@@ -2132,7 +2131,7 @@ NewObjectArray(JNIEnv *jenv, jsize length, jclass class, jobject initValue)
 	_JC_ASSERT(class_obj->type == vm->boot.types.Class);
 
 	/* Get class type */
-	type = _jc_get_vm_pointer(class_obj, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, class_obj, Class, vmdata, _jc_type *);
 	_JC_ASSERT((type->flags & _JC_TYPE_MASK) == _JC_TYPE_REFERENCE);
 
 	/* Get the name of the array type for this class */
@@ -2260,7 +2259,7 @@ RegisterNatives(JNIEnv *jenv, jclass class,
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class info */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 	_JC_ASSERT((type->flags & (_JC_TYPE_ARRAY|_JC_TYPE_REFERENCE))
 	    == _JC_TYPE_REFERENCE);
 
@@ -2318,7 +2317,7 @@ UnregisterNatives(JNIEnv *jenv, jclass class)
 	_jc_resuming_java(env);
 
 	/* Get class info */
-	type = _jc_get_vm_pointer(*class, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
 	_JC_ASSERT((type->flags & (_JC_TYPE_ARRAY|_JC_TYPE_REFERENCE))
 	    == _JC_TYPE_REFERENCE);
 
@@ -2516,16 +2515,16 @@ NewDirectByteBuffer(JNIEnv *jenv, void *addr, jlong capacity)
 	_jc_resuming_java(env);
 	_jc_push_stack_local_native_frame(env, &frame);
 
-	/* Create RawData object */
+	/* Create Pointer object */
 	if ((data = _jc_new_local_native_ref(env,
-	    _jc_new_object(env, vm->boot.types.RawData))) == NULL)
+	    _jc_new_object(env, vm->boot.types.Pointer))) == NULL)
 		goto done;
 	switch (sizeof(void *)) {
 	case 4:
-		*_JC_VMFIELD(vm, *data, RawData, data, jint) = (_jc_word)addr;
+		*_JC_VMFIELD(vm, *data, Pointer, data, jint) = (_jc_word)addr;
 		break;
 	case 8:
-		*_JC_VMFIELD(vm, *data, RawData, data, jlong) = (_jc_word)addr;
+		*_JC_VMFIELD(vm, *data, Pointer, data, jlong) = (_jc_word)addr;
 		break;
 	default:
 		_JC_ASSERT(0);
@@ -2534,10 +2533,10 @@ NewDirectByteBuffer(JNIEnv *jenv, void *addr, jlong capacity)
 
 	/* Create buffer object */
 	if ((buffer = _jc_new_local_native_ref(env,
-	    _jc_new_object(env, vm->boot.types.DirectByteBufferImpl))) == NULL)
+	    _jc_new_object(env, vm->boot.types.ReadWrite))) == NULL)
 		goto done;
 	if (_jc_invoke_nonvirtual(env,
-	    vm->boot.methods.DirectByteBufferImpl.init, *buffer, NULL,
+	    vm->boot.methods.ReadWrite.init, *buffer, NULL,
 	    *data, (jint)capacity, (jint)capacity, (jint)0) != JNI_OK) {
 		buffer = NULL;
 		goto done;
@@ -2572,22 +2571,22 @@ GetDirectBufferAddress(JNIEnv *jenv, jobject obj)
 	}
 	_JC_ASSERT(*obj != NULL);
 
-	/* Get RawData object */
+	/* Get Pointer object */
 	data = *_JC_VMFIELD(vm, *obj, Buffer, address, _jc_object *);
 	if (data == NULL) {
 		_jc_post_exception(env, _JC_NullPointerException);
 		goto done;
 	}
 
-	/* Extract address from RawData object */
+	/* Extract address from Pointer object */
 	switch (sizeof(void *)) {
 	case 4:
 		addr = (void *)(_jc_word)*_JC_VMFIELD(vm,
-		    data, RawData, data, jint);
+		    data, Pointer, data, jint);
 		break;
 	case 8:
 		addr = (void *)(_jc_word)*_JC_VMFIELD(vm,
-		    data, RawData, data, jlong);
+		    data, Pointer, data, jlong);
 		break;
 	default:
 		_JC_ASSERT(0);

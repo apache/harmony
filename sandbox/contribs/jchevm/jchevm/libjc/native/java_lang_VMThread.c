@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_VMThread.c,v 1.6 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: java_lang_VMThread.c,v 1.7 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -44,7 +44,7 @@ JCNI_java_lang_VMThread_countStackFrames(_jc_env *env, _jc_object *this)
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
 	/* Get internal thread structure */
-	thread = _jc_get_vm_pointer(this, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, this, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 
@@ -122,7 +122,7 @@ JCNI_java_lang_VMThread_isInterrupted(_jc_env *env, _jc_object *this)
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
 	/* Get thread's thread structure */
-	thread = _jc_get_vm_pointer(this, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, this, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 
@@ -169,7 +169,7 @@ JCNI_java_lang_VMThread_nativeSetPriority(_jc_env *env, _jc_object *this,
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
 	/* Get internal thread structure */
-	thread = _jc_get_vm_pointer(this, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, this, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 
@@ -204,7 +204,7 @@ JCNI_java_lang_VMThread_nativeStop(_jc_env *env,
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
 	/* Get internal thread structure */
-	thread = _jc_get_vm_pointer(this, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, this, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 
@@ -245,7 +245,7 @@ JCNI_java_lang_VMThread_resume(_jc_env *env, _jc_object *this)
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
 	/* Get internal thread structure */
-	thread = _jc_get_vm_pointer(this, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, this, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 
@@ -318,8 +318,8 @@ JCNI_java_lang_VMThread_start(_jc_env *env, _jc_object *this, jlong stack_size)
 	}
 
 	/* Sanity check thread is not already started */
-	_JC_ASSERT(_jc_get_vm_pointer(this,
-	    vm->boot.fields.VMThread.vmdata) == NULL);
+	_JC_ASSERT(_jc_get_vm_pointer(vm,
+	    this, vm->boot.fields.VMThread.vmdata) == NULL);
 
 	/* Get requested stack size; use default if zero */
 	thread->stack_size = stack_size;
@@ -426,7 +426,9 @@ JCNI_java_lang_VMThread_start(_jc_env *env, _jc_object *this, jlong stack_size)
 #endif	/* !_JC_NO_THREAD_ATTRIBUTES */
 
 	/* Set the VMThread's vmdata pointer */
-	_jc_set_vm_pointer(this, vm->boot.fields.VMThread.vmdata, thread);
+	if (_jc_set_vm_pointer(env, this,
+	    vm->boot.fields.VMThread.vmdata, thread) != JNI_OK)
+	    	goto fail;
 
 	/* Hack to pass the VMThread's Thread pointer without setting it */
 	thread->retval.l = this;
@@ -434,7 +436,8 @@ JCNI_java_lang_VMThread_start(_jc_env *env, _jc_object *this, jlong stack_size)
 	/* Spawn new pthread to execute this thread */
 	if ((error = pthread_create(&pthread,
 	    attrp, _jc_thread_start, thread)) != 0) {
-		_jc_set_vm_pointer(this, vm->boot.fields.VMThread.vmdata, NULL);
+		(void)_jc_set_vm_pointer(env, this,
+		    vm->boot.fields.VMThread.vmdata, NULL);
 		_jc_post_exception_msg(env, _JC_InternalError,
 		    "%s: %s", "pthread_create", strerror(error));
 		goto fail;
@@ -475,7 +478,7 @@ JCNI_java_lang_VMThread_suspend(_jc_env *env, _jc_object *this)
 	_JC_MUTEX_LOCK(env, vm->mutex);
 
 	/* Get internal thread structure */
-	thread = _jc_get_vm_pointer(this, vm->boot.fields.VMThread.vmdata);
+	thread = _jc_get_vm_pointer(vm, this, vm->boot.fields.VMThread.vmdata);
 	if (thread == NULL)
 		goto done;
 

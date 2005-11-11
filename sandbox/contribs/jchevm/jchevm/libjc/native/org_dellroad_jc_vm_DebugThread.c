@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: org_dellroad_jc_vm_DebugThread.c,v 1.7 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: org_dellroad_jc_vm_DebugThread.c,v 1.8 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -212,8 +212,8 @@ _jc_dump_loader(_jc_env *env, _jc_class_loader *loader)
 		pinstance = *_JC_VMFIELD(vm, loader->instance,
 		    ClassLoader, parent, _jc_object *);
 		if (pinstance != NULL) {
-			parent = _jc_get_vm_pointer(pinstance,
-			    vm->boot.fields.ClassLoader.vmdata);
+			parent = _jc_get_vm_pointer(vm,
+			    pinstance, vm->boot.fields.ClassLoader.vmdata);
 		} else
 			parent = vm->boot.loader;
 	}

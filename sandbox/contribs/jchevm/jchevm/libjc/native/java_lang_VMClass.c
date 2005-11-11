@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_VMClass.c,v 1.10 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id: java_lang_VMClass.c,v 1.11 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 #include "libjc.h"
@@ -26,13 +26,35 @@ static _jc_type		*_jc_get_type(_jc_env *env, _jc_object *this,
 				jboolean resolve);
 
 /*
- * static final native Class forName(String)
+ * static final native Class forName(String, boolean, ClassLoader)
  *	throws java/lang/ClassNotFoundException
  */
 _jc_object * _JC_JCNI_ATTR
-JCNI_java_lang_VMClass_forName(_jc_env *env, _jc_object *name)
+JCNI_java_lang_VMClass_forName(_jc_env *env, _jc_object *name_string,
+	jboolean initialize, _jc_object *loader_obj)
 {
-	return NULL;
+	_jc_jvm *const vm = env->vm;
+	_jc_object *clobj;
+
+	/* Load class */
+	clobj = _jc_internal_load_class(env,
+	    name_string, loader_obj, JNI_FALSE);
+
+	/* Initialize if desired */
+	if (initialize) {
+		_jc_type *type;
+
+		/* Get type */
+		type = *_JC_VMFIELD(vm, clobj, Class, vmdata, _jc_type *);
+		_JC_ASSERT(type != NULL);
+
+		/* Initialize type */
+		if (_jc_initialize_type(env, type) != JNI_OK)
+			_jc_throw_exception(env);
+	}
+
+	/* Done */
+	return clobj;
 }
 
 /*
@@ -446,22 +468,6 @@ JCNI_java_lang_VMClass_getSuperclass(_jc_env *env, _jc_object *this)
 }
 
 /*
- * static final native void initialize(Class)
- */
-void _JC_JCNI_ATTR
-JCNI_java_lang_VMClass_initialize(_jc_env *env, _jc_object *this)
-{
-	_jc_type *type;
-
-	/* Get type */
-	type = _jc_get_type(env, this, JNI_FALSE);
-
-	/* Initialize type */
-	if (_jc_initialize_type(env, type) != JNI_OK)
-		_jc_throw_exception(env);
-}
-
-/*
  * static final native boolean isArray(Class)
  */
 jboolean _JC_JCNI_ATTR
@@ -541,17 +547,6 @@ JCNI_java_lang_VMClass_isPrimitive(_jc_env *env, _jc_object *this)
 }
 
 /*
- * static final native Class loadArrayClass(String, ClassLoader)
- *	throws java/lang/ClassNotFoundException
- */
-_jc_object * _JC_JCNI_ATTR
-JCNI_java_lang_VMClass_loadArrayClass(_jc_env *env,
-	_jc_object *name_string, _jc_object *loader_obj)
-{
-	return _jc_internal_load_class(env, name_string, loader_obj, JNI_FALSE);
-}
-
-/*
  * static final native void throwException(Throwable)
  */
 void _JC_JCNI_ATTR
@@ -584,7 +579,7 @@ _jc_get_type(_jc_env *env, _jc_object *this, jboolean resolve)
 	}
 
 	/* Get type */
-	type = _jc_get_vm_pointer(this, vm->boot.fields.Class.vmdata);
+	type = *_JC_VMFIELD(vm, this, Class, vmdata, _jc_type *);
 
 	/* Resolve type */
 	if (resolve && _jc_resolve_type(env, type) != JNI_OK)

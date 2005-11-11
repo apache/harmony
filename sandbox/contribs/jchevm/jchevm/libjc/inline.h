@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: inline.h,v 1.6 2005/02/27 04:52:59 archiecobbs Exp $
+ * $Id: inline.h,v 1.7 2005/11/09 18:14:22 archiecobbs Exp $
  */
 
 /*
@@ -179,55 +179,5 @@ _jc_num_refs(_jc_object *const obj)
 		}
 	}
 	return nrefs;
-}
-
-/*
- * Extract a pointer from an object field of type long.
- * If the field is null then NULL is returned.
- */
-static inline void *
-_jc_get_vm_pointer(_jc_object *obj, _jc_field *field)
-{
-	/* Sanity check */
-	_JC_ASSERT(obj != NULL && field != NULL);
-	_JC_ASSERT(_jc_subclass_of(obj, field->class));
-	_JC_ASSERT(_jc_sig_types[(u_char)*field->signature] == _JC_TYPE_LONG);
-
-	/* Extract pointer from field */
-	return *((void **)((char *)obj + field->offset));
-}
-
-/*
- * Store a pointer into an object field of type long.
- */
-static inline void
-_jc_set_vm_pointer(_jc_object *obj, _jc_field *field, void *ptr)
-{
-	/* Sanity check */
-	_JC_ASSERT(obj != NULL && field != NULL);
-	_JC_ASSERT(_jc_subclass_of(obj, field->class));
-	_JC_ASSERT(_jc_sig_types[(u_char)*field->signature] == _JC_TYPE_LONG);
-
-	/* Copy the pointer into the field */
-	*((void **)((char *)obj + field->offset)) = ptr;
-}
- 
-/*
- * Store a pointer into an object field of type long atomically.
- */
-static inline jboolean
-_jc_vm_pointer_cas(_jc_object *obj, _jc_field *field,
-	void *oldptr, void *newptr)
-{
-	volatile _jc_word *const word
-	    = (_jc_word *)((char *)obj + field->offset);
-
-	/* Sanity check */
-	_JC_ASSERT(obj != NULL && field != NULL);
-	_JC_ASSERT(_jc_subclass_of(obj, field->class));
-	_JC_ASSERT(_jc_sig_types[(u_char)*field->signature] == _JC_TYPE_LONG);
-
-	/* Atomically update field */
-	return _jc_compare_and_swap(word, (_jc_word)oldptr, (_jc_word)newptr);
 }
 
