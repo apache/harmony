@@ -1,11 +1,11 @@
-# $Id: configure.in,v 1.58 2005/11/09 18:17:14 archiecobbs Exp $
+# $Id$
 
 AC_INIT([JC Virtual Machine], [1.4.7], [http://sourceforge.net/projects/jcvm], [jc])
 AC_CONFIG_AUX_DIR(scripts)
 AM_INIT_AUTOMAKE
 dnl AM_MAINTAINER_MODE
 AC_PREREQ(2.57)
-AC_REVISION($Id: configure.in,v 1.58 2005/11/09 18:17:14 archiecobbs Exp $)
+AC_REVISION($Id$)
 AC_PREFIX_DEFAULT(/usr/local)
 AC_CONFIG_SRCDIR(libjc/libjc.h)
 AC_PROG_MAKE_SET
@@ -172,7 +172,6 @@ AC_CONFIG_FILES(libjc/Makefile)
 AC_CONFIG_FILES(libjc/arch/Makefile)
 AC_CONFIG_FILES(libjc/arch/i386/Makefile)
 AC_CONFIG_FILES(libjc/native/Makefile)
-AC_CONFIG_FILES(soot/Makefile)
 AC_CONFIG_FILES(tools/Makefile)
 AC_CONFIG_FILES(tools/cfdump/Makefile)
 AC_CONFIG_FILES(tools/jcgen/Makefile)

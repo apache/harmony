@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: regen.sh,v 1.8 2005/11/09 18:14:21 archiecobbs Exp $
+# $Id$
 
 #
 # Script to regenerate all the GNU auto* gunk.
@@ -29,15 +29,6 @@ AUTOHEADER="autoheader"
 AUTOMAKE="automake"
 AUTOCONF="autoconf"
 
-if [ `uname -s` = 'FreeBSD' ]; then
-#	LIBTOOLIZE="libtoolize15"
-#	ACLOCAL="aclocal18"
-	ACLOCAL_ARGS="-I /usr/local/share/libtool15/libltdl/ -I /usr/local/share/automake18"
-#	AUTOHEADER="autoheader259"
-#	AUTOMAKE="automake18"
-#	AUTOCONF="autoconf259"
-fi
-
 echo "running libtoolize"
 ${LIBTOOLIZE} -c -f
 
@@ -61,5 +52,5 @@ if [ `uname -s` = 'FreeBSD' ]; then
 	export CPPFLAGS=-I/usr/local/include;
 fi
 
-./configure --enable-werror --enable-assertions --with-classpath=/usr/local/classpath
+./configure --enable-werror --enable-assertions ${1+"$@"}
 

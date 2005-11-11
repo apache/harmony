@@ -1,9 +1,9 @@
-## $Id: Makefile.am,v 1.6 2005/04/01 00:00:30 archiecobbs Exp $
+## $Id$
 
 EXTRA_DIST=	AUTHORS CHANGES README LGPL-2.1 LICENSE INSTALL \
 		install-sh libtool missing
 
-SUBDIRS=	tools libjc jc include doc etc java soot jsrc
+SUBDIRS=	tools libjc jc include doc etc java jsrc
 
 ##
 ## This replaces the string "@COPYRIGHT@" in each source file
