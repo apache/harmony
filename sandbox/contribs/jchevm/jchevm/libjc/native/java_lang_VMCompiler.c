@@ -21,6 +21,9 @@
 #include "libjc.h"
 #include "java_lang_VMCompiler.h"
 
+/* NOTE: these are not used with "stock" Classpath */
+
+#if 0
 /*
  * public static final native boolean compileClass(Class)
  */
@@ -89,4 +92,5 @@ JCNI_java_lang_VMCompiler_enable(_jc_env *env)
 {
 	env->vm->compiler_disabled = JNI_FALSE;
 }
+#endif
 

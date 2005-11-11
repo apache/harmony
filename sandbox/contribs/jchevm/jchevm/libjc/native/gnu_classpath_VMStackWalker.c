@@ -39,8 +39,11 @@ _jc_poppable_method(_jc_jvm *vm, _jc_method *method)
 	return JNI_FALSE;
 }
 
+#if 0
 /*
  * public static final native Class getCallingClass()
+ *
+ * NOTE: this implementation is not used with "stock" Classpath.
  */
 _jc_object * _JC_JCNI_ATTR
 JCNI_gnu_classpath_VMStackWalker_getCallingClass(_jc_env *env)
@@ -86,6 +89,8 @@ JCNI_gnu_classpath_VMStackWalker_getCallingClass(_jc_env *env)
 
 /*
  * public static final native ClassLoader getCallingClassLoader()
+ *
+ * NOTE: this implementation is not used with "stock" Classpath.
  */
 _jc_object * _JC_JCNI_ATTR
 JCNI_gnu_classpath_VMStackWalker_getCallingClassLoader(_jc_env *env)
@@ -128,6 +133,7 @@ JCNI_gnu_classpath_VMStackWalker_getCallingClassLoader(_jc_env *env)
 	/* Done */
 	return result;
 }
+#endif
 
 /*
  * public static final native Class[] getClassContext()

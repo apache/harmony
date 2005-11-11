@@ -11,7 +11,7 @@ CLASSPATH=	$(CLASSPATH_HOME)/share/classpath/glibj.zip:$(sootdir)/sootclasses-@S
 
 JCOMPILE=	$(JIKES) -nowarn +F -bootclasspath '' -extdirs '' -sourcepath '' -classpath $(srcdir):$(CLASSPATH) -d classes
 
-SUBDIRS=	gnu java org
+SUBDIRS=	org
 
 EXTRA_DIST=	api.tgz jc.zip
 
