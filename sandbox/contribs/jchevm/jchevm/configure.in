@@ -1,6 +1,6 @@
 # $Id$
 
-AC_INIT([JC Virtual Machine], [1.4.7], [http://sourceforge.net/projects/jcvm], [jc])
+AC_INIT([JC Harmony Edition Virtual Machine], [1.0], [http://incubator.apache.org/harmony/], [jchevm])
 AC_CONFIG_AUX_DIR(scripts)
 AM_INIT_AUTOMAKE
 dnl AM_MAINTAINER_MODE
@@ -55,12 +55,6 @@ AC_ARG_ENABLE(werror,
     AC_HELP_STRING([--enable-werror],
         [include -Werror GCC compiler flag (default NO)]),
     [test x"$enableval" = "xyes" && JC_CFLAGS="${JC_CFLAGS} -Werror"])
-AC_ARG_ENABLE(pregenerated-sources,
-    AC_HELP_STRING([--enable-pregenerated-sources],
-        [install and compile pregenerated sources (default YES)]),
-    [JC_PREGENERATED_SOURCES="$enableval"],
-    [JC_PREGENERATED_SOURCES="yes"])
-AC_SUBST(JC_PREGENERATED_SOURCES)
 
 # Check for required programs
 AC_PROG_INSTALL
@@ -162,12 +156,8 @@ AC_CONFIG_FILES(java/Makefile)
 AC_CONFIG_FILES(java/org/Makefile)
 AC_CONFIG_FILES(java/org/dellroad/Makefile)
 AC_CONFIG_FILES(java/org/dellroad/jc/Makefile)
-AC_CONFIG_FILES(java/org/dellroad/jc/cgen/Makefile)
-AC_CONFIG_FILES(java/org/dellroad/jc/cgen/analysis/Makefile)
-AC_CONFIG_FILES(java/org/dellroad/jc/cgen/escape/Makefile)
 AC_CONFIG_FILES(java/org/dellroad/jc/vm/Makefile)
 AC_CONFIG_FILES(jc/Makefile)
-AC_CONFIG_FILES(jsrc/Makefile)
 AC_CONFIG_FILES(libjc/Makefile)
 AC_CONFIG_FILES(libjc/arch/Makefile)
 AC_CONFIG_FILES(libjc/arch/i386/Makefile)

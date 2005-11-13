@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.14 2005/05/24 01:09:38 archiecobbs Exp $
+## $Id$
 
 SUBDIRS=		native arch
 
@@ -76,8 +76,6 @@ libjc_la_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
 			native/java_lang_reflect_Constructor.c \
 			native/java_lang_reflect_Field.c \
 			native/java_lang_reflect_Method.c \
-			native/org_dellroad_jc_JCFinder.c \
-			native/org_dellroad_jc_cgen_SootCodeGenerator.c \
 			native/org_dellroad_jc_vm_DebugThread.c \
 			native/org_dellroad_jc_vm_FinalizerThread.c
 

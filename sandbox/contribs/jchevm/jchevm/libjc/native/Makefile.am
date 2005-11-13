@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.8 2005/05/15 21:41:01 archiecobbs Exp $
+## $Id$
 
 jcbindir=	$(bindir)
 jcdir=		$(datadir)/jc
@@ -33,10 +33,6 @@ EXTRA_DIST=	gnu_classpath_VMStackWalker.c \
 		java_lang_reflect_Field.h \
 		java_lang_reflect_Method.c \
 		java_lang_reflect_Method.h \
-		org_dellroad_jc_JCFinder.c \
-		org_dellroad_jc_JCFinder.h \
-		org_dellroad_jc_cgen_SootCodeGenerator.c \
-		org_dellroad_jc_cgen_SootCodeGenerator.h \
 		org_dellroad_jc_vm_DebugThread.c \
 		org_dellroad_jc_vm_DebugThread.h \
 		org_dellroad_jc_vm_FinalizerThread.c \
@@ -65,8 +61,6 @@ HFILES=		gnu_classpath_VMStackWalker.h \
 		java_lang_reflect_Constructor.h \
 		java_lang_reflect_Field.h \
 		java_lang_reflect_Method.h \
-		org_dellroad_jc_JCFinder.h \
-		org_dellroad_jc_cgen_SootCodeGenerator.h \
 		org_dellroad_jc_vm_DebugThread.h \
 		org_dellroad_jc_vm_FinalizerThread.h
 
@@ -101,10 +95,6 @@ java_lang_reflect_Constructor.h:
 java_lang_reflect_Field.h:
 	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
 java_lang_reflect_Method.h:
-	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
-org_dellroad_jc_JCFinder.h:
-	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
-org_dellroad_jc_cgen_SootCodeGenerator.h:
 	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
 org_dellroad_jc_vm_DebugThread.h:
 	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`

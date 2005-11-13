@@ -74,46 +74,4 @@ Installation instructions for the JC virtual machine:
    usual place) or HTML format (PREFIX/share/jc/doc/jc.html). There
    is also a man page, jc(1).
 
-NOTES:
-
-0. The JC distribution includes pre-generated C source files for
-   all installed classes including Classpath. The C source files
-   depend on the exact contents of the class files; therefore,
-   any Classpath classes that differ will cause the corresponding
-   C source files to be invalid, and such files will be automatically
-   regenerated during the install process. The pre-generated source
-   files correspond to Classpath 0.19, configured with "--with-jikes
-   --prefix=/usr/local", and compiled by jikes 1.22.
-
-   If you are using a different version of Classpath, built the
-   classfiles with a compiler other than jikes 1.22, or installed
-   Classpath in a different location, then some pre-generated C
-   source files will appear invalid and have to be regenerated,
-   which will lengthen the installation time.
-
-   The install process try to will use another installed JVM to bootstrap
-   generate these sources if present. The Sun JDK should normally be
-   detected during the configure process but you can explicitly specify
-   one via the "JAVA" environment variable when running configure.
-   The installation process has not been tested with other VM's; you
-   may need to edit the Makefile to adjust the maximum heap, etc.
-
-   If another Java VM is not detected, installation will still succeed
-   but no sources will be regenerated (i.e., the pre-generated sources
-   shipped with JC are compiled without checking).
-
-   In either case, ELF objects will be created for all classes during
-   installation by compiling the generated sources with GCC.
-
-1. Regenerating source files for all of Classpath takes hours. Even if
-   regeneration is not required (see #0 above), the installed source and
-   object files require over 1/2 G of disk space.
-
-   You can completely disable the installation and compilation of the
-   pre-generated sources by configuring JC with the ./configure flag
-   "--disable-pregenerated-sources".
-
-2. See http://jcvm.sourceforge.net/share/jc/doc/jc.html#Running%20JC
-   for tips on optimizing JC's performance.
-
-$Id: INSTALL,v 1.27 2005/11/09 18:14:21 archiecobbs Exp $
+$Id$

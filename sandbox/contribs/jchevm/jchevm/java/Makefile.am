@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.9 2005/03/16 15:30:40 archiecobbs Exp $
+## $Id$
 
 jcdir=		$(datadir)/jc
 apidir=		$(jcdir)/doc/api
@@ -31,14 +31,12 @@ jc.zip:
 	rm -rf classes
 
 JDOC_TITLE=	"JC Virtual Machine"
-JDOC_FLAGS=	-classpath $(CLASSPATH) -sourcepath $(srcdir) -d api -doctitle $(JDOC_TITLE) -windowtitle $(JDOC_TITLE) -breakiterator -link http://java.sun.com/j2se/1.4.2/docs/api -link http://www.sable.mcgill.ca/soot/doc/
+JDOC_FLAGS=	-classpath $(CLASSPATH) -sourcepath $(srcdir) -d api -doctitle $(JDOC_TITLE) -windowtitle $(JDOC_TITLE) -breakiterator -link http://java.sun.com/j2se/1.4.2/docs/api
 
 api.tgz:
 	rm -rf api
 	mkdir api
-	$(JAVADOC) $(JDOC_FLAGS) org.dellroad.jc org.dellroad.jc.cgen \
-	    org.dellroad.jc.vm org.dellroad.jc.cgen.analysis \
-	    org.dellroad.jc.cgen.escape
+	$(JAVADOC) $(JDOC_FLAGS) org.dellroad.jc.vm
 	( cd api && $(TAR) czf ../api.tgz * )
 	rm -rf api
 
