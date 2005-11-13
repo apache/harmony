@@ -23,9 +23,8 @@ To create the distribution tarball:
 
   0. You'll need autoconf, automake, autoheader, and libtool installed first.
   1. Follow INSTALL step 0 & 1 to install libpopt, libz, and Classpath.
-     you should configure Classpath with ``--prefix=/usr/local''
-  2. Run "sh etc/makedist.sh --with-classpath=DIR" as root with DIR being
-     the Classpath installation root (default is /usr/local/classpath).
+  2. Run "sh etc/makedist.sh" as root; you may add "--with-classpath=DIR"
+     where is the Classpath installation root (default /usr/local/classpath).
 
 Once you've done that, you don't actually have to use the distribution
 tarball; you can just run "make && make install" from this directory.

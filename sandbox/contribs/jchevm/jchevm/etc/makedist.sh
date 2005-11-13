@@ -7,6 +7,7 @@ for ARG in $@; do
     --with-classpath=*)
     	CLASSPATH_HOME=`echo $ARG | sed 's/--with-classpath=\(.*\)$/\1/g'`
     	;;
+  esac
 done
 
 if [ ! -f etc/makedist.sh ]; then

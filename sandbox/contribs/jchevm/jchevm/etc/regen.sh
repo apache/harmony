@@ -46,11 +46,12 @@ ${AUTOCONF} -f -i
 cp scripts/install-sh install-sh
 cp scripts/missing missing
 
-echo "running configure"
+CONFIGFLAGS="--enable-werror --enable-assertions"
+echo running configure ${CONFIGFLAGS} "$@"
 if [ `uname -s` = 'FreeBSD' ]; then
 	export LDFLAGS=-L/usr/local/lib ;
 	export CPPFLAGS=-I/usr/local/include;
 fi
 
-./configure --enable-werror --enable-assertions ${1+"$@"}
+./configure ${CONFIGFLAGS} ${1+"$@"}
 

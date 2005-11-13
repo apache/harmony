@@ -161,8 +161,6 @@ AC_CONFIG_FILES(libjc/arch/i386/Makefile)
 AC_CONFIG_FILES(libjc/native/Makefile)
 AC_CONFIG_FILES(tools/Makefile)
 AC_CONFIG_FILES(tools/cfdump/Makefile)
-AC_CONFIG_FILES(tools/jcgen/Makefile)
-AC_CONFIG_FILES(tools/jcgen/jcgen)
 AC_CONFIG_FILES(tools/jcjavah/Makefile)
 
 AM_CONFIG_HEADER(include/config.h)
