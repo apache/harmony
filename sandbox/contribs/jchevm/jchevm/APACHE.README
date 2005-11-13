@@ -17,7 +17,7 @@ To build JCHEVM, first understand that you have checked out the Subversion
 repository, which is not the same thing as a ready to build distribution
 tarball. So you must first create a distribution tarball, which causes
 some files that are required for the build but not checked into the
-Subversion repository to be built:
+Subversion repository to be built.
 
 To create the distribution tarball:
 
@@ -25,9 +25,12 @@ To create the distribution tarball:
   1. Follow INSTALL step 0 & 1 to install libpopt, libz, and Classpath.
   2. Run "sh etc/makedist.sh" as root; you may add "--with-classpath=DIR"
      where is the Classpath installation root (default /usr/local/classpath).
+  3. Some root-owned files will be created; you might want to revert to
+     your normal user ownership with "chown -R username ."
 
-Once you've done that, you don't actually have to use the distribution
-tarball; you can just run "make && make install" from this directory.
+Once you've done that, unpack the tarball, then ./configure, make, and
+make install as usual. If you install JCHEVM using the default --prefix
+of /usr/local then on Linux you may need to run "ldconfig /usr/local/lib".
 
 -------------------------------------------------------------------------------
 

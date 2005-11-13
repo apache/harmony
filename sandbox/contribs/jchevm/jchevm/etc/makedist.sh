@@ -1,7 +1,7 @@
 #!/bin/sh
 # $Id$
 
-CLASSPATH_HOME=/usr/local
+CLASSPATH_HOME=/usr/local/classpath
 for ARG in $@; do
   case $ARG in
     --with-classpath=*)
