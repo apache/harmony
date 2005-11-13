@@ -2,7 +2,7 @@
 This is the JC virtual machine contribution to Apache's Harmony project,
 the JC Harmony Edition VM (JCHEVM).
 
-All code in the original contribute was written by me. However many
+All code in the original contribution was written by me. However many
 ideas and algorithms herein were NOT invented by me; rather I just
 reimplemented them (with modifications). These are described the
 documentation (see doc/jc.texi).
