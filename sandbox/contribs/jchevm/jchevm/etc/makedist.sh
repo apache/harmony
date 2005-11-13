@@ -1,7 +1,13 @@
 #!/bin/sh
 # $Id$
 
-PREFIX=/usr/local
+CLASSPATH_HOME=/usr/local
+for ARG in $@; do
+  case $ARG in
+    --with-classpath=*)
+    	CLASSPATH_HOME=`echo $ARG | sed 's/--with-classpath=\(.*\)$/\1/g'`
+    	;;
+done
 
 if [ ! -f etc/makedist.sh ]; then
     echo '***' run me from the top level directory please
@@ -13,14 +19,14 @@ if [ `id -u` -ne 0 ]; then
     exit 1
 fi
 
-if [ ! -w ${PREFIX}/share/classpath/glibj.zip ]; then
+if [ ! -w ${CLASSPATH_HOME}/share/classpath/glibj.zip ]; then
     echo '***' you must build and install classpath first
     exit 1
 fi
 
 rm -f java/jc.zip java/api.tgz
 
-sh etc/regen.sh
+sh etc/regen.sh ${1+"$@"}
 (cd tools && make && make install) || exit 1
 (cd java && make && make install) || exit 1
 (cd include && make && make install) || exit 1

@@ -39,7 +39,7 @@ Installation instructions for the JC virtual machine:
 
    Then:
 
-	$ ./configure --prefix=/usr/local --enable-jni --with-jikes
+	$ ./configure --enable-jni --with-jikes
 	$ gmake
 	$ gmake install
 
@@ -55,7 +55,7 @@ Installation instructions for the JC virtual machine:
 	$ make install
 
    where DIR is the Classpath is install location, i.e., the --prefix
-   you configured Classpath with. Classpath's default prefix is
+   you configured Classpath with (if any). Classpath's default prefix is
    /usr/local/classpath, but packaging systems often change this. E.g.,
    on Debian, if using the classpath package, use "--with-classpath=/usr".
 

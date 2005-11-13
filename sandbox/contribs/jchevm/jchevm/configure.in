@@ -12,9 +12,6 @@ AC_PROG_MAKE_SET
 
 # Definitions
 AC_SUBST(LIBRARY_VERSION, [1:1:0])
-AC_SUBST(SOOT_VERSION, [2.1.0])
-AC_SUBST(JASMIN_VERSION, [1.2])
-AC_SUBST(POLYGLOT_VERSION, [1.1.0])
 AC_SUBST(CLASSPATH_VERSION, [0.19])
 
 [JC_CFLAGS='-g -O3 -pipe -Wall -Waggregate-return -Wcast-align -Wchar-subscripts -Wcomment -Wformat -Wimplicit -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wno-long-long -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wswitch -Wtrigraphs -Wuninitialized -Wunused -Wwrite-strings']
@@ -33,8 +30,8 @@ else
     JC_PREFIX="$prefix"
 fi]
 
-# Get Classpath home, default to same as prefix
-[CLASSPATH_HOME="${JC_PREFIX}"]
+# Get Classpath home, default to /usr/local/classpath
+[CLASSPATH_HOME="/usr/local/classpath"]
 AC_ARG_WITH([classpath],
     [AC_HELP_STRING([--with-classpath=DIR],
 	[specify Classpath installation home])],

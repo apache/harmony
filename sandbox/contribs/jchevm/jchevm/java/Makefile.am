@@ -5,9 +5,7 @@ apidir=		$(jcdir)/doc/api
 
 jc_DATA=	jc.zip
 
-sootdir=	$(top_srcdir)/soot
-
-CLASSPATH=	$(CLASSPATH_HOME)/share/classpath/glibj.zip:$(sootdir)/sootclasses-@SOOT_VERSION@.jar:$(sootdir)/jasminclasses-sable-@JASMIN_VERSION@.jar:$(sootdir)/polyglot-@POLYGLOT_VERSION@.jar
+CLASSPATH=	$(CLASSPATH_HOME)/share/classpath/glibj.zip
 
 JCOMPILE=	$(JIKES) -nowarn +F -bootclasspath '' -extdirs '' -sourcepath '' -classpath $(srcdir):$(CLASSPATH) -d classes
 

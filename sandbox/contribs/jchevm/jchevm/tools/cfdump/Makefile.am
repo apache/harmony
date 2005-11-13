@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.5 2005/02/27 21:50:04 archiecobbs Exp $
+## $Id$
 
 jcbindir=	$(bindir)
 
@@ -22,9 +22,6 @@ AM_CFLAGS+=	-D_AC_INCLUDEDIR=\"$(includedir)\"
 AM_CFLAGS+=	-D_AC_DATADIR=\"$(datadir)\"
 AM_CFLAGS+=	-D_AC_LIBDIR=\"$(libdir)\"
 AM_CFLAGS+=	-D_JC_CLASSPATH_HOME=\"@CLASSPATH_HOME@\"
-AM_CFLAGS+=	-DSOOT_VERSION=\"@SOOT_VERSION@\"
-AM_CFLAGS+=	-DJASMIN_VERSION=\"@JASMIN_VERSION@\"
-AM_CFLAGS+=	-DPOLYGLOT_VERSION=\"@POLYGLOT_VERSION@\"
 
 AM_CPPFLAGS=	-I$(top_srcdir)/libjc
 AM_CPPFLAGS+=	-I$(top_srcdir)/libjc/arch

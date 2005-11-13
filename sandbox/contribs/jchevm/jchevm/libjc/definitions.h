@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: definitions.h,v 1.17 2005/05/24 01:09:38 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _DEFINITIONS_H_
@@ -509,13 +509,7 @@ enum {
 
 #define _JC_BOOT_CLASS_PATH						\
     _AC_DATADIR "/jc/jc.zip"						\
-    _JC_PATH_SEPARATOR _JC_CLASSPATH_HOME "/share/classpath/glibj.zip"	\
-    _JC_PATH_SEPARATOR _AC_DATADIR 					\
-	"/jc/sootclasses-" SOOT_VERSION ".jar"				\
-    _JC_PATH_SEPARATOR _AC_DATADIR					\
-	"/jc/jasminclasses-sable-" JASMIN_VERSION ".jar"		\
-    _JC_PATH_SEPARATOR _AC_DATADIR					\
-	"/jc/polyglot-" POLYGLOT_VERSION ".jar"
+    _JC_PATH_SEPARATOR _JC_CLASSPATH_HOME "/share/classpath/glibj.zip"
 
 /*
  * Core classes that must be loaded by the boot loader.
