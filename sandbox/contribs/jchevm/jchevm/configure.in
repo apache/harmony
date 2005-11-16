@@ -80,6 +80,7 @@ AC_CHECK_LIB(crypto, MD5_Init,,
 	[AC_MSG_ERROR([required library crypto missing])])
 AC_CHECK_LIB(popt, poptGetContext,,
 	[AC_MSG_ERROR([required library libpopt missing])])
+AC_CHECK_LIB(dl, dlopen,,,)
 
 # Check for pthread library, linking either via -pthread or -lpthread
 AC_MSG_CHECKING([whether -pthread gets us the pthread library])
