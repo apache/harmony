@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: support.c,v 1.4 2005/03/12 04:24:54 archiecobbs Exp $
+ * $Id$
  */
 
 #include "cfdump.h"
@@ -158,6 +158,7 @@ _jc_env	*
 _jc_support_init()
 {
 	_jc_mutex_init(&phoney_env, &phoney_loader.mutex);
+	_jc_mutex_init(&phoney_env, &phoney_jvm.mutex);
 	_jc_uni_alloc_init(&phoney_loader.uni, 0, NULL);
 	phoney_jvm.boot.loader = &phoney_loader;
 	phoney_env.vm = &phoney_jvm;
