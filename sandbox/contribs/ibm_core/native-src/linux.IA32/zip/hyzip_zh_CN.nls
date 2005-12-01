@@ -1,0 +1,7 @@
+# This file was automatically reverse engineered from hyzip.nls and java_zh_CN.properties
+HYNLS.MODULE=ZIPS
+HYNLS.HEADER=hyzipnls.h
+
+HYNLS_ZIP_UNABLE_TO_OPEN_ZIP_DLL=\u65e0\u6cd5\u6253\u5f00 %s\uff08%s\uff09
+HYNLS_ZIP_MISSING_EXPORT=\u65e0\u6cd5\u6253\u5f00 %s\uff08\u7f3a\u5c11\u5bfc\u51fa\uff09
+

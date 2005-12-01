@@ -1,0 +1,18 @@
+LIBRARY	HYTEXT
+
+SECTIONS
+	.data	READ WRITE
+	.text	EXECUTE READ
+
+EXPORTS
+	Java_com_ibm_text_BidiWrapper_ubidi_1close
+	Java_com_ibm_text_BidiWrapper_ubidi_1countRuns
+	Java_com_ibm_text_BidiWrapper_ubidi_1getDirection
+	Java_com_ibm_text_BidiWrapper_ubidi_1getLength
+	Java_com_ibm_text_BidiWrapper_ubidi_1getLevels
+	Java_com_ibm_text_BidiWrapper_ubidi_1getParaLevel
+	Java_com_ibm_text_BidiWrapper_ubidi_1getRun
+	Java_com_ibm_text_BidiWrapper_ubidi_1open
+	Java_com_ibm_text_BidiWrapper_ubidi_1reorderVisual
+	Java_com_ibm_text_BidiWrapper_ubidi_1setLine
+	Java_com_ibm_text_BidiWrapper_ubidi_1setPara

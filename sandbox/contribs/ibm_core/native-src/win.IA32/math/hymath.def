@@ -1,0 +1,20 @@
+LIBRARY	HYMATH
+
+SECTIONS
+	.data	READ WRITE
+	.text	EXECUTE READ
+
+EXPORTS
+	Java_com_ibm_oti_util_FloatingPointParser_parseDblImpl
+	Java_com_ibm_oti_util_FloatingPointParser_parseFltImpl
+	Java_com_ibm_oti_util_math_BigInteger_addImpl
+	Java_com_ibm_oti_util_math_BigInteger_compImpl
+	Java_com_ibm_oti_util_math_BigInteger_divImpl
+	Java_com_ibm_oti_util_math_BigInteger_mulImpl
+	Java_com_ibm_oti_util_math_BigInteger_negImpl
+	Java_com_ibm_oti_util_math_BigInteger_remImpl
+	Java_com_ibm_oti_util_math_BigInteger_shlImpl
+	Java_com_ibm_oti_util_math_BigInteger_subImpl
+	Java_com_ibm_oti_util_NumberConverter_bigIntDigitGeneratorInstImpl
+	JNI_OnLoad
+	JNI_OnUnload

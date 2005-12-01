@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright 1998, 2005 The Apache Software Foundation or its licensors, as applicable
+     
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<project name="Build-Harmony-Documentation" default="all" basedir=".">
+
+    <property name="vm.doc.dir" value="vm_doc" />
+    <property name="kernel.doc.dir" value="kernel_doc" />
+
+    <!-- ================================= 
+          target: all
+         ================================= -->
+    <target name="all" 
+        description="Target to rebuild the Harmony doc from scratch." 
+        depends="doxygen-kernel, doxygen-natives" />
+
+    <!-- ================================= 
+          target: properties
+         ================================= -->
+    <target name="properties" depends="init, windows-properties, linux-properties" />
+
+    <!-- ================================= 
+          target: windows-properties              
+         ================================= -->
+    <target name="windows-properties" if="is.windows">
+        <property name="target.platform" value="win.IA32" />
+        <property name="exe.suffix" value=".exe" />
+    </target>
+
+    <!-- ================================= 
+          target: linux-properties              
+         ================================= -->
+    <target name="linux-properties" if="is.linux">
+        <property name="target.platform" value="linux.IA32" />
+        <property name="exe.suffix" value="" />
+    </target>
+
+    <!-- ================================= 
+          target: init                      
+         ================================= -->
+    <target name="init">
+        <condition property="is.windows">
+            <os family="windows" />
+        </condition>
+
+        <condition property="is.linux">
+            <os name="linux" />
+        </condition>
+    </target>
+
+    <!-- ================================= 
+          target: doxygen-kernel                      
+         ================================= -->
+    <target name="doxygen-kernel" 
+        depends="properties, clean-kernel" 
+        description="Invoke doxygen on contributed kernel source">
+        <exec executable="doxygen${exe.suffix}" dir="..">
+            <arg line="doc/kernel/kernel.cfg" />
+            <env key="HARMONY_DOC_DIR" value="${basedir}" />
+        </exec>
+    </target>
+
+    <!-- ================================= 
+          target: doxygen-natives                      
+         ================================= -->
+    <target name="doxygen-natives" 
+        depends="properties, clean-natives" 
+        description="Invoke doxygen on natives">
+        <exec executable="doxygen${exe.suffix}" dir="..">
+            <arg line="doc/vminterface/natives.cfg" />
+            <env key="HARMONY_DOC_DIR" value="${basedir}" />
+            <env key="HARMONY_NATIVE_SRC_DIR" value="${basedir}/../native-src/${target.platform}" />
+        </exec>
+    </target>
+
+    <!-- ================================= 
+          target: clean-kernel    
+         ================================= -->
+    <target name="clean-kernel" description="Clean away the generated kernel documentation.">
+        <echo>Cleaning up kernel documentation directories</echo>
+        <delete failonerror="false" dir='${kernel.doc.dir}' />
+    </target>
+
+    <!-- ================================= 
+          target: clean-natives    
+         ================================= -->
+    <target name="clean-natives" description="Clean away the generated natives documentation.">
+        <echo>Cleaning up natives documentation directories</echo>
+        <delete failonerror="false" dir='${vm.doc.dir}' />
+    </target>
+
+
+    <!-- ================================= 
+          target: clean         
+         ================================= -->
+    <target name="clean" 
+        depends="clean-kernel, clean-natives" 
+        description="Clean away the generated documentation." />
+
+</project>

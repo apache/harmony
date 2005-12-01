@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony LUNI
+Bundle-SymbolicName: org.apache.harmony.luni
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: com.ibm.io.nio.factory,
+ java.nio.charset,
+ java.security,
+ java.util.jar,
+ java.util.regex,
+ java.util.zip
+Export-Package: com.ibm.misc.util,
+ com.ibm.oti.util,
+ java.io,
+ java.lang,
+ java.lang.ref,
+ java.lang.reflect,
+ java.net,
+ java.util
+

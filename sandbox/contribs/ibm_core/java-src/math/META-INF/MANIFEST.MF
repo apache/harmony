@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Math
+Bundle-SymbolicName: org.apache.harmony.math
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Export-Package: java.math
+Import-Package: java.util
+Require-Bundle: org.apache.harmony.luni

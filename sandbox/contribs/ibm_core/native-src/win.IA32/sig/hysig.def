@@ -1,0 +1,11 @@
+LIBRARY	HYSIG
+
+SECTIONS
+	.data	READ WRITE
+	.text	EXECUTE READ
+
+EXPORTS
+	jsig_handler
+	jsig_primary_signal
+	signal
+
