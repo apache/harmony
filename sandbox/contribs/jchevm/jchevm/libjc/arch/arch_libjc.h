@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: arch_libjc.h,v 1.7 2005/07/10 21:03:55 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _ARCH_LIBJC_H_
@@ -209,6 +209,8 @@ extern const void	*_jc_signal_fault_address(int sig_num,
 #include "ia64/ia64_libjc.h"
 #elif defined(__powerpc__)
 #include "powerpc/powerpc_libjc.h"
+#elif defined(__ppc__)
+#include "ppc/ppc_libjc.h"
 #else
 #error "Unsupported architecture for architecture-specific functions"
 #endif
