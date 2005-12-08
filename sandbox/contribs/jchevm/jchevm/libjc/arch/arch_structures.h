@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: arch_structures.h,v 1.2 2004/12/14 03:03:25 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _ARCH_STRUCTURES_H_
@@ -65,6 +65,8 @@ representing a stack frame, with the following properties:
 #include "ia64/ia64_structures.h"
 #elif defined(__powerpc__)
 #include "powerpc/powerpc_structures.h"
+#elif defined(__ppc__)
+#include "ppc/ppc_structures.h"
 #else
 #error "Unsupported architecture for architecture-specific structures"
 #endif
