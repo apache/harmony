@@ -105,7 +105,7 @@ AC_SUBST(_JC_THREAD_LOCAL_SUPPORT)
 # Check for required header files
 AC_HEADER_STDC
 AC_CHECK_HEADERS(sys/mman.h sys/wait.h pthread.h fcntl.h signal.h \
-	ctype.h errno.h dlfcn.h sched.h math.h pwd.h elf.h \
+	ctype.h errno.h dlfcn.h sched.h math.h pwd.h \
 	zlib.h openssl/md5.h, [],
 	[AC_MSG_ERROR([required header file missing])])
 AC_CHECK_HEADERS([ucontext.h], [],
@@ -139,7 +139,7 @@ AC_LIBTOOL_DLOPEN
 AM_PROG_LIBTOOL
 
 # Get host architecture
-[JC_ARCH=`uname -m | sed -e 's/i[456]86/i386/g'`]
+[JC_ARCH=`uname -m | sed -e 's/i[456]86/i386/g' | sed -e 's/Power Macintosh/ppc/g'`]
 AC_SUBST(JC_ARCH)
 
 # Generated files
@@ -159,6 +159,7 @@ AC_CONFIG_FILES(jc/Makefile)
 AC_CONFIG_FILES(libjc/Makefile)
 AC_CONFIG_FILES(libjc/arch/Makefile)
 AC_CONFIG_FILES(libjc/arch/i386/Makefile)
+AC_CONFIG_FILES(libjc/arch/ppc/Makefile)
 AC_CONFIG_FILES(libjc/native/Makefile)
 AC_CONFIG_FILES(tools/Makefile)
 AC_CONFIG_FILES(tools/cfdump/Makefile)
