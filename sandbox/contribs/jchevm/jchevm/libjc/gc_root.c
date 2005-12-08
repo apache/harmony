@@ -15,14 +15,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: gc_root.c,v 1.12 2005/03/20 23:05:31 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
-
-/* Internal definitions */
-#define _JC_NUM_REGISTER_OFFS						\
-	(sizeof(_jc_register_offs) / sizeof(*_jc_register_offs))
 
 /* Internal functions */
 static _jc_object	*_jc_locate_object(_jc_jvm *vm,
@@ -31,14 +27,9 @@ static int		_jc_root_walk_thread(_jc_env *thread,
 				const _jc_word *info, _jc_object ***refsp);
 static int		_jc_root_walk_native_refs(_jc_native_frame_list *list,
 				_jc_object ***refsp);
-static int		_jc_scan_exec_stack(_jc_jvm *vm, _jc_exec_stack *stack,
-				const _jc_word *info, _jc_object ***refsp);
 static int		_jc_scan_interp_stack(_jc_jvm *vm,
 				_jc_interp_stack *stack, const _jc_word *info,
 				_jc_object ***refsp);
-
-/* Internal variables */
-static const int	_jc_register_offs[] = _JC_REGISTER_OFFS;
 
 /*
  * Find the head of the object given a pointer into its interior.
@@ -247,11 +238,8 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
 	/* Scan each contiguous Java stack segment */
 	for (jstack = thread->java_stack;
 	    jstack != NULL; jstack = jstack->next) {
-		count += jstack->interp ?
-		    _jc_scan_interp_stack(vm,
-		      (_jc_interp_stack *)jstack, info, &refs) :
-		    _jc_scan_exec_stack(vm,
-		      (_jc_exec_stack *)jstack, info, &refs);
+		count += _jc_scan_interp_stack(vm,
+		      (_jc_interp_stack *)jstack, info, &refs);
 	}
 
 	/* Get implicit references from Java methods to their classes */
@@ -327,79 +315,6 @@ _jc_scan_interp_stack(_jc_jvm *vm, _jc_interp_stack *stack,
 
 		/* Find object pointed to, if any */
 		if ((obj = _jc_locate_object(vm, info, ref)) == NULL)
-			continue;
-
-		/* Add object to list */
-		if (refs != NULL)
-			*refs++ = obj;
-		count++;
-	}
-
-	/* Done */
-	*refsp = refs;
-	return count;
-}
-
-/*
- * Scan a contiguous executable stack chunk.
- */
-static int
-_jc_scan_exec_stack(_jc_jvm *vm, _jc_exec_stack *stack,
-	const _jc_word *info, _jc_object ***refsp)
-{
-	const size_t stack_step = (_JC_STACK_ALIGN < sizeof(void *)) ?
-	    _JC_STACK_ALIGN : sizeof(void *);
-	_jc_object **refs = *refsp;
-	const char *stack_bot = NULL;
-	const char *stack_top = NULL;
-	_jc_stack_crawl crawl;
-	_jc_object *obj;
-	const char *ptr;
-	int count = 0;
-	int regnum;
-
-	/* Get references from saved registers */
-	for (regnum = 0; regnum < _JC_NUM_REGISTER_OFFS; regnum++) {
-
-		/* Find object pointed to by register, if any */
-		if ((obj = _jc_locate_object(vm, info,
-		    *(_jc_word **)((char *)&stack->regs
-		      + _jc_register_offs[regnum]))) == NULL)
-			continue;
-
-		/* Add object to list */
-		if (refs != NULL)
-			*refs++ = obj;
-		count++;
-	}
-
-	/* Compute the top of this Java stack segment */
-	stack_top = _jc_mcontext_sp(&stack->regs);
-
-	/* Find the bottom of this Java stack segment */
-	memset(&crawl, 0, sizeof(crawl));
-	crawl.frame = stack->frame;
-	crawl.pc = stack->pc;
-	while (crawl.method != &vm->invoke_method) {
-		_jc_stack_frame_next(&crawl.frame, &crawl.pc);
-		_jc_stack_crawl_skip(vm, &crawl);
-	}
-	stack_bot = _jc_stack_frame_sp(crawl.frame);
-
-	/* Sanity check stack alignment */
-	_JC_ASSERT(((_jc_word)stack_top & (_JC_STACK_ALIGN - 1)) == 0);
-	_JC_ASSERT(((_jc_word)stack_bot & (_JC_STACK_ALIGN - 1)) == 0);
-
-	/* Conservatively find references in this Java stack segment */
-#if _JC_DOWNWARD_STACK
-	for (ptr = stack_top; ptr < stack_bot; ptr += stack_step)
-#else
-	for (ptr = stack_bot; ptr < stack_top; ptr += stack_step)
-#endif
-	{
-		/* Find object pointed into, if any */
-		if ((obj = _jc_locate_object(vm,
-		    info, *(_jc_word **)ptr)) == NULL)
 			continue;
 
 		/* Add object to list */

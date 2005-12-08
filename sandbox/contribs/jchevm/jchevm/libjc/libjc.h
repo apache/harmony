@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: libjc.h,v 1.34 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _LIBJC_H_
@@ -45,7 +45,6 @@
 #include <sched.h>
 #include <math.h>
 #include <pwd.h>
-#include <elf.h>
 
 #include <zlib.h>
 
@@ -151,8 +150,6 @@ extern int		_jc_gen_deplist(_jc_env *env, _jc_classfile *cfile,
 extern _jc_type		*_jc_derive_type_from_classfile(_jc_env *env,
 				_jc_class_loader *loader, const char *name,
 				_jc_classbytes *cbytes);
-extern jint		_jc_derive_types_from_object(_jc_env *env,
-				_jc_elf *elf);
 extern _jc_type		*_jc_derive_array_type(_jc_env *env,
 				_jc_class_loader *loader, const char *name);
 extern void		_jc_initialize_lockword(_jc_env *env, _jc_type *type,
@@ -163,20 +160,6 @@ extern void		_jc_initialize_bsi(_jc_jvm *vm, _jc_type *type);
 extern _jc_type		*_jc_derive_type_interp(_jc_env *env,
 				_jc_class_loader *loader,
 				_jc_classbytes *cbytes);
-
-/* elf.c */
-extern _jc_elf		*_jc_elf_load(_jc_env *env, _jc_class_loader *loader,
-				const char *path);
-extern jint		_jc_elf_link(_jc_env *env, _jc_elf *elf,
-				_jc_elf_resolver *resolver, void *arg);
-extern void		_jc_elf_link_cleanup(_jc_elf *elf);
-extern void		_jc_elf_addref(_jc_elf *elf);
-extern void		_jc_elf_unref(_jc_elf **elfp);
-
-/* elf_reloc.c */
-extern jint		_jc_elf_arch_reloc(_jc_env *env, const char *path,
-				char *target_base, Elf_Addr target_offset,
-				Elf_Word type, Elf_Addr value, Elf_Off addend);
 
 /* exception.c */
 extern void		_jc_post_exception_object(_jc_env *env,

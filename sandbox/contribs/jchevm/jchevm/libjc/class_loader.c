@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: class_loader.c,v 1.13 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -253,11 +253,8 @@ _jc_destroy_loader(_jc_jvm *vm, _jc_class_loader **loaderp)
 		/* Free supers info (unresolved ELF types) */
 		_jc_vm_free(&type->u.nonarray.supers);
 
-		/* Unreference parsed class file or ELF object */
-		if (_JC_ACC_TEST(type, INTERP))
-			_jc_destroy_classfile(&type->u.nonarray.u.cfile);
-		else
-			_jc_elf_unref(&type->u.nonarray.u.elf);
+		/* Unreference parsed class file */
+		_jc_destroy_classfile(&type->u.nonarray.u.cfile);
 
 remove_type:
 		/* Remove this type from the tree */

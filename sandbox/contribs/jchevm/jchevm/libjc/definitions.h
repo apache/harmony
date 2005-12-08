@@ -575,12 +575,6 @@ struct _jc_align {
 #define _JC_PAGE_MASK	(_JC_PAGE_SIZE - 1)
 
 /*
- * ELF symbol resolver function type.
- */
-typedef jint	_jc_elf_resolver(_jc_env *env, void *arg,
-			const char *name, Elf_Addr *result);
-
-/*
  * Splay tree node comparision function type.
  */
 typedef int	_jc_splay_cmp_t(const void *item1, const void *item2);
@@ -693,6 +687,9 @@ typedef int	_jc_splay_cmp_t(const void *item1, const void *item2);
 									\
 	_JC_ASSERT(_env == NULL || (mutex ## _owner) != _env);		\
 	_r = pthread_mutex_lock(_mutex);				\
+	/* TODO: remove the following two lines... */ \
+	if(_r==EINVAL) fprintf(stdout, "EINVAL\n"); \
+	else if(_r==EDEADLK) fprintf(stdout, "EDEADLK\n"); \
 	_JC_ASSERT(_r == 0);						\
 	(mutex ## _owner) = _env;					\
     } while (0)

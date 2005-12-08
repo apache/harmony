@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: structures.h,v 1.37 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _STRUCTURES_H_
@@ -98,56 +98,6 @@ struct _jc_splay_tree {
  *			ELF file structures				*
  ************************************************************************/
 
-/* This describes a loadable section within an ELF object */
-struct _jc_elf_loadable {
-	const char		*name;		/* name of section */
-	const Elf_Shdr		*shdr;		/* section header */
-	const Elf_Shdr		*rel;		/* normal relocations section */
-	const Elf_Shdr		*rela;		/* addend relocations section */
-	const char		*bytes;		/* start of section in file */
-	char			*vaddr;		/* start of loaded section */
-	Elf_Off			offset;		/* offset of loaded section */
-};
-
-/* This describes the ELF debug section containing line number info */
-struct _jc_elf_debug_lines {
-	u_char			type;		/* _JC_LINE_DEBUG_* */
-	const char		*strings;	/* associated string section */
-	_jc_elf_loadable	loadable;	/* loading info */
-};
-
-/*
- * Linking and symbol information associated with an ELF object.
- * This information is only needed for loading and linking.
- */
-struct _jc_elf_info {
-	char			*map_base;	/* base of mmap() region */
-	size_t			map_size;	/* size of mmap() region */
-	const Elf_Ehdr		*ehdr;		/* ELF header (=map_base) */
-	const Elf_Shdr		*shdrs;		/* section headers */
-	int			num_symbols;	/* number of symbols */
-	const Elf_Sym		*symbols;	/* symbols */
-	int			num_loadables;	/* number loadable sections */
-	_jc_elf_loadable	*loadables;	/* loadable sections */
-	_jc_elf_loadable	**shdr2section;	/* maps shdr index -> section */
-	const char		*strings;	/* strings in string table */
-	_jc_env			*resolver;	/* currently resolving thread */
-	_jc_elf_debug_lines	debug_lines;	/* ELF debug line info */
-};
-
-/*
- * Information associated with a loaded ELF object.
- */
-struct _jc_elf {
-	_jc_elf_info		*info;		/* transient linking info */
-	_jc_class_loader	*loader;	/* loader who loaded me */
-	char			*vaddr;		/* load address of object */
-	Elf_Off			vsize;		/* size of loaded object */
-	_jc_splay_tree		types;		/* types defined in file */
-	volatile _jc_word	refs;		/* number of references */
-	char			pathname[0];	/* original file pathname */
-};
-
 /* One entry in the object file search path */
 struct _jc_objpath_entry {
 	int			type;		/* _JC_OBJPATH_* */
@@ -197,15 +147,6 @@ struct _jc_map_state {
 	int			last_map;
 	_jc_linenum_info	linenum;
 	_jc_pc_map_info		pc_map;
-};
-
-/* ELF stabs entry format */
-struct _jc_stab {
-	uint32_t	sindex;
-	u_char		type;
-	u_char		misc;
-	uint16_t	desc;
-	Elf_Addr	value;
 };
 
 /* DWARF line program header */

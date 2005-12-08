@@ -4,7 +4,7 @@ SUBDIRS=		native arch
 
 lib_LTLIBRARIES=	libjc.la
 
-libjc_la_LDFLAGS=	-version-info @LIBRARY_VERSION@ -module
+libjc_la_LDFLAGS=	-version-info @LIBRARY_VERSION@
 
 # Standard source files
 libjc_la_SOURCES= \
@@ -20,7 +20,6 @@ libjc_la_SOURCES= \
 			debug_line.c \
 			derive.c \
 			derive2.c \
-			elf.c \
 			exception.c \
 			fatal.c \
 			gc_final.c \
@@ -80,8 +79,7 @@ libjc_la_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
 			native/org_dellroad_jc_vm_FinalizerThread.c
 
 # Architecture specific source files
-libjc_la_SOURCES+=	arch/@JC_ARCH@/arch_elf_reloc.c \
-			arch/@JC_ARCH@/arch_functions.c
+libjc_la_SOURCES+= arch/@JC_ARCH@/arch_functions.c
 
 # Header files
 libjc_la_SOURCES+=	cf_parse.h \
