@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: cf_parse.c,v 1.10 2005/03/12 23:51:00 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -1033,7 +1033,7 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 			goto fail;
 		trap->start = value16;
 		if (_jc_map_offset(s->env, code, code_length,
-		    offset_map, &trap->start) != JNI_OK)
+		    (jint *) offset_map, &trap->start) != JNI_OK)
 			goto fail;
 		if (_jc_parse_uint16(s, &value16) != JNI_OK)
 			goto fail;
@@ -1041,13 +1041,13 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 		if (trap->end == code_length)
 			trap->end = code->num_insns;
 		else if (_jc_map_offset(s->env, code, code_length,
-		    offset_map, &trap->end) != JNI_OK)
+		    (jint *) offset_map, &trap->end) != JNI_OK)
 			goto fail;
 		if (_jc_parse_uint16(s, &value16) != JNI_OK)
 			goto fail;
 		trap->target = value16;
 		if (_jc_map_offset(s->env, code, code_length,
-		    offset_map, &trap->target) != JNI_OK)
+		    (jint *) offset_map, &trap->target) != JNI_OK)
 			goto fail;
 		if (trap->end <= trap->start) {
 			_JC_EX_STORE(s->env, ClassFormatError,
@@ -1092,7 +1092,7 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 
 			linemap->index = linenum->offset;
 			if (_jc_map_offset(s->env, code, code_length,
-			    offset_map, &linemap->index) != JNI_OK) {
+			    (jint *) offset_map, &linemap->index) != JNI_OK) {
 				_jc_free_attribute(&attr);
 				goto fail;
 			}
@@ -1594,7 +1594,7 @@ pass2:
 		case _JC_ifnull:
 		case _JC_jsr:
 			if (_jc_map_offset(s->env, code, code_length,
-			    offset_map, &insn->u.branch.target) != JNI_OK)
+			    (jint *) offset_map, &insn->u.branch.target) != JNI_OK)
 				return JNI_ERR;
 			break;
 		case _JC_lookupswitch:
@@ -1603,11 +1603,11 @@ pass2:
 			int j;
 
 			if (_jc_map_offset(s->env, code, code_length,
-			    offset_map, &lsw->default_target) != JNI_OK)
+			    (jint *) offset_map, &lsw->default_target) != JNI_OK)
 				return JNI_ERR;
 			for (j = 0; j < lsw->num_pairs; j++) {
 				if (_jc_map_offset(s->env, code,
-				    code_length, offset_map,
+				    code_length, (jint *) offset_map,
 				    &lsw->pairs[j].target) != JNI_OK)
 					return JNI_ERR;
 			}
@@ -1620,11 +1620,11 @@ pass2:
 			int j;
 
 			if (_jc_map_offset(s->env, code, code_length,
-			    offset_map, &tsw->default_target) != JNI_OK)
+			    (jint *) offset_map, &tsw->default_target) != JNI_OK)
 				return JNI_ERR;
 			for (j = 0; j < num_targets; j++) {
 				if (_jc_map_offset(s->env, code, code_length,
-				    offset_map, &tsw->targets[j]) != JNI_OK)
+				    (jint *) offset_map, &tsw->targets[j]) != JNI_OK)
 					return JNI_ERR;
 			}
 			break;
