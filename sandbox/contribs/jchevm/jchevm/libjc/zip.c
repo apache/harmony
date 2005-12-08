@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: zip.c,v 1.2 2004/07/05 21:03:28 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -395,7 +395,7 @@ _jc_zip_inflate(_jc_env *env, _jc_zip *zip, _jc_zip_entry *zent, void *data)
 		}
 
 		/* Decompress the chunk we just read */
-		zs.next_in = buf;
+		zs.next_in = (Bytef *) buf;
 		zs.avail_in = r;
 		flush = (i + r == zent->comp_len) ? Z_FINISH : Z_SYNC_FLUSH;
 		switch (inflate(&zs, flush)) {
