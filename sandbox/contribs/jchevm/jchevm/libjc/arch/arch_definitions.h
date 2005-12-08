@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: arch_definitions.h,v 1.9 2005/05/14 22:20:17 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _ARCH_DEFINITIONS_H_
@@ -113,9 +113,6 @@ Other definitions
  * The following arch-specific definitions remain:
  *
  * _JC_PAGE_SHIFT
- * _JC_ELF_CLASS
- * _JC_ELF_DATA
- * _JC_ELF_MACHINE
  */
 
 #if defined(__i386__)
@@ -128,6 +125,8 @@ Other definitions
 #include "ia64/ia64_definitions.h"
 #elif defined(__powerpc__)
 #include "powerpc/powerpc_definitions.h"
+#elif defined(__ppc__)
+#include "ppc/ppc_definitions.h"
 #else
 #error "Unsupported architecture for architecture-specific definitions"
 #endif
