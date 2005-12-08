@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: jni_machdep.h,v 1.1.1.1 2004/02/20 05:15:11 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _JNI_MACHDEP_H_
@@ -25,7 +25,7 @@
  * Goal: define JNI C typedefs for Java primitive types.
  */
 
-#if (defined (__ia64__) || defined (__alpha__) || defined (__i386__) || defined(__sparc__))
+#if (defined (__ia64__) || defined (__alpha__) || defined (__i386__) || defined(__sparc__)) || defined(__ppc__)
 
 typedef	unsigned char	jboolean;
 typedef	signed char	jbyte;
