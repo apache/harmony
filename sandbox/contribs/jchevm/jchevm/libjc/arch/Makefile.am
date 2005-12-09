@@ -1,5 +1,8 @@
-noinst_HEADERS=		arch_functions.c \
-			ppc_definitions.h \
-			ppc_libjc.h \
-			ppc_structures.h
+## $Id$
+
+noinst_HEADERS=		arch_definitions.h \
+			arch_libjc.h \
+			arch_structures.h
+
+SUBDIRS=		i386 ppc
 
