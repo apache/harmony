@@ -136,7 +136,7 @@ AC_CHECK_DECL(environ, [AC_DEFINE([HAVE_DECL_ENVIRON], [1],
 AC_LIBTOOL_DLOPEN
 AC_DISABLE_STATIC
 AC_LIBTOOL_DLOPEN
-AM_PROG_LIBTOOL
+AC_PROG_LIBTOOL
 
 # Get host architecture
 [JC_ARCH=`uname -m | sed -e 's/i[456]86/i386/g' | sed -e 's/Power Macintosh/ppc/g'`]
