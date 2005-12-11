@@ -203,14 +203,7 @@ _jc_destroy_loader(_jc_jvm *vm, _jc_class_loader **loaderp)
 	/* Unload associated native libraries */
 	_jc_unload_native_libraries(vm, loader);
 
-	/*
-	 * Walk the tree of classes defined by this loader
-	 * and for each class:
-	 *
-	 * 1. Remove the class' methods from the method tree
-	 * 2. Unreference class and dependencies from VM class file tree
-	 * 3. Destroy any associated ELF linking information
-	 */
+	/* Free non-class loader memory associated with each type */
 	while (loader->defined_types.size > 0) {
 		_jc_type *type;
 
@@ -219,12 +212,9 @@ _jc_destroy_loader(_jc_jvm *vm, _jc_class_loader **loaderp)
 		type = _JC_NODE2ITEM(&loader->defined_types,
 		    loader->defined_types.root);
 
-		/* The following stuff does not apply to array types */
-		if (_JC_FLG_TEST(type, ARRAY))
-			goto remove_type;
-
-		/* Free supers info (unresolved ELF types) */
-		_jc_vm_free(&type->u.nonarray.supers);
+		/* Free any temporary superclass info (non-array types only) */
+		if (!_JC_FLG_TEST(type, ARRAY))
+			_jc_vm_free(&type->u.nonarray.supers);
 
 remove_type:
 		/* Remove this type from the tree */
