@@ -750,8 +750,10 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		case _JC_invokevirtual:
 		    {
 			_jc_cf_ref *const ref = insn->u.invoke.method;
+			_jc_invoke *const invoke = &info->invoke;
 			_jc_method *imethod;
 			_jc_type *type;
+			int j;
 
 			/* Resolve method's class */
 			if ((type = _jc_load_type(env,
@@ -855,8 +857,21 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			_JC_ASSERT((opcode == _JC_invokeinterface)
 			    == _JC_ACC_TEST(imethod->class, INTERFACE));
 
+			/* Count the number of words to pop off the stack */
+			invoke->pop = imethod->num_parameters
+			    + (opcode != _JC_invokestatic);
+			for (j = 0; j < imethod->num_parameters; j++) {
+				if (_jc_dword_type[imethod->param_ptypes[j]])
+					invoke->pop++;
+			}
+
+			/* Optimization: de-virtualize final methods */
+			if (_JC_ACC_TEST(imethod->class, FINAL)
+			    && opcode == _JC_invokevirtual)
+				opcode = _JC_invokespecial;
+
 			/* OK */
-			info->method = imethod;
+			invoke->method = imethod;
 			break;
 		    }
 		case _JC_ldc:

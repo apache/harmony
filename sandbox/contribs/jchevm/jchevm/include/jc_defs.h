@@ -116,6 +116,7 @@ typedef struct _jc_inner_class		_jc_inner_class;
 
 typedef struct _jc_lookup		_jc_lookup;
 typedef struct _jc_iinc			_jc_iinc;
+typedef struct _jc_invoke		_jc_invoke;
 typedef struct _jc_linemap		_jc_linemap;
 typedef struct _jc_lookupswitch		_jc_lookupswitch;
 typedef union _jc_insn_info		_jc_insn_info;
@@ -211,6 +212,11 @@ struct _jc_iinc {
 	jint	  	value;
 };
 
+struct _jc_invoke {
+	_jc_method	*method;
+	_jc_uint16  	pop;
+};
+
 struct _jc_multianewarray {
 	_jc_type	*type;
 	unsigned char	dims;
@@ -247,7 +253,7 @@ struct _jc_linemap {
 };
 
 union _jc_insn_info {
-	_jc_method		*method;
+	_jc_invoke		invoke;
 	_jc_field		*field;
 	_jc_iinc		iinc;
 	_jc_multianewarray	multianewarray;

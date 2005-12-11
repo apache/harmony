@@ -936,26 +936,17 @@ do_invokevirtual:
 do_invokestatic:
 do_invokeinterface:
     {
-	_jc_method *imethod = INFO(method);
+	const _jc_invoke *const invoke = &INFO(invoke);
+	_jc_method *imethod = invoke->method;
 	_jc_word *params;
 	_jc_object *obj;
-	int ndoubles;
 	jint status;
-	int i;
-
-	/* Count number of long/double parameters */
-	ndoubles = 0;
-	for (i = 0; i < imethod->num_parameters; i++) {
-		if (_jc_dword_type[imethod->param_ptypes[i]])
-			ndoubles++;
-	}
 
 	/* Pop the stack and check for null */
-	if (code->opcodes[pc] == _JC_invokestatic) {
-		POP(imethod->num_parameters + ndoubles);
+	POP(invoke->pop);
+	if (code->opcodes[pc] == _JC_invokestatic)
 		obj = NULL;
-	} else {
-		POP(imethod->num_parameters + ndoubles + 1);
+	else {
 		if ((obj = STACKL(0)) == NULL)
 			goto null_pointer_exception;
 	}
