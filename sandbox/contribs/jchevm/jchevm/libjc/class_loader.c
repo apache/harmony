@@ -139,10 +139,8 @@ _jc_create_loader(_jc_env *env)
 	_JC_MUTEX_ASSERT(env, vm->mutex);
 
 	/* Create and initialize new structure */
-	if ((loader = _jc_vm_zalloc(env, sizeof(*loader)
-	    + vm->object_path_len * sizeof(*loader->objects_loaded))) == NULL)
+	if ((loader = _jc_vm_zalloc(env, sizeof(*loader))) == NULL)
 		return NULL;
-	loader->objects_loaded = (jboolean *)(loader + 1);
 
 	/* Initialize class loader memory manager */
 	_jc_uni_alloc_init(&loader->uni, _JC_CL_ALLOC_MIN_PAGES,
@@ -214,10 +212,7 @@ _jc_destroy_loader(_jc_jvm *vm, _jc_class_loader **loaderp)
 	 * 3. Destroy any associated ELF linking information
 	 */
 	while (loader->defined_types.size > 0) {
-		_jc_class_node *cnode;
-		_jc_class_node key;
 		_jc_type *type;
-		int j;
 
 		/* Get type at the root of the tree */
 		_JC_ASSERT(loader->defined_types.root != NULL);
@@ -228,33 +223,8 @@ _jc_destroy_loader(_jc_jvm *vm, _jc_class_loader **loaderp)
 		if (_JC_FLG_TEST(type, ARRAY))
 			goto remove_type;
 
-		/* Remove all this class' methods from the method tree */
-		if (!_JC_ACC_TEST(type, INTERP)) {
-			for (j = 0; j < type->u.nonarray.num_methods; j++) {
-				_jc_method *const method
-				    = type->u.nonarray.methods[j];
-
-				if (method->function == NULL)
-					continue;
-				_jc_splay_remove(&vm->method_tree, method);
-			}
-		}
-
-		/* Unreference the class file associated with this class */
-		key.name = type->name;
-		cnode = _jc_splay_find(&vm->classfiles, &key);
-		_JC_ASSERT(cnode != NULL);
-		_jc_unref_class_node(vm, &cnode);
-
-		/* Unreference class files this class depends on */
-		_jc_unref_class_deps(vm, type->u.nonarray.class_depends,
-		    type->u.nonarray.num_class_depends);
-
 		/* Free supers info (unresolved ELF types) */
 		_jc_vm_free(&type->u.nonarray.supers);
-
-		/* Unreference parsed class file */
-		_jc_destroy_classfile(&type->u.nonarray.u.cfile);
 
 remove_type:
 		/* Remove this type from the tree */

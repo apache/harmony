@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: thread.c,v 1.15 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -351,21 +351,9 @@ _jc_stop_the_world(_jc_env *env)
 		}
 	}
 
-	/*
-	 * Unmap the check address page so all threads executing Java code
-	 * will receive a SEGV signal, which will cause them to invoke
-	 * _jc_thread_check() and notice that they need to halt.
-	 */
-	if (mprotect(vm->check_address, _JC_PAGE_SIZE, PROT_NONE) == -1)
-		_jc_fatal_error(vm, "mprotect: %s", strerror(errno));
-
 	/* Now wait for the threads running in Java mode to actually halt */
 	while (vm->pending_halt_count > 0)
 		_JC_COND_WAIT(env, vm->all_halted, vm->mutex);
-
-	/* Re-map the check address page */
-	if (mprotect(vm->check_address, _JC_PAGE_SIZE, PROT_READ) == -1)
-		_jc_fatal_error(vm, "mprotect: %s", strerror(errno));
 
 	/* Update flags */
 	vm->world_stopped = JNI_TRUE;
@@ -435,11 +423,7 @@ _jc_stopping_java(_jc_env *env, const char *fmt, ...)
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL
 	    || env->status == _JC_THRDSTAT_HALTING_NORMAL);
-	_JC_ASSERT(env->java_stack == NULL
-	    || ((!env->java_stack->interp
-	       && ((_jc_exec_stack *)env->java_stack)->pc != NULL)
-	      || (env->java_stack->interp
-	       && ((_jc_interp_stack *)env->java_stack)->clipped)));
+	_JC_ASSERT(env->java_stack == NULL || env->java_stack->clipped);
 
 	/* Update debug status */
 	if (fmt == NULL) {
@@ -489,11 +473,7 @@ _jc_resuming_java(_jc_env *env)
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NONJAVA
 	    || env->status == _JC_THRDSTAT_HALTING_NONJAVA);
-	_JC_ASSERT(env->java_stack == NULL
-	    || ((!env->java_stack->interp
-	       && ((_jc_exec_stack *)env->java_stack)->pc != NULL)
-	      || (env->java_stack->interp
-	       && ((_jc_interp_stack *)env->java_stack)->clipped)));
+	_JC_ASSERT(env->java_stack == NULL || env->java_stack->clipped);
 
 	/* Change this thread's status, but first halt if requested */
 	if (!_jc_compare_and_swap(&env->status,

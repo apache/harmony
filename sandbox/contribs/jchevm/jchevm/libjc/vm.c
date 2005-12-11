@@ -15,14 +15,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: vm.c,v 1.17 2005/05/15 02:05:07 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
 #include "java_lang_Thread.h"
 
 /* Internal functions */
-static void	_jc_length_detect(_jc_env *env) _JC_JCNI_ATTR;
 static int	_jc_parse_vm_options(_jc_env *env, const JavaVMInitArgs *args);
 
 /*
@@ -37,9 +36,7 @@ _jc_create_vm(void *args, _jc_jvm **vmp, _jc_env **envp)
 	_jc_env *env = &temp_env;
 	_jc_jvm temp_vm;
 	_jc_jvm *vm = &temp_vm;
-	_jc_method method;
 	jobject sref = NULL;
-	u_char rtype;
 	int i;
 
 	/* Static checks */
@@ -95,15 +92,6 @@ pfail1:		_jc_vm_free(&vm);
 		goto fail_info;
 	}
 
-	/* Map in thread check page */
-	if ((vm->check_address = mmap(NULL, _JC_PAGE_SIZE,
-	    PROT_READ, MAP_PRIVATE|MAP_ANON, -1, 0)) == MAP_FAILED) {
-		vm->check_address = NULL;
-		_JC_EX_STORE(env, InternalError, "%s: %s",
-		    "mmap", strerror(errno));
-		goto fail;
-	}
-
 	/* Allocate threads.by_id array */
 	if ((vm->threads.by_id = _jc_vm_alloc(env,
 	    _JC_MAX_THREADS * sizeof(*vm->threads.by_id))) == NULL)
@@ -128,14 +116,6 @@ pfail1:		_jc_vm_free(&vm);
 		goto fail_info;
 	}
 	_JC_MUTEX_UNLOCK(env, vm->mutex);
-
-	/* Initialize classfiles tree */
-	_jc_splay_init(&vm->classfiles, _jc_classfile_tree_compare,
-	    _JC_OFFSETOF(_jc_class_node, node));
-
-	/* Initialize PC -> method tree */
-	_jc_splay_init(&vm->method_tree, _jc_method_tree_compare,
-	    _JC_OFFSETOF(_jc_method, u.exec.node));
 
 	/* Initialize default system properties */
 	if (_jc_set_system_properties(env) != JNI_OK)
@@ -169,30 +149,6 @@ pfail1:		_jc_vm_free(&vm);
 	if (_jc_load_native_library(env,
 	    vm->boot.loader, _JC_INTERNAL_NATIVE_LIBRARY) != JNI_OK)
 		goto fail_info;
-
-	/* Copy _jc_invoke_jcni_a() method descriptor */
-	vm->invoke_method = _jc_invoke_jcni_a$method_info;
-
-	/* Compute high/low PC limits of _jc_invoke_jcni_a() function */
-	memset(&method, 0, sizeof(method));
-	method.access_flags |= _JC_ACC_STATIC;
-	method.num_parameters = 0;
-	method.param_ptypes = &rtype;
-	for (rtype = _JC_TYPE_BOOLEAN; rtype < _JC_TYPE_MAX; rtype++)
-		_jc_invoke_jcni_a(env, &method, _jc_length_detect, NULL, NULL);
-
-	/* Sanity check _jc_invoke_jcni_a() length */
-	_JC_ASSERT((char *)vm->invoke_method.u.exec.function_end
-	    - (char *)vm->invoke_method.function < 8192);
-#if 0
-	printf("_jc_invoke_jcni_a(): %p - %p length=%d\n",
-	    vm->invoke_method.function, vm->invoke_method.u.exec.function_end,
-	    (char *)vm->invoke_method.u.exec.function_end
-	      - (char *)vm->invoke_method.function);
-#endif
-
-	/* Add _jc_invoke_jcni_a() to PC -> method tree */
-	_jc_splay_insert(&vm->method_tree, &vm->invoke_method);
 
 	/* Load bootstrap Java classes, methods, etc. */
 	if (_jc_bootstrap_classes(env) != JNI_OK)
@@ -302,29 +258,6 @@ done:
 }
 
 /*
- * Part of the hack to compute the length of _jc_invoke_jcni_a().
- */
-static void _JC_JCNI_ATTR
-_jc_length_detect(_jc_env *env)
-{
-	_jc_jvm *const vm = env->vm;
-	_jc_stack_frame frame;
-	const void *pc;
-
-	/* Get PC return address */
-	_jc_stack_frame_current(&frame);
-	_jc_stack_frame_next(&frame, &pc);
-
-	/* Update high/low bound of _jc_invoke_jcni_a() */
-	if (vm->invoke_method.function == NULL
-	    || pc < vm->invoke_method.function)
-		vm->invoke_method.function = (const char *)pc - 1;
-	if (vm->invoke_method.u.exec.function_end == NULL
-	    || pc >= vm->invoke_method.u.exec.function_end)
-		vm->invoke_method.u.exec.function_end = (const char *)pc + 1;
-}
-
-/*
  * Free a Java VM structure.
  *
  * This assumes there are no threads remaining alive.
@@ -356,27 +289,6 @@ _jc_free_vm(_jc_jvm **vmp)
 		}
 		_jc_vm_free(&vm->boot.class_path);
 	}
-	if (vm->object_path != NULL) {
-		for (i = 0; i < vm->object_path_len; i++) {
-			_jc_objpath_entry *const ent = &vm->object_path[i];
-
-			_jc_vm_free(&ent->pathname);
-		}
-		_jc_vm_free(&vm->object_path);
-	}
-	if (vm->source_path != NULL) {
-		for (i = 0; vm->source_path[i] != NULL; i++)
-			_jc_vm_free(&vm->source_path[i]);
-		_jc_vm_free(&vm->source_path);
-	}
-	if (vm->object_path != NULL) {
-		for (i = 0; i < vm->object_path_len; i++) {
-			_jc_objpath_entry *const ent = &vm->object_path[i];
-
-			_jc_vm_free(&ent->pathname);
-		}
-		_jc_vm_free(&vm->object_path);
-	}
 
 	/* Free fat locks XXX need to recover fat locks alive in the heap */
 	while (!SLIST_EMPTY(&vm->fat_locks.free_list)) {
@@ -404,7 +316,6 @@ _jc_free_vm(_jc_jvm **vmp)
 
 		_jc_destroy_loader(vm, &loader);
 	}
-	_JC_ASSERT(vm->method_tree.size <= 1);	/* vm->invoke_method ok */
 	_JC_ASSERT(vm->avail_loader_pages == vm->max_loader_pages);
 
 	/* Free native globals */
@@ -414,10 +325,6 @@ _jc_free_vm(_jc_jvm **vmp)
 	_jc_mutex_destroy(&vm->mutex);
 	_jc_cond_destroy(&vm->all_halted);
 	_jc_cond_destroy(&vm->world_restarted);
-
-	/* Free thread check page */
-	if (vm->check_address != NULL)
-		munmap(vm->check_address, _JC_PAGE_SIZE);
 
 	/* Free the heap */
 	_jc_heap_destroy(vm);
@@ -529,12 +436,6 @@ _jc_parse_vm_options(_jc_env *env, const JavaVMInitArgs *args)
 				if (*s != '\0' && *s++ != ',')
 					goto option_fail;
 			}
-			continue;
-		}
-
-		/* FILE * for outputting list of loaded object files */
-		if (strcmp(opt->optionString, "-Xloadlist") == 0) {
-			vm->object_list = opt->extraInfo;
 			continue;
 		}
 

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: instance.c,v 1.4 2005/03/12 04:24:17 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -82,7 +82,7 @@ check_array:		return to == env->vm->boot.types.Object
 
 	/* Search instanceof hash table */
 	if ((entry = from->u.nonarray.instanceof_hash_table[
-	    (int)to->u.nonarray.hash & (_JC_INSTANCEOF_HASHSIZE - 1)]) == NULL)
+	    _JC_INSTANCEOF_HASH(to)]) == NULL)
 		return 0;
 	while (*entry != NULL) {
 		if (*entry++ == to)

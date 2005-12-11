@@ -91,79 +91,16 @@ an included file:
 	the given range of memory (if appropriate), as the memory
 	contains newly loaded executable code.
 
-Stack Functions
----------------
-
-The following functions all manipulate '_jc_stack_frame' objects.
-A stack frame object is associated with a specific function invocation.
-Typically a '_jc_stack_frame' is just functionA()'s saved frame pointer.
+Stack Pointer Functions
+-----------------------
 
 These functions must not call any other functions that could allocate
 memory, etc. See "arch/arch_structures.h".
-
-    void
-    _jc_stack_frame_init(_jc_stack_frame *framep)
-
-	Initialize 'frame' to the invalid stack frame value.
-
-    jboolean
-    _jc_stack_frame_valid(_jc_stack_frame frame)
-
-	Returns JNI_TRUE if the frame is not the invalid frame.
-
-    jboolean
-    _jc_stack_frame_equal(_jc_stack_frame frame1, _jc_stack_frame frame2)
-
-	Returns JNI_TRUE if the two frames are the same.
-
-    void
-    _jc_stack_frame_current(_jc_stack_frame *framep)
-
-	Initialize 'frame' to refer to the stack frame associated with
-	the invocation from functionA() -> functionB(), where functionB()
-	is the function calling _jc_stack_frame_current().
-
-    void
-    _jc_stack_frame_next(_jc_stack_frame *frame, const void **pcp)
-
-	Advance 'frame' to the frame one deeper on the stack
-	and update *pcp to be the PC address in the deeper frame.
-
-    const void *
-    _jc_stack_frame_sp(_jc_stack_frame frame)
-
-	Convert a stack frame into a stack address. If 'frame' is associated
-	with functionA(), then the stack address is only required to include
-	the stack variables of the fuction that invoked functionA() (but not
-	functionA() itself). The pointer must be aligned to _JC_STACK_ALIGN.
 
     const void *
     _jc_mcontext_sp(const mcontext_t *mctx)
 
     	Returns the saved stack pointer from an mcontext_t structure.
-
-    const void *
-    _jc_mcontext_pc(const mcontext_t *mctx)
-
-    	Returns the saved PC from an mcontext_t structure. This should
-	correspond to the PC address in functionA() where functionA() is
-	the function that called getcontext() or caught the signal.
-
-    _jc_stack_frame
-    _jc_mcontext_frame(const mcontext_t *mctx)
-
-    	Returns the stack frame from an mcontext_t structure. This
-	should correspond to functionA() calling functionB(), where
-	functionA() is the function that called getcontext() or
-	caught the signal.
-
-    const void *
-    _jc_signal_fault_address(int sig_num, siginfo_t *info, ucontext_t *uctx)
-
-	This function is invoked during signal handling. The three
-	parameters are copied unchanged by the POSIX SIG_INFO style
-	handler. This function should return the fault address, i.e.,
-	the illegal memory address which could not be accessed, if any.
 
 */
 
@@ -181,19 +118,8 @@ extern void		_jc_dynamic_invoke(const void *func, int jcni,
 				int nparams, const u_char *ptypes, int nwords,
 				_jc_word *words, _jc_value *retval);
 
-/* Stack frame functions */
-extern void		_jc_stack_frame_init(_jc_stack_frame *framep);
-extern void		_jc_stack_frame_next(_jc_stack_frame *prev,
-				const void **pcp);
-extern jboolean		_jc_stack_frame_valid(_jc_stack_frame frame);
-extern jboolean		_jc_stack_frame_equal(_jc_stack_frame frame1,
-			_jc_stack_frame frame2);
-extern const void	*_jc_stack_frame_sp(_jc_stack_frame frame);
+/* Stack pointer functions */
 extern const void	*_jc_mcontext_sp(const mcontext_t *mctx);
-extern const void	*_jc_mcontext_pc(const mcontext_t *mctx);
-extern _jc_stack_frame	_jc_mcontext_frame(const mcontext_t *mctx);
-extern const void	*_jc_signal_fault_address(int sig_num,
-				siginfo_t *info, ucontext_t *uctx);
 
 /************************************************************************
  *			Architecture-specific functions			*

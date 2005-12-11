@@ -91,17 +91,12 @@ _jc_resolve_type(_jc_env *env, _jc_type *type)
 			goto fail;
 	}
 
-	/* Compute vtable and mtable for this class (as needed) */
-	if (!_JC_ACC_TEST(type, INTERFACE)) {
-		_jc_jvm *const vm = env->vm;
+	/* Compute vtable and mtable for this class */
+	if (!_JC_ACC_TEST(type, INTERFACE))
+		_jc_resolve_vtable(env->vm, type);
 
-		if (!vm->loader_enabled || !vm->generation_enabled)
-			_jc_resolve_vtable(vm, type);
-	}
-
-	/* Resolve interpreted types */
-	if (_JC_ACC_TEST(type, INTERP)
-	    && _jc_resolve_interp(env, type, &info) != JNI_OK)
+	/* Resolve type */
+	if (_jc_resolve_interp(env, type, &info) != JNI_OK)
 	    	goto fail;
 
 	/* Merge in type's implicit references into class loader's list */
@@ -141,7 +136,7 @@ out:
 }
 
 /*
- * Resolve vtable and mtable (as needed).
+ * Resolve vtable and mtable.
  */
 static void
 _jc_resolve_vtable(_jc_jvm *vm, _jc_type *type)
@@ -150,8 +145,7 @@ _jc_resolve_vtable(_jc_jvm *vm, _jc_type *type)
 	int i;
 
 	/* Sanity check */
-	_JC_ASSERT(!_JC_ACC_TEST(type, INTERFACE)
-	    && (!vm->loader_enabled || !vm->generation_enabled));
+	_JC_ASSERT(!_JC_ACC_TEST(type, INTERFACE));
 
 	/*
 	 * Copy superclass' vtable and mtable. At this point these tables
@@ -161,14 +155,9 @@ _jc_resolve_vtable(_jc_jvm *vm, _jc_type *type)
 		_jc_type *const stype = type->superclass;
 		_jc_nonarray_type *const sntype = &stype->u.nonarray;
 
-		/*
-		 * For interpreted types, copy superclass vtable.
-		 * For ELF types, the vtable should already be correct.
-		 */
-		if (_JC_ACC_TEST(type, INTERP)) {
-			memcpy(type->vtable, stype->vtable,
-			    sntype->num_vmethods * sizeof(*type->vtable));
-		}
+		/* Copy superclass vtable */
+		memcpy(type->vtable, stype->vtable,
+		    sntype->num_vmethods * sizeof(*type->vtable));
 
 		/* Copy superclass mtable (if needed) */
 		memcpy(ntype->mtable, sntype->mtable,
@@ -227,12 +216,8 @@ _jc_resolve_field(_jc_env *env, _jc_type *type,
 
 	/* Search for field in superinterfaces */
 	for (i = 0; i < type->num_interfaces; i++) {
-		_jc_type *itype;
+		_jc_type *const itype = type->interfaces[i];
 
-		itype = (!_JC_FLG_TEST(type, RESOLVED)
-		      && !_JC_ACC_TEST(type, INTERP)) ?
-		    type->u.nonarray.supers->interfaces[i] :
-		    type->interfaces[i];
 		if ((field = _jc_resolve_field(env,
 		    itype, name, sig, is_static)) != NULL)
 			return field;
@@ -240,10 +225,7 @@ _jc_resolve_field(_jc_env *env, _jc_type *type,
 
 	/* Search for field in superclasses */
 	while (JNI_TRUE) {
-		type = (!_JC_FLG_TEST(type, RESOLVED)
-		      && !_JC_ACC_TEST(type, INTERP)) ?
-		    type->u.nonarray.supers->superclass : type->superclass;
-		if (type == NULL)
+		if ((type = type->superclass) == NULL)
 			break;
 		if ((field = _jc_get_declared_field(env,
 		    type, name, sig, is_static)) != NULL)
@@ -279,19 +261,13 @@ _jc_resolve_method(_jc_env *env, _jc_type *type,
 			return method;
 		if (clinit)
 			return NULL;
-		stype = (!_JC_FLG_TEST(stype, RESOLVED)
-		      && !_JC_ACC_TEST(stype, INTERP)) ?
-		    stype->u.nonarray.supers->superclass : stype->superclass;
+		stype = stype->superclass;
 	}
 
 	/* Search for method in superinterfaces */
 	for (i = 0; i < type->num_interfaces; i++) {
-		_jc_type *itype;
+		_jc_type *const itype = type->interfaces[i];
 
-		itype = (!_JC_FLG_TEST(type, RESOLVED)
-		      && !_JC_ACC_TEST(type, INTERP)) ?
-		    type->u.nonarray.supers->interfaces[i] :
-		    type->interfaces[i];
 		if ((method = _jc_resolve_method(env,
 		    itype, name, sig)) != NULL)
 			return method;

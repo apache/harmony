@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: exception.c,v 1.15 2005/03/16 15:31:12 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -277,9 +277,6 @@ void
 _jc_throw_exception(_jc_env *env)
 {
 	_jc_jvm *const vm = env->vm;
-	_jc_stack_crawl crawl;
-	_jc_catch_frame *catch;
-	int target_index = 1;
 
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL
@@ -299,121 +296,8 @@ _jc_throw_exception(_jc_env *env)
 		_jc_printf(vm, "]\n");
 	}
 
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
-	/*
-	 * Crawl up the stack, searching for a method that:
-	 *
-	 *   (a) Matches the current catch frame (i.e., same method); and
-	 *   (b) Has a matching trap table entry for the exception
-	 *
-	 * If we find a method that satisfies (a) but not (b) then
-	 * the current catch frame is discarded, as it corresponds to
-	 * a frame that might have caught the exception but didn't.
-	 * The corresponding method must be (indirectly) recursive.
-	 */
-	catch = env->head.catch_list;
-	for (_jc_stack_crawl_first(env, &crawl);
-	    JNI_TRUE; _jc_stack_crawl_next(vm, &crawl)) {
-		_jc_method *const method = crawl.method;
-		int i;
-
-		/* We should never run out of stack or catch frames */
-		_JC_ASSERT(method != NULL);
-		_JC_ASSERT(catch != NULL);
-		_JC_ASSERT(!_JC_ACC_TEST(method, INTERP));
-
-		/* Does this frame's method correspond to the catch frame? */
-		if (method != catch->method)
-			continue;
-
-		/*
-		 * If the method doesn't have a trap table, it must be
-		 * _jc_invoke_jcni_a(), which catches all exceptions.
-		 */
-		if (method->u.exec.trap_table_len == 0) {
-			_JC_ASSERT(method == &vm->invoke_method);
-			if ((env->vm->verbose_flags
-			    & (1 << _JC_VERBOSE_EXCEPTIONS)) != 0) {
-				_jc_printf(vm, "[verbose %s: caught via %s()"
-				    " in thread %p: ",
-				    _jc_verbose_names[_JC_VERBOSE_EXCEPTIONS],
-				    method->name, env);
-				_jc_fprint_exception_headline(env,
-				    stdout, env->head.caught);
-				_jc_printf(vm, "]\n");
-			}
-			break;
-		}
-		_JC_ASSERT(method->class != NULL);
-
-		/* If not within any trap region, skip the trap scan */
-		if (catch->region == 0)
-			goto not_caught;
-
-		/* Search trap table for a matching range and exception */
-		for (i = 0; i < method->u.exec.trap_table_len; i++) {
-			_jc_trap_info *const trap
-			    = &method->u.exec.trap_table[i];
-
-			/* Sanity check */
-			_JC_ASSERT(trap->start > 0 && trap->end > trap->start);
-
-			/* Did the exception happen within the trap region? */
-			if (catch->region < trap->start
-			    || catch->region >= trap->end)
-				continue;
-
-			/* Does the exception type match what's caught? */
-			if (trap->type != NULL
-			    && !_jc_subclass_of(env->head.caught, trap->type))
-				continue;
-
-			/* Derive trap target index from trap table index */
-			target_index = i + 1;
-
-			/* Verbosity */
-			if ((env->vm->verbose_flags
-			    & (1 << _JC_VERBOSE_EXCEPTIONS)) != 0) {
-				_jc_printf(vm, "[verbose %s: caught via trap"
-				    " %d (%d-%d) in %s.%s%s in thread %p: ",
-				    _jc_verbose_names[_JC_VERBOSE_EXCEPTIONS],
-				    target_index - 1, trap->start, trap->end,
-				    method->class->name, method->name,
-				    method->signature, env);
-				_jc_fprint_exception_headline(env,
-				    stdout, env->head.caught);
-				_jc_printf(vm, "]\n");
-			}
-
-			/* Unwind the stack */
-			goto found;
-		}
-
-not_caught:
-		/* Exception not caught; discard the current catch frame */
-		catch = catch->next;
-	}
-
-found:
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
-
-	/* Unlink all catch frames added after the target catch frame */
-	env->head.catch_list = catch;
-
-	/* Reset the top Java stack frame */
-	env->java_stack = crawl.stack;
-	_JC_ASSERT(env->java_stack == NULL || !env->java_stack->interp);
-	((_jc_exec_stack *)env->java_stack)->pc = NULL;
-#ifndef NDEBUG
-	_jc_stack_frame_init(&((_jc_exec_stack *)env->java_stack)->frame);
-#endif
-
-	/* Jump back to the catching method, supplying the target trap index */
-	_JC_ASSERT(target_index > 0);
-	siglongjmp(catch->context, target_index);
+	/* Jump back to most recent invocation of _jc_invoke_jcni_a() */
+	siglongjmp(env->head.catch_list->context, 1);
 }
 
 /*

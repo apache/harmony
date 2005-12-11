@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: jc_invoke.c,v 1.8 2005/05/19 22:52:28 archiecobbs Exp $
+ * $Id$
  */
 
 #include <stdio.h>
@@ -51,7 +51,6 @@ enum cmdline_option {
 	OPT_PROPERTY,
 	OPT_VERBOSE,
 	OPT_VERSION,
-	OPT_LOADLIST,
 	OPT_COMPATOPTS,
 };
 
@@ -69,10 +68,8 @@ static const	char *const jc_verbose[] = {
 	"gc",
 	"Xexceptions",
 	"Xresolution",
-	"Xgen",
 	"Xjni-invoke",
 	"Xinit",
-	"Xobj",
 	NULL
 };
 
@@ -100,14 +97,10 @@ static const	struct poptOption jc_popt_options[] = {
 		", gc=Garbage collection"
 		", exceptions=Exceptions"
 		", resolution=Class resolution"
-		", gen=ELF object generation"
 		", jni-invoke=Native method calls"
 		", init=Class initialization"
-		", obj=ELF object loading"
 		".",
 		"opt1,opt2,..." },
-    {	"loadlist",		'L', POPT_ARG_STRING, NULL, OPT_LOADLIST,
-	"Record loaded ELF objects in file", "filename" },
     {	"jar",			'j', POPT_ARG_NONE, NULL, OPT_JAR,
 	"Execute main class of JAR file", NULL },
     {	"show-options",		'X', POPT_ARG_NONE,   NULL, OPT_COMPATOPTS,
@@ -136,11 +129,6 @@ static const struct flag_subst jdk_flags[] = {
     {	"-Xms",		NULL,		0,	"jc.heap.initial" },
     {	"-ss",		NULL,		0,	"jc.stack.default" },
     {	"-Xss",		NULL,		0,	"jc.stack.default" },
-    {	"-Xint",	"false",	0,	"jc.object.loader.enabled" },
-    {	"-Xnogen",	"false",	0,	"jc.object.generation.enabled"},
-    {	"-Xnoln",	"false",	0,	"jc.include.line.numbers" },
-    {	"-Xobj",	"true",		0,	"jc.without.classfiles" },
-    {	"-Xrnd",	"true",		0,	"jc.resolve.native.directly" },
     {	NULL,		NULL,		0,	NULL }
 };
 
@@ -395,20 +383,6 @@ _jc_invoke(int orig_ac, const char **orig_av,
 			    printer, value)) == JNI_EVERSION)
 				goto usage;
 			if (status != JNI_OK)
-				goto done;
-			break;
-		    }
-		case OPT_LOADLIST:
-		    {
-			FILE *loadlist;
-
-			if ((loadlist = fopen(value, "w")) == NULL) {
-				jc_print(printer, stderr, "%s: %s\n",
-				    value, strerror(errno));
-				goto done;
-			}
-			if (jc_add_vm_arg(&vm_args, printer,
-			    "-Xloadlist", loadlist) != JNI_OK)
 				goto done;
 			break;
 		    }

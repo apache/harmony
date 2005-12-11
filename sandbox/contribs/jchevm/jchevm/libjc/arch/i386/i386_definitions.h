@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: i386_definitions.h,v 1.6 2005/05/08 21:12:07 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _ARCH_I386_DEFINITIONS_H_
@@ -26,10 +26,6 @@
 #endif
 
 #define	_JC_PAGE_SHIFT		12		/* 4096 byte pages */
-
-#define _JC_ELF_CLASS		ELFCLASS32
-#define _JC_ELF_DATA		ELFDATA2LSB
-#define _JC_ELF_MACHINE		EM_386
 
 #define _JC_STACK_ALIGN		2
 

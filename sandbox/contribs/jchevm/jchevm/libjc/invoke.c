@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: invoke.c,v 1.17 2005/07/10 21:03:54 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -841,16 +841,6 @@ _jc_invoke_unwrap_a(_jc_env *env, _jc_method *method,
  * parameter as JCNI does not pass the Class object to static methods.
  */
 
-/*
- * Method descriptor for _jc_invoke_jcni_a(), so that it can be found
- * in a stack trace like compiled Java methods. Note the "function" and
- * "function_end" values are computed at runtime in _jc_create_vm().
- */
-const _jc_method _jc_invoke_jcni_a$method_info = {
-	.name=			"_jc_invoke_jcni_a",
-	.signature=		"()V",
-};
-
 jint
 _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 	const void *func, _jc_object *volatile obj, _jc_word *volatile params)
@@ -870,8 +860,11 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 	int nparams2;
 	int i;
 
-	/* Define exception traps */
-	_JC_DEFINE_TRAPS(env, catch, &vm->invoke_method, &&exception);
+	/* Catch exceptions here */
+	catch.next = env->head.catch_list;
+	env->head.catch_list = &catch;
+	if (sigsetjmp(catch.context, 0) != 0)
+		goto exception;
 
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL
@@ -951,14 +944,12 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 		got_monitor = JNI_TRUE;
 	}
 
-	/* Start a new contiguous Java stack frame sequence */
+	/* Start a new contiguous executable Java stack frame sequence */
 	memset(&java_stack, 0, sizeof(java_stack));
 	java_stack.jstack.interp = JNI_FALSE;
 	java_stack.jstack.next = env->java_stack;
-	java_stack.pc = NULL;
-#ifndef NDEBUG
-	_jc_stack_frame_init(&java_stack.frame);
-#endif
+	java_stack.jstack.method = method;
+	java_stack.start_sp = &java_stack;
 	env->java_stack = &java_stack.jstack;
 	pushed_java_stack = JNI_TRUE;
 
@@ -1005,8 +996,8 @@ done:
 	if (status != JNI_OK)
 		memset(&env->retval, 0, sizeof(env->retval));
 
-	/* Unlink catch frame */
-	_JC_CANCEL_TRAPS(env, catch);
+	/* Unlink exception catcher */
+	env->head.catch_list = catch.next;
 
 	/* Done */
 	return status;

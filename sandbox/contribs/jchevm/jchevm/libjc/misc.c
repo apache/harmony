@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: misc.c,v 1.9 2005/07/04 19:56:16 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -76,61 +76,6 @@ io_err:
 	_jc_post_exception_msg(env, _JC_InternalError,
 	    "%s: %s", error_path, strerror(errno));
 	return JNI_ERR;
-}
-
-/*
- * Comparator for _jc_class_node that sorts by name.
- */
-int
-_jc_classfile_tree_compare(const void *v1, const void *v2)
-{
-	const _jc_class_node *const node1 = v1;
-	const _jc_class_node *const node2 = v2;
-
-	return strcmp(node1->name, node2->name);
-}
-
-/*
- * Method comparison function that sorts by function address.
- *
- * This has a special case for function == function_end, which
- * is used for searching. In this case, the address is a return
- * address after a function call, so the beginning of the
- * other function is exclusive while its end is inclusive.
- */
-int
-_jc_method_tree_compare(const void *v1, const void *v2)
-{
-	const _jc_method *const method1 = v1;
-	const _jc_method *const method2 = v2;
-
-	/* Handle case where method1 is a search key */
-	if (method1->function == method1->u.exec.function_end) {
-		_JC_ASSERT(method2->function != method2->u.exec.function_end);
-		_JC_ASSERT(!_JC_ACC_TEST(method2, INTERP));
-		return (method1->function > method2->u.exec.function_end)
-		    - (method1->function <= method2->function);
-	}
-
-	/* Handle case where method2 is a search key */
-	if (method2->function == method2->u.exec.function_end) {
-		_JC_ASSERT(!_JC_ACC_TEST(method1, INTERP));
-		return (method2->function <= method1->function)
-		    - (method2->function > method1->u.exec.function_end);
-	}
-
-	/* Sanity check: we only do this for executable methods */
-	_JC_ASSERT(!_JC_ACC_TEST(method1, INTERP));
-	_JC_ASSERT(!_JC_ACC_TEST(method2, INTERP));
-
-	/* Sanity check: if they overlap, they must be the same method */
-	_JC_ASSERT(method1->u.exec.function_end <= method2->function
-	    || method2->u.exec.function_end <= method1->function
-	    || method1 == method2);
-
-	/* Both methods are normal */
-	return (method1->function > method2->function)
-	    - (method1->function < method2->function);
 }
 
 /*
@@ -318,46 +263,6 @@ _jc_parse_classpath(_jc_env *env, const char *path,
 }
 
 /*
- * Parse object search path into _jc_parse_objpath structures.
- *
- * If unsuccessful an exception is stored.
- */
-int
-_jc_parse_objpath(_jc_env *env, const char *path, _jc_objpath_entry **listp)
-{
-	_jc_objpath_entry *list;
-	char **pathnames;
-	int len;
-	int i;
-
-	/* Chop up object path into components and count them */
-	if ((pathnames = _jc_parse_searchpath(env, path)) == NULL)
-		return -1;
-	for (len = 0; pathnames[len] != NULL; len++);
-
-	/* Allocate object path entry array */
-	if ((list = _jc_vm_zalloc(env, len * sizeof(*list))) == NULL) {
-		while (len > 0)
-			_jc_vm_free(&pathnames[--len]);
-		_jc_vm_free(&pathnames);
-		return -1;
-	}
-
-	/* Initialize entries */
-	for (i = 0; i < len; i++) {
-		_jc_objpath_entry *const ent = &list[i];
-
-		ent->type = _JC_OBJPATH_UNKNOWN;
-		ent->pathname = pathnames[i];
-	}
-
-	/* Done */
-	_jc_vm_free(&pathnames);
-	*listp = list;
-	return len;
-}
-
-/*
  * Parse a directory search path into component directories.
  *
  * If unsuccessful an exception is stored.
@@ -429,25 +334,6 @@ _jc_node_cmp(const void *item1, const void *item2)
 	const _jc_type_node *const node2 = item2;
 
 	return strcmp(node1->type->name, node2->type->name);
-}
-
-/*
- * Compare two _jc_method_node's, sorting on the class and method name.
- */
-int
-_jc_method_node_compare(const void *v1, const void *v2)
-{
-	const _jc_method_node *const info1 = v1;
-	const _jc_method_node *const info2 = v2;
-	int diff;
-
-	if ((diff = info1->mlen - info2->mlen) != 0)
-		return diff;
-	if ((diff = info1->clen - info2->clen) != 0)
-		return diff;
-	if ((diff = strncmp(info1->mname, info2->mname, info1->mlen)) != 0)
-		return diff;
-	return strncmp(info1->cname, info2->cname, info1->clen);
 }
 
 /*

@@ -10,14 +10,10 @@ libjc_la_LDFLAGS=	-version-info @LIBRARY_VERSION@
 libjc_la_SOURCES= \
 			array.c \
 			bootstrap.c \
-			c_support.c \
 			cf_parse.c \
 			cl_alloc.c \
 			class_bytes.c \
-			class_file.c \
 			class_loader.c \
-			class_object.c \
-			debug_line.c \
 			derive.c \
 			derive2.c \
 			exception.c \

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: bootstrap.c,v 1.17 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -205,8 +205,6 @@ _jc_bootstrap_classes(_jc_env *env)
 	BOOTSTRAP_TYPE("[Ljava/lang/reflect/Method;", Method_array);
 	for (i = _JC_TYPE_BOOLEAN; i <= _JC_TYPE_VOID; i++)
 		BOOTSTRAP_TYPE(_jc_prim_wrapper_class[i], prim_wrapper[i]);
-	if (vm->generation_enabled)
-		BOOTSTRAP_TYPE("org/dellroad/jc/Generate", Generate);
 
 	/* Find special constructors */
 	RESOLVE_CONSTRUCTOR(StackTraceElement,
@@ -272,12 +270,6 @@ _jc_bootstrap_classes(_jc_env *env)
 
 		snprintf(mname, sizeof(mname), "%sValue", _jc_prim_names[i]);
 		RESOLVE_METHOD1(prim_wrapper[i], value, mname, signature, 0);
-	}
-	if (vm->generation_enabled) {
-		RESOLVE_METHOD(Generate, v,
-		    "()Lorg/dellroad/jc/Generate;", _JC_ACC_STATIC);
-		RESOLVE_METHOD(Generate, generateObject,
-		    "(Ljava/lang/String;Ljava/lang/ClassLoader;)V", 0);
 	}
 
 	/* Find special fields */

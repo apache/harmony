@@ -15,13 +15,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: class_bytes.c,v 1.5 2005/03/18 23:16:28 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
 
 /* Internal functions */
-static void		_jc_hash_classbytes(_jc_classbytes *bytes);
 static void		_jc_munmap_freer(_jc_classbytes *bytes);
 static void		_jc_free_freer(_jc_classbytes *bytes);
 
@@ -196,11 +195,7 @@ _jc_read_classbytes_dir(_jc_env *env, _jc_cpath_entry *ent,
 	}
 	bytes->bytes = addr;
 	bytes->length = info.st_size;
-	bytes->refs = 1;
 	bytes->freer = _jc_munmap_freer;
-
-	/* Compute hash */
-	_jc_hash_classbytes(bytes);
 
 	/* Set return value to the bytes found */
 	*bytesp = bytes;
@@ -254,7 +249,6 @@ _jc_read_classbytes_zip(_jc_env *env, _jc_cpath_entry *ent,
 	memset(bytes, 0, sizeof(*bytes));
 	bytes->bytes = (u_char *)bytes + sizeof(*bytes);
 	bytes->length = zent->uncomp_len;
-	bytes->refs = 1;
 	bytes->freer = _jc_free_freer;
 
 	/* Extract file contents from ZIP file */
@@ -262,9 +256,6 @@ _jc_read_classbytes_zip(_jc_env *env, _jc_cpath_entry *ent,
 		_jc_free_classbytes(&bytes);
 		return JNI_ERR;
 	}
-
-	/* Compute hash */
-	_jc_hash_classbytes(bytes);
 
 	/* Set return value to the bytes found */
 	*bytesp = bytes;
@@ -287,31 +278,12 @@ _jc_copy_classbytes(_jc_env *env, const void *data, size_t len)
 	memset(bytes, 0, sizeof(*bytes));
 	bytes->bytes = (u_char *)bytes + sizeof(*bytes);
 	bytes->length = len;
-	bytes->refs = 1;
 	bytes->freer = _jc_free_freer;
 
 	/* Copy bytes */
 	memcpy(bytes->bytes, data, len);
 
-	/* Compute hash */
-	_jc_hash_classbytes(bytes);
-
 	/* Done */
-	return bytes;
-}
-
-/*
- * Add a reference to a _jc_classbytes structure.
- */
-_jc_classbytes *
-_jc_dup_classbytes(_jc_classbytes *bytes)
-{
-	_jc_word old_refs;
-
-	_JC_ASSERT(bytes->refs > 0);
-	do
-		old_refs = bytes->refs;
-	while (!_jc_compare_and_swap(&bytes->refs, old_refs, old_refs + 1));
 	return bytes;
 }
 
@@ -322,41 +294,14 @@ void
 _jc_free_classbytes(_jc_classbytes **bytesp)
 {
 	_jc_classbytes *bytes = *bytesp;
-	_jc_word old_refs;
 
 	/* Sanity check */
 	if (bytes == NULL)
 		return;
 	*bytesp = NULL;
 
-	/* Decrement ref count */
-	_JC_ASSERT(bytes->refs > 0);
-	do
-		old_refs = bytes->refs;
-	while (!_jc_compare_and_swap(&bytes->refs, old_refs, old_refs - 1));
-
-	/* Free structure if that was the last reference */
-	if (bytes->refs == 0)
-		(*bytes->freer)(bytes);
-}
-
-/*
- * Compute the hash value of a class' bytes.
- */
-static void
-_jc_hash_classbytes(_jc_classbytes *bytes)
-{
-	u_char md5[MD5_DIGEST_LENGTH];
-	MD5_CTX ctx;
-	int i;
-
-	MD5_Init(&ctx);
-	MD5_Update(&ctx, bytes->bytes, bytes->length);
-	MD5_Final(md5, &ctx);
-	for (bytes->hash = i = 0; i < 8; i++) {
-		bytes->hash = (bytes->hash << 8)
-		    | md5[MD5_DIGEST_LENGTH - 8 + i];
-	}
+	/* Free structure */
+	(*bytes->freer)(bytes);
 }
 
 /*

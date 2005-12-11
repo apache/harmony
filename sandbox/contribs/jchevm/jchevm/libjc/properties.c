@@ -58,22 +58,6 @@ static const _jc_property _jc_fixed_properties[] = {
 { "jc.heap.size",			_JC_DEFAULT_HEAP_SIZE },
 { "jc.loader.size",			_JC_DEFAULT_LOADER_SIZE },
 { "jc.heap.granularity",		_JC_DEFAULT_HEAP_GRANULARITY },
-{ "jc.gnu.compiler",			_JC_GNU_COMPILER },
-{ "jc.include.dir",			_JC_INCLUDE_DIR },
-{ "jc.object.generator",	"org.dellroad.jc.cgen.JCObjectGenerator" },
-{ "jc.method.optimizer",	"org.dellroad.jc.cgen.DefaultMethodOptimizer" },
-{ "jc.gen.inline.max.expansion",	"2.5" },
-{ "jc.gen.inline.max.caller",		"5000" },
-{ "jc.gen.inline.max.callee",		"12" },
-{ "jc.gen.inline.min.caller",		"20" },
-{ "jc.gen.inline.min.callee",		"3" },
-{ "jc.gen.inline.verbose",		"false" },
-{ "jc.include.line.numbers",		"true" },
-{ "jc.object.generation.enabled",	/* "true" */ "false" },
-{ "jc.object.loader.enabled",		/* "true" */ "false" },
-{ "jc.without.classfiles",		"false" },
-{ "jc.ignore.resolution.failures",	"false" },
-{ "jc.resolve.native.directly",		"false" },
 { NULL,					NULL }
 };
 
@@ -95,7 +79,6 @@ _jc_set_system_properties(_jc_env *env)
 	struct utsname uts;
 	struct passwd *pw;
 	time_t now;
-	char *buf;
 	char *s;
 	int i;
 
@@ -145,20 +128,6 @@ _jc_set_system_properties(_jc_env *env)
 	now = time(NULL);
 	if (_jc_set_property(env,
 	    "user.timezone", localtime(&now)->tm_zone) != JNI_OK)
-		return JNI_ERR;
-
-	/* Set source and object directory paths */
-	if ((buf = _JC_FORMAT_STRING(env, "%s%s.jc_src%s%s",
-	    home_dir, _JC_FILE_SEPARATOR, _JC_PATH_SEPARATOR,
-	    _JC_BOOT_SOURCE_DIR)) == NULL)
-		return JNI_ERR;
-	if (_jc_set_property(env, "jc.source.path", buf) != JNI_OK)
-		return JNI_ERR;
-	if ((buf = _JC_FORMAT_STRING(env, "%s%s.jc_obj%s%s",
-	    home_dir, _JC_FILE_SEPARATOR, _JC_PATH_SEPARATOR,
-	    _JC_BOOT_OBJECT_DIR)) == NULL)
-		return JNI_ERR;
-	if (_jc_set_property(env, "jc.object.path", buf) != JNI_OK)
 		return JNI_ERR;
 
 	/* Set operating system info */
@@ -264,22 +233,11 @@ _jc_digest_properties(_jc_env *env)
 	_jc_jvm *const vm = env->vm;
 	_jc_property *prop;
 	size_t loader_size;
-	int len;
 	int i;
 
 	/* Sort properties for faster searching */
 	qsort(vm->system_properties.elems, vm->system_properties.length,
 	    sizeof(*vm->system_properties.elems), _jc_property_cmp);
-
-	/* Get whether object generation is enabled */
-	prop = _jc_property_get(vm, "jc.object.generation.enabled");
-	_JC_ASSERT(prop != NULL);
-	vm->generation_enabled = strcmp(prop->value, "true") == 0;
-
-	/* Get line number support */
-	prop = _jc_property_get(vm, "jc.include.line.numbers");
-	_JC_ASSERT(prop != NULL);
-	vm->line_numbers = strcmp(prop->value, "true") == 0;
 
 	/* Sanity check */
 	_JC_ASSERT(vm->boot.class_path == NULL);
@@ -302,25 +260,6 @@ _jc_digest_properties(_jc_env *env)
 	prop = _jc_property_get(vm, "java.boot.class.path.append");
 	if (prop != NULL && _jc_parse_classpath(env, prop->value,
 	    &vm->boot.class_path, &vm->boot.class_path_len) == JNI_ERR)
-		return JNI_ERR;
-
-	/* Get object file search path */
-	prop = _jc_property_get(vm, "jc.object.path");
-	_JC_ASSERT(prop != NULL);
-
-	/* Sanity check */
-	_JC_ASSERT(vm->object_path == NULL);
-	_JC_ASSERT(vm->object_path_len == 0);
-
-	/* Parse object path */
-	if ((len = _jc_parse_objpath(env, prop->value, &vm->object_path)) == -1)
-		return JNI_ERR;
-	vm->object_path_len = len;
-
-	/* Get source and object directory paths */
-	prop = _jc_property_get(vm, "jc.source.path");
-	_JC_ASSERT(prop != NULL);
-	if ((vm->source_path = _jc_parse_searchpath(env, prop->value)) == NULL)
 		return JNI_ERR;
 
 	/* Get thread stack minimum, maximum, and default */
@@ -352,30 +291,6 @@ _jc_digest_properties(_jc_env *env)
 		return JNI_ERR;
 	vm->max_loader_pages = _JC_HOWMANY(loader_size, _JC_PAGE_SIZE);
 	vm->avail_loader_pages = vm->max_loader_pages;
-
-	/* Check for native resolution optimization */
-	prop = _jc_property_get(vm, "jc.resolve.native.directly");
-	_JC_ASSERT(prop != NULL);
-	vm->resolve_native_directly = strcmp(prop->value, "true") == 0;
-
-	/* Check whether we really need classfiles */
-	prop = _jc_property_get(vm, "jc.without.classfiles");
-	_JC_ASSERT(prop != NULL);
-	vm->without_classfiles = strcmp(prop->value, "true") == 0;
-
-	/* Check whether to enable the ELF loader */
-	prop = _jc_property_get(vm, "jc.object.loader.enabled");
-	_JC_ASSERT(prop != NULL);
-	vm->loader_enabled = strcmp(prop->value, "true") == 0;
-
-	/* Check whether we should ignore class resolution failures */
-	prop = _jc_property_get(vm, "jc.ignore.resolution.failures");
-	_JC_ASSERT(prop != NULL);
-	vm->ignore_resolution_failures = strcmp(prop->value, "true") == 0;
-
-	/* Without classfiles or loader implies no object generation */
-	if (vm->without_classfiles || !vm->loader_enabled)
-		vm->generation_enabled = JNI_FALSE;
 
 	/* Check stack parameters */
 	if (vm->threads.stack_minimum > vm->threads.stack_default

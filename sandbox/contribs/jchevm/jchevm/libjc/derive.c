@@ -50,10 +50,7 @@ _jc_derive_type_from_classfile(_jc_env *env, _jc_class_loader *loader,
 {
 	_jc_jvm *const vm = env->vm;
 	jboolean deriving_node = JNI_FALSE;
-	_jc_type *const key = (_jc_type *)((char *)&name
-	    - _JC_OFFSETOF(_jc_type, name));
 	_jc_super_info *supers = NULL;
-	_jc_class_node *cnode = NULL;
 	_jc_classfile *cfile;
 	_jc_type_node node;
 	_jc_type *type = NULL;
@@ -85,20 +82,6 @@ _jc_derive_type_from_classfile(_jc_env *env, _jc_class_loader *loader,
 		    "type `%s' must be defined by the bootstrap loader", name);
 		goto fail;
 	}
-
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
-	/* Add class file to VM class file tree */
-	if ((cnode = _jc_ref_class_node(env,
-	    name, cbytes->hash, cbytes)) == NULL) {
-		_JC_MUTEX_UNLOCK(env, vm->mutex);
-		_jc_post_exception_info(env);
-		return NULL;
-	}
-
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Create a temporary fake type node for the deriving types tree */
 	memset(&node, 0, sizeof(node));
@@ -134,13 +117,10 @@ _jc_derive_type_from_classfile(_jc_env *env, _jc_class_loader *loader,
 	_JC_MUTEX_UNLOCK(env, loader->mutex);
 
 	/* Allocate structure for temporarily saving super types */
-	if (!vm->loader_enabled || !vm->generation_enabled) {
-		if ((supers = _jc_vm_alloc(env,
-		    sizeof(*supers) + cfile->num_interfaces
-		      * sizeof(*supers->interfaces))) == NULL) {
-			_jc_post_exception_info(env);
-			goto fail;
-		}
+	if ((supers = _jc_vm_alloc(env, sizeof(*supers)
+	    + cfile->num_interfaces * sizeof(*supers->interfaces))) == NULL) {
+		_jc_post_exception_info(env);
+		goto fail;
 	}
 
 	/* Skip loading superclass for java.lang.Object */
@@ -182,67 +162,7 @@ no_superclass:
 			supers->interfaces[i] = siface;
 	}
 
-	/* Loading supertypes may have loaded ELF object with type as well */
-	_JC_MUTEX_LOCK(env, loader->mutex);
-	type = _jc_splay_find(&loader->defined_types, key);
-	_JC_MUTEX_UNLOCK(env, loader->mutex);
-	if (type != NULL)
-		goto done;
-
-	/* If the ELF loader is disabled, we must interpret */
-	if (!vm->loader_enabled)
-		goto create_type;
-
-	/* Try to load an ELF object containing the type */
-	if (_jc_load_object(env, loader, name) == JNI_OK)
-		goto find_type;
-
-	/* If something unexpected happened, bail out */
-	if (env->ex.num != _JC_LinkageError) {
-		_jc_post_exception_info(env);
-		goto fail;
-	}
-
-	/* If on-demand object generation is disabled, interpret */
-	if (!vm->generation_enabled)
-		goto create_type;
-
-	/* Generate a new ELF object file for this class */
-	if (_jc_generate_object(env, loader, name) != JNI_OK)
-		goto fail;
-
-	/* Try again to load object file containing the type */
-	if (_jc_load_object(env, loader, name) != JNI_OK) {
-		_jc_post_exception_info(env);
-		goto fail;
-	}
-
-find_type:
-	/*
-	 * We've done our best to load the right ELF object.
-	 * Look in the types tree to see if our type is there.
-	 */
-	_JC_MUTEX_LOCK(env, loader->mutex);
-	type = _jc_splay_find(&loader->defined_types, key);
-	_JC_MUTEX_UNLOCK(env, loader->mutex);
-	if (type == NULL) {
-		_jc_post_exception_msg(env, _JC_LinkageError,
-		    "no ELF object found containing `%s'", name);
-		goto fail;
-	}
-
-	/* Save super types (so we can access them before resolution) */
-	type->u.nonarray.supers = supers;
-	supers = NULL;
-
-	/* Done */
-	goto done;
-
-create_type:
-	/*
-	 * We are unable or unwilling to find or create an ELF object.
-	 * We must interpret this Java class.
-	 */
+	/* Derive type */
 	if ((type = _jc_derive_type_interp(env, loader, cbytes)) == NULL) {
 		_jc_post_exception_info(env);
 		goto fail;
@@ -260,27 +180,8 @@ done:
 		_JC_MUTEX_UNLOCK(env, loader->mutex);
 	}
 
-	/* Unreference class file in VM class file tree */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-	_jc_unref_class_node(vm, &cnode);
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
-
 	/* Destroy parsed class file */
 	_jc_destroy_classfile(&cfile);
-
-	/* If this thread wants to save class file, save it */
-	if (type == NULL) {
-		_jc_class_save *csave;
-
-		for (csave = env->class_save;
-		    csave != NULL; csave = csave->next) {
-			if (strcmp(csave->name, name) == 0) {
-				_JC_ASSERT(csave->bytes == NULL);
-				csave->bytes = _jc_dup_classbytes(cbytes);
-				break;
-			}
-		}
-	}
 
 	/* Free leftover supers info (if any) */
 	_jc_vm_free(&supers);

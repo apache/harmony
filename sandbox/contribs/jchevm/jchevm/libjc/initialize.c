@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: initialize.c,v 1.7 2005/03/12 04:24:17 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -267,23 +267,14 @@ _jc_initialize_fields(_jc_env *env, _jc_type *type)
 		    {
 			const u_char *const b = field->initial_value;
 
-			if (_JC_ACC_TEST(type, INTERP)) {
-				memcpy(value, b, sizeof(jfloat));
-				break;
-			}
-			*((jfloat *)value) = _JC_FCONST(b[0], b[1], b[2], b[3]);
+			memcpy(value, b, sizeof(jfloat));
 			break;
 		    }
 		case _JC_TYPE_DOUBLE:
 		    {
 			const u_char *const b = field->initial_value;
 
-			if (_JC_ACC_TEST(type, INTERP)) {
-				memcpy(value, b, sizeof(jdouble));
-				break;
-			}
-			*((jdouble *)value) = _JC_DCONST(b[0],
-			    b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
+			memcpy(value, b, sizeof(jdouble));
 			break;
 		    }
 		case _JC_TYPE_REFERENCE:

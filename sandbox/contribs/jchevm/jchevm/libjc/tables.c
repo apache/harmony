@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: tables.c,v 1.11 2005/07/10 21:03:54 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -261,9 +261,7 @@ const char *const _jc_verbose_names[_JC_VERBOSE_MAX] = {
 	[_JC_VERBOSE_EXCEPTIONS]=	"exceptions",
 	[_JC_VERBOSE_RESOLUTION]=	"resolution",
 	[_JC_VERBOSE_INIT]=		"init",
-	[_JC_VERBOSE_GEN]=		"gen",
 	[_JC_VERBOSE_JNI_INVOKE]=	"jni-invoke",
-	[_JC_VERBOSE_OBJ]=		"obj",
 };
 
 /*

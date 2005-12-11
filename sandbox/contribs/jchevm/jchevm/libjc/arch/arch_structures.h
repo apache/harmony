@@ -28,26 +28,7 @@
 /*
 
 This purpose of this file is to define architecture-specific structures.
-Here is a summary of structures that need to be defined by this file or
-an included file:
-
-Stack Frames
-------------
-
-This file must define a '_jc_stack_frame' type, an opaque type
-representing a stack frame, with the following properties:
-
-    - A stack frame is always associated with a function invocation,
-      i.e., there is a calling function and a called function.
-    - A stack frame is cabable of providing the return address in the
-      calling function, i.e., the address of the next instruction to
-      execute in the calling function after the called function returns.
-    - A stack frame does not need to remain valid after the calling
-      function returns.
-    - Two stack frames can be compared for equality, where equality means
-      they refer to the same caller -> callee invocation on the stack.
-    - There must be an 'invalid' value not equal to any other value.
-    - It is possible to get the 'current' stack frame.
+Currently there are none.
 
 */
 

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: derive2.c,v 1.4 2005/05/08 21:12:07 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -42,7 +42,6 @@ _jc_derive_type_interp(_jc_env *env,
 	_jc_class_loader *loader, _jc_classbytes *cbytes)
 {
 	_jc_jvm *const vm = env->vm;
-	_jc_class_node *cnode = NULL;
 	int num_class_vmethods;
 	int num_super_vmethods;
 	int num_vmethods;
@@ -129,11 +128,10 @@ _jc_derive_type_interp(_jc_env *env,
 	ntype = &type->u.nonarray;
 	ntype->num_vmethods = num_vmethods;
 	type->superclass = superclass;
-	type->access_flags = cfile->access_flags | _JC_ACC_INTERP;
+	type->access_flags = cfile->access_flags;
 	type->flags = _JC_TYPE_REFERENCE | _JC_TYPE_LOADED;
 	type->loader = loader;
-	ntype->u.cfile = cfile;
-	ntype->hash = cbytes->hash;
+	ntype->cfile = cfile;
 
 	/* Allocate memory for mtable */
 	if (num_vmethods > 0
@@ -268,18 +266,6 @@ _jc_derive_type_interp(_jc_env *env,
 	_JC_ASSERT(vtable_index == num_vmethods);
 
 skip_vtable:
-	/*
-	 * Find/create this class' class file node and add a reference to it.
-	 * This also acts as an implicit dependency on the class file.
-	 */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-	if ((cnode = _jc_ref_class_node(env, type->name, ntype->hash,
-	    loader != vm->boot.loader ? cbytes : NULL)) == NULL) {
-		_JC_MUTEX_UNLOCK(env, vm->mutex);
-		goto fail;
-	}
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
-
 	/* Allocate and initialize type node */
 	if ((node = _jc_cl_zalloc(env, loader, sizeof(*node))) == NULL)
 		goto fail;
@@ -302,13 +288,6 @@ fail:
 	/* Give back class loader memory */
 	_jc_uni_reset(&loader->uni, mark);
 
-	/* Release class file reference */
-	if (cnode != NULL) {
-		_JC_MUTEX_LOCK(env, vm->mutex);
-		_jc_unref_class_node(vm, &cnode);
-		_JC_MUTEX_UNLOCK(env, vm->mutex);
-	}
-
 	/* Free parsed class file */
 	_jc_destroy_classfile(&cfile);
 
@@ -324,11 +303,10 @@ static jint
 _jc_derive_fields(_jc_env *env, _jc_type *type)
 {
 	_jc_nonarray_type *const ntype = &type->u.nonarray;
-	_jc_classfile *const cfile = ntype->u.cfile;
+	_jc_classfile *const cfile = ntype->cfile;
 	int i;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(type, INTERP));
 	_JC_MUTEX_ASSERT(env, type->loader->mutex);
 
 	/* Allocate fields array */
@@ -360,7 +338,7 @@ _jc_derive_fields(_jc_env *env, _jc_type *type)
 		field->signature = field->name + nlen;
 		memcpy((char *)field->signature, cfield->descriptor, slen);
 		field->class = type;
-		field->access_flags = cfield->access_flags | _JC_ACC_INTERP;
+		field->access_flags = cfield->access_flags;
 	}
 
 	/* Done */
@@ -374,11 +352,10 @@ static jint
 _jc_derive_methods(_jc_env *env, _jc_type *type)
 {
 	_jc_nonarray_type *const ntype = &type->u.nonarray;
-	_jc_classfile *const cfile = ntype->u.cfile;
+	_jc_classfile *const cfile = ntype->cfile;
 	int i;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(type, INTERP));
 	_JC_MUTEX_ASSERT(env, type->loader->mutex);
 
 	/* Allocate methods array */
@@ -413,7 +390,7 @@ _jc_derive_methods(_jc_env *env, _jc_type *type)
 		method->signature = method->name + nlen;
 		memcpy((char *)method->signature, cmethod->descriptor, slen);
 		method->class = type;
-		method->access_flags = cmethod->access_flags | _JC_ACC_INTERP;
+		method->access_flags = cmethod->access_flags;
 
 		/* Parse signature and count number of parameters */
 		if ((nparam = _jc_resolve_signature(env, method, NULL)) == -1)

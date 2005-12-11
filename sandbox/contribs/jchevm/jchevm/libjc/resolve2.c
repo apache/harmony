@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: resolve2.c,v 1.4 2005/07/10 21:03:54 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -49,10 +49,9 @@ _jc_resolve_interp(_jc_env *env, _jc_type *type, _jc_resolve_info *info)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_nonarray_type *const ntype = &type->u.nonarray;
-	_jc_classfile *const cfile = ntype->u.cfile;
+	_jc_classfile *const cfile = ntype->cfile;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(type, INTERP));
 	_JC_ASSERT(!_JC_FLG_TEST(type, ARRAY));
 
 	/* Verbosity */
@@ -101,7 +100,7 @@ _jc_resolve_interp(_jc_env *env, _jc_type *type, _jc_resolve_info *info)
 		goto fail;
 
 	/* We don't need the class file anymore */
-	_jc_destroy_classfile(&type->u.nonarray.u.cfile);
+	_jc_destroy_classfile(&type->u.nonarray.cfile);
 
 	/* Done */
 	return JNI_OK;
@@ -125,14 +124,11 @@ _jc_resolve_fields(_jc_env *env, _jc_type *type, _jc_resolve_info *info)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_nonarray_type *const ntype = &type->u.nonarray;
-	_jc_classfile *const cfile = ntype->u.cfile;
+	_jc_classfile *const cfile = ntype->cfile;
 	size_t initial_values_size;
 	void *initial_values;
 	char *ptr;
 	int i;
-
-	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(type, INTERP));
 
 	/* Resolve each field's type and count static initializers */
 	initial_values_size = 0;
@@ -140,9 +136,6 @@ _jc_resolve_fields(_jc_env *env, _jc_type *type, _jc_resolve_info *info)
 		_jc_cf_field *const cfield = &cfile->fields[i];
 		const u_char ptype = _jc_sig_types[(u_char)*cfield->descriptor];
 		_jc_field *const field = ntype->fields[i];
-
-		/* Sanity check */
-		_JC_ASSERT(_JC_ACC_TEST(field, INTERP));
 
 		/* Resolve type and add up initializer sizes */
 		switch (ptype) {
@@ -295,11 +288,8 @@ _jc_resolve_methods(_jc_env *env, _jc_type *const type, _jc_resolve_info *info)
 {
 	_jc_nonarray_type *const ntype = &type->u.nonarray;
 	_jc_class_loader *const loader = type->loader;
-	_jc_classfile *const cfile = ntype->u.cfile;
+	_jc_classfile *const cfile = ntype->cfile;
 	int i;
-
-	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(type, INTERP));
 
 	/* Resolve method signature info */
 	for (i = 0; i < ntype->num_methods; i++) {
@@ -308,9 +298,6 @@ _jc_resolve_methods(_jc_env *env, _jc_type *const type, _jc_resolve_info *info)
 		u_char md5[MD5_DIGEST_LENGTH];
 		MD5_CTX ctx;
 		int j;
-
-		/* Sanity check */
-		_JC_ASSERT(_JC_ACC_TEST(method, INTERP));
 
 		/* Compute method's signature hash */
 		MD5_Init(&ctx);
@@ -497,15 +484,14 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_class_loader *const loader = method->class->loader;
-	_jc_classfile *const cfile = method->class->u.nonarray.u.cfile;
-	_jc_method_code *const interp = &method->u.code;
+	_jc_classfile *const cfile = method->class->u.nonarray.cfile;
+	_jc_method_code *const interp = &method->code;
 	_jc_cf_code code_mem;
 	_jc_cf_code *const code = &code_mem;
 	jboolean mutex_locked;
 	int i;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(method, INTERP));
 	_JC_ASSERT(!_JC_FLG_TEST(method->class, RESOLVED));
 
 	/* Parse bytecode */
@@ -1298,8 +1284,7 @@ again:
 	memset(&heads, ~0, sizeof(heads));
 	for (i = 0; i < num_types; i++) {
 		_jc_type *const type = types[i];
-		const int bucket = (int)type->u.nonarray.hash
-		    & (_JC_INSTANCEOF_HASHSIZE - 1);
+		const int bucket = _JC_INSTANCEOF_HASH(type);
 
 		/* Keep track of the number of nonempty buckets */
 		if (heads[bucket] == -1)
@@ -1360,7 +1345,7 @@ static jint
 _jc_resolve_inner_classes(_jc_env *env, _jc_type *type, _jc_resolve_info *info)
 {
 	_jc_nonarray_type *const ntype = &type->u.nonarray;
-	_jc_classfile *const cfile = ntype->u.cfile;
+	_jc_classfile *const cfile = ntype->cfile;
 	_jc_cf_inner_classes *const cinners = cfile->inner_classes;
 	int count;
 	int i;

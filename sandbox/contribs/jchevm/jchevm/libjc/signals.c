@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: signals.c,v 1.9 2005/02/23 22:48:16 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -176,7 +176,7 @@ _jc_signal_action(int sig_num, siginfo_t *info, ucontext_t *uctx)
 	 * If the signal occurred while the Java stack was clipped,
 	 * then it didn't occur in Java code and so was unexpected.
 	 */
-	if (estack->pc != NULL)
+	if (estack->jstack.clipped)
 		goto unexpected;
 
 #if !HAVE_GETCONTEXT
@@ -195,89 +195,13 @@ _jc_signal_action(int sig_num, siginfo_t *info, ucontext_t *uctx)
 	 */
 	_jc_stack_clip_ctx(env, &uctx->uc_mcontext);
 
-	/*
-	 * Adjust PC to be consistent with our 'frame' semantics.
-	 * Signals leave the PC pointing to the triggering instruction
-	 * rather than the 'return address' instruction.
-	 */
-	estack->pc = (const char *)estack->pc + 1;
-
-#ifndef NDEBUG
-	/*
-	 * For signals used to generate Java exceptions, verify that the signal
-	 * happened within a Java method and not some internal libjc function.
-	 */
-	switch (sig_index) {
-	case _JC_SIGNAL_SEGV:
-	case _JC_SIGNAL_BUS:
-	case _JC_SIGNAL_FPE:
-	    {
-		_jc_method *method;
-		_jc_method key;
-
-		key.function = key.u.exec.function_end = estack->pc;
-		_JC_MUTEX_LOCK(env, vm->mutex);
-		method = _jc_splay_find(&vm->method_tree, &key);
-		_JC_MUTEX_UNLOCK(env, vm->mutex);
-		if (method == NULL)
-			goto unexpected;
-		break;
-	    }
-	default:
-		break;
-	}
-#endif
-
 	/* Take the appropriate action */
 	switch (sig_index) {
-
-	/*
-	 * For SEGV/BUS, there are three cases:
-	 *
-	 * 1. null object dereference (generate NullPointerException)
-	 * 2. touched stack guard page (generate StackOverflowError)
-	 * 3. doing periodic thread check (call _jc_thread_check())
-	 */
 	case _JC_SIGNAL_SEGV:
 	case _JC_SIGNAL_BUS:
 	    {
-		jboolean stack_overflow;
-		const void *fault_addr;
-		unsigned int diff;
-
-		/* Get the fault address */
-		fault_addr = _jc_signal_fault_address(sig_num, info, uctx);
-
-		/* Test for thread check address */
-		if ((char *)fault_addr >= vm->check_address
-		    && (char *)fault_addr < vm->check_address + _JC_PAGE_SIZE) {
-			env->handling_signal = JNI_FALSE;
-			if (_jc_thread_check(env) != JNI_OK)
-				_jc_throw_exception(env);
-			_jc_stack_unclip(env);
-			return;
-		}
-
-		/*
-		 * Test for stack overflow. The signal happens when the
-		 * _JC_STACK_OVERFLOW_CHECK() macro probes past the top
-		 * of the stack and hits the guard page.  If the fault
-		 * address is "above" (stack relative) but "close to"
-		 * (within the stack overflow margin) the current stack
-		 * address then that must be what happened; otherwise, it
-		 * must just be a normal NullPointerException.
-		 */
-#if _JC_DOWNWARD_STACK
-		diff = (char *)&sig_num - (char *)fault_addr;
-#else
-		diff = (char *)fault_addr - (char *)&sig_num;
-#endif
-		stack_overflow = (diff <= _JC_STACK_OVERFLOW_MARGIN);
-
-		/* Throw the appropriate exception */
 		env->handling_signal = JNI_FALSE;
-		_jc_post_exception(env, stack_overflow ?
-		    _JC_StackOverflowError : _JC_NullPointerException);
+		_jc_post_exception(env, _JC_NullPointerException);
 		_jc_throw_exception(env);
 	    }
 

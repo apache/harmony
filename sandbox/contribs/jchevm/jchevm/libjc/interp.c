@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: interp.c,v 1.7 2005/07/10 21:03:54 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -259,7 +259,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method,
 		ACTION(swap),
 		ACTION(tableswitch),
 	};
-	_jc_method_code *const code = &method->u.code;
+	_jc_method_code *const code = &method->code;
 	int ticker = PERIODIC_CHECK_TICKS;
 	_jc_interp_stack state;
 	_jc_object *lock = NULL;
@@ -290,14 +290,13 @@ _jc_interp(_jc_env *const env, _jc_method *const method,
 	_JC_ASSERT(!_JC_ACC_TEST(method->class, INTERFACE)
 	    || strcmp(method->name, "<clinit>") == 0);
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
-	_JC_ASSERT(_JC_ACC_TEST(method, INTERP));
 	_JC_ASSERT(!_JC_ACC_TEST(method, NATIVE));
 
 	/* Push Java stack frame */
 	memset(&state, 0, sizeof(state));
 	state.jstack.interp = JNI_TRUE;
 	state.jstack.next = env->java_stack;
-	state.method = method;
+	state.jstack.method = method;
 	state.pcp = &pc;
 	env->java_stack = &state.jstack;
 
@@ -1051,12 +1050,8 @@ not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
 	/* Invoke the method */
 	if (_JC_ACC_TEST(imethod, NATIVE))
 		status = _jc_invoke_native_method(env, imethod, JNI_TRUE, sp);
-	else if (_JC_ACC_TEST(imethod, INTERP))
+	else
 		status = _jc_interp(env, imethod, obj, params);
-	else {
-		status = _jc_invoke_jcni_a(env,
-		    imethod, imethod->function, obj, params);
-	}
 
 	/* Did method throw an exception? */
 	if (status != JNI_OK)
@@ -1612,12 +1607,11 @@ _jc_lookup_compare(const void *v1, const void *v2)
 int
 _jc_interp_pc_to_jline(_jc_method *method, int index)
 {
-	_jc_method_code *const code = &method->u.code;
+	_jc_method_code *const code = &method->code;
 	_jc_linemap *base;
 	int span;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(method, INTERP));
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
 	_JC_ASSERT(index >= 0 && index < code->num_insns);
 
@@ -1692,13 +1686,11 @@ _jc_vinterp(_jc_env *env, va_list args)
 	int i;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(method, INTERP));
 	_JC_ASSERT(!_JC_ACC_TEST(method, NATIVE));
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
 
 	/* Allocate space for parameter array */
-	if ((params = _JC_STACK_ALLOC(env,
-	    method->u.code.num_params2)) == NULL) {
+	if ((params = _JC_STACK_ALLOC(env, method->code.num_params2)) == NULL) {
 		_jc_post_exception_info(env);
 		_jc_throw_exception(env);
 	}
@@ -1757,7 +1749,7 @@ _jc_vinterp(_jc_env *env, va_list args)
 			break;
 		}
 	}
-	_JC_ASSERT(pnum == method->u.code.num_params2);
+	_JC_ASSERT(pnum == method->code.num_params2);
 
 	/* Clip the current top of the Java stack */
 	clipped_stack = !env->java_stack->interp && _jc_stack_clip(env);
@@ -1783,7 +1775,6 @@ _jc_vinterp_native(_jc_env *env, va_list args)
 	_jc_method *const method = env->interp;
 
 	/* Sanity check */
-	_JC_ASSERT(_JC_ACC_TEST(method, INTERP));
 	_JC_ASSERT(_JC_ACC_TEST(method, NATIVE));
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
 

@@ -81,18 +81,7 @@ extern jint		_jc_read_classbytes_dir(_jc_env *env,
 extern jint		_jc_read_classbytes_zip(_jc_env *env,
 				_jc_cpath_entry *ent, const char *name,
 				_jc_classbytes **bytesp);
-extern _jc_classbytes	*_jc_dup_classbytes(_jc_classbytes *bytes);
 extern void		_jc_free_classbytes(_jc_classbytes **bytesp);
-
-/* class_file.c */
-extern _jc_class_node	*_jc_get_class_node(_jc_env *env,
-				_jc_class_loader *loader, const char *name);
-extern _jc_class_node	*_jc_ref_class_node(_jc_env *env, const char *name,
-				jlong hash, _jc_classbytes *cbytes);
-extern void		_jc_unref_class_node(_jc_jvm *vm,
-				_jc_class_node **nodep);
-extern void		_jc_unref_class_deps(_jc_jvm *vm,
-				_jc_class_depend *deps, int num_deps);
 
 /* class_loader.c */
 extern _jc_class_loader	*_jc_get_loader(_jc_env *env, _jc_object *cl);
@@ -103,12 +92,6 @@ extern void		_jc_destroy_loader(_jc_jvm *vm,
 extern void		_jc_loader_wait(_jc_env *env, _jc_class_loader *loader);
 extern jint		_jc_merge_implicit_refs(_jc_env *env,
 				_jc_resolve_info *info);
-
-/* class_object.c */
-extern jint		_jc_load_object(_jc_env *env, _jc_class_loader *loader,
-				const char *name);
-extern jint		_jc_generate_object(_jc_env *env,
-				_jc_class_loader *loader, const char *name);
 
 /* cl_alloc.c */
 extern void		_jc_uni_alloc_init(_jc_uni_mem *uni, int min_pages,
@@ -133,14 +116,6 @@ extern void		*_jc_cl_zalloc(_jc_env *env, _jc_class_loader *loader,
 				size_t size);
 extern char		*_jc_cl_strdup(_jc_env *env, _jc_class_loader *loader,
 				const char *s);
-
-/* debug_line.c */
-extern jint		_jc_debug_line_stabs(_jc_env *env, _jc_elf *elf,
-				_jc_splay_tree *tree);
-extern jint		_jc_debug_line_dwarf2(_jc_env *env, _jc_elf *elf,
-				_jc_splay_tree *tree);
-extern int		_jc_exec_pc_to_jline(_jc_method *method,
-				const void *pc);
 
 /* deps.c */
 extern int		_jc_gen_deplist(_jc_env *env, _jc_classfile *cfile,
@@ -289,8 +264,6 @@ extern jint		_jc_invoke_jni_a(_jc_env *env, _jc_method *method,
 				const void *func, _jc_object *obj,
 				_jc_word *params);
 
-extern const _jc_method	_jc_invoke_jcni_a$method_info;
-
 /* jni_invoke.c */
 extern const		struct JNIInvokeInterface _jc_invoke_interface;
 
@@ -331,16 +304,11 @@ extern const char	*_jc_parse_class_ref(const char *s, _jc_class_ref *rc,
 extern char		**_jc_parse_searchpath(_jc_env *env, const char *path);
 extern jint		_jc_parse_classpath(_jc_env *env, const char *path,
 				_jc_cpath_entry **listp, int *lenp);
-extern int		_jc_parse_objpath(_jc_env *env, const char *path,
-				_jc_objpath_entry **listp);
 extern void		_jc_jni_encode(char **bufp, const char *s);
 extern size_t		_jc_jni_encode_length(const char *s);
 extern int		_jc_field_compare(const void *v1, const void *v2);
 extern int		_jc_method_compare(const void *v1, const void *v2);
 
-extern _jc_splay_cmp_t	_jc_method_node_compare;
-extern _jc_splay_cmp_t	_jc_classfile_tree_compare;
-extern _jc_splay_cmp_t	_jc_method_tree_compare;
 extern _jc_splay_cmp_t	_jc_class_ref_compare;
 extern _jc_splay_cmp_t	_jc_type_cmp;
 extern _jc_splay_cmp_t	_jc_node_cmp;
@@ -493,8 +461,6 @@ extern void		_jc_print_stack_frames(_jc_env *env, FILE *fp,
 extern void		_jc_stack_crawl_first(_jc_env *env,
 				_jc_stack_crawl *crawl);
 extern void		_jc_stack_crawl_next(_jc_jvm *vm,
-				_jc_stack_crawl *crawl);
-extern void		_jc_stack_crawl_skip(_jc_jvm *vm,
 				_jc_stack_crawl *crawl);
 extern jboolean		_jc_stack_clip(_jc_env *env);
 extern jboolean		_jc_stack_clip_ctx(_jc_env *env, const mcontext_t *ctx);

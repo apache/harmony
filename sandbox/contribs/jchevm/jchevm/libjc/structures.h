@@ -34,15 +34,9 @@ typedef struct _jc_boot_fields _jc_boot_fields;
 typedef struct _jc_boot_methods _jc_boot_methods;
 typedef struct _jc_boot_objects _jc_boot_objects;
 typedef struct _jc_boot_types _jc_boot_types;
-typedef struct _jc_class_node _jc_class_node;
 typedef struct _jc_class_ref _jc_class_ref;
-typedef struct _jc_class_save _jc_class_save;
 typedef struct _jc_classbytes _jc_classbytes;
 typedef struct _jc_cpath_entry _jc_cpath_entry;
-typedef struct _jc_dwarf2_line_hdr _jc_dwarf2_line_hdr;
-typedef struct _jc_elf_debug_lines _jc_elf_debug_lines;
-typedef struct _jc_elf_info _jc_elf_info;
-typedef struct _jc_elf_loadable _jc_elf_loadable;
 typedef struct _jc_ex_info _jc_ex_info;
 typedef struct _jc_exec_stack _jc_exec_stack;
 typedef struct _jc_fat_lock _jc_fat_lock;
@@ -54,12 +48,9 @@ typedef struct _jc_initialization _jc_initialization;
 typedef struct _jc_interp_stack _jc_interp_stack;
 typedef struct _jc_java_stack _jc_java_stack;
 typedef struct _jc_jvm _jc_jvm;
-typedef struct _jc_map_state _jc_map_state;
-typedef struct _jc_method_node _jc_method_node;
 typedef struct _jc_native_frame _jc_native_frame;
 typedef struct _jc_native_frame_list _jc_native_frame_list;
 typedef struct _jc_native_lib _jc_native_lib;
-typedef struct _jc_objpath_entry _jc_objpath_entry;
 typedef struct _jc_properties _jc_properties;
 typedef struct _jc_property _jc_property;
 typedef struct _jc_resolve_info _jc_resolve_info;
@@ -95,25 +86,8 @@ struct _jc_splay_tree {
 };
 
 /************************************************************************
- *			ELF file structures				*
+ *			    Resolution info				*
  ************************************************************************/
-
-/* One entry in the object file search path */
-struct _jc_objpath_entry {
-	int			type;		/* _JC_OBJPATH_* */
-	char			*pathname;
-};
-
-/* Information about a method function during ELF file processing */
-struct _jc_method_node {
-	const char		*cname;		/* encoded class name */
-	int			clen;		/* length of 'cname' */
-	const char		*mname;		/* encoded method name */
-	int			mlen;		/* length of 'mname' */
-	size_t			size;		/* size of function body */
-	_jc_method		*method;	/* associated _jc_method */
-	_jc_splay_node		node;		/* node in temporary tree */
-};
 
 /* Information maintained when resolving classes */
 struct _jc_resolve_info {
@@ -140,52 +114,11 @@ struct _jc_pc_map {
 	uint16_t	jline;
 };
 
-/* Transient state used when building a PC map */
-struct _jc_map_state {
-	int			map_alloc;
-	int			last_linenum;
-	int			last_map;
-	_jc_linenum_info	linenum;
-	_jc_pc_map_info		pc_map;
-};
-
-/* DWARF line program header */
-struct _jc_dwarf2_line_hdr {
-	unsigned char	minimum_instruction_length;
-	unsigned char	default_is_stmt;
-	signed char	line_base;
-	unsigned char	line_range;
-	unsigned char	opcode_base;
-	unsigned char	standard_opcode_lengths[0];
-};
-
 /* Class bytes: in-memory copy of a class file byte[] array */
 struct _jc_classbytes {
 	u_char			*bytes;
 	size_t			length;
-	jlong			hash;
-	volatile _jc_word	refs;
 	void			(*freer)(_jc_classbytes *);
-};
-
-/*
- * VM meta-information about a class file, stored in the vm->classfiles tree.
- *
- * The 'bytes' field is non-NULL only if (a) the class was first loaded by
- * a non-bootstrap class loader, and (b) object file generation is enabled.
- *
- * Otherwise, we don't need it (not (b)) or we can get it by searching the
- * boot loader classpath (not (a)).
- *
- * Each loaded type holds one reference for its own class and one for
- * each class listed in its dependency list.
- */
-struct _jc_class_node {
-	const char	*name;			/* name of class */
-	jint		refs;			/* number of references */
-	jlong		hash;			/* hash of class file bytes */
-	_jc_classbytes	*bytes;			/* saved bytes for code gen */
-	_jc_splay_node	node;			/* in vm->classfiles */
 };
 
 /* A reference to one class from another class */
@@ -236,31 +169,27 @@ struct _jc_native_frame {
 /*
  * Common information that lives at the beginning of
  * _jc_exec_stack and _jc_interp_stack.
- */
-struct _jc_java_stack {
-	jboolean			interp;
-	_jc_java_stack			*next;
-};
-
-/*
- * Structure representing a contiguous portion of the C call stack
- * (some functions within which may be Java method C functions).
- * The "frame" and "pc" fields define the top of a C stack fragment
- * (or, in the case of the current thread, they may be NULL to indicate
- * that the top of the stack is the top of the real C stack and has not
- * yet been "marked"). The bottom of the fragment is always a stack
- * frame for _jc_invoke_jcni_a(). The next deeper contiguous stack frame
- * fragment is pointed to by the "next" field.
  *
  * The "next" field is needed is so we can "skip over" stack frames
  * associated with native code, signal frames, etc. This is because
  * we can't reliabily follow the chain of frame pointers through
  * those frames (especially signal frames).
  */
+struct _jc_java_stack {
+	jboolean			interp;
+	jboolean			clipped;
+	_jc_method			*method;
+	_jc_java_stack			*next;
+};
+
+/*
+ * Represents one native method stack frame. "regs" hold a copy
+ * of all machine registers, so that all references are captured
+ * and don't leak into unscanned regions of the C call stack.
+ */
 struct _jc_exec_stack {
 	_jc_java_stack			jstack;
-	_jc_stack_frame			frame;
-	const void			*pc;
+	void				*start_sp;
 	mcontext_t			regs;
 };
 
@@ -269,10 +198,8 @@ struct _jc_exec_stack {
  */
 struct _jc_interp_stack {
 	_jc_java_stack			jstack;
-	_jc_method			*method;
 	_jc_word			*locals;
 	const int			*pcp;
-	jboolean			clipped;
 };
 
 /*
@@ -283,15 +210,11 @@ struct _jc_interp_stack {
  * If/when Throwable.getStackTrace() is called later, this
  * information gets converted into a StackTraceElement[] array.
  *
- * For exec methods, 'pc' is the actual CPU program counter.
- * For interp methods, 'pc' points to the (int) instruction index.
+ * 'ipc' is the (int) instruction index.
  */
 struct _jc_saved_frame {
 	_jc_method			*method;
-	union {
-		const void			*pc;	/* executable */
-		int				ipc;	/* interpreted */
-	}				u;
+	int				ipc;
 };
 
 /*
@@ -301,18 +224,6 @@ struct _jc_saved_frame {
 struct _jc_stack_crawl {
 	_jc_method			*method;	/* current method */
 	_jc_java_stack			*stack;		/* current chunk */
-	_jc_stack_frame			frame;		/* exec only */
-	const void			*pc;		/* exec only */
-};
-
-/*
- * Thread-private structure used when trying to find class files.
- * See _jc_get_class_node().
- */
-struct _jc_class_save {
-	const char	*name;			/* name of class */
-	_jc_classbytes	*bytes;			/* class file bytes */
-	_jc_class_save	*next;			/* next in list */
 };
 
 /*
@@ -387,7 +298,6 @@ struct _jc_env {
 #endif
 
 	/* Thread flags */
-	const char			*generating;
 	jboolean			out_of_memory;
 	jboolean			handling_signal;
 
@@ -400,9 +310,6 @@ struct _jc_env {
 	pthread_cond_t			resumption;
 	volatile _jc_word		interrupt_status;
 	_jc_fat_lock			*interruptible_lock;
-
-	/* Used by _jc_get_class_node() */
-	_jc_class_save			*class_save;
 
 	/* Support for threads throwing exceptions in other threads */
 	_jc_object			*volatile cross_exception;
@@ -454,7 +361,6 @@ struct _jc_class_loader {
 	_jc_splay_tree			defined_types;	/* _jc_type's */
 	int				num_implicit_refs;
 	_jc_object			**implicit_refs;
-	jboolean			*objects_loaded;
 	jboolean			gc_mark;
 	jboolean			waiters;
 	STAILQ_HEAD(, _jc_native_lib)	native_libs;
@@ -480,7 +386,6 @@ struct _jc_boot_types {
 	_jc_type	*ReadWrite;
 	_jc_type	*Error;
 	_jc_type	*Field;
-	_jc_type	*Generate;
 	_jc_type	*Method;
 	_jc_type	*Object;
 	_jc_type	*PhantomReference;
@@ -539,10 +444,6 @@ struct _jc_boot_methods {
 	struct {
 		_jc_method	*init;
 	}			Field;
-	struct {
-		_jc_method	*v;
-		_jc_method	*generateObject;
-	}			Generate;
 	struct {
 		_jc_method	*init;
 		_jc_method	*invoke;
@@ -898,16 +799,6 @@ struct _jc_jvm {
 	 * Properties and variables derived from them.
 	 */
 	_jc_properties			system_properties;
-	jboolean			generation_enabled;
-	jboolean			line_numbers;
-	jboolean			resolve_native_directly;
-	jboolean			without_classfiles;
-	jboolean			loader_enabled;
-	jboolean			ignore_resolution_failures;
-	jboolean			compiler_disabled;
-	char				**source_path;
-	_jc_objpath_entry		*object_path;
-	int				object_path_len;
 	int				max_loader_pages;
 
 	/*
@@ -937,17 +828,6 @@ struct _jc_jvm {
 	LIST_HEAD(, _jc_class_loader)	class_loaders;
 
 	/*
-	 * Tree of known class files and their hash values.
-	 */
-	_jc_splay_tree			classfiles;	/* _jc_cfile_node's */
-
-	/*
-	 * Tree mapping stack PC values to Java methods (or C functions).
-	 */
-	_jc_splay_tree			method_tree;	/* _jc_method's */
-	_jc_method			invoke_method;	/* _jc_invoke_jcni_a()*/
-
-	/*
 	 * Used for 'stop the world' operations, suspend/resume, shutdown
 	 */
 	int				pending_halt_count;
@@ -956,7 +836,6 @@ struct _jc_jvm {
 	pthread_cond_t			all_halted;
 	pthread_cond_t			world_restarted;
 	pthread_cond_t			vm_destruction;
-	char				*check_address;
 
 	/*
 	 * VM internal threads
@@ -971,7 +850,6 @@ struct _jc_jvm {
 	jint				gc_cycles;
 	volatile _jc_word		avail_loader_pages;
 	_jc_word			gc_stack_visited;
-	FILE				*object_list;
 };
 
 #endif	/* _STRUCTURES_H_ */

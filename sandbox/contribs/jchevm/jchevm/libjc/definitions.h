@@ -90,9 +90,7 @@ enum {
 	_JC_VERBOSE_EXCEPTIONS,
 	_JC_VERBOSE_RESOLUTION,
 	_JC_VERBOSE_INIT,
-	_JC_VERBOSE_GEN,
 	_JC_VERBOSE_JNI_INVOKE,
-	_JC_VERBOSE_OBJ,
 	_JC_VERBOSE_MAX
 };
 
@@ -335,68 +333,6 @@ enum {
 #define _JC_NATIVE_REF_MARK_IN_USE(frame, i)				\
 	((frame)->flags &= ~(1 << (i + 3)))
 
-/*
- * ELF types (32/64 bit)
- */
-#undef Elf_Addr
-#undef Elf_Ehdr
-#undef Elf_Off
-#undef Elf_Rel
-#undef Elf_Rela
-#undef Elf_Shdr
-#undef Elf_Word
-#undef Elf_Sym
-#undef ELF_R_TYPE
-#undef ELF_R_SYM
-#if _JC_ELF_CLASS == ELFCLASS32
-#define Elf_Addr Elf32_Addr
-#define Elf_Ehdr Elf32_Ehdr
-#define Elf_Off Elf32_Off
-#define Elf_Rel Elf32_Rel
-#define Elf_Rela Elf32_Rela
-#define Elf_Shdr Elf32_Shdr
-#define Elf_Word Elf32_Word
-#define Elf_Sym Elf32_Sym
-#define ELF_R_TYPE(x) ELF32_R_TYPE(x)
-#define ELF_R_SYM(x) ELF32_R_SYM(x)
-#elif _JC_ELF_CLASS == ELFCLASS64
-#define Elf_Addr Elf64_Addr
-#define Elf_Ehdr Elf64_Ehdr
-#define Elf_Off Elf64_Off
-#define Elf_Rel Elf64_Rel
-#define Elf_Rela Elf64_Rela
-#define Elf_Shdr Elf64_Shdr
-#define Elf_Word Elf64_Word
-#define Elf_Sym Elf64_Sym
-#define ELF_R_TYPE(x) ELF64_R_TYPE(x)
-#define ELF_R_SYM(x) ELF64_R_SYM(x)
-#else
-#error "Invalid value for _JC_ELF_CLASS"
-#endif
-
-/*
- * Supported ELF line info debug sections supported.
- */
-enum {
-	_JC_LINE_DEBUG_NONE,
-	_JC_LINE_DEBUG_DWARF1,
-	_JC_LINE_DEBUG_DWARF2,
-	_JC_LINE_DEBUG_STABS,
-};
-
-/* Stabs debugging section entry types */
-#define STAB_FUN		0x24
-#define STAB_SLINE		0x44
-
-/* DWARF 2.0 .debug_line sections definitions (partial list) */
-#define DW_LNE_end_sequence	1
-#define DW_LNE_set_address	2
-#define DW_LNS_copy		1
-#define DW_LNS_advance_pc	2
-#define DW_LNS_advance_line	3
-#define DW_LNS_const_add_pc	8
-#define DW_LNS_fixed_advance_pc	9
-
 /* Size of one page */
 #define _JC_PAGE_SIZE			(1 << _JC_PAGE_SHIFT)
 
@@ -407,6 +343,10 @@ enum {
 /* Convert page pointer to page index */
 #define _JC_PAGE_INDEX(heap, ptr)					\
 	(((char *)(ptr) - (char *)(heap)->pages) / _JC_PAGE_SIZE)
+
+/* How to compute the instanceof hash table hash bucket */
+#define _JC_INSTANCEOF_HASH(t)						\
+	((int)(((_jc_word)(t)) / 30031) & (_JC_INSTANCEOF_HASHSIZE - 1))
 
 /*
  * Heap page info layout
@@ -503,9 +443,6 @@ enum {
 #endif	/* HAVE_INTTYPES_H */
 
 #define _JC_LIBRARY_PATH	_JC_CLASSPATH_HOME "/lib/classpath"
-#define _JC_INCLUDE_DIR		_AC_INCLUDEDIR "/jc"
-#define _JC_BOOT_SOURCE_DIR	_AC_DATADIR "/jc/src"
-#define _JC_BOOT_OBJECT_DIR	_AC_LIBDIR "/jc/obj"
 
 #define _JC_BOOT_CLASS_PATH						\
     _AC_DATADIR "/jc/jc.zip"						\
@@ -519,31 +456,12 @@ enum {
 	    || strncmp((name), "gnu/java/", 9) == 0)
 
 /*
- * Package object file name
- */
-#define _JC_PACKAGE_OBJECT_NAME		"_package.o"
-
-/*
  * Class path entry types.
  */
 #define _JC_CPATH_UNKNOWN		0
 #define _JC_CPATH_DIRECTORY		1
 #define _JC_CPATH_ZIPFILE		2
 #define _JC_CPATH_ERROR			3
-
-/*
- * Object path entry types.
- */
-#define _JC_OBJPATH_UNKNOWN		0
-#define _JC_OBJPATH_DIRECTORY		1
-#define _JC_OBJPATH_ELFFILE		2
-#define _JC_OBJPATH_ERROR		3
-
-/*
- * Macro to check if a PC value lies within a method.
- */
-#define _JC_INMETHOD(meth, pc)						\
-	((pc) > (meth)->function && (pc) <= (meth)->function_end)
 
 /*
  * Array bounds check for offset + length. Returns true if bounds are OK.
@@ -687,9 +605,6 @@ typedef int	_jc_splay_cmp_t(const void *item1, const void *item2);
 									\
 	_JC_ASSERT(_env == NULL || (mutex ## _owner) != _env);		\
 	_r = pthread_mutex_lock(_mutex);				\
-	/* TODO: remove the following two lines... */ \
-	if(_r==EINVAL) fprintf(stdout, "EINVAL\n"); \
-	else if(_r==EDEADLK) fprintf(stdout, "EDEADLK\n"); \
 	_JC_ASSERT(_r == 0);						\
 	(mutex ## _owner) = _env;					\
     } while (0)

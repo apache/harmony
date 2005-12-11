@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_VMThrowable.c,v 1.3 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -139,9 +139,8 @@ JCNI_java_lang_VMThrowable_getStackTrace(_jc_env *env, _jc_object *this,
 			goto fail;
 
 		/* Get Java line number, if known */
-		jline = _JC_ACC_TEST(method, INTERP) ?
-		    _jc_interp_pc_to_jline(method, frame->u.ipc) :
-		    _jc_exec_pc_to_jline(method, frame->u.pc);
+		jline = frame->ipc == -1 ?
+		    0 : _jc_interp_pc_to_jline(method, frame->ipc);
 
 		/* Create String for Class name, converting '/' -> '.' */
 		if ((cname = _jc_vm_strdup(env, class->name)) == NULL) {

@@ -68,10 +68,6 @@ Numerical constants
     _JC_PAGE_SHIFT	log_2 of the size of a VM page (as returned by
 			getpagesize(3)). E.g., 4096 byte pages -> 12.
 
-    _JC_ELF_CLASS	ELF object class
-    _JC_ELF_DATA	ELF object data format
-    _JC_ELF_MACHINE	ELF object machine type
-
     _JC_STACK_ALIGN	Runtime stack alignment
 
     _JC_BIG_ENDIAN	1 if big endian, 0 if little endian
@@ -81,7 +77,8 @@ Other definitions
 
     _JC_REGISTER_OFFS	Initializer for an array of integers representing
     			the offsets into a mcontext_t structure where the
-			registers live. Used for garbage collection.
+			registers possibly containing references live.
+			Used for garbage collection.
 
 */
 

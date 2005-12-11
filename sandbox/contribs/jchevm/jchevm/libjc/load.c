@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: load.c,v 1.8 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -145,11 +145,13 @@ _jc_bootcl_load_type(_jc_env *env, const char *name)
 	_jc_jvm *const vm = env->vm;
 	_jc_class_loader *const loader = vm->boot.loader;
 	jboolean loader_locked = JNI_FALSE;
+	_jc_classbytes *cbytes;
 	_jc_type_node loading_node;
 	_jc_type_node node_key;
 	_jc_type_node *node;
 	_jc_type *type_key;
 	_jc_type *type = NULL;
+	int index;
 
 	/* Sanity check */
 	_JC_ASSERT(strchr(name, '.') == NULL);
@@ -209,51 +211,25 @@ not_loading:
 		goto done;
 	}
 
-	/* Handle two cases: with or without class files */
-	if (vm->without_classfiles) {
-
-		/* Try to load object file for this class */
-		if (_jc_load_object(env, loader, name) != JNI_OK) {
-
-			/* Convert LinkageError -> NoClassDefFoundError */
-			if (env->ex.num == _JC_LinkageError)
-				env->ex.num = _JC_NoClassDefFoundError;
-
-			/* Post exception */
-			_jc_post_exception_info(env);
-			goto done;
-		}
-
-		/* Lock loader */
-		_JC_MUTEX_LOCK(env, loader->mutex);
-		loader_locked = JNI_TRUE;
-
-		/* Look for loaded type */
-		type = _jc_splay_find(&loader->defined_types, type_key);
-	} else {
-		_jc_classbytes *cbytes;
-		int index;
-
-		/* Find the class file bytes in the filesystem */
-		if ((cbytes = _jc_bootcl_find_classbytes(env,
-		    name, &index)) == NULL) {
-			_jc_post_exception_info(env);
-			goto done;
-		}
-
-		/* Attempt to derive the type from the class file bytes */
-		type = _jc_derive_type_from_classfile(env,
-		    loader, name, cbytes);
-
-		/* Verbosity */
-		if (type != NULL) {
-			VERBOSE(CLASS, vm, "found `%s' classfile in `%s'",
-			    type->name, vm->boot.class_path[index].pathname);
-		}
-
-		/* Free class file bytes */
-		_jc_free_classbytes(&cbytes);
+	/* Find the class file bytes in the filesystem */
+	if ((cbytes = _jc_bootcl_find_classbytes(env,
+	    name, &index)) == NULL) {
+		_jc_post_exception_info(env);
+		goto done;
 	}
+
+	/* Attempt to derive the type from the class file bytes */
+	type = _jc_derive_type_from_classfile(env,
+	    loader, name, cbytes);
+
+	/* Verbosity */
+	if (type != NULL) {
+		VERBOSE(CLASS, vm, "found `%s' classfile in `%s'",
+		    type->name, vm->boot.class_path[index].pathname);
+	}
+
+	/* Free class file bytes */
+	_jc_free_classbytes(&cbytes);
 
 done:
 	/* Lock loader */

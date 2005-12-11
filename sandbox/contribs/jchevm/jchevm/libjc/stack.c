@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: stack.c,v 1.19 2005/04/04 14:04:05 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -50,25 +50,16 @@ _jc_stack_clip(_jc_env *env)
 	if (stack == NULL)
 		return JNI_FALSE;
 
-	/* If interpreting, just set the flag */
-	if (stack->interp) {
-		_jc_interp_stack *const istack = (_jc_interp_stack *)stack;
-
-		if (!istack->clipped) {
-			istack->clipped = JNI_TRUE;
-			return JNI_TRUE;
-		}
+	/* If already clipped, do nothing */
+	if (stack->clipped)
 		return JNI_FALSE;
-	}
+
+	/* If interpreting, just set the flag */
+	if (stack->interp)
+		goto done;
 
 	/* We are running executable Java */
 	estack = (_jc_exec_stack *)stack;
-
-	/* Is the Java stack already clipped? */
-	if (estack->pc != NULL) {
-		_JC_ASSERT(_jc_stack_frame_valid(estack->frame));
-		return JNI_FALSE;
-	}
 
 	/* Grab the current context and clip the Java stack with it */
 #if HAVE_GETCONTEXT
@@ -111,11 +102,9 @@ _jc_stack_clip(_jc_env *env)
     }
 #endif
 
-	/* Roll back two frames to calling function's calling function */
-	_jc_stack_frame_next(&estack->frame, &estack->pc);
-	_jc_stack_frame_next(&estack->frame, &estack->pc);
-
+done:
 	/* Done */
+	stack->clipped = JNI_TRUE;
 	return JNI_TRUE;
 }
 
@@ -146,16 +135,8 @@ _jc_stack_clip_ctx(_jc_env *env, const mcontext_t *ctx)
 	_JC_ASSERT(!stack->interp);
 	estack = (_jc_exec_stack *)stack;
 
-	/* Sanity check */
-	_JC_ASSERT(estack->pc == NULL);
-	_JC_ASSERT(!_jc_stack_frame_valid(estack->frame));
-
 	/* Save machine registers */
 	estack->regs = *ctx;
-
-	/* Extract frame info from saved context */
-	estack->frame = _jc_mcontext_frame(&estack->regs);
-	estack->pc = _jc_mcontext_pc(&estack->regs);
 
 	/* Done */
 	return JNI_TRUE;
@@ -168,35 +149,15 @@ void
 _jc_stack_unclip(_jc_env *env)
 {
 	_jc_java_stack *const stack = env->java_stack;
-	_jc_exec_stack *estack;
 
 	/* Sanity check */
 	_JC_ASSERT(stack != NULL);
 	_JC_ASSERT(env == _jc_get_current_env());
+	_JC_ASSERT(stack->clipped);
 
-	/* If interpreting, just unset the flag */
-	if (stack->interp) {
-		_jc_interp_stack *const istack = (_jc_interp_stack *)stack;
-
-		/* Sanity check: the stack is clipped */
-		_JC_ASSERT(istack->clipped);
-
-		/* Mark it unclipped */
-		istack->clipped = JNI_FALSE;
-		return;
-	}
-
-	/* We are running executable Java */
-	estack = (_jc_exec_stack *)stack;
-
-	/* Sanity check: the stack is clipped */
-	_JC_ASSERT(estack->pc != NULL);
-
-	/* Invalidate Java stack top, allowing it to "float" again */
-	estack->pc = NULL;
-#ifndef NDEBUG
-	_jc_stack_frame_init(&estack->frame);
-#endif
+	/* Mark it unclipped */
+	stack->clipped = JNI_FALSE;
+	return;
 }
 
 /*
@@ -289,11 +250,12 @@ _jc_print_stack_frames(_jc_env *env, FILE *fp,
 			    class->u.nonarray.source_file);
 
 			/* Print Java line number if known */
-			jline = _JC_ACC_TEST(method, INTERP) ?
-			    _jc_interp_pc_to_jline(method, frame->u.ipc) :
-			    _jc_exec_pc_to_jline(method, frame->u.pc);
-			if (jline != 0)
-				_jc_fprintf(vm, fp, ":%d", jline);
+			if (frame->ipc != -1) {
+				jline = _jc_interp_pc_to_jline(method,
+				    frame->ipc);
+				if (jline != 0)
+					_jc_fprintf(vm, fp, ":%d", jline);
+			}
 		}
 		_jc_fprintf(vm, fp, ")\n");
 	}
@@ -327,20 +289,19 @@ _jc_save_stack_frames(_jc_env *env, _jc_env *thread,
 	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
 		_jc_saved_frame *const frame = &frames[i];
 
-		/* Skip non-Java functions */
-		if (crawl.method->class == NULL)
-			continue;
+		/* Sanity check */
+		_JC_ASSERT(crawl.method->class != NULL);
 
 		/* Save this one */
 		if (i < max) {
 			frame->method = crawl.method;
-			if (_JC_ACC_TEST(crawl.method, INTERP)) {
+			if (crawl.stack->interp) {
 				_jc_interp_stack *const istack
 				    = (_jc_interp_stack *)crawl.stack;
 
-				frame->u.ipc = *istack->pcp;
+				frame->ipc = *istack->pcp;
 			} else
-				frame->u.pc = crawl.pc;
+				frame->ipc = -1;
 		}
 		i++;
 	}
@@ -365,8 +326,6 @@ void
 _jc_stack_crawl_first(_jc_env *thread, _jc_stack_crawl *crawl)
 {
 	_jc_java_stack *const stack = thread->java_stack;
-	_jc_exec_stack *const estack = (_jc_exec_stack *)stack;
-	_jc_interp_stack *const istack = (_jc_interp_stack *)stack;
 
 	/* Initialize */
 	memset(crawl, 0, sizeof(*crawl));
@@ -377,36 +336,13 @@ _jc_stack_crawl_first(_jc_env *thread, _jc_stack_crawl *crawl)
 
 	/* Sanity check */
 	_JC_ASSERT(thread == _jc_get_current_env()
-	    || (((!stack->interp && estack->pc != NULL)
-	       || (stack->interp && istack->clipped))
+	    || (stack->clipped
 	      && (thread->status == _JC_THRDSTAT_HALTING_NONJAVA
 	       || thread->status == _JC_THRDSTAT_HALTED)));
 
 	/* Start with top of stack */
 	crawl->stack = stack;
-
-	/* Interpreted case is easy */
-	if (stack->interp) {
-		crawl->method = istack->method;
-		return;
-	}
-
-	/*
-	 * Executable case.
-	 *
-	 * If the stack top already clipped, use it; otherwise start here.
-	 * In the latter case, this must be the current thread.
-	 */
-	if ((crawl->pc = estack->pc) != NULL)
-		crawl->frame = estack->frame;
-	else {
-		_JC_ASSERT(!_jc_stack_frame_valid(estack->frame));
-		_jc_stack_frame_current(&crawl->frame);
-		_jc_stack_frame_next(&crawl->frame, &crawl->pc);
-	}
-
-	/* Skip over non-Java C stack frames */
-	_jc_stack_crawl_skip(thread->vm, crawl);
+	crawl->method = stack->method;
 }
 
 /*
@@ -420,20 +356,8 @@ _jc_stack_crawl_first(_jc_env *thread, _jc_stack_crawl *crawl)
 void
 _jc_stack_crawl_next(_jc_jvm *vm, _jc_stack_crawl *crawl)
 {
-	_jc_java_stack *stack = crawl->stack;
-
 	/* Sanity check */
 	_JC_ASSERT(crawl->method != NULL);
-
-	/*
-	 * For executable stack, just scan C stack frames until we
-	 * reach _jc_invoke_jcni_a() (we always will eventually).
-	 */
-	if (!stack->interp && crawl->method != &vm->invoke_method) {
-		_jc_stack_frame_next(&crawl->frame, &crawl->pc);
-		_jc_stack_crawl_skip(vm, crawl);
-		return;
-	}
 
 	/* Advance to the next deeper stack chunk */
 	crawl->stack = crawl->stack->next;
@@ -444,43 +368,7 @@ _jc_stack_crawl_next(_jc_jvm *vm, _jc_stack_crawl *crawl)
 		return;
 	}
 
-	/* Initialize new stack chunk */
-	if (crawl->stack->interp) {
-		_jc_interp_stack *const istack
-		    = (_jc_interp_stack *)crawl->stack;
-
-		crawl->method = istack->method;
-	} else {
-		_jc_exec_stack *const estack = (_jc_exec_stack *)crawl->stack;
-
-		crawl->pc = estack->pc;
-		crawl->frame = estack->frame;
-		_JC_ASSERT(_jc_stack_frame_valid(crawl->frame));
-		_jc_stack_crawl_skip(vm, crawl);
-	}
-}
-
-/*
- * March backwards through consecutive stack frames
- * until we hit one that matches a registered method.
- */
-void
-_jc_stack_crawl_skip(_jc_jvm *vm, _jc_stack_crawl *crawl)
-{
-	/* Look for a Java function (or _jc_invoke_jcni_a()) */
-	while (JNI_TRUE) {
-		_jc_method key;
-
-		/* See if stack frame function is a registered method */
-		key.function = key.u.exec.function_end = (void *)crawl->pc;
-		if ((crawl->method = _jc_splay_find(
-		    &vm->method_tree, &key)) != NULL) {
-			_JC_ASSERT(!_JC_ACC_TEST(crawl->method, INTERP));
-			break;
-		}
-
-		/* Advance to next C stack frame */
-		_jc_stack_frame_next(&crawl->frame, &crawl->pc);
-	}
+	/* Set method and return */
+	crawl->method = crawl->stack->method;
 }
 
