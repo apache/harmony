@@ -216,7 +216,6 @@ _jc_destroy_loader(_jc_jvm *vm, _jc_class_loader **loaderp)
 		if (!_JC_FLG_TEST(type, ARRAY))
 			_jc_vm_free(&type->u.nonarray.supers);
 
-remove_type:
 		/* Remove this type from the tree */
 		_jc_splay_remove(&loader->defined_types, type);
 	}
