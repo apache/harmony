@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: native_lib.c,v 1.7 2005/03/16 21:07:48 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -105,7 +105,7 @@ _jc_invoke_native_method(_jc_env *env, _jc_method *method, int values, ...)
 
 	/* Verbosity */
 	VERBOSE(JNI_INVOKE, vm, "%s from native method %s.%s%s",
-	    status == JNI_OK ? "returned" : env->head.pending->type->name,
+	    status == JNI_OK ? "returned" : env->pending->type->name,
 	    method->class->name, method->name, method->signature);
 
 	/* Done */

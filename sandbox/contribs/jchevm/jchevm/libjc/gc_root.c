@@ -276,9 +276,9 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
 	}
 
 	/* Walk thread's pending exception (if any) */
-	if (thread->head.pending != NULL) {
+	if (thread->pending != NULL) {
 		if (refs != NULL)
-			*refs++ = thread->head.pending;
+			*refs++ = thread->pending;
 		count++;
 	}
 

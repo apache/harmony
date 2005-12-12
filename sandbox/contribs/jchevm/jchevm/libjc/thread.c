@@ -86,7 +86,7 @@ _jc_thread_check(_jc_env *env)
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL
 	    || env->status == _JC_THRDSTAT_HALTING_NORMAL);
-	_JC_ASSERT(env->head.pending == NULL);
+	_JC_ASSERT(env->pending == NULL);
 
 	/* Check for halt requested */
 	if (env->status == _JC_THRDSTAT_HALTING_NORMAL) {
@@ -105,7 +105,7 @@ _jc_thread_check(_jc_env *env)
 	if ((ex = _jc_retrieve_cross_exception(env)) != NULL) {
 		VERBOSE(EXCEPTIONS, vm, "cross-posting `%s' in thread %p",
 		    ex->type->name, env);
-		env->head.pending = ex;
+		env->pending = ex;
 		status = JNI_ERR;
 	}
 

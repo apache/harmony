@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: jni_native.c,v 1.16 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -1240,7 +1240,7 @@ ExceptionCheck(JNIEnv *jenv)
 	_jc_resuming_java(env);
 
 	/* Get result */
-	result = env->head.pending != NULL;
+	result = env->pending != NULL;
 
 	/* Returning to native code */
 	_jc_stopping_java(env, NULL);
@@ -1662,7 +1662,7 @@ ExceptionOccurred(JNIEnv *jenv)
 	_jc_resuming_java(env);
 
 	/* Get pending exception, if any */
-	ref = _jc_new_local_native_ref(env, env->head.pending);
+	ref = _jc_new_local_native_ref(env, env->pending);
 
 	/* Returning to native code */
 	_jc_stopping_java(env, NULL);
@@ -1712,7 +1712,7 @@ ExceptionClear(JNIEnv *jenv)
 	_jc_resuming_java(env);
 
 	/* Retrieve and clear pending exception, if any */
-	env->head.pending = NULL;
+	env->pending = NULL;
 
 	/* Returning to native code */
 	_jc_stopping_java(env, NULL);

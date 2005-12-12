@@ -124,7 +124,7 @@ _jc_post_exception_params(_jc_env *env, int num, _jc_word *params)
 
 	/* Sanity check */
 	_JC_ASSERT(env != NULL);
-	_JC_ASSERT(env->head.pending == NULL);
+	_JC_ASSERT(env->pending == NULL);
 	_JC_ASSERT(num >= 0 && num < _JC_VMEXCEPTION_MAX);
 	_JC_ASSERT(vm->initialization == NULL
 	    || vm->initialization->may_execute);
@@ -188,7 +188,7 @@ _jc_post_exception_params(_jc_env *env, int num, _jc_word *params)
 
 post_it:
 	/* Post the exception to this thread */
-	env->head.pending = e;
+	env->pending = e;
 
 done:
 	/* Clean up */
@@ -217,8 +217,8 @@ _jc_post_exception_object(_jc_env *env, _jc_object *exception)
 	}
 
 	/* Post the exception to this thread */
-	_JC_ASSERT(env->head.pending == NULL);
-	env->head.pending = exception;
+	_JC_ASSERT(env->pending == NULL);
+	env->pending = exception;
 }
 
 /*
@@ -283,21 +283,21 @@ _jc_throw_exception(_jc_env *env)
 	    || env->status == _JC_THRDSTAT_HALTING_NORMAL);
 	_JC_ASSERT(vm->initialization == NULL
 	    || vm->initialization->may_execute);
-	_JC_ASSERT(env->head.pending != NULL);
+	_JC_ASSERT(env->pending != NULL);
 
 	/* Retrieve and un-post the exception */
-	env->head.caught = _jc_retrieve_exception(env, NULL);
+	env->caught = _jc_retrieve_exception(env, NULL);
 
 	/* Verbosity */
 	if ((env->vm->verbose_flags & (1 << _JC_VERBOSE_EXCEPTIONS)) != 0) {
 		_jc_printf(vm, "[verbose %s: throwing in thread %p: ",
 		    _jc_verbose_names[_JC_VERBOSE_EXCEPTIONS], env);
-		_jc_fprint_exception_headline(env, stdout, env->head.caught);
+		_jc_fprint_exception_headline(env, stdout, env->caught);
 		_jc_printf(vm, "]\n");
 	}
 
 	/* Jump back to most recent invocation of _jc_invoke_jcni_a() */
-	siglongjmp(env->head.catch_list->context, 1);
+	siglongjmp(env->catch_list->context, 1);
 }
 
 /*
@@ -310,7 +310,7 @@ _jc_object *
 _jc_retrieve_exception(_jc_env *env, _jc_type *type)
 {
 	_jc_jvm *const vm = env->vm;
-	_jc_object *const e = env->head.pending;
+	_jc_object *const e = env->pending;
 
 	/* Sanity check */
 	_JC_ASSERT(env == _jc_get_current_env());
@@ -329,7 +329,7 @@ _jc_retrieve_exception(_jc_env *env, _jc_type *type)
 	}
 
 	/* Un-post the exception and return it */
-	env->head.pending = NULL;
+	env->pending = NULL;
 	return e;
 }
 

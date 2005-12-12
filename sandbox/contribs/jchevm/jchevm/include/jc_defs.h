@@ -108,7 +108,6 @@ typedef struct _jc_array		_jc_array;
 typedef struct _jc_object_array		_jc_object_array;
 typedef union _jc_value			_jc_value;
 typedef struct _jc_catch_frame		_jc_catch_frame;
-typedef struct _jc_env_head		_jc_env_head;
 
 typedef struct _jc_field		_jc_field;
 typedef struct _jc_trap_info		_jc_trap_info;
@@ -395,13 +394,6 @@ struct _jc_trap_info {
 struct _jc_catch_frame {
 	_jc_catch_frame		*next;		/* next deeper catch frame */
 	sigjmp_buf		context;	/* how to catch the exception */
-};
-
-/* Thread information made visible to generated code */
-struct _jc_env_head {
-	_jc_catch_frame		*catch_list;	/* exception traps */
-	_jc_object		*pending;	/* posted exception */
-	_jc_object		*caught;	/* caught exception */
 };
 
 /************************************************************************

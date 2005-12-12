@@ -698,7 +698,7 @@ _jc_invoke_jni_a(_jc_env *env, _jc_method *method,
 	env->jni_method = previous_jni_method;
 
 	/* Return an error if an exception was posted */
-	status = (env->head.pending != NULL) ? JNI_ERR : JNI_OK;
+	status = (env->pending != NULL) ? JNI_ERR : JNI_OK;
 
 done:
 	/* Pop local native reference frame */
@@ -830,7 +830,7 @@ _jc_invoke_unwrap_a(_jc_env *env, _jc_method *method,
  * are posted, not thrown) to the Java world (where exceptions are explicitly
  * thrown by unwinding the stack). Any exceptions thrown by the invoked method
  * cause this function to return JNI_ERR instead of JNI_OK (and the field
- * env->head.pending contains the exception).
+ * env->pending contains the exception).
  *
  * In order to catch exceptions thrown by Java code, we rely on the function
  * _jc_throw_exception() specially recognizing this function on the stack.
@@ -861,8 +861,8 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 	int i;
 
 	/* Catch exceptions here */
-	catch.next = env->head.catch_list;
-	env->head.catch_list = &catch;
+	catch.next = env->catch_list;
+	env->catch_list = &catch;
 	if (sigsetjmp(catch.context, 0) != 0)
 		goto exception;
 
@@ -964,8 +964,8 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 
 exception:
 	/* Handle any caught exceptions by re-posting them */
-	_jc_post_exception_object(env, env->head.caught);
-	env->head.caught = NULL;
+	_jc_post_exception_object(env, env->caught);
+	env->caught = NULL;
 	status = JNI_ERR;
 
 done:
@@ -997,7 +997,7 @@ done:
 		memset(&env->retval, 0, sizeof(env->retval));
 
 	/* Unlink exception catcher */
-	env->head.catch_list = catch.next;
+	env->catch_list = catch.next;
 
 	/* Done */
 	return status;

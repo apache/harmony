@@ -238,8 +238,12 @@ struct _jc_ex_info {
  * The JC internal structure that corresponds to a Java thread.
  */
 struct _jc_env {
-	_jc_env_head			head;		/* must be first */
 	_jc_jvm				*vm;		/* vm that owns me */
+
+	/* Exception info */
+	_jc_catch_frame			*catch_list;	/* exception traps */
+	_jc_object			*pending;	/* posted exception */
+	_jc_object			*caught;	/* caught exception */
 
 	/* Interpreter trampoline info */
 	_jc_method			*interp;	/* interpret method */

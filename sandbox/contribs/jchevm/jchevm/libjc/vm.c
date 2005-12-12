@@ -227,7 +227,7 @@ fail:
 	 * with no actual object created. If so, print out the info
 	 * saved in the initialization structure.
 	 */
-	if (env->head.pending == NULL && vm->initialization->ex.num != -1) {
+	if (env->pending == NULL && vm->initialization->ex.num != -1) {
 		_jc_initialization *const init = vm->initialization;
 
 		/* Print out the exception */
@@ -244,7 +244,7 @@ fail:
 	}
 
 	/* Otherwise, exception must have been posted normally */
-	_JC_ASSERT(env->head.pending != NULL);
+	_JC_ASSERT(env->pending != NULL);
 	_jc_print_stack_trace(env, stderr);
 
 done:

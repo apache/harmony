@@ -176,7 +176,7 @@ _jc_print_stack_trace(_jc_env *env, FILE *fp)
 	_jc_object *e;
 
 	/* Get exception */
-	e = env->head.pending;
+	e = env->pending;
 
 again:
 	/* Sanity check */

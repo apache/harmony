@@ -165,8 +165,8 @@ _jc_initialize_class(_jc_env *env, _jc_type *type)
 
 step10:
 	/* Step 10 */
-	_JC_ASSERT(env->head.pending != NULL);
-	if (!_jc_subclass_of(env->head.pending, vm->boot.types.Error)) {
+	_JC_ASSERT(env->pending != NULL);
+	if (!_jc_subclass_of(env->pending, vm->boot.types.Error)) {
 		_jc_word param;
 		jobject eref;
 

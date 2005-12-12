@@ -1513,7 +1513,7 @@ exception:
 	int i;
 
 	/* Sanity check */
-	_JC_ASSERT(env->head.pending != NULL);
+	_JC_ASSERT(env->pending != NULL);
 
 	/* Check this method for a matching trap */
 	for (i = 0; i < code->num_traps; i++) {
@@ -1555,7 +1555,7 @@ done:
 
 exit:
 	/* Sanity check */
-	_JC_ASSERT(status == JNI_OK || env->head.pending != NULL);
+	_JC_ASSERT(status == JNI_OK || env->pending != NULL);
 
 	/* De-synchronize if necessary */
 	if (lock != NULL) {
