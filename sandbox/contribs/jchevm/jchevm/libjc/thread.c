@@ -27,10 +27,6 @@ static pthread_key_t	_jc_env_key;
 static void		_jc_set_current_env(_jc_jvm *vm, _jc_env *env);
 static void		_jc_thread_suspend(_jc_env *env);
 
-#ifdef __linux__
-static void		_jc_touch_stack(const char *start, const char *current);
-#endif
-
 /*
  * Initialize threading.
  */
@@ -634,11 +630,6 @@ _jc_attach_thread(_jc_jvm *vm, _jc_ex_info *ex)
 	if ((env = _jc_allocate_thread(&temp_env)) == NULL)
 		goto fail;
 
-#ifdef __linux__
-	/* Make sure the stack is really there */
-	_jc_touch_stack((const char *)&vm, (const char *)&vm);
-#endif
-
 	/* Remember that this thread structure goes with the current thread */
 	_jc_set_current_env(vm, env);
 
@@ -1069,35 +1060,4 @@ fail:
 	_jc_free_global_native_ref(&ref);
 	return NULL;
 }
-
-#ifdef __linux__
-
-/*
- * Linux has an (arguable) bug whereby you get a segfault if you touch
- * otherwise valid stack memory that is too far past the current stack
- * pointer if those pages are not yet faulted into memory. This causes
- * our _JC_STACK_OVERFLOW_CHECK() macro to segfault way too early.
- * So for threads attached natively, we touch all pages in the expected
- * stack usage range to avoid this problem.
- */
-static void
-_jc_touch_stack(const char *const start, const char *current)
-{
-	const size_t max = strtoul(_JC_STACK_DEFAULT, NULL, 10);
-	char buf[1024];		/* surely smaller than one page */
-	size_t diff;
-
-	/* Get current stack depth */
-#if _JC_DOWNWARD_STACK
-	diff = start - current;
-#else
-	diff = current - start;
-#endif
-
-	/* Continue until we touch all of it */
-	if (diff < max - 1024)
-		_jc_touch_stack(start, buf);
-}
-
-#endif
 

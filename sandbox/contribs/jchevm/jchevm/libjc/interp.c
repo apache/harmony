@@ -98,10 +98,6 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 		goto exception;						\
 	}								\
     } while (0)
-#define _JC_INTERP_PRIM_ELEM(type, array, i)				\
-	(((_jc_ ## type ## _array *)(array))->elems[(i)])
-#define _JC_INTERP_REF_ELEM(array, i)					\
-	(((_jc_object_array *)(array))->elems[~(i)])
 
 #define PERIODIC_CHECK_TICKS	32
 
