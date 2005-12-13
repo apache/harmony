@@ -1,4 +1,4 @@
-# $Id: gdb.userdef,v 1.14 2005/05/08 21:03:50 archiecobbs Exp $
+# $Id$
 
 #
 # Note: for these commands to work, you must set $env to point
@@ -36,28 +36,6 @@ document setenv
   Set $env from the supplied argument, and derive $vm too.
 end
 
-define search_method_tree
-  set $addr = $arg0
-  set $tree = &$env->vm->method_tree
-  set $node = $tree->root
-  set $found = 0
-  while $found == 0 && $node != 0
-    set $method = (_jc_method *)((char *)$node - $tree->offset)
-    if $addr <= $method->function
-      set $node = $node->left
-    else
-      if $addr > $method->u.exec.function_end
-	set $node = $node->right
-      else
-	set $found = 1
-      end
-    end
-  end
-  if $found == 0
-    set $method = (_jc_method *)0
-  end
-end
-
 define print_java_stack_frame
   set $method = (_jc_method *)$arg0
   if $method == (void *)0
@@ -75,89 +53,42 @@ define print_java_stack_frame
 	printf "%s", $class->u.nonarray.source_file
       end
       set $jline = 0
-      if ($method->access_flags & 0x2000) != 0
-	set $i = 0
-	set $found = 0
-	set $pctr = (int)$arg1
-	while !$found && $i < $method->u.code.num_linemaps
-	  if $pctr >= $method->u.code.linemaps[$i].index && ($i == $method->u.code.num_linemaps - 1 || $pctr < $method->u.code.linemaps[$i + 1].index)
-	    set $jline = $method->u.code.linemaps[$i].line
-	    set $found = 1
-	  end
-	  set $i = $i + 1
+      set $i = 0
+      set $found = 0
+      set $pctr = (int)$arg1
+      while !$found && $i < $method->code.num_linemaps
+	if $pctr >= $method->code.linemaps[$i].index && ($i == $method->code.num_linemaps - 1 || $pctr < $method->code.linemaps[$i + 1].index)
+	  set $jline = $method->code.linemaps[$i].line
+	  set $found = 1
 	end
-      else
-	set $index = 0
-	set $found = 0
-	set $addr = (_jc_method *)$arg1
-	while !$found && $index < $method->u.exec.u.pc_map.len
-	  set $info = &$method->u.exec.u.pc_map.map[$index]
-	  set $next = &$method->u.exec.u.pc_map.map[$index + 1]
-	  if $addr > $info->pc && $addr <= $next->pc
-	    set $jline = $info->jline
-	    set $found = 1
-	  end
-	  set $index = $index + 1
-	end
+	set $i = $i + 1
       end
       if $jline != 0
 	printf ":%d", $jline
       end
       printf ")"
-      if ($method->access_flags & 0x2000) == 0
-	printf " pc=%p ", $addr
-      end
+      printf " pc=%p ", $addr
       printf " ((_jc_method *)%p)\n", $method
     end
   end
 end
 
-define jline
-  search_method_tree $arg0
-  print_java_stack_frame $method $arg0
-end
-
-document jline
-  Determine the Java method and line number corresponding to a PC location.
-  The method must be in the method table. The PC should be given as the
-  first argument.
-end
-
 define pstack
   set $s = $env->java_stack
-  set $p = ((void **)$ebp)[1]
-  set $f = ((void **)$ebp)[0]
   while $s != 0
     set $s = (_jc_java_stack *)$s
     if $s->interp
       set $s = (_jc_interp_stack *)$s
-      set $method = $s->method
+      set $method = $s->jstack.method
       print_java_stack_frame $method *$s->pcp
-      set $s = (_jc_interp_stack *)$s->jstack.next
-    else
-      set $s = (_jc_exec_stack *)$s
-      search_method_tree $p
-      if $method == &$env->vm->invoke_method
-	set $s = (_jc_exec_stack *)$s->jstack.next
-	if $s != 0
-	  set $p = $s->pc
-	  set $f = $s->frame
-	end
-      else
-	if $method != 0
-	  print_java_stack_frame $method $p
-	end
-      end
-      set $p = ((void **)$f)[1]
-      set $f = ((void **)$f)[0]
     end
+    set $s = ((_jc_java_stack *)$s)->next
   end
 end
 
 document pstack
   Print Java stack for the current thread. The $env variable must be
-  set consistently with the currently selected thread. The top frame
-  may not be present if its an executable method.
+  set consistently with the currently selected thread.
 end
 
 define follow_bp
@@ -241,15 +172,15 @@ end
 define pmethod
   set $accnames = { "public", "privat", "prtctd", "static", "finall", "synchr", "voltle", "trnsnt", "native", "intrfc", "abstrt", "strict" }
   set $method = (_jc_method *)$arg0
-  set $i = 1
+  set $i = 0
   while $i < 12
     if (($method->access_flags & (1 << $i)) != 0)
       printf "%s ", $accnames[$i]
     end
-    set $i = $i << 1
+    set $i = $i + 1
   end
   printf "%s.%s%s\n", $method->class->name, $method->name, $method->signature
-  printf "      type=%s\n", ($method->access_flags & 0x0100) ? (($method->access_flags & 0x1000) ? "JCNI native" : "JNI native") : ($method->access_flags & 0x2000) ? "interpreted" : "executable"
+  printf "      type=%s\n", ($method->access_flags & 0x0100) ? (($method->access_flags & 0x1000) ? "JCNI native" : "JNI native") : "interpreted"
   printf "  function=%p\n", $method->function
   if ($method->access_flags & 0x0100)
     printf "nativefunc=%p\n", $method->function
