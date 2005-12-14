@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: array.c,v 1.6 2005/03/13 00:18:51 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -85,7 +85,7 @@ _jc_gen_array_hash_tables(_jc_env *env)
 	    _JC_IMETHOD_HASHSIZE * sizeof(*array->imethod_hash_table))) == NULL)
 		goto fail;
 	if ((array->imethod_quick_table = _jc_cl_zalloc(env, vm->boot.loader,
-	      _JC_IMETHOD_HASHSIZE * sizeof(*array->imethod_quick_table)))
+	    _JC_IMETHOD_HASHSIZE * sizeof(*array->imethod_quick_table)))
 	      == NULL)
 		goto fail;
 
@@ -95,12 +95,12 @@ _jc_gen_array_hash_tables(_jc_env *env)
 		goto fail;
 
 	/* Get hash table index for clone() */
-	bucket = clone->signature_hash & (_JC_IMETHOD_HASHSIZE - 1);
+	bucket = clone->signature_hash_bucket;
 
 	/* Create hash table bucket */
 	if ((array->imethod_hash_table[bucket] = _jc_cl_zalloc(env,
 	    vm->boot.loader, 2 * sizeof(*array->imethod_hash_table[bucket])))
-	    == NULL)
+	      == NULL)
 		goto fail;
 
 	/* Put clone() in the bucket */
@@ -112,7 +112,7 @@ _jc_gen_array_hash_tables(_jc_env *env)
 	 * interface method implemented by arrays so we trivially know
 	 * there are no other methods in the same hash bucket.
 	 */
-	array->imethod_quick_table[bucket] = clone->function;
+	array->imethod_quick_table[bucket] = clone;
 
 	/* Unlock boot loader */
 	_JC_MUTEX_UNLOCK(env, vm->boot.loader->mutex);

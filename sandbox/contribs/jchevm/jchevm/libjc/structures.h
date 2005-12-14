@@ -574,7 +574,7 @@ struct _jc_boot_array {
 	int			num_interfaces;
 	_jc_type		**interfaces;
 	_jc_method		***imethod_hash_table;
-	const void		**imethod_quick_table;
+	_jc_method		**imethod_quick_table;
 };
 
 /* One entry in a classpath style search path */

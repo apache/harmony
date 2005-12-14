@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: reflect.c,v 1.26 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -428,17 +428,19 @@ _jc_reflect_invoke(_jc_env *env, _jc_method *method,
 	/* Resolve interface methods using hash table lookup */
 	if (!is_static && !is_constructor
 	    && _JC_ACC_TEST(method->class, INTERFACE)) {
-	      	const jlong sig_hash = method->signature_hash;
+	      	const int bucket = method->signature_hash_bucket;
 		_jc_type *const type = this->type;
-		const int bucket = (int)sig_hash & (_JC_IMETHOD_HASHSIZE - 1);
 		_jc_method *const *methodp;
 
 		_JC_ASSERT(type->imethod_hash_table != NULL);
 		for (methodp = type->imethod_hash_table[bucket];
 		    *methodp != NULL; methodp++) {
-			if ((*methodp)->signature_hash == sig_hash) {
+		    	_jc_method *const entry = *methodp;
+
+			if (strcmp(entry->name, method->name) == 0
+			    && strcmp(entry->signature, method->signature) == 0) {
 				imethod = method;
-				method = *methodp;
+				method = entry;
 				break;
 			}
 		}

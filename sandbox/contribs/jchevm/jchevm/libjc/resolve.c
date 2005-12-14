@@ -24,7 +24,7 @@
 static void		_jc_resolve_vtable(_jc_jvm *vm, _jc_type *type);
 
 /* Empty interface method lookup tables */
-const void		*_jc_empty_quick_table[_JC_IMETHOD_HASHSIZE];
+_jc_method		*_jc_empty_quick_table[_JC_IMETHOD_HASHSIZE];
 _jc_method		**_jc_empty_imethod_table[_JC_IMETHOD_HASHSIZE];
 
 /*

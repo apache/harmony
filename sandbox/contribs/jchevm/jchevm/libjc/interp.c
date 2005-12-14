@@ -955,9 +955,8 @@ do_invokeinterface:
 	switch (code->opcodes[pc]) {
 	case _JC_invokeinterface:
 	    {
-		const jlong sig_hash = imethod->signature_hash;
 		_jc_method *const *methodp;
-		int bucket;
+		_jc_method *quick;
 
 		/* Sanity check */
 		_JC_ASSERT(_JC_ACC_TEST(imethod->class, INTERFACE));
@@ -976,20 +975,34 @@ do_invokeinterface:
 			goto exception;
 		}
 
-		/* Lookup interface method entry point */
+		/* Sanity check */
 		_JC_ASSERT(obj->type->imethod_quick_table != NULL);
 		_JC_ASSERT(obj->type->imethod_hash_table != NULL);
-		bucket = (int)sig_hash & (_JC_IMETHOD_HASHSIZE - 1);
-		methodp = obj->type->imethod_hash_table[bucket];
-		if (methodp == NULL)
+		_JC_ASSERT(imethod->signature_hash_bucket
+		    < _JC_IMETHOD_HASHSIZE);
+
+		/* Try quick hash table lookup */
+		if ((quick = obj->type->imethod_quick_table[
+		    imethod->signature_hash_bucket]) != NULL) {
+		    	imethod = quick;
+			goto got_method;
+		}
+
+		/* Lookup interface method entry point in hash table */
+		if ((methodp = obj->type->imethod_hash_table[
+		    imethod->signature_hash_bucket]) == NULL)
 			goto not_found;
-		while (*methodp != NULL) {
-			if ((*methodp)->signature_hash == sig_hash) {
-				imethod = *methodp;
+		do {
+			_jc_method *const entry = *methodp;
+
+			if (strcmp(entry->name, imethod->name) == 0
+			    && strcmp(entry->signature,
+			      imethod->signature) == 0) {
+				imethod = entry;
 				break;
 			}
 			methodp++;
-		}
+		} while (*methodp != NULL);
 		if (*methodp == NULL) {
 not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
 			    "%s.%s%s invoked from %s.%s%s on a %s",
@@ -999,6 +1012,7 @@ not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
 			goto exception;
 		}
 
+got_method:
 		/* Verify method is public */
 		if (!_JC_ACC_TEST(imethod, PUBLIC)) {
 			_jc_post_exception_msg(env, _JC_IllegalAccessError,

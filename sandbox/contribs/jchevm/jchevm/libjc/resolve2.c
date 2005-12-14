@@ -295,20 +295,17 @@ _jc_resolve_methods(_jc_env *env, _jc_type *const type, _jc_resolve_info *info)
 	for (i = 0; i < ntype->num_methods; i++) {
 		_jc_cf_method *const cmethod = &cfile->methods[i];
 		_jc_method *const method = ntype->methods[i];
-		u_char md5[MD5_DIGEST_LENGTH];
-		MD5_CTX ctx;
+		int signature_hash = 0;
+		const char *s;
 		int j;
 
 		/* Compute method's signature hash */
-		MD5_Init(&ctx);
-		MD5_Update(&ctx, method->name, strlen(method->name));
-		MD5_Update(&ctx, method->signature, strlen(method->signature));
-		MD5_Final(md5, &ctx);
-		method->signature_hash =
-		      ((jlong)md5[ 8] << 56) | ((jlong)md5[ 9] << 48)
-		    | ((jlong)md5[10] << 40) | ((jlong)md5[11] << 32)
-		    | ((jlong)md5[12] << 24) | ((jlong)md5[13] << 16)
-		    | ((jlong)md5[14] <<  8) | ((jlong)md5[15] <<  0);
+		for (s = method->name; *s != '\0'; s++)
+			signature_hash = (signature_hash * 31) + (u_char)*s;
+		for (s = method->signature; *s != '\0'; s++)
+			signature_hash = (signature_hash * 31) + (u_char)*s;
+		method->signature_hash_bucket = signature_hash
+		    & (_JC_IMETHOD_HASHSIZE - 1);
 
 		/* Compute the number of parameters */
 		if ((j = _jc_resolve_signature(env, method, NULL)) == -1) {
@@ -1057,7 +1054,6 @@ _jc_derive_imethod_tables(_jc_env *env, _jc_type *type)
 	int max_methods;
 	int num_methods;
 	_jc_type *stype;
-	const void **qptr;
 	_jc_method **ptr;
 	int *follows;
 	int i;
@@ -1141,8 +1137,7 @@ _jc_derive_imethod_tables(_jc_env *env, _jc_type *type)
 	memset(&heads, ~0, sizeof(heads));
 	for (i = 0; i < num_methods; i++) {
 		_jc_method *const method = methods[i];
-		const int bucket = (int)method->signature_hash
-		    & (_JC_IMETHOD_HASHSIZE - 1);
+		const int bucket = method->signature_hash_bucket;
 
 		/* Keep track of the number of nonempty and singleton buckets */
 		if (heads[bucket] == -1) {
@@ -1171,21 +1166,18 @@ _jc_derive_imethod_tables(_jc_env *env, _jc_type *type)
 	_JC_MUTEX_UNLOCK(env, type->loader->mutex);
 
 	/* Fill in the "quick" hash table (if any) */
-	qptr = (const void **)(type->imethod_hash_table + _JC_IMETHOD_HASHSIZE);
+	ptr = (_jc_method **)(type->imethod_hash_table + _JC_IMETHOD_HASHSIZE);
 	if (num_singleton_buckets > 0) {
-		type->imethod_quick_table = qptr;
-		qptr += _JC_IMETHOD_HASHSIZE;
+		type->imethod_quick_table = ptr;
+		ptr += _JC_IMETHOD_HASHSIZE;
 		for (i = 0; i < _JC_IMETHOD_HASHSIZE; i++) {
-			if (heads[i] != -1 && follows[heads[i]] == -1) {
-				type->imethod_quick_table[i]
-				    = methods[heads[i]]->function;
-			}
+			if (heads[i] != -1 && follows[heads[i]] == -1)
+				type->imethod_quick_table[i] = methods[heads[i]];
 		}
 	} else
 		type->imethod_quick_table = _jc_empty_quick_table;
 
 	/* Fill in the hash table */
-	ptr = (_jc_method **)qptr;
 	for (i = 0; i < _JC_IMETHOD_HASHSIZE; i++) {
 		int next = heads[i];
 

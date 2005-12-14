@@ -48,8 +48,6 @@
 
 #include <zlib.h>
 
-#include <openssl/md5.h>
-
 #define _JC_VIRTUAL_MACHINE		1	/* for jni.h */
 
 #include "queue.h"

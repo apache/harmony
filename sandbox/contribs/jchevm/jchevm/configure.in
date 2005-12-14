@@ -76,8 +76,6 @@ AC_CHECK_LIB(m, fmod,,
 	[AC_MSG_ERROR([required library libm missing])])
 AC_CHECK_LIB(z, inflateInit_,,
 	[AC_MSG_ERROR([required library libz missing])])
-AC_CHECK_LIB(crypto, MD5_Init,,
-	[AC_MSG_ERROR([required library crypto missing])])
 AC_CHECK_LIB(popt, poptGetContext,,
 	[AC_MSG_ERROR([required library libpopt missing])])
 AC_CHECK_LIB(dl, dlopen,,,)
@@ -105,8 +103,7 @@ AC_SUBST(_JC_THREAD_LOCAL_SUPPORT)
 # Check for required header files
 AC_HEADER_STDC
 AC_CHECK_HEADERS(sys/mman.h sys/wait.h pthread.h fcntl.h signal.h \
-	ctype.h errno.h dlfcn.h sched.h math.h pwd.h \
-	zlib.h openssl/md5.h, [],
+	ctype.h errno.h dlfcn.h sched.h math.h pwd.h zlib.h, [],
 	[AC_MSG_ERROR([required header file missing])])
 AC_CHECK_HEADERS([ucontext.h], [],
 	[AC_MSG_ERROR([required header file missing])],

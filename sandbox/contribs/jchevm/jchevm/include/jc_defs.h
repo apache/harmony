@@ -302,13 +302,13 @@ struct _jc_method {
 	_jc_type		**param_types;
 	_jc_type		*return_type;
 	unsigned char		*param_ptypes;
-	jlong			signature_hash;
 	_jc_type		**exceptions;
 	const void		*function;	/* code or interp trampoline */
 	_jc_word		vtable_index;	/* index in vtable, mtable */
 	_jc_uint16		access_flags;
 	_jc_uint16		num_parameters;
 	_jc_uint16		num_exceptions;
+	_jc_uint16		signature_hash_bucket;
 	const void		*native_function;
 	_jc_method_code		code;
 };
@@ -359,7 +359,7 @@ struct _jc_type {
 	_jc_uint16		num_interfaces;
 	_jc_type		**interfaces;
 	_jc_method		***imethod_hash_table;
-	const void		**imethod_quick_table;
+	_jc_method		**imethod_quick_table;
 
 	/* Specific array/non-array info */
 	union {
@@ -552,7 +552,7 @@ _JC_DECL_ARRAYS(float, prim$type);
 _JC_DECL_ARRAYS(double, prim$type);
 
 /* Empty interface method lookup tables */
-extern const		void *_jc_empty_quick_table[_JC_IMETHOD_HASHSIZE];
+extern _jc_method	*_jc_empty_quick_table[_JC_IMETHOD_HASHSIZE];
 extern _jc_method	**_jc_empty_imethod_table[_JC_IMETHOD_HASHSIZE];
 
 #endif	/* _JC_DEFS_H_ */
