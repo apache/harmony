@@ -67,7 +67,6 @@ define print_java_stack_frame
 	printf ":%d", $jline
       end
       printf ")"
-      printf " pc=%p ", $addr
       printf " ((_jc_method *)%p)\n", $method
     end
   end
