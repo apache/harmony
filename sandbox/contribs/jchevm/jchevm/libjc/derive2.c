@@ -277,9 +277,6 @@ skip_vtable:
 	/* Add type to the loader's defined types tree */
 	_jc_splay_insert(&loader->defined_types, type);
 
-	/* Set type flags */
-	type->flags |= _JC_TYPE_REFERENCE | _JC_TYPE_LOADED;
-
 	/* Done */
 	_JC_MUTEX_UNLOCK(env, loader->mutex);
 	return type;
