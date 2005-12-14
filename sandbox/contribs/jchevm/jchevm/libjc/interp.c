@@ -1184,7 +1184,7 @@ do_lcmp:
 	PUSHI(_JC_LCMP(STACKJ(0), STACKJ(2)));
 	NEXT();
 do_ldc:
-	memcpy(sp, &INFO(constant), sizeof(jint));
+	memcpy(sp, &INFO(constant), sizeof(_jc_word));
 	POP(-1);
 	NEXT();
 do_ldc_string:
@@ -1217,7 +1217,7 @@ do_ldc_string:
 	JUMP(pc);
     }
 do_ldc2_w:
-	memcpy(sp, &INFO(constant), 2 * sizeof(jint));
+	memcpy(sp, &INFO(constant), 2 * sizeof(_jc_word));
 	POP(-2);
 	NEXT();
 do_ldiv:
@@ -1404,20 +1404,17 @@ do_putstatic:
 	const u_char ptype = _jc_sig_types[(u_char)*field->signature];
 	const void *data;
 
-	/*
-	 * Pop the stack. We can't look directly at the field's type
-	 * here because the field's class may not be resolved yet.
-	 */
-	if (_jc_dword_type[ptype])
-		POP2(1);
-	else
-		POP(1);
-
 	/* Initialize field's class */
 	if (!_JC_FLG_TEST(field->class, INITIALIZED)) {
 		if (_jc_initialize_type(env, field->class) != JNI_OK)
 			goto exception;
 	}
+
+	/* Pop the stack */
+	if (_jc_dword_type[ptype])
+		POP2(1);
+	else
+		POP(1);
 
 	/* Set the field */
 	data = (char *)field->class->u.nonarray.class_fields + field->offset;
