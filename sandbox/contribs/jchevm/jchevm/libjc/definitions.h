@@ -345,7 +345,7 @@ enum {
 	(((char *)(ptr) - (char *)(heap)->pages) / _JC_PAGE_SIZE)
 
 /* How to compute the instanceof hash table hash bucket */
-#define _JC_INSTANCEOF_HASH(t)						\
+#define _JC_INSTANCEOF_BUCKET(t)					\
 	((int)(((_jc_word)(t)) / 30031) & (_JC_INSTANCEOF_HASHSIZE - 1))
 
 /*

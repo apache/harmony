@@ -1299,7 +1299,7 @@ again:
 	memset(&heads, ~0, sizeof(heads));
 	for (i = 0; i < num_types; i++) {
 		_jc_type *const type = types[i];
-		const int bucket = _JC_INSTANCEOF_HASH(type);
+		const int bucket = _JC_INSTANCEOF_BUCKET(type);
 
 		/* Keep track of the number of nonempty buckets */
 		if (heads[bucket] == -1)

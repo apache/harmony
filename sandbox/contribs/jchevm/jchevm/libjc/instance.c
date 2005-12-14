@@ -82,7 +82,7 @@ check_array:		return to == env->vm->boot.types.Object
 
 	/* Search instanceof hash table */
 	if ((entry = from->u.nonarray.instanceof_hash_table[
-	    _JC_INSTANCEOF_HASH(to)]) == NULL)
+	    _JC_INSTANCEOF_BUCKET(to)]) == NULL)
 		return 0;
 	while (*entry != NULL) {
 		if (*entry++ == to)
