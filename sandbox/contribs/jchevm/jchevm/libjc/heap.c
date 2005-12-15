@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: heap.c,v 1.9 2005/03/05 23:59:08 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -706,6 +706,12 @@ _jc_heap_check_object(_jc_jvm *vm, _jc_object *obj, int recurse)
 	if (_JC_LW_TEST(obj->lockword, ARRAY)) {
 		_JC_ASSERT((type->u.array.element_type->flags & _JC_TYPE_MASK)
 		    == _JC_LW_EXTRACT(obj->lockword, TYPE));
+		_JC_ASSERT(_jc_num_refs(obj) == ((_jc_array *)obj)->length
+		    * (_JC_LW_EXTRACT(obj->lockword, TYPE)
+		      == _JC_TYPE_REFERENCE));
+	} else {
+		_JC_ASSERT(_jc_num_refs(obj)
+		    == obj->type->u.nonarray.num_virtual_refs);
 	}
 
 	/* Recurse (once) on reference fields */
