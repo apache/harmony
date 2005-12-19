@@ -574,10 +574,9 @@ _jc_invoke_jni_a(_jc_env *env, _jc_method *method,
 	const void *func, _jc_object *obj, _jc_word *params)
 {
 	JNIEnv *jenv = _JC_ENV2JNI(env);
-	_jc_method *previous_jni_method;
-	jboolean clipped_stack_top = JNI_FALSE;
 	jboolean pushed_frame = JNI_FALSE;
 	jboolean got_monitor = JNI_FALSE;
+	_jc_java_stack java_stack;
 	_jc_native_frame frame;
 	jint status = JNI_ERR;
 	int num_ref_params;
@@ -673,29 +672,24 @@ _jc_invoke_jni_a(_jc_env *env, _jc_method *method,
 		got_monitor = JNI_TRUE;
 	}
 
-	/* Keep track of the inner-most JNI method */
-	previous_jni_method = env->jni_method;
-	env->jni_method = method;
-
-	/* Clip the current top of the Java stack if not clipped already */
-	clipped_stack_top = _jc_stack_clip(env);
+	/* Add a Java stack frame */
+	memset(&java_stack, 0, sizeof(java_stack));
+	java_stack.next = env->java_stack;
+	java_stack.method = method;
+	env->java_stack = &java_stack;
 
 	/* Going native */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, NULL, NULL);
 
 	/* Invoke the method */
 	_jc_dynamic_invoke(func, JNI_FALSE, 2 + method->num_parameters,
 	    ptypes, nparams2, params2, &env->retval);
 
 	/* Returning from native */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, NULL);
 
-	/* Unclip stack */
-	if (clipped_stack_top)
-		_jc_stack_unclip(env);
-
-	/* Restore inner-most JNI method on the stack */
-	env->jni_method = previous_jni_method;
+	/* Pop Java stack */
+	env->java_stack = java_stack.next;
 
 	/* Return an error if an exception was posted */
 	status = (env->pending != NULL) ? JNI_ERR : JNI_OK;
@@ -840,20 +834,22 @@ _jc_invoke_unwrap_a(_jc_env *env, _jc_method *method,
  * If the method is static, 'obj' should be NULL and is not passed as a
  * parameter as JCNI does not pass the Class object to static methods.
  */
-
 jint
 _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 	const void *func, _jc_object *volatile obj, _jc_word *volatile params)
 {
 	_jc_jvm *const vm = env->vm;
+#ifndef NDEBUG
+	const volatile jboolean was_interpreting = env->interpreting;
+#endif
 	volatile jboolean pushed_java_stack = JNI_FALSE;
 	volatile jboolean pushed_native_frame = JNI_FALSE;
 	volatile jboolean set_stack_limit = JNI_FALSE;
 	volatile jboolean got_monitor = JNI_FALSE;
-	volatile jboolean clipped_stack_top = JNI_FALSE;
 	volatile jint status = JNI_ERR;
+	_jc_c_stack *volatile saved_c_stack;
 	_jc_word *volatile params2 = NULL;		/* avoid gcc warning */
-	_jc_exec_stack java_stack;
+	_jc_java_stack java_stack;
 	_jc_native_frame frame;
 	_jc_catch_frame catch;
 	u_char *ptypes;
@@ -863,8 +859,11 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 	/* Catch exceptions here */
 	catch.next = env->catch_list;
 	env->catch_list = &catch;
-	if (sigsetjmp(catch.context, 0) != 0)
+	saved_c_stack = env->c_stack;
+	if (sigsetjmp(catch.context, 0) != 0) {
+		env->c_stack = saved_c_stack;	/* pop C stack chunks */
 		goto exception;
+	}
 
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL
@@ -876,9 +875,6 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 		goto done;
 	}
 	_JC_ASSERT(_JC_ACC_TEST(method, STATIC) == (obj == NULL));
-
-	/* Clip the current top of the Java stack if not clipped already */
-	clipped_stack_top = _jc_stack_clip(env);
 
 	/* Push a new local native reference frame (allocated on the stack) */
 	_jc_push_stack_local_native_frame(env, &frame);
@@ -936,7 +932,7 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 
 	/* Synchronize native methods; non-native code synchronizes itself */
 	if (_JC_ACC_TEST(method, SYNCHRONIZED)
-	    && func == method->native_function) {
+	    && _JC_ACC_TEST(method, NATIVE)) {
 		if (_JC_ACC_TEST(method, STATIC))
 			obj = method->class->instance;
 		if (_jc_lock_object(env, obj) != JNI_OK)
@@ -944,14 +940,19 @@ _jc_invoke_jcni_a(_jc_env *env, _jc_method *method,
 		got_monitor = JNI_TRUE;
 	}
 
-	/* Start a new contiguous executable Java stack frame sequence */
-	memset(&java_stack, 0, sizeof(java_stack));
-	java_stack.jstack.interp = JNI_FALSE;
-	java_stack.jstack.next = env->java_stack;
-	java_stack.jstack.method = method;
-	java_stack.start_sp = &java_stack;
-	env->java_stack = &java_stack.jstack;
-	pushed_java_stack = JNI_TRUE;
+	/* Add a Java stack frame for native methods */
+	if (_JC_ACC_TEST(method, NATIVE)) {
+		memset(&java_stack, 0, sizeof(java_stack));
+		java_stack.next = env->java_stack;
+		java_stack.method = method;
+		env->java_stack = &java_stack;
+		pushed_java_stack = JNI_TRUE;
+	}
+
+#ifndef NDEBUG
+	/* Signals are OK now */
+	env->interpreting = JNI_FALSE;
+#endif
 
 	/* Invoke the method */
 	_jc_dynamic_invoke(func, JNI_TRUE,
@@ -971,15 +972,11 @@ exception:
 done:
 	/* Pop local native reference frame and Java stack frame segment */
 	if (pushed_java_stack)
-		env->java_stack = java_stack.jstack.next;
+		env->java_stack = java_stack.next;
 	if (pushed_native_frame)
 		_jc_pop_local_native_frame(env, NULL);
 	if (set_stack_limit)
 		env->stack_limit = NULL;
-
-	/* Unclip stack */
-	if (clipped_stack_top)
-		_jc_stack_unclip(env);
 
 	/* Synchronized? */
 	if (got_monitor) {
@@ -998,6 +995,11 @@ done:
 
 	/* Unlink exception catcher */
 	env->catch_list = catch.next;
+
+#ifndef NDEBUG
+	/* Repair debug flag */
+	env->interpreting = was_interpreting;
+#endif
 
 	/* Done */
 	return status;

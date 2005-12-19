@@ -103,7 +103,6 @@ static void
 _jc_signal_action(int sig_num, siginfo_t *info, ucontext_t *uctx)
 {
 	_jc_env *const env = _jc_get_current_env();
-	_jc_exec_stack *estack;
 	_jc_jvm *vm = NULL;
 	int sig_index;
 
@@ -161,23 +160,24 @@ _jc_signal_action(int sig_num, siginfo_t *info, ucontext_t *uctx)
 	}
 
 	/*
-	 * If this signal occured while there is no Java stack, then 
-	 * then it didn't occur in Java code and so was unexpected.
+	 * If this signal occured while there is no Java or C stack, then 
+	 * then it didn't occur in JCNI code and so was unexpected.
 	 */
-	if (env->java_stack == NULL)
+	if (env->java_stack == NULL || env->c_stack == NULL)
 		goto unexpected;
 
+#ifndef NDEBUG
 	/* If the signal occurred while interpeting, it was unexpected */
-	if (env->java_stack->interp)
+	if (env->interpreting)
 		goto unexpected;
-	estack = (_jc_exec_stack *)env->java_stack;
 
 	/*
 	 * If the signal occurred while the Java stack was clipped,
-	 * then it didn't occur in Java code and so was unexpected.
+	 * then occurred in JNI or native code and so was unexpected.
 	 */
-	if (estack->jstack.clipped)
-		goto unexpected;
+	if (env->c_stack->clipped)
+	       goto unexpected;
+#endif
 
 #if !HAVE_GETCONTEXT
 	/* Poor man's getcontext() using signals */
@@ -187,13 +187,6 @@ _jc_signal_action(int sig_num, siginfo_t *info, ucontext_t *uctx)
 		return;
 	}
 #endif
-
-	/*
-	 * Clip the top of the Java stack. We must do this here because it's
-	 * not possible to follow saved frame pointers across a signal frame.
-	 * That is, any signal creates a new contiguous Java stack region.
-	 */
-	_jc_stack_clip_ctx(env, &uctx->uc_mcontext);
 
 	/* Take the appropriate action */
 	switch (sig_index) {

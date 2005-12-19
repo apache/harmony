@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_VMObject.c,v 1.6 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -204,7 +204,6 @@ JCNI_java_lang_VMObject_wait(_jc_env *env, _jc_object *this,
 {
 	_jc_jvm *const vm = env->vm;
 	const jboolean timed_wait = (millis != 0 || nanos != 0);
-	jboolean clipped_stack_top;
 	jboolean interrupted;
 	struct timespec wakeup;
 	jint recursion_count;
@@ -290,11 +289,8 @@ JCNI_java_lang_VMObject_wait(_jc_env *env, _jc_object *this,
 		}
 	}
 
-	/* Clip the current top of the Java stack if not already */
-	clipped_stack_top = _jc_stack_clip(env);
-
 	/* Enter non-java mode */
-	_jc_stopping_java(env, "Object.wait() on %s@%p",
+	_jc_stopping_java(env, NULL, "Object.wait() on %s@%p",
 	    this->type->name, this);
 
 	/* Acquire the fat lock mutex */
@@ -404,7 +400,7 @@ finished:
 	_JC_MUTEX_UNLOCK(env, lock->mutex);
 
 	/* Back to running normal Java */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, NULL);
 
 	/* Check to see if we were interrupted */
 	interrupted = JNI_FALSE;
@@ -439,10 +435,6 @@ done:
 		_jc_post_exception(env, _JC_InterruptedException);
 		_jc_throw_exception(env);
 	}
-
-	/* Unclip stack */
-	if (clipped_stack_top)
-		_jc_stack_unclip(env);
 }
 
 /*

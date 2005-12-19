@@ -36,6 +36,7 @@ _jc_create_vm(void *args, _jc_jvm **vmp, _jc_env **envp)
 	_jc_env *env = &temp_env;
 	_jc_jvm temp_vm;
 	_jc_jvm *vm = &temp_vm;
+	_jc_c_stack cstack;
 	jobject sref = NULL;
 	int i;
 
@@ -110,7 +111,7 @@ pfail1:		_jc_vm_free(&vm);
 
 	/* Create and attach a new thread structure to the current thread */
 	_JC_MUTEX_LOCK(NULL, vm->mutex);
-	if ((env = _jc_attach_thread(vm, &temp_env.ex)) == NULL) {
+	if ((env = _jc_attach_thread(vm, &temp_env.ex, &cstack)) == NULL) {
 		_JC_MUTEX_UNLOCK(NULL, vm->mutex);
 		env = &temp_env;
 		goto fail_info;
@@ -209,6 +210,9 @@ pfail1:		_jc_vm_free(&vm);
 	_JC_ASSERT(vm->initialization->ex.num == -1);
 	_JC_ASSERT(vm->initialization->frames == NULL);
 	vm->initialization = NULL;
+
+	/* Return to native code */
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	*vmp = vm;

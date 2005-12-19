@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: jni_invoke.c,v 1.4 2005/03/16 15:31:12 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -142,9 +142,6 @@ JNI_CreateJavaVM(JavaVM **jvmp, void **envp, void *args)
 	LIST_INSERT_HEAD(&_jc_vms_list, vm, link);
 	_JC_MUTEX_UNLOCK(NULL, _jc_vms_mutex);
 
-	/* Returning now to native code */
-	_jc_stopping_java(env, NULL);
-
 	/* Done */
 	*envp = _JC_ENV2JNI(env);
 	*jvmp = _JC_JVM2JNI(vm);
@@ -170,13 +167,14 @@ DestroyJavaVM(JavaVM *jvm)
 {
 	_jc_jvm *vm = _JC_JNI2JVM(jvm);
 	_jc_env *env = _jc_get_current_env();
+	_jc_c_stack cstack;
 
 	/* This thread must be attached to the jvm */
 	if (env == NULL || env->vm != vm)
 		return JNI_ERR;
 
 	/* Enter java mode */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	VERBOSE(JNI, vm, "JNI_DestroyJavaVM invoked");
 
 	/* Kill all other threads */
@@ -227,6 +225,7 @@ AttachCurrentThreadInternal(JavaVM *jvm,
 {
 	_jc_jvm *const vm = _JC_JNI2JVM(jvm);
 	JavaVMAttachArgs *const args = _args;
+	_jc_c_stack cstack;
 	_jc_ex_info einfo;
 	_jc_env *env;
 
@@ -242,7 +241,7 @@ AttachCurrentThreadInternal(JavaVM *jvm,
 
 	/* Create and attach a new thread structure to the current thread */
 	_JC_MUTEX_LOCK(NULL, vm->mutex);
-	env = _jc_attach_thread(vm, &einfo);
+	env = _jc_attach_thread(vm, &einfo, &cstack);
 	_JC_MUTEX_UNLOCK(NULL, vm->mutex);
 	if (env == NULL) {
 		_jc_eprintf(vm, "%s: %s: %s\n", __FUNCTION__,
@@ -263,7 +262,7 @@ AttachCurrentThreadInternal(JavaVM *jvm,
 		goto fail;
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	*envp = _JC_ENV2JNI(env);
@@ -285,13 +284,17 @@ DetachCurrentThread(JavaVM *jvm)
 {
 	_jc_jvm *const vm = _JC_JNI2JVM(jvm);
 	_jc_env *env = _jc_get_current_env();
+	_jc_c_stack cstack;
 
 	/* This thread must be attached to the jvm */
 	if (env == NULL || env->vm != vm)
 		return JNI_ERR;
 
+	/* Sanity check */
+	_JC_ASSERT(env->c_stack == NULL);
+
 	/* Go un-native */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Grab global mutex */
 	_JC_MUTEX_LOCK(NULL, vm->mutex);

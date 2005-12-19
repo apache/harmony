@@ -257,7 +257,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method,
 	};
 	_jc_method_code *const code = &method->code;
 	int ticker = PERIODIC_CHECK_TICKS;
-	_jc_interp_stack state;
+	_jc_java_stack state;
 	_jc_object *lock = NULL;
 	_jc_word *sp;
 	int pc = 0;
@@ -290,11 +290,10 @@ _jc_interp(_jc_env *const env, _jc_method *const method,
 
 	/* Push Java stack frame */
 	memset(&state, 0, sizeof(state));
-	state.jstack.interp = JNI_TRUE;
-	state.jstack.next = env->java_stack;
-	state.jstack.method = method;
+	state.next = env->java_stack;
+	state.method = method;
 	state.pcp = &pc;
-	env->java_stack = &state.jstack;
+	env->java_stack = &state;
 
 	/* Allocate combined space for locals and stack */
 	if ((state.locals = _JC_STACK_ALLOC(env,
@@ -1580,7 +1579,7 @@ exit:
 	}
 
 	/* Pop Java stack frame */
-	env->java_stack = state.jstack.next;
+	env->java_stack = state.next;
 
 	/* Done */
 	return status;
@@ -1668,15 +1667,17 @@ _JC_INTERP_ENTRY(l, interp_native, _jc_object *, env->retval.l)
 _JC_INTERP_ENTRY(v, interp_native, void, )
 
 /*
- * Entry point for interpreted methods when invoked from ELF methods.
+ * Entry point for interpreted methods when invoked from JCNI methods.
  * We get here by way of a trampoline set up by _jc_build_trampoline(),
  * which also sets env->interp to the method we are going to interpret.
  */
 static void
 _jc_vinterp(_jc_env *env, va_list args)
 {
+#ifndef NDEBUG
+	const jboolean was_interpreting = env->interpreting;
+#endif
 	_jc_method *const method = env->interp;
-	jboolean clipped_stack;
 	_jc_word *params;
 	_jc_object *this;
 	jint status;
@@ -1749,15 +1750,18 @@ _jc_vinterp(_jc_env *env, va_list args)
 	}
 	_JC_ASSERT(pnum == method->code.num_params2);
 
-	/* Clip the current top of the Java stack */
-	clipped_stack = !env->java_stack->interp && _jc_stack_clip(env);
+#ifndef NDEBUG
+        /* Signals are not OK now */
+	env->interpreting = JNI_TRUE;
+#endif
 
 	/* Invoke method */
 	status = _jc_interp(env, method, this, params);
 
-	/* Unclip the current top of the Java stack */
-	if (clipped_stack)
-		_jc_stack_unclip(env);
+#ifndef NDEBUG
+        /* Restore debug flag */
+	env->interpreting = was_interpreting;
+#endif
 
 	/* Throw exception if any */
 	if (status != JNI_OK)

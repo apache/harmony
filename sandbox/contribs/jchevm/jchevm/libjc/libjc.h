@@ -456,12 +456,7 @@ extern int		_jc_save_stack_frames(_jc_env *env, _jc_env *thread,
 				int max, _jc_saved_frame *frames);
 extern void		_jc_print_stack_frames(_jc_env *env, FILE *fp,
 				int num_frames, _jc_saved_frame *frames);
-extern void		_jc_stack_crawl_first(_jc_env *env,
-				_jc_stack_crawl *crawl);
-extern void		_jc_stack_crawl_next(_jc_jvm *vm,
-				_jc_stack_crawl *crawl);
-extern jboolean		_jc_stack_clip(_jc_env *env);
-extern jboolean		_jc_stack_clip_ctx(_jc_env *env, const mcontext_t *ctx);
+extern void		_jc_stack_clip(_jc_env *env);
 extern void		_jc_stack_unclip(_jc_env *env);
 
 /* string.c */
@@ -480,7 +475,8 @@ extern _jc_env		*_jc_allocate_thread(_jc_env *env);
 extern void		_jc_free_thread(_jc_env **envp, int cachable);
 extern void		_jc_free_thread_stacks(_jc_jvm *vm);
 extern void		_jc_destroy_thread(_jc_env **envp);
-extern _jc_env		*_jc_attach_thread(_jc_jvm *vm, _jc_ex_info *ex);
+extern _jc_env		*_jc_attach_thread(_jc_jvm *vm, _jc_ex_info *ex,
+				_jc_c_stack *cstack);
 extern void		_jc_detach_thread(_jc_env **envp);
 extern jint		_jc_thread_create_instance(_jc_env *env,
 				_jc_object *group, const char *name,
@@ -489,8 +485,9 @@ extern _jc_env		*_jc_get_current_env(void);
 extern void		_jc_stop_the_world(_jc_env *env);
 extern void		_jc_resume_the_world(_jc_env *env);
 extern void		_jc_halt_if_requested(_jc_env *env);
-extern void		_jc_stopping_java(_jc_env *env, const char *fmt, ...);
-extern void		_jc_resuming_java(_jc_env *env);
+extern void		_jc_stopping_java(_jc_env *env, _jc_c_stack *cstack,
+			    const char *fmt, ...);
+extern void		_jc_resuming_java(_jc_env *env, _jc_c_stack *cstack);
 extern void		*_jc_thread_start(void *arg);
 extern jobject		_jc_internal_thread(_jc_env *env, const char *class);
 extern jint		_jc_thread_check(_jc_env *env);

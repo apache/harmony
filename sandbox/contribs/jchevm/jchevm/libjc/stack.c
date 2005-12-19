@@ -21,45 +21,23 @@
 #include "libjc.h"
 
 /*
- * Clip the current top of the Java stack. A thread's Java stack is
+ * Clip the current top C stack chunk. A thread's C stack is
  * a sequence of disconnected chunks of contiguous C stack frames
- * intersperced with non-crawlable stuff like native stack frames
- * and signal frames. Each chunk also contains a set of saved registers
- * which are scanned conservatively during garbage collection.
- *
- * This sets the top frame to be the calling function's calling function.
- * See also _jc_invoke_jcni_a().
- *
- * Returns JNI_TRUE if the stack was clipped, otherwise JNI_FALSE
- * (i.e., the stack was already clipped so we didn't clip it again).
- *
- * NOTE: If this function returns JNI_TRUE, the function calling this
- * function must call _jc_stack_unclip() before returning or else throw
- * (not just post) an exception.
+ * intersperced with uninteresting stuff like JNI native stack frames
+ * and signal frames. Each other than the top chunk also contains
+ * a set of saved registers which are scanned conservatively during
+ * garbage collection. Saving these registers is called "clipping"
+ * and it prevents references from "leaking" across chunk boundaries.
  */
-jboolean
+void
 _jc_stack_clip(_jc_env *env)
 {
-	_jc_java_stack *const stack = env->java_stack;
-	_jc_exec_stack *estack;
+	_jc_c_stack *const cstack = env->c_stack;
 
 	/* Sanity check */
 	_JC_ASSERT(env == _jc_get_current_env());
-
-	/* If no Java call stack yet, nothing to do */
-	if (stack == NULL)
-		return JNI_FALSE;
-
-	/* If already clipped, do nothing */
-	if (stack->clipped)
-		return JNI_FALSE;
-
-	/* If interpreting, just set the flag */
-	if (stack->interp)
-		goto done;
-
-	/* We are running executable Java */
-	estack = (_jc_exec_stack *)stack;
+	_JC_ASSERT(cstack != NULL);
+	_JC_ASSERT(!cstack->clipped);
 
 	/* Grab the current context and clip the Java stack with it */
 #if HAVE_GETCONTEXT
@@ -67,7 +45,7 @@ _jc_stack_clip(_jc_env *env)
 	ucontext_t ctx;
 
 	getcontext(&ctx);
-	_jc_stack_clip_ctx(env, &ctx.uc_mcontext);
+	cstack->regs = ctx.uc_mcontext;
     }
 #else
     {
@@ -98,66 +76,14 @@ _jc_stack_clip(_jc_env *env)
 #endif
 
 	/* Use it to clip Java stack */
-	_jc_stack_clip_ctx(env, &ctx);
+	cstack->regs = ctx.uc_mcontext;
     }
 #endif
 
-done:
-	/* Done */
-	stack->clipped = JNI_TRUE;
-	return JNI_TRUE;
-}
-
-/*
- * Clip the top of the Java stack using the supplied machine context,
- * which must be created either from getcontext() or by a signal.
- * The stack must not already be clipped.
- *
- * This sets the top of the Java stack to be the function in which
- * the context was created.
- *
- * Returns JNI_TRUE if the stack was clipped, otherwise JNI_FALSE
- */
-jboolean
-_jc_stack_clip_ctx(_jc_env *env, const mcontext_t *ctx)
-{
-	_jc_java_stack *const stack = env->java_stack;
-	_jc_exec_stack *estack;
-
-	/* Sanity check */
-	_JC_ASSERT(env == _jc_get_current_env());
-
-	/* If there's no Java call stack yet, nothing to do */
-	if (stack == NULL)
-		return JNI_FALSE;
-
-	/* Sanity check */
-	_JC_ASSERT(!stack->interp);
-	estack = (_jc_exec_stack *)stack;
-
-	/* Save machine registers */
-	estack->regs = *ctx;
-
-	/* Done */
-	return JNI_TRUE;
-}
-
-/*
- * Un-do the effects of _jc_stack_clip().
- */
-void
-_jc_stack_unclip(_jc_env *env)
-{
-	_jc_java_stack *const stack = env->java_stack;
-
-	/* Sanity check */
-	_JC_ASSERT(stack != NULL);
-	_JC_ASSERT(env == _jc_get_current_env());
-	_JC_ASSERT(stack->clipped);
-
-	/* Mark it unclipped */
-	stack->clipped = JNI_FALSE;
-	return;
+#ifndef NDEBUG
+	/* Mark stack as clipped */
+	cstack->clipped = JNI_TRUE;
+#endif
 }
 
 /*
@@ -266,7 +192,7 @@ _jc_print_stack_frames(_jc_env *env, FILE *fp,
  *
  * If 'thread' doesn't correspond to the current thread, then the
  * target thread must be running in non-java mode or halted
- * (so that it's top Java stack frame is already clipped).
+ * (so that it's top C stack frame is already clipped).
  *
  * The array is stored in the area pointed to by 'frames' (if not NULL).
  * At most 'max' frames are stored.
@@ -277,98 +203,26 @@ int
 _jc_save_stack_frames(_jc_env *env, _jc_env *thread,
 	int max, _jc_saved_frame *frames)
 {
-	_jc_jvm *const vm = env->vm;
-	_jc_stack_crawl crawl;
+	_jc_java_stack *jstack;
 	int i;
 
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
 	/* Crawl the stack */
-	for (i = 0, _jc_stack_crawl_first(thread, &crawl);
-	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
+	for (i = 0, jstack = env->java_stack;
+	    jstack != NULL; jstack = jstack->next) {
 		_jc_saved_frame *const frame = &frames[i];
 
 		/* Sanity check */
-		_JC_ASSERT(crawl.method->class != NULL);
+		_JC_ASSERT(jstack->method->class != NULL);
 
 		/* Save this one */
 		if (i < max) {
-			frame->method = crawl.method;
-			if (crawl.stack->interp) {
-				_jc_interp_stack *const istack
-				    = (_jc_interp_stack *)crawl.stack;
-
-				frame->ipc = *istack->pcp;
-			} else
-				frame->ipc = -1;
+			frame->method = jstack->method;
+			frame->ipc = jstack->pcp != NULL ? *jstack->pcp : -1;
 		}
 		i++;
 	}
 
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
-
 	/* Done */
 	return i;
-}
-
-/*
- * Initialize a Java stack crawl.
- *
- * If 'thread' doesn't correspond to the current thread, then the
- * target thread must be running in non-java mode or halted
- * (so that it's top Java stack frame is already clipped).
- *
- * NOTE: caller must acquire the VM lock before calling this function.
- */
-void
-_jc_stack_crawl_first(_jc_env *thread, _jc_stack_crawl *crawl)
-{
-	_jc_java_stack *const stack = thread->java_stack;
-
-	/* Initialize */
-	memset(crawl, 0, sizeof(*crawl));
-
-	/* If there's no Java call stack yet, return end of stack */
-	if (stack == NULL)
-		return;
-
-	/* Sanity check */
-	_JC_ASSERT(thread == _jc_get_current_env()
-	    || (stack->clipped
-	      && (thread->status == _JC_THRDSTAT_HALTING_NONJAVA
-	       || thread->status == _JC_THRDSTAT_HALTED)));
-
-	/* Start with top of stack */
-	crawl->stack = stack;
-	crawl->method = stack->method;
-}
-
-/*
- * Get the next registered Java method (or _jc_invoke_jcni_a()) in a stack
- * crawl. The 'thread' parameter does not have to be the current thread.
- *
- * If the bottom of the stack is reached, crawl->method is set to NULL.
- *
- * NOTE: caller must acquire the VM lock before calling this function.
- */
-void
-_jc_stack_crawl_next(_jc_jvm *vm, _jc_stack_crawl *crawl)
-{
-	/* Sanity check */
-	_JC_ASSERT(crawl->method != NULL);
-
-	/* Advance to the next deeper stack chunk */
-	crawl->stack = crawl->stack->next;
-
-	/* Did we reach the end of the Java stack? */
-	if (crawl->stack == NULL) {
-		memset(crawl, 0, sizeof(*crawl));
-		return;
-	}
-
-	/* Set method and return */
-	crawl->method = crawl->stack->method;
 }
 

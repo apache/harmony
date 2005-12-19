@@ -26,10 +26,11 @@ GetObjectField(JNIEnv *jenv, jobject obj, jfieldID field)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
 	_jc_object *fobj = NULL;
+	_jc_c_stack cstack;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -48,7 +49,7 @@ GetObjectField(JNIEnv *jenv, jobject obj, jfieldID field)
 done:
 	/* Returning to native code */
 	ref = _jc_pop_local_native_frame(env, fobj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -60,10 +61,11 @@ Get ## Type ## Field(JNIEnv *jenv, jobject obj, jfieldID field)		\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type value = 0;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Check for null */						\
@@ -82,7 +84,7 @@ Get ## Type ## Field(JNIEnv *jenv, jobject obj, jfieldID field)		\
 done:									\
 	/* Returning to native code */					\
 	_jc_pop_local_native_frame(env, NULL);				\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return value;							\
@@ -101,9 +103,10 @@ SetObjectField(JNIEnv *jenv, jobject obj, jfieldID field, jobject value)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -124,7 +127,7 @@ SetObjectField(JNIEnv *jenv, jobject obj, jfieldID field, jobject value)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 #define SetField(_type, Type)						\
@@ -134,9 +137,10 @@ Set ## Type ## Field(JNIEnv *jenv, jobject obj,				\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Check for null */						\
@@ -155,7 +159,7 @@ Set ## Type ## Field(JNIEnv *jenv, jobject obj,				\
 done:									\
 	/* Returning to native code */					\
 	_jc_pop_local_native_frame(env, NULL);				\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 }
 SetField(boolean, Boolean)
 SetField(byte, Byte)
@@ -171,11 +175,12 @@ GetStaticObjectField(JNIEnv *jenv, jclass class, jfieldID field)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
+	_jc_c_stack cstack;
 	_jc_type *type;
 	jobject ref = NULL;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Sanity check */
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);
@@ -192,7 +197,7 @@ GetStaticObjectField(JNIEnv *jenv, jclass class, jfieldID field)
 	      + field->offset));
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -204,11 +209,12 @@ GetStatic ## Type ## Field(JNIEnv *jenv, jclass class, jfieldID field)	\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_jvm *const vm = env->vm;					\
+	_jc_c_stack cstack;						\
 	_jc_type *type;							\
 	j ## _type value;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 									\
 	/* Sanity check */						\
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);		\
@@ -224,7 +230,7 @@ GetStatic ## Type ## Field(JNIEnv *jenv, jclass class, jfieldID field)	\
 	    + field->offset);						\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return value;							\
@@ -243,10 +249,11 @@ SetStaticObjectField(JNIEnv *jenv, jclass class, jfieldID field, jobject value)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
+	_jc_c_stack cstack;
 	_jc_type *type;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Sanity check */
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);
@@ -263,7 +270,7 @@ SetStaticObjectField(JNIEnv *jenv, jclass class, jfieldID field, jobject value)
 	    + field->offset) = (value == NULL) ? NULL : *value;
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 #define SetStaticField(_type, Type)					\
@@ -273,10 +280,11 @@ SetStatic ## Type ## Field(JNIEnv *jenv, jclass class,			\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_jvm *const vm = env->vm;					\
+	_jc_c_stack cstack;						\
 	_jc_type *type;							\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 									\
 	/* Sanity check */						\
 	_JC_ASSERT((*class)->type == vm->boot.types.Class);		\
@@ -292,7 +300,7 @@ SetStatic ## Type ## Field(JNIEnv *jenv, jclass class,			\
 	    + field->offset) = value;					\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 }
 SetStaticField(boolean, Boolean)
 SetStaticField(byte, Byte)
@@ -320,9 +328,10 @@ CallNonvirtualVoidMethodA(JNIEnv *jenv, jobject obj,
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Invoke method */
@@ -330,7 +339,7 @@ CallNonvirtualVoidMethodA(JNIEnv *jenv, jobject obj,
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static void
@@ -339,9 +348,10 @@ CallNonvirtualVoidMethodV(JNIEnv *jenv, jobject obj,
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Invoke method */
@@ -349,7 +359,7 @@ CallNonvirtualVoidMethodV(JNIEnv *jenv, jobject obj,
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 #define CallNonvirtualMethod(_type, Type)				\
@@ -383,10 +393,11 @@ CallNonvirtual ## Type ## MethodA(JNIEnv *jenv, jobject obj,		\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type result;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Invoke method */						\
@@ -396,7 +407,7 @@ CallNonvirtual ## Type ## MethodA(JNIEnv *jenv, jobject obj,		\
 	expr1 _jc_pop_local_native_frame(env, expr2);			\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return result;							\
@@ -418,10 +429,11 @@ CallNonvirtual ## Type ## MethodV(JNIEnv *jenv, jobject obj,		\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type result;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Invoke method */						\
@@ -431,7 +443,7 @@ CallNonvirtual ## Type ## MethodV(JNIEnv *jenv, jobject obj,		\
 	expr1 _jc_pop_local_native_frame(env, expr2);			\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return result;							\
@@ -461,9 +473,10 @@ CallVoidMethodA(JNIEnv *jenv, jobject obj, jmethodID method, jvalue *args)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Invoke method */
@@ -471,7 +484,7 @@ CallVoidMethodA(JNIEnv *jenv, jobject obj, jmethodID method, jvalue *args)
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static void
@@ -479,9 +492,10 @@ CallVoidMethodV(JNIEnv *jenv, jobject obj, jmethodID method, va_list args)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Invoke method */
@@ -489,7 +503,7 @@ CallVoidMethodV(JNIEnv *jenv, jobject obj, jmethodID method, va_list args)
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 #define CallMethod(_type, Type)						\
@@ -523,10 +537,11 @@ Call ## Type ## MethodA(JNIEnv *jenv, jobject obj,			\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type result;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Invoke method */						\
@@ -536,7 +551,7 @@ Call ## Type ## MethodA(JNIEnv *jenv, jobject obj,			\
 	expr1 _jc_pop_local_native_frame(env, expr2);			\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return result;							\
@@ -558,10 +573,11 @@ Call ## Type ## MethodV(JNIEnv *jenv, jobject obj,			\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type result;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Invoke method */						\
@@ -571,7 +587,7 @@ Call ## Type ## MethodV(JNIEnv *jenv, jobject obj,			\
 	expr1 _jc_pop_local_native_frame(env, expr2);			\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return result;							\
@@ -602,9 +618,10 @@ CallStaticVoidMethodA(JNIEnv *jenv, jclass class,
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Invoke method */
@@ -612,7 +629,7 @@ CallStaticVoidMethodA(JNIEnv *jenv, jclass class,
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static void
@@ -621,9 +638,10 @@ CallStaticVoidMethodV(JNIEnv *jenv, jclass class,
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Invoke method */
@@ -631,7 +649,7 @@ CallStaticVoidMethodV(JNIEnv *jenv, jclass class,
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 #define CallStaticMethod(_type, Type)					\
@@ -665,10 +683,11 @@ CallStatic ## Type ## MethodA(JNIEnv *jenv,				\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type result;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Invoke method */						\
@@ -678,7 +697,7 @@ CallStatic ## Type ## MethodA(JNIEnv *jenv,				\
 	expr1 _jc_pop_local_native_frame(env, expr2);			\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return result;							\
@@ -700,10 +719,11 @@ CallStatic ## Type ## MethodV(JNIEnv *jenv,				\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	j ## _type result;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Invoke method */						\
@@ -713,7 +733,7 @@ CallStatic ## Type ## MethodV(JNIEnv *jenv,				\
 	expr1 _jc_pop_local_native_frame(env, expr2);			\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return result;							\
@@ -736,10 +756,11 @@ GetEitherFieldID(JNIEnv *jenv, jclass class, const char *name,
 	_jc_jvm *const vm = env->vm;
 	_jc_field *field = NULL;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_type *type;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class info */
@@ -759,7 +780,7 @@ GetEitherFieldID(JNIEnv *jenv, jclass class, const char *name,
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return field;
@@ -785,10 +806,11 @@ GetEitherMethodID(JNIEnv *jenv, jclass class,
 	_jc_jvm *const vm = env->vm;
 	_jc_method *method = NULL;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_type *type;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class info */
@@ -815,7 +837,7 @@ GetEitherMethodID(JNIEnv *jenv, jclass class,
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return method;
@@ -840,10 +862,11 @@ GetObjectClass(JNIEnv *jenv, jobject ref)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_object *clobj = NULL;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jclass class;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -859,7 +882,7 @@ GetObjectClass(JNIEnv *jenv, jobject ref)
 done:
 	/* Returning to native code */
 	class = _jc_pop_local_native_frame(env, clobj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Return class */
 	return class;
@@ -873,10 +896,11 @@ Get ## Type ## ArrayElements(JNIEnv *jenv, j ## _type ## Array array,	\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_ ## _type ## _array *a;					\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	jvalue *buf = NULL;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Check for null */						\
@@ -913,7 +937,7 @@ Get ## Type ## ArrayElements(JNIEnv *jenv, j ## _type ## Array array,	\
 done:									\
 	/* Returning to native code */					\
 	_jc_pop_local_native_frame(env, NULL);				\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Return elements */						\
 	return (j ## _type *)(buf != NULL ? buf + 1 : NULL);		\
@@ -935,9 +959,10 @@ Release ## Type ## ArrayElements(JNIEnv *jenv,				\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	jvalue *buf = (jvalue *)elems - 1;				\
 	_jc_ ## _type ## _array *a;					\
+	_jc_c_stack cstack;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 									\
 	/* Sanity check */						\
 	_JC_ASSERT(elems != NULL && array != NULL && *array != NULL);	\
@@ -955,7 +980,7 @@ Release ## Type ## ArrayElements(JNIEnv *jenv,				\
 	}								\
 									\
 	/* Returning to native code */					\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 }
 ReleaseArrayElements(boolean, Boolean)
 ReleaseArrayElements(byte, Byte)
@@ -972,10 +997,11 @@ GetObjectArrayElement(JNIEnv *jenv, jobjectArray array, jsize indx)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_object *obj = NULL;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -997,7 +1023,7 @@ GetObjectArrayElement(JNIEnv *jenv, jobjectArray array, jsize indx)
 done:
 	/* Returning to native code */
 	ref = _jc_pop_local_native_frame(env, obj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -1009,9 +1035,10 @@ SetObjectArrayElement(JNIEnv *jenv, jobjectArray array,
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1034,7 +1061,7 @@ SetObjectArrayElement(JNIEnv *jenv, jobjectArray array,
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 #define GetArrayRegion(_type, Type)					\
@@ -1044,9 +1071,10 @@ Get ## Type ## ArrayRegion(JNIEnv *jenv, j ## _type ## Array array,	\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Check for null */						\
@@ -1070,7 +1098,7 @@ Get ## Type ## ArrayRegion(JNIEnv *jenv, j ## _type ## Array array,	\
 done:									\
 	/* Returning to native code */					\
 	_jc_pop_local_native_frame(env, NULL);				\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 }
 GetArrayRegion(boolean, Boolean)
 GetArrayRegion(byte, Byte)
@@ -1088,9 +1116,10 @@ Set ## Type ## ArrayRegion(JNIEnv *jenv, j ## _type ## Array array,	\
 {									\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Check for null */						\
@@ -1114,7 +1143,7 @@ Set ## Type ## ArrayRegion(JNIEnv *jenv, j ## _type ## Array array,	\
 done:									\
 	/* Returning to native code */					\
 	_jc_pop_local_native_frame(env, NULL);				\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 }
 SetArrayRegion(boolean, Boolean)
 SetArrayRegion(byte, Byte)
@@ -1130,10 +1159,11 @@ GetPrimitiveArrayCritical(JNIEnv *jenv, jarray array, jboolean *isCopy)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	void *elems = NULL;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1185,7 +1215,7 @@ GetPrimitiveArrayCritical(JNIEnv *jenv, jarray array, jboolean *isCopy)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return elems;
@@ -1234,16 +1264,17 @@ static jboolean
 ExceptionCheck(JNIEnv *jenv)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	jboolean result;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Get result */
 	result = env->pending != NULL;
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return result;
@@ -1253,17 +1284,18 @@ static jobject
 NewGlobalRef(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Get new reference */
 	if ((ref = _jc_new_global_native_ref(env, *obj)) == NULL)
 		_jc_post_exception_info(env);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -1273,31 +1305,33 @@ static void
 DeleteGlobalRef(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Delete reference */
 	_jc_free_global_native_ref(&obj);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static jobject
 NewLocalRef(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Get new reference */
 	ref = _jc_new_local_native_ref(env, *obj);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -1307,24 +1341,26 @@ static void
 DeleteLocalRef(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Delete reference */
 	_jc_free_local_native_ref(&obj);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static jweak
 NewWeakGlobalRef(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	_jc_fatal_error(env->vm, "%s: unimplemented", __FUNCTION__);
 }
@@ -1333,9 +1369,10 @@ static void
 DeleteWeakGlobalRef(JNIEnv *jenv, jweak obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	_jc_fatal_error(env->vm, "%s: unimplemented", __FUNCTION__);
 }
@@ -1344,10 +1381,11 @@ static jint
 EnsureLocalCapacity(JNIEnv *jenv, jint capacity)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	jint status;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Extend capacity */
 	if (capacity < 0)
@@ -1358,7 +1396,7 @@ EnsureLocalCapacity(JNIEnv *jenv, jint capacity)
 		status =_jc_extend_local_native_frame(env, capacity);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return status;
@@ -1368,10 +1406,11 @@ static jint
 PushLocalFrame(JNIEnv *jenv, jint capacity)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	jint status;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Push a local native referenc eframe */
 	if (capacity < 0)
@@ -1382,7 +1421,7 @@ PushLocalFrame(JNIEnv *jenv, jint capacity)
 		status = _jc_push_local_native_frame(env, capacity);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return status;
@@ -1393,15 +1432,16 @@ PopLocalFrame(JNIEnv *jenv, jobject ref)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_object *const obj = (ref != NULL) ? *ref : NULL;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Pop frame, but create a new reference for the object */
 	ref = _jc_pop_local_native_frame(env, obj);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -1420,12 +1460,13 @@ FindClass(JNIEnv *jenv, const char *name)
 	_jc_class_loader *loader;
 	_jc_object *clobj = NULL;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_type *type;
 	jobject clref;
 	jclass class;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get the appropriate class loader to use */
@@ -1452,7 +1493,7 @@ FindClass(JNIEnv *jenv, const char *name)
 done:
 	/* Returning to native code */
 	class = _jc_pop_local_native_frame(env, clobj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return class;
@@ -1468,10 +1509,11 @@ DefineClass(JNIEnv *jenv, const char *name, jobject lref,
 	_jc_object *clobj = NULL;
 	_jc_native_frame frame;
 	_jc_type *type = NULL;
+	_jc_c_stack cstack;
 	jclass cref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1505,7 +1547,7 @@ done:
 
 	/* Returning to native code */
 	cref = _jc_pop_local_native_frame(env, clobj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return cref;
@@ -1520,10 +1562,11 @@ GetSuperclass(JNIEnv *jenv, jclass class)
 	_jc_object *clobj = NULL;
 	_jc_native_frame frame;
 	_jc_type *type = NULL;
+	_jc_c_stack cstack;
 	jclass cref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Sanity check */
@@ -1547,7 +1590,7 @@ GetSuperclass(JNIEnv *jenv, jclass class)
 done:
 	/* Returning to native code */
 	cref = _jc_pop_local_native_frame(env, clobj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return cref;
@@ -1560,11 +1603,12 @@ IsAssignableFrom(JNIEnv *jenv, jclass from_class, jclass to_class)
 	_jc_jvm *const vm = env->vm;
 	jboolean result = JNI_FALSE;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_type *from_type;
 	_jc_type *to_type;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1589,7 +1633,7 @@ IsAssignableFrom(JNIEnv *jenv, jclass from_class, jclass to_class)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return result;
@@ -1603,10 +1647,11 @@ IsInstanceOf(JNIEnv *jenv, jobject ref, jclass class)
 	_jc_object *const obj = (ref != NULL) ? *ref : NULL;
 	jboolean result = JNI_FALSE;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_type *type;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1628,7 +1673,7 @@ IsInstanceOf(JNIEnv *jenv, jobject ref, jclass class)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return result;
@@ -1639,9 +1684,10 @@ ExceptionDescribe(JNIEnv *jenv)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Print stack trace */
@@ -1649,23 +1695,24 @@ ExceptionDescribe(JNIEnv *jenv)
 
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static jthrowable
 ExceptionOccurred(JNIEnv *jenv)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	jthrowable ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Get pending exception, if any */
 	ref = _jc_new_local_native_ref(env, env->pending);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -1676,9 +1723,10 @@ Throw(JNIEnv *jenv, jthrowable obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1697,7 +1745,7 @@ Throw(JNIEnv *jenv, jthrowable obj)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return JNI_OK;
@@ -1707,24 +1755,26 @@ static void
 ExceptionClear(JNIEnv *jenv)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Retrieve and clear pending exception, if any */
 	env->pending = NULL;
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static void
 FatalError(JNIEnv *jenv, const char *msg)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	_jc_fatal_error(env->vm, "JNI fatal error: %s", msg);
 }
@@ -1743,12 +1793,13 @@ AllocObject(JNIEnv *jenv, jclass class)
 	_jc_jvm *const vm = env->vm;
 	_jc_object *const class_obj = *class;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_object *obj;
 	_jc_type *type;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class type */
@@ -1760,7 +1811,7 @@ AllocObject(JNIEnv *jenv, jclass class)
 
 	/* Returning to native code */
 	ref = _jc_pop_local_native_frame(env, obj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -1868,11 +1919,12 @@ GetStringChars(JNIEnv *jenv, jstring string, jboolean *isCopy)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jchar *buf = NULL;
 	jint len;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1897,7 +1949,7 @@ GetStringChars(JNIEnv *jenv, jstring string, jboolean *isCopy)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return buf;
@@ -1907,15 +1959,16 @@ static void
 ReleaseStringChars(JNIEnv *jenv, jstring string, const jchar *chars)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Free buffer */
 	_jc_vm_free(&chars);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static void
@@ -1950,11 +2003,12 @@ GetStringUTFRegion(JNIEnv *jenv, jstring string,
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	char *full_buf;
 	size_t full_len;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -1986,7 +2040,7 @@ GetStringUTFRegion(JNIEnv *jenv, jstring string,
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static const jchar *
@@ -2006,10 +2060,11 @@ GetStringUTFLength(JNIEnv *jenv, jstring string)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jint length = 0;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -2025,7 +2080,7 @@ GetStringUTFLength(JNIEnv *jenv, jstring string)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return length;
@@ -2036,11 +2091,12 @@ GetStringUTFChars(JNIEnv *jenv, jstring string, jboolean *isCopy)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	char *buf = NULL;
 	size_t len;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -2065,7 +2121,7 @@ GetStringUTFChars(JNIEnv *jenv, jstring string, jboolean *isCopy)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return buf;
@@ -2075,15 +2131,16 @@ static void
 ReleaseStringUTFChars(JNIEnv *jenv, jstring string, const char *utf)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Free buffer */
 	_jc_vm_free(&utf);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 }
 
 static jstring
@@ -2092,10 +2149,11 @@ NewStringUTF(JNIEnv *jenv, const char *bytes)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
 	_jc_object *strobj;
+	_jc_c_stack cstack;
 	jobject string;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Create string */
@@ -2103,7 +2161,7 @@ NewStringUTF(JNIEnv *jenv, const char *bytes)
 
 	/* Returning to native code */
 	string = _jc_pop_local_native_frame(env, strobj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return (jstring)string;
@@ -2117,6 +2175,7 @@ NewObjectArray(JNIEnv *jenv, jsize length, jclass class, jobject initValue)
 	_jc_object_array *array = NULL;
 	_jc_object *const class_obj = *class;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jobject aref = NULL;
 	size_t name_len;
 	_jc_type *atype;
@@ -2124,7 +2183,7 @@ NewObjectArray(JNIEnv *jenv, jsize length, jclass class, jobject initValue)
 	char *aname;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Sanity check */
@@ -2173,7 +2232,7 @@ NewObjectArray(JNIEnv *jenv, jsize length, jclass class, jobject initValue)
 done:
 	/* Returning to native code */
 	aref = _jc_pop_local_native_frame(env, (_jc_object *)array);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return (jobjectArray)aref;
@@ -2186,11 +2245,12 @@ New ## Type ## Array(JNIEnv *jenv, jsize length)			\
 	_jc_env *const env = _JC_JNI2ENV(jenv);				\
 	_jc_jvm *const vm = env->vm;					\
 	_jc_native_frame frame;						\
+	_jc_c_stack cstack;						\
 	_jc_array *array;						\
 	jobject ref;							\
 									\
 	/* Returning from native code */				\
-	_jc_resuming_java(env);						\
+	_jc_resuming_java(env, &cstack);				\
 	_jc_push_stack_local_native_frame(env, &frame);			\
 									\
 	/* Create array */						\
@@ -2199,7 +2259,7 @@ New ## Type ## Array(JNIEnv *jenv, jsize length)			\
 									\
 	/* Returning to native code */					\
 	ref = _jc_pop_local_native_frame(env, (_jc_object *)array);	\
-	_jc_stopping_java(env, NULL);					\
+	_jc_stopping_java(env, &cstack, NULL);				\
 									\
 	/* Done */							\
 	return (j ## _type ## Array)ref;				\
@@ -2218,10 +2278,11 @@ GetArrayLength(JNIEnv *jenv, jarray array)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jsize length = 0;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -2237,7 +2298,7 @@ GetArrayLength(JNIEnv *jenv, jarray array)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return length;
@@ -2250,12 +2311,13 @@ RegisterNatives(JNIEnv *jenv, jclass class,
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jint result = JNI_ERR;
 	_jc_type *type;
 	int i;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get class info */
@@ -2299,7 +2361,7 @@ RegisterNatives(JNIEnv *jenv, jclass class,
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return result;
@@ -2310,11 +2372,12 @@ UnregisterNatives(JNIEnv *jenv, jclass class)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
+	_jc_c_stack cstack;
 	_jc_type *type;
 	int i;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Get class info */
 	type = *_JC_VMFIELD(vm, *class, Class, vmdata, _jc_type *);
@@ -2329,7 +2392,7 @@ UnregisterNatives(JNIEnv *jenv, jclass class)
 	}
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return JNI_OK;
@@ -2340,10 +2403,11 @@ MonitorEnter(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jint status = JNI_ERR;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for NULL */
@@ -2359,7 +2423,7 @@ MonitorEnter(JNIEnv *jenv, jobject obj)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return status;
@@ -2370,10 +2434,11 @@ MonitorExit(JNIEnv *jenv, jobject obj)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jint status = JNI_ERR;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for NULL */
@@ -2389,7 +2454,7 @@ MonitorExit(JNIEnv *jenv, jobject obj)
 done:
 	/* Returning to native code */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return status;
@@ -2408,10 +2473,11 @@ static jfieldID
 FromReflectedField(JNIEnv *jenv, jobject object)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
+	_jc_c_stack cstack;
 	_jc_field *field;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Sanity check */
 	_JC_ASSERT(object != NULL && *object != NULL);
@@ -2421,7 +2487,7 @@ FromReflectedField(JNIEnv *jenv, jobject object)
 	field = _jc_get_field(env, *object);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return field;
@@ -2432,10 +2498,11 @@ FromReflectedMethod(JNIEnv *jenv, jobject object)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
+	_jc_c_stack cstack;
 	_jc_method *method;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 
 	/* Sanity check */
 	_JC_ASSERT(object != NULL && *object != NULL);
@@ -2447,7 +2514,7 @@ FromReflectedMethod(JNIEnv *jenv, jobject object)
 	    _jc_get_method(env, *object) : _jc_get_constructor(env, *object);
 
 	/* Returning to native code */
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return method;
@@ -2458,11 +2525,12 @@ ToReflectedField(JNIEnv *jenv, jclass class, jfieldID field)
 {
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_object *obj;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get reflected Field */
@@ -2470,7 +2538,7 @@ ToReflectedField(JNIEnv *jenv, jclass class, jfieldID field)
 
 	/* Returning to native code */
 	ref = _jc_pop_local_native_frame(env, obj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -2482,11 +2550,12 @@ ToReflectedMethod(JNIEnv *jenv, jclass class, jmethodID method)
 	const jboolean is_constructor = strcmp(method->name, "<init>") == 0;
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_object *obj;
 	jobject ref;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Get reflected Method or Constructor */
@@ -2496,7 +2565,7 @@ ToReflectedMethod(JNIEnv *jenv, jclass class, jmethodID method)
 
 	/* Returning to native code */
 	ref = _jc_pop_local_native_frame(env, obj);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 
 	/* Done */
 	return ref;
@@ -2508,11 +2577,12 @@ NewDirectByteBuffer(JNIEnv *jenv, void *addr, jlong capacity)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jobject data = NULL;
 	jobject buffer = NULL;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Create Pointer object */
@@ -2547,7 +2617,7 @@ done:
 	_jc_free_local_native_ref(&data);
 	buffer = _jc_pop_local_native_frame(env,
 	    _jc_free_local_native_ref(&buffer));
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 	return buffer;
 }
 
@@ -2557,11 +2627,12 @@ GetDirectBufferAddress(JNIEnv *jenv, jobject obj)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	_jc_object *data;
 	void *addr = NULL;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -2596,7 +2667,7 @@ GetDirectBufferAddress(JNIEnv *jenv, jobject obj)
 done:
 	/* Done */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 	return addr;
 }
 
@@ -2606,10 +2677,11 @@ GetDirectBufferCapacity(JNIEnv *jenv, jobject obj)
 	_jc_env *const env = _JC_JNI2ENV(jenv);
 	_jc_jvm *const vm = env->vm;
 	_jc_native_frame frame;
+	_jc_c_stack cstack;
 	jlong capacity = 0;
 
 	/* Returning from native code */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, &cstack);
 	_jc_push_stack_local_native_frame(env, &frame);
 
 	/* Check for null */
@@ -2625,7 +2697,7 @@ GetDirectBufferCapacity(JNIEnv *jenv, jobject obj)
 done:
 	/* Done */
 	_jc_pop_local_native_frame(env, NULL);
-	_jc_stopping_java(env, NULL);
+	_jc_stopping_java(env, &cstack, NULL);
 	return capacity;
 }
 

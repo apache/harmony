@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: gnu_classpath_VMStackWalker.c,v 1.5 2005/11/09 17:16:36 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -28,7 +28,8 @@ static jboolean
 _jc_poppable_method(_jc_jvm *vm, _jc_method *method)
 {
 	/* Check for VMStackWalker methods */
-	if (method->class == vm->boot.types.VMStackWalker)
+	if (method->class == vm->boot.types.VMStackWalker
+	    && strcmp(method->name, "getClassContext") == 0)
 		return JNI_TRUE;
 
 	/* Check for Method.invoke() */
@@ -50,38 +51,25 @@ JCNI_gnu_classpath_VMStackWalker_getCallingClass(_jc_env *env)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_object *result = NULL;
-	_jc_stack_crawl crawl;
+	_jc_java_stack *jstack;
 	jboolean top;
 
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
 	/* Crawl up the stack */
-	for (top = JNI_TRUE, _jc_stack_crawl_first(env, &crawl);
-	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
-
-		/* Ignore non-Java stack frames */
-		if (crawl.method->class == NULL)
-			continue;
+	for (top = JNI_TRUE, jstack = env->java_stack;
+	    jstack != NULL; jstack = jstack->next) {
 
 		/* Ignore internal methods on top of stack */
-		if (top && _jc_poppable_method(vm, crawl.method))
+		if (top && _jc_poppable_method(vm, jstack->method))
 			continue;
 		top = JNI_FALSE;
 
 		/* Pop one additional frame */
-		do
-		    _jc_stack_crawl_next(vm, &crawl);
-		while (crawl.method != NULL && crawl.method->class == NULL);
+		jstack = jstack->next;
 
 		/* Done */
-		if (crawl.method != NULL && crawl.method->class != NULL)
-			result = crawl.method->class->instance;
+		result = jstack->method->class->instance;
 		break;
 	}
-
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Done */
 	return result;
@@ -97,38 +85,25 @@ JCNI_gnu_classpath_VMStackWalker_getCallingClassLoader(_jc_env *env)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_object *result = NULL;
-	_jc_stack_crawl crawl;
+	_jc_java_stack *jstack;
 	jboolean top;
 
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
 	/* Crawl up the stack */
-	for (top = JNI_TRUE, _jc_stack_crawl_first(env, &crawl);
-	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
-
-		/* Ignore non-Java stack frames */
-		if (crawl.method->class == NULL)
-			continue;
+	for (top = JNI_TRUE, jstack = env->java_stack;
+	    jstack != NULL; jstack = jstack->next) {
 
 		/* Ignore internal methods on top of stack */
-		if (top && _jc_poppable_method(vm, crawl.method))
+		if (top && _jc_poppable_method(vm, jstack->method))
 			continue;
 		top = JNI_FALSE;
 
 		/* Pop one additional frame */
-		do
-		    _jc_stack_crawl_next(vm, &crawl);
-		while (crawl.method != NULL && crawl.method->class == NULL);
+		jstack = jstack->next;
 
 		/* Done */
-		if (crawl.method != NULL && crawl.method->class != NULL)
-			result = crawl.method->class->loader->instance;
+		result = jstack->method->class->loader->instance;
 		break;
 	}
-
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Done */
 	return result;
@@ -143,35 +118,25 @@ JCNI_gnu_classpath_VMStackWalker_getClassContext(_jc_env *env)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_object_array *array = NULL;
-	_jc_stack_crawl crawl;
+	_jc_java_stack *jstack;
 	jboolean top;
 	int num;
 
 again:
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
-	/* Crawl the Java stack and add Class objects for each method */
-	for (num = 0, top = JNI_TRUE, _jc_stack_crawl_first(env, &crawl);
-	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
-
-		/* Ignore non-Java stack frames */
-		if (crawl.method->class == NULL)
-			continue;
+	/* Crawl up the stack */
+	for (num = 0, top = JNI_TRUE, jstack = env->java_stack;
+	    jstack != NULL; jstack = jstack->next) {
 
 		/* Ignore internal methods on top of stack */
-		if (top && _jc_poppable_method(vm, crawl.method))
+		if (top && _jc_poppable_method(vm, jstack->method))
 			continue;
 		top = JNI_FALSE;
 
 		/* Add method's class */
 		if (array != NULL)
-			array->elems[~num] = crawl.method->class->instance;
+			array->elems[~num] = jstack->method->class->instance;
 		num++;
 	}
-
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Create array and loop back */
 	if (array == NULL) {

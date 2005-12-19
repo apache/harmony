@@ -829,36 +829,27 @@ int
 _jc_reflect_accessible(_jc_env *env, _jc_type *member_class,
 	uint16_t access, _jc_type **calling_classp)
 {
-	_jc_jvm *const vm = env->vm;
 	_jc_type *calling_class = NULL;
-	_jc_stack_crawl crawl;
+	_jc_java_stack *jstack;
 	int rtn;
 
 	/* If member is public, we're done */
 	if ((access & _JC_ACC_PUBLIC) != 0)
 		return 1;
 
-	/* Lock VM */
-	_JC_MUTEX_LOCK(env, vm->mutex);
-
 	/* Crawl the stack until we see a non-bootstrap ClassLoader */
-	for (_jc_stack_crawl_first(env, &crawl);
-	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
+	for (jstack = env->java_stack; jstack != NULL; jstack = jstack->next) {
 
-		/* Skip _jc_invoke_jcni_a() and java.lang.reflect methods */
-		if (crawl.method->class == NULL
-		    || strncmp(crawl.method->class->name, "java/lang/reflect/",
-		      sizeof("java/lang/reflect/") - 1) == 0)
+		/* Skip java.lang.reflect methods */
+		if (strncmp(jstack->method->class->name, "java/lang/reflect/",
+		    sizeof("java/lang/reflect/") - 1) == 0)
 			continue;
 
 		/* Found calling class */
-		calling_class = crawl.method->class;
+		calling_class = jstack->method->class;
 		*calling_classp = calling_class;
 		break;
 	}
-
-	/* Unlock VM */
-	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Sanity check */
 	_JC_ASSERT(calling_class != NULL);
@@ -879,11 +870,11 @@ _jc_reflect_accessible(_jc_env *env, _jc_type *member_class,
 		int member_plen = 0;
 		const char *s;
 
-		/*
-		 * Check for same package.
-		 * XXX We should not say classes loaded by different
-		 * XXX class loaders are in the same package.
-		 */
+		/* Check for same class loader */
+		if (member_class->loader != calling_class->loader)
+			return JNI_FALSE;
+
+		/* Check for same package */
 		if ((s = strrchr(member_class->name, '/')) != NULL)
 			member_plen = s - member_class->name;
 		if ((s = strrchr(calling_class->name, '/')) != NULL)

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: gc_scan.c,v 1.18 2005/11/09 18:14:22 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -46,7 +46,6 @@ _jc_gc(_jc_env *env, jboolean urgent)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_heap *const heap = &vm->heap;
-	jboolean clipped_stack = JNI_FALSE;
 	_jc_object **root_set = NULL;
 	_jc_trace_info *trace = NULL;
 	struct timeval start_time;
@@ -123,8 +122,12 @@ _jc_gc(_jc_env *env, jboolean urgent)
 	LIST_FOREACH(loader, &vm->class_loaders, link)
 		loader->gc_mark = 0;
 
-	/* Clip the Java stack for the current thread */
-	clipped_stack = _jc_stack_clip(env);
+	/*
+	 * We must clip the C stack for the current thread. Otherwise,
+	 * references could "leak" into subsequent C stack frames and
+	 * we'd miss them when scanning this thread's C stack.
+	 */
+	_jc_stack_clip(env);
 
 	/* Compute the root set */
 	_JC_MUTEX_LOCK(env, vm->mutex);
@@ -464,10 +467,6 @@ done:
 	_jc_heap_check(vm);
 #endif
 
-	/* Unclip Java stack */
-	if (clipped_stack)
-		_jc_stack_unclip(env);
-
 	/* Free root set memory */
 	_jc_vm_free(&root_set);
 
@@ -481,6 +480,10 @@ done:
 		sched_yield();
 
 	/* Done */
+#ifndef NDEBUG
+	if (env->c_stack != NULL)
+		env->c_stack->clipped = JNI_FALSE;
+#endif
 	return status;
 
 fail:

@@ -109,9 +109,11 @@ _jc_get_jni_loader(_jc_env *env)
 {
 	_jc_jvm *const vm = env->vm;
 
-	/* Use calling method's loader, if known */
-	if (env->jni_method != NULL)
-		return env->jni_method->class->loader;
+	/* Use current JNI method's loader, if known */
+	if (env->java_stack != NULL
+	    && _JC_ACC_TEST(env->java_stack->method, NATIVE)
+	    && !_JC_ACC_TEST(env->java_stack->method, JCNI))
+		return env->java_stack->method->class->loader;
 
 	/* Invoke ClassLoader.getSystemClassLoader() */
 	if (_jc_invoke_static(env,
@@ -250,7 +252,7 @@ _jc_loader_wait(_jc_env *env, _jc_class_loader *loader)
 	_JC_MUTEX_ASSERT(env, loader->mutex);
 
 	/* Exit Java mode */
-	_jc_stopping_java(env, "waiting for class loader %p (%s)",
+	_jc_stopping_java(env, NULL, "waiting for class loader %p (%s)",
 	    loader, (loader->instance == NULL) ?
 	      "boot loader" : loader->instance->type->name);
 
@@ -261,7 +263,7 @@ _jc_loader_wait(_jc_env *env, _jc_class_loader *loader)
 	_JC_COND_WAIT(env, loader->cond, loader->mutex);
 
 	/* Resume Java */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, NULL);
 }
 
 /*

@@ -31,11 +31,10 @@ static int		_jc_root_walk_thread(_jc_env *thread,
 				const _jc_word *info, _jc_object ***refsp);
 static int		_jc_root_walk_native_refs(_jc_native_frame_list *list,
 				_jc_object ***refsp);
-static int		_jc_scan_exec_stack(_jc_jvm *vm, _jc_exec_stack *stack,
+static int		_jc_scan_c_stack(_jc_jvm *vm, _jc_c_stack *cstack,
 				const _jc_word *info, _jc_object ***refsp);
-static int		_jc_scan_interp_stack(_jc_jvm *vm,
-				_jc_interp_stack *stack, const _jc_word *info,
-				_jc_object ***refsp);
+static int		_jc_scan_java_stack(_jc_jvm *vm, _jc_java_stack *jstack,
+				const _jc_word *info, _jc_object ***refsp);
 
 /* Internal variables */
 static const int	_jc_register_offs[] = _JC_REGISTER_OFFS;
@@ -236,32 +235,32 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
 	_jc_jvm *const vm = thread->vm;
 	_jc_object **refs = *refsp;
 	_jc_java_stack *jstack;
-	_jc_stack_crawl crawl;
+	_jc_c_stack *cstack;
 	int count = 0;
 
-	/* Sanity check */
-	_JC_ASSERT(thread->java_stack == NULL
-	    || thread->java_stack->interp
-	    || thread->java_stack->clipped);
+	/* Scan each contiguous C stack chunk */
+	for (cstack = thread->c_stack; cstack != NULL; cstack = cstack->next) {
 
-	/* Scan each contiguous Java stack segment */
-	for (jstack = thread->java_stack;
-	    jstack != NULL; jstack = jstack->next) {
-		count += jstack->interp ?
-		    _jc_scan_interp_stack(vm,
-		      (_jc_interp_stack *)jstack, info, &refs) :
-		    _jc_scan_exec_stack(vm,
-		      (_jc_exec_stack *)jstack, info, &refs);
+		/* Sanity check */
+		_JC_ASSERT(cstack->clipped);
+
+		/* Scan references */
+		count += _jc_scan_c_stack(vm, cstack, info, &refs);
 	}
 
-	/* Get implicit references from Java methods to their classes */
-	for (_jc_stack_crawl_first(thread, &crawl);
-	    crawl.method != NULL; _jc_stack_crawl_next(vm, &crawl)) {
+	/*
+	 * Scan each Java stack frame. Also get implicit references
+	 * from Java methods to their classes.
+	 */
+	for (jstack = thread->java_stack;
+	    jstack != NULL; jstack = jstack->next) {
 
-		/* Add the Class instance */
-		_JC_ASSERT(crawl.method->class->instance != NULL);
+		/* Scan the Java stack frame */
+		count += _jc_scan_java_stack(vm, jstack, info, &refs);
+
+		/* Scan the Class instance */
 		if (refs != NULL)
-			*refs++ = crawl.method->class->instance;
+			*refs++ = jstack->method->class->instance;
 		count++;
 	}
 
@@ -298,10 +297,10 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
  * Scan an interpreter stack frame.
  */
 static int
-_jc_scan_interp_stack(_jc_jvm *vm, _jc_interp_stack *stack,
+_jc_scan_java_stack(_jc_jvm *vm, _jc_java_stack *jstack,
 	const _jc_word *info, _jc_object ***refsp)
 {
-	_jc_method *const method = stack->jstack.method;
+	_jc_method *const method = jstack->method;
 	_jc_method_code *const code = &method->code;
 	_jc_object **refs = *refsp;
 	_jc_object *obj;
@@ -309,12 +308,12 @@ _jc_scan_interp_stack(_jc_jvm *vm, _jc_interp_stack *stack,
 	int i;
 
 	/* Any state in this method yet? */
-	if (stack->locals == NULL)
+	if (jstack->locals == NULL)
 		return 0;
 
 	/* Scan stack frame's locals and Java operand stack */
 	for (i = 0; i < code->max_locals + code->max_stack; i++) {
-		_jc_object *const ref = (_jc_object *)stack->locals[i];
+		_jc_object *const ref = (_jc_object *)jstack->locals[i];
 
 		/* Find object pointed to, if any */
 		if ((obj = _jc_locate_object(vm, info, ref)) == NULL)
@@ -335,7 +334,7 @@ _jc_scan_interp_stack(_jc_jvm *vm, _jc_interp_stack *stack,
  * Scan a contiguous executable stack chunk.
  */
 static int
-_jc_scan_exec_stack(_jc_jvm *vm, _jc_exec_stack *stack,
+_jc_scan_c_stack(_jc_jvm *vm, _jc_c_stack *cstack,
 	const _jc_word *info, _jc_object ***refsp)
 {
 	const size_t stack_step = (_JC_STACK_ALIGN < sizeof(void *)) ?
@@ -353,7 +352,7 @@ _jc_scan_exec_stack(_jc_jvm *vm, _jc_exec_stack *stack,
 
 		/* Find object pointed to by register, if any */
 		if ((obj = _jc_locate_object(vm, info,
-		    *(_jc_word **)((char *)&stack->regs
+		    *(_jc_word **)((char *)&cstack->regs
 		      + _jc_register_offs[regnum]))) == NULL)
 			continue;
 
@@ -363,11 +362,15 @@ _jc_scan_exec_stack(_jc_jvm *vm, _jc_exec_stack *stack,
 		count++;
 	}
 
-	/* Compute the top of this Java stack segment */
-	stack_top = _jc_mcontext_sp(&stack->regs);
+	/*
+	 * Find the bottom of this Java stack segment.
+	 *
+	 * Note: we assume 'cstack' is allocated at the bottom!
+	 */
+	stack_bot = (const char *)cstack;
 
-	/* Find the bottom of this Java stack segment */
-	stack_bot = stack->start_sp;
+	/* Find the top of this Java stack segment */
+	stack_top = _jc_mcontext_sp(&cstack->regs);
 
 	/* Sanity check stack alignment */
 	_JC_ASSERT(((_jc_word)stack_top & (_JC_STACK_ALIGN - 1)) == 0);

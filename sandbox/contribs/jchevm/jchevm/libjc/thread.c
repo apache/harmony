@@ -69,8 +69,6 @@ _jc_set_current_env(_jc_jvm *vm, _jc_env *env)
  * There must not be any currently posted exception.
  *
  * Returns JNI_ERR if there was a cross-posted exception.
- *
- * The caller must have clipped the top of the Java stack.
  */
 jint
 _jc_thread_check(_jc_env *env)
@@ -111,8 +109,6 @@ _jc_thread_check(_jc_env *env)
 
 /*
  * Suspend the current thread.
- *
- * The caller must have clipped the top of the Java stack.
  */
 static void
 _jc_thread_suspend(_jc_env *env)
@@ -133,16 +129,29 @@ _jc_thread_suspend(_jc_env *env)
 	}
 
 	/* Exit Java mode */
-	_jc_stopping_java(env, "Suspended by Thread.suspend()");
+	_jc_stopping_java(env, NULL, "Suspended by Thread.suspend()");
+
+	/* Lock VM */
+	_JC_MUTEX_LOCK(env, vm->mutex);
+
+	/* Clip the C stack */
+	_jc_stack_clip(env);
 
 	/* Suspend while suspended */
-	_JC_MUTEX_LOCK(env, vm->mutex);
 	while (env->suspended)
 		_JC_COND_WAIT(env, env->resumption, vm->mutex);
+
+#ifndef NDEBUG
+	/* Mark the C stack as not clipped */
+	if (env->c_stack != NULL)
+		env->c_stack->clipped = JNI_FALSE;
+#endif
+
+	/* Unock VM */
 	_JC_MUTEX_UNLOCK(env, vm->mutex);
 
 	/* Return to Java mode */
-	_jc_resuming_java(env);
+	_jc_resuming_java(env, NULL);
 }
 
 /*
@@ -258,10 +267,6 @@ _jc_halt_if_requested(_jc_env *env)
 
 	/* Stop while requested to */
 	while (env->status == _JC_THRDSTAT_HALTING_NORMAL) {
-		jboolean clipped_stack_top;
-
-		/* Clip the current top of the Java stack if not already */
-		clipped_stack_top = _jc_stack_clip(env);
 
 		/* Update status */
 		env->status = _JC_THRDSTAT_HALTED;
@@ -271,13 +276,18 @@ _jc_halt_if_requested(_jc_env *env)
 		if (--vm->pending_halt_count == 0)
 			_JC_COND_SIGNAL(vm->all_halted);
 
+		/* Clip the top of the C stack */
+		_jc_stack_clip(env);
+
 		/* Wait for the thread requesting the halt to finish */
 		while (env->status == _JC_THRDSTAT_HALTED)
 			_JC_COND_WAIT(env, vm->world_restarted, vm->mutex);
 
-		/* Unclip stack */
-		if (clipped_stack_top)
-			_jc_stack_unclip(env);
+#ifndef NDEBUG
+		/* Mark the C stack not clipped */
+		if (env->c_stack != NULL)
+			env->c_stack->clipped = JNI_FALSE;
+#endif
 	}
 
 	/* Sanity check */
@@ -347,9 +357,18 @@ _jc_stop_the_world(_jc_env *env)
 		}
 	}
 
+	/* Clip the C stack */
+	_jc_stack_clip(env);
+
 	/* Now wait for the threads running in Java mode to actually halt */
 	while (vm->pending_halt_count > 0)
 		_JC_COND_WAIT(env, vm->all_halted, vm->mutex);
+
+#ifndef NDEBUG
+	/* Mark the C stack not clipped */
+	if (env->c_stack != NULL)
+		env->c_stack->clipped = JNI_FALSE;
+#endif
 
 	/* Update flags */
 	vm->world_stopped = JNI_TRUE;
@@ -408,18 +427,27 @@ _jc_resume_the_world(_jc_env *env)
  * Transition from Java code to non-Java code.
  * Halt if requested to do so by another thread.
  *
- * NOTE: If this is called because we're about to invoke a non-Java
- * function, then the top of the Java stack must be clipped first.
+ * There are two cases:
+ *
+ * 1. We are about to invoke some JNI/native code (cstack == NULL)
+ *
+ *    Clip the current C call stack so no references in registers
+ *    "leak" into the upcoming C stack frames, causing missed GC refs.
+ *
+ * 2. We are about to return to some JNI/native code (cstack != NULL)
+ *
+ *    _jc_resuming_java() was previously invoked with cstack.
+ *    Pop the cstack frame that we previously pushed.
  */
 void
-_jc_stopping_java(_jc_env *env, const char *fmt, ...)
+_jc_stopping_java(_jc_env *env, _jc_c_stack *cstack, const char *fmt, ...)
 {
 	_jc_jvm *const vm = env->vm;
 
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL
 	    || env->status == _JC_THRDSTAT_HALTING_NORMAL);
-	_JC_ASSERT(env->java_stack == NULL || env->java_stack->clipped);
+	_JC_ASSERT(env->c_stack == NULL || !env->c_stack->clipped);
 
 	/* Update debug status */
 	if (fmt == NULL) {
@@ -453,23 +481,37 @@ _jc_stopping_java(_jc_env *env, const char *fmt, ...)
 		/* Unlock the VM */
 		_JC_MUTEX_UNLOCK(env, vm->mutex);
 	}
+
+	/* Pop C stack chunk if desired, else clip current C stack */
+	if (cstack != NULL) {
+		_JC_ASSERT(cstack == env->c_stack);
+		env->c_stack = cstack->next;
+	} else
+		_jc_stack_clip(env);
 }
 
 /*
  * Transition from non-Java code to Java code.
  * Halt if requested to do so by another thread.
  *
- * The top of the Java stack must have been clipped already.
+ * There are two cases:
+ *
+ * 1. We're about to invoke VM code from JNI/native code (cstack != NULL)
+ *
+ *    Start a new C stack chunk by pushing "cstack" onto the C call stack.
+ *
+ * 2. We're about to return from JNI/native to VM code (cstack == NULL)
+ *
+ *    Do nothing; the previous top of the C stack becomes "active" again.
  */
 void
-_jc_resuming_java(_jc_env *env)
+_jc_resuming_java(_jc_env *env, _jc_c_stack *cstack)
 {
 	_jc_jvm *const vm = env->vm;
 
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NONJAVA
 	    || env->status == _JC_THRDSTAT_HALTING_NONJAVA);
-	_JC_ASSERT(env->java_stack == NULL || env->java_stack->clipped);
 
 	/* Change this thread's status, but first halt if requested */
 	if (!_jc_compare_and_swap(&env->status,
@@ -481,6 +523,21 @@ _jc_resuming_java(_jc_env *env)
 		env->status = _JC_THRDSTAT_RUNNING_NORMAL;
 		_JC_MUTEX_UNLOCK(env, vm->mutex);
 	}
+
+	/* Start a new C stack chunk if desired */
+	if (cstack != NULL) {
+		_JC_ASSERT(env->c_stack == NULL || env->c_stack->clipped);
+		cstack->next = env->c_stack;
+		env->c_stack = cstack;
+	} else {
+		_JC_ASSERT(env->c_stack != NULL);
+		_JC_ASSERT(env->c_stack->clipped);
+	}
+
+#ifndef NDEBUG
+	/* Mark the C stack as not clipped */
+	env->c_stack->clipped = JNI_FALSE;
+#endif
 }
 
 /*
@@ -567,6 +624,7 @@ _jc_thread_start(void *arg)
 {
 	_jc_env *env = arg;
 	_jc_jvm *const vm = env->vm;
+	_jc_c_stack cstack;
 	_jc_object *vmt;
 
 	/* Sanity checks */
@@ -576,6 +634,10 @@ _jc_thread_start(void *arg)
 
 	/* Set thread-local pointer to my thread structure */
 	_jc_set_current_env(vm, env);
+
+	/* Push first C stack chunk */
+	memset(&cstack, 0, sizeof(cstack));
+	env->c_stack = &cstack;
 
 	/* Grab pointer to the VMThread */
 	vmt = env->retval.l;
@@ -597,13 +659,14 @@ _jc_thread_start(void *arg)
 
 /*
  * Create a thread structure and attach it to the currently running thread.
+ * If provided, use cstack as the first C stack chunk.
  *
  * If unsuccessful an exception is stored in the supplied pointers.
  *
  * NOTE: This assumes the VM global mutex is held.
  */
 _jc_env *
-_jc_attach_thread(_jc_jvm *vm, _jc_ex_info *ex)
+_jc_attach_thread(_jc_jvm *vm, _jc_ex_info *ex, _jc_c_stack *cstack)
 {
 	_jc_env temp_env;
 	_jc_env *env;
@@ -653,6 +716,12 @@ _jc_attach_thread(_jc_jvm *vm, _jc_ex_info *ex)
 
 	/* Sanity check */
 	_JC_ASSERT(env->status == _JC_THRDSTAT_RUNNING_NORMAL);
+	_JC_ASSERT(env->c_stack == NULL);
+
+	/* Push first C stack chunk */
+	_JC_ASSERT(cstack != NULL);
+	memset(cstack, 0, sizeof(*cstack));
+	env->c_stack = cstack;
 
 	/* Done */
 	return env;
@@ -688,6 +757,7 @@ _jc_detach_thread(_jc_env **envp)
 	_JC_MUTEX_ASSERT(_jc_get_current_env(), vm->mutex);
 	_JC_ASSERT(env == vm->threads.by_id[env->thread_id]);
 	_JC_ASSERT(env == _jc_get_current_env());
+	_JC_ASSERT(env->c_stack != NULL);
 
 	/* Update thread's debugging status */
 	snprintf(env->text_status, sizeof(env->text_status), "detaching");
@@ -698,6 +768,10 @@ _jc_detach_thread(_jc_env **envp)
 	 * here, we might leave without being counted as having halted.
 	 */
 	_jc_halt_if_requested(env);
+
+	/* Pop off the last remaining C stack chunk */
+	env->c_stack = env->c_stack->next;
+	_JC_ASSERT(env->c_stack == NULL);
 
 	/* Invalidate current thread's reference to thread structure */
 	_jc_set_current_env(vm, NULL);
@@ -719,6 +793,7 @@ _jc_thread_shutdown(_jc_env **envp)
 {
 	_jc_env *env = *envp;
 	int last_report = -1;
+	_jc_c_stack cstack;
 	_jc_env *thread;
 	_jc_jvm *vm;
 
@@ -765,7 +840,7 @@ _jc_thread_shutdown(_jc_env **envp)
 	}
 
 	/* Re-attach this thread */
-	if ((env = _jc_attach_thread(vm, NULL)) == NULL)
+	if ((env = _jc_attach_thread(vm, NULL, &cstack)) == NULL)
 		_jc_fatal_error(vm, "can't reattach shutdown thread");
 
 	/* Stop the world */

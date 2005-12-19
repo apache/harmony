@@ -34,18 +34,17 @@ typedef struct _jc_boot_fields _jc_boot_fields;
 typedef struct _jc_boot_methods _jc_boot_methods;
 typedef struct _jc_boot_objects _jc_boot_objects;
 typedef struct _jc_boot_types _jc_boot_types;
+typedef struct _jc_c_stack _jc_c_stack;
 typedef struct _jc_class_ref _jc_class_ref;
 typedef struct _jc_classbytes _jc_classbytes;
 typedef struct _jc_cpath_entry _jc_cpath_entry;
 typedef struct _jc_ex_info _jc_ex_info;
-typedef struct _jc_exec_stack _jc_exec_stack;
 typedef struct _jc_fat_lock _jc_fat_lock;
 typedef struct _jc_fat_locks _jc_fat_locks;
 typedef struct _jc_heap _jc_heap;
 typedef struct _jc_heap_size _jc_heap_size;
 typedef struct _jc_heap_sweep _jc_heap_sweep;
 typedef struct _jc_initialization _jc_initialization;
-typedef struct _jc_interp_stack _jc_interp_stack;
 typedef struct _jc_java_stack _jc_java_stack;
 typedef struct _jc_jvm _jc_jvm;
 typedef struct _jc_native_frame _jc_native_frame;
@@ -59,7 +58,6 @@ typedef struct _jc_scan_frame _jc_scan_frame;
 typedef struct _jc_scan_list _jc_scan_list;
 typedef struct _jc_splay_tree _jc_splay_tree;
 typedef struct _jc_stab _jc_stab;
-typedef struct _jc_stack_crawl _jc_stack_crawl;
 typedef struct _jc_threads _jc_threads;
 typedef struct _jc_trace_info _jc_trace_info;
 typedef struct _jc_type_node _jc_type_node;
@@ -167,37 +165,31 @@ struct _jc_native_frame {
 };
 
 /*
- * Common information that lives at the beginning of
- * _jc_exec_stack and _jc_interp_stack.
+ * Represents one chunk of scannable C call stack.
  *
  * The "next" field is needed is so we can "skip over" stack frames
  * associated with native code, signal frames, etc. This is because
  * we can't reliabily follow the chain of frame pointers through
  * those frames (especially signal frames).
- */
-struct _jc_java_stack {
-	jboolean			interp;
-	jboolean			clipped;
-	_jc_method			*method;
-	_jc_java_stack			*next;
-};
-
-/*
- * Represents one native method stack frame. "regs" hold a copy
+ *
+ * All but the current chunk are "clipped", meaning "regs" hold a copy
  * of all machine registers, so that all references are captured
  * and don't leak into unscanned regions of the C call stack.
  */
-struct _jc_exec_stack {
-	_jc_java_stack			jstack;
-	void				*start_sp;
+struct _jc_c_stack {
+	_jc_c_stack			*next;
 	mcontext_t			regs;
+#ifndef NDEBUG
+	jboolean			clipped;
+#endif
 };
 
 /*
- * Represents one interpreted Java method stack frame.
+ * Represents one interpreted Java method in the Java call stack.
  */
-struct _jc_interp_stack {
-	_jc_java_stack			jstack;
+struct _jc_java_stack {
+	_jc_java_stack			*next;
+	_jc_method			*method;
 	_jc_word			*locals;
 	const int			*pcp;
 };
@@ -210,20 +202,11 @@ struct _jc_interp_stack {
  * If/when Throwable.getStackTrace() is called later, this
  * information gets converted into a StackTraceElement[] array.
  *
- * 'ipc' is the (int) instruction index.
+ * 'ipc' is the (int) instruction index, or -1 if unknown.
  */
 struct _jc_saved_frame {
 	_jc_method			*method;
 	int				ipc;
-};
-
-/*
- * Structure used when crawling the stack looking for Java methods.
- * See _jc_stack_crawl_first() and _jc_stack_crawl_next().
- */
-struct _jc_stack_crawl {
-	_jc_method			*method;	/* current method */
-	_jc_java_stack			*stack;		/* current chunk */
 };
 
 /*
@@ -248,12 +231,14 @@ struct _jc_env {
 	/* Interpreter trampoline info */
 	_jc_method			*interp;	/* interpret method */
 
-	/* Stack info */
-	void				*stack;		/* thread's stack */
+	/* C stack info */
+	void				*stack;		/* c stack memory */
 	size_t				stack_size;	/* size of stack */
-	char				*stack_limit;	/* for stack overflow */
+	char				*stack_limit;	/* c stack limit */
+	_jc_c_stack			*c_stack;	/* c stack chunks */
+
+	/* Java stack info */
 	_jc_java_stack			*java_stack;	/* java stack info */
-	_jc_method			*jni_method;	/* innermost JNI meth */
 	_jc_value			retval;		/* invoke rtn value */
 
 	/* Thread info */
@@ -304,6 +289,9 @@ struct _jc_env {
 	/* Thread flags */
 	jboolean			out_of_memory;
 	jboolean			handling_signal;
+#ifndef NDEBUG
+	jboolean			interpreting;
+#endif
 
 	/*
 	 * Support for Thread.interrupt() and suspend/resume.

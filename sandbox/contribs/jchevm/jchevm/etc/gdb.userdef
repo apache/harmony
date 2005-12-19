@@ -73,15 +73,11 @@ define print_java_stack_frame
 end
 
 define pstack
-  set $s = $env->java_stack
-  while $s != 0
-    set $s = (_jc_java_stack *)$s
-    if $s->interp
-      set $s = (_jc_interp_stack *)$s
-      set $method = $s->jstack.method
-      print_java_stack_frame $method *$s->pcp
-    end
-    set $s = ((_jc_java_stack *)$s)->next
+  set $jstack = $env->java_stack
+  while $jstack != 0
+    set $jip = $jstack->pcp != 0 ? *$jstack->pcp : -1
+    print_java_stack_frame $jstack->method $jip
+    set $jstack = $jstack->next
   end
 end
 

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: lock.c,v 1.6 2005/03/19 19:40:45 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -32,7 +32,6 @@ jint
 _jc_lock_object(_jc_env *env, _jc_object *obj)
 {
 	_jc_jvm *const vm = env->vm;
-	jboolean clipped_stack_top;
 	_jc_word old_lockword;
 	_jc_fat_lock *lock;
 	jint status;
@@ -134,11 +133,8 @@ retry:
 		if (!notified)
 			goto retry;
 
-		/* Clip the current top of the Java stack if not already */
-		clipped_stack_top = _jc_stack_clip(env);
-
 		/* Enter non-Java mode */
-		_jc_stopping_java(env, "waiting for thinlock on %s@%p",
+		_jc_stopping_java(env, NULL, "waiting for thinlock on %s@%p",
 		    obj->type->name, obj);
 
 		/* Transition made; reacquire lock */
@@ -169,11 +165,7 @@ retry:
 		_JC_MUTEX_UNLOCK(env, owner->lock.owner.mutex);
 
 		/* Back to running normal Java */
-		_jc_resuming_java(env);
-
-		/* Unclip stack */
-		if (clipped_stack_top)
-			_jc_stack_unclip(env);
+		_jc_resuming_java(env, NULL);
 
 		/* Retry locking */
 		env->lock.waiter.object = NULL;
@@ -184,11 +176,8 @@ retry:
 	lock = vm->fat_locks.by_id[_JC_LW_EXTRACT(old_lockword, FAT_ID)];
 	_JC_ASSERT(lock != NULL);
 
-	/* Clip the current top of the Java stack if not already */
-	clipped_stack_top = _jc_stack_clip(env);
-
 	/* Enter non-Java mode */
-	_jc_stopping_java(env, "waiting for fatlock on %s@%p",
+	_jc_stopping_java(env, NULL, "waiting for fatlock on %s@%p",
 	    obj->type->name, obj);
 
 	/* Acquire mutex associated with the fat lock */
@@ -219,11 +208,7 @@ retry:
 	_JC_MUTEX_UNLOCK(env, lock->mutex);
 
 	/* Return to normal java */
-	_jc_resuming_java(env);
-
-	/* Unclip stack */
-	if (clipped_stack_top)
-		_jc_stack_unclip(env);
+	_jc_resuming_java(env, NULL);
 
 	/* Throw an error if recursion count overflowed */
 	if (status != JNI_OK) {
