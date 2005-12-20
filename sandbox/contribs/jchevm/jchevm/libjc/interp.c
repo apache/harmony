@@ -21,8 +21,7 @@
 #include "libjc.h"
 
 /* Internal functions */
-static jint	_jc_interp(_jc_env *env, _jc_method *const method,
-			_jc_object *this, _jc_word *args);
+static jint	_jc_interp(_jc_env *env, _jc_method *const method);
 static int	_jc_lookup_compare(const void *v1, const void *v2);
 static void	_jc_vinterp(_jc_env *env, va_list args);
 static void	_jc_vinterp_native(_jc_env *env, va_list args);
@@ -35,9 +34,9 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define JUMP(_pc)							\
     do {								\
 	pc = (_pc);							\
-	_JC_ASSERT(sp >= state.locals + code->max_locals);		\
-	_JC_ASSERT(sp <= state.locals					\
-	    + code->max_locals + code->max_stack);			\
+	_JC_ASSERT(env->sp >= locals + code->max_locals);		\
+	_JC_ASSERT(env->sp <= locals + code->max_locals			\
+	    + code->max_stack);						\
 	_JC_ASSERT(pc >= 0 && pc < code->num_insns);			\
 	_JC_ASSERT(actions[code->opcodes[pc]] != NULL);			\
 	_JC_ASSERT(ticker > 0);						\
@@ -65,23 +64,23 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 
 #endif	/* !NDEBUG */
 
-#define STACKI(i)	(*(jint *)(sp + (i)))
-#define STACKF(i)	(*(jfloat *)(sp + (i)))
-#define STACKJ(i)	(*(jlong *)(sp + (i)))
-#define STACKD(i)	(*(jdouble *)(sp + (i)))
-#define STACKL(i)	(*(_jc_object **)(sp + (i)))
-#define LOCALI(i)	(*(jint *)(state.locals + i))
-#define LOCALF(i)	(*(jfloat *)(state.locals + i))
-#define LOCALJ(i)	(*(jlong *)(state.locals + i))
-#define LOCALD(i)	(*(jdouble *)(state.locals + i))
-#define LOCALL(i)	(*(_jc_object **)(state.locals + i))
-#define PUSHI(v)	do { STACKI(0) = (v); sp++; } while (0)
-#define PUSHF(v)	do { STACKF(0) = (v); sp++; } while (0)
-#define PUSHJ(v)	do { STACKJ(0) = (v); sp += 2; } while (0)
-#define PUSHD(v)	do { STACKD(0) = (v); sp += 2; } while (0)
-#define PUSHL(v)	do { STACKL(0) = (v); sp++; } while (0)
-#define POP(i)		(sp -= (i))
-#define POP2(i)		(sp -= 2 * (i))
+#define STACKI(i)	(*(jint *)(env->sp + (i)))
+#define STACKF(i)	(*(jfloat *)(env->sp + (i)))
+#define STACKJ(i)	(*(jlong *)(env->sp + (i)))
+#define STACKD(i)	(*(jdouble *)(env->sp + (i)))
+#define STACKL(i)	(*(_jc_object **)(env->sp + (i)))
+#define LOCALI(i)	(*(jint *)(locals + i))
+#define LOCALF(i)	(*(jfloat *)(locals + i))
+#define LOCALJ(i)	(*(jlong *)(locals + i))
+#define LOCALD(i)	(*(jdouble *)(locals + i))
+#define LOCALL(i)	(*(_jc_object **)(locals + i))
+#define PUSHI(v)	do { STACKI(0) = (v); env->sp++; } while (0)
+#define PUSHF(v)	do { STACKF(0) = (v); env->sp++; } while (0)
+#define PUSHJ(v)	do { STACKJ(0) = (v); env->sp += 2; } while (0)
+#define PUSHD(v)	do { STACKD(0) = (v); env->sp += 2; } while (0)
+#define PUSHL(v)	do { STACKL(0) = (v); env->sp++; } while (0)
+#define POP(i)		(env->sp -= (i))
+#define POP2(i)		(env->sp -= 2 * (i))
 
 #define INFO(f)		(code->info[pc].f)
 
@@ -108,8 +107,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
  * Otherwise, an exception is posted and JNI_ERR is returned.
  */
 static jint
-_jc_interp(_jc_env *const env, _jc_method *const method,
-	_jc_object *const this, _jc_word *args)
+_jc_interp(_jc_env *const env, _jc_method *const method)
 {
 #define ACTION(name)  [_JC_ ## name]= &&do_ ## name
 	static const void *const actions[0x100] = {
@@ -257,20 +255,38 @@ _jc_interp(_jc_env *const env, _jc_method *const method,
 	};
 	_jc_method_code *const code = &method->code;
 	int ticker = PERIODIC_CHECK_TICKS;
-	_jc_java_stack state;
+	_jc_java_stack stack_frame;
+	_jc_word *const locals = env->sp;
 	_jc_object *lock = NULL;
-	_jc_word *sp;
 	int pc = 0;
 
-	/* Stack overflow check */
+	/* Sanity check */
+	_JC_ASSERT(env->sp != NULL);
+	_JC_ASSERT(env->sp >= env->stack_data);
+	_JC_ASSERT(env->sp <= env->stack_data + env->vm->java_stack_size);
+
+	/* Stack overflow check for C stack */
 #if _JC_DOWNWARD_STACK
-	if ((char *)&env < env->stack_limit)
+	if ((char *)&env < env->stack_limit
+	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0)
 #else
-	if ((char *)&env > env->stack_limit)
+	if ((char *)&env > env->stack_limit
+	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0)
 #endif
 	{
 		_jc_post_exception(env, _JC_StackOverflowError);
 		return JNI_ERR;
+	}
+
+	/* Check Java stack overflow; release secret space during exception */
+	if (env->sp + code->max_locals + code->max_stack
+	    > env->stack_data_end) {
+		if ((env->in_vmex & (1 << _JC_StackOverflowError)) == 0
+		    || env->sp + code->max_locals + code->max_stack
+		      > env->stack_data_end + _JC_JAVA_STACK_MARGIN) {
+			_jc_post_exception(env, _JC_StackOverflowError);
+			return JNI_ERR;
+		}
 	}
 
 	/* Is method abstract? */
@@ -282,44 +298,27 @@ _jc_interp(_jc_env *const env, _jc_method *const method,
 	}
 
 	/* Sanity check */
-	_JC_ASSERT((this == NULL) == _JC_ACC_TEST(method, STATIC));
 	_JC_ASSERT(!_JC_ACC_TEST(method->class, INTERFACE)
 	    || strcmp(method->name, "<clinit>") == 0);
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
 	_JC_ASSERT(!_JC_ACC_TEST(method, NATIVE));
 
 	/* Push Java stack frame */
-	memset(&state, 0, sizeof(state));
-	state.next = env->java_stack;
-	state.method = method;
-	state.pcp = &pc;
-	env->java_stack = &state;
-
-	/* Allocate combined space for locals and stack */
-	if ((state.locals = _JC_STACK_ALLOC(env,
-	    (code->max_locals + code->max_stack)
-	      * sizeof(*state.locals))) == NULL) {
-		_jc_post_exception_info(env);
-		goto exception;
-	}
-	sp = &state.locals[code->max_locals];
+	memset(&stack_frame, 0, sizeof(stack_frame));
+	stack_frame.next = env->java_stack;
+	stack_frame.method = method;
+	stack_frame.pcp = &pc;
+	env->java_stack = &stack_frame;
+	env->sp += code->max_locals;
 
 	/* Sanity check */
 	_JC_ASSERT(code->opcodes != NULL);
 	_JC_ASSERT(code->num_insns > 0);
 
-	/* Copy method parameters into local variables */
-	if (!_JC_ACC_TEST(method, STATIC)) {
-		state.locals[0] = (_jc_word)this;
-		memcpy(state.locals + 1, args,
-		    code->num_params2 * sizeof(*args));
-	} else
-		memcpy(state.locals, args, code->num_params2 * sizeof(*args));
-
 	/* Synchronize */
 	if (_JC_ACC_TEST(method, SYNCHRONIZED)) {
 		lock = _JC_ACC_TEST(method, STATIC) ?
-		    method->class->instance : this;
+		    method->class->instance : LOCALL(0);
 		if (_jc_lock_object(env, lock) != JNI_OK) {
 			lock = NULL;
 			goto exception;
@@ -933,32 +932,23 @@ do_invokeinterface:
     {
 	const _jc_invoke *const invoke = &INFO(invoke);
 	_jc_method *imethod = invoke->method;
-	_jc_word *params;
-	_jc_object *obj;
 	jint status;
-
-	/* Pop the stack and check for null */
-	POP(invoke->pop);
-	if (code->opcodes[pc] == _JC_invokestatic)
-		obj = NULL;
-	else {
-		if ((obj = STACKL(0)) == NULL)
-			goto null_pointer_exception;
-	}
 
 	/* Sanity check */
 	_JC_ASSERT((code->opcodes[pc] == _JC_invokeinterface)
 	    == _JC_ACC_TEST(imethod->class, INTERFACE));
 
-	/* Do method lookup */
+	/* Check for null and do method lookup */
 	switch (code->opcodes[pc]) {
 	case _JC_invokeinterface:
 	    {
 		_jc_method *const *methodp;
 		_jc_method *quick;
+		_jc_object *obj;
 
-		/* Sanity check */
-		_JC_ASSERT(_JC_ACC_TEST(imethod->class, INTERFACE));
+		/* Check for null */
+		if ((obj = STACKL(-invoke->pop)) == NULL)
+			goto null_pointer_exception;
 
 		/* Verify object implements the interface */
 		switch (_jc_instance_of(env, obj, imethod->class)) {
@@ -1025,14 +1015,22 @@ got_method:
 	    }
 	case _JC_invokevirtual:
 	    {
+		_jc_object *obj;
 		_jc_type *vtype;
 
+		/* Check for null */
+		if ((obj = STACKL(-invoke->pop)) == NULL)
+			goto null_pointer_exception;
+
+		/* Resolve virtual method */
 		vtype = _JC_LW_TEST(obj->lockword, ARRAY) ?
 		    env->vm->boot.types.Object : obj->type;
 		imethod = vtype->u.nonarray.mtable[imethod->vtable_index];
 		break;
 	    }
 	case _JC_invokespecial:
+		if (STACKL(-invoke->pop) == NULL)
+			goto null_pointer_exception;
 		break;
 	case _JC_invokestatic:
 		if (!_JC_FLG_TEST(imethod->class, INITIALIZED)
@@ -1044,14 +1042,23 @@ got_method:
 		break;
 	}
 
-	/* Get pointer to parameters */
-	params = sp + (code->opcodes[pc] != _JC_invokestatic);
-
 	/* Invoke the method */
-	if (_JC_ACC_TEST(imethod, NATIVE))
-		status = _jc_invoke_native_method(env, imethod, JNI_TRUE, sp);
-	else
-		status = _jc_interp(env, imethod, obj, params);
+	if (_JC_ACC_TEST(imethod, NATIVE)) {
+
+		/* Invoke native method */
+		status = _jc_invoke_native_method(env,
+		    imethod, JNI_TRUE, env->sp - invoke->pop);
+
+		/* Pop the stack */
+		POP(invoke->pop);
+	} else {
+
+		/* Pop the stack, leaving parameters above the top */
+		POP(invoke->pop);
+
+		/* Invoke the method */
+		status = _jc_interp(env, imethod);
+	}
 
 	/* Did method throw an exception? */
 	if (status != JNI_OK)
@@ -1183,7 +1190,7 @@ do_lcmp:
 	PUSHI(_JC_LCMP(STACKJ(0), STACKJ(2)));
 	NEXT();
 do_ldc:
-	memcpy(sp, &INFO(constant), sizeof(_jc_word));
+	memcpy(env->sp, &INFO(constant), sizeof(_jc_word));
 	POP(-1);
 	NEXT();
 do_ldc_string:
@@ -1216,7 +1223,7 @@ do_ldc_string:
 	JUMP(pc);
     }
 do_ldc2_w:
-	memcpy(sp, &INFO(constant), 2 * sizeof(_jc_word));
+	memcpy(env->sp, &INFO(constant), 2 * sizeof(_jc_word));
 	POP(-2);
 	NEXT();
 do_ldiv:
@@ -1546,9 +1553,9 @@ exception:
 			_jc_printf(vm, "]\n");
 		}
 
-		/* Push exception and proceed with handler */
-		state.locals[code->max_locals] = (_jc_word)e;
-		sp = &state.locals[code->max_locals + 1];
+		/* Clear stack, push exception, and proceed with handler */
+		env->sp = locals + code->max_locals;
+		PUSHL(e);
 		JUMP(trap->target);
 	}
 
@@ -1579,7 +1586,8 @@ exit:
 	}
 
 	/* Pop Java stack frame */
-	env->java_stack = state.next;
+	env->java_stack = stack_frame.next;
+	env->sp = locals;
 
 	/* Done */
 	return status;
@@ -1677,78 +1685,109 @@ _jc_vinterp(_jc_env *env, va_list args)
 #ifndef NDEBUG
 	const jboolean was_interpreting = env->interpreting;
 #endif
+	jboolean allocated_stack = JNI_FALSE;
 	_jc_method *const method = env->interp;
-	_jc_word *params;
-	_jc_object *this;
+	_jc_word *sp;
 	jint status;
-	int pnum;
 	int i;
 
 	/* Sanity check */
 	_JC_ASSERT(!_JC_ACC_TEST(method, NATIVE));
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
 
-	/* Allocate space for parameter array */
-	if ((params = _JC_STACK_ALLOC(env, method->code.num_params2)) == NULL) {
-		_jc_post_exception_info(env);
-		_jc_throw_exception(env);
+	/* For a brand new thread, allocate its Java stack here */
+	if (env->sp == NULL) {
+		_jc_jvm *const vm = env->vm;
+
+		/* Sanity check */
+		_JC_ASSERT(env->stack_data == NULL);
+		_JC_ASSERT(env->stack_data_end == NULL);
+
+		/* Allocate Java stack */
+		if ((env->stack_data = _jc_vm_alloc(env,
+		    vm->java_stack_size * sizeof(*env->stack_data))) == NULL) {
+			_jc_post_exception_info(env);
+			_jc_throw_exception(env);
+		}
+		env->stack_data_end = env->stack_data
+		    + vm->java_stack_size - _JC_JAVA_STACK_MARGIN;
+		env->sp = env->stack_data;
+		allocated_stack = JNI_TRUE;
 	}
 
-	/* Get 'this' if method is non-static */
-	this = !_JC_ACC_TEST(method, STATIC) ?
-	    va_arg(args, _jc_object *) : NULL;
+	/* Place paramters over top of the stack like _jc_interp() expects */
+	sp = env->sp;
 
-	/* Get method parameters, occupying two slots for long/double */
-	for (pnum = i = 0; i < method->num_parameters; i++) {
+	/* Check Java stack overflow; release secret space during exception */
+	if (sp + 1 + method->code.num_params2 > env->stack_data_end) {
+		if ((env->in_vmex & (1 << _JC_StackOverflowError)) == 0
+		    || sp + 1 + method->code.num_params2
+		      > env->stack_data_end + _JC_JAVA_STACK_MARGIN) {
+			_jc_post_exception(env, _JC_StackOverflowError);
+			_jc_throw_exception(env);
+		}
+	}
+
+	/* Push 'this' if method is non-static */
+	if (!_JC_ACC_TEST(method, STATIC)) {
+		_jc_object *const this = va_arg(args, _jc_object *);
+
+		_JC_ASSERT(this != NULL);
+		*sp++ = (_jc_word)this;
+	}
+
+	/* Push method parameters, occupying two slots for long/double */
+	for (i = 0; i < method->num_parameters; i++) {
 		switch (method->param_ptypes[i]) {
 		case _JC_TYPE_BOOLEAN:
-			params[pnum++] = (jint)(jboolean)va_arg(args, jint);
+			*sp++ = (jint)(jboolean)va_arg(args, jint);
 			break;
 		case _JC_TYPE_BYTE:
-			params[pnum++] = (jint)(jbyte)va_arg(args, jint);
+			*sp++ = (jint)(jbyte)va_arg(args, jint);
 			break;
 		case _JC_TYPE_CHAR:
-			params[pnum++] = (jint)(jchar)va_arg(args, jint);
+			*sp++ = (jint)(jchar)va_arg(args, jint);
 			break;
 		case _JC_TYPE_SHORT:
-			params[pnum++] = (jint)(jshort)va_arg(args, jint);
+			*sp++ = (jint)(jshort)va_arg(args, jint);
 			break;
 		case _JC_TYPE_INT:
-			params[pnum++] = va_arg(args, jint);
+			*sp++ = va_arg(args, jint);
 			break;
 		case _JC_TYPE_FLOAT:
 		    {
 			jfloat param = (jfloat)va_arg(args, jdouble);
 
-			memcpy(params + pnum, &param, sizeof(param));
-			pnum++;
+			memcpy(sp, &param, sizeof(param));
+			sp++;
 			break;
 		    }
 		case _JC_TYPE_LONG:
 		    {
 			jlong param = va_arg(args, jlong);
 
-			memcpy(params + pnum, &param, sizeof(param));
-			pnum += 2;
+			memcpy(sp, &param, sizeof(param));
+			sp += 2;
 			break;
 		    }
 		case _JC_TYPE_DOUBLE:
 		    {
 			jdouble param = va_arg(args, jdouble);
 
-			memcpy(params + pnum, &param, sizeof(param));
-			pnum += 2;
+			memcpy(sp, &param, sizeof(param));
+			sp += 2;
 			break;
 		    }
 		case _JC_TYPE_REFERENCE:
-			params[pnum++] = (_jc_word)va_arg(args, _jc_object *);
+			*sp++ = (_jc_word)va_arg(args, _jc_object *);
 			break;
 		default:
 			_JC_ASSERT(JNI_FALSE);
 			break;
 		}
 	}
-	_JC_ASSERT(pnum == method->code.num_params2);
+	_JC_ASSERT(sp - env->sp == method->code.num_params2
+	    + !_JC_ACC_TEST(method, STATIC));
 
 #ifndef NDEBUG
         /* Signals are not OK now */
@@ -1756,12 +1795,20 @@ _jc_vinterp(_jc_env *env, va_list args)
 #endif
 
 	/* Invoke method */
-	status = _jc_interp(env, method, this, params);
+	status = _jc_interp(env, method);
 
 #ifndef NDEBUG
         /* Restore debug flag */
 	env->interpreting = was_interpreting;
 #endif
+
+	/* Free Java stack */
+	if (allocated_stack) {
+		_JC_ASSERT(env->sp == env->stack_data);
+		_jc_vm_free(&env->stack_data);
+		env->stack_data_end = NULL;
+		env->sp = NULL;
+	}
 
 	/* Throw exception if any */
 	if (status != JNI_OK)

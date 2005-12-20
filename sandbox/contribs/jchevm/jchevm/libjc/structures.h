@@ -190,7 +190,6 @@ struct _jc_c_stack {
 struct _jc_java_stack {
 	_jc_java_stack			*next;
 	_jc_method			*method;
-	_jc_word			*locals;
 	const int			*pcp;
 };
 
@@ -221,7 +220,15 @@ struct _jc_ex_info {
  * The JC internal structure that corresponds to a Java thread.
  */
 struct _jc_env {
-	_jc_jvm				*vm;		/* vm that owns me */
+
+	/* Java stack info */
+	_jc_word			*sp;		/* java stack pointer */
+	_jc_word			*stack_data;	/* java stack memory */
+	_jc_word			*stack_data_end;
+	_jc_java_stack			*java_stack;	/* java method stack */
+
+	/* The VM that owns me */
+	_jc_jvm				*vm;
 
 	/* Exception info */
 	_jc_catch_frame			*catch_list;	/* exception traps */
@@ -237,11 +244,8 @@ struct _jc_env {
 	char				*stack_limit;	/* c stack limit */
 	_jc_c_stack			*c_stack;	/* c stack chunks */
 
-	/* Java stack info */
-	_jc_java_stack			*java_stack;	/* java stack info */
-	_jc_value			retval;		/* invoke rtn value */
-
 	/* Thread info */
+	_jc_value			retval;		/* invoke rtn value */
 	volatile _jc_word		status;		/* JC_THRDSTAT_* */
 	jint				thread_id;	/* unique thread id */
 	_jc_object			*instance;	/* java.lang.Thread */
@@ -792,6 +796,7 @@ struct _jc_jvm {
 	 */
 	_jc_properties			system_properties;
 	int				max_loader_pages;
+	int				java_stack_size;
 
 	/*
 	 * This is non-NULL during bootstrap only.

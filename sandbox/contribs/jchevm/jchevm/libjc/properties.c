@@ -55,6 +55,7 @@ static const _jc_property _jc_fixed_properties[] = {
 { "jc.stack.minimum",			_JC_STACK_MINIMUM },
 { "jc.stack.maximum",			_JC_STACK_MAXIMUM },
 { "jc.stack.default",			_JC_STACK_DEFAULT },
+{ "jc.java.stack.size",			_JC_JAVA_STACK_DEFAULT },
 { "jc.heap.size",			_JC_DEFAULT_HEAP_SIZE },
 { "jc.loader.size",			_JC_DEFAULT_LOADER_SIZE },
 { "jc.heap.granularity",		_JC_DEFAULT_HEAP_GRANULARITY },
@@ -275,6 +276,10 @@ _jc_digest_properties(_jc_env *env)
 	_JC_ASSERT(prop != NULL);
 	if (_jc_digest_size(env, &vm->threads.stack_default, prop, 0) != JNI_OK)
 		return JNI_ERR;
+	prop = _jc_property_get(vm, "jc.java.stack.size");
+	_JC_ASSERT(prop != NULL);
+	if (_jc_digest_size(env, &vm->java_stack_size, prop, 0) != JNI_OK)
+		return JNI_ERR;
 
 	/* Get heap size and granularity factor */
 	prop = _jc_property_get(vm, "jc.heap.size");
@@ -303,6 +308,13 @@ _jc_digest_properties(_jc_env *env)
 		    "jc.stack.minimum", vm->threads.stack_minimum,
 		    "jc.stack.maximum", vm->threads.stack_maximum,
 		    "jc.stack.default", vm->threads.stack_default);
+		return JNI_ERR;
+	}
+	if (vm->java_stack_size < _JC_JAVA_STACK_MARGIN) {
+		_JC_EX_STORE(env, InternalError,
+		    "too small value %d < %d for `%s'",
+		    vm->java_stack_size, _JC_JAVA_STACK_MARGIN,
+		    "jc.java.stack.size");
 		return JNI_ERR;
 	}
 

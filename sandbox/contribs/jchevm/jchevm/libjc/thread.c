@@ -946,6 +946,9 @@ set_id:
 	_JC_ASSERT(!new_env->resumption_initialized);
 	_JC_ASSERT(vm->threads.next_free_id > 0
 	    && vm->threads.next_free_id < _JC_MAX_THREADS);
+	_JC_ASSERT(new_env->sp == NULL);
+	_JC_ASSERT(new_env->stack_data == NULL);
+	_JC_ASSERT(new_env->stack_data_end == NULL);
 
 	/* Assign next free thread ID to the thread */
 	new_env->thread_id = vm->threads.next_free_id;
@@ -1032,7 +1035,7 @@ _jc_free_thread(_jc_env **envp, int cachable)
 }
 
 /*
- * Free stacks associated with free'd threads.
+ * Free C stacks associated with free'd threads.
  *
  * We maintain the invariant that free'd threads whose stacks still
  * need to be free'd are all at the front of the thread free list.
@@ -1044,7 +1047,7 @@ _jc_free_thread_stacks(_jc_jvm *vm)
 {
 	_jc_env *env;
 
-	/* Free thread stack */
+	/* Free thread's C stack */
 	LIST_FOREACH(env, &vm->threads.free_list, link) {
 		if (env->stack == NULL)
 			return;
@@ -1067,8 +1070,13 @@ _jc_destroy_thread(_jc_env **envp)
 		return;
 	*envp = NULL;
 
-	/* Stack must be freed already */
+	/* C stack must be freed already */
 	_JC_ASSERT(env->stack == NULL);
+
+	/* Java stack must be freed already */
+	_JC_ASSERT(env->sp == NULL);
+	_JC_ASSERT(env->stack_data == NULL);
+	_JC_ASSERT(env->stack_data_end == NULL);
 
 	/* Destroy thread structure */
 	_jc_cond_destroy(&env->lock.waiter.cond);

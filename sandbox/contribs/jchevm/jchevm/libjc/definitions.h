@@ -287,6 +287,12 @@ enum {
 #define _JC_CL_ALLOC_IMPLICIT_REFS		32
 
 /*
+ * Java stack parameters
+ */
+#define _JC_JAVA_STACK_DEFAULT			"4090"
+#define _JC_JAVA_STACK_MARGIN			100
+
+/*
  * Short name for internal java.lang native library.
  */
 #define _JC_INTERNAL_NATIVE_LIBRARY		"JC virtual machine"

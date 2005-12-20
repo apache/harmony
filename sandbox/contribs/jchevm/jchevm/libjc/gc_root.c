@@ -33,8 +33,6 @@ static int		_jc_root_walk_native_refs(_jc_native_frame_list *list,
 				_jc_object ***refsp);
 static int		_jc_scan_c_stack(_jc_jvm *vm, _jc_c_stack *cstack,
 				const _jc_word *info, _jc_object ***refsp);
-static int		_jc_scan_java_stack(_jc_jvm *vm, _jc_java_stack *jstack,
-				const _jc_word *info, _jc_object ***refsp);
 
 /* Internal variables */
 static const int	_jc_register_offs[] = _JC_REGISTER_OFFS;
@@ -236,6 +234,7 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
 	_jc_object **refs = *refsp;
 	_jc_java_stack *jstack;
 	_jc_c_stack *cstack;
+	_jc_word *sp;
 	int count = 0;
 
 	/* Scan each contiguous C stack chunk */
@@ -248,17 +247,26 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
 		count += _jc_scan_c_stack(vm, cstack, info, &refs);
 	}
 
-	/*
-	 * Scan each Java stack frame. Also get implicit references
-	 * from Java methods to their classes.
-	 */
+	/* Scan the Java stack */
+	_JC_ASSERT(thread->sp >= thread->stack_data
+	    && thread->sp <= thread->stack_data + vm->java_stack_size);
+	for (sp = thread->stack_data; sp < thread->sp; sp++) {
+		_jc_object *const ref = (_jc_object *)*sp;
+		_jc_object *obj;
+
+		/* Find object pointed to, if any */
+		if ((obj = _jc_locate_object(vm, info, ref)) == NULL)
+			continue;
+
+		/* Add object to list */
+		if (refs != NULL)
+			*refs++ = obj;
+		count++;
+	}
+
+	/* Get implicit references from Java methods to their classes */
 	for (jstack = thread->java_stack;
 	    jstack != NULL; jstack = jstack->next) {
-
-		/* Scan the Java stack frame */
-		count += _jc_scan_java_stack(vm, jstack, info, &refs);
-
-		/* Scan the Class instance */
 		if (refs != NULL)
 			*refs++ = jstack->method->class->instance;
 		count++;
@@ -285,43 +293,6 @@ _jc_root_walk_thread(_jc_env *thread, const _jc_word *info, _jc_object ***refsp)
 	if (thread->cross_exception != NULL) {
 		if (refs != NULL)
 			*refs++ = thread->cross_exception;
-		count++;
-	}
-
-	/* Done */
-	*refsp = refs;
-	return count;
-}
-
-/*
- * Scan an interpreter stack frame.
- */
-static int
-_jc_scan_java_stack(_jc_jvm *vm, _jc_java_stack *jstack,
-	const _jc_word *info, _jc_object ***refsp)
-{
-	_jc_method *const method = jstack->method;
-	_jc_method_code *const code = &method->code;
-	_jc_object **refs = *refsp;
-	_jc_object *obj;
-	int count = 0;
-	int i;
-
-	/* Any state in this method yet? */
-	if (jstack->locals == NULL)
-		return 0;
-
-	/* Scan stack frame's locals and Java operand stack */
-	for (i = 0; i < code->max_locals + code->max_stack; i++) {
-		_jc_object *const ref = (_jc_object *)jstack->locals[i];
-
-		/* Find object pointed to, if any */
-		if ((obj = _jc_locate_object(vm, info, ref)) == NULL)
-			continue;
-
-		/* Add object to list */
-		if (refs != NULL)
-			*refs++ = obj;
 		count++;
 	}
 
