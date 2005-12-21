@@ -34,9 +34,8 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define JUMP(_pc)							\
     do {								\
 	pc = (_pc);							\
-	_JC_ASSERT(env->sp >= locals + code->max_locals);		\
-	_JC_ASSERT(env->sp <= locals + code->max_locals			\
-	    + code->max_stack);						\
+	_JC_ASSERT(sp >= locals + code->max_locals);			\
+	_JC_ASSERT(sp <= locals + code->max_locals + code->max_stack);	\
 	_JC_ASSERT(pc >= 0 && pc < code->num_insns);			\
 	_JC_ASSERT(actions[code->opcodes[pc]] != NULL);			\
 	_JC_ASSERT(ticker > 0);						\
@@ -64,23 +63,23 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 
 #endif	/* !NDEBUG */
 
-#define STACKI(i)	(*(jint *)(env->sp + (i)))
-#define STACKF(i)	(*(jfloat *)(env->sp + (i)))
-#define STACKJ(i)	(*(jlong *)(env->sp + (i)))
-#define STACKD(i)	(*(jdouble *)(env->sp + (i)))
-#define STACKL(i)	(*(_jc_object **)(env->sp + (i)))
+#define STACKI(i)	(*(jint *)(sp + (i)))
+#define STACKF(i)	(*(jfloat *)(sp + (i)))
+#define STACKJ(i)	(*(jlong *)(sp + (i)))
+#define STACKD(i)	(*(jdouble *)(sp + (i)))
+#define STACKL(i)	(*(_jc_object **)(sp + (i)))
 #define LOCALI(i)	(*(jint *)(locals + i))
 #define LOCALF(i)	(*(jfloat *)(locals + i))
 #define LOCALJ(i)	(*(jlong *)(locals + i))
 #define LOCALD(i)	(*(jdouble *)(locals + i))
 #define LOCALL(i)	(*(_jc_object **)(locals + i))
-#define PUSHI(v)	do { STACKI(0) = (v); env->sp++; } while (0)
-#define PUSHF(v)	do { STACKF(0) = (v); env->sp++; } while (0)
-#define PUSHJ(v)	do { STACKJ(0) = (v); env->sp += 2; } while (0)
-#define PUSHD(v)	do { STACKD(0) = (v); env->sp += 2; } while (0)
-#define PUSHL(v)	do { STACKL(0) = (v); env->sp++; } while (0)
-#define POP(i)		(env->sp -= (i))
-#define POP2(i)		(env->sp -= 2 * (i))
+#define PUSHI(v)	do { STACKI(0) = (v); sp++; } while (0)
+#define PUSHF(v)	do { STACKF(0) = (v); sp++; } while (0)
+#define PUSHJ(v)	do { STACKJ(0) = (v); sp += 2; } while (0)
+#define PUSHD(v)	do { STACKD(0) = (v); sp += 2; } while (0)
+#define PUSHL(v)	do { STACKL(0) = (v); sp++; } while (0)
+#define POP(i)		(sp -= (i))
+#define POP2(i)		(sp -= 2 * (i))
 
 #define INFO(f)		(code->info[pc].f)
 
@@ -258,6 +257,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	_jc_java_stack stack_frame;
 	_jc_word *const locals = env->sp;
 	_jc_object *lock = NULL;
+	_jc_word *sp;
 	int pc = 0;
 
 	/* Sanity check */
@@ -309,7 +309,8 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	stack_frame.method = method;
 	stack_frame.pcp = &pc;
 	env->java_stack = &stack_frame;
-	env->sp += code->max_locals;
+	sp = locals + code->max_locals;
+	env->sp = sp + code->max_stack;
 
 	/* Sanity check */
 	_JC_ASSERT(code->opcodes != NULL);
@@ -1047,7 +1048,7 @@ got_method:
 
 		/* Invoke native method */
 		status = _jc_invoke_native_method(env,
-		    imethod, JNI_TRUE, env->sp - invoke->pop);
+		    imethod, JNI_TRUE, sp - invoke->pop);
 
 		/* Pop the stack */
 		POP(invoke->pop);
@@ -1057,7 +1058,9 @@ got_method:
 		POP(invoke->pop);
 
 		/* Invoke the method */
+		env->sp = sp;
 		status = _jc_interp(env, imethod);
+		env->sp = locals + code->max_locals + code->max_stack;
 	}
 
 	/* Did method throw an exception? */
@@ -1190,7 +1193,7 @@ do_lcmp:
 	PUSHI(_JC_LCMP(STACKJ(0), STACKJ(2)));
 	NEXT();
 do_ldc:
-	memcpy(env->sp, &INFO(constant), sizeof(_jc_word));
+	memcpy(sp, &INFO(constant), sizeof(_jc_word));
 	POP(-1);
 	NEXT();
 do_ldc_string:
@@ -1223,7 +1226,7 @@ do_ldc_string:
 	JUMP(pc);
     }
 do_ldc2_w:
-	memcpy(env->sp, &INFO(constant), 2 * sizeof(_jc_word));
+	memcpy(sp, &INFO(constant), 2 * sizeof(_jc_word));
 	POP(-2);
 	NEXT();
 do_ldiv:
@@ -1554,7 +1557,7 @@ exception:
 		}
 
 		/* Clear stack, push exception, and proceed with handler */
-		env->sp = locals + code->max_locals;
+		sp = locals + code->max_locals;
 		PUSHL(e);
 		JUMP(trap->target);
 	}
