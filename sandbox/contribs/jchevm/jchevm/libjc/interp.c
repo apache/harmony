@@ -1151,7 +1151,7 @@ got_method:
 		if (STACKL(-invoke->pop) == NULL)
 			goto null_pointer_exception;
 		break;
-	case _JC_invokestatic:
+	case _JC_invokestatic2:
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
