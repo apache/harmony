@@ -728,7 +728,37 @@ _jc_unwrap_primitive(_jc_env *env, _jc_object *obj, _jc_value *value)
 	if ((status = _jc_invoke_virtual(env,
 	    vm->boot.methods.prim_wrapper[ptype].value, obj)) != JNI_OK)
 		return status;
-	*value = env->retval;
+
+	/* Convert Java return type to actual Java type */
+	switch (ptype) {
+	case _JC_TYPE_BOOLEAN:
+		value->z = (jboolean)env->retval.i;
+		break;
+	case _JC_TYPE_BYTE:
+		value->b = (jbyte)env->retval.i;
+		break;
+	case _JC_TYPE_CHAR:
+		value->c = (jchar)env->retval.i;
+		break;
+	case _JC_TYPE_SHORT:
+		value->s = (jshort)env->retval.i;
+		break;
+	case _JC_TYPE_INT:
+		value->i = env->retval.i;
+		break;
+	case _JC_TYPE_LONG:
+		value->j = env->retval.j;
+		break;
+	case _JC_TYPE_FLOAT:
+		value->f = env->retval.f;
+		break;
+	case _JC_TYPE_DOUBLE:
+		value->d = env->retval.d;
+		break;
+	default:
+		_JC_ASSERT(JNI_FALSE);
+		break;
+	}
 
 	/* Done */
 	return ptype;

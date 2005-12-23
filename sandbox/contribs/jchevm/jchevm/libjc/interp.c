@@ -1070,17 +1070,9 @@ got_method:
 	/* Push return value, if any */
 	switch (imethod->param_ptypes[imethod->num_parameters]) {
 	case _JC_TYPE_BOOLEAN:
-		PUSHI(env->retval.z);
-		break;
 	case _JC_TYPE_BYTE:
-		PUSHI(env->retval.b);
-		break;
 	case _JC_TYPE_CHAR:
-		PUSHI(env->retval.c);
-		break;
 	case _JC_TYPE_SHORT:
-		PUSHI(env->retval.s);
-		break;
 	case _JC_TYPE_INT:
 		PUSHI(env->retval.i);
 		break;
@@ -1575,7 +1567,7 @@ exit:
 
 	/* De-synchronize if necessary */
 	if (lock != NULL) {
-		_jc_value retval;
+		_jc_rvalue retval;
 
 		/* Temporarily save return value */
 		retval = env->retval;
@@ -1656,20 +1648,20 @@ _jc_ ## _name ## _ ## _letter(_jc_env *env, ...)			\
 	va_end(args);							\
 	return _rtn;							\
 }
-_JC_INTERP_ENTRY(z, interp, jboolean, env->retval.z)
-_JC_INTERP_ENTRY(b, interp, jbyte, env->retval.b)
-_JC_INTERP_ENTRY(c, interp, jchar, env->retval.c)
-_JC_INTERP_ENTRY(s, interp, jshort, env->retval.s)
+_JC_INTERP_ENTRY(z, interp, jboolean, (jboolean)env->retval.i)
+_JC_INTERP_ENTRY(b, interp, jbyte, (jbyte)env->retval.i)
+_JC_INTERP_ENTRY(c, interp, jchar, (jchar)env->retval.i)
+_JC_INTERP_ENTRY(s, interp, jshort, (jshort)env->retval.i)
 _JC_INTERP_ENTRY(i, interp, jint, env->retval.i)
 _JC_INTERP_ENTRY(j, interp, jlong, env->retval.j)
 _JC_INTERP_ENTRY(f, interp, jfloat, env->retval.f)
 _JC_INTERP_ENTRY(d, interp, jdouble, env->retval.d)
 _JC_INTERP_ENTRY(l, interp, _jc_object *, env->retval.l)
 _JC_INTERP_ENTRY(v, interp, void, )
-_JC_INTERP_ENTRY(z, interp_native, jboolean, env->retval.z)
-_JC_INTERP_ENTRY(b, interp_native, jbyte, env->retval.b)
-_JC_INTERP_ENTRY(c, interp_native, jchar, env->retval.c)
-_JC_INTERP_ENTRY(s, interp_native, jshort, env->retval.s)
+_JC_INTERP_ENTRY(z, interp_native, jboolean, (jboolean)env->retval.i)
+_JC_INTERP_ENTRY(b, interp_native, jbyte, (jbyte)env->retval.i)
+_JC_INTERP_ENTRY(c, interp_native, jchar, (jchar)env->retval.i)
+_JC_INTERP_ENTRY(s, interp_native, jshort, (jshort)env->retval.i)
 _JC_INTERP_ENTRY(i, interp_native, jint, env->retval.i)
 _JC_INTERP_ENTRY(j, interp_native, jlong, env->retval.j)
 _JC_INTERP_ENTRY(f, interp_native, jfloat, env->retval.f)

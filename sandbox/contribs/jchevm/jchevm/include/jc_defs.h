@@ -107,6 +107,7 @@ typedef struct _jc_method_code		_jc_method_code;
 typedef struct _jc_array		_jc_array;
 typedef struct _jc_object_array		_jc_object_array;
 typedef union _jc_value			_jc_value;
+typedef union _jc_rvalue		_jc_rvalue;
 typedef struct _jc_catch_frame		_jc_catch_frame;
 
 typedef struct _jc_field		_jc_field;
@@ -137,6 +138,19 @@ union _jc_value {
 	jbyte		b;
 	jchar		c;
 	jshort		s;
+	jint		i;
+	jlong		j;
+	jfloat		f;
+	jdouble		d;
+	_jc_object	*l;
+	_jc_word	_dummy;			/* ensure size/alignment */
+};
+
+/*
+ * Java return value. Like _jc_value but has z, b, c, and s folded
+ * into i, because Java methods return all those types as ints.
+ */
+union _jc_rvalue {
 	jint		i;
 	jlong		j;
 	jfloat		f;

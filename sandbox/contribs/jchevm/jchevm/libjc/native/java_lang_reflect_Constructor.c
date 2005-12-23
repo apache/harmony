@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_reflect_Constructor.c,v 1.7 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -44,7 +44,7 @@ JCNI_java_lang_reflect_Constructor_constructNative(_jc_env *env,
 	if (_jc_invoke_virtual(env,
 	    vm->boot.methods.AccessibleObject.isAccessible, this) != JNI_OK)
 		_jc_throw_exception(env);
-	if (env->retval.z)
+	if (env->retval.i)
 		goto accessible;
 
 	/* Check access */

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: arch_functions.c,v 1.4 2005/07/10 21:03:55 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -290,7 +290,7 @@ _jc_build_trampoline(u_char *code, _jc_method *method, const void *func)
 
 void
 _jc_dynamic_invoke(const void *func, int jcni, int nparams,
-	const u_char *ptypes, int nwords, _jc_word *words, _jc_value *retval)
+	const u_char *ptypes, int nwords, _jc_word *words, _jc_rvalue *retval)
 {
 	_jc_word twords[3];
 	u_char push[4];
@@ -355,25 +355,25 @@ push_args:
 		asm volatile ("movl %0,%%ecx" : : "m" (words[2]) : "sp", "cx");
 		asm volatile ("movl %0,%%edx" : : "m" (words[1]) : "sp", "dx");
 		asm volatile ("movl %0,%%eax" : : "m" (words[0]) : "sp", "ax");
-		retval->z = (*(jboolean (*)())func)();
+		retval->i = (*(jboolean (*)())func)();
 		break;
 	case _JC_TYPE_BYTE:
 		asm volatile ("movl %0,%%ecx" : : "m" (words[2]) : "sp", "cx");
 		asm volatile ("movl %0,%%edx" : : "m" (words[1]) : "sp", "dx");
 		asm volatile ("movl %0,%%eax" : : "m" (words[0]) : "sp", "ax");
-		retval->b = (*(jbyte (*)())func)();
+		retval->i = (*(jbyte (*)())func)();
 		break;
 	case _JC_TYPE_CHAR:
 		asm volatile ("movl %0,%%ecx" : : "m" (words[2]) : "sp", "cx");
 		asm volatile ("movl %0,%%edx" : : "m" (words[1]) : "sp", "dx");
 		asm volatile ("movl %0,%%eax" : : "m" (words[0]) : "sp", "ax");
-		retval->c = (*(jchar (*)())func)();
+		retval->i = (*(jchar (*)())func)();
 		break;
 	case _JC_TYPE_SHORT:
 		asm volatile ("movl %0,%%ecx" : : "m" (words[2]) : "sp", "cx");
 		asm volatile ("movl %0,%%edx" : : "m" (words[1]) : "sp", "dx");
 		asm volatile ("movl %0,%%eax" : : "m" (words[0]) : "sp", "ax");
-		retval->s = (*(jshort (*)())func)();
+		retval->i = (*(jshort (*)())func)();
 		break;
 	case _JC_TYPE_INT:
 		asm volatile ("movl %0,%%ecx" : : "m" (words[2]) : "sp", "cx");
@@ -426,7 +426,7 @@ push_args:
 
 void
 _jc_dynamic_invoke(const void *func, int jcni, int nparams,
-	const u_char *ptypes, int nwords, _jc_word *words, _jc_value *retval)
+	const u_char *ptypes, int nwords, _jc_word *words, _jc_rvalue *retval)
 {
 	int i;
 
@@ -437,16 +437,16 @@ _jc_dynamic_invoke(const void *func, int jcni, int nparams,
 	/* Invoke function */
 	switch (ptypes[nparams]) {
 	case _JC_TYPE_BOOLEAN:
-		retval->z = (*(jboolean (*)())func)();
+		retval->i = (*(jboolean (*)())func)();
 		break;
 	case _JC_TYPE_BYTE:
-		retval->b = (*(jbyte (*)())func)();
+		retval->i = (*(jbyte (*)())func)();
 		break;
 	case _JC_TYPE_CHAR:
-		retval->c = (*(jchar (*)())func)();
+		retval->i = (*(jchar (*)())func)();
 		break;
 	case _JC_TYPE_SHORT:
-		retval->s = (*(jshort (*)())func)();
+		retval->i = (*(jshort (*)())func)();
 		break;
 	case _JC_TYPE_INT:
 		retval->i = (*(jint (*)())func)();

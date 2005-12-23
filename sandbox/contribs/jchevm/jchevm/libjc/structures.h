@@ -245,7 +245,7 @@ struct _jc_env {
 	_jc_c_stack			*c_stack;	/* c stack chunks */
 
 	/* Thread info */
-	_jc_value			retval;		/* invoke rtn value */
+	_jc_rvalue			retval;		/* invoke rtn value */
 	volatile _jc_word		status;		/* JC_THRDSTAT_* */
 	jint				thread_id;	/* unique thread id */
 	_jc_object			*instance;	/* java.lang.Thread */

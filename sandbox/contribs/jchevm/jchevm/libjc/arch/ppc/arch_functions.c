@@ -260,7 +260,7 @@ _jc_build_trampoline(u_char *code, _jc_method *method, const void *func)
 
 void
 _jc_dynamic_invoke(const void *func, int jcni, int nparams,
-	const u_char *ptypes, int nwords, _jc_word *words, _jc_value *retval)
+	const u_char *ptypes, int nwords, _jc_word *words, _jc_rvalue *retval)
 {
 	fprintf(stdout, "WARNING: Call to unimplemented function _jc_dynamic_invoke(...).\n");
 	exit(0);

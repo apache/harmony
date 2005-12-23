@@ -412,10 +412,10 @@ CallNonvirtual ## Type ## MethodA(JNIEnv *jenv, jobject obj,		\
 	/* Done */							\
 	return result;							\
 }
-CallNonvirtualMethodA(boolean, Boolean, result = env->retval.z;, NULL)
-CallNonvirtualMethodA(byte, Byte, result = env->retval.b;, NULL)
-CallNonvirtualMethodA(short, Short, result = env->retval.s;, NULL)
-CallNonvirtualMethodA(char, Char, result = env->retval.c;, NULL)
+CallNonvirtualMethodA(boolean, Boolean, result = (jboolean)env->retval.i;, NULL)
+CallNonvirtualMethodA(byte, Byte, result = (jbyte)env->retval.i;, NULL)
+CallNonvirtualMethodA(short, Short, result = (jshort)env->retval.i;, NULL)
+CallNonvirtualMethodA(char, Char, result = (jchar)env->retval.i;, NULL)
 CallNonvirtualMethodA(int, Int, result = env->retval.i;, NULL)
 CallNonvirtualMethodA(long, Long, result = env->retval.j;, NULL)
 CallNonvirtualMethodA(float, Float, result = env->retval.f;, NULL)
@@ -448,10 +448,10 @@ CallNonvirtual ## Type ## MethodV(JNIEnv *jenv, jobject obj,		\
 	/* Done */							\
 	return result;							\
 }
-CallNonvirtualMethodV(boolean, Boolean, result = env->retval.z;, NULL)
-CallNonvirtualMethodV(byte, Byte, result = env->retval.b;, NULL)
-CallNonvirtualMethodV(short, Short, result = env->retval.s;, NULL)
-CallNonvirtualMethodV(char, Char, result = env->retval.c;, NULL)
+CallNonvirtualMethodV(boolean, Boolean, result = (jboolean)env->retval.i;, NULL)
+CallNonvirtualMethodV(byte, Byte, result = (jbyte)env->retval.i;, NULL)
+CallNonvirtualMethodV(short, Short, result = (jshort)env->retval.i;, NULL)
+CallNonvirtualMethodV(char, Char, result = (jchar)env->retval.i;, NULL)
 CallNonvirtualMethodV(int, Int, result = env->retval.i;, NULL)
 CallNonvirtualMethodV(long, Long, result = env->retval.j;, NULL)
 CallNonvirtualMethodV(float, Float, result = env->retval.f;, NULL)
@@ -556,10 +556,10 @@ Call ## Type ## MethodA(JNIEnv *jenv, jobject obj,			\
 	/* Done */							\
 	return result;							\
 }
-CallMethodA(boolean, Boolean, result = env->retval.z;, NULL)
-CallMethodA(byte, Byte, result = env->retval.b;, NULL)
-CallMethodA(short, Short, result = env->retval.s;, NULL)
-CallMethodA(char, Char, result = env->retval.c;, NULL)
+CallMethodA(boolean, Boolean, result = (jboolean)env->retval.i;, NULL)
+CallMethodA(byte, Byte, result = (jbyte)env->retval.i;, NULL)
+CallMethodA(short, Short, result = (jshort)env->retval.i;, NULL)
+CallMethodA(char, Char, result = (jchar)env->retval.i;, NULL)
 CallMethodA(int, Int, result = env->retval.i;, NULL)
 CallMethodA(long, Long, result = env->retval.j;, NULL)
 CallMethodA(float, Float, result = env->retval.f;, NULL)
@@ -592,10 +592,10 @@ Call ## Type ## MethodV(JNIEnv *jenv, jobject obj,			\
 	/* Done */							\
 	return result;							\
 }
-CallMethodV(boolean, Boolean, result = env->retval.z;, NULL)
-CallMethodV(byte, Byte, result = env->retval.b;, NULL)
-CallMethodV(short, Short, result = env->retval.s;, NULL)
-CallMethodV(char, Char, result = env->retval.c;, NULL)
+CallMethodV(boolean, Boolean, result = (jboolean)env->retval.i;, NULL)
+CallMethodV(byte, Byte, result = (jbyte)env->retval.i;, NULL)
+CallMethodV(short, Short, result = (jshort)env->retval.i;, NULL)
+CallMethodV(char, Char, result = (jchar)env->retval.i;, NULL)
 CallMethodV(int, Int, result = env->retval.i;, NULL)
 CallMethodV(long, Long, result = env->retval.j;, NULL)
 CallMethodV(float, Float, result = env->retval.f;, NULL)
@@ -702,10 +702,10 @@ CallStatic ## Type ## MethodA(JNIEnv *jenv,				\
 	/* Done */							\
 	return result;							\
 }
-CallStaticMethodA(boolean, Boolean, result = env->retval.z;, NULL)
-CallStaticMethodA(byte, Byte, result = env->retval.b;, NULL)
-CallStaticMethodA(short, Short, result = env->retval.s;, NULL)
-CallStaticMethodA(char, Char, result = env->retval.c;, NULL)
+CallStaticMethodA(boolean, Boolean, result = (jboolean)env->retval.i;, NULL)
+CallStaticMethodA(byte, Byte, result = (jbyte)env->retval.i;, NULL)
+CallStaticMethodA(short, Short, result = (jshort)env->retval.i;, NULL)
+CallStaticMethodA(char, Char, result = (jchar)env->retval.i;, NULL)
 CallStaticMethodA(int, Int, result = env->retval.i;, NULL)
 CallStaticMethodA(long, Long, result = env->retval.j;, NULL)
 CallStaticMethodA(float, Float, result = env->retval.f;, NULL)
@@ -738,10 +738,10 @@ CallStatic ## Type ## MethodV(JNIEnv *jenv,				\
 	/* Done */							\
 	return result;							\
 }
-CallStaticMethodV(boolean, Boolean, result = env->retval.z;, NULL)
-CallStaticMethodV(byte, Byte, result = env->retval.b;, NULL)
-CallStaticMethodV(short, Short, result = env->retval.s;, NULL)
-CallStaticMethodV(char, Char, result = env->retval.c;, NULL)
+CallStaticMethodV(boolean, Boolean, result = (jboolean)env->retval.i;, NULL)
+CallStaticMethodV(byte, Byte, result = (jbyte)env->retval.i;, NULL)
+CallStaticMethodV(short, Short, result = (jshort)env->retval.i;, NULL)
+CallStaticMethodV(char, Char, result = (jchar)env->retval.i;, NULL)
 CallStaticMethodV(int, Int, result = env->retval.i;, NULL)
 CallStaticMethodV(long, Long, result = env->retval.j;, NULL)
 CallStaticMethodV(float, Float, result = env->retval.f;, NULL)

@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_reflect_Field.c,v 1.13 2005/07/09 19:58:35 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -622,7 +622,7 @@ _jc_field_validate(_jc_env *env, _jc_object *this,
 	if (_jc_invoke_virtual(env,
 	    vm->boot.methods.AccessibleObject.isAccessible, this) != JNI_OK)
 		return NULL;
-	if (env->retval.z)
+	if (env->retval.i)
 		goto accessible;
 
 	/* Check access */

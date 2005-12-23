@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: java_lang_reflect_Method.c,v 1.8 2005/05/15 21:41:01 archiecobbs Exp $
+ * $Id$
  */
 
 #include "libjc.h"
@@ -104,8 +104,8 @@ JCNI_java_lang_reflect_Method_invokeNative(_jc_env *env, _jc_object *this,
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_type *calling_class;
-	_jc_object *return_obj;
 	_jc_method *method;
+	_jc_value value;
 	int rtype;
 
 	/* Get method */
@@ -115,7 +115,7 @@ JCNI_java_lang_reflect_Method_invokeNative(_jc_env *env, _jc_object *this,
 	if (_jc_invoke_virtual(env,
 	    vm->boot.methods.AccessibleObject.isAccessible, this) != JNI_OK)
 		_jc_throw_exception(env);
-	if (env->retval.z)
+	if (env->retval.i)
 		goto accessible;
 
 	/* Check access */
@@ -137,9 +137,44 @@ accessible:
 	/* Invoke method */
 	if (_jc_reflect_invoke(env, method, obj, params) != JNI_OK)
 		_jc_throw_exception(env);
+	rtype = (method->return_type->flags & _JC_TYPE_MASK);
+
+	/* Convert Java return type to actual Java type */
+	switch (rtype) {
+	case _JC_TYPE_BOOLEAN:
+		value.z = (jboolean)env->retval.i;
+		break;
+	case _JC_TYPE_BYTE:
+		value.b = (jbyte)env->retval.i;
+		break;
+	case _JC_TYPE_CHAR:
+		value.c = (jchar)env->retval.i;
+		break;
+	case _JC_TYPE_SHORT:
+		value.s = (jshort)env->retval.i;
+		break;
+	case _JC_TYPE_INT:
+		value.i = env->retval.i;
+		break;
+	case _JC_TYPE_LONG:
+		value.j = env->retval.j;
+		break;
+	case _JC_TYPE_FLOAT:
+		value.f = env->retval.f;
+		break;
+	case _JC_TYPE_DOUBLE:
+		value.d = env->retval.d;
+		break;
+	case _JC_TYPE_VOID:			/* silence compiler warning */
+	case _JC_TYPE_REFERENCE:
+		value.l = env->retval.l;
+		break;
+	default:
+		_JC_ASSERT(JNI_FALSE);
+		break;
+	}
 
 	/* Wrap return value */
-	rtype = (method->return_type->flags & _JC_TYPE_MASK);
 	switch (rtype) {
 	case _JC_TYPE_BOOLEAN:
 	case _JC_TYPE_BYTE:
@@ -149,24 +184,22 @@ accessible:
 	case _JC_TYPE_LONG:
 	case _JC_TYPE_FLOAT:
 	case _JC_TYPE_DOUBLE:
-		if ((return_obj = _jc_wrap_primitive(env,
-		    rtype, &env->retval)) == NULL)
+		if ((obj = _jc_wrap_primitive(env, rtype, &value)) == NULL)
 			_jc_throw_exception(env);
 		break;
 	case _JC_TYPE_VOID:
-		return_obj = NULL;
+		obj = NULL;
 		break;
 	case _JC_TYPE_REFERENCE:
-		return_obj = env->retval.l;
+		obj = value.l;
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
-		return_obj = NULL;		/* silence compiler warning */
 		break;
 	}
 
 	/* Done */
-	return return_obj;
+	return obj;
 }
 
 /*

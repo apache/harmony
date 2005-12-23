@@ -701,7 +701,7 @@ done:
 
 	/* Synchronized? */
 	if (got_monitor) {
-		_jc_value retval;
+		_jc_rvalue retval;
 		jint status2;
 
 		retval = env->retval;
@@ -980,7 +980,7 @@ done:
 
 	/* Synchronized? */
 	if (got_monitor) {
-		_jc_value retval;
+		_jc_rvalue retval;
 		jint status2;
 
 		retval = env->retval;

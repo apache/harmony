@@ -72,7 +72,7 @@ an included file:
 
     void
     _jc_dynamic_invoke(const void *func, int jcni, int nparams,
-        const u_char *ptypes, int nwords, _jc_word *words, _jc_value *retval)
+        const u_char *ptypes, int nwords, _jc_word *words, _jc_rvalue *retval)
 
 	Dynamically constructed C function call. Should invoke the C function
 	"func" with supplied parameters. Return value should be stored in
@@ -83,6 +83,8 @@ an included file:
 	'jcni' is non-zero for JNCI functions, zero for normal C functions.
 	Can be ignored if JNCI calling conventions are the same as normal
 	calling conventions for a particular architecture.
+
+	Note types Z, B, C, and S are returned as jints in "retval".
 
     void
     _jc_iflush(const void *mem, size_t len)
@@ -116,7 +118,7 @@ extern int		_jc_build_trampoline(u_char *code, _jc_method *method,
 				const void *func);
 extern void		_jc_dynamic_invoke(const void *func, int jcni,
 				int nparams, const u_char *ptypes, int nwords,
-				_jc_word *words, _jc_value *retval);
+				_jc_word *words, _jc_rvalue *retval);
 
 /* Stack pointer functions */
 extern const void	*_jc_mcontext_sp(const mcontext_t *mctx);
