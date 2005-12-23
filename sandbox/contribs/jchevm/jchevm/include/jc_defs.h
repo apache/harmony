@@ -120,6 +120,7 @@ typedef struct _jc_invoke		_jc_invoke;
 typedef struct _jc_linemap		_jc_linemap;
 typedef struct _jc_lookupswitch		_jc_lookupswitch;
 typedef union _jc_insn_info		_jc_insn_info;
+typedef struct _jc_field_info		_jc_field_info;
 typedef struct _jc_multianewarray	_jc_multianewarray;
 typedef struct _jc_tableswitch		_jc_tableswitch;
 typedef struct _jc_interp_trap		_jc_interp_trap;
@@ -265,9 +266,17 @@ struct _jc_linemap {
 	_jc_uint16	line;
 };
 
+struct _jc_field_info {
+	_jc_field	*field;
+	union {
+	    void	*data;
+	    jint	offset;
+	}		u;
+};
+
 union _jc_insn_info {
 	_jc_invoke		invoke;
-	_jc_field		*field;
+	_jc_field_info		field;
 	_jc_iinc		iinc;
 	_jc_multianewarray	multianewarray;
 	_jc_type		*type;

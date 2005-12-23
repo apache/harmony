@@ -697,6 +697,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			_jc_cf_ref *const ref = insn->u.fieldref.field;
 			_jc_field *field;
 			_jc_type *type;
+			u_char ptype;
 
 			/* Resolve field's class */
 			if ((type = _jc_load_type(env,
@@ -713,8 +714,88 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 				goto post_fail;
 			}
 
+			/* Compute field offset/location */
+			info->field.field = field;
+			ptype = _jc_sig_types[(u_char)*field->signature];
+			switch (opcode) {
+			case _JC_getfield:
+				info->field.u.offset = field->offset;
+				switch (ptype) {
+				case _JC_TYPE_BOOLEAN:
+					opcode = _JC_getfield_z;
+					break;
+				case _JC_TYPE_BYTE:
+					opcode = _JC_getfield_b;
+					break;
+				case _JC_TYPE_CHAR:
+					opcode = _JC_getfield_c;
+					break;
+				case _JC_TYPE_SHORT:
+					opcode = _JC_getfield_s;
+					break;
+				case _JC_TYPE_INT:
+					opcode = _JC_getfield_i;
+					break;
+				case _JC_TYPE_LONG:
+					opcode = _JC_getfield_j;
+					break;
+				case _JC_TYPE_FLOAT:
+					opcode = _JC_getfield_f;
+					break;
+				case _JC_TYPE_DOUBLE:
+					opcode = _JC_getfield_d;
+					break;
+				case _JC_TYPE_REFERENCE:
+					opcode = _JC_getfield_l;
+					break;
+				default:
+					_JC_ASSERT(JNI_FALSE);
+				}
+				break;
+			case _JC_putfield:
+				info->field.u.offset = field->offset;
+				switch (ptype) {
+				case _JC_TYPE_BOOLEAN:
+					opcode = _JC_putfield_z;
+					break;
+				case _JC_TYPE_BYTE:
+					opcode = _JC_putfield_b;
+					break;
+				case _JC_TYPE_CHAR:
+					opcode = _JC_putfield_c;
+					break;
+				case _JC_TYPE_SHORT:
+					opcode = _JC_putfield_s;
+					break;
+				case _JC_TYPE_INT:
+					opcode = _JC_putfield_i;
+					break;
+				case _JC_TYPE_LONG:
+					opcode = _JC_putfield_j;
+					break;
+				case _JC_TYPE_FLOAT:
+					opcode = _JC_putfield_f;
+					break;
+				case _JC_TYPE_DOUBLE:
+					opcode = _JC_putfield_d;
+					break;
+				case _JC_TYPE_REFERENCE:
+					opcode = _JC_putfield_l;
+					break;
+				default:
+					_JC_ASSERT(JNI_FALSE);
+				}
+				break;
+			case _JC_getstatic:
+			case _JC_putstatic:
+				info->field.u.data = (char *)field->class->
+				    u.nonarray.class_fields + field->offset;
+				break;
+			default:
+				_JC_ASSERT(JNI_FALSE);
+			}
+
 			/* Done */
-			info->field = field;
 			break;
 		    }
 		case _JC_goto:

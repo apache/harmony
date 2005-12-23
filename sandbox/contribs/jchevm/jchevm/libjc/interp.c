@@ -161,8 +161,25 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(freturn),
 		ACTION(fstore),
 		ACTION(fsub),
-		ACTION(getfield),
+		ACTION(getfield_z),
+		ACTION(getfield_b),
+		ACTION(getfield_c),
+		ACTION(getfield_s),
+		ACTION(getfield_i),
+		ACTION(getfield_j),
+		ACTION(getfield_f),
+		ACTION(getfield_d),
+		ACTION(getfield_l),
 		ACTION(getstatic),
+		ACTION(getstatic_z),
+		ACTION(getstatic_b),
+		ACTION(getstatic_c),
+		ACTION(getstatic_s),
+		ACTION(getstatic_i),
+		ACTION(getstatic_j),
+		ACTION(getstatic_f),
+		ACTION(getstatic_d),
+		ACTION(getstatic_l),
 		ACTION(goto),
 		ACTION(i2b),
 		ACTION(i2c),
@@ -199,6 +216,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(invokeinterface),
 		ACTION(invokespecial),
 		ACTION(invokestatic),
+		ACTION(invokestatic2),
 		ACTION(invokevirtual),
 		ACTION(ior),
 		ACTION(irem),
@@ -243,8 +261,25 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(nop),
 		ACTION(pop),
 		ACTION(pop2),
-		ACTION(putfield),
+		ACTION(putfield_z),
+		ACTION(putfield_b),
+		ACTION(putfield_c),
+		ACTION(putfield_s),
+		ACTION(putfield_i),
+		ACTION(putfield_j),
+		ACTION(putfield_f),
+		ACTION(putfield_d),
+		ACTION(putfield_l),
 		ACTION(putstatic),
+		ACTION(putstatic_z),
+		ACTION(putstatic_b),
+		ACTION(putstatic_c),
+		ACTION(putstatic_s),
+		ACTION(putstatic_i),
+		ACTION(putstatic_j),
+		ACTION(putstatic_f),
+		ACTION(putstatic_d),
+		ACTION(putstatic_l),
 		ACTION(ret),
 		ACTION(return),
 		ACTION(saload),
@@ -692,56 +727,99 @@ do_fsub:
 	POP(2);
 	PUSHF(STACKF(0) - STACKF(1));
 	NEXT();
-do_getfield:
+do_getfield_z:
     {
-	_jc_field *const field = INFO(field);
-	_jc_object *obj;
-	void *data;
+    	_jc_object *obj;
 
 	POP(1);
-	obj = STACKL(0);
-
-	if (obj == NULL)
+	if ((obj = STACKL(0)) == NULL)
 		goto null_pointer_exception;
-	data = (char *)obj + field->offset;
-	switch (field->type->flags & _JC_TYPE_MASK) {
-	case _JC_TYPE_BOOLEAN:
-		PUSHI(*(jboolean *)data);
-		break;
-	case _JC_TYPE_BYTE:
-		PUSHI(*(jbyte *)data);
-		break;
-	case _JC_TYPE_CHAR:
-		PUSHI(*(jchar *)data);
-		break;
-	case _JC_TYPE_SHORT:
-		PUSHI(*(jshort *)data);
-		break;
-	case _JC_TYPE_INT:
-		PUSHI(*(jint *)data);
-		break;
-	case _JC_TYPE_FLOAT:
-		PUSHF(*(jfloat *)data);
-		break;
-	case _JC_TYPE_LONG:
-		PUSHJ(*(jlong *)data);
-		break;
-	case _JC_TYPE_DOUBLE:
-		PUSHD(*(jdouble *)data);
-		break;
-	case _JC_TYPE_REFERENCE:
-		PUSHL(*(_jc_object **)data);
-		break;
-	default:
-		_JC_ASSERT(JNI_FALSE);
-		break;
-	}
+	PUSHI(*(jboolean *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_b:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHI(*(jbyte *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_c:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHI(*(jchar *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_s:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHI(*(jshort *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_i:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHI(*(jint *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_j:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHJ(*(jlong *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_f:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHF(*(jfloat *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_d:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHD(*(jdouble *)((char *)obj + INFO(field).u.offset));
+	NEXT();
+    }
+do_getfield_l:
+    {
+    	_jc_object *obj;
+
+	POP(1);
+	if ((obj = STACKL(0)) == NULL)
+		goto null_pointer_exception;
+	PUSHL(*(_jc_object **)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
 do_getstatic:
     {
-	_jc_field *const field = INFO(field);
-	void *data;
+	_jc_field *const field = INFO(field).field;
 
 	/* Initialize field's class */
 	if (!_JC_FLG_TEST(field->class, INITIALIZED)) {
@@ -749,42 +827,68 @@ do_getstatic:
 			goto exception;
 	}
 
-	/* Get field */
-	data = (char *)field->class->u.nonarray.class_fields + field->offset;
-	switch (field->type->flags & _JC_TYPE_MASK) {
+	/* Update instruction and execute again */
+	switch (_jc_sig_types[(u_char)*field->signature]) {
 	case _JC_TYPE_BOOLEAN:
-		PUSHI(*(jboolean *)data);
+		code->opcodes[pc] = _JC_getstatic_z;
 		break;
 	case _JC_TYPE_BYTE:
-		PUSHI(*(jbyte *)data);
+		code->opcodes[pc] = _JC_getstatic_b;
 		break;
 	case _JC_TYPE_CHAR:
-		PUSHI(*(jchar *)data);
+		code->opcodes[pc] = _JC_getstatic_c;
 		break;
 	case _JC_TYPE_SHORT:
-		PUSHI(*(jshort *)data);
+		code->opcodes[pc] = _JC_getstatic_s;
 		break;
 	case _JC_TYPE_INT:
-		PUSHI(*(jint *)data);
+		code->opcodes[pc] = _JC_getstatic_i;
 		break;
 	case _JC_TYPE_FLOAT:
-		PUSHF(*(jfloat *)data);
+		code->opcodes[pc] = _JC_getstatic_f;
 		break;
 	case _JC_TYPE_LONG:
-		PUSHJ(*(jlong *)data);
+		code->opcodes[pc] = _JC_getstatic_j;
 		break;
 	case _JC_TYPE_DOUBLE:
-		PUSHD(*(jdouble *)data);
+		code->opcodes[pc] = _JC_getstatic_d;
 		break;
 	case _JC_TYPE_REFERENCE:
-		PUSHL(*(_jc_object **)data);
+		code->opcodes[pc] = _JC_getstatic_l;
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
 		break;
 	}
-	NEXT();
+	JUMP(pc);
     }
+do_getstatic_z:
+	PUSHI(*(jboolean *)INFO(field).u.data);
+	NEXT();
+do_getstatic_b:
+	PUSHI(*(jbyte *)INFO(field).u.data);
+	NEXT();
+do_getstatic_c:
+	PUSHI(*(jchar *)INFO(field).u.data);
+	NEXT();
+do_getstatic_s:
+	PUSHI(*(jshort *)INFO(field).u.data);
+	NEXT();
+do_getstatic_i:
+	PUSHI(*(jint *)INFO(field).u.data);
+	NEXT();
+do_getstatic_j:
+	PUSHJ(*(jlong *)INFO(field).u.data);
+	NEXT();
+do_getstatic_f:
+	PUSHF(*(jfloat *)INFO(field).u.data);
+	NEXT();
+do_getstatic_d:
+	PUSHD(*(jdouble *)INFO(field).u.data);
+	NEXT();
+do_getstatic_l:
+	PUSHL(*(_jc_object **)INFO(field).u.data);
+	NEXT();
 do_goto:
 	JUMP(INFO(target));
 do_i2b:
@@ -926,9 +1030,23 @@ do_instanceof:
 		_JC_ASSERT(JNI_FALSE);
 	}
 	NEXT();
+do_invokestatic:
+    {
+	_jc_method *const imethod = INFO(invoke).method;
+
+	/* Initialize method's class */
+	if (!_JC_FLG_TEST(imethod->class, INITIALIZED)) {
+		if (_jc_initialize_type(env, imethod->class) != JNI_OK)
+			goto exception;
+	}
+
+	/* Update instruction and execute again */
+	code->opcodes[pc] = _JC_invokestatic2;
+	JUMP(pc);
+    }
 do_invokespecial:
 do_invokevirtual:
-do_invokestatic:
+do_invokestatic2:
 do_invokeinterface:
     {
 	const _jc_invoke *const invoke = &INFO(invoke);
@@ -1034,9 +1152,6 @@ got_method:
 			goto null_pointer_exception;
 		break;
 	case _JC_invokestatic:
-		if (!_JC_FLG_TEST(imethod->class, INITIALIZED)
-		    && _jc_initialize_type(env, imethod->class) != JNI_OK)
-			goto exception;
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
@@ -1346,64 +1461,64 @@ do_pop:
 do_pop2:
 	POP2(1);
 	NEXT();
-do_putfield:
-    {
-	_jc_field *const field = INFO(field);
-	_jc_type *const ftype = field->type;
-	const void *data;
-
-	/* Pop the stack */
-	if (_jc_dword_type[ftype->flags & _JC_TYPE_MASK])
-		POP2(1);
-	else
-		POP(1);
-	POP(1);
-
-	/* Check for null instance */
+do_putfield_z:
+	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
-
-	/* Set the field */
-	data = (char *)STACKL(0) + field->offset;
-	switch (ftype->flags & _JC_TYPE_MASK) {
-	case _JC_TYPE_BOOLEAN:
-		*(jboolean *)data = STACKI(1) & 0x01;
-		break;
-	case _JC_TYPE_BYTE:
-		*(jbyte *)data = STACKI(1);
-		break;
-	case _JC_TYPE_CHAR:
-		*(jchar *)data = STACKI(1);
-		break;
-	case _JC_TYPE_SHORT:
-		*(jshort *)data = STACKI(1);
-		break;
-	case _JC_TYPE_INT:
-		*(jint *)data = STACKI(1);
-		break;
-	case _JC_TYPE_FLOAT:
-		*(jfloat *)data = STACKF(1);
-		break;
-	case _JC_TYPE_LONG:
-		*(jlong *)data = STACKJ(1);
-		break;
-	case _JC_TYPE_DOUBLE:
-		*(jdouble *)data = STACKD(1);
-		break;
-	case _JC_TYPE_REFERENCE:
-		*(_jc_object **)data = STACKL(1);
-		break;
-	default:
-		_JC_ASSERT(JNI_FALSE);
-		break;
-	}
+	*(jboolean *)((char *)STACKL(0)
+	    + INFO(field).u.offset) = STACKI(1) & 0x01;
 	NEXT();
-    }
+do_putfield_b:
+	POP(2);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jbyte *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
+	NEXT();
+do_putfield_c:
+	POP(2);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jchar *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
+	NEXT();
+do_putfield_s:
+	POP(2);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jshort *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
+	NEXT();
+do_putfield_i:
+	POP(2);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jint *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
+	NEXT();
+do_putfield_j:
+	POP(3);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jlong *)((char *)STACKL(0) + INFO(field).u.offset) = STACKJ(1);
+	NEXT();
+do_putfield_f:
+	POP(2);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jfloat *)((char *)STACKL(0) + INFO(field).u.offset) = STACKF(1);
+	NEXT();
+do_putfield_d:
+	POP(3);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(jdouble *)((char *)STACKL(0) + INFO(field).u.offset) = STACKD(1);
+	NEXT();
+do_putfield_l:
+	POP(2);
+	if (STACKL(0) == NULL)
+		goto null_pointer_exception;
+	*(_jc_object **)((char *)STACKL(0) + INFO(field).u.offset) = STACKL(1);
+	NEXT();
 do_putstatic:
     {
-	_jc_field *const field = INFO(field);
-	const u_char ptype = _jc_sig_types[(u_char)*field->signature];
-	const void *data;
+	_jc_field *const field = INFO(field).field;
 
 	/* Initialize field's class */
 	if (!_JC_FLG_TEST(field->class, INITIALIZED)) {
@@ -1411,48 +1526,77 @@ do_putstatic:
 			goto exception;
 	}
 
-	/* Pop the stack */
-	if (_jc_dword_type[ptype])
-		POP2(1);
-	else
-		POP(1);
-
-	/* Set the field */
-	data = (char *)field->class->u.nonarray.class_fields + field->offset;
-	switch (ptype) {
+	/* Update instruction and execute again */
+	switch (_jc_sig_types[(u_char)*field->signature]) {
 	case _JC_TYPE_BOOLEAN:
-		*(jboolean *)data = STACKI(0) & 0x01;
+		code->opcodes[pc] = _JC_putstatic_z;
 		break;
 	case _JC_TYPE_BYTE:
-		*(jbyte *)data = STACKI(0);
+		code->opcodes[pc] = _JC_putstatic_b;
 		break;
 	case _JC_TYPE_CHAR:
-		*(jchar *)data = STACKI(0);
+		code->opcodes[pc] = _JC_putstatic_c;
 		break;
 	case _JC_TYPE_SHORT:
-		*(jshort *)data = STACKI(0);
+		code->opcodes[pc] = _JC_putstatic_s;
 		break;
 	case _JC_TYPE_INT:
-		*(jint *)data = STACKI(0);
+		code->opcodes[pc] = _JC_putstatic_i;
 		break;
 	case _JC_TYPE_FLOAT:
-		*(jfloat *)data = STACKF(0);
+		code->opcodes[pc] = _JC_putstatic_f;
 		break;
 	case _JC_TYPE_LONG:
-		*(jlong *)data = STACKJ(0);
+		code->opcodes[pc] = _JC_putstatic_j;
 		break;
 	case _JC_TYPE_DOUBLE:
-		*(jdouble *)data = STACKD(0);
+		code->opcodes[pc] = _JC_putstatic_d;
 		break;
 	case _JC_TYPE_REFERENCE:
-		*(_jc_object **)data = STACKL(0);
+		code->opcodes[pc] = _JC_putstatic_l;
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
 		break;
 	}
-	NEXT();
+	JUMP(pc);
     }
+do_putstatic_z:
+	POP(1);
+	*(jboolean *)INFO(field).u.data = STACKI(0) & 0x01;
+	NEXT();
+do_putstatic_b:
+	POP(1);
+	*(jbyte *)INFO(field).u.data = STACKI(0);
+	NEXT();
+do_putstatic_c:
+	POP(1);
+	*(jchar *)INFO(field).u.data = STACKI(0);
+	NEXT();
+do_putstatic_s:
+	POP(1);
+	*(jshort *)INFO(field).u.data = STACKI(0);
+	NEXT();
+do_putstatic_i:
+	POP(1);
+	*(jint *)INFO(field).u.data = STACKI(0);
+	NEXT();
+do_putstatic_j:
+	POP2(1);
+	*(jlong *)INFO(field).u.data = STACKJ(0);
+	NEXT();
+do_putstatic_f:
+	POP(1);
+	*(jfloat *)INFO(field).u.data = STACKF(0);
+	NEXT();
+do_putstatic_d:
+	POP2(1);
+	*(jdouble *)INFO(field).u.data = STACKD(0);
+	NEXT();
+do_putstatic_l:
+	POP(1);
+	*(_jc_object **)INFO(field).u.data = STACKL(0);
+	NEXT();
 do_ret:
 	JUMP(LOCALI(INFO(local)));
 do_return:

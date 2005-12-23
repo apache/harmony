@@ -160,7 +160,44 @@ enum {
 /*
  * Some pseudo-bytecodes
  */
-#define _JC_ldc_string		0xe0
+#define _JC_ldc_string		0xca
+#define _JC_invokestatic2	0xcb
+#define _JC_getstatic_z		0xcc
+#define _JC_getstatic_b		0xcd
+#define _JC_getstatic_c		0xce
+#define _JC_getstatic_s		0xcf
+#define _JC_getstatic_i		0xd0
+#define _JC_getstatic_j		0xd1
+#define _JC_getstatic_f		0xd2
+#define _JC_getstatic_d		0xd3
+#define _JC_getstatic_l		0xd4
+#define _JC_putstatic_z		0xd5
+#define _JC_putstatic_b		0xd6
+#define _JC_putstatic_c		0xd7
+#define _JC_putstatic_s		0xd8
+#define _JC_putstatic_i		0xd9
+#define _JC_putstatic_j		0xda
+#define _JC_putstatic_f		0xdb
+#define _JC_putstatic_d		0xdc
+#define _JC_putstatic_l		0xdd
+#define _JC_getfield_z		0xde
+#define _JC_getfield_b		0xdf
+#define _JC_getfield_c		0xe0
+#define _JC_getfield_s		0xe1
+#define _JC_getfield_i		0xe2
+#define _JC_getfield_j		0xe3
+#define _JC_getfield_f		0xe4
+#define _JC_getfield_d		0xe5
+#define _JC_getfield_l		0xe6
+#define _JC_putfield_z		0xe7
+#define _JC_putfield_b		0xe8
+#define _JC_putfield_c		0xe9
+#define _JC_putfield_s		0xea
+#define _JC_putfield_i		0xeb
+#define _JC_putfield_j		0xec
+#define _JC_putfield_f		0xed
+#define _JC_putfield_d		0xee
+#define _JC_putfield_l		0xef
 
 /*
  * Lockword layout
