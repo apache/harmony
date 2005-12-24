@@ -57,6 +57,9 @@ libjc_la_SOURCES= \
 			vm_alloc.c \
 			zip.c
 
+interp.S:	interp.c
+	$(COMPILE) -S -o $@ $<
+
 # Java native method source files
 libjc_la_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
 			native/gnu_classpath_VMSystemProperties.c \

@@ -109,6 +109,7 @@ static jint
 _jc_interp(_jc_env *const env, _jc_method *const method)
 {
 #define ACTION(name)  [_JC_ ## name]= &&do_ ## name
+#define TARGET(name)  do_ ## name:   asm ("/***** " #name " *****/");
 	static const void *const actions[0x100] = {
 		ACTION(aaload),
 		ACTION(aastore),
@@ -365,7 +366,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	/* Start */
 	JUMP(0);
 
-do_aaload:
+TARGET(aaload)
     {
 	_jc_object_array *array;
 	jint index;
@@ -379,7 +380,7 @@ do_aaload:
 	PUSHL(array->elems[~index]);
 	NEXT();
     }
-do_aastore:
+TARGET(aastore)
     {
 	_jc_object_array *array;
 	_jc_object *obj;
@@ -408,10 +409,10 @@ do_aastore:
 	array->elems[~index] = obj;
 	NEXT();
     }
-do_aload:
+TARGET(aload)
 	PUSHL(LOCALL(INFO(local)));
 	NEXT();
-do_anewarray:
+TARGET(anewarray)
     {
 	_jc_array *array;
 	jint length;
@@ -423,11 +424,11 @@ do_anewarray:
 	PUSHL((_jc_object *)array);
 	NEXT();
     }
-do_areturn:
+TARGET(areturn)
 	POP(1);
 	env->retval.l = STACKL(0);
 	goto done;
-do_arraylength:
+TARGET(arraylength)
     {
 	_jc_array *array;
 
@@ -438,17 +439,17 @@ do_arraylength:
 	PUSHI(array->length);
 	NEXT();
     }
-do_astore:
+TARGET(astore)
 	POP(1);
 	LOCALL(INFO(local)) = STACKL(0);
 	NEXT();
-do_athrow:
+TARGET(athrow)
 	POP(1);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	_jc_post_exception_object(env, STACKL(0));
 	goto exception;
-do_baload:
+TARGET(baload)
     {
 	_jc_array *array;
 	jint index;
@@ -466,7 +467,7 @@ do_baload:
 		PUSHI(((_jc_byte_array *)array)->elems[index]);
 	NEXT();
     }
-do_bastore:
+TARGET(bastore)
     {
 	_jc_array *array;
 	jint index;
@@ -484,7 +485,7 @@ do_bastore:
 		((_jc_byte_array *)array)->elems[index] = STACKI(2) & 0xff;
 	NEXT();
     }
-do_caload:
+TARGET(caload)
     {
 	_jc_char_array *array;
 	jint index;
@@ -496,7 +497,7 @@ do_caload:
 	PUSHI(array->elems[index]);
 	NEXT();
     }
-do_castore:
+TARGET(castore)
     {
 	_jc_char_array *array;
 	jint index;
@@ -508,7 +509,7 @@ do_castore:
 	array->elems[index] = STACKI(2) & 0xffff;
 	NEXT();
     }
-do_checkcast:
+TARGET(checkcast)
     {
 	_jc_object *const obj = STACKL(-1);
 
@@ -531,23 +532,23 @@ do_checkcast:
 	}
 	NEXT();
     }
-do_d2f:
+TARGET(d2f)
 	POP2(1);
 	PUSHF(STACKD(0));
 	NEXT();
-do_d2i:
+TARGET(d2i)
 	POP2(1);
 	PUSHI(_JC_CAST_FLT2INT(env, jdouble, jint, STACKD(0)));
 	NEXT();
-do_d2l:
+TARGET(d2l)
 	POP2(1);
 	PUSHJ(_JC_CAST_FLT2INT(env, jdouble, jlong, STACKD(0)));
 	NEXT();
-do_dadd:
+TARGET(dadd)
 	POP2(2);
 	PUSHD(STACKD(0) + STACKD(2));
 	NEXT();
-do_daload:
+TARGET(daload)
     {
 	_jc_double_array *array;
 	jint index;
@@ -559,7 +560,7 @@ do_daload:
 	PUSHD(array->elems[index]);
 	NEXT();
     }
-do_dastore:
+TARGET(dastore)
     {
 	_jc_double_array *array;
 	jint index;
@@ -571,68 +572,68 @@ do_dastore:
 	array->elems[index] = STACKD(2);
 	NEXT();
     }
-do_dcmpg:
+TARGET(dcmpg)
 	POP2(2);
 	PUSHI(_JC_DCMPG(STACKD(0), STACKD(2)));
 	NEXT();
-do_dcmpl:
+TARGET(dcmpl)
 	POP2(2);
 	PUSHI(_JC_DCMPL(STACKD(0), STACKD(2)));
 	NEXT();
-do_ddiv:
+TARGET(ddiv)
 	POP2(2);
 	PUSHD(STACKD(0) / STACKD(2));
 	NEXT();
-do_dload:
+TARGET(dload)
 	PUSHD(LOCALD(INFO(local)));
 	NEXT();
-do_dmul:
+TARGET(dmul)
 	POP2(2);
 	PUSHD(STACKD(0) * STACKD(2));
 	NEXT();
-do_dneg:
+TARGET(dneg)
 	POP2(1);
 	PUSHD(-STACKD(0));
 	NEXT();
-do_drem:
+TARGET(drem)
 	POP2(2);
 	PUSHD(fmod(STACKD(0), STACKD(2)));
 	NEXT();
-do_dreturn:
+TARGET(dreturn)
 	POP2(1);
 	env->retval.d = STACKD(0);
 	goto done;
-do_dstore:
+TARGET(dstore)
 	POP2(1);
 	LOCALD(INFO(local)) = STACKD(0);
 	NEXT();
-do_dsub:
+TARGET(dsub)
 	POP2(2);
 	PUSHD(STACKD(0) - STACKD(2));
 	NEXT();
-do_dup:
+TARGET(dup)
 	STACKI(0) = STACKI(-1);
 	POP(-1);
 	NEXT();
-do_dup_x1:
+TARGET(dup_x1)
 	STACKI(0) = STACKI(-1);
 	STACKI(-1) = STACKI(-2);
 	STACKI(-2) = STACKI(0);
 	POP(-1);
 	NEXT();
-do_dup_x2:
+TARGET(dup_x2)
 	STACKI(0) = STACKI(-1);
 	STACKI(-1) = STACKI(-2);
 	STACKI(-2) = STACKI(-3);
 	STACKI(-3) = STACKI(0);
 	POP(-1);
 	NEXT();
-do_dup2:
+TARGET(dup2)
 	STACKI(1) = STACKI(-1);
 	STACKI(0) = STACKI(-2);
 	POP(-2);
 	NEXT();
-do_dup2_x1:
+TARGET(dup2_x1)
 	STACKI(1) = STACKI(-1);
 	STACKI(0) = STACKI(-2);
 	STACKI(-1) = STACKI(-3);
@@ -640,7 +641,7 @@ do_dup2_x1:
 	STACKI(-3) = STACKI(0);
 	POP(-2);
 	NEXT();
-do_dup2_x2:
+TARGET(dup2_x2)
 	STACKI(1) = STACKI(-1);
 	STACKI(0) = STACKI(-2);
 	STACKI(-1) = STACKI(-3);
@@ -649,23 +650,23 @@ do_dup2_x2:
 	STACKI(-4) = STACKI(0);
 	POP(-2);
 	NEXT();
-do_f2d:
+TARGET(f2d)
 	POP(1);
 	PUSHD(STACKF(0));
 	NEXT();
-do_f2i:
+TARGET(f2i)
 	POP(1);
 	PUSHI(_JC_CAST_FLT2INT(env, jfloat, jint, STACKF(0)));
 	NEXT();
-do_f2l:
+TARGET(f2l)
 	POP(1);
 	PUSHJ(_JC_CAST_FLT2INT(env, jfloat, jlong, STACKF(0)));
 	NEXT();
-do_fadd:
+TARGET(fadd)
 	POP(2);
 	PUSHF(STACKF(0) + STACKF(1));
 	NEXT();
-do_faload:
+TARGET(faload)
     {
 	_jc_float_array *array;
 	jint index;
@@ -677,10 +678,10 @@ do_faload:
 	PUSHF(array->elems[index]);
 	NEXT();
     }
-do_failure:
+TARGET(failure)
 	_jc_post_exception_msg(env, _JC_InternalError, "failure opcode");
 	goto exception;
-do_fastore:
+TARGET(fastore)
     {
 	_jc_float_array *array;
 	jint index;
@@ -692,46 +693,46 @@ do_fastore:
 	array->elems[index] = STACKF(2);
 	NEXT();
     }
-do_fcmpg:
+TARGET(fcmpg)
 	POP(2);
 	PUSHI(_JC_FCMPG(STACKF(0), STACKF(1)));
 	NEXT();
-do_fcmpl:
+TARGET(fcmpl)
 	POP(2);
 	PUSHI(_JC_FCMPL(STACKF(0), STACKF(1)));
 	NEXT();
-do_fdiv:
+TARGET(fdiv)
 	POP(2);
 	PUSHF(STACKF(0) / STACKF(1));
 	NEXT();
-do_fload:
+TARGET(fload)
 	PUSHF(LOCALF(INFO(local)));
 	NEXT();
-do_fmul:
+TARGET(fmul)
 	POP(2);
 	PUSHF(STACKF(0) * STACKF(1));
 	NEXT();
-do_fneg:
+TARGET(fneg)
 	POP(1);
 	PUSHF(-STACKF(0));
 	NEXT();
-do_frem:
+TARGET(frem)
 	POP(2);
 	PUSHF(fmod(STACKF(0), STACKF(1)));
 	NEXT();
-do_freturn:
+TARGET(freturn)
 	POP(1);
 	env->retval.f = STACKF(0);
 	goto done;
-do_fstore:
+TARGET(fstore)
 	POP(1);
 	LOCALF(INFO(local)) = STACKF(0);
 	NEXT();
-do_fsub:
+TARGET(fsub)
 	POP(2);
 	PUSHF(STACKF(0) - STACKF(1));
 	NEXT();
-do_getfield_z:
+TARGET(getfield_z)
     {
     	_jc_object *obj;
 
@@ -741,7 +742,7 @@ do_getfield_z:
 	PUSHI(*(jboolean *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_b:
+TARGET(getfield_b)
     {
     	_jc_object *obj;
 
@@ -751,7 +752,7 @@ do_getfield_b:
 	PUSHI(*(jbyte *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_c:
+TARGET(getfield_c)
     {
     	_jc_object *obj;
 
@@ -761,7 +762,7 @@ do_getfield_c:
 	PUSHI(*(jchar *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_s:
+TARGET(getfield_s)
     {
     	_jc_object *obj;
 
@@ -771,7 +772,7 @@ do_getfield_s:
 	PUSHI(*(jshort *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_i:
+TARGET(getfield_i)
     {
     	_jc_object *obj;
 
@@ -781,7 +782,7 @@ do_getfield_i:
 	PUSHI(*(jint *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_j:
+TARGET(getfield_j)
     {
     	_jc_object *obj;
 
@@ -791,7 +792,7 @@ do_getfield_j:
 	PUSHJ(*(jlong *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_f:
+TARGET(getfield_f)
     {
     	_jc_object *obj;
 
@@ -801,7 +802,7 @@ do_getfield_f:
 	PUSHF(*(jfloat *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_d:
+TARGET(getfield_d)
     {
     	_jc_object *obj;
 
@@ -811,7 +812,7 @@ do_getfield_d:
 	PUSHD(*(jdouble *)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getfield_l:
+TARGET(getfield_l)
     {
     	_jc_object *obj;
 
@@ -821,7 +822,7 @@ do_getfield_l:
 	PUSHL(*(_jc_object **)((char *)obj + INFO(field).u.offset));
 	NEXT();
     }
-do_getstatic:
+TARGET(getstatic)
     {
 	_jc_field *const field = INFO(field).field;
 
@@ -866,64 +867,64 @@ do_getstatic:
 	}
 	JUMP(pc);
     }
-do_getstatic_z:
+TARGET(getstatic_z)
 	PUSHI(*(jboolean *)INFO(field).u.data);
 	NEXT();
-do_getstatic_b:
+TARGET(getstatic_b)
 	PUSHI(*(jbyte *)INFO(field).u.data);
 	NEXT();
-do_getstatic_c:
+TARGET(getstatic_c)
 	PUSHI(*(jchar *)INFO(field).u.data);
 	NEXT();
-do_getstatic_s:
+TARGET(getstatic_s)
 	PUSHI(*(jshort *)INFO(field).u.data);
 	NEXT();
-do_getstatic_i:
+TARGET(getstatic_i)
 	PUSHI(*(jint *)INFO(field).u.data);
 	NEXT();
-do_getstatic_j:
+TARGET(getstatic_j)
 	PUSHJ(*(jlong *)INFO(field).u.data);
 	NEXT();
-do_getstatic_f:
+TARGET(getstatic_f)
 	PUSHF(*(jfloat *)INFO(field).u.data);
 	NEXT();
-do_getstatic_d:
+TARGET(getstatic_d)
 	PUSHD(*(jdouble *)INFO(field).u.data);
 	NEXT();
-do_getstatic_l:
+TARGET(getstatic_l)
 	PUSHL(*(_jc_object **)INFO(field).u.data);
 	NEXT();
-do_goto:
+TARGET(goto)
 	JUMP(INFO(target));
-do_i2b:
+TARGET(i2b)
 	POP(1);
 	PUSHI((jbyte)STACKI(0));
 	NEXT();
-do_i2c:
+TARGET(i2c)
 	POP(1);
 	PUSHI((jchar)STACKI(0));
 	NEXT();
-do_i2d:
+TARGET(i2d)
 	POP(1);
 	PUSHD(STACKI(0));
 	NEXT();
-do_i2f:
+TARGET(i2f)
 	POP(1);
 	PUSHF(STACKI(0));
 	NEXT();
-do_i2l:
+TARGET(i2l)
 	POP(1);
 	PUSHJ(STACKI(0));
 	NEXT();
-do_i2s:
+TARGET(i2s)
 	POP(1);
 	PUSHI((jshort)STACKI(0));
 	NEXT();
-do_iadd:
+TARGET(iadd)
 	POP(2);
 	PUSHI(STACKI(0) + STACKI(1));
 	NEXT();
-do_iaload:
+TARGET(iaload)
     {
 	_jc_int_array *array;
 	jint index;
@@ -935,11 +936,11 @@ do_iaload:
 	PUSHI(array->elems[index]);
 	NEXT();
     }
-do_iand:
+TARGET(iand)
 	POP(2);
 	PUSHI(STACKI(0) & STACKI(1));
 	NEXT();
-do_iastore:
+TARGET(iastore)
     {
 	_jc_int_array *array;
 	jint index;
@@ -951,75 +952,75 @@ do_iastore:
 	array->elems[index] = STACKI(2);
 	NEXT();
     }
-do_idiv:
+TARGET(idiv)
 	POP(2);
 	if (STACKI(1) == 0)
 		goto arithmetic_exception;
 	PUSHI(STACKI(0) / STACKI(1));
 	NEXT();
-do_if_acmpeq:
+TARGET(if_acmpeq)
 	POP(2);
 	JUMP(STACKL(0) == STACKL(1) ? INFO(target) : pc + 1);
-do_if_acmpne:
+TARGET(if_acmpne)
 	POP(2);
 	JUMP(STACKL(0) != STACKL(1) ? INFO(target) : pc + 1);
-do_if_icmpeq:
+TARGET(if_icmpeq)
 	POP(2);
 	JUMP(STACKI(0) == STACKI(1) ? INFO(target) : pc + 1);
-do_if_icmpne:
+TARGET(if_icmpne)
 	POP(2);
 	JUMP(STACKI(0) != STACKI(1) ? INFO(target) : pc + 1);
-do_if_icmplt:
+TARGET(if_icmplt)
 	POP(2);
 	JUMP(STACKI(0) < STACKI(1) ? INFO(target) : pc + 1);
-do_if_icmpge:
+TARGET(if_icmpge)
 	POP(2);
 	JUMP(STACKI(0) >= STACKI(1) ? INFO(target) : pc + 1);
-do_if_icmpgt:
+TARGET(if_icmpgt)
 	POP(2);
 	JUMP(STACKI(0) > STACKI(1) ? INFO(target) : pc + 1);
-do_if_icmple:
+TARGET(if_icmple)
 	POP(2);
 	JUMP(STACKI(0) <= STACKI(1) ? INFO(target) : pc + 1);
-do_ifeq:
+TARGET(ifeq)
 	POP(1);
 	JUMP(STACKI(0) == 0 ? INFO(target) : pc + 1);
-do_ifne:
+TARGET(ifne)
 	POP(1);
 	JUMP(STACKI(0) != 0 ? INFO(target) : pc + 1);
-do_iflt:
+TARGET(iflt)
 	POP(1);
 	JUMP(STACKI(0) < 0 ? INFO(target) : pc + 1);
-do_ifge:
+TARGET(ifge)
 	POP(1);
 	JUMP(STACKI(0) >= 0 ? INFO(target) : pc + 1);
-do_ifgt:
+TARGET(ifgt)
 	POP(1);
 	JUMP(STACKI(0) > 0 ? INFO(target) : pc + 1);
-do_ifle:
+TARGET(ifle)
 	POP(1);
 	JUMP(STACKI(0) <= 0 ? INFO(target) : pc + 1);
-do_ifnonnull:
+TARGET(ifnonnull)
 	POP(1);
 	JUMP(STACKL(0) != NULL ? INFO(target) : pc + 1);
-do_ifnull:
+TARGET(ifnull)
 	POP(1);
 	JUMP(STACKL(0) == NULL ? INFO(target) : pc + 1);
-do_iinc:
+TARGET(iinc)
 	LOCALI(INFO(iinc).local) += INFO(iinc).value;
 	NEXT();
-do_iload:
+TARGET(iload)
 	PUSHI(LOCALI(INFO(local)));
 	NEXT();
-do_imul:
+TARGET(imul)
 	POP(2);
 	PUSHI(STACKI(0) * STACKI(1));
 	NEXT();
-do_ineg:
+TARGET(ineg)
 	POP(1);
 	PUSHI(-STACKI(0));
 	NEXT();
-do_instanceof:
+TARGET(instanceof)
 	POP(1);
 	switch (_jc_instance_of(env, STACKL(0), INFO(type))) {
 	case 1:
@@ -1034,7 +1035,7 @@ do_instanceof:
 		_JC_ASSERT(JNI_FALSE);
 	}
 	NEXT();
-do_invokestatic:
+TARGET(invokestatic)
     {
 	_jc_method *const imethod = INFO(invoke).method;
 
@@ -1048,10 +1049,10 @@ do_invokestatic:
 	code->opcodes[pc] = _JC_invokestatic2;
 	JUMP(pc);
     }
-do_invokespecial:
-do_invokevirtual:
-do_invokestatic2:
-do_invokeinterface:
+TARGET(invokespecial)
+TARGET(invokevirtual)
+TARGET(invokestatic2)
+TARGET(invokeinterface)
     {
 	const _jc_invoke *const invoke = &INFO(invoke);
 	_jc_method *imethod = invoke->method;
@@ -1214,64 +1215,64 @@ got_method:
 	}
 	NEXT();
     }
-do_ior:
+TARGET(ior)
 	POP(2);
 	PUSHI(STACKI(0) | STACKI(1));
 	NEXT();
-do_irem:
+TARGET(irem)
 	POP(2);
 	if (STACKI(1) == 0)
 		goto arithmetic_exception;
 	PUSHI(STACKI(0) % STACKI(1));
 	NEXT();
-do_ireturn:
+TARGET(ireturn)
 	POP(1);
 	env->retval.i = STACKI(0);
 	goto done;
-do_ishl:
+TARGET(ishl)
 	POP(2);
 	PUSHI(STACKI(0) << (STACKI(1) & 0x1f));
 	NEXT();
-do_ishr:
+TARGET(ishr)
 	POP(2);
 	PUSHI(_JC_ISHR(STACKI(0), STACKI(1) & 0x1f));
 	NEXT();
-do_istore:
+TARGET(istore)
 	POP(1);
 	LOCALI(INFO(local)) = STACKI(0);
 	NEXT();
-do_isub:
+TARGET(isub)
 	POP(2);
 	PUSHI(STACKI(0) - STACKI(1));
 	NEXT();
-do_iushr:
+TARGET(iushr)
 	POP(2);
 	PUSHI(_JC_IUSHR(STACKI(0), STACKI(1) & 0x1f));
 	NEXT();
-do_ixor:
+TARGET(ixor)
 	POP(2);
 	PUSHI(STACKI(0) ^ STACKI(1));
 	NEXT();
-do_jsr:
+TARGET(jsr)
 	PUSHI(pc + 1);
 	JUMP(INFO(target));
-do_l2d:
+TARGET(l2d)
 	POP2(1);
 	PUSHD(STACKJ(0));
 	NEXT();
-do_l2f:
+TARGET(l2f)
 	POP2(1);
 	PUSHF(STACKJ(0));
 	NEXT();
-do_l2i:
+TARGET(l2i)
 	POP2(1);
 	PUSHI(STACKJ(0));
 	NEXT();
-do_ladd:
+TARGET(ladd)
 	POP2(2);
 	PUSHJ(STACKJ(0) + STACKJ(2));
 	NEXT();
-do_laload:
+TARGET(laload)
     {
 	_jc_long_array *array;
 	jint index;
@@ -1283,11 +1284,11 @@ do_laload:
 	PUSHJ(array->elems[index]);
 	NEXT();
     }
-do_land:
+TARGET(land)
 	POP2(2);
 	PUSHJ(STACKJ(0) & STACKJ(2));
 	NEXT();
-do_lastore:
+TARGET(lastore)
     {
 	_jc_long_array *array;
 	jint index;
@@ -1299,15 +1300,15 @@ do_lastore:
 	array->elems[index] = STACKJ(2);
 	NEXT();
     }
-do_lcmp:
+TARGET(lcmp)
 	POP2(2);
 	PUSHI(_JC_LCMP(STACKJ(0), STACKJ(2)));
 	NEXT();
-do_ldc:
+TARGET(ldc)
 	memcpy(sp, &INFO(constant), sizeof(_jc_word));
 	POP(-1);
 	NEXT();
-do_ldc_string:
+TARGET(ldc_string)
     {
 	_jc_resolve_info rinfo;
 	_jc_object *string;
@@ -1336,28 +1337,28 @@ do_ldc_string:
 	/* Now execute it again */
 	JUMP(pc);
     }
-do_ldc2_w:
+TARGET(ldc2_w)
 	memcpy(sp, &INFO(constant), 2 * sizeof(_jc_word));
 	POP(-2);
 	NEXT();
-do_ldiv:
+TARGET(ldiv)
 	POP2(2);
 	if (STACKJ(2) == 0)
 		goto arithmetic_exception;
 	PUSHJ(STACKJ(0) / STACKJ(2));
 	NEXT();
-do_lload:
+TARGET(lload)
 	PUSHJ(LOCALJ(INFO(local)));
 	NEXT();
-do_lmul:
+TARGET(lmul)
 	POP2(2);
 	PUSHJ(STACKJ(0) * STACKJ(2));
 	NEXT();
-do_lneg:
+TARGET(lneg)
 	POP2(1);
 	PUSHJ(-STACKJ(0));
 	NEXT();
-do_lookupswitch:
+TARGET(lookupswitch)
     {
 	_jc_lookupswitch *const lsw = INFO(lookupswitch);
 	_jc_lookup *entry;
@@ -1369,59 +1370,59 @@ do_lookupswitch:
 	    sizeof(*lsw->pairs), _jc_lookup_compare);
 	JUMP(entry != NULL ? entry->target : lsw->default_target);
     }
-do_lor:
+TARGET(lor)
 	POP2(2);
 	PUSHJ(STACKJ(0) | STACKJ(2));
 	NEXT();
-do_lrem:
+TARGET(lrem)
 	POP2(2);
 	if (STACKJ(2) == 0)
 		goto arithmetic_exception;
 	PUSHJ(STACKJ(0) % STACKJ(2));
 	NEXT();
-do_lreturn:
+TARGET(lreturn)
 	POP2(1);
 	env->retval.j = STACKJ(0);
 	goto done;
-do_lshl:
+TARGET(lshl)
 	POP(3);
 	PUSHJ(STACKJ(0) << (STACKI(2) & 0x3f));
 	NEXT();
-do_lshr:
+TARGET(lshr)
 	POP(3);
 	PUSHJ(_JC_LSHR(STACKJ(0), STACKI(2)));
 	NEXT();
-do_lstore:
+TARGET(lstore)
 	POP2(1);
 	LOCALJ(INFO(local)) = STACKJ(0);
 	NEXT();
-do_lsub:
+TARGET(lsub)
 	POP2(2);
 	PUSHJ(STACKJ(0) - STACKJ(2));
 	NEXT();
-do_lushr:
+TARGET(lushr)
 	POP(3);
 	PUSHJ(_JC_LUSHR(STACKJ(0), STACKI(2)));
 	NEXT();
-do_lxor:
+TARGET(lxor)
 	POP2(2);
 	PUSHJ(STACKJ(0) ^ STACKJ(2));
 	NEXT();
-do_monitorenter:
+TARGET(monitorenter)
 	POP(1);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	if (_jc_lock_object(env, STACKL(0)) != JNI_OK)
 		goto exception;
 	NEXT();
-do_monitorexit:
+TARGET(monitorexit)
 	POP(1);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	if (_jc_unlock_object(env, STACKL(0)) != JNI_OK)
 		goto exception;
 	NEXT();
-do_multianewarray:
+TARGET(multianewarray)
     {
 	_jc_multianewarray *const info = &INFO(multianewarray);
 	_jc_array *array;
@@ -1438,7 +1439,7 @@ do_multianewarray:
 	PUSHL((_jc_object *)array);
 	NEXT();
     }
-do_new:
+TARGET(new)
     {
 	_jc_object *obj;
 
@@ -1447,7 +1448,7 @@ do_new:
 	PUSHL(obj);
 	NEXT();
     }
-do_newarray:
+TARGET(newarray)
     {
 	_jc_array *array;
 
@@ -1457,70 +1458,70 @@ do_newarray:
 	PUSHL((_jc_object *)array);
 	NEXT();
     }
-do_nop:
+TARGET(nop)
 	NEXT();
-do_pop:
+TARGET(pop)
 	POP(1);
 	NEXT();
-do_pop2:
+TARGET(pop2)
 	POP2(1);
 	NEXT();
-do_putfield_z:
+TARGET(putfield_z)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jboolean *)((char *)STACKL(0)
 	    + INFO(field).u.offset) = STACKI(1) & 0x01;
 	NEXT();
-do_putfield_b:
+TARGET(putfield_b)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jbyte *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
-do_putfield_c:
+TARGET(putfield_c)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jchar *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
-do_putfield_s:
+TARGET(putfield_s)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jshort *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
-do_putfield_i:
+TARGET(putfield_i)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jint *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
-do_putfield_j:
+TARGET(putfield_j)
 	POP(3);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jlong *)((char *)STACKL(0) + INFO(field).u.offset) = STACKJ(1);
 	NEXT();
-do_putfield_f:
+TARGET(putfield_f)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jfloat *)((char *)STACKL(0) + INFO(field).u.offset) = STACKF(1);
 	NEXT();
-do_putfield_d:
+TARGET(putfield_d)
 	POP(3);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(jdouble *)((char *)STACKL(0) + INFO(field).u.offset) = STACKD(1);
 	NEXT();
-do_putfield_l:
+TARGET(putfield_l)
 	POP(2);
 	if (STACKL(0) == NULL)
 		goto null_pointer_exception;
 	*(_jc_object **)((char *)STACKL(0) + INFO(field).u.offset) = STACKL(1);
 	NEXT();
-do_putstatic:
+TARGET(putstatic)
     {
 	_jc_field *const field = INFO(field).field;
 
@@ -1565,47 +1566,47 @@ do_putstatic:
 	}
 	JUMP(pc);
     }
-do_putstatic_z:
+TARGET(putstatic_z)
 	POP(1);
 	*(jboolean *)INFO(field).u.data = STACKI(0) & 0x01;
 	NEXT();
-do_putstatic_b:
+TARGET(putstatic_b)
 	POP(1);
 	*(jbyte *)INFO(field).u.data = STACKI(0);
 	NEXT();
-do_putstatic_c:
+TARGET(putstatic_c)
 	POP(1);
 	*(jchar *)INFO(field).u.data = STACKI(0);
 	NEXT();
-do_putstatic_s:
+TARGET(putstatic_s)
 	POP(1);
 	*(jshort *)INFO(field).u.data = STACKI(0);
 	NEXT();
-do_putstatic_i:
+TARGET(putstatic_i)
 	POP(1);
 	*(jint *)INFO(field).u.data = STACKI(0);
 	NEXT();
-do_putstatic_j:
+TARGET(putstatic_j)
 	POP2(1);
 	*(jlong *)INFO(field).u.data = STACKJ(0);
 	NEXT();
-do_putstatic_f:
+TARGET(putstatic_f)
 	POP(1);
 	*(jfloat *)INFO(field).u.data = STACKF(0);
 	NEXT();
-do_putstatic_d:
+TARGET(putstatic_d)
 	POP2(1);
 	*(jdouble *)INFO(field).u.data = STACKD(0);
 	NEXT();
-do_putstatic_l:
+TARGET(putstatic_l)
 	POP(1);
 	*(_jc_object **)INFO(field).u.data = STACKL(0);
 	NEXT();
-do_ret:
+TARGET(ret)
 	JUMP(LOCALI(INFO(local)));
-do_return:
+TARGET(return)
 	goto done;
-do_saload:
+TARGET(saload)
     {
 	_jc_short_array *array;
 	jint index;
@@ -1617,7 +1618,7 @@ do_saload:
 	PUSHI(array->elems[index]);
 	NEXT();
     }
-do_sastore:
+TARGET(sastore)
     {
 	_jc_short_array *array;
 	jint index;
@@ -1629,7 +1630,7 @@ do_sastore:
 	array->elems[index] = STACKI(2);
 	NEXT();
     }
-do_swap:
+TARGET(swap)
     {
 	jint temp;
 
@@ -1638,7 +1639,7 @@ do_swap:
 	STACKI(-1) = temp;
 	NEXT();
     }
-do_tableswitch:
+TARGET(tableswitch)
     {
 	_jc_tableswitch *const tsw = INFO(tableswitch);
 	jint key;
