@@ -486,6 +486,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 	_jc_cf_code code_mem;
 	_jc_cf_code *const code = &code_mem;
 	jboolean mutex_locked;
+	int *depth;
 	int i;
 
 	/* Sanity check */
@@ -819,7 +820,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			info->target = insn->u.branch.target;
 			break;
 		case _JC_iinc:
-			info->iinc.index = insn->u.iinc.index;
+			info->iinc.local = insn->u.iinc.index;
 			info->iinc.value = insn->u.iinc.value;
 			break;
 		case _JC_invokeinterface:
@@ -1093,6 +1094,56 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 
 		/* Copy opcode */
 		interp->opcodes[i] = opcode;
+	}
+
+	/* Compute stack depth at the start of each instruction */
+	if ((depth = _JC_STACK_ALLOC(env,
+	    code->num_insns * sizeof(*depth))) == NULL)
+		goto post_fail;
+	if (_jc_compute_stack_depth(env, interp, depth) != JNI_OK)
+		goto post_fail;
+
+	/*
+	 * Change all local indicies into stack pointer offsets.
+	 * We must include any stack operations performed before
+	 * the local is referenced.
+	 */
+	for (i = 0; i < code->num_insns; i++) {
+		_jc_cf_insn *const insn = &code->insns[i];
+		_jc_insn_info *const info = &interp->info[i];
+
+		/* Handle the case of unreachable code */
+		if (depth[i] == -1) {
+			insn->opcode = _JC_failure;
+			continue;
+		}
+
+		/* Change local index to SP offset */
+		_JC_ASSERT(depth[i] >= 0 && depth[i] <= code->max_stack);
+		switch (insn->opcode) {
+		case _JC_aload:
+		case _JC_dload:
+		case _JC_fload:
+		case _JC_iload:
+		case _JC_lload:
+		case _JC_ret:
+			info->local += -code->max_locals - depth[i];
+			break;
+		case _JC_astore:
+		case _JC_fstore:
+		case _JC_istore:
+			info->local += -code->max_locals - (depth[i] - 1);
+			break;
+		case _JC_dstore:
+		case _JC_lstore:
+			info->local += -code->max_locals - (depth[i] - 2);
+			break;
+		case _JC_iinc:
+			info->iinc.local += -code->max_locals - depth[i];
+			break;
+		default:
+			break;
+		}
 	}
 
 	/* Done */

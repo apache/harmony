@@ -198,6 +198,7 @@ enum {
 #define _JC_putfield_f		0xed
 #define _JC_putfield_d		0xee
 #define _JC_putfield_l		0xef
+#define _JC_failure		0xff
 
 /*
  * Lockword layout
@@ -505,6 +506,9 @@ enum {
 #define _JC_CPATH_DIRECTORY		1
 #define _JC_CPATH_ZIPFILE		2
 #define _JC_CPATH_ERROR			3
+
+/* Invalid bytecode stack adjustment value */
+#define _JC_STACKADJ_INVALID		0x80
 
 /*
  * Array bounds check for offset + length. Returns true if bounds are OK.

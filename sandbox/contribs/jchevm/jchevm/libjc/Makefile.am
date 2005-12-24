@@ -8,6 +8,7 @@ libjc_la_LDFLAGS=	-version-info @LIBRARY_VERSION@
 
 # Standard source files
 libjc_la_SOURCES= \
+			analysis.c \
 			array.c \
 			bootstrap.c \
 			cf_parse.c \

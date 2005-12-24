@@ -68,11 +68,11 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define STACKJ(i)	(*(jlong *)(sp + (i)))
 #define STACKD(i)	(*(jdouble *)(sp + (i)))
 #define STACKL(i)	(*(_jc_object **)(sp + (i)))
-#define LOCALI(i)	(*(jint *)(locals + i))
-#define LOCALF(i)	(*(jfloat *)(locals + i))
-#define LOCALJ(i)	(*(jlong *)(locals + i))
-#define LOCALD(i)	(*(jdouble *)(locals + i))
-#define LOCALL(i)	(*(_jc_object **)(locals + i))
+#define LOCALI(i)	(*(jint *)(sp + i))
+#define LOCALF(i)	(*(jfloat *)(sp + i))
+#define LOCALJ(i)	(*(jlong *)(sp + i))
+#define LOCALD(i)	(*(jdouble *)(sp + i))
+#define LOCALL(i)	(*(_jc_object **)(sp + i))
 #define PUSHI(v)	do { STACKI(0) = (v); sp++; } while (0)
 #define PUSHF(v)	do { STACKF(0) = (v); sp++; } while (0)
 #define PUSHJ(v)	do { STACKJ(0) = (v); sp += 2; } while (0)
@@ -149,6 +149,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(f2i),
 		ACTION(f2l),
 		ACTION(fadd),
+		ACTION(failure),
 		ACTION(faload),
 		ACTION(fastore),
 		ACTION(fcmpg),
@@ -354,7 +355,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	/* Synchronize */
 	if (_JC_ACC_TEST(method, SYNCHRONIZED)) {
 		lock = _JC_ACC_TEST(method, STATIC) ?
-		    method->class->instance : LOCALL(0);
+		    method->class->instance : LOCALL(-code->max_locals);
 		if (_jc_lock_object(env, lock) != JNI_OK) {
 			lock = NULL;
 			goto exception;
@@ -676,6 +677,9 @@ do_faload:
 	PUSHF(array->elems[index]);
 	NEXT();
     }
+do_failure:
+	_jc_post_exception_msg(env, _JC_InternalError, "failure opcode");
+	goto exception;
 do_fastore:
     {
 	_jc_float_array *array;
@@ -1002,7 +1006,7 @@ do_ifnull:
 	POP(1);
 	JUMP(STACKL(0) == NULL ? INFO(target) : pc + 1);
 do_iinc:
-	LOCALI(INFO(iinc).index) += INFO(iinc).value;
+	LOCALI(INFO(iinc).local) += INFO(iinc).value;
 	NEXT();
 do_iload:
 	PUSHI(LOCALI(INFO(local)));

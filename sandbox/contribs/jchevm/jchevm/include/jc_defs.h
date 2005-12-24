@@ -222,7 +222,7 @@ struct _jc_object_array {
  ************************************************************************/
 
 struct _jc_iinc {
-	jint		index;
+	jint		local;
 	jint	  	value;
 };
 
@@ -283,7 +283,7 @@ union _jc_insn_info {
 	_jc_lookupswitch	*lookupswitch;
 	_jc_tableswitch		*tableswitch;
 	_jc_uint16		target;
-	_jc_uint16		local;
+	jint			local;
 	_jc_value		constant;
 	const char		*utf8;
 };
