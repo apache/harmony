@@ -1387,8 +1387,10 @@ TARGET(multianewarray)
 
 	POP(info->dims);
 	sizes = &STACKI(0);			/* overwrite popped stack */
-	for (i = 0; i < info->dims; i++)
-		sizes[i] = STACKI(i);
+	if (sizeof(_jc_word) != sizeof(jint)) {
+		for (i = 0; i < info->dims; i++)
+			sizes[i] = STACKI(i);
+	}
 	if ((array = _jc_new_multiarray(env,
 	    info->type, info->dims, sizes)) == NULL)
 		goto exception;
