@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: main.c,v 1.10 2005/03/28 15:12:58 archiecobbs Exp $
+ * $Id$
  */
 
 #include "cfdump.h"
@@ -429,7 +429,7 @@ dump_code(_jc_env *env, _jc_classfile *cf, _jc_cf_bytecode *bytecode)
 			snprintf(bufs[0], sizeof(bufs[0]),
 			    "[%d]", trap->start);
 			snprintf(bufs[1], sizeof(bufs[1]),
-			    "[%d]", trap->end - 1);
+			    "[%d]", trap->end);
 			snprintf(bufs[2], sizeof(bufs[2]),
 			    "[%d]", trap->target);
 			printf("\t\t%-6s.. %-6s -> %-6s %s\n",
