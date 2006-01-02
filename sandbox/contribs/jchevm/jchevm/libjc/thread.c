@@ -96,7 +96,8 @@ _jc_thread_check(_jc_env *env)
 		_jc_thread_suspend(env);
 
 	/* Check for an exception posted by another thread */
-	if ((ex = _jc_retrieve_cross_exception(env)) != NULL) {
+	if (env->cross_exception != NULL
+	    && (ex = _jc_retrieve_cross_exception(env)) != NULL) {
 		VERBOSE(EXCEPTIONS, vm, "cross-posting `%s' in thread %p",
 		    ex->type->name, env);
 		env->pending = ex;
