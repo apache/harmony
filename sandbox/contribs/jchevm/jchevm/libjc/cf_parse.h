@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: cf_parse.h,v 1.2 2005/02/27 23:29:44 archiecobbs Exp $
+ * $Id$
  */
 
 #ifndef _CF_PARSE_H_
@@ -311,7 +311,7 @@ struct _jc_cf_fieldref {
 	_jc_cf_ref	*field;
 };
 struct _jc_cf_iinc {
-	uint16_t	index;
+	_jc_uint16	index;
 	jshort		value;
 };
 struct _jc_cf_invoke {
@@ -319,10 +319,10 @@ struct _jc_cf_invoke {
 };
 struct _jc_cf_lookup {
 	jint		match;
-	jint		target;
+	_jc_uint32	target;
 };
 struct _jc_cf_lookupswitch {
-	jint		default_target;
+	_jc_uint32	default_target;
 	jint		num_pairs;
 	_jc_cf_lookup	pairs[0];
 };
@@ -334,16 +334,16 @@ struct _jc_cf_newarray {
 	u_char		type;		/* _JC_TYPE_XXX */
 };
 struct _jc_cf_tableswitch {
-	jint		default_target;
+	_jc_uint32	default_target;
 	jint		low;
 	jint		high;
-	jint		targets[0];
+	_jc_uint32	targets[0];
 };
 struct _jc_cf_branch {
-	jint		target;
+	_jc_uint32	target;
 };
 struct _jc_cf_local {
-	uint16_t	index;
+	_jc_uint16	index;
 };
 struct _jc_cf_immediate {
 	jint		value;
@@ -373,25 +373,25 @@ struct _jc_cf_insn {
 
 /* LineNumberTable attribute */
 struct _jc_cf_linenums {
-	uint16_t	length;
+	_jc_uint16	length;
 	_jc_cf_linenum	*linenums;
 };
 
 struct _jc_cf_linenum {
-	uint16_t	offset;			/* bytecode offset */
-	uint16_t	line;
+	_jc_uint16	offset;			/* bytecode offset */
+	_jc_uint16	line;
 };
 
 struct _jc_cf_linemap {
-	jint		index;			/* instruction index */
-	uint16_t	line;
+	_jc_uint32	index;			/* instruction index */
+	_jc_uint16	line;
 };
 
 /* Parsed method trap */
 struct _jc_cf_trap {
-	jint		start;			/* instruction index */
-	jint		end;			/* instruction index */
-	jint		target;			/* instruction index */
+	_jc_uint32	start;			/* instruction index */
+	_jc_uint32	end;			/* instruction index */
+	_jc_uint32	target;			/* instruction index */
 	const char	*type;
 };
 
@@ -404,11 +404,11 @@ struct _jc_cf_bytecode {
 
 /* Parsed method bytecode */
 struct _jc_cf_code {
-	uint16_t	max_stack;
-	uint16_t	max_locals;
-	uint16_t	num_traps;
-	uint16_t	num_linemaps;
-	jint		num_insns;
+	_jc_uint16	max_stack;
+	_jc_uint16	max_locals;
+	_jc_uint16	num_traps;
+	_jc_uint16	num_linemaps;
+	_jc_uint32	num_insns;
 	_jc_cf_insn	*insns;
 	_jc_cf_trap	*traps;
 	_jc_cf_linemap	*linemaps;
@@ -449,20 +449,20 @@ struct _jc_cf_constant {
 
 /* Field info */
 struct _jc_cf_field {
-	uint16_t	access_flags;
+	_jc_uint16	access_flags;
 	const char	*name;
 	const char	*descriptor;
-	uint16_t	num_attributes;
+	_jc_uint16	num_attributes;
 	_jc_cf_attr	*attributes;
 	_jc_cf_constant	*initial_value;
 };
 
 /* Method info */
 struct _jc_cf_method {
-	uint16_t		access_flags;
+	_jc_uint16		access_flags;
 	const char		*name;
 	const char		*descriptor;
-	uint16_t		num_attributes;
+	_jc_uint16		num_attributes;
 	_jc_cf_attr		*attributes;
 	_jc_cf_exceptions	*exceptions;
 	_jc_cf_bytecode		*code;
@@ -470,7 +470,7 @@ struct _jc_cf_method {
 
 /* Exceptions attribute */
 struct _jc_cf_exceptions {
-	uint16_t	num_exceptions;
+	_jc_uint16	num_exceptions;
 	const char	**exceptions;
 };
 
@@ -479,18 +479,18 @@ struct _jc_cf_inner_class {
 	const char	*inner;
 	const char	*outer;
 	const char	*name;
-	uint16_t	access_flags;
+	_jc_uint16	access_flags;
 };
 
 struct _jc_cf_inner_classes {
-	uint16_t		num_classes;
+	_jc_uint16		num_classes;
 	_jc_cf_inner_class	*classes;
 };
 
 /* Attribute (only some are explicitly supported) */
 struct _jc_cf_attr {
 	const char	*name;
-	uint32_t	length;
+	_jc_uint32	length;
 	const u_char	*bytes;
 	union {
 	    _jc_cf_constant		*ConstantValue;
@@ -504,20 +504,20 @@ struct _jc_cf_attr {
 
 /* Parsed classfile */
 struct _jc_classfile {
-	uint16_t		minor_version;
-	uint16_t		major_version;
-	uint16_t		access_flags;
-	uint16_t		num_constants;
+	_jc_uint16		minor_version;
+	_jc_uint16		major_version;
+	_jc_uint16		access_flags;
+	_jc_uint16		num_constants;
 	_jc_cf_constant		*constants;
 	const char		*name;
 	const char		*superclass;
-	uint16_t		num_interfaces;
+	_jc_uint16		num_interfaces;
 	const char		**interfaces;
-	uint16_t		num_fields;
+	_jc_uint16		num_fields;
 	_jc_cf_field		*fields;
-	uint16_t		num_methods;
+	_jc_uint16		num_methods;
 	_jc_cf_method		*methods;
-	uint16_t		num_attributes;
+	_jc_uint16		num_attributes;
 	_jc_cf_attr		*attributes;
 	_jc_cf_inner_classes	*inner_classes;
 	const char		*source_file;

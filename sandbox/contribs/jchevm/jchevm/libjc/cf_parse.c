@@ -35,19 +35,19 @@ static int	_jc_parse_methodref(_jc_cf_parse_state *s, _jc_cf_ref **refp);
 static int	_jc_parse_interfacemethodref(_jc_cf_parse_state *s,
 			_jc_cf_ref **refp);
 static int	_jc_parse_bytecode(_jc_cf_parse_state *s, _jc_cf_code *code,
-			uint32_t *offset_map, uint32_t length);
-static int	_jc_map_offset(_jc_env *env, _jc_cf_code *code, uint32_t length,
-			jint *offset_map, jint *targetp);
+			_jc_uint32 *offset_map, _jc_uint32 length);
+static int	_jc_map_offset(_jc_env *env, _jc_cf_code *code, _jc_uint32 length,
+			_jc_uint32 *offset_map, _jc_uint32 *targetp);
 static int	_jc_parse_local8(_jc_cf_parse_state *s, _jc_cf_code *code,
-			uint16_t *indexp);
+			_jc_uint16 *indexp);
 static int	_jc_parse_local16(_jc_cf_parse_state *s, _jc_cf_code *code,
-			uint16_t *indexp);
+			_jc_uint16 *indexp);
 static int	_jc_parse_cpool_index8(_jc_cf_parse_state *s, int types,
 			_jc_cf_constant **ptr, int optional);
 static int	_jc_parse_cpool_index16(_jc_cf_parse_state *s, int types,
 			_jc_cf_constant **ptr, int optional);
 static int	_jc_parse_cpool_index(_jc_cf_parse_state *s, int types,
-			_jc_cf_constant **ptr, uint16_t index);
+			_jc_cf_constant **ptr, _jc_uint16 index);
 static int	_jc_parse_string(_jc_cf_parse_state *s, const char **utfp,
 			int optional);
 static int	_jc_parse_integer(_jc_cf_parse_state *s, jint *value);
@@ -55,10 +55,10 @@ static int	_jc_parse_float(_jc_cf_parse_state *s, jfloat *valuep);
 static int	_jc_parse_long(_jc_cf_parse_state *s, jlong *valuep);
 static int	_jc_parse_double(_jc_cf_parse_state *s, jdouble *valuep);
 static int	_jc_parse_utf8(_jc_cf_parse_state *s, const u_char **utfp,
-			uint16_t *lengthp);
-static int	_jc_parse_uint32(_jc_cf_parse_state *s, uint32_t *valuep);
-static int	_jc_parse_uint16(_jc_cf_parse_state *s, uint16_t *valuep);
-static int	_jc_parse_uint8(_jc_cf_parse_state *s, uint8_t *valuep);
+			_jc_uint16 *lengthp);
+static int	_jc_parse_uint32(_jc_cf_parse_state *s, _jc_uint32 *valuep);
+static int	_jc_parse_uint16(_jc_cf_parse_state *s, _jc_uint16 *valuep);
+static int	_jc_parse_uint8(_jc_cf_parse_state *s, u_char *valuep);
 static int	_jc_scan_constant(_jc_cf_parse_state *s, size_t *lenp);
 static void	_jc_free_attribute(_jc_cf_attr *attr);
 static void	_jc_sub_state(_jc_cf_parse_state *s, _jc_cf_parse_state *t,
@@ -82,7 +82,7 @@ _jc_parse_classfile(_jc_env *env, _jc_classbytes *bytes, int howmuch)
 {
 	_jc_classfile *cfile;
 	_jc_cf_parse_state s;
-	uint32_t magic;
+	_jc_uint32 magic;
 	int i;
 
 	/* Initialize parse state */
@@ -159,7 +159,7 @@ _jc_parse_classfile(_jc_env *env, _jc_classbytes *bytes, int howmuch)
 
 	/* Get superclass; special case java/lang/Object */
 	if (strcmp(cfile->name, "java/lang/Object") == 0) {
-		uint16_t cp_index;
+		_jc_uint16 cp_index;
 
 		if (_jc_parse_uint16(&s, &cp_index) != JNI_OK)
 			goto fail;
@@ -332,7 +332,7 @@ _jc_parse_cpool(_jc_cf_parse_state *s, _jc_classfile *cfile)
 	for (strings_size = 0, i = 1; i < cfile->num_constants; i++) {
 		_jc_cf_constant *const constant = &cfile->constants[i - 1];
 		const u_char *utf;
-		uint16_t utf_len;
+		_jc_uint16 utf_len;
 
 		switch (constant->type) {
 		case CONSTANT_Utf8:
@@ -529,7 +529,7 @@ _jc_scan_constant(_jc_cf_parse_state *s, size_t *lenp)
 		break;
 	case CONSTANT_Utf8:
 	    {
-		uint16_t utf_len;
+		_jc_uint16 utf_len;
 
 		s->pos++;
 		if (_jc_parse_utf8(s, NULL, &utf_len) != JNI_OK)
@@ -963,12 +963,12 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 {
 	_jc_cf_parse_state state;
 	_jc_cf_parse_state *const s = &state;
-	uint32_t *offset_map = NULL;
+	_jc_uint32 *offset_map = NULL;
 #if 0
 	_jc_cf_insn *new_insns;
 #endif
-	uint32_t code_length;
-	uint16_t num_attrs;
+	_jc_uint32 code_length;
+	_jc_uint16 num_attrs;
 	int i;
 
 	/* Initialize parse state */
@@ -1027,13 +1027,13 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 		goto fail;
 	for (i = 0; i < code->num_traps; i++) {
 		_jc_cf_trap *const trap = &code->traps[i];
-		uint16_t value16;
+		_jc_uint16 value16;
 
 		if (_jc_parse_uint16(s, &value16) != JNI_OK)
 			goto fail;
 		trap->start = value16;
 		if (_jc_map_offset(s->env, code, code_length,
-		    (jint *) offset_map, &trap->start) != JNI_OK)
+		    offset_map, &trap->start) != JNI_OK)
 			goto fail;
 		if (_jc_parse_uint16(s, &value16) != JNI_OK)
 			goto fail;
@@ -1041,13 +1041,13 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 		if (trap->end == code_length)
 			trap->end = code->num_insns;
 		else if (_jc_map_offset(s->env, code, code_length,
-		    (jint *) offset_map, &trap->end) != JNI_OK)
+		    offset_map, &trap->end) != JNI_OK)
 			goto fail;
 		if (_jc_parse_uint16(s, &value16) != JNI_OK)
 			goto fail;
 		trap->target = value16;
 		if (_jc_map_offset(s->env, code, code_length,
-		    (jint *) offset_map, &trap->target) != JNI_OK)
+		    offset_map, &trap->target) != JNI_OK)
 			goto fail;
 		if (trap->end <= trap->start) {
 			_JC_EX_STORE(s->env, ClassFormatError,
@@ -1092,7 +1092,7 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 
 			linemap->index = linenum->offset;
 			if (_jc_map_offset(s->env, code, code_length,
-			    (jint *) offset_map, &linemap->index) != JNI_OK) {
+			    offset_map, &linemap->index) != JNI_OK) {
 				_jc_free_attribute(&attr);
 				goto fail;
 			}
@@ -1146,14 +1146,14 @@ _jc_destroy_code(_jc_cf_code *code)
  */
 static int
 _jc_parse_bytecode(_jc_cf_parse_state *s, _jc_cf_code *code,
-	uint32_t *offset_map, uint32_t code_length)
+	_jc_uint32 *offset_map, _jc_uint32 code_length)
 {
 	const size_t start = s->pos;
 	const size_t end = s->pos + code_length;
 	_jc_cf_insn *insn = code->insns;
-	uint32_t insn_offset;
-	uint16_t value16;
-	uint8_t value8;
+	_jc_uint32 insn_offset;
+	_jc_uint16 value16;
+	u_char value8;
 	int inum = 0;
 	int i;
 
@@ -1368,7 +1368,7 @@ loop:
 	    {
 		const char *const opname = _jc_bytecode_names[insn->opcode];
 		_jc_cf_lookupswitch *lsw;
-		jint default_target;
+		_jc_uint32 default_target;
 		jint num_pairs;
 		int pad;
 
@@ -1427,7 +1427,7 @@ loop:
 	    {
 		const char *const opname = _jc_bytecode_names[insn->opcode];
 		_jc_cf_tableswitch *tsw;
-		jint default_target;
+		_jc_uint32 default_target;
 		jint num_targets;
 		jint high;
 		jint low;
@@ -1594,7 +1594,7 @@ pass2:
 		case _JC_ifnull:
 		case _JC_jsr:
 			if (_jc_map_offset(s->env, code, code_length,
-			    (jint *) offset_map, &insn->u.branch.target) != JNI_OK)
+			    offset_map, &insn->u.branch.target) != JNI_OK)
 				return JNI_ERR;
 			break;
 		case _JC_lookupswitch:
@@ -1603,11 +1603,11 @@ pass2:
 			int j;
 
 			if (_jc_map_offset(s->env, code, code_length,
-			    (jint *) offset_map, &lsw->default_target) != JNI_OK)
+			    offset_map, &lsw->default_target) != JNI_OK)
 				return JNI_ERR;
 			for (j = 0; j < lsw->num_pairs; j++) {
 				if (_jc_map_offset(s->env, code,
-				    code_length, (jint *) offset_map,
+				    code_length, offset_map,
 				    &lsw->pairs[j].target) != JNI_OK)
 					return JNI_ERR;
 			}
@@ -1620,11 +1620,11 @@ pass2:
 			int j;
 
 			if (_jc_map_offset(s->env, code, code_length,
-			    (jint *) offset_map, &tsw->default_target) != JNI_OK)
+			    offset_map, &tsw->default_target) != JNI_OK)
 				return JNI_ERR;
 			for (j = 0; j < num_targets; j++) {
 				if (_jc_map_offset(s->env, code, code_length,
-				    (jint *) offset_map, &tsw->targets[j]) != JNI_OK)
+				    offset_map, &tsw->targets[j]) != JNI_OK)
 					return JNI_ERR;
 			}
 			break;
@@ -1642,14 +1642,14 @@ pass2:
  * Convert a bytecode offset into an instruction index.
  */
 static int
-_jc_map_offset(_jc_env *env, _jc_cf_code *code, uint32_t length,
-	jint *offset_map, jint *targetp)
+_jc_map_offset(_jc_env *env, _jc_cf_code *code, _jc_uint32 length,
+	_jc_uint32 *offset_map, _jc_uint32 *targetp)
 {
-	jint target = *targetp;
+	_jc_uint32 target = *targetp;
 
 	if (target == 0)
 		return JNI_OK;
-	if (target < 0 || target >= length || offset_map[target] == 0) {
+	if (target >= length || offset_map[target] == 0) {
 		_JC_EX_STORE(env, ClassFormatError,
 		    "invalid branch target %u", target);
 		return JNI_ERR;
@@ -1662,9 +1662,9 @@ _jc_map_offset(_jc_env *env, _jc_cf_code *code, uint32_t length,
  * Parse an 8 bit local index.
  */
 static int
-_jc_parse_local8(_jc_cf_parse_state *s, _jc_cf_code *code, uint16_t *indexp)
+_jc_parse_local8(_jc_cf_parse_state *s, _jc_cf_code *code, _jc_uint16 *indexp)
 {
-	uint8_t index;
+	u_char index;
 
 	if (_jc_parse_uint8(s, &index) != JNI_OK)
 		return JNI_ERR;
@@ -1682,9 +1682,9 @@ _jc_parse_local8(_jc_cf_parse_state *s, _jc_cf_code *code, uint16_t *indexp)
  * Parse an 16 bit local index.
  */
 static int
-_jc_parse_local16(_jc_cf_parse_state *s, _jc_cf_code *code, uint16_t *indexp)
+_jc_parse_local16(_jc_cf_parse_state *s, _jc_cf_code *code, _jc_uint16 *indexp)
 {
-	uint16_t index;
+	_jc_uint16 index;
 
 	if (_jc_parse_uint16(s, &index) != JNI_OK)
 		return JNI_ERR;
@@ -1705,7 +1705,7 @@ static int
 _jc_parse_cpool_index8(_jc_cf_parse_state *s, int types,
 	_jc_cf_constant **ptr, int optional)
 {
-	uint8_t cp_index;
+	u_char cp_index;
 
 	if (_jc_parse_uint8(s, &cp_index) != JNI_OK)
 		return JNI_ERR;
@@ -1723,7 +1723,7 @@ static int
 _jc_parse_cpool_index16(_jc_cf_parse_state *s, int types,
 	_jc_cf_constant **ptr, int optional)
 {
-	uint16_t cp_index;
+	_jc_uint16 cp_index;
 
 	if (_jc_parse_uint16(s, &cp_index) != JNI_OK)
 		return JNI_ERR;
@@ -1736,7 +1736,7 @@ _jc_parse_cpool_index16(_jc_cf_parse_state *s, int types,
 
 static int
 _jc_parse_cpool_index(_jc_cf_parse_state *s, int types,
-	_jc_cf_constant **ptr, uint16_t cp_index)
+	_jc_cf_constant **ptr, _jc_uint16 cp_index)
 {
 	_jc_classfile *const cfile = s->cfile;
 	_jc_cf_constant *c;
@@ -1821,7 +1821,7 @@ _jc_parse_string(_jc_cf_parse_state *s, const char **utfp, int optional)
 static int
 _jc_parse_integer(_jc_cf_parse_state *s, jint *valuep)
 {
-	uint32_t value;
+	_jc_uint32 value;
 
 	if (_jc_parse_uint32(s, &value) != JNI_OK)
 		return JNI_ERR;
@@ -1833,7 +1833,7 @@ _jc_parse_integer(_jc_cf_parse_state *s, jint *valuep)
 static int
 _jc_parse_float(_jc_cf_parse_state *s, jfloat *valuep)
 {
-	uint8_t b[4];
+	u_char b[4];
 	int i;
 
 	for (i = 0; i < 4; i++) {
@@ -1848,8 +1848,8 @@ _jc_parse_float(_jc_cf_parse_state *s, jfloat *valuep)
 static int
 _jc_parse_long(_jc_cf_parse_state *s, jlong *valuep)
 {
-	uint64_t value = 0;
-	uint8_t byte;
+	_jc_uint64 value = 0;
+	u_char byte;
 	int i;
 
 	for (i = 0; i < 8; i++) {
@@ -1865,7 +1865,7 @@ _jc_parse_long(_jc_cf_parse_state *s, jlong *valuep)
 static int
 _jc_parse_double(_jc_cf_parse_state *s, jdouble *valuep)
 {
-	uint8_t b[8];
+	u_char b[8];
 	int i;
 
 	for (i = 0; i < 8; i++) {
@@ -1880,9 +1880,9 @@ _jc_parse_double(_jc_cf_parse_state *s, jdouble *valuep)
 }
 
 static int
-_jc_parse_utf8(_jc_cf_parse_state *s, const u_char **utfp, uint16_t *lengthp)
+_jc_parse_utf8(_jc_cf_parse_state *s, const u_char **utfp, _jc_uint16 *lengthp)
 {
-	uint16_t length;
+	_jc_uint16 length;
 	const u_char *utf;
 
 	/* Get length */
@@ -1917,10 +1917,10 @@ invalid:
 }
 
 static int
-_jc_parse_uint32(_jc_cf_parse_state *s, uint32_t *valuep)
+_jc_parse_uint32(_jc_cf_parse_state *s, _jc_uint32 *valuep)
 {
-	uint32_t value = 0;
-	uint8_t byte;
+	_jc_uint32 value = 0;
+	u_char byte;
 	int i;
 
 	for (i = 0; i < 4; i++) {
@@ -1934,10 +1934,10 @@ _jc_parse_uint32(_jc_cf_parse_state *s, uint32_t *valuep)
 }
 
 static int
-_jc_parse_uint16(_jc_cf_parse_state *s, uint16_t *valuep)
+_jc_parse_uint16(_jc_cf_parse_state *s, _jc_uint16 *valuep)
 {
-	uint16_t value = 0;
-	uint8_t byte;
+	_jc_uint16 value = 0;
+	u_char byte;
 	int i;
 
 	for (i = 0; i < 2; i++) {
@@ -1951,7 +1951,7 @@ _jc_parse_uint16(_jc_cf_parse_state *s, uint16_t *valuep)
 }
 
 static int
-_jc_parse_uint8(_jc_cf_parse_state *s, uint8_t *valuep)
+_jc_parse_uint8(_jc_cf_parse_state *s, u_char *valuep)
 {
 	if (s->pos >= s->length) {
 		_JC_EX_STORE(s->env, ClassFormatError, "truncated class file");
