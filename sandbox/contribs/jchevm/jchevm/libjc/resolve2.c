@@ -324,6 +324,14 @@ _jc_resolve_methods(_jc_env *env, _jc_type *const type, _jc_resolve_info *info)
 			return JNI_ERR;
 		}
 
+		/* Determine parameter count with long/double counted twice */
+		_JC_ASSERT(method->code.num_params2 == 0);
+		method->code.num_params2 = method->num_parameters;
+		for (j = 0; j < method->num_parameters; j++) {
+			if (_jc_dword_type[method->param_ptypes[j]])
+				method->code.num_params2++;
+		}
+
 		/* Resolve exception types */
 		for (j = 0; j < method->num_exceptions; j++) {
 			if ((method->exceptions[j] = _jc_load_type(env, loader,
@@ -499,7 +507,6 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 	}
 
 	/* Allocate resolved method info */
-	memset(interp, 0, sizeof(*interp));
 	_JC_MUTEX_LOCK(env, loader->mutex);
 	mutex_locked = JNI_TRUE;
 	if ((interp->opcodes = _jc_cl_alloc(env, loader,
@@ -531,14 +538,6 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 
 		linemap->index = clinemap->index;
 		linemap->line = clinemap->line;
-	}
-
-	/* Determine parameter count with long/double counted twice */
-	_JC_ASSERT(interp->num_params2 == 0);
-	interp->num_params2 = method->num_parameters;
-	for (i = 0; i < method->num_parameters; i++) {
-		if (_jc_dword_type[method->param_ptypes[i]])
-			interp->num_params2++;
 	}
 
 	/* Resolve and copy trap info */

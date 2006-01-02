@@ -398,19 +398,12 @@ _jc_invoke_v(_jc_env *env, _jc_method *method,
 	const void *func, _jc_object *obj, va_list args, jboolean jni)
 {
 	_jc_word *params;
-	int nwords;
 	int pi;
 	int i;
 
-	/* Count parameter words */
-	nwords = method->num_parameters;
-	for (i = 0; i < method->num_parameters; i++) {
-		if (_jc_dword_type[method->param_ptypes[i]])
-			nwords++;
-	}
-
 	/* Allocate array of _jc_word's to hold the parameters */
-	if ((params = _JC_STACK_ALLOC(env, nwords * sizeof(*params))) == NULL) {
+	if ((params = _JC_STACK_ALLOC(env,
+	    method->code.num_params2 * sizeof(*params))) == NULL) {
 		_jc_post_exception_info(env);
 		return JNI_ERR;
 	}
@@ -480,19 +473,12 @@ _jc_invoke_unwrap_v(_jc_env *env, _jc_method *method,
 {
 	_jc_word *params;
 	_jc_object *this;
-	int nwords;
 	int pi;
 	int i;
 
-	/* Count parameter words */
-	nwords = method->num_parameters;
-	for (i = 0; i < method->num_parameters; i++) {
-		if (_jc_dword_type[method->param_ptypes[i]])
-			nwords++;
-	}
-
 	/* Allocate array of _jc_word's to hold the parameters */
-	if ((params = _JC_STACK_ALLOC(env, nwords * sizeof(*params))) == NULL) {
+	if ((params = _JC_STACK_ALLOC(env,
+	    method->code.num_params2 * sizeof(*params))) == NULL) {
 		_jc_post_exception_info(env);
 		return JNI_ERR;
 	}
@@ -735,19 +721,12 @@ _jc_invoke_unwrap_a(_jc_env *env, _jc_method *method,
 {
 	_jc_word *params;
 	_jc_object *this;
-	int nwords;
 	int pi;
 	int i;
 
-	/* Count parameter words */
-	nwords = method->num_parameters;
-	for (i = 0; i < method->num_parameters; i++) {
-		if (_jc_dword_type[method->param_ptypes[i]])
-			nwords++;
-	}
-
 	/* Allocate array of _jc_word's to hold the parameters */
-	if ((params = _JC_STACK_ALLOC(env, nwords * sizeof(*params))) == NULL) {
+	if ((params = _JC_STACK_ALLOC(env,
+	    method->code.num_params2 * sizeof(*params))) == NULL) {
 		_jc_post_exception_info(env);
 		return JNI_ERR;
 	}
