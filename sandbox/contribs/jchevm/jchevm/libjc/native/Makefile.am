@@ -8,8 +8,6 @@ EXTRA_DIST=	gnu_classpath_VMStackWalker.c \
 		gnu_classpath_VMStackWalker.h \
 		gnu_classpath_VMSystemProperties.c \
 		gnu_classpath_VMSystemProperties.h \
-		java_io_VMObjectStreamClass.c \
-		java_io_VMObjectStreamClass.h \
 		java_lang_Thread.h \
 		java_lang_VMClass.c \
 		java_lang_VMClass.h \
@@ -48,7 +46,6 @@ JAVAH_CMD=	$(JAVAH) -classpath $(jcdir)/jc.zip:$(cpdir)/glibj.zip \
 
 HFILES=		gnu_classpath_VMStackWalker.h \
 		gnu_classpath_VMSystemProperties.h \
-		java_io_VMObjectStreamClass.h \
 		java_lang_Thread.h \
 		java_lang_VMClass.h \
 		java_lang_VMClassLoader.h \
@@ -69,8 +66,6 @@ hfiles:			${HFILES}
 gnu_classpath_VMStackWalker.h:
 	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
 gnu_classpath_VMSystemProperties.h:
-	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
-java_io_VMObjectStreamClass.h:
 	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`
 java_lang_Thread.h:
 	$(JAVAH_CMD) `echo $@ | sed -e 's/\.h$$//g' -e 's/_/./g'`

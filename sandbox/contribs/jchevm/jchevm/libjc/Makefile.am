@@ -64,7 +64,6 @@ interp.s:	interp.c
 # Java native method source files
 libjc_la_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
 			native/gnu_classpath_VMSystemProperties.c \
-			native/java_io_VMObjectStreamClass.c \
 			native/java_lang_VMClass.c \
 			native/java_lang_VMClassLoader.c \
 			native/java_lang_VMCompiler.c \
