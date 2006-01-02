@@ -289,6 +289,17 @@ enum {
 #endif
 
 /*
+ * Branch prediction
+ */
+#ifdef __GNUC__
+#define _JC_LIKELY(x)	__builtin_expect((x), 1)
+#define _JC_UNLIKELY(x)	__builtin_expect((x), 0)
+#else
+#define _JC_LIKELY(x)	(x)
+#define _JC_UNLIKELY(x)	(x)
+#endif
+
+/*
  * How many references in a native reference frame.
  *
  * Do not change this, as the structure of 'struct _jc_native_frame'

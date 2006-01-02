@@ -39,7 +39,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 	_JC_ASSERT(pc >= 0 && pc < code->num_insns);			\
 	_JC_ASSERT(actions[code->opcodes[pc]] != NULL);			\
 	_JC_ASSERT(ticker > 0);						\
-	if (--ticker == 0)						\
+	if (_JC_UNLIKELY(--ticker == 0))				\
 		goto periodic_check;					\
 	goto *actions[code->opcodes[pc]];				\
     } while (0)
@@ -51,7 +51,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define JUMP(_pc)							\
     do {								\
 	pc = (_pc);							\
-	if (--ticker == 0)						\
+	if (_JC_UNLIKELY(--ticker == 0))				\
 		goto periodic_check;					\
 	goto *actions[code->opcodes[pc]];				\
     } while (0)
@@ -83,17 +83,32 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 
 #define INFO(f)		(code->info[pc].f)
 
+#define NULLPOINTERCHECK(x)						\
+    do {								\
+	if (_JC_UNLIKELY((x) == NULL))					\
+		goto null_pointer_exception;				\
+    } while (0)
+
 #define ARRAYCHECK(array, i)						\
     do {								\
 	_jc_array *const _array = (_jc_array *)(array);			\
 	jint _i = (i);							\
 									\
-	if (_array == NULL)						\
-		goto null_pointer_exception;				\
-	if (_i < 0 || _i >= _array->length) {				\
+	NULLPOINTERCHECK(_array);					\
+	if (_JC_UNLIKELY(_i < 0 || _i >= _array->length)) {		\
 		_jc_post_exception_msg(env,				\
 		    _JC_ArrayIndexOutOfBoundsException, "%d", _i);	\
 		goto exception;						\
+	}								\
+    } while (0)
+
+#define INITIALIZETYPE(t)						\
+    do {								\
+    	_jc_type *const _type = (t);					\
+									\
+	if (_JC_UNLIKELY(!_JC_FLG_TEST(_type, INITIALIZED))) {		\
+		if (_jc_initialize_type(env, _type) != JNI_OK)		\
+			goto exception;					\
 	}								\
     } while (0)
 
@@ -304,11 +319,11 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 
 	/* Stack overflow check for C stack */
 #if _JC_DOWNWARD_STACK
-	if ((char *)&env < env->stack_limit
-	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0)
+	if (_JC_UNLIKELY((char *)&env < env->stack_limit
+	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0))
 #else
-	if ((char *)&env > env->stack_limit
-	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0)
+	if (_JC_UNLIKELY((char *)&env > env->stack_limit
+	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0))
 #endif
 	{
 		_jc_post_exception(env, _JC_StackOverflowError);
@@ -316,8 +331,8 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	}
 
 	/* Check Java stack overflow; release secret space during exception */
-	if (env->sp + code->max_locals + code->max_stack
-	    > env->stack_data_end) {
+	if (_JC_UNLIKELY(env->sp + code->max_locals + code->max_stack
+	    > env->stack_data_end)) {
 		if ((env->in_vmex & (1 << _JC_StackOverflowError)) == 0
 		    || env->sp + code->max_locals + code->max_stack
 		      > env->stack_data_end + _JC_JAVA_STACK_MARGIN) {
@@ -327,7 +342,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	}
 
 	/* Is method abstract? */
-	if (_JC_ACC_TEST(method, ABSTRACT)) {
+	if (_JC_UNLIKELY(_JC_ACC_TEST(method, ABSTRACT))) {
 		_jc_post_exception_msg(env, _JC_AbstractMethodError,
 		    "%s.%s%s", method->class->name, method->name,
 		    method->signature);
@@ -354,10 +369,10 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	_JC_ASSERT(code->num_insns > 0);
 
 	/* Synchronize */
-	if (_JC_ACC_TEST(method, SYNCHRONIZED)) {
+	if (_JC_UNLIKELY(_JC_ACC_TEST(method, SYNCHRONIZED))) {
 		lock = _JC_ACC_TEST(method, STATIC) ?
 		    method->class->instance : LOCALL(-code->max_locals);
-		if (_jc_lock_object(env, lock) != JNI_OK) {
+		if (_JC_UNLIKELY(_jc_lock_object(env, lock) != JNI_OK)) {
 			lock = NULL;
 			goto exception;
 		}
@@ -391,7 +406,7 @@ TARGET(aastore)
 	index = STACKI(1);
 	ARRAYCHECK(array, index);
 	obj = STACKL(2);
-	if (obj != NULL) {
+	if (_JC_LIKELY(obj != NULL)) {
 		switch (_jc_assignable_from(env, obj->type,
 		    array->type->u.array.element_type)) {
 		case 1:
@@ -415,7 +430,8 @@ TARGET(anewarray)
     {
 	_jc_array *array;
 
-	if ((array = _jc_new_array(env, INFO(type), STACKI(-1))) == NULL)
+	if (_JC_UNLIKELY((array = _jc_new_array(env,
+	    INFO(type), STACKI(-1))) == NULL))
 		goto exception;
 	STACKL(-1) = (_jc_object *)array;
 	NEXT();
@@ -427,8 +443,7 @@ TARGET(arraylength)
     {
 	_jc_array *array;
 
-	if ((array = (_jc_array *)STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(array = (_jc_array *)STACKL(-1));
 	STACKI(-1) = array->length;
 	NEXT();
     }
@@ -438,8 +453,7 @@ TARGET(astore)
 	NEXT();
 TARGET(athrow)
 	POP(1);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	_jc_post_exception_object(env, STACKL(0));
 	goto exception;
 TARGET(baload)
@@ -500,7 +514,7 @@ TARGET(checkcast)
     {
 	_jc_object *const obj = STACKL(-1);
 
-	if (obj != NULL) {
+	if (_JC_LIKELY(obj != NULL)) {
 		_jc_type *const type = INFO(type);
 
 		switch (_jc_instance_of(env, obj, type)) {
@@ -716,8 +730,7 @@ TARGET(getfield_z)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKI(-1) = *(jboolean *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -725,8 +738,7 @@ TARGET(getfield_b)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKI(-1) = *(jbyte *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -734,8 +746,7 @@ TARGET(getfield_c)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKI(-1) = *(jchar *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -743,8 +754,7 @@ TARGET(getfield_s)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKI(-1) = *(jshort *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -752,8 +762,7 @@ TARGET(getfield_i)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKI(-1) = *(jint *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -762,8 +771,7 @@ TARGET(getfield_j)
     	_jc_object *obj;
 
 	POP(-1);
-	if ((obj = STACKL(-2)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-2));
 	STACKJ(-2) = *(jlong *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -771,8 +779,7 @@ TARGET(getfield_f)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKF(-1) = *(jfloat *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -781,8 +788,7 @@ TARGET(getfield_d)
     	_jc_object *obj;
 
 	POP(-1);
-	if ((obj = STACKL(-2)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-2));
 	STACKD(-2) = *(jdouble *)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -790,8 +796,7 @@ TARGET(getfield_l)
     {
     	_jc_object *obj;
 
-	if ((obj = STACKL(-1)) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(obj = STACKL(-1));
 	STACKL(-1) = *(_jc_object **)((char *)obj + INFO(field).u.offset);
 	NEXT();
     }
@@ -800,10 +805,7 @@ TARGET(getstatic)
 	_jc_field *const field = INFO(field).field;
 
 	/* Initialize field's class */
-	if (!_JC_FLG_TEST(field->class, INITIALIZED)) {
-		if (_jc_initialize_type(env, field->class) != JNI_OK)
-			goto exception;
-	}
+	INITIALIZETYPE(field->class);
 
 	/* Update instruction and execute again */
 	switch (_jc_sig_types[(u_char)*field->signature]) {
@@ -923,7 +925,7 @@ TARGET(iastore)
     }
 TARGET(idiv)
 	POP(1);
-	if (STACKI(0) == 0)
+	if (_JC_UNLIKELY(STACKI(0) == 0))
 		goto arithmetic_exception;
 	STACKI(-1) /= STACKI(0);
 	NEXT();
@@ -992,7 +994,8 @@ TARGET(instanceof)
     {
     	jint result;
 
-	if ((result = _jc_instance_of(env, STACKL(-1), INFO(type))) == -1)
+	if (_JC_UNLIKELY((result = _jc_instance_of(env,
+	    STACKL(-1), INFO(type))) == -1))
 		goto exception;
 	STACKI(-1) = result;
 	NEXT();
@@ -1002,10 +1005,7 @@ TARGET(invokestatic)
 	_jc_method *const imethod = INFO(invoke).method;
 
 	/* Initialize method's class */
-	if (!_JC_FLG_TEST(imethod->class, INITIALIZED)) {
-		if (_jc_initialize_type(env, imethod->class) != JNI_OK)
-			goto exception;
-	}
+	INITIALIZETYPE(imethod->class);
 
 	/* Update instruction and execute again */
 	code->opcodes[pc] = _JC_invokestatic2;
@@ -1033,8 +1033,7 @@ TARGET(invokeinterface)
 		_jc_object *obj;
 
 		/* Check for null */
-		if ((obj = STACKL(-invoke->pop)) == NULL)
-			goto null_pointer_exception;
+		NULLPOINTERCHECK(obj = STACKL(-invoke->pop));
 
 		/* Verify object implements the interface */
 		switch (_jc_instance_of(env, obj, imethod->class)) {
@@ -1057,15 +1056,15 @@ TARGET(invokeinterface)
 		    < _JC_IMETHOD_HASHSIZE);
 
 		/* Try quick hash table lookup */
-		if ((quick = obj->type->imethod_quick_table[
-		    imethod->signature_hash_bucket]) != NULL) {
+		if (_JC_LIKELY((quick = obj->type->imethod_quick_table[
+		    imethod->signature_hash_bucket]) != NULL)) {
 		    	imethod = quick;
 			goto got_method;
 		}
 
 		/* Lookup interface method entry point in hash table */
-		if ((methodp = obj->type->imethod_hash_table[
-		    imethod->signature_hash_bucket]) == NULL)
+		if (_JC_UNLIKELY((methodp = obj->type->imethod_hash_table[
+		    imethod->signature_hash_bucket]) == NULL))
 			goto not_found;
 		do {
 			_jc_method *const entry = *methodp;
@@ -1078,7 +1077,7 @@ TARGET(invokeinterface)
 			}
 			methodp++;
 		} while (*methodp != NULL);
-		if (*methodp == NULL) {
+		if (_JC_UNLIKELY(*methodp == NULL)) {
 not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
 			    "%s.%s%s invoked from %s.%s%s on a %s",
 			    imethod->class->name, imethod->name,
@@ -1089,7 +1088,7 @@ not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
 
 got_method:
 		/* Verify method is public */
-		if (!_JC_ACC_TEST(imethod, PUBLIC)) {
+		if (_JC_UNLIKELY(!_JC_ACC_TEST(imethod, PUBLIC))) {
 			_jc_post_exception_msg(env, _JC_IllegalAccessError,
 			    "%s.%s%s invoked from %s.%s%s on a %s",
 			    imethod->class->name, imethod->name,
@@ -1105,8 +1104,7 @@ got_method:
 		_jc_type *vtype;
 
 		/* Check for null */
-		if ((obj = STACKL(-invoke->pop)) == NULL)
-			goto null_pointer_exception;
+		NULLPOINTERCHECK(obj = STACKL(-invoke->pop));
 
 		/* Resolve virtual method */
 		vtype = _JC_LW_TEST(obj->lockword, ARRAY) ?
@@ -1115,8 +1113,7 @@ got_method:
 		break;
 	    }
 	case _JC_invokespecial:
-		if (STACKL(-invoke->pop) == NULL)
-			goto null_pointer_exception;
+		NULLPOINTERCHECK(STACKL(-invoke->pop));
 		break;
 	case _JC_invokestatic2:
 		break;
@@ -1126,7 +1123,7 @@ got_method:
 	}
 
 	/* Invoke the method */
-	if (_JC_ACC_TEST(imethod, NATIVE)) {
+	if (_JC_UNLIKELY(_JC_ACC_TEST(imethod, NATIVE))) {
 
 		/* Invoke native method */
 		status = _jc_invoke_native_method(env,
@@ -1146,7 +1143,7 @@ got_method:
 	}
 
 	/* Did method throw an exception? */
-	if (status != JNI_OK)
+	if (_JC_UNLIKELY(status != JNI_OK))
 		goto exception;
 
 	/* Push return value, if any */
@@ -1183,7 +1180,7 @@ TARGET(ior)
 	NEXT();
 TARGET(irem)
 	POP(1);
-	if (STACKI(0) == 0)
+	if (_JC_UNLIKELY(STACKI(0) == 0))
 		goto arithmetic_exception;
 	STACKI(-1) %= STACKI(0);
 	NEXT();
@@ -1272,8 +1269,8 @@ TARGET(ldc_string)
 	_jc_object *string;
 
 	/* Create intern'd string */
-	if ((string = _jc_new_intern_string(env,
-	    INFO(utf8), strlen(INFO(utf8)))) == NULL)
+	if (_JC_UNLIKELY((string = _jc_new_intern_string(env,
+	    INFO(utf8), strlen(INFO(utf8)))) == NULL))
 		goto exception;
 
 	/* Create reference list with one reference */
@@ -1283,7 +1280,7 @@ TARGET(ldc_string)
 	rinfo.num_implicit_refs = 1;
 
 	/* Add implicit reference to string from class loader */
-	if (_jc_merge_implicit_refs(env, &rinfo) != JNI_OK) {
+	if (_JC_UNLIKELY(_jc_merge_implicit_refs(env, &rinfo) != JNI_OK)) {
 		_jc_post_exception_info(env);
 		goto exception;
 	}
@@ -1301,7 +1298,7 @@ TARGET(ldc2_w)
 	NEXT();
 TARGET(ldiv)
 	POP2(1);
-	if (STACKJ(0) == 0)
+	if (_JC_UNLIKELY(STACKJ(0) == 0))
 		goto arithmetic_exception;
 	STACKJ(-2) /= STACKJ(0);
 	NEXT();
@@ -1333,7 +1330,7 @@ TARGET(lor)
 	NEXT();
 TARGET(lrem)
 	POP2(1);
-	if (STACKJ(0) == 0)
+	if (_JC_UNLIKELY(STACKJ(0) == 0))
 		goto arithmetic_exception;
 	STACKJ(-2) %= STACKJ(0);
 	NEXT();
@@ -1366,16 +1363,14 @@ TARGET(lxor)
 	NEXT();
 TARGET(monitorenter)
 	POP(1);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
-	if (_jc_lock_object(env, STACKL(0)) != JNI_OK)
+	NULLPOINTERCHECK(STACKL(0));
+	if (_JC_UNLIKELY(_jc_lock_object(env, STACKL(0)) != JNI_OK))
 		goto exception;
 	NEXT();
 TARGET(monitorexit)
 	POP(1);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
-	if (_jc_unlock_object(env, STACKL(0)) != JNI_OK)
+	NULLPOINTERCHECK(STACKL(0));
+	if (_JC_UNLIKELY(_jc_unlock_object(env, STACKL(0)) != JNI_OK))
 		goto exception;
 	NEXT();
 TARGET(multianewarray)
@@ -1391,8 +1386,8 @@ TARGET(multianewarray)
 		for (i = 0; i < info->dims; i++)
 			sizes[i] = STACKI(i);
 	}
-	if ((array = _jc_new_multiarray(env,
-	    info->type, info->dims, sizes)) == NULL)
+	if (_JC_UNLIKELY((array = _jc_new_multiarray(env,
+	    info->type, info->dims, sizes)) == NULL))
 		goto exception;
 	PUSHL((_jc_object *)array);
 	NEXT();
@@ -1401,7 +1396,7 @@ TARGET(new)
     {
 	_jc_object *obj;
 
-	if ((obj = _jc_new_object(env, INFO(type))) == NULL)
+	if (_JC_UNLIKELY((obj = _jc_new_object(env, INFO(type))) == NULL))
 		goto exception;
 	PUSHL(obj);
 	NEXT();
@@ -1411,7 +1406,8 @@ TARGET(newarray)
 	_jc_array *array;
 
 	POP(1);
-	if ((array = _jc_new_array(env, INFO(type), STACKI(0))) == NULL)
+	if (_JC_UNLIKELY((array = _jc_new_array(env,
+	    INFO(type), STACKI(0))) == NULL))
 		goto exception;
 	PUSHL((_jc_object *)array);
 	NEXT();
@@ -1426,57 +1422,48 @@ TARGET(pop2)
 	NEXT();
 TARGET(putfield_z)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jboolean *)((char *)STACKL(0)
 	    + INFO(field).u.offset) = STACKI(1) & 0x01;
 	NEXT();
 TARGET(putfield_b)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jbyte *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
 TARGET(putfield_c)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jchar *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
 TARGET(putfield_s)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jshort *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
 TARGET(putfield_i)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jint *)((char *)STACKL(0) + INFO(field).u.offset) = STACKI(1);
 	NEXT();
 TARGET(putfield_j)
 	POP(3);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jlong *)((char *)STACKL(0) + INFO(field).u.offset) = STACKJ(1);
 	NEXT();
 TARGET(putfield_f)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jfloat *)((char *)STACKL(0) + INFO(field).u.offset) = STACKF(1);
 	NEXT();
 TARGET(putfield_d)
 	POP(3);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(jdouble *)((char *)STACKL(0) + INFO(field).u.offset) = STACKD(1);
 	NEXT();
 TARGET(putfield_l)
 	POP(2);
-	if (STACKL(0) == NULL)
-		goto null_pointer_exception;
+	NULLPOINTERCHECK(STACKL(0));
 	*(_jc_object **)((char *)STACKL(0) + INFO(field).u.offset) = STACKL(1);
 	NEXT();
 TARGET(putstatic)
@@ -1484,10 +1471,7 @@ TARGET(putstatic)
 	_jc_field *const field = INFO(field).field;
 
 	/* Initialize field's class */
-	if (!_JC_FLG_TEST(field->class, INITIALIZED)) {
-		if (_jc_initialize_type(env, field->class) != JNI_OK)
-			goto exception;
-	}
+	INITIALIZETYPE(field->class);
 
 	/* Update instruction and execute again */
 	switch (_jc_sig_types[(u_char)*field->signature]) {
@@ -1609,7 +1593,7 @@ TARGET(tableswitch)
     }
 
 periodic_check:
-	if (_jc_thread_check(env) != JNI_OK)
+	if (_JC_UNLIKELY(_jc_thread_check(env) != JNI_OK))
 		goto exception;
 	ticker = PERIODIC_CHECK_TICKS;
 	JUMP(pc);
@@ -1673,14 +1657,14 @@ exit:
 	_JC_ASSERT(status == JNI_OK || env->pending != NULL);
 
 	/* De-synchronize if necessary */
-	if (lock != NULL) {
+	if (_JC_UNLIKELY(lock != NULL)) {
 		_jc_rvalue retval;
 
 		/* Temporarily save return value */
 		retval = env->retval;
 
 		/* Unlock monitor */
-		if (_jc_unlock_object(env, lock) != JNI_OK)
+		if (_JC_UNLIKELY(_jc_unlock_object(env, lock) != JNI_OK))
 			status = JNI_ERR;
 
 		/* Restore return value */
