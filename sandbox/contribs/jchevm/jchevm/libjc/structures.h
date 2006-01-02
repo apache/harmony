@@ -124,7 +124,7 @@ struct _jc_super_info {
 /* One entry in a method's [PC -> Java line number table] map */
 struct _jc_pc_map {
 	const void	*pc;
-	uint16_t	jline;
+	_jc_uint16	jline;
 };
 
 /* Class bytes: in-memory copy of a class file byte[] array */

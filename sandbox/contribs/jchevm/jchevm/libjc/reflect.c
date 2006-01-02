@@ -857,7 +857,7 @@ f2d:	value->d = svalue.f; return JNI_OK;
  */
 int
 _jc_reflect_accessible(_jc_env *env, _jc_type *member_class,
-	uint16_t access, _jc_type **calling_classp)
+	_jc_uint16 access, _jc_type **calling_classp)
 {
 	_jc_type *calling_class = NULL;
 	_jc_java_stack *jstack;

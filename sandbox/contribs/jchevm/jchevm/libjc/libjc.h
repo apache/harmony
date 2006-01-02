@@ -419,7 +419,7 @@ extern int		_jc_unwrap_primitive(_jc_env *env, _jc_object *obj,
 extern jint		_jc_convert_primitive(_jc_env *env, int dtype,
 				int stype, _jc_value *value);
 extern int		_jc_reflect_accessible(_jc_env *env,
-				_jc_type *member_class, uint16_t access,
+				_jc_type *member_class, _jc_uint16 access,
 				_jc_type **calling_classp);
 
 /* resolve.c */

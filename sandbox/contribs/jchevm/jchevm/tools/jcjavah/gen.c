@@ -15,13 +15,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * $Id: gen.c,v 1.3 2005/05/08 21:12:07 archiecobbs Exp $
+ * $Id$
  */
 
 #include "javah.h"
 
 struct flag_name {
-	uint16_t	flag;
+	_jc_uint16	flag;
 	const char	*name;
 };
 
