@@ -45,6 +45,7 @@ typedef struct _jc_fat_locks _jc_fat_locks;
 typedef struct _jc_heap _jc_heap;
 typedef struct _jc_heap_size _jc_heap_size;
 typedef struct _jc_heap_sweep _jc_heap_sweep;
+typedef struct _jc_ilib_entry _jc_ilib_entry;
 typedef struct _jc_initialization _jc_initialization;
 typedef struct _jc_java_stack _jc_java_stack;
 typedef struct _jc_jvm _jc_jvm;
@@ -352,6 +353,14 @@ struct _jc_native_lib {
 	char				*name;
 	void				*handle;
 	STAILQ_ENTRY(_jc_native_lib)	link;
+};
+
+/*
+ * JC internal native library entry.
+ */
+struct _jc_ilib_entry {
+	const char			*name;
+	void				*addr;
 };
 
 /*

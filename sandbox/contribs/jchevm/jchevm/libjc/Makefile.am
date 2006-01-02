@@ -2,12 +2,10 @@
 
 SUBDIRS=		native arch
 
-lib_LTLIBRARIES=	libjc.la
-
-libjc_la_LDFLAGS=	-version-info @LIBRARY_VERSION@
+lib_LIBRARIES=		libjc.a
 
 # Standard source files
-libjc_la_SOURCES= \
+libjc_a_SOURCES= \
 			analysis.c \
 			array.c \
 			bootstrap.c \
@@ -62,7 +60,7 @@ interp.s:	interp.c
 	mv interp.lo $@
 
 # Java native method source files
-libjc_la_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
+libjc_a_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
 			native/gnu_classpath_VMSystemProperties.c \
 			native/java_lang_VMClass.c \
 			native/java_lang_VMClassLoader.c \
@@ -79,10 +77,10 @@ libjc_la_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
 			native/org_dellroad_jc_vm_FinalizerThread.c
 
 # Architecture specific source files
-libjc_la_SOURCES+= arch/@JC_ARCH@/arch_functions.c
+libjc_a_SOURCES+= arch/@JC_ARCH@/arch_functions.c
 
 # Header files
-libjc_la_SOURCES+=	cf_parse.h \
+libjc_a_SOURCES+=	cf_parse.h \
 			definitions.h \
 			libjc.h \
 			inline.h \

@@ -19,8 +19,133 @@
  */
 
 #include "libjc.h"
+#include "gnu_classpath_VMStackWalker.h"
+#include "gnu_classpath_VMSystemProperties.h"
+#include "java_lang_Thread.h"
+#include "java_lang_VMClass.h"
+#include "java_lang_VMClassLoader.h"
+#include "java_lang_VMCompiler.h"
+#include "java_lang_VMObject.h"
+#include "java_lang_VMRuntime.h"
+#include "java_lang_VMSystem.h"
+#include "java_lang_VMThread.h"
+#include "java_lang_VMThrowable.h"
+#include "java_lang_reflect_Constructor.h"
+#include "java_lang_reflect_Field.h"
+#include "java_lang_reflect_Method.h"
+#include "org_dellroad_jc_vm_DebugThread.h"
+#include "org_dellroad_jc_vm_FinalizerThread.h"
 
 typedef jint	jni_onload_t(JavaVM *jvm, void *reserved);
+
+/* Internal functions */
+static void	*_jc_dlsym(void *handle, const char *name);
+static int	_jc_ilib_compare(const void *item1, const void *item2);
+
+/*
+ * Internal JCNI native methods.
+ *
+ * NOTE: This table must be kept up to date and sorted!
+ */
+#define _JC_ILIB_ENTRY(method)	{ "JCNI_" #method, JCNI_ ## method }
+static const _jc_ilib_entry _jc_ilib_table[] = {
+	_JC_ILIB_ENTRY(gnu_classpath_VMStackWalker_getClassContext),
+	_JC_ILIB_ENTRY(gnu_classpath_VMSystemProperties_preInit),
+	_JC_ILIB_ENTRY(java_lang_VMClassLoader_defineClass),
+	_JC_ILIB_ENTRY(java_lang_VMClassLoader_findLoadedClass),
+	_JC_ILIB_ENTRY(java_lang_VMClassLoader_getPrimitiveClass),
+	_JC_ILIB_ENTRY(java_lang_VMClassLoader_loadClass),
+	_JC_ILIB_ENTRY(java_lang_VMClassLoader_resolveClass),
+	_JC_ILIB_ENTRY(java_lang_VMClass_forName),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getClassLoader),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getComponentType),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getDeclaredClasses),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getDeclaredConstructors),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getDeclaredFields),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getDeclaredMethods),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getDeclaringClass),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getInterfaces),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getModifiers),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getName),
+	_JC_ILIB_ENTRY(java_lang_VMClass_getSuperclass),
+	_JC_ILIB_ENTRY(java_lang_VMClass_isArray),
+	_JC_ILIB_ENTRY(java_lang_VMClass_isAssignableFrom),
+	_JC_ILIB_ENTRY(java_lang_VMClass_isInstance),
+	_JC_ILIB_ENTRY(java_lang_VMClass_isInterface),
+	_JC_ILIB_ENTRY(java_lang_VMClass_isPrimitive),
+	_JC_ILIB_ENTRY(java_lang_VMClass_throwException),
+	_JC_ILIB_ENTRY(java_lang_VMObject_clone),
+	_JC_ILIB_ENTRY(java_lang_VMObject_getClass),
+	_JC_ILIB_ENTRY(java_lang_VMObject_notify),
+	_JC_ILIB_ENTRY(java_lang_VMObject_notifyAll),
+	_JC_ILIB_ENTRY(java_lang_VMObject_wait),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_availableProcessors),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_exit),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_freeMemory),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_gc),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_mapLibraryName),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_maxMemory),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_nativeLoad),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_runFinalization),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_runFinalizationForExit),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_runFinalizersOnExit),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_totalMemory),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_traceInstructions),
+	_JC_ILIB_ENTRY(java_lang_VMRuntime_traceMethodCalls),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_arraycopy),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_currentTimeMillis),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_getenv),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_identityHashCode),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_setErr),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_setIn),
+	_JC_ILIB_ENTRY(java_lang_VMSystem_setOut),
+	_JC_ILIB_ENTRY(java_lang_VMThread_countStackFrames),
+	_JC_ILIB_ENTRY(java_lang_VMThread_currentThread),
+	_JC_ILIB_ENTRY(java_lang_VMThread_interrupt),
+	_JC_ILIB_ENTRY(java_lang_VMThread_interrupted),
+	_JC_ILIB_ENTRY(java_lang_VMThread_isInterrupted),
+	_JC_ILIB_ENTRY(java_lang_VMThread_nativeSetPriority),
+	_JC_ILIB_ENTRY(java_lang_VMThread_nativeStop),
+	_JC_ILIB_ENTRY(java_lang_VMThread_resume),
+	_JC_ILIB_ENTRY(java_lang_VMThread_start),
+	_JC_ILIB_ENTRY(java_lang_VMThread_suspend),
+	_JC_ILIB_ENTRY(java_lang_VMThread_yield),
+	_JC_ILIB_ENTRY(java_lang_VMThrowable_fillInStackTrace),
+	_JC_ILIB_ENTRY(java_lang_VMThrowable_getStackTrace),
+	_JC_ILIB_ENTRY(java_lang_reflect_Constructor_constructNative),
+	_JC_ILIB_ENTRY(java_lang_reflect_Constructor_getExceptionTypes),
+	_JC_ILIB_ENTRY(java_lang_reflect_Constructor_getModifiers),
+	_JC_ILIB_ENTRY(java_lang_reflect_Constructor_getParameterTypes),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_get),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getBoolean),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getByte),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getChar),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getDouble),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getFloat),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getInt),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getLong),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getModifiers),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getShort),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_getType),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_set),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setBoolean),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setByte),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setChar),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setDouble),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setFloat),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setInt),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setLong),
+	_JC_ILIB_ENTRY(java_lang_reflect_Field_setShort),
+	_JC_ILIB_ENTRY(java_lang_reflect_Method_getExceptionTypes),
+	_JC_ILIB_ENTRY(java_lang_reflect_Method_getModifiers),
+	_JC_ILIB_ENTRY(java_lang_reflect_Method_getParameterTypes),
+	_JC_ILIB_ENTRY(java_lang_reflect_Method_getReturnType),
+	_JC_ILIB_ENTRY(java_lang_reflect_Method_invokeNative),
+	_JC_ILIB_ENTRY(org_dellroad_jc_vm_DebugThread_dumpDebugInfo),
+	_JC_ILIB_ENTRY(org_dellroad_jc_vm_FinalizerThread_finalizeObjects),
+};
+#undef _JC_ILIB_ENTRY
+#define NUM_ILIB_ENTRIES    (sizeof(_jc_ilib_table) / sizeof(*_jc_ilib_table))
 
 /*
  * Invoke a native method.
@@ -134,6 +259,20 @@ _jc_load_native_library(_jc_env *env,
 	dlname = (strcmp(name, _JC_INTERNAL_NATIVE_LIBRARY) == 0) ?
 	    NULL : name;
 
+#ifndef NDEBUG
+	if (dlname == NULL) {
+	    int i;
+
+	    /* Sanity check that _jc_ilib_table is sorted */
+	    for (i = 0; i < NUM_ILIB_ENTRIES - 1; i++) {
+		    const _jc_ilib_entry *const entry1 = &_jc_ilib_table[i];
+		    const _jc_ilib_entry *const entry2 = &_jc_ilib_table[i + 1];
+
+		    _JC_ASSERT(_jc_ilib_compare(entry1, entry2) < 0);
+	    }
+	}
+#endif
+
 	/* Lock loader */
 	_JC_MUTEX_LOCK(env, loader->mutex);
 	loader_locked = JNI_TRUE;
@@ -179,15 +318,17 @@ retry:
 		    loader->instance->type->name, loader->instance);
 	}
 
-	/* Try to open the shared library */
-	if ((handle = dlopen(dlname, RTLD_NOW)) == NULL) {
+	/* Try to open the shared library; special case libjc */
+	if (dlname == NULL)
+		handle = _JC_INTERNAL_LIBRARY_HANDLE;
+	else if ((handle = dlopen(dlname, RTLD_NOW)) == NULL) {
 		_JC_EX_STORE(env, UnsatisfiedLinkError,
 		    "failed to open native library `%s': %s", name, dlerror());
 		goto fail;
 	}
 
 	/* Invoke JNI_OnLoad() (if any) */
-	if ((on_load = dlsym(handle, "JNI_OnLoad")) != NULL) {
+	if ((on_load = _jc_dlsym(handle, "JNI_OnLoad")) != NULL) {
 		const char *vname = NULL;
 		jint version;
 
@@ -279,14 +420,16 @@ _jc_unload_native_libraries(_jc_jvm *vm, _jc_class_loader *loader)
 		STAILQ_REMOVE_HEAD(&loader->native_libs, link);
 
 		/* Invoke JNI_OnUnload() */
-		if ((on_unload = dlsym(lib->handle, "JNI_OnUnload")) != NULL) {
+		if ((on_unload = _jc_dlsym(lib->handle,
+		    "JNI_OnUnload")) != NULL) {
 			VERBOSE(JNI, vm, "invoking JNI_OnUnload() in native"
 			    " library `%s'", lib->name);
 			(*on_unload)(_JC_JVM2JNI(vm), NULL);
 		}
 
 		/* Close shared library */
-		if (dlclose(lib->handle) == -1) {
+		if (lib->handle != _JC_INTERNAL_LIBRARY_HANDLE
+		    && dlclose(lib->handle) == -1) {
 			_jc_eprintf(vm, "%s(%s): %s\n",
 			    "dlclose", lib->name, dlerror());
 		}
@@ -338,7 +481,7 @@ _jc_resolve_native_method(_jc_env *env, _jc_method *method)
 
 	/* Search native libraries associated with method's class loader */
 	STAILQ_FOREACH(lib, &loader->native_libs, link) {
-		if ((func = dlsym(lib->handle, jni_name)) != NULL) {
+		if ((func = _jc_dlsym(lib->handle, jni_name)) != NULL) {
 			method->access_flags &= ~_JC_ACC_JCNI;
 			goto found;
 		}
@@ -347,7 +490,7 @@ _jc_resolve_native_method(_jc_env *env, _jc_method *method)
 	/* Try short JCNI function name */
 	strncpy(jni_name, "JCNI", 4);
 	STAILQ_FOREACH(lib, &loader->native_libs, link) {
-		if ((func = dlsym(lib->handle, jni_name)) != NULL) {
+		if ((func = _jc_dlsym(lib->handle, jni_name)) != NULL) {
 			method->access_flags |= _JC_ACC_JCNI;
 			goto found;
 		}
@@ -361,7 +504,7 @@ _jc_resolve_native_method(_jc_env *env, _jc_method *method)
 	/* Search native libraries associated with method's class loader */
 	strncpy(jni_name, "Java", 4);
 	STAILQ_FOREACH(lib, &loader->native_libs, link) {
-		if ((func = dlsym(lib->handle, jni_name)) != NULL) {
+		if ((func = _jc_dlsym(lib->handle, jni_name)) != NULL) {
 			method->access_flags &= ~_JC_ACC_JCNI;
 			goto found;
 		}
@@ -370,7 +513,7 @@ _jc_resolve_native_method(_jc_env *env, _jc_method *method)
 	/* Try long JCNI function name */
 	strncpy(jni_name, "JCNI", 4);
 	STAILQ_FOREACH(lib, &loader->native_libs, link) {
-		if ((func = dlsym(lib->handle, jni_name)) != NULL) {
+		if ((func = _jc_dlsym(lib->handle, jni_name)) != NULL) {
 			method->access_flags |= _JC_ACC_JCNI;
 			goto found;
 		}
@@ -403,4 +546,36 @@ found:
 	return JNI_OK;
 }
 
+/*
+ * dlsym() wrapper that special cases the JC internal native library.
+ */
+static void *
+_jc_dlsym(void *handle, const char *name)
+{
+	_jc_ilib_entry *entry;
+	_jc_ilib_entry key;
+
+	/* Handle normal native libraries */
+	if (handle != _JC_INTERNAL_LIBRARY_HANDLE)
+		return dlsym(handle, name);
+
+	/* Handle JC internal native library */
+	key.name = name;
+	if ((entry = bsearch(&key, _jc_ilib_table, NUM_ILIB_ENTRIES,
+	    sizeof(*_jc_ilib_table), _jc_ilib_compare)) == NULL)
+		return NULL;
+	return entry->addr;
+}
+
+/*
+ * Comparison function for _jc_ilib_entry's.
+ */
+static int
+_jc_ilib_compare(const void *item1, const void *item2)
+{
+	const _jc_ilib_entry *const entry1 = item1;
+	const _jc_ilib_entry *const entry2 = item2;
+
+	return strcmp(entry1->name, entry2->name);
+}
 

@@ -342,9 +342,10 @@ enum {
 #define _JC_JAVA_STACK_MARGIN			100
 
 /*
- * Short name for internal java.lang native library.
+ * Short name and handle for internal java.lang native library.
  */
 #define _JC_INTERNAL_NATIVE_LIBRARY		"JC virtual machine"
+#define _JC_INTERNAL_LIBRARY_HANDLE		((void *)1)
 
 /*
  * Number of pages to reserve for low memory situations where
