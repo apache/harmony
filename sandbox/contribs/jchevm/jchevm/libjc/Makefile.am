@@ -56,8 +56,7 @@ libjc_a_SOURCES= \
 			zip.c
 
 interp.s:	interp.c
-	$(LTCOMPILE) -S -c `test -f '$<' || echo '$(srcdir)/'`$<
-	mv interp.lo $@
+	$(COMPILE) -o $@ -S -c `test -f '$<' || echo '$(srcdir)/'`$<
 
 # Java native method source files
 libjc_a_SOURCES+=	native/gnu_classpath_VMStackWalker.c \
