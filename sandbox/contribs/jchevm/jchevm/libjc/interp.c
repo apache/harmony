@@ -539,10 +539,10 @@ TARGET(d2f)
 	NEXT();
 TARGET(d2i)
 	POP(1);
-	STACKI(-1) = _JC_CAST_FLT2INT(env, jdouble, jint, STACKD(-1));
+	STACKI(-1) = _JC_CAST_FLT2INT(jdouble, jint, STACKD(-1));
 	NEXT();
 TARGET(d2l)
-	STACKJ(-2) = _JC_CAST_FLT2INT(env, jdouble, jlong, STACKD(-2));
+	STACKJ(-2) = _JC_CAST_FLT2INT(jdouble, jlong, STACKD(-2));
 	NEXT();
 TARGET(dadd)
 	POP2(1);
@@ -652,11 +652,11 @@ TARGET(f2d)
 	STACKD(-2) = STACKF(-2);
 	NEXT();
 TARGET(f2i)
-	STACKI(-1) = _JC_CAST_FLT2INT(env, jfloat, jint, STACKF(-1));
+	STACKI(-1) = _JC_CAST_FLT2INT(jfloat, jint, STACKF(-1));
 	NEXT();
 TARGET(f2l)
 	POP(-1);
-	STACKJ(-2) = _JC_CAST_FLT2INT(env, jfloat, jlong, STACKF(-2));
+	STACKJ(-2) = _JC_CAST_FLT2INT(jfloat, jlong, STACKF(-2));
 	NEXT();
 TARGET(fadd)
 	POP(1);

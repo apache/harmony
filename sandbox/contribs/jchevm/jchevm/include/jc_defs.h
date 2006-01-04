@@ -536,7 +536,7 @@ struct _jc_catch_frame {
 /*
  * Conversion from floating point -> integral types.
  */
-#define _JC_CAST_FLT2INT(env, vtype, ctype, value)			\
+#define _JC_CAST_FLT2INT(vtype, ctype, value)				\
     ({									\
 	const vtype _val = (value);					\
 	const ctype _min = (ctype)(_JC_JLONG(1)				\
