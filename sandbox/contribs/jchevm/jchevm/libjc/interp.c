@@ -317,13 +317,14 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(tableswitch),
 	};
 	_jc_method_code *const code = &method->code;
-	int ticker = PERIODIC_CHECK_TICKS;
 	_jc_java_stack stack_frame;
-	_jc_word *const locals = env->sp;
-	_jc_object *lock = NULL;
 	_jc_method *imethod;
+	_jc_word *locals;
+	_jc_object *lock;
 	_jc_insn *pc;
 	_jc_word *sp;
+	jint ticker;
+	jint status;
 
 	/* Special hack to copy out target offsets */
 	if (_JC_UNLIKELY(method == NULL)) {
@@ -336,7 +337,15 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	_JC_ASSERT(env->sp >= env->stack_data);
 	_JC_ASSERT(env->sp <= env->stack_data + env->vm->java_stack_size);
 
-	/* Stack overflow check for C stack */
+	/* Is method abstract? */
+	if (_JC_UNLIKELY(_JC_ACC_TEST(method, ABSTRACT))) {
+		_jc_post_exception_msg(env, _JC_AbstractMethodError,
+		    "%s.%s%s", method->class->name, method->name,
+		    method->signature);
+		return JNI_ERR;
+	}
+
+	/* Check for C stack overflow */
 #if _JC_DOWNWARD_STACK
 	if (_JC_UNLIKELY((char *)&env < env->stack_limit
 	    && (env->in_vmex & (1 << _JC_StackOverflowError)) == 0))
@@ -349,52 +358,43 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		return JNI_ERR;
 	}
 
+	/* Create Java stack space */
+	locals = env->sp;
+	sp = locals + code->max_locals;
+	env->sp = sp + code->max_stack;
+
 	/* Check Java stack overflow; release secret space during exception */
-	if (_JC_UNLIKELY(env->sp + code->max_locals + code->max_stack
-	    > env->stack_data_end)) {
+	if (_JC_UNLIKELY(env->sp > env->stack_data_end)) {
 		_jc_post_exception(env, _JC_StackOverflowError);
-		return JNI_ERR;
+		goto fail;
 	}
 
-	/* Is method abstract? */
-	if (_JC_UNLIKELY(_JC_ACC_TEST(method, ABSTRACT))) {
-		_jc_post_exception_msg(env, _JC_AbstractMethodError,
-		    "%s.%s%s", method->class->name, method->name,
-		    method->signature);
-		return JNI_ERR;
-	}
+	/* Synchronize */
+	if (_JC_UNLIKELY(_JC_ACC_TEST(method, SYNCHRONIZED))) {
+		lock = _JC_ACC_TEST(method, STATIC) ?
+		    method->class->instance : LOCALL(-code->max_locals);
+		if (_JC_UNLIKELY(_jc_lock_object(env, lock) != JNI_OK))
+			goto fail;
+	} else
+		lock = NULL;
 
 	/* Sanity check */
 	_JC_ASSERT(!_JC_ACC_TEST(method->class, INTERFACE)
 	    || strcmp(method->name, "<clinit>") == 0);
 	_JC_ASSERT(_JC_FLG_TEST(method->class, RESOLVED));
 	_JC_ASSERT(!_JC_ACC_TEST(method, NATIVE));
+	_JC_ASSERT(code->insns != NULL);
+	_JC_ASSERT(code->num_insns > 0);
 
 	/* Push Java stack frame */
 	memset(&stack_frame, 0, sizeof(stack_frame));
 	stack_frame.next = env->java_stack;
 	stack_frame.method = method;
 	env->java_stack = &stack_frame;
-	sp = locals + code->max_locals;
-	env->sp = sp + code->max_stack;
-	pc = code->insns;
 
-	/* Sanity check */
-	_JC_ASSERT(code->insns != NULL);
-	_JC_ASSERT(code->num_insns > 0);
-
-	/* Synchronize */
-	if (_JC_UNLIKELY(_JC_ACC_TEST(method, SYNCHRONIZED))) {
-		lock = _JC_ACC_TEST(method, STATIC) ?
-		    method->class->instance : LOCALL(-code->max_locals);
-		if (_JC_UNLIKELY(_jc_lock_object(env, lock) != JNI_OK)) {
-			lock = NULL;
-			goto exception;
-		}
-	}
-
-	/* Start */
-	RERUN();
+	/* Begin execution */
+	ticker = PERIODIC_CHECK_TICKS;
+	JUMP(code->insns);
 
 TARGET(aaload)
     {
@@ -1680,7 +1680,6 @@ arithmetic_exception:
 
 exception:
     {
-	jint status;
 	int i;
 
 	/* Sanity check */
@@ -1719,12 +1718,16 @@ exception:
 
 	/* Exception not caught */
 	status = JNI_ERR;
-	goto exit;
+	goto finish;
+
+fail:
+	status = JNI_ERR;
+	goto out;
 
 done:
 	status = JNI_OK;
 
-exit:
+finish:
 	/* Sanity check */
 	_JC_ASSERT(status == JNI_OK || env->pending != NULL);
 
@@ -1743,6 +1746,7 @@ exit:
 		env->retval = retval;
 	}
 
+out:
 	/* Pop Java stack frame */
 	env->java_stack = stack_frame.next;
 	env->sp = locals;
