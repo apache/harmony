@@ -213,6 +213,8 @@ extern jdouble		_jc_interp_native_d(_jc_env *env, ...);
 extern _jc_object	*_jc_interp_native_l(_jc_env *env, ...);
 extern void		_jc_interp_native_v(_jc_env *env, ...);
 extern int		_jc_interp_pc_to_jline(_jc_method *method, int index);
+extern void		_jc_interp_get_targets(_jc_env *env);
+extern const _jc_word	*_jc_interp_targets;
 
 /* invoke.c */
 extern jint		_jc_invoke_nonvirtual(_jc_env *env,

@@ -134,6 +134,9 @@ pfail1:		_jc_vm_free(&vm);
 	if (_jc_heap_init(env, vm) != JNI_OK)
 		goto fail_info;
 
+	/* Get interpreter targets */
+	_jc_interp_get_targets(env);
+
 	/* Create the bootstrap class loader */
 	_JC_MUTEX_LOCK(env, vm->mutex);
 	if ((vm->boot.loader = _jc_create_loader(env)) == NULL) {

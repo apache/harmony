@@ -206,7 +206,7 @@ struct _jc_c_stack {
 struct _jc_java_stack {
 	_jc_java_stack			*next;
 	_jc_method			*method;
-	const int			*pcp;
+	_jc_insn			*pc;
 };
 
 /*

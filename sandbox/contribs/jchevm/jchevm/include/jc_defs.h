@@ -119,8 +119,10 @@ typedef struct _jc_iinc			_jc_iinc;
 typedef struct _jc_invoke		_jc_invoke;
 typedef struct _jc_linemap		_jc_linemap;
 typedef struct _jc_lookupswitch		_jc_lookupswitch;
+typedef struct _jc_insn			_jc_insn;
 typedef union _jc_insn_info		_jc_insn_info;
 typedef struct _jc_field_info		_jc_field_info;
+typedef struct _jc_string_info		_jc_string_info;
 typedef struct _jc_multianewarray	_jc_multianewarray;
 typedef struct _jc_tableswitch		_jc_tableswitch;
 typedef struct _jc_interp_trap		_jc_interp_trap;
@@ -238,11 +240,16 @@ struct _jc_multianewarray {
 
 struct _jc_lookup {
 	jint		match;
-	_jc_uint16	target;
+	_jc_insn	*target;
+};
+
+struct _jc_string_info {
+	_jc_object	*string;
+	const char	*utf8;
 };
 
 struct _jc_lookupswitch {
-	_jc_uint16	default_target;
+	_jc_insn	*default_target;
 	_jc_uint16	num_pairs;
 	_jc_lookup	pairs[0];
 };
@@ -250,14 +257,14 @@ struct _jc_lookupswitch {
 struct _jc_tableswitch {
 	jint		low;
 	jint		high;
-	_jc_uint16	default_target;
-	_jc_uint16	targets[0];
+	_jc_insn	*default_target;
+	_jc_insn	*targets[0];
 };
 
 struct _jc_interp_trap {
-	_jc_uint16	start;
-	_jc_uint16	end;
-	_jc_uint16	target;
+	_jc_insn	*start;
+	_jc_insn	*end;
+	_jc_insn	*target;
 	_jc_type	*type;
 };
 
@@ -282,10 +289,15 @@ union _jc_insn_info {
 	_jc_type		*type;
 	_jc_lookupswitch	*lookupswitch;
 	_jc_tableswitch		*tableswitch;
-	_jc_uint16		target;
+	_jc_insn		*target;
 	jint			local;
 	_jc_value		constant;
-	const char		*utf8;
+	_jc_string_info 	string;
+};
+
+struct _jc_insn {
+	_jc_word		action;
+	_jc_insn_info		info;
 };
 
 /************************************************************************
@@ -305,8 +317,7 @@ struct _jc_field {
 
 /* Interpreted method info */
 struct _jc_method_code {
-	unsigned char	*opcodes;
-	_jc_insn_info	*info;
+	_jc_insn	*insns;
 	_jc_interp_trap	*traps;
 	_jc_linemap	*linemaps;
 	_jc_uint16	max_stack;
@@ -404,13 +415,6 @@ struct _jc_type {
 struct _jc_inner_class {
 	_jc_type		*type;
 	_jc_uint16		access_flags;
-};
-
-/* Trap table entry */
-struct _jc_trap_info {
-	_jc_type		*type;		/* (sub)class of Throwable */
-	_jc_uint16		start;		/* starting trap region */
-	_jc_uint16		end;		/* ending trap region */
 };
 
 /* Exception catcher */

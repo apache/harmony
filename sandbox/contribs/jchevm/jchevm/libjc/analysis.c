@@ -55,7 +55,7 @@ _jc_compute_stack_depth(_jc_env *env, _jc_method_code *code, int *depth)
 		_jc_interp_trap *const trap = &code->traps[i];
 
 		if (_jc_compute_stack_depth2(env,
-		    &state, trap->target) != JNI_OK)
+		    &state, trap->target - code->insns) != JNI_OK)
 			return JNI_ERR;
 	}
 
@@ -90,7 +90,8 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 
 	/* Flow forward */
 	while (JNI_TRUE) {
-		_jc_insn_info *const info = &code->info[state.ip];
+		_jc_insn *const insn = &code->insns[state.ip];
+		_jc_insn_info *const info = &insn->info;
 		int delta;
 
 		/* Sanity check */
@@ -109,7 +110,7 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 		 * operations that can affect "returnAddress" values,
 		 * which we must track in order to handle "ret".
 		 */
-		switch (code->opcodes[state.ip]) {
+		switch (insn->action) {
 		case _JC_astore:
 			_JC_ASSERT(state.sp >= 1);
 			state.locals[info->local] = state.stack[state.sp - 1];
@@ -169,7 +170,7 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 		}
 
 		/* Update stack pointer */
-		switch (code->opcodes[state.ip]) {
+		switch (insn->action) {
 		case _JC_getstatic:
 			delta = _jc_dword_type[_jc_sig_types[
 			    (u_char)*info->field.field->signature]] ? 2 : 1;
@@ -197,16 +198,16 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 			break;
 		default:
 			delta = (signed char)(_jc_bytecode_stackadj[
-			    code->opcodes[state.ip]] ^ _JC_STACKADJ_INVALID);
+			    insn->action] ^ _JC_STACKADJ_INVALID);
 			_JC_ASSERT(delta >= -4 && delta <= 2);
 			break;
 		}
 		state.sp += delta;
 
 		/* Flow to next instruction(s) */
-		switch (code->opcodes[state.ip]) {
+		switch (insn->action) {
 		case _JC_goto:
-			state.ip = info->target;
+			state.ip = info->target - code->insns;
 			break;
 		case _JC_areturn:
 		case _JC_dreturn:
@@ -233,7 +234,7 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 		case _JC_ifnonnull:
 		case _JC_ifnull:
 			if (_jc_compute_stack_depth2(env,
-			    &state, info->target) != JNI_OK)
+			    &state, info->target - code->insns) != JNI_OK)
 				return JNI_ERR;
 			state.ip++;
 			break;
@@ -241,12 +242,12 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 
 			/* Flow into subroutine */
 			if (_jc_compute_stack_depth2(env,
-			    &state, info->target) != JNI_OK)
+			    &state, info->target - code->insns) != JNI_OK)
 				return JNI_ERR;
 
 			/* Retrieve our new stack depth */
-			_JC_ASSERT(state.retsp[info->target] != -1);
-			state.sp = state.retsp[info->target];
+			_JC_ASSERT(state.retsp[info->target - code->insns] != -1);
+			state.sp = state.retsp[info->target - code->insns];
 
 			/* Continue with next instruction */
 			state.ip++;
@@ -259,11 +260,11 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 			for (i = 0; i < lsw->num_pairs; i++) {
 				_jc_lookup *const entry = &lsw->pairs[i];
 
-				if (_jc_compute_stack_depth2(env,
-				    &state, entry->target) != JNI_OK)
+				if (_jc_compute_stack_depth2(env, &state,
+				    entry->target - code->insns) != JNI_OK)
 					return JNI_ERR;
 			}
-			state.ip = lsw->default_target;
+			state.ip = lsw->default_target - code->insns;
 			break;
 		    }
 		case _JC_ret:
@@ -274,8 +275,8 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 			/* Let JSR instruction know what SP it gets back */
 			jsr_ip = state.locals[info->local] - 1;
 			_JC_ASSERT(jsr_ip >= 0 && jsr_ip <= code->num_insns);
-			_JC_ASSERT(code->opcodes[jsr_ip] == _JC_jsr);
-			sub_ip = code->info[jsr_ip].target;
+			_JC_ASSERT(code->insns[jsr_ip].action == _JC_jsr);
+			sub_ip = code->insns[jsr_ip].info.target - code->insns;
 			_JC_ASSERT(sub_ip >= 0 && sub_ip <= code->num_insns);
 			state.retsp[sub_ip] = state.sp;
 			return JNI_OK;
@@ -286,11 +287,11 @@ _jc_compute_stack_depth2(_jc_env *env, const _jc_depth_state *state0, int ip)
 			int i;
 
 			for (i = 0; i < tsw->high - tsw->low + 1; i++) {
-				if (_jc_compute_stack_depth2(env,
-				    &state, tsw->targets[i]) != JNI_OK)
+				if (_jc_compute_stack_depth2(env, &state,
+				    tsw->targets[i] - code->insns) != JNI_OK)
 					return JNI_ERR;
 			}
-			state.ip = tsw->default_target;
+			state.ip = tsw->default_target - code->insns;
 			break;
 		    }
 		default:

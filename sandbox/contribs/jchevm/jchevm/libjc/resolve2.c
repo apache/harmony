@@ -509,11 +509,8 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 	/* Allocate resolved method info */
 	_JC_MUTEX_LOCK(env, loader->mutex);
 	mutex_locked = JNI_TRUE;
-	if ((interp->opcodes = _jc_cl_alloc(env, loader,
-	    code->num_insns * sizeof(*interp->opcodes))) == NULL)
-		goto post_fail;
-	if ((interp->info = _jc_cl_alloc(env, loader,
-	    code->num_insns * sizeof(*interp->info))) == NULL)
+	if ((interp->insns = _jc_cl_alloc(env, loader,
+	    code->num_insns * sizeof(*interp->insns))) == NULL)
 		goto post_fail;
 	if ((interp->traps = _jc_cl_alloc(env, loader,
 	    code->num_traps * sizeof(*interp->traps))) == NULL)
@@ -545,9 +542,9 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		_jc_cf_trap *const ptrap = &code->traps[i];
 		_jc_interp_trap *const itrap = &interp->traps[i];
 
-		itrap->start = ptrap->start;
-		itrap->end = ptrap->end;
-		itrap->target = ptrap->target;
+		itrap->start = &interp->insns[ptrap->start];
+		itrap->end = &interp->insns[ptrap->end];
+		itrap->target = &interp->insns[ptrap->target];
 		if (ptrap->type == NULL) {
 			itrap->type = NULL;
 			continue;
@@ -562,12 +559,13 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 
 	/* Resolve and copy instructions */
 	for (i = 0; i < code->num_insns; i++) {
-		_jc_cf_insn *const insn = &code->insns[i];
-		_jc_insn_info *const info = &interp->info[i];
+		_jc_cf_insn *const cinsn = &code->insns[i];
+		_jc_insn *const insn = &interp->insns[i];
+		_jc_insn_info *const info = &insn->info;
 		u_char opcode;
 
 		/* Get opcode */
-		opcode = insn->opcode;
+		opcode = cinsn->opcode;
 
 		/* Copy and resolve additional info, possibly changing opcode */
 		switch (opcode) {
@@ -586,11 +584,11 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		case _JC_lload:
 		case _JC_lstore:
 		case _JC_ret:
-			info->local = insn->u.local.index;
+			info->local = cinsn->u.local.index;
 			break;
 		case _JC_anewarray:
 		    {
-			const char *etype = insn->u.type.name;
+			const char *etype = cinsn->u.type.name;
 			const size_t elen = strlen(etype) + 1;
 			char *atype;
 
@@ -620,7 +618,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		case _JC_instanceof:
 		case _JC_new:
 			if ((info->type = _jc_load_type(env,
-			    loader, insn->u.type.name)) == NULL)
+			    loader, cinsn->u.type.name)) == NULL)
 				goto fail;
 			if (_jc_resolve_add_loader_ref(env,
 			    rinfo, info->type->loader) != JNI_OK)
@@ -628,7 +626,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			break;
 		case _JC_bipush:
 		case _JC_sipush:
-			info->constant.i = insn->u.immediate.value;
+			info->constant.i = cinsn->u.immediate.value;
 			opcode = _JC_ldc;
 			break;
 		case _JC_dconst_0:
@@ -694,7 +692,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		    {
 			const int is_static = opcode == _JC_getstatic
 			    || opcode == _JC_putstatic;
-			_jc_cf_ref *const ref = insn->u.fieldref.field;
+			_jc_cf_ref *const ref = cinsn->u.fieldref.field;
 			_jc_field *field;
 			_jc_type *type;
 			u_char ptype;
@@ -816,18 +814,18 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		case _JC_ifnonnull:
 		case _JC_ifnull:
 		case _JC_jsr:
-			info->target = insn->u.branch.target;
+			info->target = &interp->insns[cinsn->u.branch.target];
 			break;
 		case _JC_iinc:
-			info->iinc.local = insn->u.iinc.index;
-			info->iinc.value = insn->u.iinc.value;
+			info->iinc.local = cinsn->u.iinc.index;
+			info->iinc.value = cinsn->u.iinc.value;
 			break;
 		case _JC_invokeinterface:
 		case _JC_invokespecial:
 		case _JC_invokestatic:
 		case _JC_invokevirtual:
 		    {
-			_jc_cf_ref *const ref = insn->u.invoke.method;
+			_jc_cf_ref *const ref = cinsn->u.invoke.method;
 			_jc_invoke *const invoke = &info->invoke;
 			_jc_method *imethod;
 			_jc_type *type;
@@ -954,7 +952,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		    }
 		case _JC_ldc:
 		    {
-			_jc_cf_constant *const c = insn->u.constant;
+			_jc_cf_constant *const c = cinsn->u.constant;
 
 			switch (c->type) {
 			case CONSTANT_Integer:
@@ -976,7 +974,8 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 					goto post_fail;
 				}
 				_JC_MUTEX_UNLOCK(env, loader->mutex);
-				info->utf8 = copy;
+				info->string.string = NULL;
+				info->string.utf8 = copy;
 
 				/* Set opcode */
 				opcode = _JC_ldc_string;
@@ -1003,7 +1002,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		    }
 		case _JC_ldc2_w:
 		    {
-			_jc_cf_constant *const c = insn->u.constant;
+			_jc_cf_constant *const c = cinsn->u.constant;
 
 			switch (c->type) {
 			case CONSTANT_Long:
@@ -1019,7 +1018,7 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		    }
 		case _JC_lookupswitch:
 		    {
-			_jc_cf_lookupswitch *const csw = insn->u.lookupswitch;
+			_jc_cf_lookupswitch *const csw = cinsn->u.lookupswitch;
 			_jc_lookupswitch *sw;
 			int j;
 
@@ -1033,14 +1032,14 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			_JC_MUTEX_UNLOCK(env, loader->mutex);
 
 			/* Copy info */
-			sw->default_target = csw->default_target;
+			sw->default_target = &interp->insns[csw->default_target];
 			sw->num_pairs = csw->num_pairs;
 			for (j = 0; j < sw->num_pairs; j++) {
 				_jc_cf_lookup *const clup = &csw->pairs[j];
 				_jc_lookup *const lup = &sw->pairs[j];
 
 				lup->match = clup->match;
-				lup->target = clup->target;
+				lup->target = &interp->insns[clup->target];
 			}
 
 			/* Done */
@@ -1049,20 +1048,20 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		    }
 		case _JC_multianewarray:
 			if ((info->multianewarray.type = _jc_load_type(env,
-			    loader, insn->u.multianewarray.type)) == NULL)
+			    loader, cinsn->u.multianewarray.type)) == NULL)
 				goto fail;
 			if (_jc_resolve_add_loader_ref(env, rinfo,
 			    info->multianewarray.type->loader) != JNI_OK)
 				goto post_fail;
-			info->multianewarray.dims = insn->u.multianewarray.dims;
+			info->multianewarray.dims = cinsn->u.multianewarray.dims;
 			break;
 		case _JC_newarray:
 			info->type = vm->boot.types.prim_array[
-			    insn->u.newarray.type];
+			    cinsn->u.newarray.type];
 			break;
 		case _JC_tableswitch:
 		    {
-			_jc_cf_tableswitch *const csw = insn->u.tableswitch;
+			_jc_cf_tableswitch *const csw = cinsn->u.tableswitch;
 			const int num_targets = csw->high - csw->low + 1;
 			_jc_tableswitch *sw;
 			int j;
@@ -1077,11 +1076,11 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			_JC_MUTEX_UNLOCK(env, loader->mutex);
 
 			/* Copy info */
-			sw->default_target = csw->default_target;
+			sw->default_target = &interp->insns[csw->default_target];
 			sw->low = csw->low;
 			sw->high = csw->high;
 			for (j = 0; j < num_targets; j++)
-				sw->targets[j] = csw->targets[j];
+				sw->targets[j] = &interp->insns[csw->targets[j]];
 
 			/* Done */
 			info->tableswitch = sw;
@@ -1091,8 +1090,8 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 			break;
 		}
 
-		/* Copy opcode */
-		interp->opcodes[i] = opcode;
+		/* Set opcode */
+		insn->action = opcode;
 	}
 
 	/* Compute stack depth at the start of each instruction */
@@ -1108,18 +1107,18 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 	 * the local is referenced.
 	 */
 	for (i = 0; i < code->num_insns; i++) {
-		_jc_cf_insn *const insn = &code->insns[i];
-		_jc_insn_info *const info = &interp->info[i];
+		_jc_insn *const insn = &interp->insns[i];
+		_jc_insn_info *const info = &insn->info;
 
 		/* Handle the case of unreachable code */
 		if (depth[i] == -1) {
-			insn->opcode = _JC_failure;
+			insn->action = _JC_failure;
 			continue;
 		}
 
 		/* Change local index to SP offset */
 		_JC_ASSERT(depth[i] >= 0 && depth[i] <= code->max_stack);
-		switch (insn->opcode) {
+		switch (insn->action) {
 		case _JC_aload:
 		case _JC_dload:
 		case _JC_fload:
@@ -1145,6 +1144,14 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		}
 	}
 
+	/* Finally, convert opcodes to interpreter jump targets */
+	for (i = 0; i < code->num_insns; i++) {
+		_jc_insn *const insn = &interp->insns[i];
+
+		insn->action = _jc_interp_targets[insn->action];
+		_JC_ASSERT(insn->action != 0);
+	}
+
 	/* Done */
 	return JNI_OK;
 
@@ -1159,10 +1166,8 @@ fail:
 	}
 	_jc_cl_unalloc(loader, &interp->traps,
 	    code->num_traps * sizeof(*interp->traps));
-	_jc_cl_unalloc(loader, &interp->info,
-	    code->num_insns * sizeof(*interp->info));
-	_jc_cl_unalloc(loader, &interp->opcodes,
-	    code->num_insns * sizeof(*interp->opcodes));
+	_jc_cl_unalloc(loader, &interp->insns,
+	    code->num_insns * sizeof(*interp->insns));
 	_JC_MUTEX_UNLOCK(env, loader->mutex);
 
 	/* Free parsed code */

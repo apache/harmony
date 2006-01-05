@@ -217,7 +217,8 @@ _jc_save_stack_frames(_jc_env *env, _jc_env *thread,
 		/* Save this one */
 		if (i < max) {
 			frame->method = jstack->method;
-			frame->ipc = jstack->pcp != NULL ? *jstack->pcp : -1;
+			frame->ipc = jstack->pc != NULL ?
+			    jstack->pc - jstack->method->code.insns : -1;
 		}
 		i++;
 	}

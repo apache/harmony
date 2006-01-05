@@ -20,6 +20,9 @@
 
 #include "libjc.h"
 
+/* Public variables */
+const _jc_word	*_jc_interp_targets;
+
 /* Internal functions */
 static jint	_jc_interp(_jc_env *env, _jc_method *const method);
 static int	_jc_lookup_compare(const void *v1, const void *v2);
@@ -31,37 +34,43 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
  */
 #ifndef NDEBUG
 
-#define JUMP(_pc)							\
+#define CHECK_PC_SP()							\
     do {								\
-	pc = (_pc);							\
 	_JC_ASSERT(sp >= locals + code->max_locals);			\
 	_JC_ASSERT(sp <= locals + code->max_locals + code->max_stack);	\
-	_JC_ASSERT(pc >= 0 && pc < code->num_insns);			\
-	_JC_ASSERT(actions[code->opcodes[pc]] != NULL);			\
+	_JC_ASSERT(pc >= code->insns					\
+	    && pc < code->insns + code->num_insns);			\
+	_JC_ASSERT(pc->action != 0);					\
 	_JC_ASSERT(ticker > 0);						\
-	if (_JC_UNLIKELY(--ticker == 0))				\
-		goto periodic_check;					\
-	goto *actions[code->opcodes[pc]];				\
     } while (0)
-
-#define NEXT()		JUMP(pc + 1)
 
 #else	/* !NDEBUG */
 
+#define CHECK_PC_SP()							\
+    do { } while (0)							\
+
+#endif	/* !NDEBUG */
+
 #define JUMP(_pc)							\
     do {								\
 	pc = (_pc);							\
+	CHECK_PC_SP();							\
 	if (_JC_UNLIKELY(--ticker == 0))				\
 		goto periodic_check;					\
-	goto *actions[code->opcodes[pc]];				\
+	goto *(void *)pc->action;					\
     } while (0)
 
 #define NEXT()								\
     do {								\
-	goto *actions[code->opcodes[++pc]];				\
+	CHECK_PC_SP();							\
+	goto *(void *)(++pc)->action;					\
     } while (0)
 
-#endif	/* !NDEBUG */
+#define RERUN()								\
+    do {								\
+	CHECK_PC_SP();							\
+	goto *(void *)pc->action;					\
+    } while (0)
 
 #define STACKI(i)	(*(jint *)(sp + (i)))
 #define STACKF(i)	(*(jfloat *)(sp + (i)))
@@ -80,7 +89,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define PUSHL(v)	do { STACKL(0) = (v); sp++; } while (0)
 #define POP(i)		(sp -= (i))
 
-#define INFO(f)		(code->info[pc].f)
+#define INFO(f)		(pc->info.f)
 
 #define NULLPOINTERCHECK(x)						\
     do {								\
@@ -95,6 +104,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 									\
 	NULLPOINTERCHECK(_array);					\
 	if (_JC_UNLIKELY(_i < 0 || _i >= _array->length)) {		\
+		stack_frame.pc = pc;					\
 		_jc_post_exception_msg(env,				\
 		    _JC_ArrayIndexOutOfBoundsException, "%d", _i);	\
 		goto exception;						\
@@ -106,6 +116,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
     	_jc_type *const _type = (t);					\
 									\
 	if (_JC_UNLIKELY(!_JC_FLG_TEST(_type, INITIALIZED))) {		\
+		stack_frame.pc = pc;					\
 		if (_jc_initialize_type(env, _type) != JNI_OK)		\
 			goto exception;					\
 	}								\
@@ -122,9 +133,11 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 static jint
 _jc_interp(_jc_env *const env, _jc_method *const method)
 {
-#define ACTION(name)  [_JC_ ## name]= &&do_ ## name
-#define TARGET(name)  do_ ## name:   asm ("/***** " #name " *****/");
-	static const void *const actions[0x100] = {
+#define ACTION(name)  [_JC_ ## name]= (_jc_word)&&do_ ## name
+#define TARGET(name)  							\
+	_JC_ASSERT(JNI_FALSE);		/* should never fall through */	\
+	do_ ## name:   asm ("/***** " #name " *****/");
+	static const _jc_word actions[0x100] = {
 		ACTION(aaload),
 		ACTION(aastore),
 		ACTION(aload),
@@ -308,8 +321,15 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	_jc_java_stack stack_frame;
 	_jc_word *const locals = env->sp;
 	_jc_object *lock = NULL;
+	_jc_method *imethod;
+	_jc_insn *pc;
 	_jc_word *sp;
-	int pc = 0;
+
+	/* Special hack to copy out target offsets */
+	if (_JC_UNLIKELY(method == NULL)) {
+		env->retval.l = (_jc_object *)actions;
+		return JNI_OK;
+	}
 
 	/* Sanity check */
 	_JC_ASSERT(env->sp != NULL);
@@ -358,13 +378,13 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	memset(&stack_frame, 0, sizeof(stack_frame));
 	stack_frame.next = env->java_stack;
 	stack_frame.method = method;
-	stack_frame.pcp = &pc;
 	env->java_stack = &stack_frame;
 	sp = locals + code->max_locals;
 	env->sp = sp + code->max_stack;
+	pc = code->insns;
 
 	/* Sanity check */
-	_JC_ASSERT(code->opcodes != NULL);
+	_JC_ASSERT(code->insns != NULL);
 	_JC_ASSERT(code->num_insns > 0);
 
 	/* Synchronize */
@@ -378,7 +398,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	}
 
 	/* Start */
-	JUMP(0);
+	RERUN();
 
 TARGET(aaload)
     {
@@ -406,6 +426,7 @@ TARGET(aastore)
 	ARRAYCHECK(array, index);
 	obj = STACKL(2);
 	if (_JC_LIKELY(obj != NULL)) {
+		stack_frame.pc = pc;
 		switch (_jc_assignable_from(env, obj->type,
 		    array->type->u.array.element_type)) {
 		case 1:
@@ -429,6 +450,7 @@ TARGET(anewarray)
     {
 	_jc_array *array;
 
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY((array = _jc_new_array(env,
 	    INFO(type), STACKI(-1))) == NULL))
 		goto exception;
@@ -453,6 +475,7 @@ TARGET(astore)
 TARGET(athrow)
 	POP(1);
 	NULLPOINTERCHECK(STACKL(0));
+	stack_frame.pc = pc;
 	_jc_post_exception_object(env, STACKL(0));
 	goto exception;
 TARGET(baload)
@@ -516,7 +539,8 @@ TARGET(checkcast)
 	if (_JC_LIKELY(obj != NULL)) {
 		_jc_type *const type = INFO(type);
 
-		switch (_jc_instance_of(env, obj, type)) {
+		stack_frame.pc = pc;
+		switch (_jc_assignable_from(env, obj->type, type)) {
 		case 1:
 			break;
 		case 0:
@@ -674,6 +698,7 @@ TARGET(faload)
 	NEXT();
     }
 TARGET(failure)
+	stack_frame.pc = pc;
 	_jc_post_exception_msg(env, _JC_InternalError, "failure opcode");
 	goto exception;
 TARGET(fastore)
@@ -809,37 +834,37 @@ TARGET(getstatic)
 	/* Update instruction and execute again */
 	switch (_jc_sig_types[(u_char)*field->signature]) {
 	case _JC_TYPE_BOOLEAN:
-		code->opcodes[pc] = _JC_getstatic_z;
+		pc->action = _jc_interp_targets[_JC_getstatic_z];
 		break;
 	case _JC_TYPE_BYTE:
-		code->opcodes[pc] = _JC_getstatic_b;
+		pc->action = _jc_interp_targets[_JC_getstatic_b];
 		break;
 	case _JC_TYPE_CHAR:
-		code->opcodes[pc] = _JC_getstatic_c;
+		pc->action = _jc_interp_targets[_JC_getstatic_c];
 		break;
 	case _JC_TYPE_SHORT:
-		code->opcodes[pc] = _JC_getstatic_s;
+		pc->action = _jc_interp_targets[_JC_getstatic_s];
 		break;
 	case _JC_TYPE_INT:
-		code->opcodes[pc] = _JC_getstatic_i;
+		pc->action = _jc_interp_targets[_JC_getstatic_i];
 		break;
 	case _JC_TYPE_FLOAT:
-		code->opcodes[pc] = _JC_getstatic_f;
+		pc->action = _jc_interp_targets[_JC_getstatic_f];
 		break;
 	case _JC_TYPE_LONG:
-		code->opcodes[pc] = _JC_getstatic_j;
+		pc->action = _jc_interp_targets[_JC_getstatic_j];
 		break;
 	case _JC_TYPE_DOUBLE:
-		code->opcodes[pc] = _JC_getstatic_d;
+		pc->action = _jc_interp_targets[_JC_getstatic_d];
 		break;
 	case _JC_TYPE_REFERENCE:
-		code->opcodes[pc] = _JC_getstatic_l;
+		pc->action = _jc_interp_targets[_JC_getstatic_l];
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
 		break;
 	}
-	JUMP(pc);
+	RERUN();
     }
 TARGET(getstatic_z)
 	PUSHI(*(jboolean *)INFO(field).u.data);
@@ -930,52 +955,84 @@ TARGET(idiv)
 	NEXT();
 TARGET(if_acmpeq)
 	POP(2);
-	JUMP(STACKL(0) == STACKL(1) ? INFO(target) : pc + 1);
+	if (STACKL(0) == STACKL(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_acmpne)
 	POP(2);
-	JUMP(STACKL(0) != STACKL(1) ? INFO(target) : pc + 1);
+	if (STACKL(0) != STACKL(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_icmpeq)
 	POP(2);
-	JUMP(STACKI(0) == STACKI(1) ? INFO(target) : pc + 1);
+	if (STACKI(0) == STACKI(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_icmpne)
 	POP(2);
-	JUMP(STACKI(0) != STACKI(1) ? INFO(target) : pc + 1);
+	if (STACKI(0) != STACKI(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_icmplt)
 	POP(2);
-	JUMP(STACKI(0) < STACKI(1) ? INFO(target) : pc + 1);
+	if (STACKI(0) < STACKI(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_icmpge)
 	POP(2);
-	JUMP(STACKI(0) >= STACKI(1) ? INFO(target) : pc + 1);
+	if (STACKI(0) >= STACKI(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_icmpgt)
 	POP(2);
-	JUMP(STACKI(0) > STACKI(1) ? INFO(target) : pc + 1);
+	if (STACKI(0) > STACKI(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(if_icmple)
 	POP(2);
-	JUMP(STACKI(0) <= STACKI(1) ? INFO(target) : pc + 1);
+	if (STACKI(0) <= STACKI(1))
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifeq)
 	POP(1);
-	JUMP(STACKI(0) == 0 ? INFO(target) : pc + 1);
+	if (STACKI(0) == 0)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifne)
 	POP(1);
-	JUMP(STACKI(0) != 0 ? INFO(target) : pc + 1);
+	if (STACKI(0) != 0)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(iflt)
 	POP(1);
-	JUMP(STACKI(0) < 0 ? INFO(target) : pc + 1);
+	if (STACKI(0) < 0)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifge)
 	POP(1);
-	JUMP(STACKI(0) >= 0 ? INFO(target) : pc + 1);
+	if (STACKI(0) >= 0)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifgt)
 	POP(1);
-	JUMP(STACKI(0) > 0 ? INFO(target) : pc + 1);
+	if (STACKI(0) > 0)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifle)
 	POP(1);
-	JUMP(STACKI(0) <= 0 ? INFO(target) : pc + 1);
+	if (STACKI(0) <= 0)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifnonnull)
 	POP(1);
-	JUMP(STACKL(0) != NULL ? INFO(target) : pc + 1);
+	if (STACKL(0) != NULL)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(ifnull)
 	POP(1);
-	JUMP(STACKL(0) == NULL ? INFO(target) : pc + 1);
+	if (STACKL(0) == NULL)
+		JUMP(INFO(target));
+	NEXT();
 TARGET(iinc)
 	LOCALI(INFO(iinc).local) += INFO(iinc).value;
 	NEXT();
@@ -993,6 +1050,7 @@ TARGET(instanceof)
     {
     	jint result;
 
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY((result = _jc_instance_of(env,
 	    STACKL(-1), INFO(type))) == -1))
 		goto exception;
@@ -1001,141 +1059,153 @@ TARGET(instanceof)
     }
 TARGET(invokestatic)
     {
-	_jc_method *const imethod = INFO(invoke).method;
-
 	/* Initialize method's class */
-	INITIALIZETYPE(imethod->class);
+	INITIALIZETYPE(INFO(invoke).method->class);
 
 	/* Update instruction and execute again */
-	code->opcodes[pc] = _JC_invokestatic2;
-	JUMP(pc);
+	pc->action = actions[_JC_invokestatic2];
+	RERUN();
     }
 TARGET(invokespecial)
+    {
+	const _jc_invoke *const invoke = &INFO(invoke);
+
+	/* Get method */
+	imethod = invoke->method;
+
+	/* Check for null */
+	NULLPOINTERCHECK(STACKL(-invoke->pop));
+
+	/* Invoke */
+	goto invoke;
+    }
 TARGET(invokevirtual)
+    {
+	const _jc_invoke *const invoke = &INFO(invoke);
+	_jc_object *obj;
+	_jc_type *vtype;
+
+	/* Check for null */
+	NULLPOINTERCHECK(obj = STACKL(-invoke->pop));
+
+	/* Resolve virtual method */
+	vtype = _JC_LW_TEST(obj->lockword, ARRAY) ?
+	    env->vm->boot.types.Object : obj->type;
+	imethod = vtype->u.nonarray.mtable[invoke->method->vtable_index];
+
+	/* Invoke */
+	goto invoke;
+    }
 TARGET(invokestatic2)
+    {
+	const _jc_invoke *const invoke = &INFO(invoke);
+
+	/* Get method */
+	imethod = invoke->method;
+
+	/* Invoke */
+	goto invoke;
+    }
 TARGET(invokeinterface)
     {
 	const _jc_invoke *const invoke = &INFO(invoke);
-	_jc_method *imethod = invoke->method;
-	jint status;
+	_jc_method *const *methodp;
+	_jc_method *quick;
+	_jc_object *obj;
+
+	/* Get interface method */
+	imethod = invoke->method;
 
 	/* Sanity check */
-	_JC_ASSERT((code->opcodes[pc] == _JC_invokeinterface)
-	    == _JC_ACC_TEST(imethod->class, INTERFACE));
+	_JC_ASSERT(_JC_ACC_TEST(imethod->class, INTERFACE));
 
-	/* Check for null and do method lookup */
-	switch (code->opcodes[pc]) {
-	case _JC_invokeinterface:
-	    {
-		_jc_method *const *methodp;
-		_jc_method *quick;
-		_jc_object *obj;
+	/* Check for null */
+	NULLPOINTERCHECK(obj = STACKL(-invoke->pop));
 
-		/* Check for null */
-		NULLPOINTERCHECK(obj = STACKL(-invoke->pop));
-
-		/* Verify object implements the interface */
-		switch (_jc_instance_of(env, obj, imethod->class)) {
-		case 0:
-			_jc_post_exception_msg(env,
-			    _JC_IncompatibleClassChangeError,
-			    "`%s' does not implement interface `%s'",
-			    obj->type->name, imethod->class->name);
-			goto exception;
-		case 1:
-			break;
-		case -1:
-			goto exception;
-		}
-
-		/* Sanity check */
-		_JC_ASSERT(obj->type->imethod_quick_table != NULL);
-		_JC_ASSERT(obj->type->imethod_hash_table != NULL);
-		_JC_ASSERT(imethod->signature_hash_bucket
-		    < _JC_IMETHOD_HASHSIZE);
-
-		/* Try quick hash table lookup */
-		if (_JC_LIKELY((quick = obj->type->imethod_quick_table[
-		    imethod->signature_hash_bucket]) != NULL)) {
-		    	imethod = quick;
-			goto got_method;
-		}
-
-		/* Lookup interface method entry point in hash table */
-		if (_JC_UNLIKELY((methodp = obj->type->imethod_hash_table[
-		    imethod->signature_hash_bucket]) == NULL))
-			goto not_found;
-		do {
-			_jc_method *const entry = *methodp;
-
-			if (strcmp(entry->name, imethod->name) == 0
-			    && strcmp(entry->signature,
-			      imethod->signature) == 0) {
-				imethod = entry;
-				break;
-			}
-			methodp++;
-		} while (*methodp != NULL);
-		if (_JC_UNLIKELY(*methodp == NULL)) {
-not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
-			    "%s.%s%s invoked from %s.%s%s on a %s",
-			    imethod->class->name, imethod->name,
-			    imethod->signature, method->class->name,
-			    method->name, method->signature, obj->type->name);
-			goto exception;
-		}
-
-got_method:
-		/* Verify method is public */
-		if (_JC_UNLIKELY(!_JC_ACC_TEST(imethod, PUBLIC))) {
-			_jc_post_exception_msg(env, _JC_IllegalAccessError,
-			    "%s.%s%s invoked from %s.%s%s on a %s",
-			    imethod->class->name, imethod->name,
-			    imethod->signature, method->class->name,
-			    method->name, method->signature, obj->type->name);
-			goto exception;
-		}
+	/* Verify object implements the interface */
+	stack_frame.pc = pc;
+	switch (_jc_assignable_from(env, obj->type, imethod->class)) {
+	case 0:
+		_jc_post_exception_msg(env,
+		    _JC_IncompatibleClassChangeError,
+		    "`%s' does not implement interface `%s'",
+		    obj->type->name, imethod->class->name);
+		goto exception;
+	case 1:
 		break;
-	    }
-	case _JC_invokevirtual:
-	    {
-		_jc_object *obj;
-		_jc_type *vtype;
-
-		/* Check for null */
-		NULLPOINTERCHECK(obj = STACKL(-invoke->pop));
-
-		/* Resolve virtual method */
-		vtype = _JC_LW_TEST(obj->lockword, ARRAY) ?
-		    env->vm->boot.types.Object : obj->type;
-		imethod = vtype->u.nonarray.mtable[imethod->vtable_index];
-		break;
-	    }
-	case _JC_invokespecial:
-		NULLPOINTERCHECK(STACKL(-invoke->pop));
-		break;
-	case _JC_invokestatic2:
-		break;
-	default:
-		_JC_ASSERT(JNI_FALSE);
-		break;
+	case -1:
+		goto exception;
 	}
 
+	/* Sanity check */
+	_JC_ASSERT(obj->type->imethod_quick_table != NULL);
+	_JC_ASSERT(obj->type->imethod_hash_table != NULL);
+	_JC_ASSERT(imethod->signature_hash_bucket
+	    < _JC_IMETHOD_HASHSIZE);
+
+	/* Try quick hash table lookup */
+	if (_JC_LIKELY((quick = obj->type->imethod_quick_table[
+	    imethod->signature_hash_bucket]) != NULL)) {
+		imethod = quick;
+		goto got_method;
+	}
+
+	/* Lookup interface method entry point in hash table */
+	if (_JC_UNLIKELY((methodp = obj->type->imethod_hash_table[
+	    imethod->signature_hash_bucket]) == NULL))
+		goto not_found;
+	do {
+		_jc_method *const entry = *methodp;
+
+		if (strcmp(entry->name, imethod->name) == 0
+		    && strcmp(entry->signature,
+		      imethod->signature) == 0) {
+			imethod = entry;
+			goto got_method;
+		}
+		methodp++;
+	} while (*methodp != NULL);
+	if (_JC_UNLIKELY(*methodp == NULL)) {
+not_found:		_jc_post_exception_msg(env, _JC_AbstractMethodError,
+		    "%s.%s%s invoked from %s.%s%s on a %s",
+		    imethod->class->name, imethod->name,
+		    imethod->signature, method->class->name,
+		    method->name, method->signature, obj->type->name);
+		goto exception;
+	}
+
+got_method:
+	/* Verify method is public */
+	if (_JC_UNLIKELY(!_JC_ACC_TEST(imethod, PUBLIC))) {
+		_jc_post_exception_msg(env, _JC_IllegalAccessError,
+		    "%s.%s%s invoked from %s.%s%s on a %s",
+		    imethod->class->name, imethod->name,
+		    imethod->signature, method->class->name,
+		    method->name, method->signature, obj->type->name);
+		goto exception;
+	}
+
+	/* Invoke it */
+	goto invoke;
+    }
+
+invoke:
+    {
+	const _jc_invoke *const invoke = &INFO(invoke);
+	jint status;
+
+	/* Pop the stack, leaving parameters above the top */
+	POP(invoke->pop);
+
 	/* Invoke the method */
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY(_JC_ACC_TEST(imethod, NATIVE))) {
 
 		/* Invoke native method */
-		status = _jc_invoke_native_method(env,
-		    imethod, JNI_TRUE, sp - invoke->pop);
-
-		/* Pop the stack */
-		POP(invoke->pop);
+		status = _jc_invoke_native_method(env, imethod, JNI_TRUE, sp);
 	} else {
 
-		/* Pop the stack, leaving parameters above the top */
-		POP(invoke->pop);
-
-		/* Invoke the method */
+		/* Invoke Java method */
 		env->sp = sp;
 		status = _jc_interp(env, imethod);
 		env->sp = locals + code->max_locals + code->max_stack;
@@ -1211,7 +1281,7 @@ TARGET(ixor)
 	STACKI(-1) ^= STACKI(0);
 	NEXT();
 TARGET(jsr)
-	PUSHI(pc + 1);
+	PUSHL((void *)(pc + 1));
 	JUMP(INFO(target));
 TARGET(l2d)
 	STACKD(-2) = STACKJ(-2);
@@ -1264,12 +1334,14 @@ TARGET(ldc)
 	NEXT();
 TARGET(ldc_string)
     {
+    	_jc_string_info *const info = &INFO(string);
 	_jc_resolve_info rinfo;
 	_jc_object *string;
 
 	/* Create intern'd string */
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY((string = _jc_new_intern_string(env,
-	    INFO(utf8), strlen(INFO(utf8)))) == NULL))
+	    info->utf8, strlen(info->utf8))) == NULL))
 		goto exception;
 
 	/* Create reference list with one reference */
@@ -1284,12 +1356,10 @@ TARGET(ldc_string)
 		goto exception;
 	}
 
-	/* Update instruction */
-	INFO(constant).l = string;
-	code->opcodes[pc] = _JC_ldc;
-
-	/* Now execute it again */
-	JUMP(pc);
+	/* Update instruction and execute again */
+	info->string = string;
+	pc->action = actions[_JC_ldc];
+	RERUN();
     }
 TARGET(ldc2_w)
 	*sp++ = ((_jc_word *)&INFO(constant))[0];
@@ -1363,12 +1433,14 @@ TARGET(lxor)
 TARGET(monitorenter)
 	POP(1);
 	NULLPOINTERCHECK(STACKL(0));
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY(_jc_lock_object(env, STACKL(0)) != JNI_OK))
 		goto exception;
 	NEXT();
 TARGET(monitorexit)
 	POP(1);
 	NULLPOINTERCHECK(STACKL(0));
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY(_jc_unlock_object(env, STACKL(0)) != JNI_OK))
 		goto exception;
 	NEXT();
@@ -1385,6 +1457,7 @@ TARGET(multianewarray)
 		for (i = 0; i < info->dims; i++)
 			sizes[i] = STACKI(i);
 	}
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY((array = _jc_new_multiarray(env,
 	    info->type, info->dims, sizes)) == NULL))
 		goto exception;
@@ -1395,6 +1468,7 @@ TARGET(new)
     {
 	_jc_object *obj;
 
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY((obj = _jc_new_object(env, INFO(type))) == NULL))
 		goto exception;
 	PUSHL(obj);
@@ -1405,6 +1479,7 @@ TARGET(newarray)
 	_jc_array *array;
 
 	POP(1);
+	stack_frame.pc = pc;
 	if (_JC_UNLIKELY((array = _jc_new_array(env,
 	    INFO(type), STACKI(0))) == NULL))
 		goto exception;
@@ -1475,37 +1550,37 @@ TARGET(putstatic)
 	/* Update instruction and execute again */
 	switch (_jc_sig_types[(u_char)*field->signature]) {
 	case _JC_TYPE_BOOLEAN:
-		code->opcodes[pc] = _JC_putstatic_z;
+		pc->action = actions[_JC_putstatic_z];
 		break;
 	case _JC_TYPE_BYTE:
-		code->opcodes[pc] = _JC_putstatic_b;
+		pc->action = actions[_JC_putstatic_b];
 		break;
 	case _JC_TYPE_CHAR:
-		code->opcodes[pc] = _JC_putstatic_c;
+		pc->action = actions[_JC_putstatic_c];
 		break;
 	case _JC_TYPE_SHORT:
-		code->opcodes[pc] = _JC_putstatic_s;
+		pc->action = actions[_JC_putstatic_s];
 		break;
 	case _JC_TYPE_INT:
-		code->opcodes[pc] = _JC_putstatic_i;
+		pc->action = actions[_JC_putstatic_i];
 		break;
 	case _JC_TYPE_FLOAT:
-		code->opcodes[pc] = _JC_putstatic_f;
+		pc->action = actions[_JC_putstatic_f];
 		break;
 	case _JC_TYPE_LONG:
-		code->opcodes[pc] = _JC_putstatic_j;
+		pc->action = actions[_JC_putstatic_j];
 		break;
 	case _JC_TYPE_DOUBLE:
-		code->opcodes[pc] = _JC_putstatic_d;
+		pc->action = actions[_JC_putstatic_d];
 		break;
 	case _JC_TYPE_REFERENCE:
-		code->opcodes[pc] = _JC_putstatic_l;
+		pc->action = actions[_JC_putstatic_l];
 		break;
 	default:
 		_JC_ASSERT(JNI_FALSE);
 		break;
 	}
-	JUMP(pc);
+	RERUN();
     }
 TARGET(putstatic_z)
 	POP(1);
@@ -1544,7 +1619,7 @@ TARGET(putstatic_l)
 	*(_jc_object **)INFO(field).u.data = STACKL(0);
 	NEXT();
 TARGET(ret)
-	JUMP(LOCALI(INFO(local)));
+	JUMP((_jc_insn *)LOCALL(INFO(local)));
 TARGET(return)
 	goto done;
 TARGET(saload)
@@ -1595,13 +1670,15 @@ periodic_check:
 	if (_JC_UNLIKELY(_jc_thread_check(env) != JNI_OK))
 		goto exception;
 	ticker = PERIODIC_CHECK_TICKS;
-	JUMP(pc);
+	RERUN();
 
 null_pointer_exception:
+	stack_frame.pc = pc;
 	_jc_post_exception(env, _JC_NullPointerException);
 	goto exception;
 
 arithmetic_exception:
+	stack_frame.pc = pc;
 	_jc_post_exception(env, _JC_ArithmeticException);
 	goto exception;
 
@@ -1677,6 +1754,17 @@ exit:
 	/* Done */
 	return status;
     }
+}
+
+/*
+ * Fill in the interpreter instruction target table.
+ */
+void
+_jc_interp_get_targets(_jc_env *env)
+{
+	/* Get actions table via kludge */
+	(void)_jc_interp(env, NULL);
+	_jc_interp_targets = (const _jc_word *)env->retval.l;
 }
 
 /*
