@@ -79,7 +79,6 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define PUSHD(v)	do { STACKD(0) = (v); sp += 2; } while (0)
 #define PUSHL(v)	do { STACKL(0) = (v); sp++; } while (0)
 #define POP(i)		(sp -= (i))
-#define POP2(i)		(sp -= 2 * (i))
 
 #define INFO(f)		(code->info[pc].f)
 
@@ -545,7 +544,7 @@ TARGET(d2l)
 	STACKJ(-2) = _JC_CAST_FLT2INT(jdouble, jlong, STACKD(-2));
 	NEXT();
 TARGET(dadd)
-	POP2(1);
+	POP(2);
 	STACKD(-2) += STACKD(0);
 	NEXT();
 TARGET(daload)
@@ -580,32 +579,32 @@ TARGET(dcmpl)
 	STACKI(-1) = _JC_DCMPL(STACKD(-1), STACKD(1));
 	NEXT();
 TARGET(ddiv)
-	POP2(1);
+	POP(2);
 	STACKD(-2) /= STACKD(0);
 	NEXT();
 TARGET(dload)
 	PUSHD(LOCALD(INFO(local)));
 	NEXT();
 TARGET(dmul)
-	POP2(1);
+	POP(2);
 	STACKD(-2) *= STACKD(0);
 	NEXT();
 TARGET(dneg)
 	STACKD(-2) = -STACKD(-2);
 	NEXT();
 TARGET(drem)
-	POP2(1);
+	POP(2);
 	STACKD(-2) = fmod(STACKD(-2), STACKD(0));
 	NEXT();
 TARGET(dreturn)
 	env->retval.d = STACKD(-2);
 	goto done;
 TARGET(dstore)
-	POP2(1);
+	POP(2);
 	LOCALD(INFO(local)) = STACKD(0);
 	NEXT();
 TARGET(dsub)
-	POP2(1);
+	POP(2);
 	STACKD(-2) -= STACKD(0);
 	NEXT();
 TARGET(dup)
@@ -1226,7 +1225,7 @@ TARGET(l2i)
 	STACKI(-1) = STACKJ(-1);
 	NEXT();
 TARGET(ladd)
-	POP2(1);
+	POP(2);
 	STACKJ(-2) += STACKJ(0);
 	NEXT();
 TARGET(laload)
@@ -1241,7 +1240,7 @@ TARGET(laload)
 	NEXT();
     }
 TARGET(land)
-	POP2(1);
+	POP(2);
 	STACKJ(-2) &= STACKJ(0);
 	NEXT();
 TARGET(lastore)
@@ -1297,7 +1296,7 @@ TARGET(ldc2_w)
 	*sp++ = ((_jc_word *)&INFO(constant))[1];
 	NEXT();
 TARGET(ldiv)
-	POP2(1);
+	POP(2);
 	if (_JC_UNLIKELY(STACKJ(0) == 0))
 		goto arithmetic_exception;
 	STACKJ(-2) /= STACKJ(0);
@@ -1306,7 +1305,7 @@ TARGET(lload)
 	PUSHJ(LOCALJ(INFO(local)));
 	NEXT();
 TARGET(lmul)
-	POP2(1);
+	POP(2);
 	STACKJ(-2) *= STACKJ(0);
 	NEXT();
 TARGET(lneg)
@@ -1325,11 +1324,11 @@ TARGET(lookupswitch)
 	JUMP(entry != NULL ? entry->target : lsw->default_target);
     }
 TARGET(lor)
-	POP2(1);
+	POP(2);
 	STACKJ(-2) |= STACKJ(0);
 	NEXT();
 TARGET(lrem)
-	POP2(1);
+	POP(2);
 	if (_JC_UNLIKELY(STACKJ(0) == 0))
 		goto arithmetic_exception;
 	STACKJ(-2) %= STACKJ(0);
@@ -1346,11 +1345,11 @@ TARGET(lshr)
 	STACKJ(-2) = _JC_LSHR(STACKJ(-2), STACKI(0));
 	NEXT();
 TARGET(lstore)
-	POP2(1);
+	POP(2);
 	LOCALJ(INFO(local)) = STACKJ(0);
 	NEXT();
 TARGET(lsub)
-	POP2(1);
+	POP(2);
 	STACKJ(-2) -= STACKJ(0);
 	NEXT();
 TARGET(lushr)
@@ -1358,7 +1357,7 @@ TARGET(lushr)
 	STACKJ(-2) = _JC_LUSHR(STACKJ(-2), STACKI(0));
 	NEXT();
 TARGET(lxor)
-	POP2(1);
+	POP(2);
 	STACKJ(-2) ^= STACKJ(0);
 	NEXT();
 TARGET(monitorenter)
@@ -1418,7 +1417,7 @@ TARGET(pop)
 	POP(1);
 	NEXT();
 TARGET(pop2)
-	POP2(1);
+	POP(2);
 	NEXT();
 TARGET(putfield_z)
 	POP(2);
@@ -1529,7 +1528,7 @@ TARGET(putstatic_i)
 	*(jint *)INFO(field).u.data = STACKI(0);
 	NEXT();
 TARGET(putstatic_j)
-	POP2(1);
+	POP(2);
 	*(jlong *)INFO(field).u.data = STACKJ(0);
 	NEXT();
 TARGET(putstatic_f)
@@ -1537,7 +1536,7 @@ TARGET(putstatic_f)
 	*(jfloat *)INFO(field).u.data = STACKF(0);
 	NEXT();
 TARGET(putstatic_d)
-	POP2(1);
+	POP(2);
 	*(jdouble *)INFO(field).u.data = STACKD(0);
 	NEXT();
 TARGET(putstatic_l)
