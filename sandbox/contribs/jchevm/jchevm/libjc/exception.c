@@ -116,7 +116,7 @@ _jc_post_exception_msg(_jc_env *env, int num, const char *fmt, ...)
  * one to avoid infinite recursion.
  */
 void
-_jc_post_exception_params(_jc_env *env, int num, _jc_word *params)
+_jc_post_exception_params(_jc_env *env, const int num, _jc_word *params)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_method *const cons = vm->boot.methods.vmex[num].init;
@@ -154,6 +154,12 @@ _jc_post_exception_params(_jc_env *env, int num, _jc_word *params)
 
 	/* Enable recursion detection */
 	env->in_vmex |= (1 << num);
+
+	/* Release extra stack space during stack overflows */
+	if (num == _JC_StackOverflowError && env->stack_data != NULL) {
+		_JC_ASSERT(env->stack_data_end != NULL);
+		env->stack_data_end += _JC_JAVA_STACK_MARGIN;
+	}
 
 	/* Verbosity */
 	if ((env->vm->verbose_flags & (1 << _JC_VERBOSE_EXCEPTIONS)) != 0) {
@@ -193,6 +199,8 @@ post_it:
 done:
 	/* Clean up */
 	env->in_vmex &= ~(1 << num);
+	if (num == _JC_StackOverflowError && env->stack_data != NULL)
+		env->stack_data_end -= _JC_JAVA_STACK_MARGIN;
 }
 
 /*

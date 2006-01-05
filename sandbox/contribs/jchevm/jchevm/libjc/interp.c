@@ -352,12 +352,8 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	/* Check Java stack overflow; release secret space during exception */
 	if (_JC_UNLIKELY(env->sp + code->max_locals + code->max_stack
 	    > env->stack_data_end)) {
-		if ((env->in_vmex & (1 << _JC_StackOverflowError)) == 0
-		    || env->sp + code->max_locals + code->max_stack
-		      > env->stack_data_end + _JC_JAVA_STACK_MARGIN) {
-			_jc_post_exception(env, _JC_StackOverflowError);
-			return JNI_ERR;
-		}
+		_jc_post_exception(env, _JC_StackOverflowError);
+		return JNI_ERR;
 	}
 
 	/* Is method abstract? */
@@ -1893,12 +1889,8 @@ _jc_vinterp(_jc_env *env, va_list args)
 
 	/* Check Java stack overflow; release secret space during exception */
 	if (sp + 1 + method->code.num_params2 > env->stack_data_end) {
-		if ((env->in_vmex & (1 << _JC_StackOverflowError)) == 0
-		    || sp + 1 + method->code.num_params2
-		      > env->stack_data_end + _JC_JAVA_STACK_MARGIN) {
-			_jc_post_exception(env, _JC_StackOverflowError);
-			_jc_throw_exception(env);
-		}
+		_jc_post_exception(env, _JC_StackOverflowError);
+		_jc_throw_exception(env);
 	}
 
 	/* Push 'this' if method is non-static */
