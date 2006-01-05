@@ -1152,6 +1152,9 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 		_JC_ASSERT(insn->action != 0);
 	}
 
+	/* Free parsed code */
+	_jc_destroy_code(code);
+
 	/* Done */
 	return JNI_OK;
 
