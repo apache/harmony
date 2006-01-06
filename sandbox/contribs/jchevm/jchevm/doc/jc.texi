@@ -1,36 +1,44 @@
 \input texinfo @c -*-texinfo-*-
 @c %**start of header
 @setfilename jc.info
-@settitle JC Virtual Machine Documentation
+@settitle JC Harmony Edition Virtual Machine Documentation
 @c %**end of header
 
 @include version.texi
 
 @copying
-JC Virtual Machine Documentation
+JC Harmony Edition Virtual Machine Documentation
 
 by Archie L. Cobbs @email{archie@@dellroad.org}.
 
-Copyright @copyright{} 2004, Archie L. Cobbs.
+Copyright @copyright{} 2004-2006, Archie L. Cobbs.
 All rights reserved.
 
-This manual documents version @value{VERSION} of the JC virtual machine.
+This manual documents version @value{VERSION} of the JC Harmony Edition virtual machine.
 
 @quotation
-Permission is granted to reproduce this work in any form
-for non-commercial purposes only.
+Copyright 2005-2006 The Apache Software Foundation or its licensors,
+as applicable.
 
-Permission is granted to modify this work, granted that any modifications
-are clearly attributed to their respective author(s).
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+@uref{http://www.apache.org/licenses/LICENSE-2.0 http://www.apache.org/licenses/LICENSE-2.0}
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
 @end quotation
 @end copying
 
 @c Output title page
 @titlepage
-@title JC Virtual Machine Documentation
+@title JC Harmony Edition Virtual Machine Documentation
 @author Archie L. Cobbs @email{archie@freebsd.org}
-
-@code{$Id: jc.texi,v 1.56 2005/06/21 21:54:34 archiecobbs Exp $}
 
 @c Output copyright page
 @page
@@ -38,13 +46,23 @@ are clearly attributed to their respective author(s).
 @insertcopying
 @end titlepage
 
+@c Notice until updated
+@strong{
+*** NOTE *** *** NOTE *** *** NOTE *** *** NOTE *** *** NOTE *** 
+
+This is the manual for the original JCVM. It has not yet been updated
+for the JC Harmony Edition VM, which is an interpreter-only version of JC.
+However, all of the information not related to JC's code generation,
+executable mode execution, etc. should still be accurate.
+}
+
 @c Output table of contents
 @contents
 
 @c Define top node
 @ifnottex
 @node Top
-@top JC Virtual Machine Documentation
+@top JC Harmony Edition Virtual Machine Documentation
 
 @insertcopying
 
