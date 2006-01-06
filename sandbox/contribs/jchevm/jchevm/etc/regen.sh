@@ -46,7 +46,7 @@ ${AUTOCONF} -f -i
 cp scripts/install-sh install-sh
 cp scripts/missing missing
 
-CONFIGFLAGS="--enable-werror --enable-assertions"
+CONFIGFLAGS="--enable-werror --disable-assertions"
 echo running configure ${CONFIGFLAGS} "$@"
 if [ `uname -s` = 'FreeBSD' ]; then
 	export LDFLAGS=-L/usr/local/lib ;
