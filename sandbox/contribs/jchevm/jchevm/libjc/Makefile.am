@@ -6,7 +6,6 @@ lib_LIBRARIES=		libjc.a
 
 # Standard source files
 libjc_a_SOURCES= \
-			analysis.c \
 			array.c \
 			bootstrap.c \
 			cf_parse.c \

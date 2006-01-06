@@ -1206,70 +1206,60 @@ loop:
 	case _JC_aload_2:
 	case _JC_aload_3:
 		insn->u.local.index = insn->opcode - _JC_aload_0;
-		insn->opcode = _JC_aload;
 		break;
 	case _JC_astore_0:
 	case _JC_astore_1:
 	case _JC_astore_2:
 	case _JC_astore_3:
 		insn->u.local.index = insn->opcode - _JC_astore_0;
-		insn->opcode = _JC_astore;
 		break;
 	case _JC_dload_0:
 	case _JC_dload_1:
 	case _JC_dload_2:
 	case _JC_dload_3:
 		insn->u.local.index = insn->opcode - _JC_dload_0;
-		insn->opcode = _JC_dload;
 		break;
 	case _JC_dstore_0:
 	case _JC_dstore_1:
 	case _JC_dstore_2:
 	case _JC_dstore_3:
 		insn->u.local.index = insn->opcode - _JC_dstore_0;
-		insn->opcode = _JC_dstore;
 		break;
 	case _JC_fload_0:
 	case _JC_fload_1:
 	case _JC_fload_2:
 	case _JC_fload_3:
 		insn->u.local.index = insn->opcode - _JC_fload_0;
-		insn->opcode = _JC_fload;
 		break;
 	case _JC_fstore_0:
 	case _JC_fstore_1:
 	case _JC_fstore_2:
 	case _JC_fstore_3:
 		insn->u.local.index = insn->opcode - _JC_fstore_0;
-		insn->opcode = _JC_fstore;
 		break;
 	case _JC_iload_0:
 	case _JC_iload_1:
 	case _JC_iload_2:
 	case _JC_iload_3:
 		insn->u.local.index = insn->opcode - _JC_iload_0;
-		insn->opcode = _JC_iload;
 		break;
 	case _JC_istore_0:
 	case _JC_istore_1:
 	case _JC_istore_2:
 	case _JC_istore_3:
 		insn->u.local.index = insn->opcode - _JC_istore_0;
-		insn->opcode = _JC_istore;
 		break;
 	case _JC_lload_0:
 	case _JC_lload_1:
 	case _JC_lload_2:
 	case _JC_lload_3:
 		insn->u.local.index = insn->opcode - _JC_lload_0;
-		insn->opcode = _JC_lload;
 		break;
 	case _JC_lstore_0:
 	case _JC_lstore_1:
 	case _JC_lstore_2:
 	case _JC_lstore_3:
 		insn->u.local.index = insn->opcode - _JC_lstore_0;
-		insn->opcode = _JC_lstore;
 		break;
 	case _JC_anewarray:
 	case _JC_checkcast:

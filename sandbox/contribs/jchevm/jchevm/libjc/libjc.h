@@ -60,10 +60,6 @@
 #include "structures.h"
 #include "arch_libjc.h"
 
-/* analysis.c */
-extern jint		_jc_compute_stack_depth(_jc_env *env,
-				_jc_method_code *code, int *depth);
-
 /* array.c */
 extern jint		_jc_setup_array_types(_jc_env *env);
 
@@ -519,7 +515,6 @@ extern const jlong	_jc_type_max_array_length[_JC_TYPE_MAX];
 extern const char	_jc_hex_chars[16];
 extern const char	*const _jc_verbose_names[_JC_VERBOSE_MAX];
 extern const char	*const _jc_bytecode_names[0x100];
-extern const signed char _jc_bytecode_stackadj[0x100];
 
 /* utf.c */
 extern jint		_jc_utf_decode(const u_char *utf,

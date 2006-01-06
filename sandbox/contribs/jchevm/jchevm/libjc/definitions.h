@@ -519,9 +519,6 @@ enum {
 #define _JC_CPATH_ZIPFILE		2
 #define _JC_CPATH_ERROR			3
 
-/* Invalid bytecode stack adjustment value */
-#define _JC_STACKADJ_INVALID		0x80
-
 /*
  * Array bounds check for offset + length. Returns true if bounds are OK.
  *

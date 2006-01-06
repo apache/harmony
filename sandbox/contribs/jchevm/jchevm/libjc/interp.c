@@ -77,11 +77,11 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define STACKJ(i)	(*(jlong *)(sp + (i)))
 #define STACKD(i)	(*(jdouble *)(sp + (i)))
 #define STACKL(i)	(*(_jc_object **)(sp + (i)))
-#define LOCALI(i)	(*(jint *)(sp + i))
-#define LOCALF(i)	(*(jfloat *)(sp + i))
-#define LOCALJ(i)	(*(jlong *)(sp + i))
-#define LOCALD(i)	(*(jdouble *)(sp + i))
-#define LOCALL(i)	(*(_jc_object **)(sp + i))
+#define LOCALI(i)	(*(jint *)(locals + i))
+#define LOCALF(i)	(*(jfloat *)(locals + i))
+#define LOCALJ(i)	(*(jlong *)(locals + i))
+#define LOCALD(i)	(*(jdouble *)(locals + i))
+#define LOCALL(i)	(*(_jc_object **)(locals + i))
 #define PUSHI(v)	do { STACKI(0) = (v); sp++; } while (0)
 #define PUSHF(v)	do { STACKF(0) = (v); sp++; } while (0)
 #define PUSHJ(v)	do { STACKJ(0) = (v); sp += 2; } while (0)
@@ -141,10 +141,18 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(aaload),
 		ACTION(aastore),
 		ACTION(aload),
+		ACTION(aload_0),
+		ACTION(aload_1),
+		ACTION(aload_2),
+		ACTION(aload_3),
 		ACTION(anewarray),
 		ACTION(areturn),
 		ACTION(arraylength),
 		ACTION(astore),
+		ACTION(astore_0),
+		ACTION(astore_1),
+		ACTION(astore_2),
+		ACTION(astore_3),
 		ACTION(athrow),
 		ACTION(baload),
 		ACTION(bastore),
@@ -159,20 +167,30 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(dastore),
 		ACTION(dcmpg),
 		ACTION(dcmpl),
+		ACTION(dconst_0),
+		ACTION(dconst_1),
 		ACTION(ddiv),
 		ACTION(dload),
+		ACTION(dload_0),
+		ACTION(dload_1),
+		ACTION(dload_2),
+		ACTION(dload_3),
 		ACTION(dmul),
 		ACTION(dneg),
 		ACTION(drem),
 		ACTION(dreturn),
 		ACTION(dstore),
+		ACTION(dstore_0),
+		ACTION(dstore_1),
+		ACTION(dstore_2),
+		ACTION(dstore_3),
 		ACTION(dsub),
 		ACTION(dup),
-		ACTION(dup_x1),
-		ACTION(dup_x2),
 		ACTION(dup2),
 		ACTION(dup2_x1),
 		ACTION(dup2_x2),
+		ACTION(dup_x1),
+		ACTION(dup_x2),
 		ACTION(f2d),
 		ACTION(f2i),
 		ACTION(f2l),
@@ -182,33 +200,44 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(fastore),
 		ACTION(fcmpg),
 		ACTION(fcmpl),
+		ACTION(fconst_0),
+		ACTION(fconst_1),
+		ACTION(fconst_2),
 		ACTION(fdiv),
 		ACTION(fload),
+		ACTION(fload_0),
+		ACTION(fload_1),
+		ACTION(fload_2),
+		ACTION(fload_3),
 		ACTION(fmul),
 		ACTION(fneg),
 		ACTION(frem),
 		ACTION(freturn),
 		ACTION(fstore),
+		ACTION(fstore_0),
+		ACTION(fstore_1),
+		ACTION(fstore_2),
+		ACTION(fstore_3),
 		ACTION(fsub),
-		ACTION(getfield_z),
 		ACTION(getfield_b),
 		ACTION(getfield_c),
-		ACTION(getfield_s),
+		ACTION(getfield_d),
+		ACTION(getfield_f),
 		ACTION(getfield_i),
 		ACTION(getfield_j),
-		ACTION(getfield_f),
-		ACTION(getfield_d),
 		ACTION(getfield_l),
+		ACTION(getfield_s),
+		ACTION(getfield_z),
 		ACTION(getstatic),
-		ACTION(getstatic_z),
 		ACTION(getstatic_b),
 		ACTION(getstatic_c),
-		ACTION(getstatic_s),
+		ACTION(getstatic_d),
+		ACTION(getstatic_f),
 		ACTION(getstatic_i),
 		ACTION(getstatic_j),
-		ACTION(getstatic_f),
-		ACTION(getstatic_d),
 		ACTION(getstatic_l),
+		ACTION(getstatic_s),
+		ACTION(getstatic_z),
 		ACTION(goto),
 		ACTION(i2b),
 		ACTION(i2c),
@@ -220,25 +249,36 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(iaload),
 		ACTION(iand),
 		ACTION(iastore),
+		ACTION(iconst_0),
+		ACTION(iconst_1),
+		ACTION(iconst_2),
+		ACTION(iconst_3),
+		ACTION(iconst_4),
+		ACTION(iconst_5),
+		ACTION(iconst_m1),
 		ACTION(idiv),
 		ACTION(if_acmpeq),
 		ACTION(if_acmpne),
 		ACTION(if_icmpeq),
-		ACTION(if_icmpne),
-		ACTION(if_icmplt),
 		ACTION(if_icmpge),
 		ACTION(if_icmpgt),
 		ACTION(if_icmple),
+		ACTION(if_icmplt),
+		ACTION(if_icmpne),
 		ACTION(ifeq),
-		ACTION(ifne),
-		ACTION(iflt),
 		ACTION(ifge),
 		ACTION(ifgt),
 		ACTION(ifle),
+		ACTION(iflt),
+		ACTION(ifne),
 		ACTION(ifnonnull),
 		ACTION(ifnull),
 		ACTION(iinc),
 		ACTION(iload),
+		ACTION(iload_0),
+		ACTION(iload_1),
+		ACTION(iload_2),
+		ACTION(iload_3),
 		ACTION(imul),
 		ACTION(ineg),
 		ACTION(instanceof),
@@ -253,6 +293,10 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(ishl),
 		ACTION(ishr),
 		ACTION(istore),
+		ACTION(istore_0),
+		ACTION(istore_1),
+		ACTION(istore_2),
+		ACTION(istore_3),
 		ACTION(isub),
 		ACTION(iushr),
 		ACTION(ixor),
@@ -265,11 +309,17 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(land),
 		ACTION(lastore),
 		ACTION(lcmp),
+		ACTION(lconst_0),
+		ACTION(lconst_1),
 		ACTION(ldc),
-		ACTION(ldc_string),
 		ACTION(ldc2_w),
+		ACTION(ldc_string),
 		ACTION(ldiv),
 		ACTION(lload),
+		ACTION(lload_0),
+		ACTION(lload_1),
+		ACTION(lload_2),
+		ACTION(lload_3),
 		ACTION(lmul),
 		ACTION(lneg),
 		ACTION(lookupswitch),
@@ -279,6 +329,10 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(lshl),
 		ACTION(lshr),
 		ACTION(lstore),
+		ACTION(lstore_0),
+		ACTION(lstore_1),
+		ACTION(lstore_2),
+		ACTION(lstore_3),
 		ACTION(lsub),
 		ACTION(lushr),
 		ACTION(lxor),
@@ -290,25 +344,25 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 		ACTION(nop),
 		ACTION(pop),
 		ACTION(pop2),
-		ACTION(putfield_z),
 		ACTION(putfield_b),
 		ACTION(putfield_c),
-		ACTION(putfield_s),
+		ACTION(putfield_d),
+		ACTION(putfield_f),
 		ACTION(putfield_i),
 		ACTION(putfield_j),
-		ACTION(putfield_f),
-		ACTION(putfield_d),
 		ACTION(putfield_l),
+		ACTION(putfield_s),
+		ACTION(putfield_z),
 		ACTION(putstatic),
-		ACTION(putstatic_z),
 		ACTION(putstatic_b),
 		ACTION(putstatic_c),
-		ACTION(putstatic_s),
+		ACTION(putstatic_d),
+		ACTION(putstatic_f),
 		ACTION(putstatic_i),
 		ACTION(putstatic_j),
-		ACTION(putstatic_f),
-		ACTION(putstatic_d),
 		ACTION(putstatic_l),
+		ACTION(putstatic_s),
+		ACTION(putstatic_z),
 		ACTION(ret),
 		ACTION(return),
 		ACTION(saload),
@@ -360,8 +414,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 
 	/* Create Java stack space */
 	locals = env->sp;
-	sp = locals + code->max_locals;
-	env->sp = sp + code->max_stack;
+	env->sp = locals + code->max_locals + code->max_stack;
 
 	/* Check Java stack overflow; release secret space during exception */
 	if (_JC_UNLIKELY(env->sp > env->stack_data_end)) {
@@ -372,7 +425,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	/* Synchronize */
 	if (_JC_UNLIKELY(_JC_ACC_TEST(method, SYNCHRONIZED))) {
 		lock = _JC_ACC_TEST(method, STATIC) ?
-		    method->class->instance : LOCALL(-code->max_locals);
+		    method->class->instance : LOCALL(0);
 		if (_JC_UNLIKELY(_jc_lock_object(env, lock) != JNI_OK))
 			goto fail;
 	} else
@@ -394,6 +447,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 
 	/* Begin execution */
 	ticker = PERIODIC_CHECK_TICKS;
+	sp = locals + code->max_locals;
 	JUMP(code->insns);
 
 TARGET(aaload)
@@ -442,6 +496,18 @@ TARGET(aastore)
 TARGET(aload)
 	PUSHL(LOCALL(INFO(local)));
 	NEXT();
+TARGET(aload_0)
+	PUSHL(LOCALL(0));
+	NEXT();
+TARGET(aload_1)
+	PUSHL(LOCALL(1));
+	NEXT();
+TARGET(aload_2)
+	PUSHL(LOCALL(2));
+	NEXT();
+TARGET(aload_3)
+	PUSHL(LOCALL(3));
+	NEXT();
 TARGET(anewarray)
     {
 	_jc_array *array;
@@ -467,6 +533,22 @@ TARGET(arraylength)
 TARGET(astore)
 	POP(1);
 	LOCALL(INFO(local)) = STACKL(0);
+	NEXT();
+TARGET(astore_0)
+	POP(1);
+	LOCALL(0) = STACKL(0);
+	NEXT();
+TARGET(astore_1)
+	POP(1);
+	LOCALL(1) = STACKL(0);
+	NEXT();
+TARGET(astore_2)
+	POP(1);
+	LOCALL(2) = STACKL(0);
+	NEXT();
+TARGET(astore_3)
+	POP(1);
+	LOCALL(3) = STACKL(0);
 	NEXT();
 TARGET(athrow)
 	POP(1);
@@ -552,6 +634,12 @@ TARGET(checkcast)
 	}
 	NEXT();
     }
+TARGET(dconst_0)
+	PUSHD(0);
+	NEXT();
+TARGET(dconst_1)
+	PUSHD(1);
+	NEXT();
 TARGET(d2f)
 	POP(1);
 	STACKF(-1) = STACKD(-1);
@@ -605,6 +693,18 @@ TARGET(ddiv)
 TARGET(dload)
 	PUSHD(LOCALD(INFO(local)));
 	NEXT();
+TARGET(dload_0)
+	PUSHD(LOCALD(0));
+	NEXT();
+TARGET(dload_1)
+	PUSHD(LOCALD(1));
+	NEXT();
+TARGET(dload_2)
+	PUSHD(LOCALD(2));
+	NEXT();
+TARGET(dload_3)
+	PUSHD(LOCALD(3));
+	NEXT();
 TARGET(dmul)
 	POP(2);
 	STACKD(-2) *= STACKD(0);
@@ -622,6 +722,22 @@ TARGET(dreturn)
 TARGET(dstore)
 	POP(2);
 	LOCALD(INFO(local)) = STACKD(0);
+	NEXT();
+TARGET(dstore_0)
+	POP(2);
+	LOCALD(0) = STACKD(0);
+	NEXT();
+TARGET(dstore_1)
+	POP(2);
+	LOCALD(1) = STACKD(0);
+	NEXT();
+TARGET(dstore_2)
+	POP(2);
+	LOCALD(2) = STACKD(0);
+	NEXT();
+TARGET(dstore_3)
+	POP(2);
+	LOCALD(3) = STACKD(0);
 	NEXT();
 TARGET(dsub)
 	POP(2);
@@ -717,12 +833,33 @@ TARGET(fcmpl)
 	POP(1);
 	STACKI(-1) = _JC_FCMPL(STACKF(-1), STACKF(0));
 	NEXT();
+TARGET(fconst_0)
+	PUSHF(0);
+	NEXT();
+TARGET(fconst_1)
+	PUSHF(1);
+	NEXT();
+TARGET(fconst_2)
+	PUSHF(2);
+	NEXT();
 TARGET(fdiv)
 	POP(1);
 	STACKF(-1) /= STACKF(0);
 	NEXT();
 TARGET(fload)
 	PUSHF(LOCALF(INFO(local)));
+	NEXT();
+TARGET(fload_0)
+	PUSHF(LOCALF(0));
+	NEXT();
+TARGET(fload_1)
+	PUSHF(LOCALF(1));
+	NEXT();
+TARGET(fload_2)
+	PUSHF(LOCALF(2));
+	NEXT();
+TARGET(fload_3)
+	PUSHF(LOCALF(3));
 	NEXT();
 TARGET(fmul)
 	POP(1);
@@ -741,6 +878,22 @@ TARGET(freturn)
 TARGET(fstore)
 	POP(1);
 	LOCALF(INFO(local)) = STACKF(0);
+	NEXT();
+TARGET(fstore_0)
+	POP(1);
+	LOCALF(0) = STACKF(0);
+	NEXT();
+TARGET(fstore_1)
+	POP(1);
+	LOCALF(1) = STACKF(0);
+	NEXT();
+TARGET(fstore_2)
+	POP(1);
+	LOCALF(2) = STACKF(0);
+	NEXT();
+TARGET(fstore_3)
+	POP(1);
+	LOCALF(3) = STACKF(0);
 	NEXT();
 TARGET(fsub)
 	POP(1);
@@ -943,6 +1096,27 @@ TARGET(iastore)
 	array->elems[index] = STACKI(2);
 	NEXT();
     }
+TARGET(iconst_m1)
+	PUSHI(-1);
+	NEXT();
+TARGET(iconst_0)
+	PUSHI(0);
+	NEXT();
+TARGET(iconst_1)
+	PUSHI(1);
+	NEXT();
+TARGET(iconst_2)
+	PUSHI(2);
+	NEXT();
+TARGET(iconst_3)
+	PUSHI(3);
+	NEXT();
+TARGET(iconst_4)
+	PUSHI(4);
+	NEXT();
+TARGET(iconst_5)
+	PUSHI(5);
+	NEXT();
 TARGET(idiv)
 	POP(1);
 	if (_JC_UNLIKELY(STACKI(0) == 0))
@@ -1034,6 +1208,18 @@ TARGET(iinc)
 	NEXT();
 TARGET(iload)
 	PUSHI(LOCALI(INFO(local)));
+	NEXT();
+TARGET(iload_0)
+	PUSHI(LOCALI(0));
+	NEXT();
+TARGET(iload_1)
+	PUSHI(LOCALI(1));
+	NEXT();
+TARGET(iload_2)
+	PUSHI(LOCALI(2));
+	NEXT();
+TARGET(iload_3)
+	PUSHI(LOCALI(3));
 	NEXT();
 TARGET(imul)
 	POP(1);
@@ -1264,6 +1450,22 @@ TARGET(istore)
 	POP(1);
 	LOCALI(INFO(local)) = STACKI(0);
 	NEXT();
+TARGET(istore_0)
+	POP(1);
+	LOCALI(0) = STACKI(0);
+	NEXT();
+TARGET(istore_1)
+	POP(1);
+	LOCALI(1) = STACKI(0);
+	NEXT();
+TARGET(istore_2)
+	POP(1);
+	LOCALI(2) = STACKI(0);
+	NEXT();
+TARGET(istore_3)
+	POP(1);
+	LOCALI(3) = STACKI(0);
+	NEXT();
 TARGET(isub)
 	POP(1);
 	STACKI(-1) -= STACKI(0);
@@ -1325,6 +1527,12 @@ TARGET(lcmp)
 	POP(3);
 	STACKI(-1) = _JC_LCMP(STACKJ(-1), STACKJ(1));
 	NEXT();
+TARGET(lconst_0)
+	PUSHJ(0);
+	NEXT();
+TARGET(lconst_1)
+	PUSHJ(1);
+	NEXT();
 TARGET(ldc)
 	*sp++ = *((_jc_word *)&INFO(constant));
 	NEXT();
@@ -1370,6 +1578,18 @@ TARGET(ldiv)
 TARGET(lload)
 	PUSHJ(LOCALJ(INFO(local)));
 	NEXT();
+TARGET(lload_0)
+	PUSHJ(LOCALJ(0));
+	NEXT();
+TARGET(lload_1)
+	PUSHJ(LOCALJ(1));
+	NEXT();
+TARGET(lload_2)
+	PUSHJ(LOCALJ(2));
+	NEXT();
+TARGET(lload_3)
+	PUSHJ(LOCALJ(3));
+	NEXT();
 TARGET(lmul)
 	POP(2);
 	STACKJ(-2) *= STACKJ(0);
@@ -1413,6 +1633,22 @@ TARGET(lshr)
 TARGET(lstore)
 	POP(2);
 	LOCALJ(INFO(local)) = STACKJ(0);
+	NEXT();
+TARGET(lstore_0)
+	POP(2);
+	LOCALJ(0) = STACKJ(0);
+	NEXT();
+TARGET(lstore_1)
+	POP(2);
+	LOCALJ(1) = STACKJ(0);
+	NEXT();
+TARGET(lstore_2)
+	POP(2);
+	LOCALJ(2) = STACKJ(0);
+	NEXT();
+TARGET(lstore_3)
+	POP(2);
+	LOCALJ(3) = STACKJ(0);
 	NEXT();
 TARGET(lsub)
 	POP(2);

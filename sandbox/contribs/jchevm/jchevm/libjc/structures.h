@@ -38,7 +38,6 @@ typedef struct _jc_c_stack _jc_c_stack;
 typedef struct _jc_class_ref _jc_class_ref;
 typedef struct _jc_classbytes _jc_classbytes;
 typedef struct _jc_cpath_entry _jc_cpath_entry;
-typedef struct _jc_depth_state	_jc_depth_state;
 typedef struct _jc_ex_info _jc_ex_info;
 typedef struct _jc_fat_lock _jc_fat_lock;
 typedef struct _jc_fat_locks _jc_fat_locks;
@@ -83,20 +82,6 @@ struct _jc_splay_tree {
 	int		size;		/* number of nodes in tree */
 	_jc_splay_node	*root;		/* root of the tree */
 	_jc_splay_cmp_t	*compare;	/* item comparision function */
-};
-
-/************************************************************************
- *		    Java stack depth computation state			*
- ************************************************************************/
-
-struct _jc_depth_state {
-	int		sp;
-	int		ip;
-	_jc_method_code	*code;
-	int		*depth;
-	int		*retsp;
-	int		*locals;
-	int		*stack;
 };
 
 /************************************************************************
