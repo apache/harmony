@@ -14,16 +14,6 @@ Installation instructions for the JC virtual machine:
 	Should come installed with FreeBSD.
 	Debian: zlib1g-dev
 
-    libcrypto:
-	http://www.openssl.org/
-	Should come installed with FreeBSD as part of OpenSSL.
-	Debian: libssl-dev
-
-  Optional:
-
-    Another "Java 2" compatible JVM installed, such as Sun's JDK,
-    kaffe, SableVM, etc. This is needed during installation only.
-
 1. Install classpath-0.19. You can get it from
 
 	ftp://ftp.gnu.org/pub/gnu/classpath/classpath-0.19.tar.gz

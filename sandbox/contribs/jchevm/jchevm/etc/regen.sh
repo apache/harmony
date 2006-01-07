@@ -11,6 +11,8 @@
 # If it looks like I don't know what I'm doing here, you're right.
 #
 
+set -e
+
 if [ ! -f libjc/Makefile.am ]; then
     echo '***' run me from the top level directory please
     exit 1

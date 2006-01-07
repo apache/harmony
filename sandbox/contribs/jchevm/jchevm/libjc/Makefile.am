@@ -91,8 +91,6 @@ AM_CFLAGS+=		-D_AC_DATADIR=\"$(datadir)\"
 AM_CFLAGS+=		-D_AC_LIBDIR=\"$(libdir)\"
 AM_CFLAGS+=		-D_AC_SYSCONFDIR=\"$(sysconfdir)\"
 AM_CFLAGS+=		-D_JC_CLASSPATH_HOME=\"@CLASSPATH_HOME@\"
-AM_CFLAGS+=		-D_JC_BOOTSTRAP_JAVA=\"$(JAVA)\"
-AM_CFLAGS+=		-D_JC_GNU_COMPILER=\"$(HOSTGCC)\"
 
 AM_CPPFLAGS=		-I$(srcdir)/native -I$(srcdir)/arch
 

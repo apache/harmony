@@ -68,8 +68,6 @@ AC_PATH_PROG(JAVADOC, javadoc, /usr/bin/javadoc, [$PATH:/usr/local/java/bin])
 AC_ARG_VAR(JAVADOC, [path to javadoc executable])
 AC_PATH_PROG(TAR, tar)
 AC_ARG_VAR(TAR, [path to tar executable])
-AC_PATH_PROG(HOSTGCC, gcc)
-AC_ARG_VAR(HOSTGCC, [path to GCC compiler for host architecture])
 
 # Check for required libraries
 AC_CHECK_LIB(m, fmod,,
