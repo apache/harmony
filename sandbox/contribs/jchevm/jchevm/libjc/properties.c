@@ -233,7 +233,7 @@ _jc_digest_properties(_jc_env *env)
 {
 	_jc_jvm *const vm = env->vm;
 	_jc_property *prop;
-	size_t loader_size;
+	size_t size;
 	int i;
 
 	/* Sort properties for faster searching */
@@ -278,8 +278,9 @@ _jc_digest_properties(_jc_env *env)
 		return JNI_ERR;
 	prop = _jc_property_get(vm, "jc.java.stack.size");
 	_JC_ASSERT(prop != NULL);
-	if (_jc_digest_size(env, &vm->java_stack_size, prop, 0) != JNI_OK)
+	if (_jc_digest_size(env, &size, prop, 0) != JNI_OK)
 		return JNI_ERR;
+	vm->java_stack_size = size;
 
 	/* Get heap size and granularity factor */
 	prop = _jc_property_get(vm, "jc.heap.size");
@@ -288,13 +289,14 @@ _jc_digest_properties(_jc_env *env)
 		return JNI_ERR;
 	prop = _jc_property_get(vm, "jc.heap.granularity");
 	_JC_ASSERT(prop != NULL);
-	if (_jc_digest_size(env, &vm->heap.granularity, prop, 99) != JNI_OK)
+	if (_jc_digest_size(env, &size, prop, 99) != JNI_OK)
 		return JNI_ERR;
+	vm->heap.granularity = size;
 	prop = _jc_property_get(vm, "jc.loader.size");
 	_JC_ASSERT(prop != NULL);
-	if (_jc_digest_size(env, &loader_size, prop, 0) != JNI_OK)
+	if (_jc_digest_size(env, &size, prop, 0) != JNI_OK)
 		return JNI_ERR;
-	vm->max_loader_pages = _JC_HOWMANY(loader_size, _JC_PAGE_SIZE);
+	vm->max_loader_pages = _JC_HOWMANY(size, _JC_PAGE_SIZE);
 	vm->avail_loader_pages = vm->max_loader_pages;
 
 	/* Check stack parameters */

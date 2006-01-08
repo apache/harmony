@@ -1304,12 +1304,16 @@ loop:
 		break;
 	case _JC_jsr_w:
 	case _JC_goto_w:
+	    {
+		jint value32;
+
 		_JC_ASSERT(_JC_jsr_w - _JC_jsr == _JC_goto_w - _JC_goto);
 		insn->opcode -= _JC_jsr_w - _JC_jsr;
-		if (_jc_parse_integer(s, &insn->u.branch.target) != JNI_OK)
+		if (_jc_parse_integer(s, &value32) != JNI_OK)
 			return JNI_ERR;
-		insn->u.branch.target += insn_offset;
+		insn->u.branch.target = insn_offset + value32;
 		break;
+	    }
 	case _JC_iinc:
 		if (_jc_parse_local8(s, code, &insn->u.iinc.index) != JNI_OK)
 			return JNI_ERR;
@@ -1360,6 +1364,7 @@ loop:
 		_jc_cf_lookupswitch *lsw;
 		_jc_uint32 default_target;
 		jint num_pairs;
+		jint value32;
 		int pad;
 
 		/* Parse padding */
@@ -1375,9 +1380,9 @@ loop:
 		}
 
 		/* Parse default target offset */
-		if (_jc_parse_integer(s, &default_target) != JNI_OK)
+		if (_jc_parse_integer(s, &value32) != JNI_OK)
 			return JNI_ERR;
-		default_target += insn_offset;
+		default_target = insn_offset + value32;
 
 		/* Parse number of pairs */
 		if (_jc_parse_integer(s, &num_pairs) != JNI_OK)
@@ -1407,9 +1412,9 @@ loop:
 				    "misordered %s table", opname);
 				return JNI_ERR;
 			}
-			if (_jc_parse_integer(s, &lookup->target) != JNI_OK)
+			if (_jc_parse_integer(s, &value32) != JNI_OK)
 				return JNI_ERR;
-			lookup->target += insn_offset;
+			lookup->target = insn_offset + value32;
 		}
 		break;
 	    }
@@ -1419,6 +1424,7 @@ loop:
 		_jc_cf_tableswitch *tsw;
 		_jc_uint32 default_target;
 		jint num_targets;
+		jint value32;
 		jint high;
 		jint low;
 		int pad;
@@ -1436,9 +1442,9 @@ loop:
 		}
 
 		/* Parse default target offset */
-		if (_jc_parse_integer(s, &default_target) != JNI_OK)
+		if (_jc_parse_integer(s, &value32) != JNI_OK)
 			return JNI_ERR;
-		default_target += insn_offset;
+		default_target = insn_offset + value32;
 
 		/* Parse bounds */
 		if (_jc_parse_integer(s, &low) != JNI_OK)
@@ -1463,9 +1469,9 @@ loop:
 
 		/* Parse targets */
 		for (i = 0; i < num_targets; i++) {
-			if (_jc_parse_integer(s, &tsw->targets[i]) != JNI_OK)
+			if (_jc_parse_integer(s, &value32) != JNI_OK)
 				return JNI_ERR;
-			tsw->targets[i] += insn_offset;
+			tsw->targets[i] = insn_offset + value32;
 		}
 		break;
 	    }
