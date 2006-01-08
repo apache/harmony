@@ -140,6 +140,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	static const _jc_word actions[0x100] = {
 		ACTION(aaload),
 		ACTION(aastore),
+		ACTION(aconst_null),
 		ACTION(aload),
 		ACTION(aload_0),
 		ACTION(aload_1),
@@ -493,6 +494,9 @@ TARGET(aastore)
 	array->elems[~index] = obj;
 	NEXT();
     }
+TARGET(aconst_null)
+	PUSHL(NULL);
+	NEXT();
 TARGET(aload)
 	PUSHL(LOCALL(INFO(local)));
 	NEXT();

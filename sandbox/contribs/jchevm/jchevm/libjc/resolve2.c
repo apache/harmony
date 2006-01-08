@@ -568,10 +568,6 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 
 		/* Copy and resolve additional info, possibly changing opcode */
 		switch (opcode) {
-		case _JC_aconst_null:
-			info->constant.l = NULL;
-			opcode = _JC_ldc;
-			break;
 		case _JC_aload:
 		case _JC_astore:
 		case _JC_dload:
