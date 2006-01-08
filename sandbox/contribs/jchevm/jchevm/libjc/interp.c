@@ -77,6 +77,7 @@ static void	_jc_vinterp_native(_jc_env *env, va_list args);
 #define STACKJ(i)	(*(jlong *)(sp + (i)))
 #define STACKD(i)	(*(jdouble *)(sp + (i)))
 #define STACKL(i)	(*(_jc_object **)(sp + (i)))
+#define STACKW(i)	(sp[i])
 #define LOCALI(i)	(*(jint *)(locals + i))
 #define LOCALF(i)	(*(jfloat *)(locals + i))
 #define LOCALJ(i)	(*(jlong *)(locals + i))
@@ -748,42 +749,42 @@ TARGET(dsub)
 	STACKD(-2) -= STACKD(0);
 	NEXT();
 TARGET(dup)
-	STACKI(0) = STACKI(-1);
+	STACKW(0) = STACKW(-1);
 	POP(-1);
 	NEXT();
 TARGET(dup_x1)
-	STACKI(0) = STACKI(-1);
-	STACKI(-1) = STACKI(-2);
-	STACKI(-2) = STACKI(0);
+	STACKW(0) = STACKW(-1);
+	STACKW(-1) = STACKW(-2);
+	STACKW(-2) = STACKW(0);
 	POP(-1);
 	NEXT();
 TARGET(dup_x2)
-	STACKI(0) = STACKI(-1);
-	STACKI(-1) = STACKI(-2);
-	STACKI(-2) = STACKI(-3);
-	STACKI(-3) = STACKI(0);
+	STACKW(0) = STACKW(-1);
+	STACKW(-1) = STACKW(-2);
+	STACKW(-2) = STACKW(-3);
+	STACKW(-3) = STACKW(0);
 	POP(-1);
 	NEXT();
 TARGET(dup2)
-	STACKI(1) = STACKI(-1);
-	STACKI(0) = STACKI(-2);
+	STACKW(1) = STACKW(-1);
+	STACKW(0) = STACKW(-2);
 	POP(-2);
 	NEXT();
 TARGET(dup2_x1)
-	STACKI(1) = STACKI(-1);
-	STACKI(0) = STACKI(-2);
-	STACKI(-1) = STACKI(-3);
-	STACKI(-2) = STACKI(1);
-	STACKI(-3) = STACKI(0);
+	STACKW(1) = STACKW(-1);
+	STACKW(0) = STACKW(-2);
+	STACKW(-1) = STACKW(-3);
+	STACKW(-2) = STACKW(1);
+	STACKW(-3) = STACKW(0);
 	POP(-2);
 	NEXT();
 TARGET(dup2_x2)
-	STACKI(1) = STACKI(-1);
-	STACKI(0) = STACKI(-2);
-	STACKI(-1) = STACKI(-3);
-	STACKI(-2) = STACKI(-4);
-	STACKI(-3) = STACKI(1);
-	STACKI(-4) = STACKI(0);
+	STACKW(1) = STACKW(-1);
+	STACKW(0) = STACKW(-2);
+	STACKW(-1) = STACKW(-3);
+	STACKW(-2) = STACKW(-4);
+	STACKW(-3) = STACKW(1);
+	STACKW(-4) = STACKW(0);
 	POP(-2);
 	NEXT();
 TARGET(f2d)
@@ -1884,11 +1885,11 @@ TARGET(sastore)
     }
 TARGET(swap)
     {
-	jint temp;
+	_jc_word temp;
 
-	temp = STACKI(-2);
-	STACKI(-2) = STACKI(-1);
-	STACKI(-1) = temp;
+	temp = STACKW(-2);
+	STACKW(-2) = STACKW(-1);
+	STACKW(-1) = temp;
 	NEXT();
     }
 TARGET(tableswitch)
