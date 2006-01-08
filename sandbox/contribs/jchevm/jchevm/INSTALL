@@ -8,11 +8,13 @@ Installation instructions for the JC virtual machine:
 	ftp://ftp.rpm.org/pub/rpm/dist/rpm-4.0.x/popt-1.6.4.tar.gz
 	FreeBSD: devel/popt
 	Debian: libpopt-dev
+	RPM: popt-devel
 
     libz:
 	http://www.gzip.org/zlib/
 	Should come installed with FreeBSD.
 	Debian: zlib1g-dev
+	RPM: zlib
 
 1. Install classpath-0.19. You can get it from
 
@@ -26,6 +28,7 @@ Installation instructions for the JC virtual machine:
 	ftp://www-126.ibm.com/pub/jikes/1.22/jikes-1.22.tar.gz
 	FreeBSD: java/jikes
 	Debian: jikes
+	PRM: jikes
 
    Then:
 
