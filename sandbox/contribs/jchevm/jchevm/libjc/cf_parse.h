@@ -319,10 +319,10 @@ struct _jc_cf_invoke {
 };
 struct _jc_cf_lookup {
 	jint		match;
-	_jc_uint32	target;
+	_jc_uint16	target;
 };
 struct _jc_cf_lookupswitch {
-	_jc_uint32	default_target;
+	_jc_uint16	default_target;
 	jint		num_pairs;
 	_jc_cf_lookup	pairs[0];
 };
@@ -334,13 +334,13 @@ struct _jc_cf_newarray {
 	u_char		type;		/* _JC_TYPE_XXX */
 };
 struct _jc_cf_tableswitch {
-	_jc_uint32	default_target;
 	jint		low;
 	jint		high;
-	_jc_uint32	targets[0];
+	_jc_uint16	default_target;
+	_jc_uint16	targets[0];
 };
 struct _jc_cf_branch {
-	_jc_uint32	target;
+	_jc_uint16	target;
 };
 struct _jc_cf_local {
 	_jc_uint16	index;
@@ -383,15 +383,15 @@ struct _jc_cf_linenum {
 };
 
 struct _jc_cf_linemap {
-	_jc_uint32	index;			/* instruction index */
+	_jc_uint16	index;			/* instruction index */
 	_jc_uint16	line;
 };
 
 /* Parsed method trap */
 struct _jc_cf_trap {
-	_jc_uint32	start;			/* instruction index */
-	_jc_uint32	end;			/* instruction index */
-	_jc_uint32	target;			/* instruction index */
+	_jc_uint16	start;			/* instruction index */
+	_jc_uint16	end;			/* instruction index */
+	_jc_uint16	target;			/* instruction index */
 	const char	*type;
 };
 
@@ -408,7 +408,7 @@ struct _jc_cf_code {
 	_jc_uint16	max_locals;
 	_jc_uint16	num_traps;
 	_jc_uint16	num_linemaps;
-	_jc_uint32	num_insns;
+	_jc_uint16	num_insns;
 	_jc_cf_insn	*insns;
 	_jc_cf_trap	*traps;
 	_jc_cf_linemap	*linemaps;

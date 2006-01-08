@@ -35,9 +35,9 @@ static int	_jc_parse_methodref(_jc_cf_parse_state *s, _jc_cf_ref **refp);
 static int	_jc_parse_interfacemethodref(_jc_cf_parse_state *s,
 			_jc_cf_ref **refp);
 static int	_jc_parse_bytecode(_jc_cf_parse_state *s, _jc_cf_code *code,
-			_jc_uint32 *offset_map, _jc_uint32 length);
-static int	_jc_map_offset(_jc_env *env, _jc_cf_code *code, _jc_uint32 length,
-			_jc_uint32 *offset_map, _jc_uint32 *targetp);
+			_jc_uint16 *offset_map, _jc_uint16 length);
+static int	_jc_map_offset(_jc_env *env, _jc_cf_code *code, _jc_uint16 length,
+			_jc_uint16 *offset_map, _jc_uint16 *targetp);
 static int	_jc_parse_local8(_jc_cf_parse_state *s, _jc_cf_code *code,
 			_jc_uint16 *indexp);
 static int	_jc_parse_local16(_jc_cf_parse_state *s, _jc_cf_code *code,
@@ -963,12 +963,13 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 {
 	_jc_cf_parse_state state;
 	_jc_cf_parse_state *const s = &state;
-	_jc_uint32 *offset_map = NULL;
+	_jc_uint16 *offset_map = NULL;
 #if 0
 	_jc_cf_insn *new_insns;
 #endif
-	_jc_uint32 code_length;
+	_jc_uint16 code_length;
 	_jc_uint16 num_attrs;
+	_jc_uint32 u32;
 	int i;
 
 	/* Initialize parse state */
@@ -985,8 +986,15 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 		goto fail;
 	if (_jc_parse_uint16(s, &code->max_locals) != JNI_OK)
 		goto fail;
-	if (_jc_parse_uint32(s, &code_length) != JNI_OK)
+	if (_jc_parse_uint32(s, &u32) != JNI_OK)
 		goto fail;
+	if ((_jc_uint16)u32 != u32) {
+		_JC_EX_STORE(s->env, ClassFormatError,
+		    "Illegal `Code' attribute bytecode length %u",
+		    (unsigned int)u32);
+		goto fail;
+	}
+	code_length = (_jc_uint16)u32;
 	if (s->pos + code_length > s->length) {
 		_JC_EX_STORE(s->env, ClassFormatError,
 		    "`Code' attribute bytecode length overflow");
@@ -1000,7 +1008,6 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 	if ((code->insns = _jc_vm_zalloc(s->env,
 	    code_length * sizeof(*code->insns))) == NULL)
 		goto fail;
-	code->num_insns = -1;
 
 	/* Parse bytecode */
 	if (_jc_parse_bytecode(s, code, offset_map, code_length) != JNI_OK)
@@ -1027,25 +1034,21 @@ _jc_parse_code(_jc_env *env, _jc_classfile *cfile,
 		goto fail;
 	for (i = 0; i < code->num_traps; i++) {
 		_jc_cf_trap *const trap = &code->traps[i];
-		_jc_uint16 value16;
 
-		if (_jc_parse_uint16(s, &value16) != JNI_OK)
+		if (_jc_parse_uint16(s, &trap->start) != JNI_OK)
 			goto fail;
-		trap->start = value16;
 		if (_jc_map_offset(s->env, code, code_length,
 		    offset_map, &trap->start) != JNI_OK)
 			goto fail;
-		if (_jc_parse_uint16(s, &value16) != JNI_OK)
+		if (_jc_parse_uint16(s, &trap->end) != JNI_OK)
 			goto fail;
-		trap->end = value16;
 		if (trap->end == code_length)
 			trap->end = code->num_insns;
 		else if (_jc_map_offset(s->env, code, code_length,
 		    offset_map, &trap->end) != JNI_OK)
 			goto fail;
-		if (_jc_parse_uint16(s, &value16) != JNI_OK)
+		if (_jc_parse_uint16(s, &trap->target) != JNI_OK)
 			goto fail;
-		trap->target = value16;
 		if (_jc_map_offset(s->env, code, code_length,
 		    offset_map, &trap->target) != JNI_OK)
 			goto fail;
@@ -1146,7 +1149,7 @@ _jc_destroy_code(_jc_cf_code *code)
  */
 static int
 _jc_parse_bytecode(_jc_cf_parse_state *s, _jc_cf_code *code,
-	_jc_uint32 *offset_map, _jc_uint32 code_length)
+	_jc_uint16 *offset_map, _jc_uint16 code_length)
 {
 	const size_t start = s->pos;
 	const size_t end = s->pos + code_length;
@@ -1162,7 +1165,7 @@ _jc_parse_bytecode(_jc_cf_parse_state *s, _jc_cf_code *code,
 
 loop:
 	/* Sanity check */
-	_JC_ASSERT(code->num_insns == -1);
+	_JC_ASSERT(code->num_insns == 0);
 	_JC_ASSERT(s->pos <= end);
 	_JC_ASSERT(inum <= code_length);
 	_JC_ASSERT(inum == insn - code->insns);
@@ -1362,7 +1365,7 @@ loop:
 	    {
 		const char *const opname = _jc_bytecode_names[insn->opcode];
 		_jc_cf_lookupswitch *lsw;
-		_jc_uint32 default_target;
+		_jc_uint16 default_target;
 		jint num_pairs;
 		jint value32;
 		int pad;
@@ -1422,7 +1425,7 @@ loop:
 	    {
 		const char *const opname = _jc_bytecode_names[insn->opcode];
 		_jc_cf_tableswitch *tsw;
-		_jc_uint32 default_target;
+		_jc_uint16 default_target;
 		jint num_targets;
 		jint value32;
 		jint high;
@@ -1638,10 +1641,10 @@ pass2:
  * Convert a bytecode offset into an instruction index.
  */
 static int
-_jc_map_offset(_jc_env *env, _jc_cf_code *code, _jc_uint32 length,
-	_jc_uint32 *offset_map, _jc_uint32 *targetp)
+_jc_map_offset(_jc_env *env, _jc_cf_code *code, _jc_uint16 length,
+	_jc_uint16 *offset_map, _jc_uint16 *targetp)
 {
-	_jc_uint32 target = *targetp;
+	_jc_uint16 target = *targetp;
 
 	if (target == 0)
 		return JNI_OK;
