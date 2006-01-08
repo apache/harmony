@@ -75,7 +75,7 @@ end
 define pstack
   set $jstack = $env->java_stack
   while $jstack != 0
-    set $jip = $jstack->pcp != 0 ? *$jstack->pcp : -1
+    set $jip = $jstack->pc != 0 ? $jstack->pc - $jstack->method->code.insns : -1
     print_java_stack_frame $jstack->method $jip
     set $jstack = $jstack->next
   end
