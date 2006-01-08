@@ -418,7 +418,7 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	locals = env->sp;
 	env->sp = locals + code->max_locals + code->max_stack;
 
-	/* Check Java stack overflow; release secret space during exception */
+	/* Check Java stack overflow */
 	if (_JC_UNLIKELY(env->sp > env->stack_data_end)) {
 		_jc_post_exception(env, _JC_StackOverflowError);
 		goto fail;
@@ -450,7 +450,8 @@ _jc_interp(_jc_env *const env, _jc_method *const method)
 	/* Begin execution */
 	ticker = PERIODIC_CHECK_TICKS;
 	sp = locals + code->max_locals;
-	JUMP(code->insns);
+	pc = code->insns;
+	RERUN();
 
 TARGET(aaload)
     {
@@ -2132,7 +2133,7 @@ _jc_vinterp(_jc_env *env, va_list args)
 	/* Place paramters over top of the stack like _jc_interp() expects */
 	sp = env->sp;
 
-	/* Check Java stack overflow; release secret space during exception */
+	/* Check Java stack overflow */
 	if (sp + 1 + method->code.num_params2 > env->stack_data_end) {
 		_jc_post_exception(env, _JC_StackOverflowError);
 		_jc_throw_exception(env);
