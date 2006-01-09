@@ -11,14 +11,15 @@ JCOMPILE=	$(JIKES) -nowarn +F -bootclasspath '' -extdirs '' -sourcepath '' -clas
 
 SUBDIRS=	org
 
-EXTRA_DIST=	api.tgz jc.zip
+EXTRA_DIST=	jc.zip
+#EXTRA_DIST+=	api.tgz
 
-install-data-local:	api.tgz
-	$(mkinstalldirs) $(DESTDIR)$(apidir)
-	$(TAR) xzf $(srcdir)/api.tgz -C $(DESTDIR)$(apidir)
+#install-data-local:	api.tgz
+#	$(mkinstalldirs) $(DESTDIR)$(apidir)
+#	$(TAR) xzf $(srcdir)/api.tgz -C $(DESTDIR)$(apidir)
 
-uninstall-local:
-	rm -rf $(DESTDIR)$(apidir)
+#uninstall-local:
+#	rm -rf $(DESTDIR)$(apidir)
 
 jc.zip:
 	rm -rf classes
