@@ -61,6 +61,9 @@ struct flag_subst {
 	const char	*prop;
 };
 
+/* Subversion revision from version.c */
+extern const unsigned long _jc_svn_revision;
+
 /* Verbosity options */
 static const	char *const jc_verbose[] = {
 	"class",
@@ -388,9 +391,10 @@ _jc_invoke(int orig_ac, const char **orig_av,
 		    }
 		case OPT_VERSION:
 			jc_print(printer, stdout,
-			    "JC virtual machine version %s\n"
-			    "Copyright (C) 2003-2005 Archie L. Cobbs\n"
-			    "All rights reserved.\n", VERSION);
+			    "JC virtual machine version %s (r%lu)\n"
+			    "Copyright (C) 2003-2006 Archie L. Cobbs\n"
+			    "All rights reserved.\n", VERSION,
+			    _jc_svn_revision);
 			rtn = _JC_RETURN_NORMAL;
 			goto done;
 		case OPT_COMPATOPTS:

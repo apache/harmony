@@ -50,6 +50,7 @@ libjc_a_SOURCES= \
 			thread.c \
 			utf.c \
 			verify.c \
+			version.c \
 			vm.c \
 			vm_alloc.c \
 			zip.c
@@ -84,6 +85,13 @@ libjc_a_SOURCES+=	cf_parse.h \
 			inline.h \
 			structures.h \
 			zip.h
+
+EXTRA_DIST=		version.c
+
+version.c:
+	echo '#include "libjc.h"' > $@
+	echo 'const unsigned long _jc_svn_revision = '`svn info $(top_srcdir) \
+	  | grep '^Last Changed Rev:' | awk '{ print $$NF }'`';' >> $@
 
 AM_CFLAGS=		$(CFLAGS) @JC_CFLAGS@
 AM_CFLAGS+=		-D_AC_INCLUDEDIR=\"$(includedir)\"
