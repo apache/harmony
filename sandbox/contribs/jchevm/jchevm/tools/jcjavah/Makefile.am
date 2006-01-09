@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.2 2005/01/09 02:06:56 archiecobbs Exp $
+## $Id$
 
 jcbindir=		$(bindir)
 
@@ -25,6 +25,7 @@ AM_CFLAGS+=	-D_AC_INCLUDEDIR=\"$(includedir)\"
 AM_CFLAGS+=	-D_AC_DATADIR=\"$(datadir)\"
 AM_CFLAGS+=	-D_AC_LIBDIR=\"$(libdir)\"
 
-AM_CPPFLAGS=	-I$(top_srcdir)/libjc
+AM_CPPFLAGS=	-I$(top_srcdir)/include
+AM_CPPFLAGS+=	-I$(top_srcdir)/libjc
 AM_CPPFLAGS+=	-I$(top_srcdir)/libjc/arch
 

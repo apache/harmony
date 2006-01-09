@@ -92,5 +92,7 @@ AM_CFLAGS+=		-D_AC_LIBDIR=\"$(libdir)\"
 AM_CFLAGS+=		-D_AC_SYSCONFDIR=\"$(sysconfdir)\"
 AM_CFLAGS+=		-D_JC_CLASSPATH_HOME=\"@CLASSPATH_HOME@\"
 
-AM_CPPFLAGS=		-I$(srcdir)/native -I$(srcdir)/arch
+AM_CPPFLAGS=		-I$(top_srcdir)/include
+AM_CPPFLAGS+=		-I$(srcdir)/native
+AM_CPPFLAGS+=		-I$(srcdir)/arch
 
