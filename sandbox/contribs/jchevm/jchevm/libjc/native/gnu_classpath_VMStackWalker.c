@@ -20,6 +20,7 @@
 
 #include "libjc.h"
 #include "gnu_classpath_VMStackWalker.h"
+#include "java_lang_VMClass.h"
 
 /* Internal functions */
 static jboolean	_jc_poppable_method(_jc_jvm *vm, _jc_method *method);
@@ -151,5 +152,11 @@ again:
 
 	/* Done */
 	return array;
+}
+
+_jc_object * _JC_JCNI_ATTR
+JCNI_gnu_classpath_VMStackWalker_getClassLoader(_jc_env *env, _jc_object *clobj)
+{
+	return JCNI_java_lang_VMClass_getClassLoader(env, clobj);
 }
 

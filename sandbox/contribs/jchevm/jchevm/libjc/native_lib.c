@@ -42,6 +42,10 @@ typedef jint	jni_onload_t(JavaVM *jvm, void *reserved);
 static void	*_jc_dlsym(void *handle, const char *name);
 static int	_jc_ilib_compare(const void *item1, const void *item2);
 
+/* Backward compat for classpath-0.19 */
+extern _jc_object *JCNI_gnu_classpath_VMStackWalker_getClassLoader(_jc_env *,
+			_jc_object *) _JC_JCNI_ATTR;
+
 /*
  * Internal JCNI native methods.
  *
@@ -50,6 +54,7 @@ static int	_jc_ilib_compare(const void *item1, const void *item2);
 #define _JC_ILIB_ENTRY(method)	{ "JCNI_" #method, JCNI_ ## method }
 static const _jc_ilib_entry _jc_ilib_table[] = {
 	_JC_ILIB_ENTRY(gnu_classpath_VMStackWalker_getClassContext),
+	_JC_ILIB_ENTRY(gnu_classpath_VMStackWalker_getClassLoader),
 	_JC_ILIB_ENTRY(gnu_classpath_VMSystemProperties_preInit),
 	_JC_ILIB_ENTRY(java_lang_VMClassLoader_defineClass),
 	_JC_ILIB_ENTRY(java_lang_VMClassLoader_findLoadedClass),
