@@ -5,9 +5,6 @@
 # Script to regenerate all the GNU auto* gunk.
 # Run this from the top directory of the source tree.
 #
-# This is customized for my FreeBSD machine. It probably
-# won't work right on your machine, please edit to suit.
-#
 # If it looks like I don't know what I'm doing here, you're right.
 #
 

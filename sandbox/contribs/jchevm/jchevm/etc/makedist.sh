@@ -31,10 +31,7 @@ fi
 rm -f java/jc.zip java/api.tgz
 
 # Configure (so we have Makefiles)
-sh etc/regen.sh ${1+"$@"}
-
-# Pre-build jc.zip so builder doesn't have to
-( cd java && make )
+sh autogen.sh ${1+"$@"}
 
 # Create the distribution
 make dist

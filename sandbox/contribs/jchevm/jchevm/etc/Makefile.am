@@ -1,10 +1,10 @@
-## $Id: Makefile.am,v 1.8 2005/04/29 00:49:30 archiecobbs Exp $
+## $Id$
 
 jcetcdir=		$(sysconfdir)
 
 dist_jcetc_DATA=	jc.conf
 
-EXTRA_DIST=		gdb.userdef regen.sh makedist.sh jc.xpm \
+EXTRA_DIST=		gdb.userdef makedist.sh jc.xpm \
 			classpath.spec.in jcvm.spec.in
 
 rpms:			classpath-rpm jcvm-rpm

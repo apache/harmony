@@ -26,7 +26,7 @@ To make a checked out version of JCHEVM buildable:
 
   0. You'll need autoconf, automake, and libtool installed first.
   1. Follow INSTALL step 0 & 1 to install libpopt, libz, and Classpath.
-  2. Run "sh etc/regen.sh"; you may add "--with-classpath=DIR" to specify
+  2. Run "autogen.sh"; you may add "--with-classpath=DIR" to specify
      a non-default Classpath install dir (the default is /usr/local/classpath).
   3. ./configure && make && make install
 
