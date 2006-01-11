@@ -15,58 +15,26 @@ If you want to play with the complete JCVM, please visit http://jcvm.sf.net/
 
 To build JCHEVM, first understand that you have checked out the Subversion
 repository, which is not the same thing as a ready to build distribution
-tarball. To build JCHEVM, a distribution tarball must be created first.
-This causes some files that are required for the build (but not checked
-into the Subversion repository) to be generated. However, once you've
-gone through this process the first time, you will then also be able to
-peform subsequent builds and installs from this, the Subversion-checked-out
-directory (i.e., it's a bit of a bootstrap problem).
+tarball. To build JCHEVM, some files that are part of the distribution and
+required for the build (but not checked into the Subversion repository)
+must be generated first. However, once you've gone through this process
+the first time, you will then also be able to peform subsequent builds
+and installs from this, the Subversion-checked-out directory (i.e.,
+it's a bit of a bootstrap problem).
 
-To create the distribution tarball and build JCHEVM:
+To make a checked out version of JCHEVM buildable:
 
-  0. You'll need autoconf, automake, autoheader, and libtool installed first.
+  0. You'll need autoconf, automake, and libtool installed first.
   1. Follow INSTALL step 0 & 1 to install libpopt, libz, and Classpath.
-  2. Run "sh etc/makedist.sh" as root; you may add "--with-classpath=DIR"
-     to specify a non-default Classpath installation directory (the default
-	 is /usr/local/classpath).
-  3. Some root-owned files will be created; you might want to revert to
-     your normal user ownership with "chown -R username ."
-  4. Unpack the resulting tarball jchevm-X.Y.tar.gz and cd into it.
-  5. ./configure && make && make install
+  2. Run "sh etc/regen.sh"; you may add "--with-classpath=DIR" to specify
+     a non-default Classpath install dir (the default is /usr/local/classpath).
+  3. ./configure && make && make install
 
 The default installation directory is /usr/local (change via --prefix flag
 to configure); on Linux you may need to run "ldconfig /usr/local/lib".
 
 Alternately, if you can get someone else to build the distribution tarball
-for then you and skip steps 0-3. This of course would be the usual case for
+for then you and skip steps 0-2. This of course would be the usual case for
 average users (rather than developers).
 
--------------------------------------------------------------------------------
-
-Here's a posting describing some of the parts of JCVM that may
-be useful to reuse in Harmony:
-
-    http://mail-archives.apache.org/mod_mbox/incubator-harmony-dev/200505.mbox/%3c4288F308.9000502@dellroad.org%3e
-
--------------------------------------------------------------------------------
-
-Here's how this tarball was created:
-
-1. cvs -d :ext:yournamehere@cvs.sourceforge.net:/cvsroot/jcvm checkout jcvm
-   When: Sun Sep 25 13:28:25 CDT 2005
-
-2. Substituted the Apache copyright header (COPYRIGHT.Apache)
-   into all source files.
-
-3. Removed non-original or irrelevant stuff:
-
-	java/gnu subdirectory
-	java/java subdirectory
-	soot/ subdirectory
-	website/ subdirectory
-	include/queue.h
-
-4. Added LICENSE.Apache
-
--Archie Cobbs
-
+$Id$

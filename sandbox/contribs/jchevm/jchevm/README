@@ -1,30 +1,15 @@
 
-Welcome to JC!
+Welcome to JC Harmony Edition Virtual Machine!
 
-JC is a Java virtual machine implementation that converts class files
-into C source files using the Soot Java bytecode analysis framework,
-compiles them with GCC, and loads them using a built-in ELF object
-file loader. JC utilizes the GNU Classpath class library and provides
-a fairly complete Java runtime including sophisticated optimizations to
-increase runtime performance. JC also includes a bytecode interpreter,
-and supports execution in either or mixed modes.
+JC Harmony Edition is the Apache Harmony version of the JC Virtual Machine,
+which is described here: http://jcvm.sourceforge.net/
 
-Although JC has good interpreter performance, JC doesn't try to be
-fast in every situation. Instead, JC focuses on this question: how
-fast can we go if we know some or all of the class files ahead of
-time? The answer is: very fast! Optimizations that are just too
-complex and expensive to perform at runtime are instead performed
-at code generation time. JC's code generator is written in Java,
-using the powerful Soot bytecode analysis framework. When combined
-with the proven power of GCC's C optimizer the results are impressive.
-As an additional benefit, JC contains very little architecture-specific
-code and is highly portable.
+JC Harmony Edition does not perform Java-to-C code generation, currently
+executing only in interpreter mode.
 
 See INSTALL for installation instructions.
 
 Once installed, documentation is available via the jc(1) man page
 and the JC manual in info(1), and HTML form under $prefix/share/jc/doc.
 
-Visit the JC home page at http://jcvm.sourceforge.net/
-
-$Id: README,v 1.5 2005/05/14 21:42:18 archiecobbs Exp $
+$Id$
