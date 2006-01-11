@@ -47,7 +47,7 @@ HFILES=		gnu_classpath_VMStackWalker.h \
 
 all-local:		${HFILES}
 
-clean:
+distclean-local:
 		rm -f ${HFILES}
 
 gnu_classpath_VMStackWalker.h:
