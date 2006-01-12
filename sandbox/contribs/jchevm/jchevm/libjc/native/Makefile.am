@@ -25,8 +25,7 @@ EXTRA_DIST=	gnu_classpath_VMStackWalker.c \
 ##
 
 JAVAH=		../../tools/jcjavah/jcjavah
-JAVAH_CMD=	$(JAVAH) -classpath $(top_srcdir)/java/jc.zip:$(cpdir)/glibj.zip \
-		    -d $(srcdir)
+JAVAH_CMD=	$(JAVAH) -classpath $(top_srcdir)/java/jc.zip:$(cpdir)/glibj.zip
 
 HFILES=		gnu_classpath_VMStackWalker.h \
 		gnu_classpath_VMSystemProperties.h \
