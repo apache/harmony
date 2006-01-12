@@ -38,7 +38,7 @@ limitations under the License.
 @c Output title page
 @titlepage
 @title JC Harmony Edition Virtual Machine Documentation
-@author Archie L. Cobbs @email{archie@freebsd.org}
+@author Archie L. Cobbs @email{archie@@freebsd.org}
 
 @c Output copyright page
 @page
@@ -47,14 +47,12 @@ limitations under the License.
 @end titlepage
 
 @c Notice until updated
-@strong{
-*** NOTE *** *** NOTE *** *** NOTE *** *** NOTE *** *** NOTE *** 
+@strong{*** NOTE *** *** NOTE *** *** NOTE *** *** NOTE *** *** NOTE ***}
 
-This is the manual for the original JCVM. It has not yet been updated
+@strong{This is the manual for the original JCVM. It has not yet been updated
 for the JC Harmony Edition VM, which is an interpreter-only version of JC.
 However, all of the information not related to JC's code generation,
-executable mode execution, etc. should still be accurate.
-}
+executable mode execution, etc. should still be accurate.}
 
 @c Output table of contents
 @contents
