@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.5 2005/04/23 22:35:16 archiecobbs Exp $
+## $Id$
 
 info_TEXINFOS=	jc.texi
 
@@ -15,6 +15,9 @@ jc.1:		Makefile $(srcdir)/jc.1.in
 	    $(srcdir)/jc.1.in > jc.1
 
 EXTRA_DIST=	jc.html jc.1.in
+
+clean-local:
+	rm -f jc.1
 
 SUFFIXES=	.info .html
 
