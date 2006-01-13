@@ -58,44 +58,6 @@
     } while (0)
 
 /*
- * During bootstrap, the throwing of internal exceptions caused by missing
- * object files on which certain core classes depend for class resolution
- * can lead to infinite loops and/or ExceptionInInitializerErrors during
- * the initialization of java.lang.Class. In other words, "Avoid all
- * exceptions until Class.<clinit> finishes". So we preemptively create
- * and load these object files here. This list pretty much has to be
- * cobbled together by hand based on trial & error and is highly dependent
- * on the Class.<clinit> initialization sequence.
- */
-static const char *const _jc_bootstrap_types[] = {
-	"java/io/FileInputStream",
-	"java/lang/ClassLoader",
-	"java/lang/Math",
-	"java/lang/Runtime",
-	"java/lang/String",
-	"java/lang/StringBuffer",
-	"java/lang/System",
-	"java/lang/VMRuntime",
-	"java/lang/VMString",
-	"java/lang/VMSystem",
-	"java/lang/VMClassLoader",
-	"java/lang/ref/WeakReference",
-	"java/security/AllPermission",
-	"java/security/ProtectionDomain",
-	"java/util/Collections",
-	"java/util/Hashtable$HashIterator",
-	"java/util/Map",
-	"java/util/Properties",
-	"java/util/StringTokenizer",
-	"java/util/Vector",
-	"java/util/WeakHashMap",
-	"java/util/WeakHashMap$WeakEntrySet",
-	"java/util/zip/ZipFile",
-};
-#define NUM_BOOTSTRAP_TYPES						\
-	(sizeof(_jc_bootstrap_types) / sizeof(*_jc_bootstrap_types))
-
-/*
  * Bootstrap Java classes
  */
 jint
@@ -168,13 +130,6 @@ _jc_bootstrap_classes(_jc_env *env)
 	RESOLVE_FIELD(VMThrowable, vmdata, "Ljava/lang/Object;", 0);
 	for (i = 0; i < _JC_VMEXCEPTION_MAX; i++)
 		BOOTSTRAP_TYPE(_jc_vmex_names[i], vmex[i]);
-
-	/* Load more types we need for bootstrapping */
-	for (i = 0; i < NUM_BOOTSTRAP_TYPES; i++) {
-		if (_jc_load_type(env, vm->boot.loader,
-		    _jc_bootstrap_types[i]) == NULL)
-			goto fail;
-	}
 
 	/* Load more special classes */
 	BOOTSTRAP_TYPE(long_ptr ?
