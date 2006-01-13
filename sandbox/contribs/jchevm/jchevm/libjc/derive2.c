@@ -295,6 +295,8 @@ fail:
 
 /*
  * Derive fields.
+ *
+ * If unsuccessful an exception is stored.
  */
 static jint
 _jc_derive_fields(_jc_env *env, _jc_type *type)
@@ -344,6 +346,8 @@ _jc_derive_fields(_jc_env *env, _jc_type *type)
 
 /*
  * Derive methods.
+ *
+ * If unsuccessful an exception is stored.
  */
 static jint
 _jc_derive_methods(_jc_env *env, _jc_type *type)

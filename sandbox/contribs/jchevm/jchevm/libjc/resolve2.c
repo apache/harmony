@@ -118,6 +118,8 @@ fail:
 
 /*
  * Resolve fields.
+ *
+ * If unsuccessful, an exception is posted.
  */
 static jint
 _jc_resolve_fields(_jc_env *env, _jc_type *type, _jc_resolve_info *info)
@@ -282,6 +284,8 @@ fail:
 
 /*
  * Resolve methods.
+ *
+ * If unsuccessful, an exception is posted.
  */
 static jint
 _jc_resolve_methods(_jc_env *env, _jc_type *const type, _jc_resolve_info *info)
@@ -319,10 +323,8 @@ _jc_resolve_methods(_jc_env *env, _jc_type *const type, _jc_resolve_info *info)
 		    cmethod->exceptions->num_exceptions : 0;
 
 		/* Resolve method parameter types */
-		if (_jc_resolve_signature(env, method, info) == -1) {
-			_jc_post_exception_info(env);
+		if (_jc_resolve_signature(env, method, info) == -1)
 			return JNI_ERR;
-		}
 
 		/* Determine parameter count with long/double counted twice */
 		_JC_ASSERT(method->code.num_params2 == 0);
@@ -374,27 +376,21 @@ done:
  * if info != NULL, also resolves and fills in method->param_types and
  * method->return_type.
  *
- * Returns -1 and stores an exception on failure.
+ * Returns -1 and stores an exception (if info == NULL) or posts an
+ * exception (if info != NULL) on failure.
  */
 int
 _jc_resolve_signature(_jc_env *env, _jc_method *method, _jc_resolve_info *info)
 {
 	_jc_jvm *const vm = env->vm;
-	jboolean resolve;
+	const jboolean resolve = info != NULL;
 	int done = 0;
 	const char *s;
 	int i;
 
-	/* Should we resolve types? */
-	resolve = (info != NULL);
-
 	/* Sanity check signature */
-	if (*method->signature != '(') {
-invalid:	_jc_post_exception_msg(env, _JC_ClassFormatError,
-		    "invalid signature `%s' for %s.%s", method->signature,
-		    method->class->name, method->name);
-		return -1;
-	}
+	if (*method->signature != '(')
+		goto invalid;
 
 	/* Parse parameters */
 	for (i = 0, s = method->signature + 1; !done; i++) {
@@ -443,7 +439,7 @@ invalid:	_jc_post_exception_msg(env, _JC_ClassFormatError,
 				    _jc_load_type2(env, loader,
 					s + 1, end - s - 2);
 				if (type == NULL)
-					return -1;
+					return -1;	/* exception posted */
 			}
 			s = end;
 			break;
@@ -459,10 +455,8 @@ invalid:	_jc_post_exception_msg(env, _JC_ClassFormatError,
 			else
 				method->return_type = type;
 			if (_jc_resolve_add_loader_ref(env,
-			    info, type->loader) != JNI_OK) {
-				_jc_post_exception_info(env);
-				return -1;
-			}
+			    info, type->loader) != JNI_OK)
+				goto fail;
 		}
 
 		/* Set param (or return value) ptype */
@@ -476,6 +470,18 @@ invalid:	_jc_post_exception_msg(env, _JC_ClassFormatError,
 
 	/* Done */
 	return i - 1;
+
+invalid:
+	/* Method signature is invalid */
+	_JC_EX_STORE(env, ClassFormatError,
+	    "invalid signature `%s' for %s.%s", method->signature,
+	    method->class->name, method->name);
+
+fail:
+	/* Post exception if resolving and return failure */
+	if (resolve)
+		_jc_post_exception_info(env);
+	return -1;
 }
 
 /*
