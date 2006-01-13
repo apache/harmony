@@ -9,6 +9,9 @@ EXTRA_DIST=		gdb.userdef makedist.sh jc.xpm \
 
 rpms:			classpath-rpm jchevm-rpm
 
+distclean-local:
+	rm -rf rpm
+
 classpath-rpm:		rpmdirs
 	DIR=`pwd`; \
 	rpmbuild -bb --clean --define "_topdir $${DIR}/rpm" classpath.spec
