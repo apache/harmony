@@ -16,9 +16,9 @@ Installation instructions for the JC virtual machine:
 	Debian: zlib1g-dev
 	RPM: zlib
 
-1. Install classpath-0.19. You can get it from
+1. Install classpath-0.20. You can get it from
 
-	ftp://ftp.gnu.org/pub/gnu/classpath/classpath-0.19.tar.gz
+	ftp://ftp.gnu.org/pub/gnu/classpath/classpath-0.20.tar.gz
 	FreeBSD: java/classpath
 	Debian: classpath
 

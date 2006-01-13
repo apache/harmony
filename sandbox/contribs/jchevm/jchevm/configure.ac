@@ -12,7 +12,7 @@ AC_PROG_MAKE_SET
 
 # Definitions
 AC_SUBST(LIBRARY_VERSION, [1:1:0])
-AC_SUBST(CLASSPATH_VERSION, [0.19])
+AC_SUBST(CLASSPATH_VERSION, [0.20])
 
 [JC_CFLAGS='-g -O3 -pipe -Wall -Waggregate-return -Wcast-align -Wchar-subscripts -Wcomment -Wformat -Wimplicit -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wno-long-long -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wswitch -Wtrigraphs -Wuninitialized -Wunused -Wwrite-strings']
 AC_SUBST(JC_CFLAGS)
