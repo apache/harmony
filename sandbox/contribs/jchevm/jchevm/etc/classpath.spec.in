@@ -1,19 +1,28 @@
-# $Id: classpath.spec.in,v 1.1 2005/03/20 20:13:57 archiecobbs Exp $
+# $Id$
 
 %define version_num @CLASSPATH_VERSION@
 %define release_num 1
 
-Summary: GNU Classpath Java class libraries
-Name: classpath
-Version: %{version_num}
-Release: %{release_num}
-Group: Development/Tools
-Copyright: GPL+exception
-URL: http://www.classpath.org/
-BuildRoot: %{_tmppath}/%{name}-root
-BuildRequires: jikes, zip
-Packager: Archie Cobbs <archie@dellroad.org>
-Source: ftp://ftp.gnu.org/pub/gnu/classpath/classpath-%{version_num}.tar.gz
+Summary:	GNU Classpath Java class libraries
+Name:		classpath
+Version:	%{version_num}
+Release:	%{release_num}
+Group	:	Development/Tools
+Copyright:	GPL+exception
+URL:		http://www.classpath.org/
+BuildRoot:	%{_tmppath}/%{name}-root
+BuildRequires:	jikes >= 1.22
+BuildRequires:	zip
+BuildRequires:	gtk2-devel >= 2.4
+BuildRequires:	libart_lgpl
+BuildRequires:	cairo >= 0.5.0
+BuildRequires:	pango-devel
+BuildRequires:	freetype2-devel
+BuildRequires:	libxml2 >= 2.6.8
+BuildRequires:	libxslt >= 1.1.11
+BuildRequires:	alsa-devel
+Packager:	Archie Cobbs <archie@dellroad.org>
+Source:		ftp://ftp.gnu.org/pub/gnu/classpath/classpath-%{version_num}.tar.gz
 
 %description
 GNU Classpath, Essential Libraries for Java, is a GNU project to create
@@ -25,12 +34,7 @@ for the Java programming language.
 
 %build
 pushd ${RPM_BUILD_DIR}/classpath-%{version_num}
-# Determine if we can build the GTK stuff
-GTKPEER='disable'
-if pkg-config --exists 'gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 libart-2.0 gdk-pixbuf-2.0'; then
-    GTKPEER='enable'
-fi
-%configure --with-jikes --enable-jni --${GTKPEER}-gtk-peer
+%configure --with-jikes --enable-jni
 make
 popd
 
@@ -55,12 +59,12 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS COPYING LICENSE README THANKYOU
+%doc AUTHORS COPYING LICENSE README THANKYOU HACKING TODO BUGS
 %{_libdir}/classpath
 %dir %{_datadir}/classpath
 %{_libdir}/security/classpath.security
 %{_datadir}/classpath/glibj.zip
-%doc %{_datadir}/classpath/api
+%{_includedir}/*
 %doc %{_datadir}/classpath/examples
 %doc %{_infodir}/*
 

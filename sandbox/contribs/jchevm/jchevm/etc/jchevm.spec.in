@@ -1,0 +1,57 @@
+# $Id$
+
+%define version_num @VERSION@
+%define release_num 1
+%define classpath_ver @CLASSPATH_VERSION@
+%define classpath_home /usr/local/classpath
+
+Summary:	The JC Virtual Machine
+Name:		jchevm
+Version:	%{version_num}
+Release:	%{release_num}
+Group:		Development/Tools
+Copyright:	Apache
+URL:		http://incubator.apache.org/harmony/
+BuildRoot:	%{_tmppath}/%{name}-root
+Icon:		jc.xpm
+Packager:	Archie Cobbs <archie@dellroad.org>
+Source:		http://incubator.apache.org/harmony/jchevm-%{version_num}.tar.gz
+ExclusiveArch:	i386 i486 i586 i686
+Requires:	classpath >= %{classpath_ver}
+
+%description
+JC Harmony Edition is a Java virtual machine implementation that
+performs fast bytecode interpretation and uses GNU Classpath as
+its class library.
+
+%prep
+%setup -n %{name}-%{version_num}
+
+%build
+%configure --with-classpath=%{classpath_home}
+make
+
+%install
+%{makeinstall}
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%clean
+rm -rf ${RPM_BUILD_ROOT}
+
+%files
+%defattr(-,root,root)
+%doc AUTHORS LICENSE README
+%{_bindir}/cfdump
+%{_bindir}/jc
+%{_bindir}/jcjavah
+%{_datadir}/jc
+%docdir %{_datadir}/jc/doc
+%{_includedir}/jc
+%{_libdir}/libjc.*
+%config %{_sysconfdir}/jc.conf
+%doc %{_mandir}/man1/jc.1.gz
+%doc %{_infodir}/jc.info*
+
