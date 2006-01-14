@@ -22,7 +22,7 @@
 
 /* List of fixed default properties */
 static const _jc_property _jc_fixed_properties[] = {
-{ "java.version",			"1.4" },
+{ "java.version",			"1.4.2" },
 { "java.vendor",			"JC virtual machine project" },
 { "java.vendor.url",			"http://jcvm.sourceforge.net/" },
 { "java.home",				_AC_DATADIR "/jc" },
