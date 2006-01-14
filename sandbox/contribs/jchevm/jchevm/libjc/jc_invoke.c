@@ -136,7 +136,8 @@ static const struct flag_subst jdk_flags[] = {
 };
 
 /* Internal functions */
-static int	jc_run(JNIEnv *env, jboolean jar, int ac, const char **av);
+static int	jc_run(JNIEnv *env, const char *main_class,
+			int ac, const char **av);
 static int	jc_read_options(_jc_printer *printer, poptContext pctx,
 			const char *path);
 static int	jc_process_verbose(JavaVMInitArgs *args,
@@ -164,13 +165,15 @@ _jc_invoke(int orig_ac, const char **orig_av,
 	int rtn = _JC_RETURN_ERROR;
 	poptContext pctx = NULL;
 	jboolean jar = JNI_FALSE;
+	const char *classpath = ".";
+	const char *main_class;
 	const char *home_dir;
 	JavaVM *vm = NULL;
 	JNIEnv *env = NULL;
 	const char **params;
-	int got_classpath = 0;
 	char **av = NULL;
 	int num_params;
+	char *temp;
 	void *envp;
 	int ac = 0;
 	int op;
@@ -348,8 +351,8 @@ _jc_invoke(int orig_ac, const char **orig_av,
 
 		switch (op) {
 		case OPT_CLASSPATH:
-			got_classpath = 1;
-			/* FALLTHROUGH */
+			classpath = value;
+			break;
 		case OPT_LIBRARYPATH:
 		case OPT_BOOTCLASSPATH:
 		    {
@@ -446,13 +449,6 @@ _jc_invoke(int orig_ac, const char **orig_av,
 		goto usage;
 	}
 
-	/* If no classpath was explicitly specified, use "." as a default */
-	if (!got_classpath) {
-		if (jc_add_vm_property(&vm_args, printer, JAVA_CLASS_PATH,
-		    sizeof(JAVA_CLASS_PATH) - 1, ".") != JNI_OK)
-			goto done;
-	}
-
 	/* Get class name and parameters */
 	params = poptGetArgs(pctx);
 	for (num_params = 0; params != NULL
@@ -461,6 +457,27 @@ _jc_invoke(int orig_ac, const char **orig_av,
 		poptPrintHelp(pctx, stderr, 0);
 		goto done;
 	}
+
+	/* For -jar, prepend JAR file to classpath */
+	if (jar) {
+		if ((temp = alloca(strlen(params[0]) + 1
+		    + strlen(classpath) + 1)) == NULL) {
+			jc_print(printer, stderr,
+			    "jc: %s: %s\n", "alloca", strerror(errno));
+			goto done;
+		}
+		sprintf(temp, "%s:%s", params[0], classpath);
+		classpath = temp;
+		main_class = JC_JAR_LOADER_CLASS;
+	} else {
+		main_class = *params++;
+		num_params--;
+	}
+
+	/* Set classpath property */
+	if (jc_add_vm_property(&vm_args, printer, JAVA_CLASS_PATH,
+	    sizeof(JAVA_CLASS_PATH) - 1, classpath) != JNI_OK)
+		goto done;
 
 	/* Create new VM */
 	if (JNI_CreateJavaVM(&vm, &envp, &vm_args) != JNI_OK) {
@@ -476,8 +493,8 @@ _jc_invoke(int orig_ac, const char **orig_av,
 	vm_args.options = NULL;
 
 	/* Run program */
-	if ((rtn = jc_run(env, jar, num_params, params))
-	    == _JC_RETURN_EXCEPTION)
+	if ((rtn = jc_run(env, main_class,
+	    num_params, params)) == _JC_RETURN_EXCEPTION)
 		(*env)->ExceptionDescribe(env);
 
 	/* Free parsing context */
@@ -507,24 +524,14 @@ usage:
  * Run the Java program.
  */
 static int
-jc_run(JNIEnv *env, jboolean jar, int ac, const char **av)
+jc_run(JNIEnv *env, const char *main_class, int ac, const char **av)
 {
-	const char *main_class;
 	jclass string_class;
 	jarray param_array;
 	jmethodID method;
 	jclass class;
 	char *buf;
 	int i;
-
-	/* Get main class and params */
-	if (jar)
-		main_class = JC_JAR_LOADER_CLASS;
-	else {
-		main_class = av[0];
-		av++;
-		ac--;
-	}
 
 	/* Build String[] array of parameters */
 	if ((string_class = (*env)->FindClass(env, "java/lang/String")) == NULL)

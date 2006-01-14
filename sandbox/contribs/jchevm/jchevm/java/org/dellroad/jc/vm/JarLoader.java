@@ -15,7 +15,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
-// $Id: JarLoader.java,v 1.1.1.1 2004/02/20 05:15:26 archiecobbs Exp $
+// $Id$
 //
 
 package org.dellroad.jc.vm;
@@ -73,12 +73,6 @@ public class JarLoader {
 			    + Attributes.Name.MAIN_CLASS + "'' attribute"
 			    + " found in manifest of ``" + jarfile + "''");
 		}
-
-		// Prepend JAR file to class path
-		System.setProperty("java.class.path",
-		    "file://" + jarfile.getAbsolutePath()
-		      + System.getProperty("path.separator", ":")
-		      + System.getProperty("java.class.path", "."));
 
 		// Find the main class
 		Class cl;
