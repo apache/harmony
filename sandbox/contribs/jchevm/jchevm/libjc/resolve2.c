@@ -801,9 +801,23 @@ _jc_resolve_bytecode(_jc_env *env, _jc_method *const method,
 				goto post_fail;
 			}
 
-			/* Handle "Miranda methods" (punt) */
+			/*
+			 * Handle mismatch of the opcode and the interfaceness
+			 * of the method being invoked.
+			 *
+			 * The first case is "Miranda methods", a normal
+			 * invocation of an interface method. This happens when
+			 * an abstract class implements an interface but not
+			 * all of the interface's methods.
+			 *
+			 * The second case is INVOKEINTERFACE on a method of
+			 * java.lang.Object. This only happens when an interface
+			 * declares one of these methods (e.g., hashCode()).
+			 */
 			if (_JC_ACC_TEST(imethod->class, INTERFACE))
 				opcode = _JC_invokeinterface;
+			else if (opcode == _JC_invokeinterface)
+			    	opcode = _JC_invokevirtual;
 
 			/* Check static-ness and virtual-ness */
 			if (((opcode == _JC_invokestatic)
