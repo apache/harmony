@@ -90,7 +90,6 @@ struct _jc_splay_tree {
 
 /* Information maintained when resolving classes */
 struct _jc_resolve_info {
-	_jc_type		*type;
 	_jc_class_loader	*loader;
 	_jc_object		**implicit_refs;
 	int			num_implicit_refs;

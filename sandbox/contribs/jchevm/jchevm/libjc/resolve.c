@@ -55,7 +55,6 @@ _jc_resolve_type(_jc_env *env, _jc_type *type)
 
 	/* Initialize resolve info */
 	memset(&info, 0, sizeof(info));
-	info.type = type;
 	info.loader = loader;
 
 	/* Lock class object (except during initial bootstrap) */
