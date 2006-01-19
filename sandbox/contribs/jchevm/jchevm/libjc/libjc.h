@@ -89,7 +89,7 @@ extern void		_jc_destroy_loader(_jc_jvm *vm,
 				_jc_class_loader **loaderp);
 extern void		_jc_loader_wait(_jc_env *env, _jc_class_loader *loader);
 extern jint		_jc_merge_implicit_refs(_jc_env *env,
-				_jc_resolve_info *info);
+				const _jc_resolve_info *info);
 
 /* cl_alloc.c */
 extern void		_jc_uni_alloc_init(_jc_uni_mem *uni, int min_pages,

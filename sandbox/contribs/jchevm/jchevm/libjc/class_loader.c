@@ -274,26 +274,37 @@ _jc_loader_wait(_jc_env *env, _jc_class_loader *loader)
  * If unsuccessful an exception is stored.
  */
 jint
-_jc_merge_implicit_refs(_jc_env *env, _jc_resolve_info *info)
+_jc_merge_implicit_refs(_jc_env *env, const _jc_resolve_info *info)
 {
 	_jc_class_loader *const loader = info->loader;
-	_jc_object **refs = info->implicit_refs;
-	int num_refs = info->num_implicit_refs;
 	_jc_object **new_implicit_refs;
-	int i0;
-	int i;
-	int j;
+	_jc_object **refs1;
+	_jc_object **refs2;
+	int pos;
+	int i1;
+	int i2;
 
 	/* Avoid realloc() of size zero */
-	if (num_refs == 0)
+	if (info->num_implicit_refs == 0)
 		return JNI_OK;
+
+#ifndef NDEBUG
+	for (pos = 1; pos < info->num_implicit_refs; pos++)
+		_JC_ASSERT(info->implicit_refs[pos] > info->implicit_refs[pos - 1]);
+#endif
 
 	/* Lock loader */
 	_JC_MUTEX_LOCK(env, loader->mutex);
 
+#ifndef NDEBUG
+	/* Sanity check */
+	for (pos = 0; pos < loader->num_implicit_refs; pos++)
+		_JC_ASSERT(loader->implicit_refs[pos] > loader->implicit_refs[pos - 1]);
+#endif
+
 	/* Extend loader's implicit reference array */
-	if ((new_implicit_refs = _jc_vm_realloc(env,
-	    loader->implicit_refs, (loader->num_implicit_refs + num_refs)
+	if ((new_implicit_refs = _jc_vm_realloc(env, loader->implicit_refs,
+	    (loader->num_implicit_refs + info->num_implicit_refs)
 	      * sizeof(*loader->implicit_refs))) == NULL) {
 		_JC_MUTEX_UNLOCK(env, loader->mutex);
 		return JNI_ERR;
@@ -301,22 +312,41 @@ _jc_merge_implicit_refs(_jc_env *env, _jc_resolve_info *info)
 	loader->implicit_refs = new_implicit_refs;
 
 	/* Sortedly merge in new refs, working backwards */
-	i = loader->num_implicit_refs;
-	for (j = num_refs; j > 0; j--) {
-		for (i0 = i; i > 0
-		    && loader->implicit_refs[i - 1] > refs[j - 1]; i--);
-		if (i > 0 && loader->implicit_refs[i - 1] == refs[j - 1]) {
-			num_refs--;
-			continue;
+	refs1 = info->implicit_refs;
+	refs2 = loader->implicit_refs;
+	i1 = info->num_implicit_refs;
+	i2 = loader->num_implicit_refs;
+	loader->num_implicit_refs = pos = i1 + i2;
+	while (i1 > 0 && i2 > 0) {
+		if (refs1[i1 - 1] > refs2[i2 - 1])
+			refs2[--pos] = refs1[--i1];
+		else if (refs1[i1 - 1] < refs2[i2 - 1])
+			refs2[--pos] = refs2[--i2];
+		else {
+			refs2[--pos] = refs1[--i1];
+			i2--;		/* duplicate */
 		}
-		memmove(loader->implicit_refs + i + j,
-		    loader->implicit_refs + i,
-		    (i0 - i) * sizeof(*loader->implicit_refs));
-		loader->implicit_refs[i + j - 1] = refs[j - 1];
 	}
 
-	/* Update array length */
-	loader->num_implicit_refs += num_refs;
+	/* Copy over remaining refs from the "info" list */
+	if (i1 > 0) {
+		memcpy(refs2, refs1, i1 * sizeof(*refs2));
+		i2 = i1;
+	}
+
+	/* Shift refs down to squeeze out empty space */
+	if (pos > i2) {
+		memmove(refs2 + i2, refs2 + pos,
+		     (loader->num_implicit_refs - pos)
+		       * sizeof(*refs2));
+		loader->num_implicit_refs -= (pos - i2);
+	}
+
+#ifndef NDEBUG
+	/* Sanity check */
+	for (pos = 1; pos < loader->num_implicit_refs; pos++)
+		_JC_ASSERT(loader->implicit_refs[pos] > loader->implicit_refs[pos - 1]);
+#endif
 
 	/* Unlock loader */
 	_JC_MUTEX_UNLOCK(env, loader->mutex);
