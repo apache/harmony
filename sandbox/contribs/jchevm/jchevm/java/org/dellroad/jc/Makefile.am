@@ -1,4 +1,0 @@
-## $Id$
-
-SUBDIRS=	vm
-
