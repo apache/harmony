@@ -427,7 +427,6 @@ _jc_heap_block_size(_jc_jvm *vm, size_t size)
 #ifndef NDEBUG
 
 /* Internal functions */
-static void	_jc_heap_check_object(_jc_jvm *vm, _jc_object *obj, int bsi);
 static void	_jc_heap_check_block(_jc_jvm *vm, _jc_word *block,
 			char *page, int bsi);
 static void	_jc_heap_check_alloc(_jc_jvm *vm, _jc_object *obj);
@@ -667,7 +666,7 @@ _jc_heap_check_block(_jc_jvm *vm, _jc_word *block, char *page, int bsi)
 /*
  * Sanity check one object.
  */
-static void
+void
 _jc_heap_check_object(_jc_jvm *vm, _jc_object *obj, int recurse)
 {
 	_jc_heap *const heap = &vm->heap;

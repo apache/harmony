@@ -172,6 +172,8 @@ extern void		*_jc_heap_alloc_pages(_jc_env *env, int npages);
 extern int		_jc_heap_block_size(_jc_jvm *vm, size_t size);
 #ifndef NDEBUG
 extern void		_jc_heap_check(_jc_jvm *vm);
+extern void		_jc_heap_check_object(_jc_jvm *vm, _jc_object *obj,
+				int recurse);
 #endif
 
 /* init.c */
