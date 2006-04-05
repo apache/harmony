@@ -113,14 +113,18 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvmclass, h,
 /* java.lang.IncompatibleClasSchangeError and its subclasses */
 #define JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR \
                       "java/lang/IncompatibleClassChangeError"
-#define JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR \
-                      "NosuchFieldError"
-#define JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR \
-                      "NoSuchMethodError"
-#define JVMCLASS_JAVA_LANG_INSTANTIATIONERROR \
-                      "InstantiationError"
+#define JVMCLASS_JAVA_LANG_ABSTRACTMETHODERROR \
+                      "java/lang/AbstractMethodError"
 #define JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR \
-                      "IllegalAccessError"
+                      "java/lang/IllegalAccessError"
+#define JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR \
+                      "java/lang/NosuchFieldError"
+#define JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR \
+                      "java/lang/NoSuchMethodError"
+#define JVMCLASS_JAVA_LANG_INSTANTIATIONERROR \
+                      "java/lang/InstantiationError"
+#define JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR \
+                      "java/lang/IllegalAccessError"
 
 /* java.lang.VirtualMachineError and its subclasses */
 #define JVMCLASS_JAVA_LANG_VIRTUALMACHINEERROR \
