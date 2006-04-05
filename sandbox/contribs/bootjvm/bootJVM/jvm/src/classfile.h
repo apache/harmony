@@ -931,6 +931,10 @@ typedef struct
      * @brief Local implementation late binding extensions for
      * @link #CONSTANT_Methodref_info CONSTANT_Methodref_info@endlink.
      *
+     * Notice that the contents of this binding includes @e everything
+     * needed to load a @link #jvm_pc jvm_pc@endlink structure plus
+     * a related native method ordinal, if any.
+     *
      * Uses LOCAL_ as a prefix to signify an item that is @e not
      * part of the JVM spec itself, but an implementation detail.
      *
