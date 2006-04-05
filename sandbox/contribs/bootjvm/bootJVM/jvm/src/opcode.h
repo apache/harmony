@@ -336,6 +336,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(opcode, h,
 #define OPCODE_FE_IMPDEP1         0xfe /**< 254 (0xfe) impdep1 */
 #define OPCODE_FF_IMPDEP2         0xff /**< 255 (0xff) impdep2 */
 
+#define OPCODE_COUNT              1 + OPCODE_FF_IMPDEP2 /**< 256
+                                                        total opcodes */
+
 /*@} */ /* End of grouped definitions */
 
 
