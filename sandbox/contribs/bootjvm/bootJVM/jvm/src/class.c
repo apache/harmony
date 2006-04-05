@@ -98,7 +98,7 @@ rvoid class_static_setup(jvm_class_index clsidx)
      * Start out with no array allocation and no array dimensions
      */
     CLASS(clsidx).arraydims = LOCAL_CONSTANT_NO_ARRAY_DIMS;
-    CLASS(clsidx).arraylength = (jint *) rnull;
+    CLASS(clsidx).arraylength = 0;
     CLASS(clsidx).lower_dim_array = jvm_class_index_null;
 
     /* Start out with no object hash */
@@ -162,7 +162,14 @@ rvoid class_init()
 
     pjvm->class_java_lang_Object = jvm_class_index_null;
 
+    pjvm->class_primative_byte   = jvm_class_index_null;
     pjvm->class_primative_char   = jvm_class_index_null;
+    pjvm->class_primative_double = jvm_class_index_null;
+    pjvm->class_primative_float  = jvm_class_index_null;
+    pjvm->class_primative_int    = jvm_class_index_null;
+    pjvm->class_primative_long   = jvm_class_index_null;
+    pjvm->class_primative_short  = jvm_class_index_null;
+    pjvm->class_primative_boolean= jvm_class_index_null;
 
     pjvm->class_java_lang_Class  = jvm_class_index_null;
 
@@ -459,7 +466,7 @@ jvm_class_index class_static_new(rushort          special_cls,
         CLASS(clsidx).status |= CLASS_STATUS_ARRAY;
 
         CLASS(clsidx).arraydims         = arraydims;
-        CLASS(clsidx).arraylength       = arraylength;
+        CLASS(clsidx).arraylength       = arraylength[0];
         CLASS(clsidx).lower_dim_array   = lower_dim_array;
 
         /*!
@@ -1160,8 +1167,8 @@ jvm_class_index
     {
         rchar *pnextdim = utf_utf2prchar(PTR_THIS_CP_Utf8(clsname));
 
-        /*
-         * WARNING! RECURSIVE CALL! This call goes 1 level per
+        /*!
+         * @warning RECURSIVE CALL! This call goes 1 level per
          *          array dimension.
          */
         rc = class_load_from_prchar(&pnextdim[1 * sizeof(u1)],
@@ -1505,6 +1512,16 @@ jvm_class_index
  *        standard industry file naming practices, and/or (b) that
  *        no array processing happens in the lower levels.
  *
+ * @todo  HARMONY-6-jvm-class.c-20 Make a version of this function
+ *        that can accept a UTF8 class name, call class_load_from_utf(),
+ *        and call a common function that it shares with the existing
+ *        function that contains all further logic.  This will run
+ *        faster than converting UTF strings to (rchar *) and calling
+ *        the existing function.  This is a similar approach to what
+ *        is done in @link jvm/src/thread.c thread.c@endlink to create
+ *        a normal thread versus a system thread.
+ *        
+ *
  */
 
 
@@ -1734,7 +1751,8 @@ static
          switch (cfattrib_atr2enum(pcfs,
                                    pcfs->fields[fldidx]
                                          ->attributes[atridx]
-                                           ->ai.attribute_name_index))
+                                           ->ai
+                                             .attribute_name_index))
          {
              case LOCAL_SIGNATURE_ATTRIBUTE:
                  /*! 
@@ -1788,7 +1806,7 @@ static
                          pu4 = &PTR_CP_ENTRY_FLOAT(
                                     pcfs,
                                     constantvalue_index)
-                                ->bytes;
+                                  ->bytes;
 
                          valf = (jfloat) (jint) *pu4;
 
@@ -1831,7 +1849,7 @@ static
                          pu4 = &PTR_CP_ENTRY_INTEGER(
                                     pcfs,
                                     constantvalue_index)
-                                ->bytes;
+                                  ->bytes;
 
                          vali = (jint) *pu4;
 
