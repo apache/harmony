@@ -364,8 +364,7 @@ static jbyte utf_s1_s2_strncmp(u1 *s1, int l1, u1 *s2, int l2)
 
 
 /*!
- * @brief Compare two UTF strings from @c @b constant_pool as
- * @b s1 minus @b s2
+ * @brief Compare two UTF strings as @b s1 minus @b s2
  *
  *
  * @param s1   First of two UTF strings to compare
@@ -379,13 +378,39 @@ static jbyte utf_s1_s2_strncmp(u1 *s1, int l1, u1 *s2, int l2)
  */
 jbyte utf_utf_strcmp(CONSTANT_Utf8_info *s1, CONSTANT_Utf8_info *s2)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_utf_strcmp);
 
     /* Perform unified comparison of both UTF strings */
     return(utf_s1_s2_strncmp(s1->bytes,
                              s1->length,
                              s2->bytes,
                              s2->length));
+
+} /* END of utf_utf_strcmp() */
+
+
+/*!
+ * @brief Compare a UTF string to a null-terminated string.
+ *
+ *
+ * @param s1   UTF string to compare
+ *
+ * @param s2   Null-terminated string to compare
+ *
+ *
+ * @returns lexicographical value of first difference in strings,
+ *          else 0.
+ *
+ */
+jbyte utf_prchar_strcmp(CONSTANT_Utf8_info *s1, rchar *s2)
+{
+    ARCH_FUNCTION_NAME(utf_prchar_strcmp);
+
+    /* Perform unified comparison of UTF vs null-terminated string */
+    return(utf_s1_s2_strncmp(s1->bytes,
+                             s1->length,
+                             s2,
+                             portable_strlen(s2)));
 
 } /* END of utf_utf_strcmp() */
 
@@ -410,7 +435,7 @@ jbyte utf_prchar_pcfs_strcmp(rchar                   *s1,
                              ClassFile               *pcfs2,
                              jvm_constant_pool_index  cpidx2)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_prchar_pcfs_strcmp);
 
     int l1 = portable_strlen(s1);
 
@@ -444,7 +469,7 @@ jbyte utf_pcfs_strcmp(CONSTANT_Utf8_info      *s1,
                       ClassFile               *pcfs2,
                       jvm_constant_pool_index  cpidx2)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_pcfs_strcmp);
 
     u1 *s2 = PTR_CP_THIS_STRNAME(pcfs2, cpidx2);
 
@@ -494,7 +519,7 @@ static jbyte utf_common_classname_strcmp(u1                      *s1,
                                          ClassFile               *pcfs2,
                                          jvm_constant_pool_index cpidx2)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_common_classname_strcmp);
 
     CONSTANT_Class_info *pci = PTR_CP_ENTRY_CLASS(pcfs2, cpidx2);
 
@@ -552,7 +577,7 @@ jbyte utf_prchar_classname_strcmp(rchar                   *s1,
                                   ClassFile               *pcfs2,
                                   jvm_constant_pool_index  cpidx2)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_prchar_classname_strcmp);
 
     return(utf_common_classname_strcmp((u1 *) s1,
                                        portable_strlen(s1),
@@ -588,7 +613,7 @@ jbyte utf_classname_strcmp(CONSTANT_Utf8_info      *s1,
                            ClassFile               *pcfs2,
                            jvm_constant_pool_index  cpidx2)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_classname_strcmp);
 
     return(utf_common_classname_strcmp(s1->bytes,
                                        s1->length,
@@ -634,7 +659,7 @@ jbyte utf_classname_strcmp(CONSTANT_Utf8_info      *s1,
 
 jvm_array_dim utf_get_utf_arraydims(CONSTANT_Utf8_info *inbfr)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_get_utf_arraydims);
 
     /* Make return code wider than max to check overflow */
     u4 rc = 0;
@@ -676,7 +701,7 @@ jvm_array_dim utf_get_utf_arraydims(CONSTANT_Utf8_info *inbfr)
 
 rboolean utf_isarray(CONSTANT_Utf8_info *inbfr)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_isarray);
 
   return((BASETYPE_CHAR_ARRAY == (u1)inbfr->bytes[0]) ? rtrue : rfalse);
 
@@ -684,9 +709,9 @@ rboolean utf_isarray(CONSTANT_Utf8_info *inbfr)
 
 
 /*!
- * @brief Convert and an un-formatted class name UTF string (of the
- * type @c @b ClassName and not of type
- * @c @b [[[LClassName) from a (CONSTANT_Utf8_info *) into
+ * @brief Convert an un-formatted class name UTF string (of the
+ * type @c @b ClassName and not of type @c @b [[[LClassName;)
+ * from a (CONSTANT_Utf8_info *) into
  * a null-terminated string with Java class formatting items.  Result
  * is delivered in a heap-allocated buffer.  When done with result,
  * perform HEAP_FREE_DATA(result) to return that buffer to the heap.
@@ -706,7 +731,7 @@ rboolean utf_isarray(CONSTANT_Utf8_info *inbfr)
 
 rchar *utf_utf2prchar_classname(CONSTANT_Utf8_info *src)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_utf2prchar_classname);
 
     /* Retrieve string from UTF data first */
     rchar *pstr = utf_utf2prchar(src);
@@ -779,7 +804,7 @@ rchar *utf_utf2prchar_classname(CONSTANT_Utf8_info *src)
 
 rboolean utf_utf_isclassformatted(CONSTANT_Utf8_info *src)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_utf_isclassformatted);
 
     jvm_utf_string_index utfidx;
     rboolean rc = rfalse;
@@ -863,7 +888,7 @@ rboolean utf_utf_isclassformatted(CONSTANT_Utf8_info *src)
 
 cp_info_dup *utf_utf2utf_unformatted_classname(cp_info_dup *inbfr)
 {
-    ARCH_FUNCTION_NAME(utf_);
+    ARCH_FUNCTION_NAME(utf_u2f2utf_unformatted_classname);
 
     rchar *pstr = utf_utf2prchar(PTR_THIS_CP_Utf8(inbfr));
 
