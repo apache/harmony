@@ -87,8 +87,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li> @c @e macro_expansion_of(u1var)
  *                           Receives operand contents
  * </li>
- * <li> @c @e pc->offset     Add @c @b sizeof(u1) to current value
- * </li>
  * </ul>
  *
  */
@@ -125,8 +123,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li> @c @e macro_expansion_of(u2var)
  *                           Receives operand contents
  * </li>
- * <li> @c @e pc->offset     Add @c @b sizeof(u2) to current value
- * </li>
  * </ul>
  *
  */
@@ -162,8 +158,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <ul>
  * <li> @c @e macro_expansion_of(u4var)
  *                           Receives operand contents
- * </li>
- * <li> @c @e pc->offset     Add @c @b sizeof(u4) to current value
  * </li>
  * </ul>
  *
@@ -481,6 +475,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 /*@{ */ /* Begin grouped definitions */
 
+
 /*!
  * @brief Verify that an object reference is to a one-dimensional array
  * of a given primative type and is within array bounds.
@@ -522,7 +517,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                JVMCLASS_JAVA_LANG_INTERNALERROR);      \
 /*NOTREACHED*/                                                         \
     }                                                                  \
-    if (arridx >= OBJECT(objhash).arraylength[0])                      \
+    if (arridx >= OBJECT(objhash).arraylength)                         \
     {                                                                  \
         thread_throw_exception(thridx,                                 \
                                THREAD_STATUS_THREW_EXCEPTION,          \
@@ -611,11 +606,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           @link #jint jint@endlink storage
  * </li>
  * </ul>
- *
- *
- * @see GETFIELD
- *
- * @see GETSTATIC
  *
  *
  * @todo HARMONY-6-jvm-opmacros.h-11 The various type casting games
@@ -716,67 +706,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
- * @brief Retrieve value by data type from object instance field.
- *
- *
- * @param objhash Object to manipulate
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(objhash)
- *                           Any @link #jvm_object_hash
-                             jvm_object_hash@endlink variable.
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- * @todo HARMONY-6-jvm-opmacros.h-13 Needs unit testing with real data.
- *
- */
-#define GETFIELD(objhash)                                           \
-    GETDATA(OBJECT(objhash).object_instance_field_data[fluidxmisc])
-
-
-/*!
- * @brief Retrieve value by data type from class static field.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- */
-#define GETSTATIC                                                  \
-    GETDATA(CLASS(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
-              .class_static_field_data[fluidxmisc])
-
-
-/*!
  * @brief Store out value by data type into either class static field
  * or object instance field.
  *
@@ -814,11 +743,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           @link #jint jint@endlink storage
  * </li>
  * </ul>
- *
- *
- * @see PUTFIELD
- *
- * @see PUTSTATIC
  *
  *
  * @todo HARMONY-6-jvm-opmacros.h-9 The various type casting games
@@ -927,68 +851,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 /*NOTREACHED*/                                                         \
             break;                                                     \
     }
-
-
-/*!
- * @brief Store out value by data type into object instance field.
- *
- *
- * @param objhash Object to manipulate
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e macro_expansion_of(objhash)
- *                           Any @link #jvm_object_hash
-                             jvm_object_hash@endlink variable.
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- * @todo HARMONY-6-jvm-opmacros.h-14 Needs unit testing with real data.
- *
- */
-#define PUTFIELD(objhash)                                            \
-     PUTDATA(OBJECT(objhash).object_instance_field_data[fluidxmisc])
-
-
-/*!
- * @brief Store out value by data type into class static field.
- *
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- */
-#define PUTSTATIC                                                  \
-    PUTDATA(CLASS(pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM) \
-              .class_static_field_data[fluidxmisc])
-
 
 /*@} */ /* End of grouped definitions */
 
@@ -1441,8 +1303,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           Any expression resolving to a
  *                           @c @b constant_pool index
  * </li>
- * <li>  @c @e pcfs->constant_pool  Examine a @c @b constant_pool entry
- * </li>
  * </ul>
  *
  *
@@ -1468,14 +1328,31 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 #define CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(clsnameidx)          \
     pcpd       = pcfs->constant_pool[clsnameidx];                      \
     pcpd_Class = PTR_THIS_CP_Class(pcpd);                              \
+                                                                       \
     clsidxmisc = pcpd_Class->LOCAL_Class_binding.clsidxJVM;            \
+                                                                       \
+    /*                                                                 \
+     * Try to resolve this class before attempting to load.            \
+     * It could be that it has been loaded but is not yet              \
+     * resolved enough.                                                \
+     */                                                                \
     if (jvm_class_index_null == clsidxmisc)                            \
     {                                                                  \
-        /* Need local variable to avoid possible expansion confusion */\
-        jvm_constant_pool_index cpidxOLD = clsnameidx;                 \
+        (rvoid) linkage_resolve_class(GET_PC_FIELD_IMMEDIATE(thridx,   \
+                                                             clsidx),  \
+                                      rfalse);                         \
                                                                        \
-        /* If class is not loaded, go retrieve it by UTF8 class name */\
-        LATE_CLASS_LOAD(cpidxOLD);                                     \
+        clsidxmisc = pcpd_Class->LOCAL_Class_binding.clsidxJVM;        \
+                                                                       \
+        /* Now try to load it again if resolution failed to locate it*/\
+        if (jvm_class_index_null == clsidxmisc)                        \
+        {                                                              \
+            /* Need local var to avoid possible expansion confusion */ \
+            jvm_constant_pool_index cpidxOLD = clsnameidx;             \
+                                                                       \
+            /* If class is not loaded, retrieve it by UTF8 class name*/\
+            LATE_CLASS_LOAD(cpidxOLD);                                 \
+        }                                                              \
     }                                                                  \
     pcfsmisc = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs; /* Extra ; */
 
@@ -1541,19 +1418,36 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
     pcpd           = pcfs->constant_pool[Fieldref];                    \
     pcpd_Fieldref = PTR_THIS_CP_Fieldref(pcpd);                        \
     clsidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
+                                                                       \
+    /*                                                                 \
+     * Try to resolve this class before attempting to load.            \
+     * It could be that it has been loaded but is not yet              \
+     * resolved enough.                                                \
+     */                                                                \
     if (jvm_class_index_null == clsidxmisc)                            \
     {                                                                  \
-        /* If class is not loaded, go retrieve it by UTF8 class name */\
-        LATE_CLASS_LOAD(pcpd_Fieldref->class_index);                   \
+        (rvoid) linkage_resolve_class(GET_PC_FIELD_IMMEDIATE(thridx,   \
+                                                             clsidx),  \
+                                      rfalse);                         \
                                                                        \
-        /* Check if field exists in loaded class */                    \
         clsidxmisc = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
+                                                                       \
+        /* Now try to load it again if resolution failed to locate it*/\
         if (jvm_class_index_null == clsidxmisc)                        \
         {                                                              \
-            thread_throw_exception(thridx,                             \
-                                   THREAD_STATUS_THREW_ERROR,          \
+            /* If class is not loaded, retrieve it by UTF8 class name*/\
+            LATE_CLASS_LOAD(pcpd_Fieldref->class_index);               \
+                                                                       \
+            /* Check if field exists in loaded class */                \
+            clsidxmisc = pcpd_Fieldref                                 \
+                           ->LOCAL_Fieldref_binding.clsidxJVM;         \
+            if (jvm_class_index_null == clsidxmisc)                    \
+            {                                                          \
+                thread_throw_exception(thridx,                         \
+                                       THREAD_STATUS_THREW_ERROR,      \
                                 JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);  \
 /*NOTREACHED*/                                                         \
+            }                                                          \
         }                                                              \
     }                                                                  \
                                                                        \
@@ -1574,135 +1468,47 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
- * @brief Calculate method_info pointer from a method reference.
+ * @brief Report whether a method is an \<init\> method or not.
  *
- * During the calculation, various scratch variables are
- * loaded and used to simplify the code.  Two final results
- * include a (method_info *) stored the local variable @b pmth
- * and a (CONSTANT_Methodref_info *) stored in the local variable
- * @b pcpd_Methodref
  *
- * @param Methodref  @c @b constant_pool index into class file of
- *                   current class (as indicated in the program counter)
- *                   that is a method reference entry.
+ * Perform simple string comparison of a method name string to
+ * the instance initialization method name string.
+ *
+ * @param pcfs    ClassFile pointer of method in class to review
+ *
+ * @param cpidx   @c @b constant_pool index of method name string
  *
  *
  * <b>Local variables read:</b>
  * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
+ * <li> @c @e macro_expansion_of(pcfs)
+ *                           Any expression that resolves to a
+ *                           ClassFile pointer
  * </li>
- * <li> @c @e macro_expansion_of(Methodref)
- *                           Any expression resolving to a
+ * <li> @c @e macro_expansion_of(cpidx)
+ *                           Any expression that resolves to a
  *                           @c @b constant_pool index
  * </li>
  * </ul>
  *
  *
- * @returns @link #rvoid rvoid@endlink.
+ * @returns @link #rtrue rtrue@endlink if the method is the
+ *          \<init\> method.
  *
  *
  * <b>Local variables written:</b>
  * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
- * </li>
- * <li> @c @e pcpd_Methodref @c @b pcpd as a CONSTANT_Methodref_info
- *                           pointer
- * </li>
- * <li> @c @e clsidxmisc     Class index of fully bound class referenced
- *                           by @c @b pcpd_Methodref
- * </li>
- * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
- *                           referenced by @c @b clsidxmisc
- * </li>
- * <li>  @c @e pmth          method_info table entry referenced by
- *                           @c @b pcpd_Methodref
- * </li>
- * </ul>
- *
- *
- * @throws JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
- *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
-           if requested method is not found in the class@endlink.
- *
- *
- */
-#define CALCULATE_METHOD_INFO_FROM_METHOD_REFERENCE(Methodref)         \
-    pcpd           = pcfs->constant_pool[Methodref];                   \
-    pcpd_Methodref = PTR_THIS_CP_Methodref(pcpd);                      \
-    clsidxmisc     = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;\
-    if (jvm_class_index_null == clsidxmisc)                            \
-    {                                                                  \
-        /* If class is not loaded, go retrieve it by UTF8 class name */\
-       LATE_CLASS_LOAD(pcpd_Methodref->class_index);                   \
-                                                                       \
-        /* Check if method exists in loaded class */                   \
-        clsidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;\
-        if (jvm_class_index_null == clsidxmisc)                        \
-        {                                                              \
-            thread_throw_exception(thridx,                             \
-                                   THREAD_STATUS_THREW_ERROR,          \
-                                JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
-/*NOTREACHED*/                                                         \
-        }                                                              \
-    }                                                                  \
-                                                                       \
-    mthidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.mthidxJVM;    \
-    if (jvm_method_index_bad == mthidxmisc)                            \
-    {                                                                  \
-        thread_throw_exception(thridx,                                 \
-                               THREAD_STATUS_THREW_ERROR,              \
-                                JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
-/*NOTREACHED*/                                                         \
-    }                                                                  \
-                                                                       \
-    pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
-    pmth           = pcfsmisc->methods[mthidxmisc]
-
-
-/*!
- * @brief Calculate method_info pointer from program counter
- *
- * During the calculation, various scratch variables are
- * loaded and used to simplify the code.  The final result
- * is a (method_info *) stored the local variable @b pmth
- *
- * @b Parameters: @link #rvoid rvoid@endlink
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li>  @c @e clsidxmisc    Class index field from program counter
- * </li>
- * <li>  @c @e mthidxmisc    Method index field from program counter
- * </li>
- * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
- *                           referenced by program counter
- * </li>
- * <li>  @c @e pmth          Method pointer in class file field from
- *                           class referenced by program counter
+ * <li> @c @e none
  * </li>
  * </ul>
  *
  */
-#define CALCULATE_METHOD_INFO_FROM_PC                    \
-    clsidxmisc = GET_PC_FIELD_IMMEDIATE(thridx, clsidx); \
-    mthidxmisc = GET_PC_FIELD_IMMEDIATE(thridx, mthidx); \
-    pcfsmisc   = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs; \
-    pmth       = METHOD(clsidxmisc, mthidxmisc)
+#define IS_INIT_METHOD(pcfs, cpidx)                                   \
+    ((0 == utf_prchar_pcfs_strcmp(CONSTANT_UTF8_INSTANCE_CONSTRUCTOR, \
+                                  pcfs,                               \
+                                  cpidx))                             \
+     ? rtrue                                                          \
+     : rfalse)
 
 
 /*!
@@ -1764,7 +1570,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                                                      \
     /* Try again to load class */                                    \
     clsidxmisc = class_load_resolve_clinit(prchar_clsname,           \
-                                           CURRENT_THREAD,           \
+                                           thridx,                   \
                                            rfalse,                   \
                                            rfalse);                  \
                                                                      \
@@ -1777,7 +1583,12 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                THREAD_STATUS_THREW_ERROR,            \
                            JVMCLASS_JAVA_LANG_NOCLASSDEFFOUNDERROR); \
 /*NOTREACHED*/                                                       \
-    }
+    }                                                                \
+                                                                     \
+    /* Go resolve the current class again to pick up changes */      \
+    (rvoid) linkage_resolve_class(GET_PC_FIELD_IMMEDIATE(thridx,     \
+                                                         clsidx),    \
+                                  rfalse); /* Extra ; */
 
 
 /*!
@@ -1808,6 +1619,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li>  @c @e pcfs points to class file for current class.
  * </li>
  * <li>  @c @e pcode points to first opcode in this method.
+ * </li>
  * </ul>
  *
  */
@@ -1836,7 +1648,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li> @c @e macro_expansion_of(offsetvar)
  *                           Any @link #u2 u2@endlink variable.
  * </li>
- * </li>
  * </ul>
  *
  *
@@ -1858,64 +1669,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                                                 \
     /*!                                                         \
      * @todo HARMONY-6-jvm-opmacros.h-7 Need to check           \
-     *       whether max PC value itself is legal, thus         \
-     *       whether comparison should be @b &lt; or @b &lt;=   \
-     *                                                          \
-     */                                                         \
-                                                                \
-    /*                                                          \
-     * Don't need a lower bound test since offset is unsigned   \
-     */                                                         \
-    if (CODE_CONSTRAINT_CODE_LENGTH_MAX < pc->offset)           \
-    {                                                           \
-        thread_throw_exception(thridx,                          \
-                               THREAD_STATUS_THREW_ERROR,       \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR); \
-/*NOTREACHED*/                                                  \
-    }
-
-
-/*!
- * @brief Adjust program counter by a 4-byte relative offset value.
- *
- *
- * @param offset4var  Variable of type @link #u4 u4@endlink holding
- *                    destination offset to load into program counter.
- *
- * @param instrlen   Adjust offset by size of this virtual instruction
- *                   as specified in this expression.
- *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li>  @c @e thridx        Thread table index of current thread
- *                           (input parameter to
- *                           @link #opcode_run opcode_run()@endlink)
- * </li>
- * <li> @c @e macro_expansion_of(offset4var)
- *                           Any @link #u4 u4@endlink variable.
- * </li>
- * </li>
- * </ul>
- *
- *
- * @returns @link #rvoid rvoid@endlink
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- *
- */
-#define LOAD_TARGET_PC_OFFSET_WIDE(offset4var, instrlen)        \
-    /* This will create a signed value */                       \
-    pc->offset += ((jvm_pc_offset) offset4var)                  \
-                   - instrlen;                                  \
-                                                                \
-    /*!                                                         \
-     * @todo HARMONY-6-jvm-opmacros.h-8 Need to check           \
      *       whether max PC value itself is legal, thus         \
      *       whether comparison should be @b &lt; or @b &lt;=   \
      *                                                          \
@@ -1975,8 +1728,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           (input parameter to
  *                           @link #opcode_run opcode_run()@endlink)
  * </li>
- * <li>  @c @e pc offset.
- * </li>
  * </ul>
  *
  *
@@ -1988,7 +1739,6 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li>  @c @e jptmp stores offset of opcode by adjusting from
  *                   @c @b pc->offset back to opcode address.
  * </li>
- * <li>  @c @e pc->offset loaded with address following padding.
  * </ul>
  *
  */
@@ -1996,6 +1746,84 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
     jptmp       = pc->offset - sizeof(u1);         \
     pc->offset += (sizeof(u4) - sizeof(opcode));   \
     pc->offset &= ~(sizeof(u4) - 1); /* Extra ; */
+
+
+/*!
+ * @brief Synchronize to this method's class' object monitor before
+ * method invocation.
+ *
+ * This macro is designed to be used @e only within the context of
+ * the @b INVOKExxx opcodes.  This is due to the conditional
+ * adjustment of the program counter.  @e All other uses of
+ * objectutil_synchronize() should be performed in other manners.
+ *
+ * If this method is a synchronized method, attempt to gain MLOCK.
+ * If successful, carry on with opcode.  If not, unwind PC to
+ * beginning of instruction and relinquish.  The thread model will
+ * re-enter the opcode when the lock has finally been acquired.
+ *
+ *
+ * @internal This macro conditionally breaks out of @c @b switch(opcode)
+ *           statement, leaving PC pointing to this opcode.  Since the
+ *           thread state will no longer be @b RUNNING , no more
+ *           opcodes will be run on this thread until this thread
+ *           successfully arbitrates for the lock again.  At that time,
+ *           it will try this opcode again.
+ *
+ *
+ * @todo HARMONY-6-jvm-opmacros.h-15 Verify that the above
+ *       call to objectutil_synchronize() does not cause a
+ *       problem trying to get restarted, such as too many
+ *       attempts to lock the object or on the other end
+ *       with not enough attempts to unlock it. (?)
+ *
+ *
+ * @warning Be @e absolutely sure that the block level that this
+ *          macro is invoked from will @c @b break from the outer
+ *          giant @c @b switch(opcode){} statement instead of from some
+ *          inner @c @b switch() or @c @b for() or @c @b while() or
+ *          other block structure that can act on @c @b break
+ *          statements.  If this injunction is not followed, then
+ *          method synchronization will @e not happen properly.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink.
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li>  @c @e none
+ * </li>
+ * </ul>
+ *
+ */
+#define SYNCHRONIZE_METHOD_INVOCATION                                  \
+    if (ACC_SYNCHRONIZED & pmth->access_flags)                         \
+    {                                                                  \
+        if (rfalse == objectutil_synchronize(                          \
+                          CLASS(clsidxmisc).class_objhash,             \
+                          thridx))                                     \
+        {                                                              \
+                            /* size of opcode +   size of operand */   \
+            pc->offset -= (    sizeof(u1)     +   sizeof(u2)        ); \
+                                                                       \
+            break;                                                     \
+        }                                                              \
+    }
 
 
 /*@} */ /* End of grouped definitions */
@@ -2345,6 +2173,108 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
+ * @brief Check if this method is @e not a \<clinit\> method
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
+ *                           referenced by @c @b clsidxmisc
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+           if requested method is an array object@endlink.
+ *
+ */
+#define CHECK_NOT_CLINIT_METHOD                                  \
+                                                                 \
+    /* Must not be a class or instance constructor */            \
+    if (0 == utf_prchar_pcfs_strcmp(                             \
+                          LOCAL_CONSTANT_UTF8_CLASS_CONSTRUCTOR, \
+                                    pcfsmisc,                    \
+                                    pmth->name_index))           \
+    {                                                            \
+        thread_throw_exception(thridx,                           \
+                               THREAD_STATUS_THREW_ERROR,        \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
+/*NOTREACHED*/                                                   \
+    }
+
+
+/*!
+ * @brief Check if this method is @e not an \<init\> method
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
+ *                           referenced by @c @b clsidxmisc
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+ *         @link #JVMCLASS_JAVA_LANG_INSTANTIATIONERROR
+           if requested method is an array object@endlink.
+ *
+ */
+#define CHECK_NOT_INIT_METHOD                                    \
+                                                                 \
+    /* Must not be an instance constructor */                    \
+    if (0 == utf_prchar_pcfs_strcmp(                             \
+                             CONSTANT_UTF8_INSTANCE_CONSTRUCTOR, \
+                                    pcfsmisc,                    \
+                                    pmth->name_index))           \
+    {                                                            \
+        thread_throw_exception(thridx,                           \
+                               THREAD_STATUS_THREW_ERROR,        \
+                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
+/*NOTREACHED*/                                                   \
+    }                                                            \
+
+
+/*!
  * @brief Check if this object is from a normal class, that is,
  * not from an interface class.
  *
@@ -2437,6 +2367,139 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*!
+ * @brief Check if the class hierarchy is followed, per opcode.
+ *
+ *
+ * This macro is used where @b INVOKESPECIAL is being processed,
+ * once for normal virtual methods, once for native methods.
+ * It implements a passage of the JVM spec for this opcode.
+ *
+ * @param _clsidx      Class index containing class where
+ *                     resolved method is defined.
+ *
+ * @param _objhash     Object to examine
+ *
+ * @param _isinitmethod @link #rtrue rtrue@endlink if invoked method is
+ *                     the \<init\> method.
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li> @c @e macro_expansion_of(_clsidx)
+ *                           Any expression that resolves to a
+ *                           class index
+ * </li>
+ * <li> @c @e macro_expansion_of(_objhash)
+ *                           Any @link #jvm_object_hash
+                             jvm_object_hash@endlink variable.
+ * </li>
+ * <li> @c @e macro_expansion_of(_isinitmethod)
+ *                           Any expression that resolves to a
+ *                           @link #rboolean rboolean@endlink
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ */
+#define CHECK_OBJECT_CLASS_STRUCTURE(_clsidx, _objhash, _isinitmethod) \
+    switch(opcode)                                                     \
+    {                                                                  \
+        case OPCODE_B9_INVOKEINTERFACE:                                \
+            /* This logic @e should follow next bit, per spec */       \
+            if (rfalse ==                                              \
+                classutil_class_implements_interface(                  \
+                    OBJECT_CLASS_LINKAGE(_objhash)->clsidx,            \
+                    _clsidx))                                          \
+            {                                                          \
+                thread_throw_exception(thridx,                         \
+                                       THREAD_STATUS_THREW_ERROR,      \
+                      JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR);\
+/*NOTREACHED*/                                                         \
+            }                                                          \
+        /*! @warning NO @c @b break statement here! Continue... */     \
+                                                                       \
+        case OPCODE_B6_INVOKEVIRTUAL:                                  \
+            if (rfalse ==                                              \
+                classutil_class_is_a(                                  \
+                    GET_PC_FIELD_IMMEDIATE(thridx, clsidx),            \
+                    OBJECT_CLASS_LINKAGE(_objhash)->clsidx))           \
+            {                                                          \
+                thread_throw_exception(thridx,                         \
+                                       THREAD_STATUS_THREW_ERROR,      \
+                               JVMCLASS_JAVA_LANG_ABSTRACTMETHODERROR);\
+/*NOTREACHED*/                                                         \
+            }                                                          \
+            break;                                                     \
+                                                                       \
+        case OPCODE_B7_INVOKESPECIAL:                                  \
+            CHECK_SUPERCLASS_VALID_METHOD_FOUND(_clsidx,               \
+                                                _isinitmethod);        \
+            break;                                                     \
+                                                                       \
+     /* case OPCODE_B8_INVOKESTATIC:                                   \
+            break; */                                                  \
+    }
+
+
+/*!
+ * @brief Check if this method is a public method.
+ *
+ *
+ * @b Parameters: @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables read:</b>
+ * <ul>
+ * <li>  @c @e thridx        Thread table index of current thread
+ *                           (input parameter to
+ *                           @link #opcode_run opcode_run()@endlink)
+ * </li>
+ * <li>  @c @e pmth          method_info table entry of current method
+ * </li>
+ * </ul>
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ *
+ * <b>Local variables written:</b>
+ * <ul>
+ * <li> @c @e none
+ * </li>
+ * </ul>
+ *
+ *
+ * @throws JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR
+ *         @link #JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR
+           if requested method is not a public method@endlink.
+ *
+ */
+#define CHECK_PUBLIC_METHOD                                            \
+                                                                       \
+    /* Must be a public method */                                      \
+    if (!(ACC_PUBLIC & pmth->access_flags))                            \
+    {                                                                  \
+        thread_throw_exception(thridx,                                 \
+                               THREAD_STATUS_THREW_ERROR,              \
+                               JVMCLASS_JAVA_LANG_ILLEGALACCESSERROR); \
+/*NOTREACHED*/                                                         \
+    }
+
+
+/*!
  * @brief Check if this field is a static field.
  *
  *
@@ -2508,14 +2571,14 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li> @c @e macro_expansion_of(u2var)
  *                           Receives operand contents
  * </li>
- * <li> @c @e pc->offset     Add @c @b sizeof(u2) to current value
- * </li>
  * </ul>
  *
  *
- * @throws JVMCLASS_JAVA_LANG_VERIFYERROR
- *         @link #JVMCLASS_JAVA_LANG_VERIFYERROR
+ * @throws JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
+ *         @link #JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR
            if requested method is an object instance method@endlink.
+ *         Presumably the compiler did its job properly, so there is
+ *         no need to invoke a @b VerifyError instead.
  *
  */
 #define CHECK_STATIC_METHOD                                      \
@@ -2525,60 +2588,25 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
     {                                                            \
         thread_throw_exception(thridx,                           \
                                THREAD_STATUS_THREW_ERROR,        \
-                               JVMCLASS_JAVA_LANG_VERIFYERROR);  \
+              JVMCLASS_JAVA_LANG_INCOMPATIBLECLASSCHANGEERROR);  \
 /*NOTREACHED*/                                                   \
     }
 
 
 /*!
- * @brief Check if this field requires two @link #jint jint@endlink
- * accesses or just one.
+ * @brief Check if the superclass of the current class contains a
+ * matching method.
  *
  *
- * JVM stack operations and local variable accesses need to know
- * if the datum to be moved takes one @link #jint jint@endlink slot
- * or two.  Items of types @link #jlong jlong@endlink and
- * @link #jdouble jdouble@endlink take two such accesses, all others
- * take just one.
+ * This macro is used where @b INVOKESPECIAL is being processed,
+ * once for normal virtual methods, once for native methods.
+ * It implements a passage of the JVM spec for this opcode.
  *
- * @b Parameters: @link #rvoid rvoid@endlink
+ * @param _clsidx       Class index containing class where
+ *                      resolved method is defined.
  *
- *
- * <b>Local variables read:</b>
- * <ul>
- * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
- *                           field
- * </li>
- * </ul>
- *
- *
- * @returns @link #rtrue rtrue@endlink if this field takes two
- *          accesses, otherwise @link #rfalse rfalse@endlink for
- *          smaller types.
- *
- *
- * <b>Local variables written:</b>
- * <ul>
- * <li> @c @e none
- * </li>
- * </ul>
- *
- */
-#define CHECK_TWO_ACCESSES                                         \
-                                                                   \
-    (((pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM ==      \
-       BASETYPE_CHAR_J)                                         || \
-      (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM ==      \
-       BASETYPE_CHAR_D))                                           \
-    ? rtrue                                                        \
-    : rfalse)
-
-
-/*!
- * @brief Check for code attribute index in local method binding.
- *
- *
- * @param codeatridx  Code attribute index from a local method binding
+ * @param _isinitmethod @link #rtrue rtrue@endlink if invoked method is
+ *                      the \<init\> method.
  *
  *
  * <b>Local variables read:</b>
@@ -2587,9 +2615,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           (input parameter to
  *                           @link #opcode_run opcode_run()@endlink)
  * </li>
- * <li> @c @e macro_expansion_of(codeatridx)
- *                           Any expression that resolves to an
- *                           attribute index
+ * <li> @c @e macro_expansion_of(_clsidx)
+ *                           Any expression that resolves to a
+ *                           class index
+ * </li>
+ * <li> @c @e macro_expansion_of(_isinitmethod)
+ *                           Any expression that resolves to a
+ *                           @link #rboolean rboolean@endlink
  * </li>
  * </ul>
  *
@@ -2603,19 +2635,38 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * </li>
  * </ul>
  *
- *
- * @throws JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
- *         @link #JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR
-      if requested class static field is not found in the class@endlink.
- *
  */
-#define CHECK_VALID_CODEATRIDX(codeatridx)                            \
-    if (jvm_attribute_index_bad == codeatridx)                        \
-    {                                                                 \
-        thread_throw_exception(thridx,                                \
-                               THREAD_STATUS_THREW_ERROR,             \
-                               JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR); \
-/*NOTREACHED*/                                                        \
+#define CHECK_SUPERCLASS_VALID_METHOD_FOUND(_clsidx, _isinitmethod) \
+    if ((ACC_SUPER &                                                \
+        CLASS(GET_PC_FIELD_IMMEDIATE(thridx,                        \
+                                     clsidx)).status)   &&          \
+                                                                    \
+        /* "is a" tests for subclasses _and_ parent class */        \
+        ((GET_PC_FIELD_IMMEDIATE(thridx, clsidx) !=                 \
+          _clsidx) &&                                               \
+         (rtrue ==                                                  \
+          classutil_class_is_a(                                     \
+              GET_PC_FIELD_IMMEDIATE(thridx, clsidx),               \
+              _clsidx)))                                &&          \
+                                                                    \
+        (rfalse == (_isinitmethod)))                                \
+    {                                                               \
+        /*                                                          \
+         * Proceed unless superclass of current class               \
+         * does not contain the resolved method.                    \
+         */                                                         \
+        if (rfalse ==                                               \
+            classutil_class_is_a(                                   \
+                CLASS_OBJECT_LINKAGE(                               \
+                    GET_PC_FIELD_IMMEDIATE(thridx, clsidx))         \
+                      ->pcfs                                        \
+                        ->super_class,                              \
+                _clsidx))                                           \
+        {                                                           \
+            exit_throw_exception(EXIT_JVM_OBJECT,                   \
+                   JVMCLASS_JAVA_LANG_ABSTRACTMETHODERROR);         \
+/*NOTREACHED*/                                                      \
+        }                                                           \
     }
 
 
@@ -2665,5 +2716,86 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
 
 
 /*@} */ /* End of grouped definitions */
+
+#ifdef I_AM_OPCODE_C
+
+/*!
+ * @brief Java Virtual Machine operation code name strings
+ *
+ * This array is used when displaying the program counter and opcode
+ * at that address during debug.
+ *
+ */ 
+
+static char *opcode_names[OPCODE_COUNT] =
+{
+    "NOP",          "ACONST_NULL",      "ICONST_M1",    "ICONST_0",
+    "ICONST_1",     "ICONST_2",         "ICONST_3",     "ICONST_4",
+    "ICONST_5",     "LCONST_0",         "LCONST_1",     "FCONST_0",
+    "FCONST_1",     "FCONST_2",         "DCONST_0",     "DCONST_1",
+    "BIPUSH",       "SIPUSH",           "LDC",          "LDC_W",
+    "LDC2_W",       "ILOAD",            "LLOAD",        "FLOAD",
+    "DLOAD",        "ALOAD",            "ILOAD_0",      "ILOAD_1",
+    "ILOAD_2",      "ILOAD_3",          "LLOAD_0",      "LLOAD_1",
+    "LLOAD_2",      "LLOAD_3",          "FLOAD_0",      "FLOAD_1",
+    "FLOAD_2",      "FLOAD_3",          "DLOAD_0",      "DLOAD_1",
+    "DLOAD_2",      "DLOAD_3",          "ALOAD_0",      "ALOAD_1",
+    "ALOAD_2",      "ALOAD_3",          "IALOAD",       "LALOAD",
+    "FALOAD",       "DALOAD",           "AALOAD",       "BALOAD",
+    "CALOAD",       "SALOAD",           "ISTORE",       "LSTORE",
+    "FSTORE",       "DSTORE",           "ASTORE",       "ISTORE_0",
+    "ISTORE_1",     "ISTORE_2",         "ISTORE_3",     "LSTORE_0",
+    "LSTORE_1",     "LSTORE_2",         "LSTORE_3",     "FSTORE_0",
+    "FSTORE_1",     "FSTORE_2",         "FSTORE_3",     "DSTORE_0",
+    "DSTORE_1",     "DSTORE_2",         "DSTORE_3",     "ASTORE_0",
+    "ASTORE_1",     "ASTORE_2",         "ASTORE_3",     "IASTORE",
+    "LASTORE",      "FASTORE",         "DASTORE",       "AASTORE",
+    "BASTORE",      "CASTORE",         "SASTORE",       "POP",
+    "POP2",         "DUP",             "DUP_X1",        "DUP_X2",
+    "DUP2",         "DUP2_X1",         "DUP2_X2",       "SWAP",
+    "IADD",         "LADD",            "FADD",          "DADD",
+    "ISUB",         "LSUB",            "FSUB",          "DSUB",
+    "IMUL",         "LMUL",            "FMUL",          "DMUL",
+    "IDIV",         "LDIV",            "FDIV",          "DDIV",
+    "IREM",         "LREM",            "FREM",          "DREM",
+    "INEG",         "LNEG",            "FNEG",          "DNEG",
+    "ISHL",         "LSHL",            "ISHR",          "LSHR",
+    "IUSHR",        "LUSHR",           "IAND",          "LAND",
+    "IOR",          "LOR",             "IXOR",          "LXOR",
+    "IINC",         "I2L",             "I2F",           "I2D",
+    "L2I",          "L2F",             "L2D",           "F2I",
+    "F2L",          "F2D",             "D2I",           "D2L",
+    "D2F",          "I2B",             "I2C",           "I2S",
+    "LCMP",         "FCMPL",           "FCMPG",         "DCMPL",
+    "DCMPG",        "IFEQ",            "IFNE",          "IFLT",
+    "IFGE",         "IFGT",            "IFLE",          "IF_ICMPEQ",
+    "IF_ICMPNE",    "IF_ICMPLT",       "IF_ICMPGE",     "IF_ICMPGT",
+    "IF_ICMPLE",    "IF_ACMPEQ",       "IF_ACMPNE",     "GOTO",
+    "JSR",          "RET",             "TABLESWITCH",   "LOOKUPSWITCH",
+    "IRETURN",      "LRETURN",         "FRETURN",       "DRETURN",
+    "ARETURN",      "RETURN",          "GETSTATIC",     "PUTSTATIC",
+    "GETFIELD",     "PUTFIELD",        "INVOKEVIRTUAL", "INVOKESPECIAL",
+    "INVOKESTATIC", "INVOKEINTERFACE", "XXXUNUSEDXXX1", "NEW",
+    "NEWARRAY",     "ANEWARRAY",       "ARRAYLENGTH",   "ATHROW",
+    "CHECKCAST",    "INSTANCEOF",      "MONITORENTER",  "MONITOREXIT",
+    "WIDE",         "MULTIANEWARRAY",  "IFNULL",        "IFNONNULL",
+    "GOTO_W",       "JSR_W",           "BREAKPOINT",    "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
+    "UNUSED",       "UNUSED",          "IMPDEP1",       "IMPDEP2"
+};
+
+#endif /* I_AM_OPCODE_C */
+
 
 /* EOF */
