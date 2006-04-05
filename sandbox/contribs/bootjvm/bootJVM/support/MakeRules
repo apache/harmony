@@ -41,7 +41,7 @@
 # @section Reference
 #
 #/ /* 
-# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
 # Use the above open comment to force termination of parsing
 # since it is not a Doxygen-style 'C' comment.)
@@ -104,7 +104,7 @@ AR=ar
 
 CFLAGS:=-m$(CONFIG_WORDWIDTH) -O0 -g3 -Wall -fmessage-length=0 -ansi
 
-LFLAGS=-m$W(CONFIG_WORDWIDTH) -lpthread -lm -L$(TOPDIR)/libjvm/lib
+LFLAGS=-m$(CONFIG_WORDWIDTH) -lpthread -lm -L$(TOPDIR)/libjvm/lib
 
 ARCMD=r
 
@@ -164,6 +164,11 @@ INCLUDES:= \
 # Do nothing for these rules unless 'C' sources are defined.
 # If defined, additional actions are also defined.
 #
+# If 'makedepend' is in the $PATH, then HAVE_MAKEDEPEND will be 1.
+# If 'ctags' is in the $PATH, then HAVE_CTAGS will be 1.
+# If either of these utilities is missing, then invocation of
+# these rules will produce no actions.
+#
 depend::
 nodepend::
 tags::
@@ -211,24 +216,37 @@ ifneq (,$(C_SOURCES))
 ########################
 #
 # Unconditionally build dependencies for directories with 'C' sources.
-# Ignore request for other directory types.
+# Ignore request for other directory types. Also ignore request when
+# 'makedepend' is not found in $PATH.
 #
+ifeq (1,$(HAVE_MAKEDEPEND))
 
 depend::
 	$(CC_SILENT)$(TOUCHDEPEND)
 	$(CC_SILENT)-$(MAKEDEPEND)
 
-nodepend::
-	$(CC_SILENT)rm -f $(DEPEND_FILE)
+endif
 
+# Permit removal of dependency file regardless of whether or not
+# 'makedepend' is found in $PATH.  Some versions generate a '.bak;
+# also, so get rid of it, too.
+nodepend::
+	$(CC_SILENT)rm -f $(DEPEND_FILE) $(DEPEND_FILE).bak
+
+
+# If a dependency file exists anyway, reference it
 -include $(DEPEND_FILE)
+
 
 ########################
 #
 # Unconditionally build editor tag file $(CTAGS_FILE).
+# Do not build it if 'ctags' is not found in $PATH.
 #
+ifeq (1,$(HAVE_CTAGS))
 tags::
 	$(CC_SILENT)-$(CTAGS) -f $(CTAGS_FILE) $(C_SOURCES) $(C_HEADERS)
+endif
 
 ########################
 #
@@ -236,10 +254,12 @@ tags::
 #
 all::
 ifeq (,$(wildcard $(DEPEND_FILE)))
+ifeq (1,$(HAVE_MAKEDEPEND))
 	$(CC_SILENT)@$(TOUCHDEPEND)
 	$(CC_SILENT)@-$(MAKEDEPEND)
 
-endif # DEPEND
+endif # HAVE_MAKEDEPEND
+endif # DEPEND_FILE
 
 ########################
 #
