@@ -77,7 +77,7 @@
 # @section Reference
 #
 #/ /* 
-# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
 # Use the above open comment to force termination of parsing
 # since it is not a Doxygen-style 'C' comment.)
@@ -114,15 +114,15 @@ OPTLIST1=cfg
 
 ifeq (1,$(CONFIG_BUILD_JVM))
 cfg::
-	$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null all
+	$(MAKE) $(NPD) -C jvm/src BOOTJVM=defined all
 clean::
-	$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null clean
+	$(MAKE) $(NPD) -C jvm/src BOOTJVM=defined clean
 endif
 ifeq (1,$(CONFIG_BUILD_LIB))
 cfg::
-	$(MAKE) $(NPD) -C jvm/src LIBJVM=non-null all
+	$(MAKE) $(NPD) -C jvm/src LIBJVM=defined all
 clean::
-	$(MAKE) $(NPD) -C jvm/src LIBJVM=non-null clean
+	$(MAKE) $(NPD) -C jvm/src LIBJVM=defined clean
 endif
 ifeq (1,$(CONFIG_BUILD_MAIN))
 cfg::
@@ -151,7 +151,7 @@ endif
 
 OPTLIST2=all | clean | veryclean
 all veryclean::
-	-$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null LIBJVM=non-null $@
+	-$(MAKE) $(NPD) -C jvm/src BOOTJVM=defined LIBJVM=defined $@
 	-$(MAKE) $(NPD) -C main/src $@
 	-$(MAKE) $(NPD) -C jni/src/harmony/generic/0.0/src $@
 	-$(MAKE) $(NPD) -C test/src $@
@@ -166,9 +166,9 @@ veryclean::
 OPTLIST3=jvm | libjvm | main | jni | test
 
 jvm::
-	$(MAKE) $(NPD) -C jvm/src BOOTJVM=non-null all
+	$(MAKE) $(NPD) -C jvm/src BOOTJVM=defined all
 libjvm::
-	$(MAKE) $(NPD) -C jvm/src LIBJVM=non-null all
+	$(MAKE) $(NPD) -C jvm/src LIBJVM=defined all
 main::
 	$(MAKE) $(NPD) -C main/src all
 jni::
