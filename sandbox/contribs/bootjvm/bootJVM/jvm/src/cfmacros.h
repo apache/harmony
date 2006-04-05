@@ -131,15 +131,27 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
 /*@{ */ /* Begin grouped definitions */
 
 /*!
+ * @brief Report the (cp_info_dup *) of the address of the
+ * class file @p @b pcfs @c @b constant_pool entry at this
+ * index @p @b cpidx.
+ *
+ *
+ * @returns(cp_info_dup *) to a @c @b constant_pool[cpidx]
+ *
+ */
+#define PTR_CP_SLOT(pcfs, cpidx) (pcfs->constant_pool[cpidx])
+
+
+/*!
  * @brief Report the (cp_info *) of the address of the
  * class file @p @b pcfs @c @b constant_pool entry at this
  * index @p @b cpidx.
  *
  *
- * @returns(cp_info *) to a @c @b constant_pool[cpidx]
+ * @returns(cp_info *) to a @c @b constant_pool[cpidx]->cp
  *
  */
-#define PTR_CP_ENTRY(pcfs, cpidx) (&(pcfs->constant_pool[cpidx])->cp)
+#define PTR_CP_ENTRY(pcfs, cpidx) (&PTR_CP_SLOT(pcfs, cpidx)->cp)
 
 
 /*!
@@ -429,7 +441,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
 
 #define PTR_CP_THIS_STRNAME(pcfs, cpidx)  \
     ((rchar *) &PTR_CP_ENTRY_TYPE(CONSTANT_Utf8_info, pcfs, cpidx) \
-                   ->bytes[0])
+                  ->bytes[0])
 
 
 /*******************************************************************
@@ -477,24 +489,24 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
               (PTR_CP_ENTRY_TYPE(CONSTANT_Class_info,            \
                            pcfs,                                 \
                            (PTR_CP_ENTRY_TYPE(type, pcfs, cpidx) \
-                                ->strname_idx))                  \
-                   ->name_index))
+                              ->strname_idx))                    \
+                 ->name_index))
 
 #define CP2_CLASS_NAME_STRLEN(type, pcfs, cpidx, strname_idx)        \
     CP_THIS_STRLEN(pcfs,                                             \
                   (PTR_CP_ENTRY_TYPE(CONSTANT_Class_info,            \
                                pcfs,                                 \
                                (PTR_CP_ENTRY_TYPE(type, pcfs, cpidx) \
-                                    ->strname_idx))                  \
-                       ->name_index))
+                                  ->strname_idx))                    \
+                     ->name_index))
 
 #define PTR_CP2_CLASS_NAME_STRNAME(type, pcfs, cpidx, strname_idx)     \
    PTR_CP_THIS_STRNAME(pcfs,                                           \
                       (PTR_CP_ENTRY_TYPE(CONSTANT_Class_info,          \
                                  pcfs,                                 \
                                  (PTR_CP_ENTRY_TYPE(type, pcfs, cpidx) \
-                                      ->strname_idx))                  \
-                           ->name_index))
+                                    ->strname_idx))                    \
+                         ->name_index))
 
 /*@} */ /* End of grouped definitions */
 
