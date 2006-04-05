@@ -52,10 +52,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(native, h,
 /* Prototypes for functions in 'native.c' */
 
 extern rvoid native_run_method(jvm_thread_index          thridx,
-                               jvm_native_method_ordinal nmord,
                                jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
                                jvm_constant_pool_index   mthnameidx,
-                               jvm_constant_pool_index   mthdescidx);
+                               jvm_constant_pool_index   mthdescidx,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod);
 
 extern jvm_native_method_ordinal native_locate_local_method(
                                 ClassFile               *pcfs,
