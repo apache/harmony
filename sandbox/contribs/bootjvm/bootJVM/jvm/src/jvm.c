@@ -731,7 +731,6 @@ http://java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pd
  *       in table in this section.  Likewise for section 2.18,
  *       FP-strict expressions, and section 3.8, floating point
  *       arithmetic.
- *
  * @attention The virtual execution engine is still under development
  *            as this initial contribution is being made.  While the
  *            project team is working on learning what is inside the
@@ -1301,15 +1300,23 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
     /********** Load primatives of all types *********/
 
     /* Loaded on system thread */
-    if((jvm_class_index_null == class_load_primative(BASETYPE_CHAR_B))||
-       (jvm_class_index_null == (pjvm->class_primative_char  =
-                               class_load_primative(BASETYPE_CHAR_C)))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_D))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_F))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_I))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_J))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_S))||
-       (jvm_class_index_null == class_load_primative(BASETYPE_CHAR_Z)))
+    pjvm->class_primative_byte   =class_load_primative(BASETYPE_CHAR_B);
+    pjvm->class_primative_char   =class_load_primative(BASETYPE_CHAR_C);
+    pjvm->class_primative_double =class_load_primative(BASETYPE_CHAR_D);
+    pjvm->class_primative_float  =class_load_primative(BASETYPE_CHAR_F);
+    pjvm->class_primative_int    =class_load_primative(BASETYPE_CHAR_I);
+    pjvm->class_primative_long   =class_load_primative(BASETYPE_CHAR_J);
+    pjvm->class_primative_short  =class_load_primative(BASETYPE_CHAR_S);
+    pjvm->class_primative_boolean=class_load_primative(BASETYPE_CHAR_Z);
+
+    if((jvm_class_index_null == pjvm->class_primative_byte)    ||
+       (jvm_class_index_null == pjvm->class_primative_char)    ||
+       (jvm_class_index_null == pjvm->class_primative_double)  ||
+       (jvm_class_index_null == pjvm->class_primative_float)   ||
+       (jvm_class_index_null == pjvm->class_primative_int)     ||
+       (jvm_class_index_null == pjvm->class_primative_long)    ||
+       (jvm_class_index_null == pjvm->class_primative_short)   ||
+       (jvm_class_index_null == pjvm->class_primative_boolean))
     {
         sysErrMsg(arch_function_name,
                   "Cannot load primative classes for java.lang.Class");
@@ -1530,10 +1537,10 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
      *           base @e must be used to make this possible.
      */
     pjargc[0] =
-#ifdef CONFIG_HACKED_BOOTCLASSPATH
-                0    /* Not possible without built-in String*/
-#else
+#ifndef CONFIG_HACKED_BOOTCLASSPATH
                 pjvm->argcj
+#else
+                0    /* Not possible without built-in String class */
 #endif
                 ;
 
@@ -1560,13 +1567,9 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     if (0 < pjvm->argcj)
     {
-        rint pcharlen;
-
         rint i;
         for (i = 0; i < pjvm->argcj; i++)
         {
-            pcharlen = portable_strlen(pjvm->argv[i]);
-
             cp_info_dup *putfarg = nts_prchar2utf(pjvm->argvj[i]);
 
             /*!
