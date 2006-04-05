@@ -52,7 +52,9 @@ ARCH_SOURCE_COPYRIGHT_APACHE(method, c,
 #include "jvm.h"
 #include "jvmclass.h"
 #include "linkage.h"
+#include "method.h"
 #include "nts.h"
+#include "opcode.h"
 #include "utf.h"
 
 
@@ -229,6 +231,9 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
                 case BASETYPE_CHAR_ARRAY:
                 case METHOD_CHAR_VOID:
                     return((jvm_basetype) pcpd_Utf8->bytes[idx + 1]);
+                default:
+                    /* Found something, but it was invalid */
+                    return((jvm_basetype) LOCAL_BASETYPE_ERROR);
             }
         }
     }
@@ -236,7 +241,7 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
     /*!
      * @todo  HARMONY-6-jvm-method.c-1 Should this throw a
      *        @b VerifyError instead? Is it better to let
-     *        caller do this?
+     *        caller do this?  Same for above @c @b default case.
      */
 
     /* Error, something else found */
@@ -262,9 +267,6 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
  *                     CONSTANT_Utf8_info string containing the
  *                     descriptor of an unqualified method name.
  *
- * @param access_flags The @link #ACC_PUBLIC ACC_xxx@endlink access
- *                     flags for this method.
- *
  *
  * @returns Number of @link #jint jint@endlink words of JVM stack space
  *          required for parameters to method @c @b mthdescidx.
@@ -276,8 +278,7 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
  *
  */
 rint method_parm_size(jvm_class_index         clsidx,
-                      jvm_constant_pool_index mthdescidx,
-                      u2                      access_flags)
+                      jvm_constant_pool_index mthdescidx)
 {
     ARCH_FUNCTION_NAME(method_parm_size);
 
@@ -293,15 +294,7 @@ rint method_parm_size(jvm_class_index         clsidx,
     rboolean find_class_close;
     find_class_close = rfalse;
 
-    /*!
-     * @internal Adjust output length if the method is not a
-     *           a @c @b static method to account for the
-     *           object's @c @b this object hash as the first
-     *           word on the stack for the method call.
-     */
-    rint rc = (ACC_STATIC & access_flags)
-              ? ((0 * sizeof(jvm_object_hash)) / sizeof(jint))
-              : ((1 * sizeof(jvm_object_hash)) / sizeof(jint));
+    rint rc = 0;
 
     rboolean find_array_type;
     find_array_type = rfalse;
@@ -464,5 +457,118 @@ rint method_parm_size(jvm_class_index         clsidx,
 
 } /* END of method_parm_size() */
 
+
+/*!
+* @name Suggest a virtual opcode implied in method name and access flags
+ *
+ * These functions support native_run_method() by suggesting a virtual
+ * operation code that should be used when calling it in the selected
+ * locations outside of the JVM inner loop, namely, when a virtual
+ * operation code is not otherwise available.
+ *
+ * @returns The most likely candidate for JVM operation code for this
+ *          method, should it have been invoked from with the JVM inner
+ *          loop.
+ *
+ *
+ * @attention The return value does @e not represent a sure thing!
+ *            This is because of the potential ambiguity of the
+ *            algorithm, which is still sufficient for its initial
+ *            purpose of supporting
+ *            @link #POP_THIS_OBJHASH() POP_THIS_OBJHASH()@endlink in
+ *            @link jvm/src/native.c native.c@endlink.
+ *
+ *
+ * @todo  HARMONY-6-jvm-method.c-2 What criteria should be used to
+ *        be able to return OPCODE_B9_INVOKEINTERFACE also?  The
+ *        current usage is designed for use by
+ *        @link #POP_THIS_OBJHASH() POP_THIS_OBJHASH()@endlink in
+ *        @link jvm/src/native.c native.c@endlink, but it could
+ *        be extended if needed.
+ *
+ */
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Suggest virtual opcode from null-terminated method name string
+ *
+ * @param mthname      Method name
+ *
+ * @param access_flags The @link #ACC_PUBLIC ACC_xxx@endlink access
+ *                     flags for this method.
+ *
+ */
+jvm_virtual_opcode method_implied_opcode_from_prchar(
+                                        rchar            *mthname,
+                                        jvm_access_flags  access_flags)
+{
+    if (0 == portable_strcmp(LOCAL_CONSTANT_UTF8_CLASS_CONSTRUCTOR,
+                             mthname))
+    {
+        return(OPCODE_B7_INVOKESPECIAL);
+    }
+    else
+    if (0 == portable_strcmp(CONSTANT_UTF8_INSTANCE_CONSTRUCTOR,
+                             mthname))
+    {
+        return(OPCODE_B7_INVOKESPECIAL);
+    }
+    else
+    if (ACC_STATIC & access_flags)
+    {
+        return(OPCODE_B8_INVOKESTATIC);
+    }
+    else
+    {
+        return(OPCODE_B6_INVOKEVIRTUAL);
+    }
+
+} /* END of method_implied_opcode_from_prchar() */
+
+/*!
+ * @brief Suggest virtual opcode from @c @b constant_pool entry
+ *
+ * @param pcfs         Pointer to ClassFile area
+ *
+ * @param mthnameidx   Index into @c @b constant_pool for UTF8 method
+ *                     name string
+ *
+ * @param access_flags The @link #ACC_PUBLIC ACC_xxx@endlink access
+ *                     flags for this method.
+ *
+ */
+jvm_virtual_opcode method_implied_opcode_from_cp_entry_pcfs(
+                                  ClassFile              *pcfs,
+                                  jvm_constant_pool_index mthnameidx,
+                                  jvm_access_flags        access_flags)
+{
+    CONSTANT_Utf8_info *mthname =
+        PTR_THIS_CP_Utf8(pcfs->constant_pool[mthnameidx]);
+
+    if (0 == utf_prchar_strcmp(mthname,
+                               LOCAL_CONSTANT_UTF8_CLASS_CONSTRUCTOR))
+    {
+        return(OPCODE_B7_INVOKESPECIAL);
+    }
+    else
+    if (0 == utf_prchar_strcmp(mthname,
+                               CONSTANT_UTF8_INSTANCE_CONSTRUCTOR))
+    {
+        return(OPCODE_B7_INVOKESPECIAL);
+    }
+    else
+    if (ACC_STATIC & access_flags)
+    {
+        return(OPCODE_B8_INVOKESTATIC);
+    }
+    else
+    {
+        return(OPCODE_B6_INVOKEVIRTUAL);
+    }
+
+} /* END of method_implied_opcode_from_utf() */
+
+/*@} */ /* End of grouped definitions */
 
 /* EOF */
