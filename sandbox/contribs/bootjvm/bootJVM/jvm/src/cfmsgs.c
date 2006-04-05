@@ -149,10 +149,10 @@ rvoid cfmsgs_typemsg(rchar *fn,
                     "%s Class cpidx=0x%02x clsidx=%d len=%d %*.*s",
                       msg_hdr,
                       PTR_CP_ENTRY_TYPE(CONSTANT_Class_info, pcfs,cpidx)
-                          ->name_index,
+                        ->name_index,
 
                       PTR_CP_ENTRY_TYPE(CONSTANT_Class_info, pcfs,cpidx)
-                          ->LOCAL_Class_binding.clsidxJVM,
+                        ->LOCAL_Class_binding.clsidxJVM,
 
                       star_len,
 
@@ -181,16 +181,16 @@ rvoid cfmsgs_typemsg(rchar *fn,
 "%s Fieldref cpidx=0x%02x clsidx=%d fluidx=%d oiflag=%d jvalue=%c len=%d class=%*.*s cpidx=0x%02x len=%d n/t=%*.*s",
                       msg_hdr,
                     PTR_CP_ENTRY_TYPE(CONSTANT_Fieldref_info,pcfs,cpidx)
-                          ->class_index,
+                      ->class_index,
 
                     PTR_CP_ENTRY_TYPE(CONSTANT_Fieldref_info,pcfs,cpidx)
-                          ->LOCAL_Fieldref_binding.clsidxJVM,
+                      ->LOCAL_Fieldref_binding.clsidxJVM,
                     PTR_CP_ENTRY_TYPE(CONSTANT_Fieldref_info,pcfs,cpidx)
-                          ->LOCAL_Fieldref_binding.fluidxJVM,
+                      ->LOCAL_Fieldref_binding.fluidxJVM,
                     PTR_CP_ENTRY_TYPE(CONSTANT_Fieldref_info,pcfs,cpidx)
-                          ->LOCAL_Fieldref_binding.oiflagJVM,
+                      ->LOCAL_Fieldref_binding.oiflagJVM,
                     PTR_CP_ENTRY_TYPE(CONSTANT_Fieldref_info,pcfs,cpidx)
-                          ->LOCAL_Fieldref_binding.jvaluetypeJVM,
+                      ->LOCAL_Fieldref_binding.jvaluetypeJVM,
 
                       star_len,
 
@@ -201,7 +201,7 @@ rvoid cfmsgs_typemsg(rchar *fn,
                                                  class_index),
 
                     PTR_CP_ENTRY_TYPE(CONSTANT_Fieldref_info,pcfs,cpidx)
-                          ->name_and_type_index,
+                        ->name_and_type_index,
 
                       star_len2,
 
@@ -232,15 +232,15 @@ rvoid cfmsgs_typemsg(rchar *fn,
                                         cpidx)->class_index,
 
                    PTR_CP_ENTRY_TYPE(CONSTANT_Methodref_info,pcfs,cpidx)
-                       ->LOCAL_Methodref_binding.clsidxJVM,
+                     ->LOCAL_Methodref_binding.clsidxJVM,
                    PTR_CP_ENTRY_TYPE(CONSTANT_Methodref_info,pcfs,cpidx)
-                       ->LOCAL_Methodref_binding.mthidxJVM,
+                     ->LOCAL_Methodref_binding.mthidxJVM,
                    PTR_CP_ENTRY_TYPE(CONSTANT_Methodref_info,pcfs,cpidx)
-                       ->LOCAL_Methodref_binding.codeatridxJVM,
+                     ->LOCAL_Methodref_binding.codeatridxJVM,
                    PTR_CP_ENTRY_TYPE(CONSTANT_Methodref_info,pcfs,cpidx)
-                       ->LOCAL_Methodref_binding.excpatridxJVM,
+                     ->LOCAL_Methodref_binding.excpatridxJVM,
                    PTR_CP_ENTRY_TYPE(CONSTANT_Methodref_info,pcfs,cpidx)
-                       ->LOCAL_Methodref_binding.nmordJVM,
+                     ->LOCAL_Methodref_binding.nmordJVM,
 
                       star_len,
 
@@ -287,26 +287,26 @@ rvoid cfmsgs_typemsg(rchar *fn,
                      PTR_CP_ENTRY_TYPE(CONSTANT_InterfaceMethodref_info,
                                        pcfs,
                                        cpidx)
-                          ->LOCAL_InterfaceMethodref_binding.clsidxJVM,
+                       ->LOCAL_InterfaceMethodref_binding.clsidxJVM,
                      PTR_CP_ENTRY_TYPE(CONSTANT_InterfaceMethodref_info,
                                        pcfs,
                                        cpidx)
-                          ->LOCAL_InterfaceMethodref_binding.mthidxJVM,
+                       ->LOCAL_InterfaceMethodref_binding.mthidxJVM,
                      PTR_CP_ENTRY_TYPE(CONSTANT_InterfaceMethodref_info,
                                        pcfs,
                                        cpidx)
-                          ->LOCAL_InterfaceMethodref_binding
-                            .codeatridxJVM,
+                       ->LOCAL_InterfaceMethodref_binding
+                         .codeatridxJVM,
                      PTR_CP_ENTRY_TYPE(CONSTANT_InterfaceMethodref_info,
                                        pcfs,
                                        cpidx)
-                          ->LOCAL_InterfaceMethodref_binding
-                            .excpatridxJVM,
+                       ->LOCAL_InterfaceMethodref_binding
+                         .excpatridxJVM,
                      PTR_CP_ENTRY_TYPE(CONSTANT_InterfaceMethodref_info,
                                        pcfs,
                                        cpidx)
-                          ->LOCAL_InterfaceMethodref_binding
-                            .nmordJVM,
+                       ->LOCAL_InterfaceMethodref_binding
+                         .nmordJVM,
 
                       star_len,
 
@@ -343,7 +343,7 @@ rvoid cfmsgs_typemsg(rchar *fn,
                 "%s String cpidx=0x%02x len=%d UTF8='%*.*s'",
                       msg_hdr,
                      PTR_CP_ENTRY_TYPE(CONSTANT_String_info, pcfs,cpidx)
-                          ->string_index,
+                       ->string_index,
 
                       star_len,
 
@@ -379,9 +379,9 @@ rvoid cfmsgs_typemsg(rchar *fn,
         case CONSTANT_Long:
 
             pu4h = &PTR_CP_ENTRY_TYPE(CONSTANT_Long_info, pcfs, cpidx)
-                        ->high_bytes;
+                      ->high_bytes;
             pu4l = &PTR_CP_ENTRY_TYPE(CONSTANT_Long_info, pcfs, cpidx)
-                        ->low_bytes;
+                      ->low_bytes;
 
             /*
              * if WORDSIZE/32/64 mismatches -m32/-m64,
@@ -413,9 +413,9 @@ rvoid cfmsgs_typemsg(rchar *fn,
         case CONSTANT_Double:
 
             pu4h = &PTR_CP_ENTRY_TYPE(CONSTANT_Double_info, pcfs, cpidx)
-                       ->high_bytes;
+                      ->high_bytes;
             pu4l = &PTR_CP_ENTRY_TYPE(CONSTANT_Double_info, pcfs, cpidx)
-                       ->low_bytes;
+                      ->low_bytes;
 
             /*
              * if WORDSIZE/32/64 mismatches -m32/-m64,
@@ -775,11 +775,11 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                       msg_hdr,
                       CONSTANT_UTF8_CODE_ATTRIBUTE,
                       PTR_CP_ENTRY_TYPE(Code_attribute, pcfs, cpidx)
-                          ->max_stack,
+                        ->max_stack,
                       PTR_CP_ENTRY_TYPE(Code_attribute, pcfs, cpidx)
-                          ->max_locals,
+                        ->max_locals,
                       PTR_CP_ENTRY_TYPE(Code_attribute, pcfs, cpidx)
-                          ->code_length);
+                        ->code_length);
             break;
 
         case LOCAL_EXCEPTIONS_ATTRIBUTE:
@@ -790,7 +790,7 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                       msg_hdr,
                       CONSTANT_UTF8_CODE_ATTRIBUTE,
                      PTR_CP_ENTRY_TYPE(Exceptions_attribute, pcfs,cpidx)
-                          ->number_of_exceptions);
+                        ->number_of_exceptions);
             break;
 
         case LOCAL_INNERCLASSES_ATTRIBUTE:
@@ -875,7 +875,7 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                       PTR_CP_ENTRY_TYPE(LocalVariableTable_attribute,
                                         pcfs,
                                         cpidx)
-                          ->local_variable_table_length);
+                        ->local_variable_table_length);
             break;
 
         case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
@@ -889,7 +889,7 @@ rvoid cfmsgs_atrmsg(rchar *fn,
                                        LocalVariableTypeTable_attribute,
                                        pcfs,
                                        cpidx)
-                          ->local_variable_type_table_length);
+                        ->local_variable_type_table_length);
             break;
 
         case LOCAL_DEPRECATED_ATTRIBUTE:

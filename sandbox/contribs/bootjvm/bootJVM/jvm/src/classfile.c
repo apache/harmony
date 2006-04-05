@@ -587,19 +587,19 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
                 /* Initialize late binding extension */
                 PTR_THIS_CP_Fieldref(pcpd)
-                    ->LOCAL_Fieldref_binding.clsidxJVM =
+                  ->LOCAL_Fieldref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
                 PTR_THIS_CP_Fieldref(pcpd)
-                    ->LOCAL_Fieldref_binding.fluidxJVM =
+                  ->LOCAL_Fieldref_binding.fluidxJVM =
                                                     jvm_field_index_bad;
 
                 PTR_THIS_CP_Fieldref(pcpd)
-                    ->LOCAL_Fieldref_binding.oiflagJVM =
+                  ->LOCAL_Fieldref_binding.oiflagJVM =
                                                 rneither_true_nor_false;
 
                 PTR_THIS_CP_Fieldref(pcpd)
-                    ->LOCAL_Fieldref_binding.jvaluetypeJVM =
+                  ->LOCAL_Fieldref_binding.jvaluetypeJVM =
                                                    LOCAL_BASETYPE_ERROR;
 
                 break;
@@ -625,23 +625,23 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
                 /* Initialize late binding extension */
                 PTR_THIS_CP_Methodref(pcpd)
-                    ->LOCAL_Methodref_binding.clsidxJVM =
+                  ->LOCAL_Methodref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
                 PTR_THIS_CP_Methodref(pcpd)
-                    ->LOCAL_Methodref_binding.mthidxJVM =
+                  ->LOCAL_Methodref_binding.mthidxJVM =
                                                    jvm_method_index_bad;
 
                 PTR_THIS_CP_Methodref(pcpd)
-                    ->LOCAL_Methodref_binding.codeatridxJVM =
+                  ->LOCAL_Methodref_binding.codeatridxJVM =
                                                 jvm_attribute_index_bad;
 
                 PTR_THIS_CP_Methodref(pcpd)
-                    ->LOCAL_Methodref_binding.excpatridxJVM =
+                  ->LOCAL_Methodref_binding.excpatridxJVM =
                                                 jvm_attribute_index_bad;
 
                 PTR_THIS_CP_Methodref(pcpd)
-                    ->LOCAL_Methodref_binding.nmordJVM =
+                  ->LOCAL_Methodref_binding.nmordJVM =
                                          jvm_native_method_ordinal_null;
 
                 break;
@@ -668,23 +668,23 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
                 /* Initialize late binding extension */
                 PTR_THIS_CP_InterfaceMethodref(pcpd)
-                    ->LOCAL_InterfaceMethodref_binding.clsidxJVM =
+                  ->LOCAL_InterfaceMethodref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
                 PTR_THIS_CP_InterfaceMethodref(pcpd)
-                    ->LOCAL_InterfaceMethodref_binding.mthidxJVM =
+                  ->LOCAL_InterfaceMethodref_binding.mthidxJVM =
                                                    jvm_method_index_bad;
 
                 PTR_THIS_CP_InterfaceMethodref(pcpd)
-                    ->LOCAL_InterfaceMethodref_binding.codeatridxJVM =
+                  ->LOCAL_InterfaceMethodref_binding.codeatridxJVM =
                                                 jvm_attribute_index_bad;
 
                 PTR_THIS_CP_InterfaceMethodref(pcpd)
-                    ->LOCAL_InterfaceMethodref_binding.excpatridxJVM =
+                  ->LOCAL_InterfaceMethodref_binding.excpatridxJVM =
                                                 jvm_attribute_index_bad;
 
                 PTR_THIS_CP_InterfaceMethodref(pcpd)
-                    ->LOCAL_InterfaceMethodref_binding.nmordJVM =
+                  ->LOCAL_InterfaceMethodref_binding.nmordJVM =
                                          jvm_native_method_ordinal_null;
 
                 break;
@@ -1249,15 +1249,15 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
              * exception attribute is found.
              */
             pcfs->methods[mthidx]
-                    ->LOCAL_method_binding.codeatridxJVM =
+                  ->LOCAL_method_binding.codeatridxJVM =
                                             jvm_attribute_index_bad;
 
             pcfs->methods[mthidx]
-                    ->LOCAL_method_binding.excpatridxJVM =
+                  ->LOCAL_method_binding.excpatridxJVM =
                                             jvm_attribute_index_bad;
 
             pcfs->methods[mthidx]
-                    ->LOCAL_method_binding.nmordJVM =
+                  ->LOCAL_method_binding.nmordJVM =
                                      jvm_native_method_ordinal_null;
 
 
@@ -1313,7 +1313,8 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                      */
                     switch (cfattrib_atr2enum(pcfs,
                             pcfs->methods[mthidx]->attributes[atridx]
-                                      ->ai.attribute_name_index))
+                                  ->ai
+                                    .attribute_name_index))
                     {
                         case LOCAL_CODE_ATTRIBUTE:
                             pcfs
