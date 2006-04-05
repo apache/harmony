@@ -7,7 +7,7 @@
  * This file contains a stub sample implementation this class.
  *
  * The full implementation of this source file should contain each and
- * every native method that is declared by the implmentation and it
+ * every native method that is declared by the implementation and it
  * should be stored in a shared archive along with the other classes
  * of this Java package's native methods.
  *

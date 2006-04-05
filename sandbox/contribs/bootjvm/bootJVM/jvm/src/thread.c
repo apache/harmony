@@ -778,7 +778,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
                 class_find_by_prchar(
                     PTR_CP1_CLASS_NAME_STRNAME(pcfs_recurse,
                                             pcfs_recurse->super_class)))
-            ->pcfs;
+          ->pcfs;
     }
 
     /* Iterate through class table looking for superclasses */
@@ -831,7 +831,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
                 class_find_by_prchar(
                     PTR_CP1_CLASS_NAME_STRNAME(pcfs_recurse,
                                         pcfs_recurse->super_class)))
-            ->pcfs;
+          ->pcfs;
 
     } /* while pcfs_recurse */
 

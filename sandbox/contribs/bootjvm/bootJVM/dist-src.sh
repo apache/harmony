@@ -62,7 +62,7 @@
 # @section Reference
 #
 #/ /* 
-# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
 # Use the above open comment to force termination of parsing
 # since it is not a Doxygen-style 'C' comment.)
@@ -89,7 +89,7 @@ trap "" 1 2 3 15
 #
 # Check for common Eclipse output directory at normal level.
 #
-# Notice that each JNI implmementation will have its own directory
+# Notice that each JNI implemementation will have its own directory
 # tree with its own scripts and its own 'bin' directory, while Eclipse
 # generates the directory in question, which 'make -C jni/src clean'
 # does not clean up.

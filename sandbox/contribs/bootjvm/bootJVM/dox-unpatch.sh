@@ -67,7 +67,7 @@
 # @section Reference
 #
 #/ /* 
-# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
 # Use the above open comment to force termination of parsing
 # since it is not a Doxygen-style 'C' comment.)

@@ -504,7 +504,7 @@ rboolean nts_prchar_isclassformatted(rchar *src)
 
 rchar *nts_prchar2prchar_unformatted_classname(rchar *inbfr)
 {
-    ARCH_FUNCTION_NAME(nts_prchar2prcahr_unformatted_classname);
+    ARCH_FUNCTION_NAME(nts_prchar2prchar_unformatted_classname);
 
     int inbfrlen            = portable_strlen(inbfr);
     rint isfmt              = nts_prchar_isclassformatted(inbfr);
