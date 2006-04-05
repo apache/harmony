@@ -87,8 +87,17 @@ extern jvm_basetype method_return_type(jvm_class_index      clsidx,
                                     jvm_constant_pool_index mthdescidx);
 
 extern rint method_parm_size(jvm_class_index         clsidx,
-                             jvm_constant_pool_index mthdescidx,
-                             u2                      access_flags);
+                             jvm_constant_pool_index mthdescidx);
+
+extern jvm_virtual_opcode method_implied_opcode_from_prchar(
+                                        rchar            *mthname,
+                                        jvm_access_flags  access_flags);
+
+extern jvm_virtual_opcode method_implied_opcode_from_cp_entry_pcfs(
+                                  ClassFile              *pcfs,
+                                  jvm_constant_pool_index mthnameidx,
+                                  jvm_access_flags        access_flags);
+
 #endif /* _method_h_included_ */
 
 /* EOF */
