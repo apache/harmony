@@ -59,6 +59,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(object, c,
 #include "method.h"
 #include "native.h"
 #include "opcode.h"
+#include "opmacros.h"
 #include "utf.h"
 #include "unicode.h"
 #include "util.h"
@@ -177,13 +178,19 @@ rvoid object_run_method(jvm_class_index   clsidx,
     if (jvm_attribute_index_native == codeatridx)
     {
         /* Pass parameters for both local method and JNI call */
+        method_info *pmthidx = pcfs->methods[mthidx];
         native_run_method(thridx,
-                          pcfs
-                            ->methods[mthidx]
-                              ->LOCAL_method_binding.nmordJVM,
                           clsidx,
-                          pcfs->methods[mthidx]->name_index,
-                          pcfs->methods[mthidx]->descriptor_index);
+                          pmthidx->LOCAL_method_binding.nmordJVM,
+                          pmthidx->name_index,
+                          pmthidx->descriptor_index,
+                          pmthidx->access_flags,
+                          method_implied_opcode_from_cp_entry_pcfs(
+                              pcfs,
+                              pmthidx->name_index,
+                              pmthidx->access_flags),
+                              IS_INIT_METHOD(pcfs,
+                                             pmthidx->name_index));
     }
     else
     {
@@ -197,9 +204,9 @@ rvoid object_run_method(jvm_class_index   clsidx,
                          clsidx,
                          mthidx,
                          pcfs->methods[mthidx]
-                                 ->LOCAL_method_binding.codeatridxJVM,
+                               ->LOCAL_method_binding.codeatridxJVM,
                          pcfs->methods[mthidx]
-                                 ->LOCAL_method_binding.excpatridxJVM,
+                               ->LOCAL_method_binding.excpatridxJVM,
                          CODE_CONSTRAINT_START_PC);
 
         /*
@@ -295,7 +302,7 @@ jvm_object_hash
              if (0 == unicode_strcmp(punicode,
                                      len_unicode,
                                      OBJECT(array_objhash).arraydata,
-                                  OBJECT(array_objhash).arraylength[0]))
+                                  OBJECT(array_objhash).arraylength))
              {
                 return(objhash);
              }
@@ -344,7 +351,7 @@ rvoid object_new_setup(jvm_object_hash objhash)
      */
     OBJECT(objhash).arraybasetype = LOCAL_BASETYPE_ERROR;
     OBJECT(objhash).arraydims     = LOCAL_CONSTANT_NO_ARRAY_DIMS;
-    OBJECT(objhash).arraylength   = (jint *) rnull;
+    OBJECT(objhash).arraylength   = 0;
     OBJECT(objhash).arraydata     = (rvoid *) rnull;
 
     /* No object monitor is locked */
@@ -612,7 +619,8 @@ static jvm_object_hash object_allocate_slot(rboolean tryagain)
  * @param   run_init_   When @link #rtrue rtrue@endlink, run the
  *                      object's @c @b \<init\> method with default
  *                      parameters, otherwise
- *                      @link #rfalse rfalse@endlink.
+ *                      @link #rfalse rfalse@endlink.  Not meaningful
+ *                      for OBJECT_STATUS_STRING.
  *
  * @param   thridx      Thread table index associated with this
  *                      @c @b java.lang.Thread object.
@@ -711,8 +719,6 @@ jvm_object_hash object_instance_new(rushort          special_obj,
         CONSTANT_Utf8_info *pclsname = PTR_CP1_CLASS_NAME(pcfs,
                                                       pcfs->this_class);
 
-        OBJECT(objhash).arraydims = arraydims;
-
         if (CLASS(clsidx).status & CLASS_STATUS_PRIMATIVE)
         {
             OBJECT(objhash).arraybasetype = (jvm_basetype)
@@ -723,16 +729,18 @@ jvm_object_hash object_instance_new(rushort          special_obj,
             OBJECT(objhash).arraybasetype = BASETYPE_CHAR_L;
         }
 
-        OBJECT(objhash).arraylength   = arraylength;
-
         /* Set ARRAY status if applicable, also SUBARRAY */
         OBJECT(objhash).status |=
            special_obj & (OBJECT_STATUS_ARRAY | OBJECT_STATUS_SUBARRAY);
 
 
+        OBJECT(objhash).arraydims = arraydims;
+
+        OBJECT(objhash).arraylength   = arraylength[0];
+
         /* Recursively build array object with 1 less array dimension */
 
-        /* Allocate this current array dimension--arraylength[0] */
+        /* Allocate the current array dimension--arraylength[0] */
         if (1 < arraydims)
         {
             /*
@@ -741,62 +749,19 @@ jvm_object_hash object_instance_new(rushort          special_obj,
              */
 
             OBJECT(objhash).arraydata =
-                (0 > arraylength[0])
-
-                ? HEAP_GET_DATA(
-                      arraylength[0] * sizeof(jvm_object_hash),
-                      rtrue)
+                ((0 == arraylength[0])
 
                     /*!
                      * @todo  HARMONY-6-jvm-object.c-1 case needs
                      *         testing: 0 == arraylength[0]
                      */
-                : (rvoid *) rnull;
-        }
-        else
-        {
-            /*
-             * Notice OBJECT(objhash).status does NOT have
-             * OBJECT_STATUS_ARRAY set once the final array component
-             * is to be constructed.  It is @e only for the data
-             * superstructures of these components.
-             *
-             * Now look up base type, less BASETYPE_CHAR_ARRAY,
-             * which is already accounted for.
-             */
-            int unit;
-            switch(OBJECT(objhash).arraybasetype)
-            {
-                case BASETYPE_CHAR_B:  unit = sizeof(jbyte);    break;
-                case BASETYPE_CHAR_C:  unit = sizeof(jchar);    break;
-                case BASETYPE_CHAR_D:  unit = sizeof(jdouble);  break;
-                case BASETYPE_CHAR_F:  unit = sizeof(jfloat);   break;
-                case BASETYPE_CHAR_I:  unit = sizeof(jint);     break;
-                case BASETYPE_CHAR_J:  unit = sizeof(jlong);    break;
-                case BASETYPE_CHAR_L:  unit = sizeof(jvm_object_hash);
-                                                                break;
-                case BASETYPE_CHAR_S:  unit = sizeof(jshort); break;
-                case BASETYPE_CHAR_Z:  unit = sizeof(jboolean); break;
+                 ? (rvoid *) rnull
 
-                default:
-                    exit_throw_exception(EXIT_JVM_OBJECT,
-                       JVMCLASS_JAVA_LANG_UNSUPPORTEDCLASSVERSIONERROR);
-            }
+                 : HEAP_GET_DATA(
+                      arraylength[0] * sizeof(jvm_object_hash),
+                      rtrue)
+                );
 
-            /* Allocate and zero out each component of 1-dim array */
-            if (0 < arraylength[0])
-            {
-                OBJECT(objhash).arraydata =
-                    HEAP_GET_DATA(unit * arraylength[0], rtrue);
-            }
-            else
-            {
-                OBJECT(objhash).arraydata = (rvoid *) rnull;
-            }
-        }
-
-        if (1 < arraydims)
-        {
             jint dimlength;
 
             /* Notice if 0 == arraylength[0], this loop is skipped */
@@ -804,7 +769,7 @@ jvm_object_hash object_instance_new(rushort          special_obj,
             {
                 /*
                  * Go allocate each element of this dimension of array,
-                 * namely, the sub-array of arraylength[1]...
+                 * namely, the sub-array of arraylength[0]...
                  * ONLY set SUBARRAY status from this recursive call.
                  * Its purpose is for deallocation and cleanup.
                  */
@@ -829,16 +794,67 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                  OBJECT(objhasharray)
                    .arraydata)[dimlength] = objhasharray;
 
-                (rvoid) GC_OBJECT_MKREF_FROM_CLASS(clsidx,
-                                                   objhasharray);
+                (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(objhash,
+                                                    objhasharray);
             }
         }
         else
+        if (1 == arraydims)
         {
             /*
-             * Nothing further needs to be done for 1-dim array
-             * since all components were cleared upon allocation.
+             * Notice OBJECT(objhash).status does NOT have
+             * OBJECT_STATUS_ARRAY set once the final array component
+             * is to be constructed.  It is @e only for the data
+             * superstructures of these components.
+             *
+             * Now look up base type, less BASETYPE_CHAR_ARRAY,
+             * which is already accounted for.
              */
+            int unit;
+            switch(OBJECT(objhash).arraybasetype)
+            {
+                case BASETYPE_CHAR_B:  unit = sizeof(jbyte);    break;
+                case BASETYPE_CHAR_C:  unit = sizeof(jchar);    break;
+                case BASETYPE_CHAR_D:  unit = sizeof(jdouble);  break;
+                case BASETYPE_CHAR_F:  unit = sizeof(jfloat);   break;
+                case BASETYPE_CHAR_I:  unit = sizeof(jint);     break;
+                case BASETYPE_CHAR_J:  unit = sizeof(jlong);    break;
+                case BASETYPE_CHAR_L:  unit = sizeof(jvm_object_hash);
+                                                                break;
+                case BASETYPE_CHAR_S:  unit = sizeof(jshort);   break;
+                case BASETYPE_CHAR_Z:  unit = sizeof(jboolean); break;
+
+                default:
+                    exit_throw_exception(EXIT_JVM_OBJECT,
+                       JVMCLASS_JAVA_LANG_UNSUPPORTEDCLASSVERSIONERROR);
+            }
+
+            /* Allocate and zero out each component of 1-dim array */
+            if (0 < arraylength[0])
+            {
+                /*!
+                 * @internal By passing in @link #rtrue rtrue@endlink,
+                 *           all array members are cleared to zero,
+                 *           which corresponds to their correct initial
+                 *           values for all data types, including @link
+                             #jvm_object_hash jvm_object_hash@endlink
+                 *
+                 */
+                OBJECT(objhash).arraydata =
+                    HEAP_GET_DATA(unit * arraylength[0], rtrue);
+            }
+            else
+            {
+                OBJECT(objhash).arraydata = (rvoid *) rnull;
+            }
+        }
+        else
+        if (0 == arraydims)
+        {
+            /* Either bad dimensions or should not be marked as array */
+            exit_throw_exception(EXIT_JVM_OBJECT,
+                                 JVMCLASS_JAVA_LANG_INTERNALERROR);
+/*NOTREACHED*/
         }
 
     } /* if OBJECT_STATUS_ARRAY */
@@ -875,38 +891,62 @@ jvm_object_hash object_instance_new(rushort          special_obj,
      * After allocating slot, instantiate superclass first,
      * then load up remainder of this object.
      */
+    /*!
+     * @todo  HARMONY-6-jvm-object.c-7 Does a multi-dimensional
+     *        array have a superclass object?  Or even a ONE-dimensional
+     *        array have a superclass object?  Should such be reserved
+     *        for the array components _only_, where applicable?  Or
+     *        should some or all array objects themselves have
+     *        superclass objects so they eventually inherit the various
+     *        methods from java.lang.Object (except .clone() method )
+     *        and java.lang.Cloneable and java.io.Serializable (see
+     *        spec section 2.15 on these implementations).
+     */
     if (CONSTANT_CP_DEFAULT_INDEX != pcfs->super_class)
     {
         /*
          * WARNING!  RECURSIVE CALL!  This will recurse until
-         * the superclass of this object is
-         * @c @b java/Lang/Object.
+         * the superclass of this object is @c @b java/Lang/Object.
          * The recursion for class definitions is performed
          * by the calling method, so class loading does not
          * need recursion.
          */
-        rchar *supername =
-            utf_utf2prchar_classname(PTR_CP1_CLASS_NAME(pcfs,
-                                                    pcfs->super_class));
-
-        jvm_class_index clsidxsuper = class_find_by_prchar(supername);
-
-        HEAP_FREE_DATA(supername);
+        jvm_class_index clsidxsuper =
+            class_find_by_cp_entry(PTR_CP_SLOT(pcfs, 
+                                               PTR_CP_ENTRY_CLASS(pcfs,
+                                                      pcfs->super_class)
+                                                 ->name_index));
 
         if (jvm_object_hash_null == clsidxsuper)
         {
+            /*!
+             * @todo  HARMONY-6-jvm-object.c-6 Which is better, throw
+             *        an error or clean up and return null.  If the
+             *        latter, then add cleanup logic before returning.
+             */
+#if 0
             return(jvm_object_hash_null);
+#else
+        exit_throw_exception(EXIT_JVM_THREAD,
+                             JVMCLASS_JAVA_LANG_INTERNALERROR);
+/*NOTREACHED*/
+#endif
         }
 
         jvm_table_linkage *ptl = CLASS_OBJECT_LINKAGE(clsidxsuper);
 
+        /* Construct a superclass object instance for this object */
         /*
          * @warning  Recursive call, <b># of superclasses</b>
          *           levels deep.
          */
         OBJECT(objhash).objhash_superclass =
             object_instance_new(
-                (0 == utf_prchar_classname_strcmp(
+             /*!
+              * @todo  HARMONY-6-jvm-object.c-9 Do I need this logic, or
+              *        can I get away with @e only OBJECT_STATUS_EMPTY?
+              */
+             /* (0 == utf_prchar_classname_strcmp(
                           JVMCLASS_JAVA_LANG_THREAD,
                           ptl->pcfs,
                           ptl->pcfs->this_class))
@@ -916,7 +956,10 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                           ptl->pcfs,
                           ptl->pcfs->this_class))
                         ? OBJECT_STATUS_STRING
-                        : OBJECT_STATUS_EMPTY,
+                        : OBJECT_STATUS_EMPTY
+              */
+                OBJECT_STATUS_EMPTY,
+
                 ptl->pcfs,
                 clsidxsuper,
                 LOCAL_CONSTANT_NO_ARRAY_DIMS,
@@ -940,12 +983,6 @@ jvm_object_hash object_instance_new(rushort          special_obj,
     /* Declare that object is initialized */
     OBJECT(objhash).status &= ~OBJECT_STATUS_NULL;
 
-    /* Done if not running @c @b \<init\> method */
-    if (rfalse == run_init_)
-    {
-        return(objhash);
-    }
-
     if (OBJECT_STATUS_STRING & special_obj)
     {
         /*!
@@ -956,9 +993,7 @@ jvm_object_hash object_instance_new(rushort          special_obj,
          *        the byte array constructor:
          *        String(byte[] bytes, int offset,int length)
          */
-        jint *numchars = HEAP_GET_DATA(1 * sizeof(jint), rfalse);
-
-        numchars[0] = utf8string->length;
+        jint numchars = utf8string->length;
 
         jvm_object_hash array_objhash =
             object_instance_new(OBJECT_STATUS_EMPTY,
@@ -966,7 +1001,7 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                                     pjvm->class_primative_char)->pcfs,
                                 pjvm->class_primative_char,
                                 1,
-                                numchars,
+                                &numchars,
                                 rfalse,
                                 thridx,
                                 (CONSTANT_Utf8_info *) rnull);
@@ -994,10 +1029,23 @@ jvm_object_hash object_instance_new(rushort          special_obj,
     }
     else
     {
-        object_run_method(clsidx,
-            CONSTANT_UTF8_INSTANCE_CONSTRUCTOR,
-            CONSTANT_UTF8_INSTANCE_CONSTRUCTOR_DESCRIPTOR_DEFAULT,
-            thridx);
+        /*!
+         * @todo  HARMONY-6-jvm-object.c-8 Furthermore (per discussion
+         *        of superclass objects for arrays), should there be
+         *        any constructor run for arrays?  Since all components
+         *        are initialized to zero during heap allocation, is
+         *        there anything to do?  Could it simply skip this step?
+         */
+
+        /* Done if not running @c @b \<init\> method or if an array */
+        if ((rtrue == run_init_) &&
+            (!(OBJECT_STATUS_ARRAY & special_obj)))
+        {
+            object_run_method(clsidx,
+                CONSTANT_UTF8_INSTANCE_CONSTRUCTOR,
+                CONSTANT_UTF8_INSTANCE_CONSTRUCTOR_DESCRIPTOR_DEFAULT,
+                thridx);
+        }
     }
 
     /*
@@ -1005,7 +1053,7 @@ jvm_object_hash object_instance_new(rushort          special_obj,
      * but not here.  The calling function must perform
      * this task.
      */
-    /* (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(objhash); */
+    /* (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(..., objhash); */
 
 
     /* Done running @c @b \<init\> method, so quit */
@@ -1188,12 +1236,12 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
 {
     ARCH_FUNCTION_NAME(object_instance_delete);
 
-#if 0
     /*!
      * @todo  HARMONY-6-jvm-object.c-2 Should the
      *        @link #jvm_object_hash_null jvm_object_hash_null@endlink
      *        object be undeleteable?
      */
+#if 0
     if (jvm_object_hash_null == objhash)
     { 
         return(jvm_object_hash_null);
@@ -1215,19 +1263,14 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
         if ((OBJECT_STATUS_ARRAY    & OBJECT(objhash).status) ||
             (OBJECT_STATUS_SUBARRAY & OBJECT(objhash).status))
         {
-            if (1 == OBJECT(objhash).arraydims)
+            if ((rtrue == rmref) &&
+                (rnull != OBJECT(objhash).arraydata))
             {
-                /*
-                 * 1-dimensional arrays store data directly
-                 * in *arraydata, so just HEAP_FREE_DATA() for it.
-                 */
-            }
-            else
-            {
-                if (rtrue == rmref)
+                rint i;
+
+                if (1 < OBJECT(objhash).arraydims)
                 {
-                    rint i;
-                    for (i = 0; i < OBJECT(objhash).arraylength[0]; i++)
+                    for (i = 0; i < OBJECT(objhash).arraylength; i++)
                     {
                         (rvoid) GC_OBJECT_RMREF_FROM_OBJECT(
                                     objhash,
@@ -1235,23 +1278,46 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
                                      OBJECT(objhash).arraydata)[i]);
                     }
                 }
+                else
+                if (1 == OBJECT(objhash).arraydims)
+                {
+                    if (BASETYPE_CHAR_L ==
+                        OBJECT(objhash).arraybasetype)
+                    {
+                        for (i = 0;
+                             i < OBJECT(objhash).arraylength;
+                             i++)
+                        {
+                            (rvoid) GC_OBJECT_RMREF_FROM_OBJECT(
+                                        objhash,
+                                        ((jvm_object_hash *)
+                                     OBJECT(objhash).arraydata)[i]);
+                        }
+                    }
+                    else
+                    {
+                        /*
+                         * 1-dimensional primative arrays store data
+                         * directly in *arraydata, so just do
+                         * HEAP_FREE_DATA() for cleanup.
+                         */
+                    }
+                }
+                else
+                if (0 == OBJECT(objhash).arraydims)
+                {
+                    /*
+                     * Either bad dimensions or should not be marked
+                     * as array
+                     */
+                    exit_throw_exception(EXIT_JVM_OBJECT,
+                                 JVMCLASS_JAVA_LANG_INTERNALERROR);
+/*NOTREACHED*/
+                }
             }
         }
 
-        /*
-         * Only free the top-level arraylength[] specification; the
-         * OBJECT_STATUS_SUBARRAY versions are pointers @e within this
-         * complete version.
-         */
-        if ((OBJECT_STATUS_ARRAY    & OBJECT(objhash).status) ||
-            (!(OBJECT_STATUS_SUBARRAY & OBJECT(objhash).status)))
-        {
-            if (rnull != OBJECT(objhash).arraylength)
-            {
-                HEAP_FREE_DATA(OBJECT(objhash).arraylength);
-                OBJECT(objhash).arraylength   = (jint *) rnull;
-            }
-        }
+        /* OBJECT(objhash).arraylength = 0; */
 
         if (rnull != OBJECT(objhash).arraydata)
         {
@@ -1289,8 +1355,8 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
          *
          * CLASS_OBJECT_LINKAGE(),
          * OBJECT_CLASS_LINKAGE(),
-         * THREAD_OBJECT_LINKAGE()
-         * OBJECT_THREAD_LINKAGE()
+         * THREAD_OBJECT_LINKAGE(),
+         * OBJECT_THREAD_LINKAGE(),
          * OBJECT_OBJECT_LINKAGE()
          */
         /* OBJECT(objhash).table_linkage.pcfs   = (ClassFile *) rnull;*/
