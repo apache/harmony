@@ -260,6 +260,7 @@ INCLUDE_PATH           = jvm/src \
 PREDEFINED             = I_AM_EXIT_C=nonnull \
                          I_AM_JRTYPES_C=nonnull \
                          I_AM_JVMCFG_C=nonnull \
+                         I_AM_OPCODE_C=nonnull \
                          I_AM_PORTABLE_C=nonnull \
                          I_AM_STDIO_C=nonnull \
                          PORTABLE_JMP_BUF_VISIBLE=nonnull \
@@ -269,6 +270,7 @@ PREDEFINED             = I_AM_EXIT_C=nonnull \
                          CONFIG_HEAP_TYPE_OTHER \
 \
                          CONFIG_GC_TYPE_STUB \
+                         CONFIG_GC_TYPE_REFCOUNT \
                          CONFIG_GC_TYPE_OTHER \
 
 # EXPAND_AS_DEFINED    =
