@@ -65,6 +65,8 @@ extern rchar *utf_utf2prchar_classname(CONSTANT_Utf8_info *src);
 extern jbyte utf_utf_strcmp(CONSTANT_Utf8_info *s1,
                             CONSTANT_Utf8_info *s2);
 
+extern jbyte utf_prchar_strcmp(CONSTANT_Utf8_info *s1, rchar *s2);
+
 extern jbyte utf_prchar_pcfs_strcmp(rchar                   *s1,
                                     ClassFile               *pcfs,
                                     jvm_constant_pool_index  cpidx2);
