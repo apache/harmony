@@ -176,16 +176,21 @@ typedef struct
                           * is set */
 
 
-    jint *arraylength;   /**<  Array of length @p @b arraydims
-                          * containing the length of array in each of
-                          * those dimensions.  E.g., @b arraydims is
-                          * 4 for new X[7][3][9][2] so this parameter
-                          * will be a 4-element array containing the
-                          * numbers {7, 3, 9, 2} */
+    jint arraylength;    /**<  First dimension of array of length
+                          * @p @b arraydims as passed in to
+                          * class_static_new(), which  contains the
+                          * length of array in each of those dimensions.
+                          * Meaningful only when @link
+                          #CLASS_STATUS_ARRAY CLASS_STATUS_ARRAY@endlink
+                          * is set.  E.g., @b arraydims is 4 for a new
+                          * array XYZ[7][3][9][2] so this field will
+                          * store the value '7' from a 4-element array
+                          * containing the numbers {7, 3, 9, 2}
+                          */
 
     jvm_class_index  lower_dim_array; /**< Class table index of
                           * version of this class with one fewer array
-                          * dimensions, meaningful only when @link
+                          * dimensions.  Meaningful only when @link
                           #CLASS_STATUS_ARRAY CLASS_STATUS_ARRAY@endlink
                           * is set. */
 
@@ -296,14 +301,20 @@ extern jvalue          *class_get_object_instance_field_data(
 
 /* Prototypes for functions in 'classutil.c' */
 
-extern rboolean classutil_subclass_of(jvm_class_index clsidx1,
-                                      jvm_class_index clsidx2);
+extern rboolean classutil_class_is_a(jvm_class_index clsidx1,
+                                     jvm_class_index clsidx2);
 
-extern rboolean classutil_implements_interface(jvm_class_index clsidx1,
+extern rboolean classutil_class_implements_interface(
+                                               jvm_class_index clsidx1,
                                                jvm_class_index clsidx2);
 
-extern rboolean classutil_superinterface_of(jvm_class_index clsidx1,
-                                            jvm_class_index clsidx2);
+extern rboolean classutil_class_is_superinterface_of(
+                                               jvm_class_index clsidx1,
+                                               jvm_class_index clsidx2);
+
+extern rboolean classutil_class_is_accessible_to(
+                                               jvm_class_index clsidx1,
+                                               jvm_class_index clsidx2);
 
 extern rboolean
       classutil_interface_implemented_by_arrays(jvm_class_index clsidx);
