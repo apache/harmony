@@ -361,7 +361,10 @@ ARCH_SOURCE_COPYRIGHT_APACHE(native, c,
 #include "exit.h"
 #include "jvm.h"
 #include "jvmclass.h"
+#include "linkage.h"
 #include "method.h"
+#include "opcode.h"
+#include "opmacros.h"
 #include "util.h"
 #include "utf.h"
 
@@ -470,16 +473,70 @@ ARCH_SOURCE_COPYRIGHT_APACHE(native, c,
  * top of the JVM stack into real machine local variable @b objhashTHIS
  * for use as a parameter to local native object instance method calls.
  *
+ * @internal The null reference and access_flags logic is also
+ *           implemented in the virtual opcode processing area
+ *           in @link #opcode_run() opcode_run()@endlink
+ *           for non-native method invocations.
+ *
  *
  * @param thridx  Thead index of stack to access.
  *
  *
  * @returns @link #rvoid rvoid@endlink
  *
+ * @todo HARMONY-6-jvm-native.c-6 The spec is unclear as to what
+ *       happens in the case that the object reference is not
+ *       of the current class or one of its subclasses.  It is
+ *       @e assumed that @b VerifyError should be thrown.  Is this
+ *       a valid assumption?
+ *
+ * @internal Before/after the invocation of
+ *           @link #CHECK_SUPERCLASS_VALID_METHOD_FOUND()
+             CHECK_SUPERCLASS_VALID_METHOD_FOUND()@endlink,
+ *           for the @b INVOKEINTERFACE/INVOKESPECIAL opcodes, the
+ *           spec says, "The @e objectref must be of type
+ *           @c @b reference ..." It is assumed that @e all object
+ *           references are of type @c @b reference, or they would
+ *           not be object references-- this implies a self-referential
+ *           definition.
+ *
+ *
  */
-#define POP_THIS_OBJHASH(thridx) \
-    POP(thridx, objhashTHIS, jvm_object_hash)
-
+#define POP_THIS_OBJHASH(thridx)                                       \
+    POP(thridx, objhashTHIS, jvm_object_hash);                         \
+                                                                       \
+    if (jvm_object_hash_null == objhashTHIS)                           \
+    {                                                                  \
+        exit_throw_exception(EXIT_JVM_OBJECT,                          \
+                             JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION); \
+    }                                                                  \
+                                                                       \
+    switch(opcode)                                                     \
+    {                                                                  \
+        case OPCODE_B6_INVOKEVIRTUAL:                                  \
+        case OPCODE_B7_INVOKESPECIAL:                                  \
+            if ((ACC_PROTECTED & access_flags) &&                      \
+                (rtrue ==                                              \
+                 classutil_class_is_a(                                 \
+                     GET_PC_FIELD_IMMEDIATE(thridx, clsidx),           \
+                     clsidx)))                                         \
+            {                                                          \
+                if (rfalse ==                                          \
+                    classutil_class_is_a(                              \
+                           OBJECT_CLASS_LINKAGE(objhashTHIS)->clsidx,  \
+                           GET_PC_FIELD_IMMEDIATE(thridx, clsidx)))    \
+                {                                                      \
+                    exit_throw_exception(EXIT_JVM_CLASS,               \
+                                     JVMCLASS_JAVA_LANG_VERIFYERROR);  \
+/*NOTREACHED*/                                                         \
+                }                                                      \
+            }                                                          \
+                                                                       \
+            break;                                                     \
+    }                                                                  \
+                                                                       \
+    CHECK_OBJECT_CLASS_STRUCTURE(clsidx, objhashTHIS, isinitmethod);
+                                                           /*Extra ; */
 
 /*!
  * @brief Retrieve a (jobject) method parameter from the top of
@@ -583,12 +640,19 @@ ARCH_SOURCE_COPYRIGHT_APACHE(native, c,
  * report the results.
  *
  *
- * @param nmord   Ordinal number definition of local native method.
+ * @param thridx       JVM thread where request came from.
  *
- * @param thridx  JVM thread where request came from.
+ * @param clsidx       Class index of class containing native method.
  *
+ * @param nmord        Ordinal number definition of local native method.
  *
- * @returns @link #rvoid rvoid@endlink
+ * @param access_flags Access flags of this method, per class file.
+ *
+ * @param opcode       JVM operation code of instruction that
+ *                     initiated this JNI call.
+ *
+ * @param isinitmethod @link #rtrue rtrue@endlink if invoked method is
+ *                     the \<init\> method.
  *
  */
 
@@ -598,13 +662,26 @@ ARCH_SOURCE_COPYRIGHT_APACHE(native, c,
  * @brief Local native equivalent of
  * <b><code>native void mthname()</code></b>
  *
- * The JVM returns from a @c @b void method
- * using the @b RETURN opcode.
+ *
+ * @returns @link #jvoid jvoid@endlink.  The JVM returns from
+ * a @c @b void method using the @b RETURN opcode.
+ *
+ *
+ * @todo HARMONY-6-jvm-native.c-5 Notice that the
+ *       spec for this instruction implies that the
+ *       monitor exit happens @e before the return
+ *       code is pushed onto the stack.  At this time,
+ *       these actions are done the other way around.
+ *       Does this need to change?
  *
  */
-static
-    rvoid native_run_local_return_jvoid(jvm_native_method_ordinal nmord,
-                                        jvm_thread_index         thridx)
+static jvoid native_run_local_return_jvoid(
+                               jvm_thread_index          thridx,
+                               jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_local_return_jvoid);
 
@@ -702,13 +779,19 @@ static
  * @brief Local native equivalent of
  * <b><code>native jobject mthname()</code></b>
  *
- * The JVM returns from a @c @b jobject method
- * using the @b ARETURN opcode.
+ *
+ * @returns @link #jvm_object_hash jvm_object_hash@endlink of result.
+ *          The JVM returns from a @c @b jobject method
+ *          using the @b ARETURN opcode.
  *
  */
-static jvm_object_hash
-    native_run_local_return_jobject(jvm_native_method_ordinal nmord,
-                                    jvm_thread_index         thridx)
+static jvm_object_hash native_run_local_return_jobject(
+                               jvm_thread_index          thridx,
+                               jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_local_return_jobject);
 
@@ -752,13 +835,19 @@ static jvm_object_hash
  * @c @b (boolean), @c @b (byte), @c @b (char),
  * and @c @b (short) return types.
  *
- * The JVM returns from a @c @b int method (and those of
- * the listed sub-integer return types) using the @b IRETURN opcode.
+ *
+ * @returns @link #jint jint@endlink of result.
+ *          The JVM returns from a @c @b int method (and those of the
+ *          listed sub-integer return types) using the @b IRETURN opcode
  *
  */
-static
-    jint native_run_local_return_jint(jvm_native_method_ordinal nmord,
-                                      jvm_thread_index         thridx)
+static jint native_run_local_return_jint(
+                               jvm_thread_index          thridx,
+                               jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_local_return_jint);
 
@@ -897,9 +986,13 @@ static
  * using the @b FRETURN opcode.
  *
  */
-static jfloat
-    native_run_local_return_jfloat(jvm_native_method_ordinal nmord,
-                                   jvm_thread_index         thridx)
+static jfloat native_run_local_return_jfloat(
+                               jvm_thread_index          thridx,
+                               jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_local_return_jfloat);
 
@@ -933,9 +1026,13 @@ static jfloat
  * using the @b LRETURN opcode.
  *
  */
-static
-    jlong native_run_local_return_jlong(jvm_native_method_ordinal nmord,
-                                        jvm_thread_index         thridx)
+static jlong native_run_local_return_jlong(
+                               jvm_thread_index          thridx,
+                               jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_local_return_jlong);
 
@@ -974,9 +1071,13 @@ static
  * using the @b DRETURN opcode.
  *
  */
-static jdouble
-    native_run_local_return_jdouble(jvm_native_method_ordinal nmord,
-                                    jvm_thread_index         thridx)
+static jdouble native_run_local_return_jdouble(
+                               jvm_thread_index          thridx,
+                               jvm_class_index           clsidx,
+                               jvm_native_method_ordinal nmord,
+                               jvm_access_flags          access_flags,
+                               jvm_virtual_opcode        opcode,
+                               rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_local_return_jdouble);
 
@@ -1063,7 +1164,12 @@ static rvoid native_verify_ordinal_definition(
         case JVMCFG_JLOBJECT_NMO_UNREGISTER:
             return;
 
+        /*
+         * Regular JNI methods will not have an NMO
+         */
         case JVMCFG_JLOBJECT_NMO_NULL:
+            return;
+
         default:
             exit_throw_exception(EXIT_JVM_INTERNAL,
                                  JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR);
@@ -1367,9 +1473,9 @@ jvm_native_method_ordinal
  *
  * @param thridx     JVM thread where request came from.
  *
- * @param nmord      Ordinal number definition of local native method.
- *
  * @param clsidx     Class table index of native method to invoke.
+ *
+ * @param nmord      Ordinal number definition of local native method.
  *
  * @param mthnameidx Class file @c @b constant_pool index of name of
  *                   native method to invoke.  This entry must be a
@@ -1381,29 +1487,40 @@ jvm_native_method_ordinal
  *                   CONSTANT_Utf8_info string containing the
  *                   descriptor of an unqualified method name.
  *
+ * @param access_flags Access flags of this method, per class file.
+ *
+ * @param opcode       JVM operation code of instruction that
+ *                     initiated this JNI call.
+ *
+ * @param isinitmethod @link #rtrue rtrue@endlink if invoked method is
+ *                     the \<init\> method.
+ *
  *
  * @returns @link #rvoid rvoid@endlink.  May throw an error or
  *          exception of @e any kind from with the native code.
  *
  */
 rvoid native_run_method(jvm_thread_index          thridx,
-                        jvm_native_method_ordinal nmord,
                         jvm_class_index           clsidx,
+                        jvm_native_method_ordinal nmord,
                         jvm_constant_pool_index   mthnameidx,
-                        jvm_constant_pool_index   mthdescidx)
+                        jvm_constant_pool_index   mthdescidx,
+                        jvm_access_flags          access_flags,
+                        jvm_virtual_opcode        opcode,
+                        rboolean                  isinitmethod)
 {
     ARCH_FUNCTION_NAME(native_run_method);
 
     /*!
-     * Verify that this local native method ordinal is both
-     * unique and complete.
+     * @internal Verify that this local native method ordinal is both
+     *           unique and complete.
      */
     native_verify_ordinal_definition(nmord);
 
     switch(nmord)
     {
         /*!
-         * Invoke JNI methods, not local native methods
+         * @internal Invoke JNI methods, not local native methods
          */
         case JVMCFG_JLOBJECT_NMO_NULL:
             /*!
@@ -1436,19 +1553,22 @@ rvoid native_run_method(jvm_thread_index          thridx,
              * Finally, invoke JNI method, per return type.
              * The parameters are on the the JVM thread's STACK()
              * now, so simply reference the stack frame for the
-             * parameter list.  To be decided:  How to take the
-             * return code and pass it back out.  Suggest doing
-             * the same thing as the local native methods by
-             * capturing its value, POP_FRAME(), then PUSH(rc).
+             * parameter list.  The size of this parameter list is
+             * calculated in method_parm_size().  To be decided:  How
+             * to take the return code and pass it back out.  Suggest
+             * doing the same thing as the local native methods by
+             * capturing its value, then doing PUSH(rc) onto STACK().
              *
+             *                  INVOCATION_GOES_HERE:
+             *                  ---------------------
              *                  (*pjni)(&GET_SP(thridx)); ... (jvoid)
              *     jint    rc = (*pjni)(&GET_SP(thridx));
              *     jfloat  rc = (*pjni)(&GET_SP(thridx));
              *     jlong   rc = (*pjni)(&GET_SP(thridx));
              *     jdouble rc = (*pjni)(&GET_SP(thridx));
              *
-             *     POP_FRAME(thridx);
-             *     PUSH(thridx, rc); ... adjusted for return type
+             *     PUSH(thridx, rc); ... Adjusted for return type
+             *     return;           ... Done
              *
              * The only problem with this for now is that the
              * STACK() in this implementation is a push-UP stack,
@@ -1464,6 +1584,9 @@ rvoid native_run_method(jvm_thread_index          thridx,
              * implementation of it should be handle either type
              * of STACK() with equal facility.
              *
+             * Notice that if the method cannot be located, then
+             * an @b UnsatisfiedLinkError must be thrown here.
+             *
              */
             if (rfalse == JVMCFG_IGNORE_NATIVE_METHOD_CALLS)
             {
@@ -1471,62 +1594,119 @@ rvoid native_run_method(jvm_thread_index          thridx,
                                   JVMCLASS_JAVA_LANG_NOSUCHMETHODERROR);
 /*NOTREACHED*/
             }
-
-            jvalue rc;
-            jint   rcms, rcls;
-
-            switch (method_return_type(clsidx, mthdescidx))
+            else
             {
-                case BASETYPE_CHAR_B:
-                case BASETYPE_CHAR_C:
-                case BASETYPE_CHAR_I:
-                case BASETYPE_CHAR_S:
-                case BASETYPE_CHAR_Z:
-                    rc._jint = 0;
-                    PUSH(thridx, rc._jint);
-                    return;
+                jvalue rc;
+                jint   rcms, rcls, rcint;
 
-                case BASETYPE_CHAR_J:
-                    rc._jlong = 0;
-                    bytegames_split_jlong(rc._jlong, &rcms, &rcls);
-                    PUSH(thridx, rcms);
-                    PUSH(thridx, rcls);
-                    return;
+                switch (method_return_type(clsidx, mthdescidx))
+                {
+                    case BASETYPE_CHAR_B:
+                        /* (jbyte) INVOCATION_GOES_HERE: */
+                        rc._jint = (jint) (jbyte) 0 /* jbyte_JNIfn() */;
 
-                case BASETYPE_CHAR_L:
-                    rc._jobjhash = jvm_object_hash_null;
-                    PUSH(thridx, rc._jobjhash);
-                    return;
+                        PUSH(thridx, rc._jint);
+                        return;
 
-                case BASETYPE_CHAR_D:
-                    rc._jdouble = 0.0;
-                    bytegames_split_jdouble(rc._jdouble, &rcms, &rcls);
-                    PUSH(thridx, rcms);
-                    PUSH(thridx, rcls);
-                    return;
+                    case BASETYPE_CHAR_C:
+                        /* (jchar) INVOCATION_GOES_HERE: */
+                        rc._jint = (jint) (jchar) 0 /* jbyte_JNIfn() */;
 
-                case BASETYPE_CHAR_F:
-                    rc._jfloat = 0.0;
-                    PUSH(thridx, rc._jfloat);
-                    return;
+                        PUSH(thridx, rc._jint);
+                        return;
 
-                case BASETYPE_CHAR_ARRAY:
-                    rc._jarray = jvm_object_hash_null;
-                    PUSH(thridx, rc._jarray);
-                    return;
+                    case BASETYPE_CHAR_I:
+                        /* (jint) INVOCATION_GOES_HERE: */
+                        rc._jint =
+                            (jint) 0 /* jint_JNIfn() */;
 
-                case METHOD_CHAR_VOID:
-                    return;
+                        PUSH(thridx, rc._jint);
+                        return;
 
-                default:
-                /*!
-                 * @todo  HARMONY-6-jvm-native.c-4 Which is the better
-                 *       error, @b VerifyError or @b NoSuchMethodError ?
-                 */
-                exit_throw_exception(EXIT_JVM_METHOD,
-                                     JVMCLASS_JAVA_LANG_VERIFYERROR);
+                    case BASETYPE_CHAR_S:
+                        /* (jshort) INVOCATION_GOES_HERE: */
+                        rc._jint =
+                            (jint) (jshort) 0 /* jshort_JNIfn() */;
+
+                        PUSH(thridx, rc._jint);
+                        return;
+
+                    case BASETYPE_CHAR_Z:
+                        /* (jboolean) INVOCATION_GOES_HERE: */
+                        rc._jint =
+                            (jint) (jboolean) 0 /* jboolean_JNIfn() */;
+
+                        PUSH(thridx, rc._jint);
+                        return;
+
+                    case BASETYPE_CHAR_J:
+                        /* (jlong) INVOCATION_GOES_HERE: */
+                        rc._jlong =
+                            (jlong) 0 /* jlong_JNIfn() */;
+
+                        bytegames_split_jlong(rc._jlong, &rcms, &rcls);
+                        PUSH(thridx, rcms);
+                        PUSH(thridx, rcls);
+                        return;
+
+                    case BASETYPE_CHAR_L:
+                        /* (jobjhash) INVOCATION_GOES_HERE: */
+                        rc._jobjhash =
+                            jvm_object_hash_null /* jobjhash_JNIfn() */;
+
+                        /* Careful! Do not do @e any type conversion! */
+                        rcint = FORCE_JINT(rc._jobjhash);
+                        PUSH(thridx, rcint);
+                        return;
+
+                    case BASETYPE_CHAR_D:
+                        /* (jdouble) INVOCATION_GOES_HERE: */
+                        rc._jdouble =
+                            (jdouble) 0.0 /* jdouble_JNIfn() */;
+
+                        bytegames_split_jdouble(rc._jdouble,
+                                                &rcms,
+                                                &rcls);
+                        PUSH(thridx, rcms);
+                        PUSH(thridx, rcls);
+                        return;
+
+                    case BASETYPE_CHAR_F:
+                        /* (jfloat) INVOCATION_GOES_HERE: */
+                        rc._jfloat =
+                            (jfloat) 0.0 /* jfloat_JNIfn() */;
+
+                        /* Careful! Do not do @e any type conversion! */
+                        rcint = FORCE_JINT(rc._jfloat);
+                        PUSH(thridx, rcint);
+                        return;
+
+                    case BASETYPE_CHAR_ARRAY:
+                        /* (jarray) INVOCATION_GOES_HERE: */
+                        rc._jarray =
+                            jvm_object_hash_null /* jarray_JNIfn() */;
+
+                        /* Careful! Do not do @e any type conversion! */
+                        rcint = FORCE_JINT(rc._jarray);
+                        PUSH(thridx, rcint);
+                        return;
+
+                    case METHOD_CHAR_VOID:
+                        /* (jvoid) INVOCATION_GOES_HERE: */
+                        /* jvoid_JNIfn() */;
+                        return;
+
+                    default:
+                    /*!
+                     * @todo  HARMONY-6-jvm-native.c-4 Which is the
+                     *        better error, @b VerifyError or
+                     *        @b NoSuchMethodError ?
+                     */
+                    exit_throw_exception(EXIT_JVM_METHOD,
+                                        JVMCLASS_JAVA_LANG_VERIFYERROR);
 /*NOTREACHED*/
-                return; /* Satisfy compiler */
+                    return; /* Satisfy compiler */
+                }
             }
 
             return; /* Satisfy compiler */
@@ -1546,7 +1726,12 @@ rvoid native_run_method(jvm_thread_index          thridx,
 
 
             /* (rvoid) ... obviously redundant */
-                       native_run_local_return_jvoid(nmord, thridx);
+                       native_run_local_return_jvoid(thridx,
+                                                     clsidx,
+                                                     nmord,
+                                                     access_flags,
+                                                     opcode,
+                                                     isinitmethod);
             return;
 
         /*!
@@ -1564,7 +1749,12 @@ rvoid native_run_method(jvm_thread_index          thridx,
          */
 
 
-            (rvoid) native_run_local_return_jobject(nmord, thridx);
+            (rvoid) native_run_local_return_jobject(thridx,
+                                                    clsidx,
+                                                    nmord,
+                                                    access_flags,
+                                                    opcode,
+                                                    isinitmethod);
             return;
 
         /*!
@@ -1581,7 +1771,12 @@ rvoid native_run_method(jvm_thread_index          thridx,
          */
 
 
-            (rvoid) native_run_local_return_jint(nmord, thridx);
+            (rvoid) native_run_local_return_jint(thridx,
+                                                 clsidx,
+                                                 nmord,
+                                                 access_flags,
+                                                 opcode,
+                                                 isinitmethod);
             return;
 
         /*!
@@ -1598,7 +1793,12 @@ rvoid native_run_method(jvm_thread_index          thridx,
          */
 
 
-            (rvoid) native_run_local_return_jfloat(nmord, thridx);
+            (rvoid) native_run_local_return_jfloat(thridx,
+                                                   clsidx,
+                                                   nmord,
+                                                   access_flags,
+                                                   opcode,
+                                                   isinitmethod);
             return;
 
         /*!
@@ -1615,7 +1815,12 @@ rvoid native_run_method(jvm_thread_index          thridx,
          */
 
 
-            (rvoid) native_run_local_return_jlong(nmord, thridx);
+            (rvoid) native_run_local_return_jlong(thridx,
+                                                  clsidx,
+                                                  nmord,
+                                                  access_flags,
+                                                  opcode,
+                                                  isinitmethod);
             return;
 
         /*!
@@ -1632,7 +1837,12 @@ rvoid native_run_method(jvm_thread_index          thridx,
          */
 
 
-            (rvoid) native_run_local_return_jdouble(nmord, thridx);
+            (rvoid) native_run_local_return_jdouble(thridx,
+                                                    clsidx,
+                                                    nmord,
+                                                    access_flags,
+                                                    opcode,
+                                                    isinitmethod);
             return;
 
 
