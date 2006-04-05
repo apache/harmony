@@ -262,7 +262,7 @@ rboolean gc_class_new_stub(jvm_class_index clsidxNEW)
 {
     ARCH_FUNCTION_NAME(gc_class_new_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_new_stub() */
 
@@ -295,7 +295,7 @@ rboolean gc_class_reload_stub(jvm_class_index clsidxOLD,
 {
     ARCH_FUNCTION_NAME(gc_class_reload_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_reload_stub() */
 
@@ -331,7 +331,7 @@ rboolean gc_class_mkref_from_class_stub(jvm_class_index clsidxFROM,
 {
     ARCH_FUNCTION_NAME(gc_class_mkref_from_class_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_mkref_from_class_stub() */
 
@@ -364,7 +364,7 @@ rboolean gc_class_mkref_from_object_stub(jvm_object_hash objhashFROM,
 {
     ARCH_FUNCTION_NAME(gc_class_mkref_from_object_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_mkref_from_object_stub() */
 
@@ -398,7 +398,7 @@ rboolean gc_class_rmref_from_class_stub(jvm_class_index clsidxFROM,
 {
     ARCH_FUNCTION_NAME(gc_class_rmref_from_class_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_rmref_from_class_stub() */
 
@@ -432,7 +432,7 @@ rboolean gc_class_rmref_from_object_stub(jvm_object_hash objhashFROM,
 {
     ARCH_FUNCTION_NAME(gc_class_rmref_from_object_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_rmref_from_object_stub() */
 
@@ -465,7 +465,7 @@ rboolean gc_class_field_mkref_stub(jvm_class_index        clsidxTO,
 {
     ARCH_FUNCTION_NAME(gc_class_firld_mkref_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_field_mkref_stub() */
 
@@ -498,7 +498,7 @@ rboolean gc_class_field_rmref_stub(jvm_class_index clsidxTO,
 {
     ARCH_FUNCTION_NAME(gc_class_field_rmref_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_field_rmref_stub() */
 
@@ -540,7 +540,7 @@ rboolean gc_class_delete_stub(jvm_class_index clsidxOLD,
 {
     ARCH_FUNCTION_NAME(gc_class_delete_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_class_delete_stub() */
 
@@ -569,7 +569,7 @@ rboolean gc_object_new_stub(jvm_object_hash objhashNEW)
 {
     ARCH_FUNCTION_NAME(gc_object_new_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_new_stub() */
 
@@ -600,7 +600,7 @@ rboolean gc_object_mkref_from_class_stub(jvm_class_index clsidxFROM,
 {
     ARCH_FUNCTION_NAME(gc_object_mkref_from_class_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_mkref_from_class_stub() */
 
@@ -634,7 +634,7 @@ rboolean gc_object_mkref_from_object_stub(jvm_object_hash objhashFROM,
 {
     ARCH_FUNCTION_NAME(gc_object_mkref_from_object_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_mkref_from_object_stub() */
 
@@ -665,7 +665,7 @@ rboolean gc_object_rmref_from_class_stub(jvm_class_index clsidxFROM,
 {
     ARCH_FUNCTION_NAME(gc_object_rmref_from_class_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_rmref_from_class_stub() */
 
@@ -699,7 +699,7 @@ rboolean gc_object_rmref_from_object_stub(jvm_object_hash objhashFROM,
 {
     ARCH_FUNCTION_NAME(gc_object_rmref_from_object_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_rmref_from_object_stub() */
 
@@ -732,7 +732,7 @@ rboolean gc_object_field_mkref_stub(jvm_object_hash objhashTO,
 {
     ARCH_FUNCTION_NAME(gc_object_field_mkref_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_field_mkref_stub() */
 
@@ -765,7 +765,7 @@ rboolean gc_object_field_rmref_stub(jvm_object_hash objhashTO,
 {
     ARCH_FUNCTION_NAME(gc_object_field_rmref_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_field_rmref_stub() */
 
@@ -801,7 +801,7 @@ rboolean gc_object_delete_stub(jvm_object_hash objhashOLD)
 {
     ARCH_FUNCTION_NAME(gc_object_delete_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_object_delete_stub() */
 
@@ -869,7 +869,7 @@ rboolean gc_stack_mkref_from_jvm_stub(jvm_thread_index thridxFROM,
 {
     ARCH_FUNCTION_NAME(gc_stack_mkref_from_jvm_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_stack_mkref_from_jvm_stub() */
 
@@ -902,7 +902,7 @@ rboolean gc_stack_rmref_from_jvm_stub(jvm_thread_index thridxFROM,
 {
     ARCH_FUNCTION_NAME(gc_stack_rmref_from_jvm_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_stack_rmref_from_jvm_stub() */
 
@@ -949,7 +949,7 @@ rboolean gc_stack_delete_stub(jvm_thread_index    thridxOLD,
 {
     ARCH_FUNCTION_NAME(gc_stack_delete_stub);
 
-    return(rfalse);
+    return(rtrue);
 
 } /* END of gc_stack_delete_stub() */
 
