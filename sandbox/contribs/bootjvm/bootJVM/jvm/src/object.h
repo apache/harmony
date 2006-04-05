@@ -237,10 +237,12 @@ typedef struct
     /*!
      * @todo HARMONY-6-jvm-object.h-1 Is @c @b arraylength necessary?
      */
-    jint *arraylength;          /**< Length of array in @e each
-                                 * dimension, from this one on down
-                                 * to object instances.  Meaningful
-                                 * only when when @link
+    jint arraylength;           /**< First dimension of an array of
+                                 * length @c @b arraydims as passed in
+                                 * to object_instance_new(), which
+                                 * contains the length of array in each
+                                 * of those dimensions.
+                                 * Meaningful only when when @link
                                    #OBJECT_STATUS_ARRAY
                                    OBJECT_STATUS_ARRAY@endlink is set
                                  */
@@ -268,7 +270,8 @@ typedef struct
                                  */
 
     jvm_object_hash objhash_superclass; /**< Instance of
-                                 * of this object's superclass.
+                                 * of this object's superclass, namely
+                                 * the @c @b super object.
                                  * @link #JVMCFG_NULL_OBJECT
                                    JVMCFG_NULL_OBJECT@endlink indicates
                                  * that the parent class is a
