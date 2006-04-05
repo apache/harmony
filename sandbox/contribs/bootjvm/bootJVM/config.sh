@@ -126,7 +126,7 @@
 # @section Reference
 #
 #/ /* 
-# (Use  #! and #/ with dox_filter.sh to fool Doxygen into
+# (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
 # Use the above open comment to force termination of parsing
 # since it is not a Doxygen-style 'C' comment.)
@@ -136,9 +136,10 @@
 #
 # Script setup
 #
-chmod -w $0 support/echotest.sh
+chmod -w $0 support/echotest.sh support/which.sh
 
 . support/echotest.sh
+. support/which.sh
 
 # Read release level, if found
 if test -f RELEASE_LEVEL
@@ -219,9 +220,9 @@ echo ""
 echo "Over the course of the development cycle, you may add or delete"
 echo "source files:  Java source, C source, C headers, perhaps shell"
 echo "scripts.  When this is done, the 'make' process will autmatically"
-echo "pick up the changes after this script is run.  The changes"
-echo "will be made available to the 'doxygen' and 'gcc' as"
-echo "coordinated by the 'config/config_roster*' files, and"
+echo "pick up the changes after this configuratinon script has been"
+echo "run.  The changes will be made available to the 'doxygen' and"
+echo "'gcc' as coordinated by the 'config/config_roster*' files, and"
 echo "without assistance required from users."
 echo ""
 echo "The 'README' file in this directory contains much useful"
@@ -257,7 +258,7 @@ $echon "ready... $echoc"
 read dummy
 echo ""
 echo "The 'C' source code for the project may have its dependencies"
-echo "checked at compilation time by the common utility 'makedepend."
+echo "checked at compilation time by the common utility 'makedepend'."
 echo ""
 echo "\$ which makedepend"
 which makedepend
@@ -520,6 +521,39 @@ echo "such as heap allocation and garbage collection."
 echo ""
 $echon "more... $echoc"
 read dummy
+echo ""
+
+HAVE_MAKEDEPEND=0
+if test -z "`which makedepend`"
+then
+    HAVE_MAKEDEPEND=1
+else
+    echo ""
+    echo "NOTE:  Your system does not have 'makedepend' in its PATH"
+    echo "environment variable.  The 'make depend' rule will not do"
+    echo "anything for you.  If you really _do_ have it on your"
+    echo "system, stop this script, add it to PATH and run it again."
+    echo ""
+    $echon "more... $echoc"
+    read dummy
+    echo ""
+fi
+HAVE_CTAGS=0
+if test -z "`which ctags`"
+then
+    HAVE_CTAGS=1
+else
+    echo ""
+    echo "NOTE:  Your system does not have 'ctags' in its PATH"
+    echo "environment variable.  The 'make tags' rule will not do"
+    echo "anything for you.  If you really _do_ have it on your"
+    echo "system, stop this script, add it to PATH and run it again."
+    echo "(This is only meaningful and useful to users of the 'vi' text"
+    echo "editor and its derivatives.)"
+    echo ""
+    $echon "more... $echoc"
+    read dummy
+fi
 
 echo ""
 echo "The release level is configured as:  MAJOR.MINOR.PATCHLEVEL"
@@ -889,26 +923,24 @@ echo "---------------------------------------------------------"
 echo ""
 echo "The code may be partitioned into several components and built"
 echo "either all at once and/or by its various parts.  The top-level"
-echo "build script has these same options, and using 'make cfg'"
-echo "will build what is requested here in addition to individual"
-echo "selections.  The default option is 'make cfg'.  Choosing"
-echo "'all' declares that all components are to be built by the"
-echo "default build option 'make cfg'."
-echo ""
-$echon "more... $echoc"
-read dummy
+echo "Makefile has these same options, and using 'make cfg' will"
+echo "build what is requested here in place of making individual"
+echo "selections.  ('make cfg' is the default option.)  Choosing"
+echo "'make all' declares that all components are to be built by the"
+echo "default build option 'make cfg'.  ('make all' is the default"
+echo "option in all places except the top level directory.)"
 echo ""
 echo \
 "The several options for building the code (answer 'yes' or 'no') are:"
 echo ""
 echo "    all--   Build the entire code tree, namely:"
 echo ""
-echo "    jvm--   Build the main development area"
-echo "    libjvm--Build the static JVM library"
+echo "    jvm--   Build the main development area as 'bootjvm'"
+echo "    libjvm--Build the static JVM library as 'libjvm.a'"
 echo "    main--  Build the sample main() program (links 'libjvm.a')"
-echo "    test--  Build the Java test code area"
+echo "    test--  Build the Java test code area as 'bootjvm'"
 echo "    jni--   Build the sample JNI code area (links 'libjvm.a')"
-echo "    dox--   Build the documentation (using doxygen)"
+echo "    dox--   Build the documentation as 'doc' (using doxygen)"
 echo ""
 echo "A suggested combination for beginning users is 'jvm' and 'dox' to"
 echo "build everything in one place and generate documentation changes"
@@ -922,7 +954,10 @@ echo "for creating the JVM in a binary and adding test cases."
 echo ""
 
 SHOULDBUILD="Should 'make' construct"
-MSG80ALL="all:  $SHOULDBUILD the entire code tree?"
+
+MSG80ALL=\
+"all:  $SHOULDBUILD everything (as if asking for 'make all')?"
+
 MSG80JVM="jvm:  $SHOULDBUILD the main development area?"
 MSG80LIB="lib:  $SHOULDBUILD the static JVM library?"
 MSG80MAIN="main: $SHOULDBUILD the sample main() program?"
@@ -1006,50 +1041,25 @@ done
 echo ""
 echo ""
 echo "The documentation creation process is independent of the"
-echo "pre-formatted documentation installed into 'doc.ORIG'.  When"
+echo "pre-formatted documentation installed into 'doc.ORIG'.  It is"
+echo "also independent of the above configuration options because it"
+echo "may be generated completely separately upon user request.  When"
 echo "generated, it gets stored into the 'doc' directory without regard"
 echo "for previous contents.  It may be generated either through the"
-echo "pre-configured build process (per above question) or by direct"
-echo "action from the top-level build command 'make dox'.  When"
-echo "time comes to generate documentation, there are several formats"
+echo "pre-configured build process (per above questions) or by direct"
+echo "action from any directory level with 'make dox'.  When the time"
+echo "comes to generate documentation, there are several formats"
 echo "available.  Most options may be used in combination to yield only"
 echo "the desired formats.  Choosing 'all' configures every format."
 echo ""
-$echon "more... $echoc"
-read dummy
-echo ""
-echo "The several options for building various documentation formats"
-echo "(answer 'yes' or 'no') are:"
-echo ""
-echo "            all--  Build documentation in every format, namely:"
-echo ""
-echo "            html-- Build HTML format docs (doc/html)"
-echo "            latex--Build Latex info format docs (doc/latex)"
-echo "            rtf--  Build RTF docs (doc/rtf)"
-echo "            man--  Build man section 3 docs (doc/man/man3)"
-echo "            xml--  Build XML format docs (doc/xml)"
-echo ""
-echo "(Note:  Choosing 'rtf' may cause doxygen to generate spurious"
-echo "        messages, 'QGDict::hashAsciiKey: Invalid null key' on"
-echo "        otherwise perfectly formatted documentation.  Reasons"
-echo "        are not yet known.)"
-echo ""
-echo "A suggested combination for Unix users might be HTML and"
-echo "either man page or latex formats."
-echo ""
-echo "A suggested combination for Windows users might be HTML and"
-echo "RTF formats."
-echo ""
-$echon "more... $echoc"
-read dummy
-echo ""
-echo "Older versions of the NetScape HTML browser can do odd things to"
-echo "newer versions of HTML code.  In particular, the persistent"
-echo "versions 4.7X that are still widely used on many Unix systems"
-echo "may experience difficulties.  The output of Doxygen may require"
-echo "certain adjustments, particularly on presentation of code"
+echo "If you wish to configure HTML documentation, there may be a minor"
+echo "adjustment needed for certain types of HTML browsers."
+echo "Specifically, older versions of the NetScape HTML browser can do"
+echo "odd things to newer versions of HTML code.  In particular, the"
+echo "persistent 4.7X versions that are still widely used on many Unix"
+echo "systems may experience difficulties.  The output of Doxygen may"
+echo "require certain adjustments, particularly on presentation of code"
 echo "fragments and other so-called 'verbatim' fragments."
-echo ""
 
 MSG80HTML="Do you need these adjustments done for your HTML browser?"
 while true
@@ -1069,6 +1079,31 @@ do
     esac
 done
 
+echo ""
+echo "The several options for building various documentation formats"
+echo "(answer 'yes' or 'no') are:"
+echo ""
+echo "            all--  Build documentation in every format, namely:"
+echo ""
+echo "            html-- Build HTML format docs (doc/html)"
+echo "            latex--Build Latex info format docs (doc/latex)"
+echo "            rtf--  Build RTF docs (doc/rtf)"
+echo "            man--  Build man section 3 docs (doc/man/man3)"
+echo "            xml--  Build XML format docs (doc/xml)"
+echo ""
+echo "(NOTE:  Choosing 'rtf' may cause doxygen to generate spurious"
+echo "        messages, 'QGDict::hashAsciiKey: Invalid null key' on"
+echo "        otherwise perfectly formatted documentation.  Reasons"
+echo "        are not yet known.)"
+echo ""
+echo "A suggested combination for Unix users might be HTML and"
+echo "either man page or latex formats."
+echo ""
+echo "A suggested combination for Windows users might be HTML and"
+echo "RTF formats."
+echo ""
+$echon "more... $echoc"
+read dummy
 
 
 SHOULDBUILD="Should 'make dox' build"
@@ -1699,6 +1734,8 @@ CBSM="config/config_build_steps.mak"
     echo "CONFIG_WORDWIDTH=$wordwidth"
     echo "#"
     echo "JAVA_INCLUDE_PATHS:=$JAVA_INCLUDE_PATHS"
+    echo "HAVE_MAKEDEPEND:=$HAVE_MAKEDEPEND"
+    echo "HAVE_CTAGS:=$HAVE_CTAGS"
     echo "#"
 ) >> $CBSM
 (
@@ -1970,7 +2007,7 @@ echo  "$PGMNAME:  Building configured components"
 echo ""
 echo "$PGMNAME:  Cleaning out entire tree of anything left over"
 echo ""
-make clean
+make veryclean
 rc=$?
 
 
