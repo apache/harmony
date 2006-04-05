@@ -201,8 +201,29 @@ typedef struct
     jvm_class_index class_java_lang_Object; /**< Class slot occupied
                                              * by java.lang.Object */
 
+    jvm_class_index class_primative_boolean;/**< Class slot occupied
+                                             * by (jboolean) */
+
+    jvm_class_index class_primative_byte;   /**< Class slot occupied
+                                             * by (jbyte) */
+
     jvm_class_index class_primative_char;   /**< Class slot occupied
-                                             * by (char) */
+                                             * by (jchar) */
+
+    jvm_class_index class_primative_double; /**< Class slot occupied
+                                             * by (jdouble) */
+
+    jvm_class_index class_primative_float;  /**< Class slot occupied
+                                             * by (jfloat) */
+
+    jvm_class_index class_primative_int;    /**< Class slot occupied
+                                             * by (jint) */
+
+    jvm_class_index class_primative_long;   /**< Class slot occupied
+                                             * by (jlong) */
+
+    jvm_class_index class_primative_short;  /**< Class slot occupied
+                                             * by (jshort) */
 
     jvm_class_index class_java_lang_Class;  /**< Class slot occupied
                                              * by java.lang.Class */
