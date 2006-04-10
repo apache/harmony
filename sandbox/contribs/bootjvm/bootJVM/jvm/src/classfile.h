@@ -118,7 +118,10 @@ typedef struct
     u2 attribute_name_index;
     u4 attribute_length;
 
-    u1 info[1]; /**< Spec pseudo-code: @c @b info[attribute_length]; */
+    u1 info[1]; /**< Mark space for one, but
+                     @b attribute_length will reserve the correct
+                     amount of space.  See spec pseudo-code:
+                     @c @b info[attribute_length]; */
 
 } attribute_info;
 
@@ -1558,6 +1561,12 @@ typedef struct
          *           macro in @link jvm/src/classfile.c
                      classfile.c@endlink, this empty structure
          *           is provided.
+         *
+         * @warning  If ever a late binding must be implemented,
+         *           the above @c @b bytes[1] definition must
+         *           be adjusted to allow for this in some way
+         *           that either globally changes the implementation
+         *           or does not disturb it at all.
          */
     } LOCAL_Utf8_binding;
 
@@ -1803,10 +1812,11 @@ typedef struct
     u4 attribute_length;
     u2 number_of_exceptions;
 
-    u2 exception_index_table[1]; /**< Mark space only for one.
+    u2 exception_index_table[1]; /**< Mark space only for one, but
+                                      @b attribute_length will reserve
+                                      the correct amount of space.
                                       Spec pseudo-code:
                    @c @b exception_index_table[number_of_exceptions]; */
-
 } Exceptions_attribute;
 
 #define CONSTANT_UTF8_EXCEPTIONS_ATTRIBUTE      "Exceptions"
@@ -1851,9 +1861,10 @@ typedef struct
     u2 attribute_name_index;
     u4 attribute_length;
     u2 number_of_classes;
-    inner_class_table_entry classes[1]; /**< Mark space only for one.
-                                             Spec pseudo-code:
-                                    @c @b classes[number_of_classes]; */
+    inner_class_table_entry classes[1]; /**< Mark space for one, but
+                            @b attribute_length will reserve the correct
+                            amount of space.  See spec pseudo-code:
+                            @c @b classes[number_of_classes]; */
 } InnerClasses_attribute;
 
 #define CONSTANT_UTF8_INNERCLASSES_ATTRIBUTE      "InnerClasses"
@@ -2017,8 +2028,9 @@ typedef struct
     u2 attribute_name_index;
     u4 attribute_length;
     u2 line_number_table_length;
-    line_number_table_entry line_number_table[1]; /**< Mark space only
-                   for one.  Spec pseudo-code:
+    line_number_table_entry line_number_table[1]; /**< Mark space for
+                   one, but @b attribute_length will reserve the
+                   correct amount of space.  See spec pseudo-code:
                    @c @b line_number_table[line_number_table_length]; */
 
 } LineNumberTable_attribute;
@@ -2062,7 +2074,8 @@ typedef struct
     u4 attribute_length;
     u2 local_variable_table_length;
     local_variable_table_entry local_variable_table[1]; /**< Mark space
-             only for one.  Spec pseudo-code:
+             for one, but @b attribute_length will reserve the correct
+             amount of space.  See spec pseudo-code:
              @c @b local_variable_table[local_variable_table_length]; */
 
 
@@ -2107,7 +2120,8 @@ typedef struct
     u4 attribute_length;
     u2 local_variable_type_table_length;
     local_variable_type_table_entry local_variable_type_table[1]; /**<
-        Mark space only for one.  Spec pseudo-code:
+        Mark space for one, but @b attribute_length will reserve
+        the correct amount of space.  See spec pseudo-code:
         @c @b local_variable_table[local_variable_type_table_length]; */
 
 } LocalVariableTypeTable_attribute;
@@ -2243,8 +2257,9 @@ typedef struct
     u2 type_index;
     u2 num_element_value_pairs;
 
-    element_value_pair element_value_pairs[1]; /**< Mark space only
-                 for one.  Spec pseudo-code:
+    element_value_pair element_value_pairs[1]; /**< Mark space for one,
+                 but @b attribute_length will reserve the correct
+                 amount of space.  See spec pseudo-code:
                  @c @b element_value_pairs[num_element_value_pairs] */
 
 } annotation;
@@ -2260,8 +2275,10 @@ typedef struct
 {
     u2            num_values;
 
-    element_value values[1]; /**< Mark space only for one.  Spec
-                 pseudo-code: @c @b element_value values[num_values]; */
+    element_value values[1]; /**< Mark space for one, but
+                 @b attribute_length will reserve the correct
+                 amount of space.  See spec pseudo-code:
+                 @c @b element_value values[num_values]; */
 
 } array_values;
 
