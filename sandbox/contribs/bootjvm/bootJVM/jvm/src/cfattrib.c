@@ -240,14 +240,14 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 
 
 /*!
- * @name Code_attribute deferencing support.
+ * @name Attribute deferencing support.
  *
  */
 
 /*@{ */ /* Begin grouped definitions */
 
 /*!
- * @brief Conveniently reference the Code_attribute contained in
+ * @brief Conveniently reference the XXX_attribute contained in
  * an indirect <b><code>attribute_info_dup **dst</code></b>.
  *
  * After putting in the 4-byte access alignment changes,
@@ -259,11 +259,39 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  * The few other references are unchanged, and the code is
  * easier to understand.
  *
- * Notice that @link #DST_AI() DST_AI()@endlink references
- * a <b><code>attribute_info_dup *dst</code></b>, while this
- * macro references a <b><code>attribute_info_dup **dst</code></b>.
+ * Notice that @link #DST_CODE_AI() DST_XXX_AI()@endlink references
+ * a <b><code>attribute_info_dup *dst</code></b>, while 
+ * @link #DST_CODE_AI() PTR_DST_XXX_AI()@endlink
+ * references a <b><code>attribute_info_dup **dst</code></b>.
  */
-#define PTR_DST_AI(dst) ((Code_attribute *) &(*dst)->ai)
+#define PTR_DST_CONSTANTVALUE_AI(dst) \
+                               ((ConstantValue_attribute *) &(*dst)->ai)
+#define PTR_DST_CODE_AI(dst)            ((Code_attribute *) &(*dst)->ai)
+#define PTR_DST_EXCEPTIONS_AI(dst) ((Exceptions_attribute *)&(*dst)->ai)
+#define PTR_DST_INNERCLASSES_AI(dst) \
+                                 ((InnerClasses_attribute *)&(*dst)->ai)
+#define PTR_DST_ENCLOSINGMETHOD_AI(dst) \
+                              ((EnclosingMethod_attribute *)&(*dst)->ai)
+#define PTR_DST_SIGNATURE_AI(dst)   ((Signature_attribute *)&(*dst)->ai)
+#define PTR_DST_SOURCEFILE_AI(dst) ((SourceFile_attribute *)&(*dst)->ai)
+#define PTR_DST_LINENUMBERTABLE_AI(dst) \
+                              ((LineNumberTable_attribute *)&(*dst)->ai)
+#define PTR_DST_LOCALVARIABLETABLE_AI(dst) \
+                           ((LocalVariableTable_attribute *)&(*dst)->ai)
+#define PTR_DST_LOCALVARIABLETYPETABLE_AI(dst) \
+                       ((LocalVariableTypeTable_attribute *)&(*dst)->ai)
+#define PTR_DST_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE_AI(dst) \
+                    ((RuntimeVisibleAnnotations_attribute *)&(*dst)->ai)
+#define PTR_DST_LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE_AI(dst) \
+                  ((RuntimeInvisibleAnnotations_attribute *)&(*dst)->ai)
+#define \
+    PTR_DST_LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE_AI(dst) \
+           ((RuntimeVisibleParameterAnnotations_attribute *)&(*dst)->ai)
+#define \
+  PTR_DST_LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE_AI(dst) \
+          ((RuntimeInisibleParameterAnnotations_attribute *)&(*dst)->ai)
+#define PTR_DST_LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE_AI(dst) \
+                           ((AnnotationsDefault_attribute *)&(*dst)->ai)
 
 /*!
  * @brief Conveniently reference the Code_attribute contained in
@@ -272,12 +300,47 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  *
  * This is a counterpart for cfattrib_unloadattribute() where
  * no indirection is needed.  Notice that
- * @link #PTR_DST_AI() PTR_DST_AI()@endlink references
+ * @link #PTR_DST_CODE_AI() PTR_DST_CODE_AI()@endlink references
  * a <b><code>attribute_info_dup **dst</code></b>, while this
  * macro references a <b><code>attribute_info_dup *dst</code></b>.
  *
  */
-#define     DST_AI(dst) ((Code_attribute *) &dst->ai)
+#define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
+
+/*@{ */ /* Begin grouped definitions */
+
+/*!
+ * @brief Conveniently reference the Exceptions_attribute contained in
+ * an indirect <b><code>attribute_info_dup **dst</code></b>.
+ *
+ * After putting in the 4-byte access alignment changes,
+ * it became obvious that what was once (*dst)->member
+ * had become quite cumbersome.  Therefore, in order to
+ * simplify access through (attribute_info_dup *)->ai.member
+ * constructions, including appropriate casting, the following
+ * macro is offered to take care of the most common usage.
+ * The few other references are unchanged, and the code is
+ * easier to understand.
+ *
+ * Notice that @link #DST_CODE_AI() DST_CODE_AI()@endlink references
+ * a <b><code>attribute_info_dup *dst</code></b>, while this
+ * macro references a <b><code>attribute_info_dup **dst</code></b>.
+ */
+#define PTR_DST_CODE_AI(dst) ((Code_attribute *) &(*dst)->ai)
+
+/*!
+ * @brief Conveniently reference the Code_attribute contained in
+ * a <b><code>attribute_info_dup *dst</code></b>, namely, with less
+ * pointer indirection.
+ *
+ * This is a counterpart for cfattrib_unloadattribute() where
+ * no indirection is needed.  Notice that
+ * @link #PTR_DST_CODE_AI() PTR_DST_CODE_AI()@endlink references
+ * a <b><code>attribute_info_dup **dst</code></b>, while this
+ * macro references a <b><code>attribute_info_dup *dst</code></b>.
+ *
+ */
+#define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
 
 /*@} */ /* End of grouped definitions */
 
@@ -319,6 +382,13 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
 
     attribute_info tmpatr;
     u4             tmplen;
+
+    jbyte *pabytes;
+    u2 *pu2;
+
+    u2 *patblu2;
+    u2 atblidx;
+    u2 atbllen;
 
     jbyte *pnext_src = (jbyte *) src;
 
@@ -386,190 +456,531 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
     classfile_attribute_enum atrenum =
         cfattrib_atr2enum(pcfs, (*dst)->ai.attribute_name_index);
 
-    if (LOCAL_CODE_ATTRIBUTE == atrenum)
+    switch (atrenum)
     {
-        /*
-         * Copy Code_attribute field-by-field as in the top-level
-         * structure, allocating array[] pieces in that same manner.
-         *
-         * @note  You can get away with referencing
-         *        @c @b src->member here because these first
-         *        few members are of fixed length.  You @e still must
-         *        use GETRS2() or GETRI4() because they are in a
-         *        byte-stream class file, which has no guaranteed
-         *        word alignment.
-         */
-        PTR_DST_AI(dst)->max_stack =
-            GETRS2(&((Code_attribute *) src)->max_stack);
-
-        PTR_DST_AI(dst)->max_locals =
-            GETRS2(&((Code_attribute *) src)->max_locals);
-
-        PTR_DST_AI(dst)->code_length =
-            GETRI4(&((Code_attribute *) src)->code_length);
-
-        if (0 == PTR_DST_AI(dst)->code_length)
-        {
-            /*
-             * Possible, but not theoretically reasonable,
-             * thus prohibited by spec
+        case LOCAL_CONSTANTVALUE_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-26 Needs better
+             * unit testing.
              */
-            PTR_DST_AI(dst)->code = (u1 *) rnull;
-        }
-        else
-        {
-            PTR_DST_AI(dst)->code =
-                HEAP_GET_METHOD(PTR_DST_AI(dst)->code_length *
-                                    sizeof(u1),
-                                rfalse);
 
-            /* Notice this is copy TO *ptr and FROM *bfr, not *ptr! */
-            portable_memcpy( PTR_DST_AI(dst)->code,
-                            /* 1st var len fld in class file code area*/
-                            &((Code_attribute *)  src)->code,
-                           (PTR_DST_AI(dst)->code_length) * sizeof(u1));
-
-        }
-
-        /*
-         * Load up variable fields now, use same technique as
-         * elsewhere.
-         *
-         */
-        jbyte *pabytes =(jbyte *) &((Code_attribute *) src)->code;
-        pabytes += PTR_DST_AI(dst)->code_length * sizeof(u1);
-
-        u2 *pu2;
-        MAKE_PU2(pu2, pabytes);
-
-        PTR_DST_AI(dst)->exception_table_length=GETRS2(pu2++);
-
-        pabytes = (u1 *) pu2;
-
-        if (0 == PTR_DST_AI(dst)->exception_table_length)
-        {
-            /* Possible, and theoretically reasonable */
-            PTR_DST_AI(dst)->exception_table = (rvoid *) rnull;
-        }
-        else
-        {
-            PTR_DST_AI(dst)->exception_table =
-              HEAP_GET_METHOD(PTR_DST_AI(dst)->exception_table_length *
-                                  sizeof(exception_table_entry),
-                              rfalse);
-
-            portable_memcpy(&PTR_DST_AI(dst)->exception_table,
-                            pabytes,
-                            (PTR_DST_AI(dst)->exception_table_length) *
-                                sizeof(exception_table_entry));
-
-            pabytes += (PTR_DST_AI(dst)->exception_table_length) *
-                             sizeof(exception_table_entry);
-        }
-
-        MAKE_PU2(pu2, pabytes);
-
-        PTR_DST_AI(dst)->attributes_count = GETRS2(pu2++);
-
-        pabytes = (jbyte *) pu2;
-
-        if (0 == PTR_DST_AI(dst)->attributes_count)
-        {
-            PTR_DST_AI(dst)->attributes =
-                (attribute_info_dup **) rnull;
-        }
-        else
-        {
-            PTR_DST_AI(dst)->attributes =
-                HEAP_GET_METHOD(PTR_DST_AI(dst)->attributes_count *
-                                    sizeof(attribute_info_dup *),
-                                rtrue);
+            PTR_DST_CONSTANTVALUE_AI(dst)->constantvalue_index =
+                GETRS2(&((ConstantValue_attribute *) src)
+                          ->constantvalue_index);
+            break;
 
 
+        case LOCAL_CODE_ATTRIBUTE:
             /*
-             * WARNING!  RECURSIVE CALL:
+             * Copy Code_attribute field-by-field as in the top-level
+             * structure, allocating array[] pieces in that same manner.
              *
-             * Load up each attribute in this attribute area.
-             * This should NOT recurse more than once since there
-             * can ONLY be ONE Code_attribute per method.
+             * @note  You can get away with referencing
+             *        @c @b src->member here because these first
+             *        few members are of fixed length.  You @e still
+             *        must use GETRS2() or GETRI4() because they are in
+             *        a byte-stream class file, which has no guaranteed
+             *        word alignment.
              */
+            PTR_DST_CODE_AI(dst)->max_stack =
+                GETRS2(&((Code_attribute *) src)->max_stack);
 
-            jvm_attribute_index atridx;
+            PTR_DST_CODE_AI(dst)->max_locals =
+                GETRS2(&((Code_attribute *) src)->max_locals);
 
-            for (atridx = 0;
-                 atridx < PTR_DST_AI(dst)->attributes_count;
-                 atridx++)
+            PTR_DST_CODE_AI(dst)->code_length =
+                GETRI4(&((Code_attribute *) src)->code_length);
+
+            if (0 == PTR_DST_CODE_AI(dst)->code_length)
             {
                 /*
-                 * Load an attribute and verify that it is either
-                 * a valid (or an ignored) attribute, then point to
-                 * next attribute in class file image.
+                 * Possible, but not theoretically reasonable,
+                 * thus prohibited by spec
+                 */
+                PTR_DST_CODE_AI(dst)->code = (u1 *) rnull;
+            }
+            else
+            {
+                /*
+                 * Block copy array of (u1) data-- no endianness
+                 * issues here due to single-byte data width for
+                 * all items in array.
+                 */
+                PTR_DST_CODE_AI(dst)->code =
+                    HEAP_GET_METHOD(PTR_DST_CODE_AI(dst)->code_length *
+                                        sizeof(u1),
+                                    rfalse);
+
+                /* Notice this is copy TO *ptr and FROM *bfr,not *ptr!*/
+                portable_memcpy( PTR_DST_CODE_AI(dst)->code,
+                            /* 1st var len fld in class file code area*/
+                            &((Code_attribute *)  src)->code,
+                           (PTR_DST_CODE_AI(dst)->code_length)
+                            * sizeof(u1));
+
+            }
+
+            pabytes =(jbyte *) &((Code_attribute *) src)->code;
+            pabytes += PTR_DST_CODE_AI(dst)->code_length * sizeof(u1);
+
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-23 Loading the exception
+             * table was originally done with memcpy(), which worked
+             * only on big-endian architectures.  This approach uses
+             * the same technique as elsewhere, and does appear to
+             * work properly on big-endian architectures.  It needs
+             * unit testing on little-endian architectures to verify
+             * proper functionality.
+             */
+
+            /*
+             * Load up exception fields now, but (u2) and (u4) data
+             * items need endianness conversions, so don't do memcpy()
+             *
+             */
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_CODE_AI(dst)->exception_table_length = atbllen;
+            if (0 == atbllen)
+            {
+                /* Possible, and theoretically reasonable */
+                PTR_DST_CODE_AI(dst)->exception_table = (rvoid *) rnull;
+            }
+            else
+            {
+                exception_table_entry *pete;
+
+                PTR_DST_CODE_AI(dst)->exception_table =
+                    HEAP_GET_METHOD(atbllen *
+                                          sizeof(exception_table_entry),
+                                    rfalse);
+
+                /* Load up exception table one entry at a time */
+                for (atblidx = 0; atblidx < atbllen; atblidx++)
+                {
+                    MAKE_PU2(pu2, pabytes);
+
+                    pete = &(PTR_DST_CODE_AI(dst)
+                               ->exception_table)[atblidx];
+
+                    pete->start_pc = GETRS2(pu2);
+                    pu2++;
+
+                    pete->end_pc = GETRS2(pu2);
+                    pu2++;
+
+                    pete->handler_pc = GETRS2(pu2);
+                    pu2++;
+
+                    pete->catch_type = GETRS2(pu2);
+                    pu2++;
+
+                    pabytes = (jbyte *) pu2;
+                }
+            }
+
+            /*
+             * Load up attributes area
+             */
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_CODE_AI(dst)->attributes_count = atbllen;
+
+            if (0 == atbllen)
+            {
+                PTR_DST_CODE_AI(dst)->attributes =
+                    (attribute_info_dup **) rnull;
+            }
+            else
+            {
+                PTR_DST_CODE_AI(dst)->attributes =
+                    HEAP_GET_METHOD(PTR_DST_CODE_AI(dst)
+                                      ->attributes_count *
+                                    sizeof(attribute_info_dup *),
+                                    rtrue);
+
+
+                /*
+                 * WARNING!  RECURSIVE CALL:
+                 *
+                 * Load up each attribute in this attribute area.
+                 * This should NOT recurse more than once since there
+                 * can ONLY be ONE Code_attribute per method.
                  */
 
-                pabytes =
-                    cfattrib_loadattribute(
-                        pcfs,
-                        (attribute_info_dup **)
-                            &(PTR_DST_AI(dst)->attributes)[atridx],
-                        (attribute_info *) pabytes);
+                jvm_attribute_index atridx;
 
-                LOAD_SYSCALL_FAILURE_ATTRIB((rnull == pabytes),
-                                            "load field attribute",
-                                           *dst,
-                                           PTR_DST_AI(dst)->attributes);
+                for (atridx = 0;
+                     atridx < PTR_DST_CODE_AI(dst)->attributes_count;
+                     atridx++)
+                {
+                    /*
+                     * Load an attribute and verify that it is either
+                     * a valid (or an ignored) attribute, then point to
+                     * next attribute in class file image.
+                     */
 
-            } /* for (atridx) */
-        }
+                    pabytes =
+                        cfattrib_loadattribute(
+                            pcfs,
+                            (attribute_info_dup **)
+                                &(PTR_DST_CODE_AI(dst)
+                                    ->attributes)[atridx],
+                            (attribute_info *) pabytes);
 
-    } /* if LOCAL_CODE_ATTRIBUTE */
-    else if (LOCAL_CONSTANTVALUE_ATTRIBUTE == atrenum) 
-    {
-        if (0 != tmpatr.attribute_length)
-        {
-            portable_memcpy(&(*dst)->ai.info,
-                            &src->info,
-                            tmpatr.attribute_length);
-        }
+                    LOAD_SYSCALL_FAILURE_ATTRIB((rnull == pabytes),
+                                                "load field attribute",
+                                                *dst,
+                                                PTR_DST_CODE_AI(dst)
+                                                  ->attributes);
 
-        /*
-         *  we need to swap the index for the value
-         */
-        ((ConstantValue_attribute *) &(*dst)->ai)
-          ->constantvalue_index =
-              GETRS2(&((ConstantValue_attribute *) &(*dst)->ai)
-                        ->constantvalue_index);
+                } /* for (atridx) */
+            }
+            break;
 
-    } /* if LOCAL_CONSTANT_ATTRIBUTE */
-    else
-    {
-        /*!
-         * @todo HARMONY-6-jvm-cfattrib.c-2
-         *       $$$ GMJ: I don't agree... things need to be byteswapped
-         *       for indices and such.
-         *       DL:  Geir is _absolutely_ right.  I've been living
-         *            in big-endian land and forgot about this.
-         */
+        case LOCAL_EXCEPTIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-24 Needs better
+             * unit testing.
+             */
 
-        /*
-         * See comments at top of @c @b if statment as to why
-         * all other structures can be directly copied into the heap
-         * area. The only other variable-length attributes are the
-         * annotation and local variable type attributes, which
-         * are being ignored by this implementation.
-         */
-        if (0 != tmpatr.attribute_length)
-        {
-            portable_memcpy(&(*dst)->ai.info,
-                            &src->info,
-                            tmpatr.attribute_length);
-        }
+            pabytes =(jbyte *) &((Exceptions_attribute *) src)
+                                  ->number_of_exceptions;
 
-    } /* if LOCAL_CODE_ATTRIBUTE else */
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_EXCEPTIONS_AI(dst)->number_of_exceptions = atbllen;
+            if (0 != atbllen)
+            {
+                /*
+                 * Load up exception index table one entry at a time.
+                 * Space has already been reserved by the
+                 * @b attribute_length field above as parm to
+                 * HEAP_GET_METHOD() above @c @b switch() statement.
+                 */
+                patblu2 = &(PTR_DST_EXCEPTIONS_AI(dst)
+                              ->exception_index_table)[0];
+                for (atblidx = 0; atblidx < atbllen; atblidx++)
+                {
+                    MAKE_PU2(pu2, pabytes);
+
+                    patblu2[atblidx] = GETRS2(pu2);
+                    pu2++;
+
+                    pabytes = (jbyte *) pu2;
+                }
+            }
+            break;
+
+        case LOCAL_INNERCLASSES_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-25 Needs unit testing.
+             */
+
+            pabytes =(jbyte *) &((InnerClasses_attribute *) src)
+                                  ->number_of_classes;
+
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_INNERCLASSES_AI(dst)->number_of_classes = atbllen;
+            if (0 != atbllen)
+            {
+                inner_class_table_entry *picte;
+
+                /*
+                 * Load up inner classes table one entry at a time.
+                 * Space has already been reserved by the
+                 * @b attribute_length field above as parm to
+                 * HEAP_GET_METHOD() above @c @b switch() statement.
+                 */
+                for (atblidx = 0; atblidx < atbllen; atblidx++)
+                {
+                    MAKE_PU2(pu2, pabytes);
+
+                    picte = &(PTR_DST_INNERCLASSES_AI(dst)
+                                ->classes)[atblidx];
+
+                    picte->inner_class_info_index   = GETRS2(pu2);
+                    pu2++;
+
+                    picte->outer_class_info_index   = GETRS2(pu2);
+                    pu2++;
+
+                    picte->inner_name_index         = GETRS2(pu2);
+                    pu2++;
+
+                    picte->inner_class_access_flags = GETRS2(pu2);
+                    pu2++;
+
+                    pabytes = (jbyte *) pu2;
+                }
+            }
+            break;
+
+        case LOCAL_ENCLOSINGMETHOD_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-27 Needs unit testing.
+             */
+
+            PTR_DST_ENCLOSINGMETHOD_AI(dst)->class_index =
+                GETRS2(&((EnclosingMethod_attribute *) src)
+                          ->class_index);
+
+            PTR_DST_ENCLOSINGMETHOD_AI(dst)->method_index =
+                GETRS2(&((EnclosingMethod_attribute *) src)
+                          ->method_index);
+            break;
+
+        case LOCAL_SYNTHETIC_ATTRIBUTE:
+            /*
+             * Nothing else to process, no attribute-specific data.
+             */
+            break;
+
+        case LOCAL_SIGNATURE_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-28 Needs unit testing.
+             */
+
+            PTR_DST_SIGNATURE_AI(dst)->signature_index =
+                GETRS2(&((Signature_attribute *) src)->signature_index);
+            break;
+
+        case LOCAL_SOURCEFILE_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-29 Needs unit testing.
+             */
+
+            PTR_DST_SOURCEFILE_AI(dst)->sourcefile_index =
+                GETRS2(&((SourceFile_attribute *) src)
+                                                    ->sourcefile_index);
+            break;
+
+        case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-30 Needs unit testing.
+             */
+
+            pabytes =(jbyte *) &((LineNumberTable_attribute *) src)
+                                  ->line_number_table_length;
+
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_LINENUMBERTABLE_AI(dst)->line_number_table_length =
+                atbllen;
+            if (0 != atbllen)
+            {
+                line_number_table_entry *plnte;
+
+                /*
+                 * Load up line number table one entry at a time.
+                 * Space has already been reserved by the
+                 * @b attribute_length field above as parm to
+                 * HEAP_GET_METHOD() above @c @b switch() statement.
+                 */
+                for (atblidx = 0; atblidx < atbllen; atblidx++)
+                {
+                    MAKE_PU2(pu2, pabytes);
+
+                    plnte = &(PTR_DST_LINENUMBERTABLE_AI(dst)
+                                ->line_number_table)[atblidx];
+
+                    plnte->start_pc   = GETRS2(pu2);
+                    pu2++;
+
+                    plnte->line_number   = GETRS2(pu2);
+                    pu2++;
+
+                    pabytes = (jbyte *) pu2;
+                }
+            }
+            break;
+
+        case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-31 Needs unit testing.
+             */
+
+            pabytes =(jbyte *) &((LocalVariableTable_attribute *) src)
+                                  ->local_variable_table_length;
+
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_LOCALVARIABLETABLE_AI(dst)
+              ->local_variable_table_length = atbllen;
+            if (0 != atbllen)
+            {
+                local_variable_table_entry *plvte;
+
+                /*
+                 * Load up local variable table one entry at a time.
+                 * Space has already been reserved by the
+                 * @b attribute_length field above as parm to
+                 * HEAP_GET_METHOD() above @c @b switch() statement.
+                 */
+                for (atblidx = 0; atblidx < atbllen; atblidx++)
+                {
+                    MAKE_PU2(pu2, pabytes);
+
+                    plvte = &(PTR_DST_LOCALVARIABLETABLE_AI(dst)
+                                ->local_variable_table)[atblidx];
+
+                    plvte->start_pc         = GETRS2(pu2);
+                    pu2++;
+
+                    plvte->length           = GETRS2(pu2);
+                    pu2++;
+
+                    plvte->name_index       = GETRS2(pu2);
+                    pu2++;
+
+                    plvte->descriptor_index = GETRS2(pu2);
+                    pu2++;
+
+                    plvte->index            = GETRS2(pu2);
+                    pu2++;
+
+                    pabytes = (jbyte *) pu2;
+                }
+            }
+            break;
+
+        case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-32 Needs unit testing.
+             */
+
+            pabytes =(jbyte *) &((LocalVariableTypeTable_attribute *)
+                                 src)->local_variable_type_table_length;
+
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+
+            pabytes = (jbyte *) pu2;
+
+            PTR_DST_LOCALVARIABLETYPETABLE_AI(dst)
+              ->local_variable_type_table_length = atbllen;
+            if (0 != atbllen)
+            {
+                local_variable_type_table_entry *plvtte;
+
+                /*
+                 * Load up local variable table one entry at a time.
+                 * Space has already been reserved by the
+                 * @b attribute_length field above as parm to
+                 * HEAP_GET_METHOD() above @c @b switch() statement.
+                 */
+                for (atblidx = 0; atblidx < atbllen; atblidx++)
+                {
+                    MAKE_PU2(pu2, pabytes);
+
+                    plvtte = &(PTR_DST_LOCALVARIABLETYPETABLE_AI(dst)
+                                ->local_variable_type_table)[atblidx];
+
+                    plvtte->start_pc        = GETRS2(pu2);
+                    pu2++;
+
+                    plvtte->length          = GETRS2(pu2);
+                    pu2++;
+
+                    plvtte->name_index      = GETRS2(pu2);
+                    pu2++;
+
+                    plvtte->signature_index = GETRS2(pu2);
+                    pu2++;
+
+                    plvtte->index           = GETRS2(pu2);
+                    pu2++;
+
+                    pabytes = (jbyte *) pu2;
+                }
+            }
+            break;
+
+        case LOCAL_DEPRECATED_ATTRIBUTE:
+            /*
+             * Nothing else to process, no attribute-specific data.
+             */
+            break;
+
+        case LOCAL_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE:
+
+        case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
+
+        case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
+
+        case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
+
+        case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
+
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-33 The annotation
+             * attributes are currently ignored in this implementation.
+             * This should be changed when there is a need to use them.
+             */
+
+        case LOCAL_UNKNOWN_ATTRIBUTE:
+
+        default:
+            /*
+             * Concerning a permanent implementation,
+             * and per spec section 4.7.1, all unrecognized
+             * attributes must be ignored.  For completeness and
+             * for ease of future attribute implementation, such
+             * attribute is at least copied into memory, although
+             * this could be eliminated to conserve space.
+             *
+             * @todo HARMONY-6-jvm-cfattrib.c-22 Evaluate whether or not
+             * this is the best way to handle this case.
+             */
+            if (0 != tmpatr.attribute_length)
+            {
+                portable_memcpy(&(*dst)->ai.info,
+                                &src->info,
+                                tmpatr.attribute_length);
+            }
+            break;
+
+    } /* switch */
 
 
     /*!
      * @todo HARMONY-6-jvm-cfattrib.c-3 Delete this when
-     *  TODO: items below are satisfied
+     *  TODO: items below are satisfied, that is, when
+     *  the runtime structures are fully unit tested or
+     *  other item as shown below.
      */
     rboolean dummy = rtrue;
 
@@ -807,7 +1218,7 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
      */
 
     if (rtrue == cfattrib_iscodeattribute(pcfs,
-                                     DST_AI(dst)->attribute_name_index))
+                                DST_CODE_AI(dst)->attribute_name_index))
 
     {
         /*
@@ -818,7 +1229,7 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
          * were made.)
          */
 
-        if (0 == DST_AI(dst)->attributes_count)
+        if (0 == DST_CODE_AI(dst)->attributes_count)
         {
             /*
              * Possible, and theoretically reasonable.
@@ -838,7 +1249,7 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
             jvm_attribute_index atridx;
 
             for (atridx = 0;
-                 atridx < DST_AI(dst)->attributes_count;
+                 atridx < DST_CODE_AI(dst)->attributes_count;
                  atridx++)
             {
                 /*
@@ -846,14 +1257,14 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
                  */
 
                 cfattrib_unloadattribute(pcfs,
-                                       DST_AI(dst)->attributes[atridx]);
+                                  DST_CODE_AI(dst)->attributes[atridx]);
 
             } /* for (atridx) */
 
-            HEAP_FREE_METHOD(DST_AI(dst)->attributes);
+            HEAP_FREE_METHOD(DST_CODE_AI(dst)->attributes);
         }
 
-        if (0 == DST_AI(dst)->exception_table_length)
+        if (0 == DST_CODE_AI(dst)->exception_table_length)
         {
             /*
              * Possible, and theoretically reasonable.
@@ -863,10 +1274,10 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
         }
         else
         {
-            HEAP_FREE_METHOD(DST_AI(dst)->exception_table);
+            HEAP_FREE_METHOD(DST_CODE_AI(dst)->exception_table);
         }
 
-        if (0 == DST_AI(dst)->code_length)
+        if (0 == DST_CODE_AI(dst)->code_length)
         {
             /*
              * Possible, but not theoretically reasonable,
@@ -878,7 +1289,7 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
         }
         else
         {
-            HEAP_FREE_METHOD(DST_AI(dst)->code);
+            HEAP_FREE_METHOD(DST_CODE_AI(dst)->code);
         }
 
 
