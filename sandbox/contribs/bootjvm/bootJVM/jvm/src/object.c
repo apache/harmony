@@ -1346,8 +1346,8 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
         /* Unload class file if no other references to it */
         if (rfalse == object_locate_pcfs(objhash))
         {
-            classfile_unloadclassdata(OBJECT(objhash)
-                                        .table_linkage.pcfs);
+            classfile_unload_classdata(OBJECT(objhash)
+                                         .table_linkage.pcfs);
         }
 
         /* Disables @link jvm/src/linkage.h linkage.h@endlink

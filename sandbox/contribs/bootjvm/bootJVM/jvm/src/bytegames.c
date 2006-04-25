@@ -188,7 +188,7 @@ typedef union
  * The 2- and 4-byte functions are typically used for absorbing class
  * file stream data into a ClassFile structure.  Of particular
  * interest is
- * @link #classfile_loadclassdata() classfile_loadclassdata()@endlink,
+ * @link #classfile_load_classdata() classfile_load_classdata()@endlink,
  * where it is used to retrieve many different types of 2- and 4-byte
  * data.  The 8-byte functions are used by @link
    #class_get_constant_field_attribute()
@@ -479,7 +479,7 @@ rvoid bytegames_putrl8(rulong *ptr8, rulong val8)
  * The 2- and 4-byte functions are typically used for swapping class
  * file stream data as it is being absorbed into a ClassFile structure,
  * as well as for other general uses.  Of particular interest is
- * @link #classfile_loadclassdata() classfile_loadclassdata()@endlink,
+ * @link #classfile_load_classdata() classfile_load_classdata()@endlink,
  * where they are used to swap many different types of 2- and 4-byte
  * data.  The 8-byte functions are provided for completeness.
  *

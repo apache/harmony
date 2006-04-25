@@ -1035,8 +1035,8 @@ jvm_class_index class_load_primative(u1 basetype)
    @endverbatim
  *
  *   where @b name is a null-terminated string passed as the only parm,
- *   and @b b is the byte array read in by classfile_readclassfile()
- *   or classfile_readjarfile(), and @b off is zero, and @b len being
+ *   and @b b is the byte array read in by classfile_read_classfile()
+ *   or classfile_read_jarfile(), and @b off is zero, and @b len being
  *   discovered by classfile_read_XXXfile().
  *
  * @todo  HARMONY-6-jvm-class.c-7 Spec section 5.3.4
@@ -1256,11 +1256,11 @@ jvm_class_index
              */
             if (rtrue == classpath_isjar(pcname))
             {
-                pcfd = classfile_readjarfile(pcname);
+                pcfd = classfile_read_jarfile(pcname);
             }
             else
             {
-                pcfd = classfile_readclassfile(pcname);
+                pcfd = classfile_read_classfile(pcname);
             }
 
             GENERIC_FAILURE1_THROWERROR((rnull == pcfd),
@@ -1279,7 +1279,7 @@ jvm_class_index
              */
 
             /* Parse out the class file input stream */
-            pcfs = classfile_loadclassdata(pcfd);
+            pcfs = classfile_load_classdata(pcfd);
 
             /* Load into class and object tables */
             clsidx = class_static_new(CLASS_STATUS_EMPTY,
@@ -1354,7 +1354,7 @@ jvm_class_index
 
                 /*
                  * If error above, neither HEAP_FREE_DATA(super_name)
-                 * nor classfile_unloadclassdata(pcfs) will be called.
+                 * nor classfile_unload_classdata(pcfs) will be called.
                  *
                  */
             }

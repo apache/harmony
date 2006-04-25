@@ -553,7 +553,7 @@ rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
  *                @b SIGSEGV.  Such logic is already taken care
  *                of by virtue of it being an (attribute_info_dup *)
  *                type instead of as (attribute_info *).  This
- *                processing happens in cfattrib_loadattribute()
+ *                processing happens in cfattrib_load_attribute()
  *                after reading an attribute from the class file
  *                and storing it into the heap, which is properly
  *                aligned.

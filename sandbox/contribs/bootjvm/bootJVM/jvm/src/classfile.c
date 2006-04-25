@@ -353,9 +353,9 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  *
  */
 
-ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
+ClassFile *classfile_load_classdata(u1       *pclassfile_image)
 {
-    ARCH_FUNCTION_NAME(classfile_loadclassdata);
+    ARCH_FUNCTION_NAME(classfile_load_classdata);
 
     rint misc_adj; /* For ALLOC_xxx macros */
 
@@ -1133,7 +1133,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                      */
 
                     pfbytes =
-                        cfattrib_loadattribute(
+                        cfattrib_load_attribute(
                             pcfs,
                             &pcfs->fields[fldidx]->attributes[atridx],
                             (attribute_info *) pfbytes);
@@ -1297,7 +1297,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
                      */
 
                     pmbytes =
-                        cfattrib_loadattribute(
+                        cfattrib_load_attribute(
                             pcfs,
                             &pcfs->methods[mthidx]->attributes[atridx],
                             (attribute_info *) pmbytes);
@@ -1417,7 +1417,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
              */
 
             pcbytes =
-                cfattrib_loadattribute(
+                cfattrib_load_attribute(
                     pcfs,
                     &pcfs->attributes[atridx],
                     (attribute_info *) pcbytes);
@@ -1441,7 +1441,7 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
 
     return(pcfs);
 
-} /* END of classfile_loadclassdata() */
+} /* END of classfile_load_classdata() */
 
 
 /*!
@@ -1457,9 +1457,9 @@ ClassFile *classfile_loadclassdata(u1       *pclassfile_image)
  *          when a bad pointer was passed in.
  *
  */ 
-rvoid classfile_unloadclassdata(ClassFile *pcfs)
+rvoid classfile_unload_classdata(ClassFile *pcfs)
 {
-    ARCH_FUNCTION_NAME(classfile_unloadclassdata);
+    ARCH_FUNCTION_NAME(classfile_unload_classdata);
 
     if (rnull == pcfs)
     { 
@@ -1494,7 +1494,7 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
                 continue;
             }
 
-           cfattrib_unloadattribute(pcfs, pcfs->attributes[atridx]);
+           cfattrib_unload_attribute(pcfs, pcfs->attributes[atridx]);
         }
     }
 
@@ -1531,7 +1531,7 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
                         continue;
                     }
 
-                    cfattrib_unloadattribute(pcfs,
+                    cfattrib_unload_attribute(pcfs,
                              pcfs->methods[mthidx]->attributes[atridx]);
                 }
             }
@@ -1574,7 +1574,7 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
                         continue;
                     }
 
-                    cfattrib_unloadattribute(pcfs,
+                    cfattrib_unload_attribute(pcfs,
                               pcfs->fields[fldidx]->attributes[atridx]);
                 }
             }
@@ -1609,7 +1609,7 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
 
     return;
 
-} /* end of classfile_unloadclassdata() */
+} /* end of classfile_unload_classdata() */
 
 
 /*******************************************************************/
@@ -1666,9 +1666,9 @@ rvoid classfile_unloadclassdata(ClassFile *pcfs)
  * containing its Java class image.
  *
  */
-u1 *classfile_readclassfile(rchar *filename)
+u1 *classfile_read_classfile(rchar *filename)
 {
-    ARCH_FUNCTION_NAME(classfile_readclassfile);
+    ARCH_FUNCTION_NAME(classfile_read_classfile);
 
     off_t filesize = 0;
 
@@ -1717,7 +1717,7 @@ u1 *classfile_readclassfile(rchar *filename)
     /* Proper completion when entire file is read in */
     return(pclassfile_image);
 
-} /* END of classfile_readclassfile() */
+} /* END of classfile_read_classfile() */
 
 
 /*!
@@ -1731,9 +1731,9 @@ u1 *classfile_readclassfile(rchar *filename)
  * @b CLASSPATH.
  *
  */
-u1 *classfile_readjarfile(rchar *filename)
+u1 *classfile_read_jarfile(rchar *filename)
 {
-    ARCH_FUNCTION_NAME(classfile_readjarfile);
+    ARCH_FUNCTION_NAME(classfile_read_jarfile);
 
     rvoid *statbfr; /* Portability library does (struct stat) part */
 
@@ -1872,13 +1872,13 @@ u1 *classfile_readjarfile(rchar *filename)
      * in heap-allocated bfr
      */
 
-    rvoid *pvrc = classfile_readclassfile(start_class_tmpfile);
+    rvoid *pvrc = classfile_read_classfile(start_class_tmpfile);
 
     HEAP_FREE_DATA(start_class_tmpfile);
 
     return(pvrc);
 
-} /* END of classfile_readjarfile() */
+} /* END of classfile_read_jarfile() */
 
 /*@} */ /* End of grouped definitions */
 
