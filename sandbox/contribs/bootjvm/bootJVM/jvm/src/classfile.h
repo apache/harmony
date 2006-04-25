@@ -191,13 +191,15 @@ typedef struct
 /*@{ */ /* Begin grouped definitions */
 
 #define CP_INFO_NUM_EMPTIES 3 /**< Size of padding for cp_info
-                  * structures insize of cp_info_dup structure */
+                  * structures in size of cp_info_dup structure */
 
 /*!
  * @brief Pad cp_info structures for proper multi-byte field
  * address boundary alignment.
  * @see FILL_INFO_DUP0 et al.
  *
+ * @todo HARMONY-6-jvm-classfile.h-9 Rename cp_info_dup to become
+ * cp_info_mem_align
  */
 typedef struct
 {
@@ -213,7 +215,7 @@ typedef struct
 
 
 #define ATTRIBUTE_INFO_NUM_EMPTIES 2 /**< Size of padding for
-                  * attribute_info structures insize of
+                  * attribute_info structures in size of
                   * attribute_info_dup structure */
 /*!
  * @brief Pad attribute_info structures for proper multi-byte field
@@ -267,7 +269,7 @@ typedef struct
 
     attribute_info_dup **attributes; /**< Field attributes array.
                        * The spec pseudo-code defines this as:
-                    @c @b attributes_info @c @b fields[attributes_count]
+            <b><code>attributes_info fields[attributes_count]</code></b>
                        * but it is implemented as a pointer to an array
                        * of pointers.  The length of this array is 
                        * @c @b attributes_count elements.
@@ -350,7 +352,7 @@ typedef struct
 
     attribute_info_dup **attributes; /**< Method attributes array.
                        * The spec pseudo-code defines this as:
-                    @c @b attributes_info @c @b fields[attributes_count]
+            <b><code>attributes_info fields[attributes_count]</code></b>
                        * but it is implemented as a pointer to an array
                        * of pointers.  The length of this array is 
                        * @c @b attributes_count elements.
@@ -472,7 +474,7 @@ typedef struct
 
     cp_info_dup **constant_pool; /**< Constant pool array.  The spec
                        * pseudo-code defines this as:
-       <b><code>cp_info constant_pool[constant_pool_count -1]</code></b>
+      <b><code>cp_info constant_pool[constant_pool_count - 1]</code></b>
                        * but it is implemented as a pointer to an array
                        * of pointers.  The length of this array is 
                        * <b><code>constant_pool_count - 1</code></b>
@@ -1396,7 +1398,7 @@ typedef struct
  * <li>
  * <b>DOUBLE-BYTE UTF-8 FORMAT</b>:
  *                           Range of 8th bit on ASCII (plus 7-bit ASCII
- *                           NUL character: '\\u0000', namely '\\u0080'
+ *                           NUL character: '\\u0000'), namely '\\u0080'
  *                           through '\\u00ff', then extending on up
  *                           3 more bits, thus adding '\\u100' through
  *                           '\\u07ff'.
@@ -1783,7 +1785,7 @@ typedef struct
 
     u2 attributes_count;
     attribute_info_dup **attributes; /**< Spec pseudo-code:
-                   @c @b attribute_info attributes[attributes_count]; */
+      <b><code>attribute_info attributes[attributes_count]</code></b> */
 
 } Code_attribute;
 
@@ -1862,9 +1864,9 @@ typedef struct
     u4 attribute_length;
     u2 number_of_classes;
     inner_class_table_entry classes[1]; /**< Mark space for one, but
-                            @b attribute_length will reserve the correct
-                            amount of space.  See spec pseudo-code:
-                            @c @b classes[number_of_classes]; */
+                         @b number_of_classes will reserve the
+                         correct amount of space.  See spec pseudo-code:
+                         @c @b classes[number_of_classes]; */
 } InnerClasses_attribute;
 
 #define CONSTANT_UTF8_INNERCLASSES_ATTRIBUTE      "InnerClasses"
@@ -2119,9 +2121,11 @@ typedef struct
     u2 attribute_name_index;
     u4 attribute_length;
     u2 local_variable_type_table_length;
-    local_variable_type_table_entry local_variable_type_table[1]; /**<
-        Mark space for one, but @b attribute_length will reserve
-        the correct amount of space.  See spec pseudo-code:
+    local_variable_type_table_entry
+        local_variable_type_table[1]; /**< Mark space for one,
+                             but @b local_variable_type_table_length
+                             will reserve the correct amount of space.
+                             See spec pseudo-code:
         @c @b local_variable_table[local_variable_type_table_length]; */
 
 } LocalVariableTypeTable_attribute;
@@ -2179,63 +2183,195 @@ typedef struct
  */
 typedef struct
 {
-    u2 type_name_index;
-    u2 const_name_index;
+    jvm_constant_pool_index type_name_index;
+    jvm_constant_pool_index const_name_index;
 
 } enum_const_value;
 
 
+/*! @internal Must use @b @c struct form for forward referencing */
+struct element_value_pair_mem_align_struct;
+struct element_value_mem_align_struct;
+
 /*!
- * @brief The class file @b element_value structure
+ * @brief The class file @b annotation structure definition (As
+ * represented in memory)
  *
- * Section 4.8.14.1:  The @b element_value structure
+ * @see annotation
+ *
+ * The annotation_mem_align structure is annotation
+ * as represented in memory after being read in from the class file.
+ * This is slightly different from annotation so as to overcome
+ * 2- and 4-byte memory alignment issues.
+ *
+ */
+typedef struct
+{
+    u2 type_index;
+    u2 num_element_value_pairs;
+
+    struct element_value_pair_mem_align_struct
+        *element_value_pairs; /**< Mark space for one,
+                 but @b num_element_value_pairs will reserve
+                 the correct amount of space.  See spec pseudo-code:
+                 @c @b element_value_pairs[num_element_value_pairs] */
+
+} annotation_mem_align;
+
+
+#define AV_NUM_EMPTIES 2 /**< Size of padding for array_values
+                  * structures in size of array_values_mem_align
+                  * structure */
+
+/*!
+ * @brief The class file @b array_value structure definition.
+ *
+ * See spec section 4.8.14.1.
+ *
+ */
+typedef struct
+{
+    rbyte empty[AV_NUM_EMPTIES]; /**< Align @p @b num_values u2 field
+                                      against END of 4-byte  word */
+
+    u2     num_values;
+
+    struct element_value_mem_align_struct **pvalues; /**< Spec
+                                                          pseudo-code:
+                              @c @b element_value values[num_values]; */
+
+} array_values_mem_align;
+
+
+/*!
+ * @brief The class file @b element_values_union structure,
+ * anonymous in spec (per spec and class file).
+ *
+ * See section 4.8.14.1.  The element_values_union union as represented
+ * in the specification and in the class file.  This is modified
+ * somewhat in memory with element_values_union_mem_align to overcome
+ * 2- and 4-byte memory alignment issues.
+ *
+ * @see element_values_union_mem_align
+ *
+ * @todo HARMONY-6-jvm-classfile.h-6 on 64-bit architectures, this
+ *       union will produce 8-byte pointers.  <b>MAKE SURE</b> that
+ *       this size of pointer is @e not larger than the largest of
+ *       the other structures so that intensive use of annotations
+ *       ends up running off the end of the allocated destination
+ *       block when copying the attribute in from the class file
+ *       inside of cfattrib_load_annotation() .
+ *
+ */
+
+typedef union
+{
+    jvm_constant_pool_index _const_value_index;
+    enum_const_value        _enum_const_value;
+    jvm_constant_pool_index _class_info_index;
+#if 1
+    u1                      _annotation_value;
+    u1                      _array_value;
+    /*!
+     * @internal Notice that the source form, when reading the
+     *           class file, would use (annotation) and (array_values)
+     *           here, but since only a (jbyte *) is reading the buffer,
+     *           there is no need of this expression formally set
+     *           forth.  This also just so happens to avoid irresolvable
+     *           forward/backward reference/definition errors that
+     *           resolve for pointer types, but not for the structures
+     *           themselves.  (This is why the
+     *           element_values_union_mem_align version compiles.)
+     */
+#else
+    annotation              _annotation_value;
+    array_values            _array_value;
+#endif
+
+} element_values_union;
+
+
+/*!
+ * @brief The class file @b element_values_union structure,
+ * anonymous in spec (as represented in memory).
+ *
+ * @see element_values_union
+ *
+ * The element_values_union structure is element_value as represented
+ * in memory after being read in from the class file.  This is
+ * slightly different from element_values_union so as to overcome
+ * 2- and 4-byte memory alignment issues.
+ */
+
+typedef union
+{
+    jvm_constant_pool_index  _const_value_index;
+    enum_const_value         _enum_const_value;
+    jvm_constant_pool_index  _class_info_index;
+    annotation_mem_align    *_pannotation_value;
+    array_values_mem_align   _array_value;
+
+} element_values_union_mem_align;
+
+
+/*!
+ * @brief The class file @b element_value structure (per spec
+ * and class file)
+ *
+ * Section 4.8.14.1:  The element_value structure as represented
+ * in the specification and in the class file.  This is modified
+ * somewhat in memory with element_value_mem_align to overcome
+ * 2- and 4-byte memory alignment issues.
+ *
+ * @see element_value_mem_align
  *
  */
 typedef struct
 {
     u1 tag;
 
-    /*!
-     * @internal BREAKS COMPILER if declared,
-     *
-
-    values_union _value;
-
-     *
-     * due to circular member type references, so access
-     * it this way:
-     *
-     *     values_union *pv = (values_union *) &variablename.value;
-     *
-     *     pv->member ...
-     *
-     * To access both members of this structure, use the following
-     * approach:
-     *
-     *     element_value var, *ptr;
-     *
-     *     var.tag;
-     *     ELEMENT_VALUE(var).value._const_value_index;
-     *     ELEMENT_VALUE(var).value._enum_const_value;
-     *
-     *     ptr->tag;
-     *     PTR_ELEMENT_VALUE(ptr)->value._const_value_index;
-     *     PTR_ELEMENT_VALUE(ptr)->value._enum_const_value;
-     */
-
-    u1 value;
+    element_values_union _value;
 
 } element_value;
 
-/* Facilitate access to @c @b element_value.value member */
-#define ELEMENT_VALUE(var)     (*(values_union *) &(&var)->_value)
-#define PTR_ELEMENT_VALUE(ptr) ( (values_union *) &(ptr)->_value)
+
+#define EV_NUM_EMPTIES 3 /**< Size of padding for element_value
+                  * structures in size of element_value_mem_align
+                  * structure */
+/*!
+ * @brief The class file @b element_value structure (as represented
+ * in memory)
+ *
+ * @see element_value
+ *
+ * The element_value_mem_align structure is element_value as represented
+ * in memory after being read in from the class file.  This is
+ * slightly different from element_value so as to overcome
+ * 2- and 4-byte memory alignment issues.
+ *
+ */
+typedef struct element_value_mem_align_struct
+{
+    rbyte empty[EV_NUM_EMPTIES]; /**< Align @p @b tag u1 byte against
+                                      END of 4-byte  word */
+
+    u1 tag;
+
+    element_values_union_mem_align _value;
+
+} element_value_mem_align;
 
 
 /*!
- * @brief The class file @b element_value_pair structure
+ * @brief The class file @b element_value_pair structure (per spec
+ * and class file)
  *
- * See section 4.8.14.
+ * See section 4.8.14.  The @b element_value_pair structure as
+ * represented in the specification and in the class file.  This is
+ * modified somewhat in memory with element_value_pair_mem_align to
+ * overcome 2- and 4-byte memory alignment issues.
+ *
+ * @see element_value_pair_mem_align
  *
  */
 typedef struct
@@ -2247,18 +2383,53 @@ typedef struct
 
 
 /*!
- * @brief The class file @b annotation structure definition.
+ * @brief The class file @b element_value_pair structure (as represented
+ * in memory)
  *
- * See spec section 4.8.14.
+ * @see element_value_pair
+ *
+ * The element_value_pair_mem_align structure is element_value_pair
+ * as represented in memory after being read in from the class file.
+ * This is slightly different from element_value_pair so as to overcome
+ * 2- and 4-byte memory alignment issues.
  *
  */
-typedef struct
+typedef struct element_value_pair_mem_align_struct
+{
+    u2                      element_value_index;
+    element_value_mem_align value;
+
+} element_value_pair_mem_align;
+
+
+/*!
+ * @brief The class file @b annotation structure definition (per spec
+ * and class file)
+ *
+ * See spec section 4.8.14.  The @b annotation structure as
+ * represented in the specification and in the class file.  This is
+ * modified somewhat in memory with annotation_mem_align to overcome
+ * 2- and 4-byte memory alignment issues.
+ *
+ * @see annotation_mem_align
+ *
+ */
+typedef struct annotation_struct
 {
     u2 type_index;
     u2 num_element_value_pairs;
 
+    /* @todo HARMONY-6-jvm-classfile.h-7 Make sure there are not any
+     * @link ARCH_ODD2_ADDRESS_SIGSEGV ARCH_ODD2_ADDRESS_SIGSEGV@endlink
+     * or any
+     * @link ARCH_ODD4_ADDRESS_SIGSEGV ARCH_ODD4_ADDRESS_SIGSEGV@endlink
+     * boundary problems with an array like this.  It is very likely
+     * that element_value_pair does @e not have an odd number of bytes,
+     * but for these other issues, it remains to be seen if there are
+     * runtime problems with a given CPU architecture.
+     */
     element_value_pair element_value_pairs[1]; /**< Mark space for one,
-                 but @b attribute_length will reserve the correct
+                 but @b num_element_value_pairs will reserve the correct
                  amount of space.  See spec pseudo-code:
                  @c @b element_value_pairs[num_element_value_pairs] */
 
@@ -2266,39 +2437,23 @@ typedef struct
 
 
 /*!
- * @brief The class file @b array_value structure definition.
+ * @brief The class file @b array_value structure definition (per
+ * spec and class file)
  *
  * See spec section 4.8.14.1.
  *
+ * @see array_values_mem_align
  */
-typedef struct
+typedef struct array_values_struct
 {
     u2            num_values;
 
     element_value values[1]; /**< Mark space for one, but
-                 @b attribute_length will reserve the correct
+                 @b num_values will reserve the correct
                  amount of space.  See spec pseudo-code:
                  @c @b element_value values[num_values]; */
 
 } array_values;
-
-
-/*!
- * @brief The class file @b values_union structure
- * (anonymous in spec).
- *
- * See section 4.8.14.1.
- *
- */
-typedef union
-{
-    u2                _const_value_index;
-    enum_const_value  _enum_const_value;
-    u2                _class_info_index;
-    annotation        _annotation_value;
-    array_values      _array_value;
-
-} values_union;
 
 
 typedef struct
@@ -2306,8 +2461,13 @@ typedef struct
     u2 attribute_name_index;
     u4 attribute_length;
     u2 num_annotations;
-    annotation **annotations; /**< Spec pseudo-code:
-                       @c @b annotation annotations[num_annotations]; */
+    annotation_mem_align **annotations; /**< Spec pseudo-code:
+                       @c @b annotation annotations[num_annotations];
+                       Notice that the source form, when reading the
+                       class file, would use (annotation **) instead
+                       here, but only a (jbyte *) is reading the buffer,
+                       so there is no need of this expression formally
+                       set forth. */
 
 } RuntimeVisibleAnnotations_attribute;
 
@@ -2334,8 +2494,13 @@ typedef struct
     u2 attribute_name_index;
     u4 attribute_length;
     u2 num_annotations;
-    annotation **annotations; /**< Spec pseudo-code:
-                                  @c @b annotations[num_annotations]; */
+    annotation_mem_align **annotations; /**< Spec pseudo-code:
+                       @c @b annotations[num_annotations];
+                       Notice that the source form, when reading the
+                       class file, would use (annotation **) instead
+                       here, but only a (jbyte *) is reading the buffer,
+                       so there is no need of this expression formally
+                       set forth. */
 
 } RuntimeInvisibleAnnotations_attribute;
 
@@ -2361,8 +2526,13 @@ typedef struct
 typedef struct
 {
     u2 num_annotations;
-    annotation **annotations; /**< Spec pseudo-code:
-                                  @c @b annotations[num_annotations]; */
+    annotation_mem_align **annotations; /**< Spec pseudo-code:
+                       @c @b annotations[num_annotations];
+                       Notice that the source form, when reading the
+                       class file, would use (annotation **) instead
+                       here, but only a (jbyte *) is reading the buffer,
+                       so there is no need of this expression formally
+                       set forth. */
 
 } parameter_annotation;
 
@@ -2415,9 +2585,16 @@ typedef struct
 
 
 /*!
- * @brief The @b AnnotationDefault Attribute
+ * @brief The class file @b AnnotationDefault Attribute structure
+ * definition (per spec and class file)
  *
- * See spec section 4.8.18: The @b AnnotationDefault Attribute
+ * See spec section 4.8.18: The @b AnnotationDefault Attribute.
+ * This structure as represented in the specification and in
+ * the class file.  This is modified somewhat in memory with
+ * AnnotationDefault_attribute_mem_align to overcome
+ * 2- and 4-byte memory alignment issues.
+ *
+ * @see AnnotationDefault_attribute_mem_align
  *
  */
 
@@ -2438,6 +2615,31 @@ typedef struct
                                                                  spec */
 
 /*@} */ /* End of grouped definitions */
+
+
+/*!
+ * @brief The class file @b AnnotationDefault Attribute structure
+ * definition (as represented in memory)
+ *
+ * @see AnnotationDefault_attribute
+ *
+ * The AnnotationDefault_attribute_mem_align structure is a default
+ * annotation attribute as represented in memory after being read
+ * in from the class file.  This is slightly different from 
+ * AnnotationDefault so as to overcome 2- and 4-byte memory
+ * alignment issues.
+ *
+ */
+
+typedef struct
+{
+    u2                      attribute_name_index;
+    u4                      attribute_length;
+    u2                      num_parameters;
+    element_value_mem_align default_value;
+
+} AnnotationDefault_attribute_mem_align;
+
 
 
 /*!
@@ -2656,19 +2858,33 @@ typedef enum
 /* Prototypes for functions in 'classfile.c' */
 
 extern ClassFile *classfile_allocate_primative(jvm_basetype basetype);
-extern ClassFile *classfile_loadclassdata(u1     *classfile_image);
-extern rvoid classfile_unloadclassdata(ClassFile *pcfs);
-extern u1 *classfile_readclassfile(rchar *filename);
-extern u1 *classfile_readjarfile(rchar *filename);
+extern ClassFile *classfile_load_classdata(u1     *classfile_image);
+extern rvoid classfile_unload_classdata(ClassFile *pcfs);
+extern u1 *classfile_read_classfile(rchar *filename);
+extern u1 *classfile_read_jarfile(rchar *filename);
 
 /* Prototypes for functions in 'cfattrib.c' */
-extern u1 *cfattrib_loadattribute(ClassFile           *pcfs,
-                                  attribute_info_dup **dst,
-                                  attribute_info      *src);
-extern rvoid cfattrib_unloadattribute(ClassFile          *pcfs,
-                                      attribute_info_dup *dst);
+extern u1 *cfattrib_load_elementvalue(ClassFile              *pcfs,
+                                      element_value_mem_align *dst,
+                                      element_value           *src);
+extern void cfattrib_unload_elementvalue(ClassFile               *pcfs,
+                                         element_value_mem_align *dst);
+
+extern u1 *cfattrib_load_annotation(ClassFile            *pcfs,
+                                    annotation_mem_align *dst,
+                                    annotation           *src);
+extern void cfattrib_unload_annotation(ClassFile            *pcfs,
+                                       annotation_mem_align *dst);
+
+extern u1 *cfattrib_load_attribute(ClassFile           *pcfs,
+                                   attribute_info_dup **dst,
+                                   attribute_info      *src);
+extern rvoid cfattrib_unload_attribute(ClassFile          *pcfs,
+                                       attribute_info_dup *dst);
+
 extern classfile_attribute_enum cfattrib_atr2enum(ClassFile *pcfs,
                               u2 attribute_attribute_name_index);
+
 extern rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
                                      u2 attribute_attribute_name_index);
 
@@ -2680,7 +2896,7 @@ extern rvoid cfmsgs_atrmsg(rchar *fn,
                            attribute_info_dup *atr);
 
 /*!
- * @internal Remove effects of packing pragma on structure packing
+ * @internal Remove effects of packing pragma on other code.
  *
  */
 #pragma pack()
