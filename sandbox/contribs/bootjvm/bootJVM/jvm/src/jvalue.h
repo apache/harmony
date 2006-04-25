@@ -132,7 +132,20 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvalue, h,
  * @e extensively in the runtime environment, this inherent constraint
  * can help plan maximum heap sizing.
  *
+ *
+ * @internal The JVM spec compliance of much code depends
+ *           code depends on packed structures, especially
+ *           in the class file arena, yet the use of global
+ *           project-wide -fpack-struct (GCC version of
+ *           structure packing option) conflicts with issues
+ *           such as portability.  Since the largest structures
+ *           of the code are not inherently portably, they
+ *           are packed here with a pragma and the compiler
+ *           is free to not pack anything else.
+ *
  */
+#pragma pack(1)
+
 typedef union
 {
     jbyte    _jbyte;    /**< Sub-integer primative @link
@@ -166,6 +179,12 @@ typedef union
     jvm_object_hash  _jobjhash;/**< Object hash of an arbitrary object*/
 
 } jvalue;
+
+/*!
+ * @internal Remove effects of packing pragma on other code.
+ *
+ */
+#pragma pack()
 
 #endif /* _jvalue_h_included_ */
 

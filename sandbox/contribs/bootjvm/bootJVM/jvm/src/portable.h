@@ -279,7 +279,10 @@ extern rvoid  portable_free(rvoid *ptr);
  *           active at the same time for other conditions, it is
  *           better to be ugly and correct than simple and pretty,
  *           yet vulnerable to failures.
+ *
  */
+#pragma pack(1)
+
 typedef struct
 {
     jmp_buf real_member1; /**< Main part of definition */

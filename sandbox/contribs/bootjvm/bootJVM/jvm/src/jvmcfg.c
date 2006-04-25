@@ -82,6 +82,18 @@ const jvm_field_lookup_index jvm_field_lookup_index_bad =
 const jvm_attribute_index jvm_attribute_index_bad =JVMCFG_BAD_ATTRIBUTE;
 
 /*!
+ * @brief Real machine BAD annotation type index in annotation
+ */
+const jvm_annotation_type_index jvm_attribute_type_index_bad =
+                                             JVMCFG_BAD_ANNOTATION_TYPE;
+
+/*!
+ * @brief Real machine BAD element value index in annotation type
+ */
+const jvm_element_value_pair_index jvm_element_value_pair_index_bad =
+                                          JVMCFG_BAD_ELEMENT_VALUE_PAIR;
+
+/*!
  * @brief Real machine NATIVE (method) attribute index
  */
 const jvm_attribute_index jvm_attribute_index_native =

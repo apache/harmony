@@ -86,7 +86,20 @@ ARCH_HEADER_COPYRIGHT_APACHE(class, h,
  * 
  * @returns pointer to a class slot
  * 
+ *
+ * @internal The JVM spec compliance of much code depends
+ *           code depends on packed structures, especially
+ *           in the class file arena, yet the use of global
+ *           project-wide -fpack-struct (GCC version of
+ *           structure packing option) conflicts with issues
+ *           such as portability.  Since the largest structures
+ *           of the code are not inherently portably, they
+ *           are packed here with a pragma and the compiler
+ *           is free to not pack anything else.
+ *
  */
+#pragma pack(1)
+
 #define CLASS(clsidx) pjvm->class[clsidx]
 
 /*!
@@ -250,6 +263,12 @@ typedef struct
                           */
 
 } rclass;
+
+/*!
+ * @internal Remove effects of packing pragma on other code.
+ *
+ */
+#pragma pack()
 
 /* Prototypes for functions in 'class.c' */
 extern rvoid           class_init(rvoid);

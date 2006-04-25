@@ -78,7 +78,21 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvm, h,
  *
  * This model has all the usual components, a program counter,
  * a stack pointer and stack area, and thread defintions.
+ *
+ *
+ * @internal The JVM spec compliance of much code depends
+ *           code depends on packed structures, especially
+ *           in the class file arena, yet the use of global
+ *           project-wide -fpack-struct (GCC version of
+ *           structure packing option) conflicts with issues
+ *           such as portability.  Since the largest structures
+ *           of the code are not inherently portably, they
+ *           are packed here with a pragma and the compiler
+ *           is free to not pack anything else.
+ *
  */
+#pragma pack(1)
+
 typedef struct
 {
     /*
@@ -268,6 +282,12 @@ typedef struct
                                          * dimension reference.  */
 
 } rjvm;
+
+/*!
+ * @internal Remove effects of packing pragma on other code.
+ *
+ */
+#pragma pack()
 
 extern rjvm *pjvm;     /**< Declared in @link #pjvm jvm.c @endlink */
 
