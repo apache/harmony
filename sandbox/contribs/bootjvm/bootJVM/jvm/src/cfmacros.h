@@ -717,6 +717,11 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  *     LOAD_SYSCALL_FAILURE_ATTRIB() @link #rnull rnull@endlink pointer
  *                                   as (u1 *)
  * </li>
+ *
+ * <li>
+ *     LOAD_SYSCALL_FAILURE_ANNOTAT() @link #rnull rnull@endlink pointer
+ *                                   as (u1 *)
+ * </li>
  * </ul>
  *
  *
@@ -757,6 +762,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
                         rnull,                              \
                         rnull); /* Extra ; */
 
+/*!
+ * @todo  HARMONY-6-jvm-cfmacros.h-5 Does usage of @b heap2ptr need to
+ * be examined for being an array of other pointers that need to be
+ * freed?  Does this algorithm leave everything pointed to by
+ * @b heap2ptr[0..attribute_count-1] as orphaned memory blocks,
+ * thus a memory leak?
+ */
 #define LOAD_SYSCALL_FAILURE_ATTRIB(expr, msg, heap1ptr, heap2ptr) \
     if (expr)                                                      \
     {                                                              \
@@ -770,6 +782,31 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
                         u1,                                        \
                         rnull,                                     \
                         rnull); /* Extra ; */
+
+/*!
+ * @todo  HARMONY-6-jvm-cfmacros.h-6 Does usage of @b heap2ptr need to
+ * be examined for being an array of other pointers that need to be
+ * freed?  Does this algorithm leave everything pointed to by
+ * @b heap2ptr[0..num_annotations-1] as orphaned memory blocks,
+ * thus a memory leak?  Probably need to check for nested annotations.
+ *
+ * @todo  HARMONY-6-jvm-cfmacros.h-7 Is the @b u1 parameter correct
+ * here?  Should something else go in this slot instead?
+ */
+#define LOAD_SYSCALL_FAILURE_ANNOTATION(expr, msg, heap1ptr, heap2ptr) \
+    if (expr)                                                          \
+    {                                                                  \
+        HEAP_FREE_METHOD((rvoid *) heap1ptr);                          \
+        HEAP_FREE_METHOD((rvoid *) heap2ptr);                          \
+    }                                                                  \
+    GENERIC_FAILURE_PTR(expr,                                          \
+                        DMLMIN,                                        \
+                        arch_function_name,                            \
+                        msg,                                           \
+                        u1,                                            \
+                        rnull,                                         \
+                        rnull); /* Extra ; */
+
 
 /*@} */ /* End of grouped definitions */
 
@@ -889,6 +926,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  *       distinguish this mode of compilation.  (See
  *       @link ./config.sh config.sh@endlink for details.)
  *
+ * @todo HARMONY-6-jvm-cfmacros.h-8 Change FILL_INFO_DUP[012] to become
+ *       FILL_INFO_MEM_ALIGN[012] instead.
+ *
  */
 /*@{*/
 #define FILL_INFO_DUP0 0xbe
@@ -900,7 +940,28 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  */
 #define FILL_INFO_NOTUSED_U1 0x9a
 #define FILL_INFO_NOTUSED_U2 0x9ace
-#define FILL_INFO_NOTUSED_U4 0x9aceface
+#define FILL_INFO_NOTUSED_U4 0x9acefeed
+
+/*
+ * Fill in element_values_union and array_values_struct
+ * to mark unused space
+ */
+#define FILL_ELEMENT_VALUES_UNION 0x9b
+#define FILL_ARRAY_VALUES_STRUCT  0x9c
+
+/*
+ * Fill in element_values_mem_align to mark unused space
+ */
+#define FILL_ELEMENT_VALUES_MEM_ALIGN0 0xfa
+#define FILL_ELEMENT_VALUES_MEM_ALIGN1 0xce
+#define FILL_ELEMENT_VALUES_MEM_ALIGN2 0x9d
+
+/*
+ * Fill in array_values_mem_align to mark unused space
+ */
+#define FILL_ARRAY_VALUES_MEM_ALIGN0 0x9e
+#define FILL_ARRAY_VALUES_MEM_ALIGN1 0x9e
+
 /*@}*/
 
 #endif /* _cfmacros_h_included_ */

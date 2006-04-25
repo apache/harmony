@@ -50,6 +50,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(cfattrib, c,
 "$Id$");
 
 
+#include <string.h>
 #include "jvmcfg.h"
 #include "cfmacros.h"
 #include "classfile.h"
@@ -58,14 +59,14 @@ ARCH_SOURCE_COPYRIGHT_APACHE(cfattrib, c,
 
 
 /*!
- * @brief Convenient shorthand for attribute string comparison
+ * @brief Compare string to expected valuue of attribute name index.
  *
  *
  * @param string  Attribute string for comparison against ClassFile
  *                attribute_info value.
  *
  *
- * @returns integer from utf_prchar_pcfs_strcmp()
+ * @returns jbyte from utf_prchar_pcfs_strcmp()
  *
  */
 #define CMP_ATTRIBUTE(string) \
@@ -138,14 +139,14 @@ classfile_attribute_enum cfattrib_atr2enum(ClassFile *pcfs,
         return(LOCAL_ENCLOSINGMETHOD_ATTRIBUTE);
     }
     else
-    if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_SIGNATURE_ATTRIBUTE))
-    {
-        return(LOCAL_SIGNATURE_ATTRIBUTE);
-    }
-    else
     if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_SYNTHETIC_ATTRIBUTE))
     {
         return(LOCAL_SYNTHETIC_ATTRIBUTE);
+    }
+    else
+    if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_SIGNATURE_ATTRIBUTE))
+    {
+        return(LOCAL_SIGNATURE_ATTRIBUTE);
     }
     else
     if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_SOURCEFILE_ATTRIBUTE))
@@ -153,18 +154,20 @@ classfile_attribute_enum cfattrib_atr2enum(ClassFile *pcfs,
         return(LOCAL_SOURCEFILE_ATTRIBUTE);
     }
     else
-    if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_LINENUMBERTABLE_ATTRIBUTE))
+    if (0 ==
+            CMP_ATTRIBUTE(CONSTANT_UTF8_LINENUMBERTABLE_ATTRIBUTE))
     {
         return(LOCAL_LINENUMBERTABLE_ATTRIBUTE);
     }
     else
-    if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_LOCALVARIABLETABLE_ATTRIBUTE))
+    if (0 ==
+         CMP_ATTRIBUTE(CONSTANT_UTF8_LOCALVARIABLETABLE_ATTRIBUTE))
     {
         return(LOCAL_LOCALVARIABLETABLE_ATTRIBUTE);
     }
     else
-    if (0 ==
-          CMP_ATTRIBUTE(CONSTANT_UTF8_LOCALVARIABLETYPETABLE_ATTRIBUTE))
+    if (0 == CMP_ATTRIBUTE(
+                        CONSTANT_UTF8_LOCALVARIABLETYPETABLE_ATTRIBUTE))
     {
         return(LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE);
     }
@@ -280,32 +283,45 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
                            ((LocalVariableTable_attribute *)&(*dst)->ai)
 #define PTR_DST_LOCALVARIABLETYPETABLE_AI(dst) \
                        ((LocalVariableTypeTable_attribute *)&(*dst)->ai)
-#define PTR_DST_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE_AI(dst) \
+#define PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst) \
                     ((RuntimeVisibleAnnotations_attribute *)&(*dst)->ai)
-#define PTR_DST_LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE_AI(dst) \
+#define PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst) \
                   ((RuntimeInvisibleAnnotations_attribute *)&(*dst)->ai)
-#define \
-    PTR_DST_LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE_AI(dst) \
+#define PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst) \
            ((RuntimeVisibleParameterAnnotations_attribute *)&(*dst)->ai)
-#define \
-  PTR_DST_LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE_AI(dst) \
-          ((RuntimeInisibleParameterAnnotations_attribute *)&(*dst)->ai)
-#define PTR_DST_LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE_AI(dst) \
-                           ((AnnotationsDefault_attribute *)&(*dst)->ai)
+#define PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst) \
+         ((RuntimeInvisibleParameterAnnotations_attribute *)&(*dst)->ai)
+#define PTR_DST_ANNOTATIONDEFAULT_AI(dst) \
+                           ((AnnotationDefault_attribute *)&(*dst)->ai)
+#define PTR_DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst) \
+                  ((AnnotationDefault_attribute_mem_align *)&(*dst)->ai)
 
 /*!
- * @brief Conveniently reference the Code_attribute contained in
+ * @brief Conveniently reference an
+ * @link Code_attribute Xxx_attribute@endlink contained in
  * a <b><code>attribute_info_dup *dst</code></b>, namely, with less
  * pointer indirection.
  *
- * This is a counterpart for cfattrib_unloadattribute() where
+ * This is a counterpart for cfattrib_unload_attribute() where
  * no indirection is needed.  Notice that
- * @link #PTR_DST_CODE_AI() PTR_DST_CODE_AI()@endlink references
+ * @link #PTR_DST_CODE_AI() PTR_DST_XXX_AI()@endlink references
  * a <b><code>attribute_info_dup **dst</code></b>, while this
  * macro references a <b><code>attribute_info_dup *dst</code></b>.
  *
  */
 #define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
+#define     DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst) \
+                    ((RuntimeVisibleAnnotations_attribute *) &dst->ai)
+#define     DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst) \
+                  ((RuntimeInvisibleAnnotations_attribute *) &dst->ai)
+#define     DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst) \
+           ((RuntimeVisibleParameterAnnotations_attribute *) &dst->ai)
+#define     DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst) \
+           ((RuntimeInvisibleParameterAnnotations_attribute *) &dst->ai)
+#define     DST_ANNOTATIONDEFAULT_AI(dst) \
+                           ((AnnotationDefault_attribute *) &dst->ai)
+#define     DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst) \
+                    ((AnnotationDefault_attribute_mem_align *) &dst->ai)
 
 /*@{ */ /* Begin grouped definitions */
 
@@ -333,7 +349,7 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  * a <b><code>attribute_info_dup *dst</code></b>, namely, with less
  * pointer indirection.
  *
- * This is a counterpart for cfattrib_unloadattribute() where
+ * This is a counterpart for cfattrib_unload_attribute() where
  * no indirection is needed.  Notice that
  * @link #PTR_DST_CODE_AI() PTR_DST_CODE_AI()@endlink references
  * a <b><code>attribute_info_dup **dst</code></b>, while this
@@ -344,6 +360,428 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 
 /*@} */ /* End of grouped definitions */
 
+
+/*!
+ * @brief Load an annotation's element_value and minimally verify
+ * that it has either valid contents.
+ *
+ * If the element_value is valid, it will be copied
+ * into its element_value_mem_align destination area.
+ *
+ * @param  pcfs      Pointer to (partially) parsed ClassFile area
+ *
+ * @param  dst       Pointer to an element_value_pair_mem_align[]
+ *                   address telling where in the heap this
+ *                   element_value will be copied from the source area.
+ *
+ * @param  src       Pointer to an element_value in class file image.
+ *                   This data will be stored in the heap at
+ *                   location @c @b *dst .
+ *
+ *
+ * @returns Point to first byte past this annotation,
+ *          or @link #rnull rnull@endlink if parsing problem.
+ *
+ *
+ * @todo HARMONY-6-jvm-cfattrib.c-40 Needs unit testing with real data.
+ *
+ */
+
+u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
+                               element_value_mem_align *dst,
+                               element_value           *src)
+{
+    ARCH_FUNCTION_NAME(cfattrib_load_elementvalue);
+
+    u1     ev_tag;
+    jbyte *pabytes;
+    u2    *pu2;
+
+    pabytes = (jbyte *) src;
+
+    /*
+     * Retrieve element_value tag, then process value type
+     */
+    dst->empty[0] = FILL_ELEMENT_VALUES_MEM_ALIGN0;
+    dst->empty[1] = FILL_ELEMENT_VALUES_MEM_ALIGN1;
+    dst->empty[2] = FILL_ELEMENT_VALUES_MEM_ALIGN2;
+
+    ev_tag = *pabytes++;
+    dst->tag = ev_tag;
+
+    /*!
+     * @todo HARMONY-6-jvm-cfattrib.c-39 Should a check
+     * be made for each case to match @b ev_tag with the 
+     * constant_pool_index to see if they agree properly?
+     */
+    switch(ev_tag)
+    {
+        case BASETYPE_CHAR_B:
+        case BASETYPE_CHAR_C:
+        case BASETYPE_CHAR_D:
+        case BASETYPE_CHAR_F:
+        case BASETYPE_CHAR_I:
+        case BASETYPE_CHAR_J:
+        case BASETYPE_CHAR_S:
+        case BASETYPE_CHAR_Z:
+        case BASETYPE_CHAR_s:
+            MAKE_PU2(pu2, pabytes);
+            dst->_value._const_value_index = GETRS2(pu2);
+            pabytes += sizeof(jvm_constant_pool_index);
+            break;
+
+        case BASETYPE_CHAR_e:
+            MAKE_PU2(pu2, pabytes);
+            dst->_value._enum_const_value.type_name_index =
+                                                    GETRS2(pu2);
+            pabytes += sizeof(jvm_constant_pool_index);
+
+            MAKE_PU2(pu2, pabytes);
+            dst->_value._enum_const_value.const_name_index =
+                                                    GETRS2(pu2);
+            pabytes += sizeof(jvm_constant_pool_index);
+            break;
+
+        case BASETYPE_CHAR_c:
+            MAKE_PU2(pu2, pabytes);
+            dst->_value._class_info_index = GETRS2(pu2);
+            pabytes += sizeof(jvm_constant_pool_index);
+            break;
+
+        case BASETYPE_CHAR_AT:
+            /* Allocate one nested annotation */
+            dst->_value._pannotation_value =
+                HEAP_GET_METHOD(1 * sizeof(annotation_mem_align),rtrue);
+
+            /*
+             * WARNING!  RECURSIVE CALL:
+             *
+             * Load up a nested annotation.  This may go as deep
+             * as the nesting of annotation data, which will be
+             * inherently finite for a valid class file, but the
+             * actual depth is unknown at this point.
+             */
+
+            pabytes =
+                cfattrib_load_annotation(pcfs,
+                                         dst->_value._pannotation_value,
+                                         (annotation *) pabytes);
+
+
+            /* If parsing error, pass it up the line */
+            if (rnull == pabytes)
+            {
+                return((u1 *) rnull);
+            }
+
+            break;
+
+        case BASETYPE_CHAR_ARRAY:
+            /*
+             * Load an array_values[] slot, then point to
+             * next array_values in class file image.
+             */
+            dst->_value._array_value.empty[0] =
+                                           FILL_ARRAY_VALUES_MEM_ALIGN0;
+            dst->_value._array_value.empty[1] =
+                                           FILL_ARRAY_VALUES_MEM_ALIGN1;
+
+            MAKE_PU2(pu2, pabytes);
+            dst->_value._array_value.num_values = GETRS2(pu2);
+            pu2++;
+            pabytes = (jbyte *) pu2;
+
+            if (0 == dst->_value._array_value.num_values)
+            {
+                /*
+                 * Possible, but not theoretically reasonable,
+                 * but not explicitly prohibited by spec
+                 */
+                dst->_value._array_value.pvalues =
+                    (element_value_mem_align **) rnull;
+            }
+            else
+            {
+                dst->_value._array_value.pvalues =
+                    HEAP_GET_METHOD(dst->_value._array_value.num_values
+                                    * sizeof(element_value_mem_align *),
+                                    rtrue);
+
+                /*
+                 * Load an element_value_mem_align[] slot, then point to
+                 * next element_value in class file image.
+                 */
+                u2 evidx;
+                for (evidx = 0;
+                     evidx < dst->_value._array_value.num_values;
+                     evidx++)
+                {
+                    dst->_value._array_value.pvalues[evidx] =
+                        HEAP_GET_METHOD(
+                            sizeof(element_value_mem_align *),
+                            rtrue);
+                
+                    /*
+                     * WARNING!  RECURSIVE CALL:
+                     *
+                     * Unload a nested element_value.  This may go as
+                     * deep as the nesting of annotation data, which
+                     * will be inherently finite for a valid class file,
+                     * but the actual depth is unknown at this point.
+                     */
+                    pabytes = cfattrib_load_elementvalue(
+                                  pcfs,
+                                  dst
+                                    ->_value
+                                      ._array_value
+                                        .pvalues[evidx],
+                                  (element_value *) pabytes);
+
+                    /* If parsing error, pass it up the line */
+                    if (rnull == pabytes)
+                    {
+                        return((u1 *) rnull);
+                    }
+                }
+
+            }
+
+            break;
+
+    } /* switch(ev_tag) */
+
+    return((u1 *) pabytes);
+
+} /* END of cfattrib_load_elementvalue() */
+
+/*!
+ * @brief Unload an element_value_mem_align and free its heap area.
+ *
+ * @param  pcfs      Pointer to (partially) parsed ClassFile area
+ *
+ * @param  dst       Pointer to a element_value_mem_align allocation
+ *                   where this attribute is stored in the heap
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink Whether it succeeds or fails,
+ *          returning anything does not make much sense.  This is
+ *          similar to @c @b free(3) not returning anything even when
+ *          a bad pointer was passed in.
+ *
+ */
+
+void cfattrib_unload_elementvalue(ClassFile               *pcfs,
+                                  element_value_mem_align *dst)
+{
+    ARCH_FUNCTION_NAME(cfattrib_unload_elementvalue);
+
+    u2 ptridx;
+
+    switch(dst->tag)
+    {
+        case BASETYPE_CHAR_AT:
+            cfattrib_unload_annotation(pcfs,
+                                       dst->_value._pannotation_value);
+
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case BASETYPE_CHAR_ARRAY:
+            for (ptridx = 0;
+                 ptridx < dst->_value._array_value.num_values;
+                 ptridx++)
+            {
+                /*
+                 * WARNING!  RECURSIVE CALL:
+                 *
+                 * Unload a nested element_value_mem_align.  This may go
+                 * as deep as the nesting of annotation data, which will
+                 * be inherently finite for a valid class file, but the
+                 * actual depth is unknown at this point.
+                 */
+                cfattrib_unload_elementvalue(pcfs,
+                              dst->_value._array_value.pvalues[ptridx]);
+            }
+            HEAP_FREE_METHOD(dst->_value._array_value.pvalues);
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        default:
+            /* Nothing else has further heap allocation */
+            HEAP_FREE_METHOD(dst);
+            break;
+
+    } /* switch(ev_tag) */
+
+    return;
+
+} /* END of cfattrib_unload_elementvalue() */
+
+
+/*!
+ * @brief Load an annotation and verify that it has either valid
+ * contents.
+ *
+ * If the annotation is valid, it will be copied
+ * into its destination area.
+ *
+ * @param  pcfs      Pointer to (partially) parsed ClassFile area
+ *
+ * @param  dst       Pointer to an annotation_mem_align[] address
+ *                   telling where in the heap this annotation will be
+ *                   copied from the source area.
+ *
+ * @param  src       Pointer to an annotation in class file image.
+ *                   This data will be stored in the heap at
+ *                   location @c @b *dst .
+ *
+ *
+ * @returns Point to first byte past this annotation,
+ *          or @link #rnull rnull@endlink if parsing problem.
+ *
+ *
+ * @todo HARMONY-6-jvm-cfattrib.c-38 Needs unit testing with real data.
+ *
+ */
+
+u1 *cfattrib_load_annotation(ClassFile            *pcfs,
+                             annotation_mem_align *dst,
+                             annotation           *src)
+{
+    ARCH_FUNCTION_NAME(cfattrib_load_annotation);
+
+    jbyte *pabytes;
+    u2 *pu2;
+
+    jvm_annotation_type_index    anttidx;
+    u2                           numevp;
+
+    pabytes = (jbyte *) src;
+
+    MAKE_PU2(pu2, pabytes);
+
+    anttidx = GETRS2(pu2);
+    pu2++;
+    dst->type_index = anttidx;
+
+    numevp = GETRS2(pu2);
+    pu2++;
+    dst->num_element_value_pairs = numevp;
+
+    MAKE_PU2(pu2, pabytes);
+
+    /* Normal pointing to beginning of source area to load from */
+    pabytes = (jbyte *) pu2;
+
+    if (0 == numevp)
+    {
+        /*
+         * Possible, but not theoretically reasonable,
+         * but not explicitly prohibited by spec
+         */
+        dst->element_value_pairs
+            = (struct element_value_pair_mem_align_struct *) rnull;
+    }
+    else
+    {
+        rint evpbytes = numevp * sizeof(element_value_pair_mem_align);
+
+        dst->element_value_pairs = HEAP_GET_METHOD(evpbytes, rfalse);
+
+        memset(dst->element_value_pairs,
+               FILL_ELEMENT_VALUES_UNION,
+               evpbytes);
+
+
+        element_value_pair_mem_align *evp = dst->element_value_pairs;
+
+        jvm_element_value_pair_index evpidx;
+        for (evpidx = 0; evpidx < numevp; evpidx++, evp++)
+        {
+            /*
+             * Load an element_value_pair_mem_align[] slot, then point
+             * to next element_value_pair in class file image.
+             */
+            MAKE_PU2(pu2, pabytes);
+            evp->element_value_index = GETRS2(pu2);
+            pu2++;
+            pabytes = (jbyte *) pu2;
+
+            /*
+             * WARNING!  RECURSIVE CALL:
+             *
+             * Load a nested element_value, which may invoke this
+             * function for a nested annotation.  This may go as deep
+             * as the nesting of annotation data, which will be
+             * inherently finite for a valid class file, but the
+             * actual depth is unknown at this point.
+             */
+            pabytes =
+                cfattrib_load_elementvalue(pcfs,
+                                           &evp->value,
+                                           (element_value *) pabytes);
+
+            /* If parsing error, pass it up the line */
+            if (rnull == pabytes)
+            {
+                return((u1 *) rnull);
+            }
+
+        } /* for (evpidx) */
+
+    } /* if numevep else */
+
+    return((u1 *) pabytes);
+
+} /* END of cfattrib_load_annotation() */
+
+/*!
+ * @brief Unload an annotation and free its heap area.
+ *
+ * @param  pcfs      Pointer to (partially) parsed ClassFile area
+ *
+ * @param  dst       Pointer to an annotation_mem_align[] allocation
+ *                   where this attribute is stored in the heap
+ *
+ *
+ * @returns @link #rvoid rvoid@endlink Whether it succeeds or fails,
+ *          returning anything does not make much sense.  This is
+ *          similar to @c @b free(3) not returning anything even when
+ *          a bad pointer was passed in.
+ *
+ */
+
+void cfattrib_unload_annotation(ClassFile            *pcfs,
+                                annotation_mem_align *dst)
+{
+    ARCH_FUNCTION_NAME(cfattrib_unload_annotation);
+
+    jvm_element_value_pair_index evpidx;
+    u2                           numevp;
+
+    element_value_pair_mem_align *evp = dst->element_value_pairs;
+
+    numevp = dst->num_element_value_pairs;
+
+    for (evpidx = 0; evpidx < numevp; evpidx++, evp++)
+    {
+        /*
+         * WARNING!  RECURSIVE CALL:
+         *
+         * Unload a nested element_value, which may invoke this
+         * function for a nested annotation.  This may go as deep
+         * as the nesting of annotation data, which will be
+         * inherently finite for a valid class file, but the
+         * actual depth is unknown at this point.
+         */
+        cfattrib_unload_elementvalue(pcfs, &evp->value);
+    }
+    HEAP_FREE_METHOD(dst->element_value_pairs);
+    HEAP_FREE_METHOD(dst);
+
+    return;
+
+} /* END of cfattrib_unload_annotation() */
 
 /*!
  * @brief Load an attribute and verify that it has either valid contents
@@ -366,7 +804,7 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  *
  * @returns Point to first byte past this attribute,
  *          or @link #rnull rnull@endlink if parsing problem.
- *          If there is a problem, @b dst will contain a valid
+ *          The heap area @c @b *dst will contain a valid
  *          heap pointer only if there is a valid
  *          @link attribute_info.attribute_name_index
             attribute_name_index@endlink, else it will also
@@ -374,14 +812,15 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  *
  */
 
-u1 *cfattrib_loadattribute(ClassFile           *pcfs,
-                           attribute_info_dup **dst,
-                           attribute_info      *src)
+u1 *cfattrib_load_attribute(ClassFile           *pcfs,
+                            attribute_info_dup **dst,
+                            attribute_info      *src)
 {
-    ARCH_FUNCTION_NAME(cfattrib_loadattribute);
+    ARCH_FUNCTION_NAME(cfattrib_load_attribute);
 
     attribute_info tmpatr;
     u4             tmplen;
+    u2             attribute_name_index;
 
     jbyte *pabytes;
     u2 *pu2;
@@ -390,16 +829,33 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
     u2 atblidx;
     u2 atbllen;
 
+    u2 parmtblidx;
+    u2 parmtbllen;
+
     jbyte *pnext_src = (jbyte *) src;
 
+    /*!
+     * @internal The @c @b attribute_length member could be
+     * tested for each incoming attribute that was of fixed
+     * length, e.g. LOCAL_CONSTANTVALUE_ATTRIBUTE, but cannot
+     * be checked directly if variable, e.g. LOCAL_CODE_ATTRIBUTE.
+     * Therefore, check the @c @b attribute_name_index to verify
+     * that its string matches the expected value, but do not
+     * bother checking the length.  Thus the assumption is made
+     * that if the name matches the expected string, then the
+     * length will also be correct.
+     */
     tmpatr.attribute_name_index = GETRS2(&src->attribute_name_index);
     tmpatr.attribute_length     = GETRI4(&src->attribute_length);
 
-    cfmsgs_typemsg("cfattrib_loadattribute",
+    /* Convenient mapping for direct support of CMP_ATTRIBUTE() macro */
+    attribute_name_index = tmpatr.attribute_name_index;
+
+    cfmsgs_typemsg((rchar *) arch_function_name,
                    pcfs,
                    tmpatr.attribute_name_index);
     sysDbgMsg(DMLNORM,
-              arch_function_name,
+              (char *) arch_function_name,
               "len=%d",
               tmpatr.attribute_length);
 
@@ -467,6 +923,13 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
             PTR_DST_CONSTANTVALUE_AI(dst)->constantvalue_index =
                 GETRS2(&((ConstantValue_attribute *) src)
                           ->constantvalue_index);
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                                 CONSTANT_UTF8_CONSTANTVALUE_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
 
@@ -520,7 +983,7 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
 
             }
 
-            pabytes =(jbyte *) &((Code_attribute *) src)->code;
+            pabytes  = (jbyte *) &((Code_attribute *) src)->code;
             pabytes += PTR_DST_CODE_AI(dst)->code_length * sizeof(u1);
 
             /*!
@@ -628,10 +1091,18 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                      * Load an attribute and verify that it is either
                      * a valid (or an ignored) attribute, then point to
                      * next attribute in class file image.
+                     *
+                     *
+                     * WARNING!  RECURSIVE CALL:
+                     *
+                     * Load up a nested attribute.  This may go as deep
+                     * as the nesting of attribute data, which will be
+                     * inherently finite for a valid class file, but the
+                     * actual depth is unknown at this point.
                      */
 
                     pabytes =
-                        cfattrib_loadattribute(
+                        cfattrib_load_attribute(
                             pcfs,
                             (attribute_info_dup **)
                                 &(PTR_DST_CODE_AI(dst)
@@ -646,6 +1117,12 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
 
                 } /* for (atridx) */
             }
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_CODE_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_EXCEPTIONS_ATTRIBUTE:
@@ -654,8 +1131,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
              * unit testing.
              */
 
-            pabytes =(jbyte *) &((Exceptions_attribute *) src)
-                                  ->number_of_exceptions;
+            pabytes = (jbyte *) &((Exceptions_attribute *) src)
+                                   ->number_of_exceptions;
 
             MAKE_PU2(pu2, pabytes);
 
@@ -685,6 +1162,12 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                     pabytes = (jbyte *) pu2;
                 }
             }
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_EXCEPTIONS_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_INNERCLASSES_ATTRIBUTE:
@@ -692,8 +1175,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-25 Needs unit testing.
              */
 
-            pabytes =(jbyte *) &((InnerClasses_attribute *) src)
-                                  ->number_of_classes;
+            pabytes = (jbyte *) &((InnerClasses_attribute *) src)
+                                   ->number_of_classes;
 
             MAKE_PU2(pu2, pabytes);
 
@@ -735,45 +1218,13 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                     pabytes = (jbyte *) pu2;
                 }
             }
-            break;
 
-        case LOCAL_ENCLOSINGMETHOD_ATTRIBUTE:
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib.c-27 Needs unit testing.
-             */
-
-            PTR_DST_ENCLOSINGMETHOD_AI(dst)->class_index =
-                GETRS2(&((EnclosingMethod_attribute *) src)
-                          ->class_index);
-
-            PTR_DST_ENCLOSINGMETHOD_AI(dst)->method_index =
-                GETRS2(&((EnclosingMethod_attribute *) src)
-                          ->method_index);
-            break;
-
-        case LOCAL_SYNTHETIC_ATTRIBUTE:
-            /*
-             * Nothing else to process, no attribute-specific data.
-             */
-            break;
-
-        case LOCAL_SIGNATURE_ATTRIBUTE:
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib.c-28 Needs unit testing.
-             */
-
-            PTR_DST_SIGNATURE_AI(dst)->signature_index =
-                GETRS2(&((Signature_attribute *) src)->signature_index);
-            break;
-
-        case LOCAL_SOURCEFILE_ATTRIBUTE:
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib.c-29 Needs unit testing.
-             */
-
-            PTR_DST_SOURCEFILE_AI(dst)->sourcefile_index =
-                GETRS2(&((SourceFile_attribute *) src)
-                                                    ->sourcefile_index);
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                                  CONSTANT_UTF8_INNERCLASSES_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
@@ -781,8 +1232,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-30 Needs unit testing.
              */
 
-            pabytes =(jbyte *) &((LineNumberTable_attribute *) src)
-                                  ->line_number_table_length;
+            pabytes = (jbyte *) &((LineNumberTable_attribute *) src)
+                                   ->line_number_table_length;
 
             MAKE_PU2(pu2, pabytes);
 
@@ -819,6 +1270,13 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                     pabytes = (jbyte *) pu2;
                 }
             }
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                               CONSTANT_UTF8_LINENUMBERTABLE_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
@@ -826,8 +1284,8 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-31 Needs unit testing.
              */
 
-            pabytes =(jbyte *) &((LocalVariableTable_attribute *) src)
-                                  ->local_variable_table_length;
+            pabytes = (jbyte *) &((LocalVariableTable_attribute *) src)
+                                   ->local_variable_table_length;
 
             MAKE_PU2(pu2, pabytes);
 
@@ -873,6 +1331,13 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                     pabytes = (jbyte *) pu2;
                 }
             }
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                            CONSTANT_UTF8_LOCALVARIABLETABLE_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
@@ -880,8 +1345,9 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-32 Needs unit testing.
              */
 
-            pabytes =(jbyte *) &((LocalVariableTypeTable_attribute *)
-                                 src)->local_variable_type_table_length;
+            pabytes = (jbyte *)
+                      &((LocalVariableTypeTable_attribute *) src)
+                         ->local_variable_type_table_length;
 
             MAKE_PU2(pu2, pabytes);
 
@@ -927,29 +1393,417 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                     pabytes = (jbyte *) pu2;
                 }
             }
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                        CONSTANT_UTF8_LOCALVARIABLETYPETABLE_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_DEPRECATED_ATTRIBUTE:
             /*
              * Nothing else to process, no attribute-specific data.
              */
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_DEPRECATED_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
             break;
 
         case LOCAL_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-33 Needs unit testing.
+             */
+
+            pabytes = (jbyte *)
+                      &((RuntimeVisibleAnnotations_attribute *) src)
+                         ->num_annotations;
+
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+            PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+              ->num_annotations = atbllen;
+
+            pabytes = (jbyte *) pu2;
+
+            if (0 == atbllen)
+            {
+                PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                  ->annotations =
+                    (annotation_mem_align **) rnull;
+            }
+            else
+            {
+                PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)->annotations =
+                    HEAP_GET_METHOD(
+                               PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                                   ->num_annotations *
+                                 sizeof(annotation_mem_align *),
+                               rtrue);
+
+                jvm_annotation_index antidx;
+
+                for (antidx = 0;
+                     antidx <
+             PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)->num_annotations;
+                     antidx++)
+                {
+                    /*
+                     * Load an annotation[] slot, then point to
+                     * next annotation in class file image.
+                     */
+                    pabytes =
+                        cfattrib_load_annotation(
+                            pcfs,
+                            /* (annotation_mem_align **) */
+                             (PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                                 ->annotations)[antidx],
+                            (annotation *) pabytes);
+
+                    LOAD_SYSCALL_FAILURE_ANNOTATION(
+                        (rnull == pabytes),
+                        "load runtime visible annotation",
+                        *dst,
+                        PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                          ->annotations);
+                } /* for (antidx) */
+            }
+
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                     CONSTANT_UTF8_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
+            break;
 
         case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-34 Needs unit testing.
+             */
+
+            pabytes = (jbyte *)
+                      &((RuntimeInvisibleAnnotations_attribute *) src)
+                         ->num_annotations;
+
+            MAKE_PU2(pu2, pabytes);
+
+            atbllen = GETRS2(pu2);
+            pu2++;
+            PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+              ->num_annotations = atbllen;
+
+            pabytes = (jbyte *) pu2;
+
+            if (0 == atbllen)
+            {
+                PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                  ->annotations =
+                    (annotation_mem_align **) rnull;
+            }
+            else
+            {
+                PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                  ->annotations =
+                    HEAP_GET_METHOD(
+                             PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                                 ->num_annotations *
+                               sizeof(annotation_mem_align *),
+                             rtrue);
+
+                jvm_annotation_index antidx;
+
+                for (antidx = 0;
+                     antidx <
+           PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)->num_annotations;
+                     antidx++)
+                {
+                    /*
+                     * Load an annotation[] slot, then point to
+                     * next annotation in class file image.
+                     */
+                    pabytes =
+                        cfattrib_load_annotation(
+                            pcfs,
+                            /* (annotation_mem_align **) */
+                            (PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                                 ->annotations)[antidx],
+                            (annotation *) pabytes);
+
+                    LOAD_SYSCALL_FAILURE_ANNOTATION(
+                        (rnull == pabytes),
+                        "load runtime invisible annotation",
+                        *dst,
+                        PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                          ->annotations);
+                } /* for (antidx) */
+            }
+
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                   CONSTANT_UTF8_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
+            break;
 
         case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-35 Needs unit testing.
+             */
+
+            pabytes = (jbyte *)
+                 &((RuntimeVisibleParameterAnnotations_attribute *) src)
+                         ->num_parameters;
+
+            MAKE_PU2(pu2, pabytes);
+
+            parmtbllen = GETRS2(pu2);
+            pu2++;
+            PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+              ->num_parameters = parmtbllen;
+
+            pabytes = (jbyte *) pu2;
+
+            if (0 == parmtbllen)
+            {
+                PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  ->parameter_annotations = 
+                    (parameter_annotation **) rnull;
+            }
+            else
+            {
+                PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  ->parameter_annotations = 
+                    HEAP_GET_METHOD(
+                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                        ->num_parameters *
+                          sizeof(parameter_annotation *),
+                      rtrue);
+
+                for (parmtblidx = 0;
+                     parmtblidx < parmtbllen;
+                     parmtblidx++)
+                {
+                    /*
+                     * Load an parameter_annotation[] slot, then point
+                     * to next annotation in class file image.
+                     */
+
+                    atbllen = GETRS2(pu2);
+                    pu2++;
+                    PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                      ->parameter_annotations[parmtblidx]
+                        ->num_annotations = atbllen;
+
+                    pabytes = (jbyte *) pu2;
+
+                    if (0 == atbllen)
+                    {
+                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                          ->parameter_annotations[parmtblidx]
+                            ->annotations =
+                            (annotation_mem_align **) rnull;
+                    }
+                    else
+                    {
+                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                        ->parameter_annotations[parmtblidx]
+                          ->annotations =
+                            HEAP_GET_METHOD(
+                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                        ->parameter_annotations[parmtblidx]
+                          ->num_annotations *
+                                         sizeof(annotation_mem_align *),
+                                            rtrue);
+
+                        jvm_annotation_index antidx;
+
+                        for (antidx = 0;
+                             antidx <
+                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                               ->parameter_annotations[parmtblidx]
+                                 ->num_annotations;
+                             antidx++)
+                        {
+                            /*
+                             * Load an annotation[] slot, then point to
+                             * next annotation in class file image.
+                             */
+                            pabytes =
+                                cfattrib_load_annotation(
+                                    pcfs,
+                                    /* (annotation_mem_align **) */
+                     (PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                                     ->parameter_annotations[parmtblidx]
+                                       ->annotations)[antidx],
+                                    (annotation *) pabytes);
+
+                            LOAD_SYSCALL_FAILURE_ANNOTATION(
+                                (rnull == pabytes),
+                            "load runtime visible parameter annotation",
+                                *dst,
+                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                                  ->parameter_annotations[parmtblidx]
+                                    ->annotations);
+                        } /* for (antidx) */
+                    }
+                } /* for parmtblidx */
+            }
+
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+            CONSTANT_UTF8_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
+            break;
 
         case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-36 Needs unit testing.
+             */
+
+            pabytes = (jbyte *)
+               &((RuntimeInvisibleParameterAnnotations_attribute *) src)
+                         ->num_parameters;
+
+            MAKE_PU2(pu2, pabytes);
+
+            parmtbllen = GETRS2(pu2);
+            pu2++;
+            PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+              ->num_parameters = parmtbllen;
+
+            pabytes = (jbyte *) pu2;
+
+            if (0 == parmtbllen)
+            {
+                PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  ->parameter_annotations = 
+                    (parameter_annotation **) rnull;
+            }
+            else
+            {
+                PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  ->parameter_annotations = 
+                    HEAP_GET_METHOD(
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                        ->num_parameters *
+                          sizeof(parameter_annotation *),
+                      rtrue);
+
+                for (parmtblidx = 0;
+                     parmtblidx < parmtbllen;
+                     parmtblidx++)
+                {
+                    /*
+                     * Load an parameter_annotation[] slot, then point
+                     * to next annotation in class file image.
+                     */
+
+                    atbllen = GETRS2(pu2);
+                    pu2++;
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                      ->parameter_annotations[parmtblidx]
+                        ->num_annotations = atbllen;
+
+                    pabytes = (jbyte *) pu2;
+
+                    if (0 == atbllen)
+                    {
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                          ->parameter_annotations[parmtblidx]
+                            ->annotations =
+                            (annotation_mem_align **) rnull;
+                    }
+                    else
+                    {
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                        ->parameter_annotations[parmtblidx]
+                          ->annotations =
+                            HEAP_GET_METHOD(
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                        ->parameter_annotations[parmtblidx]
+                          ->num_annotations *
+                                         sizeof(annotation_mem_align *),
+                                            rtrue);
+
+                        jvm_annotation_index antidx;
+
+                        for (antidx = 0;
+                             antidx <
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                               ->parameter_annotations[parmtblidx]
+                                 ->num_annotations;
+                             antidx++)
+                        {
+                            /*
+                             * Load an annotation[] slot, then point to
+                             * next annotation in class file image.
+                             */
+                            pabytes =
+                                cfattrib_load_annotation(
+                                    pcfs,
+                                    /* (annotation_mem_align **) */
+                   (PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                                     ->parameter_annotations[parmtblidx]
+                                       ->annotations)[antidx],
+                                    (annotation *) pabytes);
+
+                            LOAD_SYSCALL_FAILURE_ANNOTATION(
+                                (rnull == pabytes),
+                            "load runtime visible parameter annotation",
+                                *dst,
+                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                                  ->parameter_annotations[parmtblidx]
+                                    ->annotations);
+                        } /* for (antidx) */
+                    }
+                } /* for parmtblidx */
+            }
+
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+          CONSTANT_UTF8_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE))
+            {
+              return(pnext_src);
+            }
+            break;
 
         case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
-
             /*!
-             * @todo HARMONY-6-jvm-cfattrib.c-33 The annotation
-             * attributes are currently ignored in this implementation.
-             * This should be changed when there is a need to use them.
+             * @todo HARMONY-6-jvm-cfattrib.c-37 Needs unit testing.
              */
+
+            pabytes = (jbyte *)
+                      &((AnnotationDefault_attribute *) src)
+                         ->default_value;
+
+
+            pabytes = cfattrib_load_elementvalue(pcfs,
+                              &PTR_DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst)
+                                                 ->default_value, 
+                                             (element_value *) pabytes);
+
+
+            /* Verify contents of @c @b attribute_name_index string */
+            if (0 == CMP_ATTRIBUTE(
+                             CONSTANT_UTF8_ANNOTATIONDEFAULT_ATTRIBUTE))
+            {
+                return(pnext_src);
+            }
+            break;
 
         case LOCAL_UNKNOWN_ATTRIBUTE:
 
@@ -963,7 +1817,9 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
              * this could be eliminated to conserve space.
              *
              * @todo HARMONY-6-jvm-cfattrib.c-22 Evaluate whether or not
-             * this is the best way to handle this case.
+             * this is the best way to handle this case, that is,
+             * should the attribute be loaded, or should the heap area
+             * be freed and a null returned?  Probably load and ignore.
              */
             if (0 != tmpatr.attribute_length)
             {
@@ -971,212 +1827,27 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
                                 &src->info,
                                 tmpatr.attribute_length);
             }
-            break;
 
-    } /* switch */
+            /*
+             * Nothing in contents of @c @b attribute_name_index
+             * that needs to be verified since contents is an
+             * unknown attribute.
+             */
+            return(pnext_src);
 
+    } /* switch atrenum */
 
-    /*!
-     * @todo HARMONY-6-jvm-cfattrib.c-3 Delete this when
-     *  TODO: items below are satisfied, that is, when
-     *  the runtime structures are fully unit tested or
-     *  other item as shown below.
+    /*
+     * Something went wrong here. free heap allocation and report error
      */
-    rboolean dummy = rtrue;
+    HEAP_FREE_METHOD(*dst);
+    return((u1 *) rnull);
 
-    switch(atrenum)
-    {
-        case LOCAL_CONSTANTVALUE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-4 Verify "ConstantValue"
-             * attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_CODE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-5 Verify "Code" attribute
-             *       contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_EXCEPTIONS_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-6 Verify "Exceptions"
-             *       attribute  contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_INNERCLASSES_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-7 Verify "InnerClasses"
-             *       attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_ENCLOSINGMETHOD_ATTRIBUTE:
-
-           /*!
-             * @todo HARMONY-6-jvm-cfattrib-8 "EnclosingMethod"
-             *       attribute has nothing to verify
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_SIGNATURE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-9 "Signature" attribute 
-             *       has nothing to verify
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_SYNTHETIC_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-10 "Synthetic" attribute
-             *       has nothing to verify
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_SOURCEFILE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-11 Verify "SourceFile"
-             *       attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-12 Verify "LineNumberTable" 
-             *       attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-13 Verify
-             *       "LocalVariableTable" attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-14 Verify
-             *       "LocalVariableTypeTable" attribute
-                     contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_DEPRECATED_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-15 "Deprecated" attribute
-             *       has nothing to verify
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-16 Verify
-             *       "RuntimeVisibleAnnotations" attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-17 Verify
-             *       "RuntimeInvisibleAnnotations" attribute contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-18 Verify
-             *       "RuntimeVisibleParameterAnnotations" contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-19 Verify
-             *       "RuntimeInvisibleParameterAnnotations" contents
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-20 "AnnotationDefault"
-             *       attribute has nothing to verify
-             */
-            dummy = rfalse;
-
-            break;
-
-        case LOCAL_UNKNOWN_ATTRIBUTE:
-        default:
-
-            /*!
-             * @todo HARMONY-6-jvm-cfattrib-21 Ignore unrecognized
-             *       attribute.  There really should not be anything
-             *       to do here since the return value
-             *       already points to the next attribute.
-             */
-            dummy = rfalse;
-
-    } /* switch(atrenum) */
-
-    return(pnext_src);
-
-} /* END of cfattrib_loadattribute() */
+} /* END of cfattrib_load_attribute() */
 
 
 /*!
- * @brief UnLoad an attribute and free its heap area.
+ * @brief Unload an attribute and free its heap area.
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
@@ -1191,10 +1862,16 @@ u1 *cfattrib_loadattribute(ClassFile           *pcfs,
  *
  */
 
-rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
-                               attribute_info_dup *dst)
+rvoid cfattrib_unload_attribute(ClassFile  *pcfs,
+                                attribute_info_dup *dst)
 {
-    ARCH_FUNCTION_NAME(cfattrib_unloadattribute);
+    ARCH_FUNCTION_NAME(cfattrib_unload_attribute);
+
+    u2  num_pointers, num_pointers2;
+    int ptridx, ptridx2;
+
+    parameter_annotation **ppa;
+    annotation_mem_align **pa;
 
     /* Ignore any NULL pointers, nothing to do (should NEVER happen) */
     if ((rnull == pcfs) || (rnull == dst))
@@ -1217,103 +1894,243 @@ rvoid cfattrib_unloadattribute(ClassFile  *pcfs,
      * string-based @c @b switch .
      */
 
-    if (rtrue == cfattrib_iscodeattribute(pcfs,
-                                DST_CODE_AI(dst)->attribute_name_index))
+    classfile_attribute_enum atrenum =
+        cfattrib_atr2enum(pcfs, dst->ai.attribute_name_index);
 
+    switch (atrenum)
     {
-        /*
-         * Free Code_attribute, all allocations in reverse order.
-         * (Should not make any difference, but this is how the
-         * @c @b constant_pool is being freed, so just do it the same
-         * way, namely, the reverse order in which allocations
-         * were made.)
-         */
-
-        if (0 == DST_CODE_AI(dst)->attributes_count)
-        {
+        case LOCAL_CODE_ATTRIBUTE:
             /*
-             * Possible, and theoretically reasonable.
-             *  Nothing to do here.
+             * Free Code_attribute, all allocations in reverse order.
+             * (Should not make any difference, but this is how the
+             * @c @b constant_pool is being freed, so just do it the
+             * same way, namely, the reverse order in which allocations
+             * were made.)
              */
-            ;
-        }
-        else
-        {
-            /*
-             * WARNING!  RECURSIVE CALL:
-             *
-             * Load up each attribute in this attribute area.
-             * This should NOT recurse more than once since there
-             * can ONLY be ONE Code_attribute per method.
-             */
-            jvm_attribute_index atridx;
 
-            for (atridx = 0;
-                 atridx < DST_CODE_AI(dst)->attributes_count;
-                 atridx++)
+            if (0 == DST_CODE_AI(dst)->attributes_count)
             {
                 /*
-                 * Unload an attribute
+                 * Possible, and theoretically reasonable.
+                 *  Nothing to do here.
                  */
+                ;
+            }
+            else
+            {
+                /*
+                 * WARNING!  RECURSIVE CALL:
+                 *
+                 * Load up each attribute in this attribute area.
+                 * This should NOT recurse more than once since there
+                 * can ONLY be ONE Code_attribute per method.
+                 */
+                jvm_attribute_index atridx;
 
-                cfattrib_unloadattribute(pcfs,
+                for (atridx = 0;
+                     atridx < DST_CODE_AI(dst)->attributes_count;
+                     atridx++)
+                {
+                    /*
+                     * Unload an attribute
+                     *
+                     *
+                     * WARNING!  RECURSIVE CALL:
+                     *
+                     * Unload a nested attribute, which may invoke this
+                     * function for a nested annotation.  This may go as
+                     * deep as the nesting of attribute data, which will
+                     * be inherently finite for a valid class file, but
+                     * the actual depth is unknown at this point.
+                     */
+
+                    cfattrib_unload_attribute(pcfs,
                                   DST_CODE_AI(dst)->attributes[atridx]);
 
-            } /* for (atridx) */
+                } /* for (atridx) */
 
-            HEAP_FREE_METHOD(DST_CODE_AI(dst)->attributes);
-        }
+                HEAP_FREE_METHOD(DST_CODE_AI(dst)->attributes);
+            }
 
-        if (0 == DST_CODE_AI(dst)->exception_table_length)
-        {
-            /*
-             * Possible, and theoretically reasonable.
-             *  Nothing to do here.
+            if (0 == DST_CODE_AI(dst)->exception_table_length)
+            {
+                /*
+                 * Possible, and theoretically reasonable.
+                 *  Nothing to do here.
+                 */
+                ;
+            }
+            else
+            {
+                HEAP_FREE_METHOD(DST_CODE_AI(dst)->exception_table);
+            }
+
+            if (0 == DST_CODE_AI(dst)->code_length)
+            {
+                /*
+                 * Possible, but not theoretically reasonable,
+                 * thus prohibited by spec.  Nothing to do here
+                 * since @link Code_attribute#code code@endlink
+                 * pointer is @link #rnull rnull@endlink.
+                 */
+                ;
+            }
+            else
+            {
+                HEAP_FREE_METHOD(DST_CODE_AI(dst)->code);
+            }
+
+
+            /* Finally, free the main attribute area itself */
+            HEAP_FREE_METHOD(dst);
+
+            break;
+
+        case LOCAL_EXCEPTIONS_ATTRIBUTE:
+            HEAP_FREE_METHOD(dst);
+
+            break;
+
+        case LOCAL_INNERCLASSES_ATTRIBUTE:
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-41 Needs unit testing.
              */
-            ;
-        }
-        else
-        {
-            HEAP_FREE_METHOD(DST_CODE_AI(dst)->exception_table);
-        }
 
-        if (0 == DST_CODE_AI(dst)->code_length)
-        {
-            /*
-             * Possible, but not theoretically reasonable,
-             * thus prohibited by spec.  Nothing to do here
-             * since @link Code_attribute#code code@endlink
-             * pointer is @link #rnull rnull@endlink.
+            num_pointers =
+             DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)->num_annotations;
+
+            for (ptridx = 0; ptridx < num_pointers; ptridx++)
+            {
+                cfattrib_unload_annotation(
+                    pcfs,
+                    DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                      ->annotations[ptridx]);
+            }
+            HEAP_FREE_METHOD(DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                               ->annotations);
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-42 Needs unit testing.
              */
-            ;
-        }
-        else
-        {
-            HEAP_FREE_METHOD(DST_CODE_AI(dst)->code);
-        }
 
+            num_pointers =
+                DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                  ->num_annotations;
 
-        /* Finally, free the main attribute area itself */
-        HEAP_FREE_METHOD(dst);
+            for (ptridx = 0; ptridx < num_pointers; ptridx++)
+            {
+                cfattrib_unload_annotation(
+                    pcfs,
+                    DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                      ->annotations[ptridx]);
+            }
+            HEAP_FREE_METHOD(DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                               ->annotations);
+            HEAP_FREE_METHOD(dst);
+            break;
 
-    } /* if LOCAL_CODE_ATTRIBUTE */
-    else
-    {
-        /*
-         * See comments at top of @c @b if statment as to
-         * why all other structures can be directly freed from the
-         * heap area. The only other variable-length attributes are
-         * the annotation and local variable type attributes, which
-         * are being ignored by this implementation.
-         */
-        HEAP_FREE_METHOD(dst);
+        case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-43 Needs unit testing.
+             */
 
-    } /* if LOCAL_CODE_ATTRIBUTE else */
+            num_pointers =
+                DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  ->num_parameters;
 
+            ppa = DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                    ->parameter_annotations;
+
+            for (ptridx = 0; ptridx < num_pointers; ptridx++)
+            {
+                num_pointers2 = ppa[ptridx]->num_annotations;
+                pa            = ppa[ptridx]->annotations;
+
+                for (ptridx2 = 0; ptridx2 < num_pointers2; ptridx2++)
+                {
+                    cfattrib_unload_annotation(pcfs, pa[ptridx2]);
+                }
+                HEAP_FREE_METHOD(pa);
+            }
+            HEAP_FREE_METHOD(ppa);
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
+            /*!
+             * @todo HARMONY-6-jvm-cfattrib.c-44 Needs unit testing.
+             */
+
+            num_pointers =
+                DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  ->num_parameters;
+
+            ppa = DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                    ->parameter_annotations;
+
+            for (ptridx = 0; ptridx < num_pointers; ptridx++)
+            {
+                num_pointers2 = ppa[ptridx]->num_annotations;
+                pa            = ppa[ptridx]->annotations;
+
+                for (ptridx2 = 0; ptridx2 < num_pointers2; ptridx2++)
+                {
+                    cfattrib_unload_annotation(pcfs, pa[ptridx2]);
+                }
+                HEAP_FREE_METHOD(pa);
+            }
+            HEAP_FREE_METHOD(ppa);
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
+            cfattrib_unload_elementvalue(
+                pcfs,
+               &DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst)->default_value);
+            HEAP_FREE_METHOD(dst);
+            break;
+
+        case LOCAL_CONSTANTVALUE_ATTRIBUTE:
+        case LOCAL_ENCLOSINGMETHOD_ATTRIBUTE:
+        case LOCAL_SYNTHETIC_ATTRIBUTE:
+        case LOCAL_SIGNATURE_ATTRIBUTE:
+        case LOCAL_SOURCEFILE_ATTRIBUTE:
+        case LOCAL_DEPRECATED_ATTRIBUTE:
+
+        case LOCAL_UNKNOWN_ATTRIBUTE:
+        default:
+            /*
+             * Only the variable-length attributes have any logic that
+             * needs to be invoked for freeing up the heap areas.  The
+             * constant-size attributes are simply freed.
+             */
+            HEAP_FREE_METHOD(dst);
+            break;
+
+    } /* switch atrenum */
 
     return;
 
-} /* END of cfattrib_unloadattribute() */
+} /* END of cfattrib_unload_attribute() */
 
 
 /* EOF */

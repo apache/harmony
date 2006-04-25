@@ -743,6 +743,17 @@ extern const jvm_interface_index jvm_interface_index_bad;
  */
 #define JVMCFG_MAX_CLASSES 200
 
+/*!
+ * @brief Class indices all use this type
+ *
+ */
+typedef rushort  jvm_class_index;
+
+/*!
+ * @brief Real machine NULL index for classes
+ */
+extern const jvm_class_index jvm_class_index_null;
+
 #ifdef I_AM_JVMCFG_C
 
 /*!
@@ -757,17 +768,6 @@ extern const jvm_interface_index jvm_interface_index_bad;
  *
  */
 #define JVMCFG_FIRST_CLASS   1
-
-/*!
- * @brief Class indices all use this type
- *
- */
-typedef rushort  jvm_class_index;
-
-/*!
- * @brief Real machine NULL index for classes
- */
-extern const jvm_class_index jvm_class_index_null;
 
 /*!
  * @brief Method table indices all use this type 
@@ -837,6 +837,92 @@ typedef u2       jvm_attribute_index;
 extern const jvm_attribute_index jvm_attribute_index_bad;
 
 /*!
+ * @brief Bad attribute slot,usually "not found"
+ *
+ */
+#define JVMCFG_BAD_ATTRIBUTE  65535
+
+/*!
+ * @brief Annotation table indices all use this type
+ *
+ */
+typedef u2       jvm_annotation_index;
+
+/*!
+ * @brief Real machine NULL index for annotations
+ *
+ */
+extern const jvm_annotation_index jvm_annotation_index_bad;
+
+/*!
+ * @brief Bad annotation slot,usually "not found"
+ *
+ */
+#define JVMCFG_BAD_ANNOTATION  65535
+
+/*!
+ * @brief Annotation table type indices all use this type
+ *
+ */
+typedef u2       jvm_annotation_type_index;
+
+/*!
+ * @brief Real machine NULL index for annotation types
+ *
+ */
+extern const jvm_annotation_type_index jvm_annotation_type_index_bad;
+
+/*!
+ * @brief Bad annotation type slot,usually "not found"
+ *
+ */
+#define JVMCFG_BAD_ANNOTATION_TYPE  65535
+
+/*!
+ * @brief Element value pair indices all use this type
+ *
+ */
+typedef u2       jvm_element_value_pair_index;
+
+/*!
+ * @brief Real machine NULL index for element value pairs
+ *
+ */
+extern const jvm_element_value_pair_index
+                                       jvm_element_value_pair_index_bad;
+
+/*!
+ * @brief Bad element value pair slot,usually "not found"
+ *
+ */
+#define JVMCFG_BAD_ELEMENT_VALUE_PAIR   65535
+
+/*!
+ * @brief Element value indices all use this type
+ *
+ */
+typedef u2       jvm_element_value_index;
+
+/*!
+ * @brief Real machine NULL index for element values
+ *
+ */
+extern const jvm_element_value_index jvm_element_value_index_bad;
+
+/*!
+ * @brief Bad element value slot,usually "not found"
+ *
+ */
+#define JVMCFG_BAD_ELEMENT_VALUE   65535
+
+/*!
+ * @brief Real machine NULL index for element value pairs
+ *
+ */
+extern const jvm_element_value_pair_index
+                                       jvm_element_value_pair_index_bad;
+
+/*!
  * @brief Real machine marker for native method
  *
  */
@@ -898,12 +984,6 @@ extern
  *
  */
 #define JVMCFG_JLOBJECT_NMO_UNREGISTER 2
-
-/*!
- * @brief Bad attribute slot,usually "not found"
- *
- */
-#define JVMCFG_BAD_ATTRIBUTE  65535
 
 /*!
  * @brief Native method slot,no code attribute
