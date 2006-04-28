@@ -36,9 +36,9 @@
 #
 # @section Control
 #
-# \$URL: https://svn.apache.org/repos/asf/incubator/harmony/enhanced/trunk/sandbox/contribs/bootjvm/bootJVM/RELEASE_LEVEL $
+# \$URL$
 #
-# \$Id: RELEASE_LEVEL 329166 2005-10-28 09:09:39Z dlydick $
+# \$Id$
 #
 # Copyright 2005 The Apache Software Foundation
 # or its licensors, as applicable.
@@ -58,11 +58,11 @@
 # and limitations under the License.
 #
 #
-# @version \$LastChangedRevision: 329166 $
+# @version \$LastChangedRevision$
 #
-# @date \$LastChangedDate: 2005-10-28 04:09:39 -0500 (Fri, 28 Oct 2005) $
+# @date \$LastChangedDate$
 #
-# @author \$LastChangedBy: dlydick $
+# @author \$LastChangedBy$
 #
 #
 # @section Reference
