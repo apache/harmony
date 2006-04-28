@@ -588,7 +588,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li> @c @e macro_expansion_of(data_array_slot)
  *                           Any @link #jvalue jvalue@endlink variable.
  * </li>
- * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
+ * <li> @c @e pcpma_Fieldref CONSTANT_Fieldref_info pointer to current
  *                           field
  * </li>
  * </ul>
@@ -618,7 +618,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  */
 #define GETDATA(data_array_slot)                                       \
-    switch (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM)       \
+    switch (pcpma_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM)      \
     {                                                                  \
         case BASETYPE_CHAR_B:                                          \
             PUSH(thridx,                                               \
@@ -725,7 +725,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * <li> @c @e macro_expansion_of(data_array_slot)
  *                           Any @link #jvalue jvalue@endlink variable.
  * </li>
- * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
+ * <li> @c @e pcpma_Fieldref CONSTANT_Fieldref_info pointer to current
  *                           field
  * </li>
  * </ul>
@@ -755,7 +755,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  */
 #define PUTDATA(data_array_slot)                                       \
-    switch (pcpd_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM)       \
+    switch (pcpma_Fieldref->LOCAL_Fieldref_binding.jvaluetypeJVM)      \
     {                                                                  \
         case BASETYPE_CHAR_B:                                          \
             POP(thridx,                                                \
@@ -1288,9 +1288,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * During the calculation, various scratch variables are
  * loaded and used to simplify the code.  Two final results
  * include a (CONSTANT_Class_info *) stored in the local variable
- * @b pcpd_Class stored the local variable @b pcfsmisc
+ * @b pcpma_Class stored the local variable @b pcfsmisc
  * and a (CONSTANT_Class_info *) stored in the local variable
- * @b pcpd_Class
+ * @b pcpma_Class
  *
  * @param clsnameidx  @c @b constant_pool index into class file of
  *                    current class (as indicated in the program
@@ -1311,12 +1311,12 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  * <b>Local variables written:</b>
  * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
+ * <li> @c @e pcpma          pointer to a @c @b constant_pool entry
  * </li>
- * <li> @c @e pcpd_Class     @c @b pcpd as a CONSTANT_Class_info pointer
+ * <li> @c @e pcpma_Class   @c @b pcpma as a CONSTANT_Class_info pointer
  * </li>
  * <li> @c @e clsidxmisc     Class index of fully bound class referenced
- *                           by @c @b pcpd_Class
+ *                           by @c @b pcpma_Class
  * </li>
  * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
  *                           referenced by @c @b clsidxmisc
@@ -1326,10 +1326,10 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  */
 #define CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(clsnameidx)          \
-    pcpd       = pcfs->constant_pool[clsnameidx];                      \
-    pcpd_Class = PTR_THIS_CP_Class(pcpd);                              \
+    pcpma       = pcfs->constant_pool[clsnameidx];                     \
+    pcpma_Class = PTR_THIS_CP_Class(pcpma);                            \
                                                                        \
-    clsidxmisc = pcpd_Class->LOCAL_Class_binding.clsidxJVM;            \
+    clsidxmisc = pcpma_Class->LOCAL_Class_binding.clsidxJVM;           \
                                                                        \
     /*                                                                 \
      * Try to resolve this class before attempting to load.            \
@@ -1342,7 +1342,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                                              clsidx),  \
                                       rfalse);                         \
                                                                        \
-        clsidxmisc = pcpd_Class->LOCAL_Class_binding.clsidxJVM;        \
+        clsidxmisc = pcpma_Class->LOCAL_Class_binding.clsidxJVM;       \
                                                                        \
         /* Now try to load it again if resolution failed to locate it*/\
         if (jvm_class_index_null == clsidxmisc)                        \
@@ -1364,7 +1364,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  * loaded and used to simplify the code.  Two final results
  * include a (field_info *) stored the local variable @b pfld
  * and a (CONSTANT_Fieldref_info *) stored in the local variable
- * @b pcpd_Fieldref
+ * @b pcpma_Fieldref
  *
  * @param Fieldref  @c @b constant_pool index into class file of current
  *                  class (as indicated in the program counter) that
@@ -1389,19 +1389,19 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  * <b>Local variables written:</b>
  * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry
+ * <li> @c @e pcpma          pointer to a @c @b constant_pool entry
  * </li>
- * <li> @c @e pcpd_Fieldref @c @b pcpd as a CONSTANT_Fieldref_info
+ * <li> @c @e pcpma_Fieldref @c @b pcpma as a CONSTANT_Fieldref_info
  *                           pointer
  * </li>
  * <li> @c @e clsidxmisc     Class index of fully bound class referenced
- *                           by @c @b pcpd_Fieldref
+ *                           by @c @b pcpma_Fieldref
  * </li>
  * <li>  @c @e pcfsmisc      @c @b pcfs class file field from class
  *                           referenced by @c @b clsidxmisc
  * </li>
  * <li>  @c @e pfld          field_info table entry referenced by
- *                           @c @b pcpd_Fieldref
+ *                           @c @b pcpma_Fieldref
  * </li>
  * <li>  @c @e fluidxmisc    Field lookup index of field from class
  *                           referenced by @c @b clsidxmisc
@@ -1415,9 +1415,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  */
 #define CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(Fieldref)            \
-    pcpd           = pcfs->constant_pool[Fieldref];                    \
-    pcpd_Fieldref = PTR_THIS_CP_Fieldref(pcpd);                        \
-    clsidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
+    pcpma           = pcfs->constant_pool[Fieldref];                   \
+    pcpma_Fieldref = PTR_THIS_CP_Fieldref(pcpma);                      \
+    clsidxmisc     = pcpma_Fieldref->LOCAL_Fieldref_binding.clsidxJVM; \
                                                                        \
     /*                                                                 \
      * Try to resolve this class before attempting to load.            \
@@ -1430,16 +1430,16 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                                              clsidx),  \
                                       rfalse);                         \
                                                                        \
-        clsidxmisc = pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM;  \
+        clsidxmisc = pcpma_Fieldref->LOCAL_Fieldref_binding.clsidxJVM; \
                                                                        \
         /* Now try to load it again if resolution failed to locate it*/\
         if (jvm_class_index_null == clsidxmisc)                        \
         {                                                              \
             /* If class is not loaded, retrieve it by UTF8 class name*/\
-            LATE_CLASS_LOAD(pcpd_Fieldref->class_index);               \
+            LATE_CLASS_LOAD(pcpma_Fieldref->class_index);              \
                                                                        \
             /* Check if field exists in loaded class */                \
-            clsidxmisc = pcpd_Fieldref                                 \
+            clsidxmisc = pcpma_Fieldref                                \
                            ->LOCAL_Fieldref_binding.clsidxJVM;         \
             if (jvm_class_index_null == clsidxmisc)                    \
             {                                                          \
@@ -1451,7 +1451,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
         }                                                              \
     }                                                                  \
                                                                        \
-    fluidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.fluidxJVM;  \
+    fluidxmisc     = pcpma_Fieldref->LOCAL_Fieldref_binding.fluidxJVM; \
     if (jvm_field_index_bad == fluidxmisc)                             \
     {                                                                  \
         thread_throw_exception(thridx,                                 \
@@ -1461,7 +1461,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
     }                                                                  \
                                                                        \
     pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
-    fluidxmisc     = pcpd_Fieldref->LOCAL_Fieldref_binding.fluidxJVM;  \
+    fluidxmisc     = pcpma_Fieldref->LOCAL_Fieldref_binding.fluidxJVM; \
     pfld           = pcfsmisc                                          \
                        ->fields[CLASS(clsidxmisc)                      \
                                  .class_static_field_lookup[fluidxmisc]]
@@ -1536,13 +1536,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *
  * <b>Local variables written:</b>
  * <ul>
- * <li> @c @e pcpd           pointer to a @c @b constant_pool entry,
+ * <li> @c @e pcpma          pointer to a @c @b constant_pool entry,
  *                           ultimately pointing to the entry containing
  *                           the name of the input @c @b clsnameidx
  * </li>
- * <li> @c @e pcpd_Class     @c @b pcpd as a CONSTANT_Class_info pointer
+ * <li> @c @e pcpma_Class   @c @b pcpma as a CONSTANT_Class_info pointer
  * </li>
- * <li> @c @e pcpd_Utf8      @c @b pcpd as a CONSTANT_Utf8_info pointer
+ * <li> @c @e pcpma_Utf8     @c @b pcpma as a CONSTANT_Utf8_info pointer
  * </li>
  * <li> @c @e prchar_clsname Null-terminated string version of class
  *                           name @c @b clsnameidx
@@ -1560,13 +1560,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  */
 #define LATE_CLASS_LOAD(clsnameidx)                                  \
                                                                      \
-    pcpd       = pcfs->constant_pool[clsnameidx]; /* Class name */   \
-    pcpd_Class = PTR_THIS_CP_Class(pcpd);                            \
+    pcpma       = pcfs->constant_pool[clsnameidx]; /* Class name */  \
+    pcpma_Class = PTR_THIS_CP_Class(pcpma);                          \
                                                   /* UTF8 string */  \
-    pcpd       = pcfs->constant_pool[pcpd_Class->name_index];        \
-    pcpd_Utf8  = PTR_THIS_CP_Utf8(pcpd);                             \
+    pcpma       = pcfs->constant_pool[pcpma_Class->name_index];      \
+    pcpma_Utf8  = PTR_THIS_CP_Utf8(pcpma);                           \
                                                                      \
-    prchar_clsname = utf_utf2prchar(pcpd_Utf8);                      \
+    prchar_clsname = utf_utf2prchar(pcpma_Utf8);                     \
                                                                      \
     /* Try again to load class */                                    \
     clsidxmisc = class_load_resolve_clinit(prchar_clsname,           \
@@ -1907,7 +1907,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
  *                           (input parameter to
  *                           @link #opcode_run opcode_run()@endlink)
  * </li>
- * <li> @c @e pcpd_Fieldref  CONSTANT_Fieldref_info pointer to current
+ * <li> @c @e pcpma_Fieldref CONSTANT_Fieldref_info pointer to current
  *                           field
  * </li>
  * <li>  @c @e pfld          field_info table entry of current field
@@ -1932,7 +1932,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                                                  \
         /* A final field must _not_ be found in a superclass */  \
         if ((ACC_FINAL & pfld->access_flags) &&                  \
-            (clsidxTMP != pcpd_Fieldref                          \
+            (clsidxTMP != pcpma_Fieldref                         \
                             ->LOCAL_Fieldref_binding.clsidxJVM)) \
         {                                                        \
             thread_throw_exception(thridx,                       \

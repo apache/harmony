@@ -251,21 +251,21 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 
 /*!
  * @brief Conveniently reference the XXX_attribute contained in
- * an indirect <b><code>attribute_info_dup **dst</code></b>.
+ * an indirect <b><code>attribute_info_mem_align **dst</code></b>.
  *
  * After putting in the 4-byte access alignment changes,
  * it became obvious that what was once (*dst)->member
  * had become quite cumbersome.  Therefore, in order to
- * simplify access through (attribute_info_dup *)->ai.member
+ * simplify access through (attribute_info_mem_align *)->ai.member
  * constructions, including appropriate casting, the following
  * macro is offered to take care of the most common usage.
  * The few other references are unchanged, and the code is
  * easier to understand.
  *
  * Notice that @link #DST_CODE_AI() DST_XXX_AI()@endlink references
- * a <b><code>attribute_info_dup *dst</code></b>, while 
+ * a <b><code>attribute_info_mem_align *dst</code></b>, while 
  * @link #DST_CODE_AI() PTR_DST_XXX_AI()@endlink
- * references a <b><code>attribute_info_dup **dst</code></b>.
+ * references a <b><code>attribute_info_mem_align **dst</code></b>.
  */
 #define PTR_DST_CONSTANTVALUE_AI(dst) \
                                ((ConstantValue_attribute *) &(*dst)->ai)
@@ -299,14 +299,14 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 /*!
  * @brief Conveniently reference an
  * @link Code_attribute Xxx_attribute@endlink contained in
- * a <b><code>attribute_info_dup *dst</code></b>, namely, with less
- * pointer indirection.
+ * a <b><code>attribute_info_mem_align *dst</code></b>, namely, with
+ * less pointer indirection.
  *
  * This is a counterpart for cfattrib_unload_attribute() where
  * no indirection is needed.  Notice that
  * @link #PTR_DST_CODE_AI() PTR_DST_XXX_AI()@endlink references
- * a <b><code>attribute_info_dup **dst</code></b>, while this
- * macro references a <b><code>attribute_info_dup *dst</code></b>.
+ * a <b><code>attribute_info_mem_align **dst</code></b>, while this
+ * macro references a <b><code>attribute_info_mem_align *dst</code></b>.
  *
  */
 #define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
@@ -327,33 +327,33 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 
 /*!
  * @brief Conveniently reference the Exceptions_attribute contained in
- * an indirect <b><code>attribute_info_dup **dst</code></b>.
+ * an indirect <b><code>attribute_info_mem_align **dst</code></b>.
  *
  * After putting in the 4-byte access alignment changes,
  * it became obvious that what was once (*dst)->member
  * had become quite cumbersome.  Therefore, in order to
- * simplify access through (attribute_info_dup *)->ai.member
+ * simplify access through (attribute_info_mem_align *)->ai.member
  * constructions, including appropriate casting, the following
  * macro is offered to take care of the most common usage.
  * The few other references are unchanged, and the code is
  * easier to understand.
  *
  * Notice that @link #DST_CODE_AI() DST_CODE_AI()@endlink references
- * a <b><code>attribute_info_dup *dst</code></b>, while this
- * macro references a <b><code>attribute_info_dup **dst</code></b>.
+ * a <b><code>attribute_info_mem_align *dst</code></b>, while this
+ * macro references a <b><code>attribute_info_mem_align **dst</code></b>.
  */
 #define PTR_DST_CODE_AI(dst) ((Code_attribute *) &(*dst)->ai)
 
 /*!
  * @brief Conveniently reference the Code_attribute contained in
- * a <b><code>attribute_info_dup *dst</code></b>, namely, with less
- * pointer indirection.
+ * a <b><code>attribute_info_mem_align *dst</code></b>, namely, with
+ * less pointer indirection.
  *
  * This is a counterpart for cfattrib_unload_attribute() where
  * no indirection is needed.  Notice that
  * @link #PTR_DST_CODE_AI() PTR_DST_CODE_AI()@endlink references
- * a <b><code>attribute_info_dup **dst</code></b>, while this
- * macro references a <b><code>attribute_info_dup *dst</code></b>.
+ * a <b><code>attribute_info_mem_align **dst</code></b>, while this
+ * macro references a <b><code>attribute_info_mem_align *dst</code></b>.
  *
  */
 #define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
@@ -793,8 +793,8 @@ void cfattrib_unload_annotation(ClassFile            *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to a attribute_info_dup[] address telling
- *                   where in the heap this attribute will be
+ * @param  dst       Pointer to a attribute_info_mem_align[] address
+ *                   telling where in the heap this attribute will be
  *                   copied from the source area.
  *
  * @param  src       Pointer to an attribute in class file image.
@@ -812,9 +812,9 @@ void cfattrib_unload_annotation(ClassFile            *pcfs,
  *
  */
 
-u1 *cfattrib_load_attribute(ClassFile           *pcfs,
-                            attribute_info_dup **dst,
-                            attribute_info      *src)
+u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
+                            attribute_info_mem_align **dst,
+                            attribute_info            *src)
 {
     ARCH_FUNCTION_NAME(cfattrib_load_attribute);
 
@@ -882,13 +882,16 @@ u1 *cfattrib_load_attribute(ClassFile           *pcfs,
     pnext_src += tmplen;
 
 
-    /* Calculate total size of this (attribute_info_dup) area in dst */
-    tmplen = sizeof(attribute_info_dup)
+    /*
+     * Calculate total size of this (attribute_info_mem_align) area
+     * in dst
+     */
+    tmplen = sizeof(attribute_info_mem_align)
              - sizeof(u1)
              + tmpatr.attribute_length;
 
     /* Allocate a heap location to store this attribute */
-    *dst = (attribute_info_dup *) HEAP_GET_METHOD(tmplen, rfalse);
+    *dst = (attribute_info_mem_align *) HEAP_GET_METHOD(tmplen, rfalse);
 
     /*
      * Copy attribute data to heap.  The @b info item is optional,
@@ -1062,14 +1065,14 @@ u1 *cfattrib_load_attribute(ClassFile           *pcfs,
             if (0 == atbllen)
             {
                 PTR_DST_CODE_AI(dst)->attributes =
-                    (attribute_info_dup **) rnull;
+                    (attribute_info_mem_align **) rnull;
             }
             else
             {
                 PTR_DST_CODE_AI(dst)->attributes =
                     HEAP_GET_METHOD(PTR_DST_CODE_AI(dst)
                                       ->attributes_count *
-                                    sizeof(attribute_info_dup *),
+                                    sizeof(attribute_info_mem_align *),
                                     rtrue);
 
 
@@ -1104,7 +1107,7 @@ u1 *cfattrib_load_attribute(ClassFile           *pcfs,
                     pabytes =
                         cfattrib_load_attribute(
                             pcfs,
-                            (attribute_info_dup **)
+                            (attribute_info_mem_align **)
                                 &(PTR_DST_CODE_AI(dst)
                                     ->attributes)[atridx],
                             (attribute_info *) pabytes);
@@ -1851,7 +1854,7 @@ u1 *cfattrib_load_attribute(ClassFile           *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to a attribute_info_dup allocation
+ * @param  dst       Pointer to a attribute_info_mem_align allocation
  *                   where this attribute is stored in the heap
  *
  *
@@ -1862,8 +1865,8 @@ u1 *cfattrib_load_attribute(ClassFile           *pcfs,
  *
  */
 
-rvoid cfattrib_unload_attribute(ClassFile  *pcfs,
-                                attribute_info_dup *dst)
+rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
+                                attribute_info_mem_align *dst)
 {
     ARCH_FUNCTION_NAME(cfattrib_unload_attribute);
 

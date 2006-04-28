@@ -55,12 +55,12 @@ ARCH_HEADER_COPYRIGHT_APACHE(nts, h,
 
 /* Prototypes for functions in 'nts.c' */
 
-extern cp_info_dup *nts_prchar2utf(rchar *inbfr);
+extern cp_info_mem_align *nts_prchar2utf(rchar *inbfr);
 
 extern jshort nts_prchar2unicode(rchar *inbfr, jchar *outbfr);
 
-extern cp_info_dup *nts_prchar2utf_classname(rchar        *inbfr,
-                                             jvm_array_dim arraydims);
+extern cp_info_mem_align *nts_prchar2utf_classname(rchar    *inbfr,
+                                              jvm_array_dim  arraydims);
 
 extern jvm_array_dim nts_get_prchar_arraydims(rchar *inbfr);
 

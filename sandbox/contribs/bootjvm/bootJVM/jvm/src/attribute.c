@@ -76,10 +76,10 @@ ARCH_SOURCE_COPYRIGHT_APACHE(attribute, c,
  *
  */
 static jvm_attribute_index attribute_name_common_find(
-                               ClassFile           *pcfs,
-                               u2                   acount,
-                               attribute_info_dup **patr,
-                               cp_info_dup         *atrname)
+                               ClassFile                 *pcfs,
+                               u2                         acount,
+                               attribute_info_mem_align **patr,
+                               cp_info_mem_align         *atrname)
 {
     ARCH_FUNCTION_NAME(attribute_name_common_find);
 
@@ -129,7 +129,7 @@ static jvm_attribute_index attribute_name_common_find(
 static jvm_attribute_index attribute_enum_common_find(
                                ClassFile                 *pcfs,
                                u2                         acount,
-                               attribute_info_dup       **patr,
+                               attribute_info_mem_align  **patr,
                                classfile_attribute_enum   atrenum)
 {
     ARCH_FUNCTION_NAME(attribute_enum_common_find);
@@ -173,9 +173,9 @@ static jvm_attribute_index attribute_enum_common_find(
  *
  */
 jvm_attribute_index
-    attribute_find_in_field_by_cp_entry(jvm_class_index  clsidx,
-                                        jvm_field_index  fldidx,
-                                        cp_info_dup     *atrname)
+    attribute_find_in_field_by_cp_entry(jvm_class_index    clsidx,
+                                        jvm_field_index    fldidx,
+                                        cp_info_mem_align *atrname)
 {
     ARCH_FUNCTION_NAME(attribute_find_in_field_by_cp_entry);
 
@@ -273,9 +273,9 @@ jvm_attribute_index
  *
  */
 jvm_attribute_index
-    attribute_find_in_method_by_cp_entry(jvm_class_index   clsidx,
-                                         jvm_method_index  mthidx,
-                                         cp_info_dup      *atrname)
+    attribute_find_in_method_by_cp_entry(jvm_class_index    clsidx,
+                                         jvm_method_index   mthidx,
+                                         cp_info_mem_align *atrname)
 {
     ARCH_FUNCTION_NAME(attribute_find_in_method_by_cp_entry);
 
@@ -371,8 +371,8 @@ jvm_attribute_index
  *
  */
 jvm_attribute_index
-    attribute_find_in_class_by_cp_entry(jvm_class_index  clsidx,
-                                        cp_info_dup     *atrname)
+    attribute_find_in_class_by_cp_entry(jvm_class_index    clsidx,
+                                        cp_info_mem_align *atrname)
 {
     ARCH_FUNCTION_NAME(attribute_find_in_class_by_cp_entry);
 

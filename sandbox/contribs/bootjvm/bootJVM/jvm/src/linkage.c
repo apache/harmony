@@ -149,28 +149,28 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
         jvm_method_index       mthidxFIND;
         jvm_attribute_index    atridxFIND;
 
-        cp_info_dup *pcpd = pcfs->constant_pool[cpidx];
+        cp_info_mem_align *pcpma = pcfs->constant_pool[cpidx];
 
-        CONSTANT_Class_info              *pcpd_Class;
-        CONSTANT_Fieldref_info           *pcpd_Fieldref;
-        CONSTANT_Methodref_info          *pcpd_Methodref;
-        CONSTANT_InterfaceMethodref_info *pcpd_InterfaceMethodref;
-        CONSTANT_NameAndType_info        *pcpd_NameAndType;
+        CONSTANT_Class_info              *pcpma_Class;
+        CONSTANT_Fieldref_info           *pcpma_Fieldref;
+        CONSTANT_Methodref_info          *pcpma_Methodref;
+        CONSTANT_InterfaceMethodref_info *pcpma_InterfaceMethodref;
+        CONSTANT_NameAndType_info        *pcpma_NameAndType;
 
-        cp_info_dup *clsname;
+        cp_info_mem_align *clsname;
 
         switch (CP_TAG(pcfs, cpidx))
         {
             case CONSTANT_Class:
 
-                pcpd_Class = PTR_THIS_CP_Class(pcpd);
+                pcpma_Class = PTR_THIS_CP_Class(pcpma);
 
                 /* Only resolve this CP slot if it is not yet done. */
                 if (jvm_class_index_null ==
-                    pcpd_Class->LOCAL_Class_binding.clsidxJVM)
+                    pcpma_Class->LOCAL_Class_binding.clsidxJVM)
                 {
                     clsname =
-                        pcfs->constant_pool[pcpd_Class->name_index];
+                        pcfs->constant_pool[pcpma_Class->name_index];
 
                     clsidxFIND = class_find_by_cp_entry(clsname);
 
@@ -181,7 +181,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                     }
                     else
                     {
-                        PTR_THIS_CP_Class(pcpd)
+                        PTR_THIS_CP_Class(pcpma)
                           ->LOCAL_Class_binding.clsidxJVM = clsidxFIND;
 
                         /* Add reference unless it references itself */
@@ -197,22 +197,22 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
 
             case CONSTANT_Fieldref:
 
-                pcpd_Fieldref = PTR_THIS_CP_Fieldref(pcpd);
+                pcpma_Fieldref = PTR_THIS_CP_Fieldref(pcpma);
 
                 /* Only resolve this CP slot if it is not yet done. */
                 if (jvm_class_index_null ==
-                    pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM)
+                    pcpma_Fieldref->LOCAL_Fieldref_binding.clsidxJVM)
                 {
-                    pcpd_Class =
+                    pcpma_Class =
                         PTR_THIS_CP_Class(pcfs->constant_pool
-                                         [pcpd_Fieldref->class_index]);
+                                         [pcpma_Fieldref->class_index]);
 
                     clsname =
-                        pcfs->constant_pool[pcpd_Class->name_index];
+                        pcfs->constant_pool[pcpma_Class->name_index];
 
                     clsidxFIND = class_find_by_cp_entry(clsname);
 
-                    pcpd_Fieldref
+                    pcpma_Fieldref
                       ->LOCAL_Fieldref_binding.clsidxJVM = clsidxFIND;
 
                     if (jvm_class_index_null == clsidxFIND)
@@ -230,20 +230,20 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                          */
                         while(rtrue)
                         {
-                            pcpd_NameAndType =
+                            pcpma_NameAndType =
                                 PTR_THIS_CP_NameAndType(
                                     pcfs->constant_pool
-                                      [pcpd_Fieldref
+                                      [pcpma_Fieldref
                                          ->name_and_type_index]);
 
                             fldidxFIND =
                                 field_find_by_cp_entry(
                                     clsidxFIND,
                                     pcfs->constant_pool
-                                            [pcpd_NameAndType
+                                            [pcpma_NameAndType
                                                ->name_index],
                                     pcfs->constant_pool
-                                            [pcpd_NameAndType
+                                            [pcpma_NameAndType
                                                ->descriptor_index]);
 
                             /* Done if field located */
@@ -258,7 +258,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                   ->pcfs
                                     ->super_class;
 
-                            pcpd_Fieldref
+                            pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.clsidxJVM =
                                 clsidxFIND;
 
@@ -276,15 +276,15 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                    JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);
 /*NOTREACHED*/
 #if 0
-                            pcpd_Fieldref
+                            pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.fluidxJVM =
                                              jvm_field_lookup_index_bad;
 
-                            pcpd_Fieldref
+                            pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.oiflagJVM =
                                                 rneither_true_nor_false;
 
-                            pcpd_Fieldref
+                            pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.jvaluetypeJVM =
                                                    LOCAL_BASETYPE_ERROR;
 
@@ -311,7 +311,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
 
                         }
 
-                        pcpd_Fieldref
+                        pcpma_Fieldref
                           ->LOCAL_Fieldref_binding.fluidxJVM =
                                                              fluidxFIND;
 
@@ -322,11 +322,11 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                    JVMCLASS_JAVA_LANG_NOSUCHFIELDERROR);
 /*NOTREACHED*/
 #if 0
-                            pcpd_Fieldref
+                            pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.oiflagJVM =
                                                 rneither_true_nor_false;
 
-                            pcpd_Fieldref
+                            pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.jvaluetypeJVM =
                                                    LOCAL_BASETYPE_ERROR;
 
@@ -338,14 +338,14 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
 #endif
                         }
 
-                        pcpd_Fieldref
+                        pcpma_Fieldref
                           ->LOCAL_Fieldref_binding.oiflagJVM =
                                 (FIELD(clsidxFIND, fldidxFIND)
                                    ->access_flags & ACC_STATIC)
                                 ? rfalse
                                 : rtrue;
 
-                        cp_info_dup *pfldesc_dup =
+                        cp_info_mem_align *pfldesc_mem_align =
                            CLASS_OBJECT_LINKAGE(clsidxFIND)
                              ->pcfs
                                ->constant_pool
@@ -353,7 +353,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                     ->descriptor_index];
 
                         CONSTANT_Utf8_info *pfldesc =
-                                          PTR_THIS_CP_Utf8(pfldesc_dup);
+                                    PTR_THIS_CP_Utf8(pfldesc_mem_align);
 
                         /*!
                          * @todo HARMONY-6-jvm-linkage.c-1 What needs
@@ -361,7 +361,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                          *       BASETYPE_ARRAY or BASETYPE_ERROR
                          *       or BASETYPE_VOID?
                          */
-                        pcpd_Fieldref
+                        pcpma_Fieldref
                           ->LOCAL_Fieldref_binding.jvaluetypeJVM =
                                                       pfldesc->bytes[0];
 
@@ -378,24 +378,24 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
 
             case CONSTANT_Methodref:
 
-                pcpd_Methodref = PTR_THIS_CP_Methodref(pcpd);
+                pcpma_Methodref = PTR_THIS_CP_Methodref(pcpma);
 
                 /* Only resolve this CP slot if it is not yet done. */
                 if (jvm_class_index_null ==
-                    pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM)
+                    pcpma_Methodref->LOCAL_Methodref_binding.clsidxJVM)
                 {
-                    pcpd_Class =
+                    pcpma_Class =
                         PTR_THIS_CP_Class(
                             pcfs
                               ->constant_pool
-                                [pcpd_Methodref->class_index]);
+                                [pcpma_Methodref->class_index]);
 
                     clsname =
-                        pcfs->constant_pool[pcpd_Class->name_index];
+                        pcfs->constant_pool[pcpma_Class->name_index];
 
                     clsidxFIND = class_find_by_cp_entry(clsname);
 
-                    pcpd_Methodref
+                    pcpma_Methodref
                       ->LOCAL_Methodref_binding.clsidxJVM = clsidxFIND;
 
                     if (jvm_class_index_null == clsidxFIND)
@@ -413,11 +413,11 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                          */
                         while(rtrue)
                         {
-                            pcpd_NameAndType =
+                            pcpma_NameAndType =
                                 PTR_THIS_CP_NameAndType(
                                     pcfs
                                       ->constant_pool
-                                        [pcpd_Methodref
+                                        [pcpma_Methodref
                                            ->name_and_type_index]);
 
                             mthidxFIND =
@@ -425,13 +425,13 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                     clsidxFIND,
                                     pcfs
                                       ->constant_pool
-                                        [pcpd_NameAndType->name_index],
+                                        [pcpma_NameAndType->name_index],
                                     pcfs
                                       ->constant_pool
-                                        [pcpd_NameAndType
+                                        [pcpma_NameAndType
                                            ->descriptor_index]);
 
-                            pcpd_Methodref
+                            pcpma_Methodref
                               ->LOCAL_Methodref_binding.mthidxJVM =
                                                              mthidxFIND;
 
@@ -447,7 +447,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                   ->pcfs
                                     ->super_class;
 
-                            pcpd_Methodref
+                            pcpma_Methodref
                               ->LOCAL_Methodref_binding.clsidxJVM =
                                                              clsidxFIND;
 
@@ -477,14 +477,14 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                         {
                             atridxFIND = jvm_attribute_index_native;
 
-                            pcpd_Methodref
+                            pcpma_Methodref
                               ->LOCAL_Methodref_binding
                                 .nmordJVM =
                                     native_locate_local_method(
                                             pcfs,
-                                            pcpd_Class->name_index,
-                                           pcpd_NameAndType->name_index,
-                                            pcpd_NameAndType
+                                            pcpma_Class->name_index,
+                                          pcpma_NameAndType->name_index,
+                                            pcpma_NameAndType
                                               ->descriptor_index,
                                             find_registerNatives);
                         }
@@ -497,7 +497,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                     LOCAL_CODE_ATTRIBUTE);
                         }
 
-                        pcpd_Methodref
+                        pcpma_Methodref
                           ->LOCAL_Methodref_binding.codeatridxJVM =
                                                              atridxFIND;
 
@@ -520,7 +520,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                 mthidxFIND,
                                 LOCAL_EXCEPTIONS_ATTRIBUTE);
 
-                        pcpd_Methodref
+                        pcpma_Methodref
                           ->LOCAL_Methodref_binding.excpatridxJVM =
                                                              atridxFIND;
 
@@ -542,23 +542,23 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
 
             case CONSTANT_InterfaceMethodref:
 
-                pcpd_InterfaceMethodref =
-                    PTR_THIS_CP_InterfaceMethodref(pcpd);
+                pcpma_InterfaceMethodref =
+                    PTR_THIS_CP_InterfaceMethodref(pcpma);
 
                 /* Only resolve this CP slot if it is not yet done. */
                 if (jvm_class_index_null ==
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.clsidxJVM)
                 {
-                    pcpd_Class =
+                    pcpma_Class =
                         PTR_THIS_CP_Class(pcfs->constant_pool
-                                [pcpd_InterfaceMethodref->class_index]);
+                               [pcpma_InterfaceMethodref->class_index]);
                     clsname =
-                        pcfs->constant_pool[pcpd_Class->name_index];
+                        pcfs->constant_pool[pcpma_Class->name_index];
 
                     clsidxFIND = class_find_by_cp_entry(clsname);
 
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.clsidxJVM =
                                                              clsidxFIND;
 
@@ -577,11 +577,11 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                          */
                         while(rtrue)
                         {
-                            pcpd_NameAndType =
+                            pcpma_NameAndType =
                                 PTR_THIS_CP_NameAndType(
                                     pcfs
                                       ->constant_pool
-                                        [pcpd_InterfaceMethodref
+                                        [pcpma_InterfaceMethodref
                                            ->name_and_type_index]);
 
                             mthidxFIND =
@@ -589,13 +589,13 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                     clsidxFIND,
                                     pcfs
                                       ->constant_pool
-                                        [pcpd_NameAndType->name_index],
+                                        [pcpma_NameAndType->name_index],
                                     pcfs
                                       ->constant_pool
-                                        [pcpd_NameAndType
+                                        [pcpma_NameAndType
                                            ->descriptor_index]);
 
-                            pcpd_InterfaceMethodref
+                            pcpma_InterfaceMethodref
                               ->LOCAL_InterfaceMethodref_binding
                                 .mthidxJVM =
                                     mthidxFIND;
@@ -612,7 +612,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                   ->pcfs
                                     ->super_class;
 
-                            pcpd_InterfaceMethodref
+                            pcpma_InterfaceMethodref
                               ->LOCAL_InterfaceMethodref_binding
                                 .clsidxJVM =
                                     clsidxFIND;
@@ -654,14 +654,14 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                              *       @link #rfalse rfalse@endlink
                              *       instead?
                              */
-                            pcpd_InterfaceMethodref
+                            pcpma_InterfaceMethodref
                               ->LOCAL_InterfaceMethodref_binding
                                 .nmordJVM =
                                     native_locate_local_method(
                                             pcfs,
-                                            pcpd_Class->name_index,
-                                           pcpd_NameAndType->name_index,
-                                            pcpd_NameAndType
+                                            pcpma_Class->name_index,
+                                          pcpma_NameAndType->name_index,
+                                            pcpma_NameAndType
                                               ->descriptor_index,
                                             find_registerNatives);
                         }
@@ -674,7 +674,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                     LOCAL_CODE_ATTRIBUTE);
                         }
 
-                        pcpd_InterfaceMethodref
+                        pcpma_InterfaceMethodref
                           ->LOCAL_InterfaceMethodref_binding
                             .codeatridxJVM =
                                 atridxFIND;
@@ -698,7 +698,7 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                 mthidxFIND,
                                 LOCAL_EXCEPTIONS_ATTRIBUTE);
 
-                        pcpd_InterfaceMethodref
+                        pcpma_InterfaceMethodref
                           ->LOCAL_InterfaceMethodref_binding
                             .excpatridxJVM =
                                 atridxFIND;
@@ -812,71 +812,71 @@ rboolean linkage_unresolve_class(jvm_class_index clsidx)
          cpidx < pcfs->constant_pool_count + CONSTANT_CP_START_INDEX -1;
          cpidx++)
     {
-        cp_info_dup *pcpd = pcfs->constant_pool[cpidx];
+        cp_info_mem_align *pcpma = pcfs->constant_pool[cpidx];
 
-        CONSTANT_Class_info              *pcpd_Class;
-        CONSTANT_Fieldref_info           *pcpd_Fieldref;
-        CONSTANT_Methodref_info          *pcpd_Methodref;
-        CONSTANT_InterfaceMethodref_info *pcpd_InterfaceMethodref;
+        CONSTANT_Class_info              *pcpma_Class;
+        CONSTANT_Fieldref_info           *pcpma_Fieldref;
+        CONSTANT_Methodref_info          *pcpma_Methodref;
+        CONSTANT_InterfaceMethodref_info *pcpma_InterfaceMethodref;
 
         switch (CP_TAG(pcfs, cpidx))
         {
             case CONSTANT_Class:
 
-                pcpd_Class = PTR_THIS_CP_Class(pcpd);
+                pcpma_Class = PTR_THIS_CP_Class(pcpma);
 
                 /* Only unresolve this CP slot if it was resolved */
                 if (jvm_class_index_null !=
-                    pcpd_Class->LOCAL_Class_binding.clsidxJVM)
+                    pcpma_Class->LOCAL_Class_binding.clsidxJVM)
                 {
                     /* Remove reference unless it references itself */
                     if (clsidx !=
-                        pcpd_Class->LOCAL_Class_binding.clsidxJVM)
+                        pcpma_Class->LOCAL_Class_binding.clsidxJVM)
                     {
                         (rvoid) GC_CLASS_RMREF_FROM_CLASS(
                                     clsidx,
-                                    pcpd_Class
+                                    pcpma_Class
                                       ->LOCAL_Class_binding
                                         .clsidxJVM);
                     }
 
-                    pcpd_Class->LOCAL_Class_binding.clsidxJVM =
+                    pcpma_Class->LOCAL_Class_binding.clsidxJVM =
                         jvm_class_index_null;
                 }
                 break;
 
             case CONSTANT_Fieldref:
 
-                pcpd_Fieldref = PTR_THIS_CP_Fieldref(pcpd);
+                pcpma_Fieldref = PTR_THIS_CP_Fieldref(pcpma);
 
                 /* Only unresolve this CP slot if it was resolved */
                 if (jvm_class_index_null !=
-                    pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM)
+                    pcpma_Fieldref->LOCAL_Fieldref_binding.clsidxJVM)
                 {
                     /* Remove reference unless it references itself */
                     if (clsidx != 
-                        pcpd_Fieldref->LOCAL_Fieldref_binding.clsidxJVM)
+                       pcpma_Fieldref->LOCAL_Fieldref_binding.clsidxJVM)
                     {
                         (rvoid) GC_CLASS_RMREF_FROM_CLASS(
                                     clsidx,
-                                    pcpd_Fieldref
+                                    pcpma_Fieldref
                                       ->LOCAL_Fieldref_binding
                                         .clsidxJVM);
                     }
 
-                    pcpd_Fieldref
+                    pcpma_Fieldref
                       ->LOCAL_Fieldref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
-                    pcpd_Fieldref
+                    pcpma_Fieldref
                       ->LOCAL_Fieldref_binding.fluidxJVM =
                                              jvm_field_lookup_index_bad;
 
-                    pcpd_Fieldref
+                    pcpma_Fieldref
                       ->LOCAL_Fieldref_binding.oiflagJVM =
                                                 rneither_true_nor_false;
 
-                    pcpd_Fieldref
+                    pcpma_Fieldref
                       ->LOCAL_Fieldref_binding.jvaluetypeJVM =
                                                    LOCAL_BASETYPE_ERROR;
                 }
@@ -884,40 +884,40 @@ rboolean linkage_unresolve_class(jvm_class_index clsidx)
 
             case CONSTANT_Methodref:
 
-                pcpd_Methodref = PTR_THIS_CP_Methodref(pcpd);
+                pcpma_Methodref = PTR_THIS_CP_Methodref(pcpma);
 
                 /* Only unresolve this CP slot if it was resolved */
                 if (jvm_class_index_null !=
-                    pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM)
+                    pcpma_Methodref->LOCAL_Methodref_binding.clsidxJVM)
                 {
                     /* Remove reference unless it references itself */
                     if (clsidx != 
-                      pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM)
+                     pcpma_Methodref->LOCAL_Methodref_binding.clsidxJVM)
                     {
                         (rvoid) GC_CLASS_RMREF_FROM_CLASS(
                                     clsidx,
-                                    pcpd_Methodref
+                                    pcpma_Methodref
                                       ->LOCAL_Methodref_binding
                                         .clsidxJVM);
                     }
 
-                    pcpd_Methodref
+                    pcpma_Methodref
                       ->LOCAL_Methodref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
-                    pcpd_Methodref
+                    pcpma_Methodref
                       ->LOCAL_Methodref_binding.mthidxJVM =
                                                    jvm_method_index_bad;
 
-                    pcpd_Methodref
+                    pcpma_Methodref
                       ->LOCAL_Methodref_binding.codeatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                    pcpd_Methodref
+                    pcpma_Methodref
                       ->LOCAL_Methodref_binding.excpatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                    pcpd_Methodref
+                    pcpma_Methodref
                       ->LOCAL_Methodref_binding.nmordJVM =
                                          jvm_native_method_ordinal_null;
                 }
@@ -925,43 +925,43 @@ rboolean linkage_unresolve_class(jvm_class_index clsidx)
 
             case CONSTANT_InterfaceMethodref:
 
-                pcpd_InterfaceMethodref =
-                    PTR_THIS_CP_InterfaceMethodref(pcpd);
+                pcpma_InterfaceMethodref =
+                    PTR_THIS_CP_InterfaceMethodref(pcpma);
 
                 /* Only unresolve this CP slot if it was resolved */
                 if (jvm_class_index_null !=
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.clsidxJVM)
                 {
                     /* Remove reference unless it references itself */
                     if (clsidx != 
-                        pcpd_InterfaceMethodref
+                        pcpma_InterfaceMethodref
                           ->LOCAL_InterfaceMethodref_binding.clsidxJVM)
                     {
                         (rvoid) GC_CLASS_RMREF_FROM_CLASS(
                                     clsidx,
-                                    pcpd_InterfaceMethodref
+                                    pcpma_InterfaceMethodref
                                       ->LOCAL_InterfaceMethodref_binding
                                         .clsidxJVM);
                     }
 
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.mthidxJVM =
                                                    jvm_method_index_bad;
 
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.codeatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.excpatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                    pcpd_InterfaceMethodref
+                    pcpma_InterfaceMethodref
                       ->LOCAL_InterfaceMethodref_binding.nmordJVM =
                                          jvm_native_method_ordinal_null;
                 }

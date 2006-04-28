@@ -79,7 +79,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(unicode, c,
  *
  *
  * @returns UTF8 structure containing length and character buffer (plus
- *          tag), but return in (cp_info_dup) for full proper word
+ *          tag), but return in (cp_info_mem_align) for full proper word
  *          alignment. When done with the data, call HEAP_FREE_DATA()
  *          on it.
  *
@@ -93,7 +93,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(unicode, c,
  *                        than that.
  */
 
-cp_info_dup *unicode_cnv2utf(jchar *inbfr, jshort length)
+cp_info_mem_align *unicode_cnv2utf(jchar *inbfr, jshort length)
 {
     ARCH_FUNCTION_NAME(unicode_cnv2utf);
 
@@ -162,12 +162,12 @@ cp_info_dup *unicode_cnv2utf(jchar *inbfr, jshort length)
      * info, adjusting for the amount of string data to be stored
      * into the result.
      */
-    cp_info_dup *rc = HEAP_GET_DATA(sizeof(cp_info_dup) -
-                                        sizeof(cp_info) +
-                                        sizeof(CONSTANT_Utf8_info) -
-                                        sizeof(u1) +
-                                        bytecnvcount,
-                                    rfalse);
+    cp_info_mem_align *rc = HEAP_GET_DATA(sizeof(cp_info_mem_align) -
+                                              sizeof(cp_info) +
+                                            sizeof(CONSTANT_Utf8_info) -
+                                              sizeof(u1) +
+                                              bytecnvcount,
+                                          rfalse);
 
     /* Prepare output structure with everything but character cnv */
     CONSTANT_Utf8_info *pcpui = PTR_THIS_CP_Utf8(rc);

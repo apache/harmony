@@ -282,7 +282,8 @@ extern jvm_class_index class_static_new(rushort          status_req,
 extern jvm_class_index class_reload(jvm_class_index clsidxOLD);
 extern jvm_class_index class_static_delete(jvm_class_index clsidx,
                                            rboolean        rmref);
-extern jvm_class_index class_find_by_cp_entry(cp_info_dup *clsname);
+extern jvm_class_index class_find_by_cp_entry(
+                                            cp_info_mem_align *clsname);
 extern jvm_class_index class_find_by_prchar(rchar *clsname);
 extern jvm_class_index class_load_primative(u1 basetype);
 extern jvm_class_index class_load_from_prchar(rchar    *clsname,
@@ -290,7 +291,7 @@ extern jvm_class_index class_load_from_prchar(rchar    *clsname,
                                                    find_registerNatives,
                                               jint     *arraylength);
 extern jvm_class_index class_load_from_cp_entry_utf(
-                                             cp_info_dup *clsname,
+                                             cp_info_mem_align *clsname,
                                              rboolean
                                                    find_registerNatives,
                                              jint        *arraylength);

@@ -886,7 +886,8 @@ rboolean utf_utf_isclassformatted(CONSTANT_Utf8_info *src)
  *
  */
 
-cp_info_dup *utf_utf2utf_unformatted_classname(cp_info_dup *inbfr)
+cp_info_mem_align
+    *utf_utf2utf_unformatted_classname(cp_info_mem_align *inbfr)
 {
     ARCH_FUNCTION_NAME(utf_u2f2utf_unformatted_classname);
 
@@ -896,7 +897,7 @@ cp_info_dup *utf_utf2utf_unformatted_classname(cp_info_dup *inbfr)
 
     HEAP_FREE_DATA(pstr);
 
-    cp_info_dup *rc = nts_prchar2utf(punf);
+    cp_info_mem_align *rc = nts_prchar2utf(punf);
 
     HEAP_FREE_DATA(punf);
 

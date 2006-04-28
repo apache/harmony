@@ -88,9 +88,9 @@ ARCH_SOURCE_COPYRIGHT_APACHE(method, c,
  *         search result.
  *
  */
-jvm_method_index method_find_by_cp_entry(jvm_class_index  clsidx,
-                                         cp_info_dup     *mthname,
-                                         cp_info_dup     *mthdesc)
+jvm_method_index method_find_by_cp_entry(jvm_class_index    clsidx,
+                                         cp_info_mem_align *mthname,
+                                         cp_info_mem_align *mthdesc)
 {
     ARCH_FUNCTION_NAME(method_find_by_cp_entry);
 
@@ -168,8 +168,8 @@ jvm_method_index
 {
     ARCH_FUNCTION_NAME(method_find_by_prchar);
 
-    cp_info_dup *pcip_mthname = nts_prchar2utf(mthname);
-    cp_info_dup *pcip_mthdesc = nts_prchar2utf(mthdesc);
+    cp_info_mem_align *pcip_mthname = nts_prchar2utf(mthname);
+    cp_info_mem_align *pcip_mthdesc = nts_prchar2utf(mthdesc);
 
     jvm_method_index rc =
         method_find_by_cp_entry(clsidx, pcip_mthname, pcip_mthdesc);
@@ -204,20 +204,20 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
 {
     ARCH_FUNCTION_NAME(method_return_type);
 
-    cp_info_dup        *pcpd;
-    CONSTANT_Utf8_info *pcpd_Utf8;
+    cp_info_mem_align  *pcpma;
+    CONSTANT_Utf8_info *pcpma_Utf8;
 
-    pcpd =CLASS_OBJECT_LINKAGE(clsidx)->pcfs->constant_pool[mthdescidx];
-    pcpd_Utf8 = PTR_THIS_CP_Utf8(pcpd);
+    pcpma=CLASS_OBJECT_LINKAGE(clsidx)->pcfs->constant_pool[mthdescidx];
+    pcpma_Utf8 = PTR_THIS_CP_Utf8(pcpma);
 
     u2 idx;
            /* Last char will be result:/ - 1/ except 'Lsome/class;' */
-    for(idx = 0; idx < pcpd_Utf8->length - 1; idx++)
+    for(idx = 0; idx < pcpma_Utf8->length - 1; idx++)
     {
         /* Scan for parm list closure, next char is return type */
-        if (METHOD_CHAR_CLOSE_PARM == pcpd_Utf8->bytes[idx])
+        if (METHOD_CHAR_CLOSE_PARM == pcpma_Utf8->bytes[idx])
         {
-            switch (pcpd_Utf8->bytes[idx + 1])
+            switch (pcpma_Utf8->bytes[idx + 1])
             {
                 case BASETYPE_CHAR_B:
                 case BASETYPE_CHAR_C:
@@ -230,7 +230,7 @@ jvm_basetype method_return_type(jvm_class_index         clsidx,
                 case BASETYPE_CHAR_Z:
                 case BASETYPE_CHAR_ARRAY:
                 case METHOD_CHAR_VOID:
-                    return((jvm_basetype) pcpd_Utf8->bytes[idx + 1]);
+                    return((jvm_basetype) pcpma_Utf8->bytes[idx + 1]);
                 default:
                     /* Found something, but it was invalid */
                     return((jvm_basetype) LOCAL_BASETYPE_ERROR);
@@ -282,11 +282,11 @@ rint method_parm_size(jvm_class_index         clsidx,
 {
     ARCH_FUNCTION_NAME(method_parm_size);
 
-    cp_info_dup        *pcpd;
-    CONSTANT_Utf8_info *pcpd_Utf8;
+    cp_info_mem_align  *pcpma;
+    CONSTANT_Utf8_info *pcpma_Utf8;
 
-    pcpd =CLASS_OBJECT_LINKAGE(clsidx)->pcfs->constant_pool[mthdescidx];
-    pcpd_Utf8 = PTR_THIS_CP_Utf8(pcpd);
+    pcpma=CLASS_OBJECT_LINKAGE(clsidx)->pcfs->constant_pool[mthdescidx];
+    pcpma_Utf8 = PTR_THIS_CP_Utf8(pcpma);
 
     rboolean find_open_paren;
     find_open_paren = rtrue;
@@ -301,12 +301,12 @@ rint method_parm_size(jvm_class_index         clsidx,
 
     u2 idx;
            /* Last char will be result:/ - 1/ except 'Lsome/class;' */
-    for(idx = 0; idx < pcpd_Utf8->length - 1; idx++)
+    for(idx = 0; idx < pcpma_Utf8->length - 1; idx++)
     {
         /* Skip past class/path/name until closing semicolon */
         if (rtrue == find_class_close)
         {
-            if (BASETYPE_CHAR_L_TERM == pcpd_Utf8->bytes[idx])
+            if (BASETYPE_CHAR_L_TERM == pcpma_Utf8->bytes[idx])
             {
                 find_class_close = rfalse;
             }
@@ -319,7 +319,7 @@ rint method_parm_size(jvm_class_index         clsidx,
         if (rtrue == find_open_paren)
         {
             /* If open paren found, start scanning descriptor */
-            if (METHOD_CHAR_OPEN_PARM == pcpd_Utf8->bytes[idx])
+            if (METHOD_CHAR_OPEN_PARM == pcpma_Utf8->bytes[idx])
             {
                 /*
                  * If anything precedes the open paren,
@@ -339,7 +339,7 @@ rint method_parm_size(jvm_class_index         clsidx,
         }
 
         /* Done if close paren, being end of descriptor */
-        if (METHOD_CHAR_CLOSE_PARM == pcpd_Utf8->bytes[idx])
+        if (METHOD_CHAR_CLOSE_PARM == pcpma_Utf8->bytes[idx])
         {
             /* Something is profoundly wrong if any condition is true */
             if ((rtrue == find_open_paren) ||
@@ -356,7 +356,7 @@ rint method_parm_size(jvm_class_index         clsidx,
         }
 
         /* Scan for parm list closure, next char is return type */
-        switch (pcpd_Utf8->bytes[idx])
+        switch (pcpma_Utf8->bytes[idx])
         {
             case BASETYPE_CHAR_B:
             case BASETYPE_CHAR_C:

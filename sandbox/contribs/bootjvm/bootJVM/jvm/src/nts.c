@@ -66,8 +66,9 @@ ARCH_SOURCE_COPYRIGHT_APACHE(nts, c,
  *
  *
  * @returns UTF8 structure containing length and rchar bfr (plus tag),
- *          but return in (cp_info_dup) for full proper word alignment.
- *          When done with the data, call HEAP_FREE_DATA() on it.
+ *          but return in (cp_info_mem_align) for full proper word
+ *          alignment. When done with the data, call HEAP_FREE_DATA()
+ *          on it.
  *
  *    @c @b rc-\>bytes      UTF8 version of @b inbfr string
  *
@@ -75,7 +76,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(nts, c,
  *                          @c @b rc-\>bytes
  */
 
-cp_info_dup *nts_prchar2utf(rchar *inbfr)
+cp_info_mem_align *nts_prchar2utf(rchar *inbfr)
 {
     ARCH_FUNCTION_NAME(nts_prchar2utf);
 
@@ -88,12 +89,12 @@ cp_info_dup *nts_prchar2utf(rchar *inbfr)
      * info, adjusting for the amount of string data to be stored
      * into the result.
      */
-    cp_info_dup *rc = HEAP_GET_DATA(sizeof(cp_info_dup) -
-                                        sizeof(cp_info) +
-                                        sizeof(CONSTANT_Utf8_info) -
-                                        sizeof(u1) +
-                                        len,
-                                    rfalse);
+    cp_info_mem_align *rc = HEAP_GET_DATA(sizeof(cp_info_mem_align) -
+                                              sizeof(cp_info) +
+                                            sizeof(CONSTANT_Utf8_info) -
+                                              sizeof(u1) +
+                                              len,
+                                          rfalse);
 
     /* Move (rchar *) string into (CONSTANT_Utf8_info) */
     CONSTANT_Utf8_info *pcpui = PTR_THIS_CP_Utf8(rc);
@@ -174,9 +175,9 @@ jshort nts_prchar2unicode(rchar *inbfr, jchar *outbfr)
  *
  *
  * @returns UTF8 structure containing length and rchar bfr (plus tag),
- *          but return in (cp_info_dup) for full proper word alignment.
- *          When done with the data, call HEAP_FREE_DATA() on it.
- *          With @b inbfr of @c @b some/path/name/filename,
+ *          but return in (cp_info_mem_align) for full proper word
+ *          alignment. When done with the data, call HEAP_FREE_DATA()
+ *          on it. With @b inbfr of @c @b some/path/name/filename,
  *          the result will be, with 3 array dimensions:
  *
  * @verbatim
@@ -197,8 +198,8 @@ jshort nts_prchar2unicode(rchar *inbfr, jchar *outbfr)
  *
  */
 
-cp_info_dup *nts_prchar2utf_classname(rchar         *inbfr,
-                                      jvm_array_dim  arraydims)
+cp_info_mem_align *nts_prchar2utf_classname(rchar         *inbfr,
+                                            jvm_array_dim  arraydims)
 {
     ARCH_FUNCTION_NAME(nts_prchar2utf_classname);
 
@@ -219,8 +220,8 @@ cp_info_dup *nts_prchar2utf_classname(rchar         *inbfr,
                  sizeof(u1) +     /* Type terminator */
                  sizeof(u1);      /* NUL character */
 
-    cp_info_dup *rc =
-        HEAP_GET_DATA(sizeof(cp_info_dup) -   /* Enclosing structure */
+    cp_info_mem_align *rc =
+        HEAP_GET_DATA(sizeof(cp_info_mem_align) - /* Enclosing struct */
                           sizeof(cp_info) +   /* Basic type */
                           sizeof(CONSTANT_Utf8_info) - /* UTF8 type */
                           sizeof(u1) +        /* Data place holder */

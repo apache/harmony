@@ -56,7 +56,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(unicode, h,
 
 /* Prototypes for functions in 'unicode.c' */
 
-extern cp_info_dup *unicode_cnv2utf(jchar *inbfr, jshort length);
+extern cp_info_mem_align *unicode_cnv2utf(jchar *inbfr, jshort length);
 
 extern jshort unicode_strcmp(jchar *us1, u2 l1, jchar *us2, u2 l2);
 

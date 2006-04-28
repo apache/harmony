@@ -55,13 +55,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * @link #CONSTANT_Class_info CONSTANT_xxxxx_info@endlink typed pointer,
  * stripping off the generic prefix bytes.
  *
- * Adjust a generic @c @b constant_pool entry (cp_info_dup *)
+ * Adjust a generic @c @b constant_pool entry (cp_info_mem_align *)
  * into its corresponding
  * @link #CONSTANT_Class_info CONSTANT_xxxxx_info@endlink typed pointer
  * by changing the pointer to point not to the beginning of the
- * (cp_info_dup) structure, but to its @p @b cp member, which is where
- * the data actually begins.  This is  useful for argument passing
- * when the whole (cp_info_dup *) is available.  The original
+ * (cp_info_mem_align) structure, but to its @p @b cp member, which is
+ * where the data actually begins.  This is  useful for argument passing
+ * when the whole (cp_info_mem_align *) is available.  The original
  * adjustment was made in the first place to support native member
  * accesses on real machine architectures that are picky about
  * multi-byte accesses that are not aligned to addresses of the
@@ -131,12 +131,12 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
 /*@{ */ /* Begin grouped definitions */
 
 /*!
- * @brief Report the (cp_info_dup *) of the address of the
+ * @brief Report the (cp_info_mem_align *) of the address of the
  * class file @p @b pcfs @c @b constant_pool entry at this
  * index @p @b cpidx.
  *
  *
- * @returns(cp_info_dup *) to a @c @b constant_pool[cpidx]
+ * @returns(cp_info_mem_align *) to a @c @b constant_pool[cpidx]
  *
  */
 #define PTR_CP_SLOT(pcfs, cpidx) (pcfs->constant_pool[cpidx])
@@ -854,11 +854,11 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
 
 #ifdef ARCH_LITTLE_ENDIAN
 #define CP_ITEM_SWAP_U2(type, member) \
-    pcpu2 = &(((type *) &pcpd->cp)->member); \
+    pcpu2 = &(((type *) &pcpma->cp)->member); \
     MACHINE_JSHORT_SWAP_PTR(pcpu2)
 
 #define CP_ITEM_SWAP_U4(type, member) \
-    pcpu4 = &(((type *) &pcpd->cp)->member); \
+    pcpu4 = &(((type *) &pcpma->cp)->member); \
     MACHINE_JINT_SWAP_PTR(pcpu4)
 
 #else
@@ -878,11 +878,11 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * address alignment purposes.
  *
  * Fill pattern bytes are provided for (cp_info) and (attribute_info)
- * structure alignment within (cp_info_dup) and (attribute_info_dup)
- * structures.  This assures that 2- and 4-byte alignments needed
- * for the beginning of those structures is followed (after the first
- * element, the @p @b tag and @p @b attribute_name_index elements,
- * respectively).
+ * structure alignment within (cp_info_mem_align) and
+ * (attribute_info_mem_align) structures.  This assures that 2- and
+ * 4-byte alignments needed for the beginning of those structures is
+ * followed (after the first element, the @p @b tag
+ * and @p @b attribute_name_index elements, respectively).
  *
  * Real machine architectures that have issues with non-aligned
  * multi-byte accesses do @e not like the fact that ClassFile
@@ -892,9 +892,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * bytes in their @link #attribute_info info@endlink fields.
  * Due to the streaming nature of Java class files, subsequent
  * attributes may thus be misaligned, even though they may only contain
- * fields with an even number of bytes.  Thus the cp_info_dup and
- * attribute_info_dup structures were devised to suppress problems like
- * this.  When the class file is read, all structure accesses are
+ * fields with an even number of bytes.  Thus the cp_info_mem_align and
+ * attribute_info_mem_align structures were devised to suppress problems
+ * like this.  When the class file is read, all structure accesses are
  * performed on blocks of allocated memory that start on 4- or 8-byte
  * address boundaries and pad the first few bytes so that all 2- and
  * 4-byte accesses are on 2- or 4-byte boundaries.
@@ -903,16 +903,16 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * three @b FILL_INFO_NOTUSED_Ux fill fields for assigning values
  * to @b notusedXX fields.
  *
- * @see cp_info_dup
- * @see attribute_info_dup
+ * @see cp_info_mem_align
+ * @see attribute_info_mem_align
  * @see ARCH_ODD4_ADDRESS_SIGSEGV
  * @see ARCH_ODD2_ADDRESS_SIGSEGV
  *
  * @todo HARMONY-6-jvm-cfmacros.h-2 WATCH OUT!  When changing
  *       CP_INFO_NUM_EMPTIES or ATTRIBUTE_INFO_NUM_EMPTIES, beware
  *       of not having he right number of @c @b struct->empty[x]=FILL
- *       lines in the cp_info_dup and attribute_info_dup assignments!
- *       Could eliminate these, but they are useful for
+ *       lines in the cp_info_mem_align and attribute_info_mem_align
+ *       assignments! Could eliminate these, but they are useful for
  *       debugging.
  *
  * @todo HARMONY-6-jvm-cfmacros.h-3 4-byte unused fields are meaningful

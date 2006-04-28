@@ -1388,7 +1388,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
 
     string1[0] = pjvm->argcj; /* Number of java command line parms */
 
-    cp_info_dup *pcpclsname =
+    cp_info_mem_align *pcpclsname =
         nts_prchar2utf_classname(JVMCLASS_JAVA_LANG_STRING, 1);
 
     rchar *pclsname = utf_utf2prchar(PTR_THIS_CP_Utf8(pcpclsname));
@@ -1570,7 +1570,7 @@ static rvoid jvm_init(int argc, char **argv, char **envp)
         rint i;
         for (i = 0; i < pjvm->argcj; i++)
         {
-            cp_info_dup *putfarg = nts_prchar2utf(pjvm->argvj[i]);
+            cp_info_mem_align *putfarg = nts_prchar2utf(pjvm->argvj[i]);
 
             /*!
              * @todo HARMONY-6-jvm-jvm.c-8 This invocation needs better

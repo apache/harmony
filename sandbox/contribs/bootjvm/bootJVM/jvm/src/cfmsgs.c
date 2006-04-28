@@ -550,8 +550,8 @@ rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
  *
  * @param  atr    Pointer to an attribute area.  WARNING:  This
  *                pointer MUST be 4-byte aligned to suppress
- *                @b SIGSEGV.  Such logic is already taken care
- *                of by virtue of it being an (attribute_info_dup *)
+ *                @b SIGSEGV.  Such logic is already taken care of by
+ *                virtue of it being an (attribute_info_mem_align *)
  *                type instead of as (attribute_info *).  This
  *                processing happens in cfattrib_load_attribute()
  *                after reading an attribute from the class file
@@ -566,9 +566,9 @@ rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
  *
  */
 
-rvoid cfmsgs_atrmsg(rchar *fn,
-                    ClassFile *pcfs,
-                    attribute_info_dup *atr)
+rvoid cfmsgs_atrmsg(rchar                    *fn,
+                    ClassFile                *pcfs,
+                    attribute_info_mem_align *atr)
 {
     ARCH_FUNCTION_NAME(cfmsgs_atrmsg);
 

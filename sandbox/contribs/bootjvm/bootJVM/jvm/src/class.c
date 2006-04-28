@@ -889,7 +889,7 @@ jvm_class_index class_static_delete(jvm_class_index clsidx,
  *         @link #jvm_class_index_null jvm_class_index_null@endlink.
  *
  */
-jvm_class_index class_find_by_cp_entry(cp_info_dup *clsname)
+jvm_class_index class_find_by_cp_entry(cp_info_mem_align *clsname)
 {
     ARCH_FUNCTION_NAME(class_find_by_cp_entry);
 
@@ -948,7 +948,7 @@ jvm_class_index class_find_by_prchar(rchar *clsname)
 {
     ARCH_FUNCTION_NAME(class_find_by_prchar);
 
-    cp_info_dup *pcip_clsname = nts_prchar2utf(clsname);
+    cp_info_mem_align *pcip_clsname = nts_prchar2utf(clsname);
 
     jvm_method_index rc =
         class_find_by_cp_entry(pcip_clsname);
@@ -1122,9 +1122,9 @@ jvm_class_index class_load_primative(u1 basetype)
 /*@{ */ /* Begin grouped definitions */
 
 jvm_class_index
-    class_load_from_cp_entry_utf(cp_info_dup *clsname,
-                                 rboolean     find_registerNatives,
-                                 jint        *arraylength)
+    class_load_from_cp_entry_utf(cp_info_mem_align *clsname,
+                                 rboolean          find_registerNatives,
+                                 jint              *arraylength)
 {
     ARCH_FUNCTION_NAME(class_load_from_cp_entry_utf);
 
@@ -1233,7 +1233,7 @@ jvm_class_index
         } /* if arraydims */
         else
         {
-            cp_info_dup *pnofmt =
+            cp_info_mem_align *pnofmt =
                              utf_utf2utf_unformatted_classname(clsname);
 
             pcname = classpath_get_from_cp_entry_utf(pnofmt);
@@ -1389,7 +1389,7 @@ jvm_class_index class_load_from_prchar(rchar    *clsname,
 {
     ARCH_FUNCTION_NAME(class_load_from_prchar);
 
-    cp_info_dup *cp_clsname = nts_prchar2utf(clsname);
+    cp_info_mem_align *cp_clsname = nts_prchar2utf(clsname);
 
     jvm_class_index clsidx =
         class_load_from_cp_entry_utf(cp_clsname,
@@ -1406,9 +1406,9 @@ jvm_class_index class_load_from_prchar(rchar    *clsname,
 #if 0
 /* Can use if want to add @b pcfs to parm list or some such */
 jvm_class_index
-    class_load_from_cp_entry_class(cp_info_dup *clsname,
-                                   rboolean     find_registerNatives,
-                                   jint        *arraylength)
+    class_load_from_cp_entry_class(cp_info_mem_align *clsname,
+                                   rboolean        find_registerNatives,
+                                   jint              *arraylength)
 {
     ARCH_FUNCTION_NAME(class_load_from_cp_entry_class);
 

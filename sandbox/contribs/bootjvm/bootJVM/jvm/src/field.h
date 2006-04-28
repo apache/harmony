@@ -74,59 +74,59 @@ ARCH_HEADER_COPYRIGHT_APACHE(field, h,
 
 /* Prototypes for functions in 'field.h' */
 
-extern jvm_field_index field_find_by_cp_entry(jvm_class_index  clsidx,
-                                              cp_info_dup     *fldname,
-                                              cp_info_dup     *flddesc);
+extern jvm_field_index field_find_by_cp_entry(jvm_class_index   clsidx,
+                                             cp_info_mem_align *fldname,
+                                             cp_info_mem_align *flddesc);
 
 extern rboolean field_index_is_class_static(jvm_class_index clsidx,
                                             jvm_field_index fldidx);
 
-extern rboolean field_name_is_class_static(jvm_class_index  clsidx,
-                                           cp_info_dup     *fldname,
-                                           cp_info_dup     *flddesc);
+extern rboolean field_name_is_class_static(jvm_class_index    clsidx,
+                                           cp_info_mem_align *fldname,
+                                           cp_info_mem_align *flddesc);
 
 extern rboolean field_index_is_object_instance(jvm_class_index clsidx,
                                                jvm_field_index fldidx);
 
 extern rboolean field_name_is_object_instance(jvm_class_index  clsidx,
-                                              cp_info_dup     *fldname,
-                                              cp_info_dup     *flddesc);
+                                            cp_info_mem_align *fldname,
+                                            cp_info_mem_align *flddesc);
 
 extern jvm_field_lookup_index
     field_index_get_class_static_lookup(jvm_class_index clsidx,
                                         jvm_field_index fldidx);
 
 extern jvm_field_lookup_index
-    field_name_get_class_static_lookup(jvm_class_index  clsidx,
-                                       cp_info_dup     *fldname,
-                                       cp_info_dup     *flddesc);
+    field_name_get_class_static_lookup(jvm_class_index    clsidx,
+                                       cp_info_mem_align *fldname,
+                                       cp_info_mem_align *flddesc);
 
 extern jvm_field_lookup_index
     field_index_get_object_instance_lookup(jvm_class_index clsidx,
                                            jvm_field_index fldidx);
 
 extern jvm_field_lookup_index
-    field_name_get_object_instance_lookup(jvm_class_index  clsidx,
-                                          cp_info_dup     *fldname,
-                                          cp_info_dup     *flddesc);
+    field_name_get_object_instance_lookup(jvm_class_index    clsidx,
+                                          cp_info_mem_align *fldname,
+                                          cp_info_mem_align *flddesc);
 
 extern jvalue *field_index_get_class_static_pjvalue(
                    jvm_class_index  clsidx,
                    jvm_field_index fldidx);
 
 extern jvalue *field_name_get_class_static_pjvalue(
-                   jvm_class_index  clsidx,
-                   cp_info_dup     *fldname,
-                   cp_info_dup     *flddesc);
+                   jvm_class_index    clsidx,
+                   cp_info_mem_align *fldname,
+                   cp_info_mem_align *flddesc);
 
 extern jvalue *field_index_get_object_instance_pjvalue(
                    jvm_object_hash objhash,
                    jvm_field_index fldidx);
 
 extern jvalue *field_name_get_object_instance_pjvalue(
-                   jvm_object_hash  objhash,
-                   cp_info_dup     *fldname,
-                   cp_info_dup     *flddesc);
+                   jvm_object_hash    objhash,
+                   cp_info_mem_align *fldname,
+                   cp_info_mem_align *flddesc);
 
 extern jvm_field_index field_index_put_class_static_pjvalue(
                    jvm_class_index  clsidx,
@@ -135,9 +135,9 @@ extern jvm_field_index field_index_put_class_static_pjvalue(
 
 extern jvm_field_index field_name_put_class_static_pjvalue(
                    jvm_class_index  clsidx,
-                   cp_info_dup     *fldname,
-                   cp_info_dup     *flddesc,
-                   jvalue          *_jvalue);
+                   cp_info_mem_align *fldname,
+                   cp_info_mem_align *flddesc,
+                   jvalue            *_jvalue);
 
 extern jvm_field_index field_index_put_object_instance_pjvalue(
                    jvm_object_hash  objhash,
@@ -145,10 +145,10 @@ extern jvm_field_index field_index_put_object_instance_pjvalue(
                    jvalue          *_jvalue);
 
 extern jvm_field_index field_name_put_object_instance_pjvalue(
-                   jvm_object_hash  objhash,
-                   cp_info_dup     *fldname,
-                   cp_info_dup     *flddesc,
-                   jvalue          *_jvalue);
+                   jvm_object_hash    objhash,
+                   cp_info_mem_align *fldname,
+                   cp_info_mem_align *flddesc,
+                   jvalue            *_jvalue);
 
 #endif /* _field_h_included_ */
 

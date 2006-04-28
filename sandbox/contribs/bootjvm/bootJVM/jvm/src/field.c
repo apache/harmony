@@ -86,9 +86,9 @@ ARCH_SOURCE_COPYRIGHT_APACHE(field, c,
  *         search result.
  *
  */
-jvm_field_index field_find_by_cp_entry(jvm_class_index  clsidx,
-                                       cp_info_dup     *fldname,
-                                       cp_info_dup     *flddesc)
+jvm_field_index field_find_by_cp_entry(jvm_class_index    clsidx,
+                                       cp_info_mem_align *fldname,
+                                       cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_find_by_cp_entry);
 
@@ -195,9 +195,9 @@ rboolean field_index_is_class_static(jvm_class_index clsidx,
  *          field, otherwise @link #rfalse rfalse@endlink.
  *
  */
-rboolean field_name_is_class_static(jvm_class_index  clsidx,
-                                    cp_info_dup     *fldname,
-                                    cp_info_dup     *flddesc)
+rboolean field_name_is_class_static(jvm_class_index    clsidx,
+                                    cp_info_mem_align *fldname,
+                                    cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_name_is_class_static);
 
@@ -275,9 +275,9 @@ rboolean field_index_is_object_instance(jvm_class_index clsidx,
  *          instance field, otherwise @link #rfalse rfalse@endlink.
  *
  */
-rboolean field_name_is_object_instance(jvm_class_index   clsidx,
-                                       cp_info_dup     *fldname,
-                                       cp_info_dup     *flddesc)
+rboolean field_name_is_object_instance(jvm_class_index    clsidx,
+                                       cp_info_mem_align *fldname,
+                                       cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_name_is_object_instance);
 
@@ -357,9 +357,9 @@ jvm_field_lookup_index
  *
  */
 jvm_field_lookup_index
-    field_name_get_class_static_lookup(jvm_class_index  clsidx,
-                                       cp_info_dup     *fldname,
-                                       cp_info_dup     *flddesc)
+    field_name_get_class_static_lookup(jvm_class_index    clsidx,
+                                       cp_info_mem_align *fldname,
+                                       cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_name_get_class_static_lookup);
 
@@ -442,9 +442,9 @@ jvm_field_lookup_index
  *
  */
 jvm_field_lookup_index
-    field_name_get_object_instance_lookup(jvm_class_index  clsidx,
-                                          cp_info_dup     *fldname,
-                                          cp_info_dup     *flddesc)
+    field_name_get_object_instance_lookup(jvm_class_index    clsidx,
+                                          cp_info_mem_align *fldname,
+                                          cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_name_get_object_instance_lookup);
 
@@ -522,9 +522,9 @@ jvalue *field_index_get_class_static_pjvalue(jvm_class_index  clsidx,
  *          @link #rnull rnull@endlink.
  *
  */
-jvalue *field_name_get_class_static_pjvalue(jvm_class_index  clsidx,
-                                            cp_info_dup     *fldname,
-                                            cp_info_dup     *flddesc)
+jvalue *field_name_get_class_static_pjvalue(jvm_class_index    clsidx,
+                                            cp_info_mem_align *fldname,
+                                            cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_name_get_class_static_pjvalue);
 
@@ -599,8 +599,8 @@ jvalue *field_index_get_object_instance_pjvalue(jvm_object_hash objhash,
  *
  */
 jvalue *field_name_get_object_instance_pjvalue(jvm_object_hash  objhash,
-                                               cp_info_dup     *fldname,
-                                               cp_info_dup     *flddesc)
+                                             cp_info_mem_align *fldname,
+                                             cp_info_mem_align *flddesc)
 {
     ARCH_FUNCTION_NAME(field_name_get_object_instance_pjvalue);
 
@@ -694,10 +694,10 @@ jvm_field_index
  *
  */
 jvm_field_index
-    field_name_put_class_static_pjvalue(jvm_class_index  clsidx,
-                                        cp_info_dup     *fldname,
-                                        cp_info_dup     *flddesc,
-                                        jvalue          *_jvalue)
+    field_name_put_class_static_pjvalue(jvm_class_index    clsidx,
+                                        cp_info_mem_align *fldname,
+                                        cp_info_mem_align *flddesc,
+                                        jvalue            *_jvalue)
 {
     ARCH_FUNCTION_NAME(field_name_put_class_static_pjvalue);
 
@@ -786,10 +786,10 @@ jvm_field_index
  *
  */
 jvm_field_index
-    field_name_put_object_instance_pjvalue(jvm_object_hash  objhash,
-                                           cp_info_dup     *fldname,
-                                           cp_info_dup     *flddesc,
-                                           jvalue          *_jvalue)
+    field_name_put_object_instance_pjvalue(jvm_object_hash    objhash,
+                                           cp_info_mem_align *fldname,
+                                           cp_info_mem_align *flddesc,
+                                           jvalue            *_jvalue)
 {
     ARCH_FUNCTION_NAME(field_name_put_object_instance_pjvalue);
 

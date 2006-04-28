@@ -75,9 +75,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(method, h,
 /* Prototypes for functions in 'method.c' */
 
 extern
-    jvm_method_index method_find_by_cp_entry(jvm_class_index  clsidx,
-                                             cp_info_dup    *mthname,
-                                             cp_info_dup    *mthdesc);
+    jvm_method_index method_find_by_cp_entry(jvm_class_index   clsidx,
+                                            cp_info_mem_align *mthname,
+                                            cp_info_mem_align *mthdesc);
 
 extern jvm_method_index method_find_by_prchar(jvm_class_index  clsidx,
                                               rchar           *mthname,

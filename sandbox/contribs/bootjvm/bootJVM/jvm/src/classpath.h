@@ -122,7 +122,8 @@ extern
 
 extern rchar *classpath_get_from_prchar(rchar *clsname);
 
-extern rchar *classpath_get_from_cp_entry_utf(cp_info_dup *clsname);
+extern rchar *classpath_get_from_cp_entry_utf(
+                                            cp_info_mem_align *clsname);
 
 
 #endif /* _classpath_h_included_ */

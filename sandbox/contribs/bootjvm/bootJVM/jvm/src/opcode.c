@@ -938,11 +938,11 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
 
 
         /* Scratch area for Fieldref and Methodref navigation */
-        cp_info_dup               *pcpd;
-        CONSTANT_Class_info       *pcpd_Class;
-        CONSTANT_Fieldref_info    *pcpd_Fieldref;
-        CONSTANT_Methodref_info   *pcpd_Methodref;
-        CONSTANT_Utf8_info        *pcpd_Utf8;
+        cp_info_mem_align         *pcpma;
+        CONSTANT_Class_info       *pcpma_Class;
+        CONSTANT_Fieldref_info    *pcpma_Fieldref;
+        CONSTANT_Methodref_info   *pcpma_Methodref;
+        CONSTANT_Utf8_info        *pcpma_Utf8;
 
         field_info              *pfld;
         method_info             *pmth;
@@ -2544,7 +2544,7 @@ case OPCODE_B2_GETSTATIC:
     /* Must reference a field */
     CHECK_CP_TAG(op1u2, CONSTANT_Fieldref);
 
-    /* calc clsidxmisc and pcpd and pcpd_Fieldref */
+    /* calc clsidxmisc and pcpma and pcpma_Fieldref */
     CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(op1u2);
 
     /* Must be a valid reference to a field */
@@ -2566,7 +2566,7 @@ case OPCODE_B2_GETSTATIC:
             CHECK_FINAL_FIELD_CURRENT_CLASS;
 
             /* Retrieve data from the class static field now */
-            GETDATA(CLASS(pcpd_Fieldref
+            GETDATA(CLASS(pcpma_Fieldref
                             ->LOCAL_Fieldref_binding
                               .clsidxJVM)
                       .class_static_field_data[fluidxmisc]);
@@ -2599,7 +2599,7 @@ case OPCODE_B3_PUTSTATIC:
     /* Must reference a field */
     CHECK_CP_TAG(op1u2, CONSTANT_Fieldref);
 
-    /* calc clsidxmisc and pcpd and pcpd_Fieldref */
+    /* calc clsidxmisc and pcpma and pcpma_Fieldref */
     CALCULATE_FIELD_INFO_FROM_FIELD_REFERENCE(op1u2);
 
     /* Must be a valid reference to a field */
@@ -2621,7 +2621,7 @@ case OPCODE_B3_PUTSTATIC:
             CHECK_FINAL_FIELD_CURRENT_CLASS;
 
             /* Store data into the static field now */
-            PUTDATA(CLASS(pcpd_Fieldref
+            PUTDATA(CLASS(pcpma_Fieldref
                             ->LOCAL_Fieldref_binding.clsidxJVM)
                     .class_static_field_data[fluidxmisc]);
             break;
@@ -2674,16 +2674,16 @@ case OPCODE_B8_INVOKESTATIC:
     CHECK_CP_TAG(op1u2, CONSTANT_Methodref);
 
     /*
-     * Calc clsidxmisc and pcpd and pcpd_Methodref.  If class
+     * Calc clsidxmisc and pcpma and pcpma_Methodref.  If class
      * has not yet been loaded, do so now.  The spec says to
      * do it following the check for an abstract method, but
      * in this implementation, the loading has to be done
      * before the testing in case the method is not in this
      * class but in a superclass or superinterface.
      */
-    pcpd           = pcfs->constant_pool[op1u2];
-    pcpd_Methodref = PTR_THIS_CP_Methodref(pcpd);
-    clsidxmisc     = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;
+    pcpma           = pcfs->constant_pool[op1u2];
+    pcpma_Methodref = PTR_THIS_CP_Methodref(pcpma);
+    clsidxmisc      =pcpma_Methodref->LOCAL_Methodref_binding.clsidxJVM;
 
     /*
      * Try to resolve this class before attempting to load.
@@ -2696,15 +2696,15 @@ case OPCODE_B8_INVOKESTATIC:
                                                              clsidx),
                                       rfalse);
 
-        clsidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.clsidxJVM;
+        clsidxmisc = pcpma_Methodref->LOCAL_Methodref_binding.clsidxJVM;
 
         if (jvm_class_index_null == clsidxmisc)
         {
             /* If class is not loaded, retrieve it by UTF8 class name */
-            LATE_CLASS_LOAD(pcpd_Methodref->class_index);
+            LATE_CLASS_LOAD(pcpma_Methodref->class_index);
 
             /* Check if method exists in loaded class */
-            clsidxmisc = pcpd_Methodref
+            clsidxmisc = pcpma_Methodref
                            ->LOCAL_Methodref_binding.clsidxJVM;
             if (jvm_class_index_null == clsidxmisc)
             {
@@ -2716,7 +2716,7 @@ case OPCODE_B8_INVOKESTATIC:
         }
     }
 
-    mthidxmisc = pcpd_Methodref->LOCAL_Methodref_binding.mthidxJVM;
+    mthidxmisc = pcpma_Methodref->LOCAL_Methodref_binding.mthidxJVM;
 
     if (jvm_method_index_bad == mthidxmisc)
     {
@@ -2733,7 +2733,7 @@ case OPCODE_B8_INVOKESTATIC:
 
     /* Must be a valid reference to a method */
     if (jvm_attribute_index_bad == 
-        pcpd_Methodref->LOCAL_Methodref_binding.codeatridxJVM)
+        pcpma_Methodref->LOCAL_Methodref_binding.codeatridxJVM)
     {
         thread_throw_exception(thridx,
                                THREAD_STATUS_THREW_ERROR,
@@ -2832,7 +2832,7 @@ case OPCODE_B8_INVOKESTATIC:
         /* Return code, if any, is pushed in the JNI processing code */
         native_run_method(thridx,
                           clsidxmisc,
-                          pcpd_Methodref
+                          pcpma_Methodref
                             ->LOCAL_Methodref_binding
                               .nmordJVM,
                           pmth->name_index,
@@ -3023,7 +3023,7 @@ case OPCODE_BB_NEW:
     CHECK_NOT_ARRAY_OBJECT;
     CHECK_NOT_INTERFACE_CLASS;
 
-    /* calc clsidxmisc and pcpd and pcpd_Class and pcfsmisc */
+    /* calc clsidxmisc and pcpma and pcpma_Class and pcfsmisc */
     CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(op1u2);
 
     /* Create new object from this class */
@@ -3154,7 +3154,7 @@ case OPCODE_BD_ANEWARRAY:
     CHECK_CP_TAG(op1u2, CONSTANT_Class);
     /* CHECK_CP_TAG2/3(op1u2, CONSTANT_Class,array? ,interface? ); */
 
-    /* calc clsidxmisc and pcpd and pcpd_Class and pcfsmisc */
+    /* calc clsidxmisc and pcpma and pcpma_Class and pcfsmisc */
     CALCULATE_CLASS_INFO_FROM_CLASS_REFERENCE(op1u2);
 
     /* Retrieve 'count' operand from TOS */

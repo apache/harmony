@@ -48,9 +48,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(attribute, h,
 
 
 extern jvm_attribute_index attribute_find_in_field_by_cp_entry(
-                                   jvm_class_index  clsidx,
-                                   jvm_field_index  fldidx,
-                                   cp_info_dup     *atrname);
+                                   jvm_class_index    clsidx,
+                                   jvm_field_index    fldidx,
+                                   cp_info_mem_align *atrname);
 
 extern jvm_attribute_index attribute_find_in_field_by_enum(
                                    jvm_class_index  clsidx,
@@ -58,9 +58,9 @@ extern jvm_attribute_index attribute_find_in_field_by_enum(
                                    rint             atrenum);
 
 extern jvm_attribute_index attribute_find_in_method_by_cp_entry(
-                                   jvm_class_index  clsidx,
-                                   jvm_method_index mthidx,
-                                   cp_info_dup     *atrname);
+                                   jvm_class_index    clsidx,
+                                   jvm_method_index   mthidx,
+                                   cp_info_mem_align *atrname);
 
 extern jvm_attribute_index attribute_find_in_method_by_enum(
                                    jvm_class_index  clsidx,
@@ -68,8 +68,8 @@ extern jvm_attribute_index attribute_find_in_method_by_enum(
                                    rint             atrenum);
 
 extern jvm_attribute_index attribute_find_in_class_by_cp_entry(
-                                   jvm_class_index  clsidx,
-                                   cp_info_dup     *atrname);
+                                   jvm_class_index    clsidx,
+                                   cp_info_mem_align *atrname);
 
 extern jvm_attribute_index attribute_find_in_class_by_enum(
                                    jvm_class_index  clsidx,

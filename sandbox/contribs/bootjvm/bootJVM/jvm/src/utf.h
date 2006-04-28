@@ -89,8 +89,8 @@ extern rboolean utf_utf_isarray(CONSTANT_Utf8_info *inbfr);
 
 extern rboolean utf_utf_isclassformatted(CONSTANT_Utf8_info *src);
 
-extern cp_info_dup
-                 *utf_utf2utf_unformatted_classname(cp_info_dup *inbfr);
+extern cp_info_mem_align
+           *utf_utf2utf_unformatted_classname(cp_info_mem_align *inbfr);
 
 #endif /* _utf_h_defined_ */
 

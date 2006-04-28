@@ -139,18 +139,19 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
 
     pcfs->constant_pool_count = 3; /* 1 class, 1 string, + j/l/Object */
     pcfs->constant_pool = HEAP_GET_DATA(pcfs->constant_pool_count *
-                                        sizeof(cp_info_dup *), rfalse);
+                                          sizeof(cp_info_mem_align *),
+                                        rfalse);
 
 
     /*!
      * @internal Since @c @b java.lang.Object is implied,
      *           don't need this slot.
      */
-    pcfs->constant_pool[0] = (cp_info_dup *) rnull;
+    pcfs->constant_pool[0] = (cp_info_mem_align *) rnull;
 
 
     /* Allocate CONSTANT_Utf8_info member.  Default of u1[1] okay */
-    pcfs->constant_pool[1] = HEAP_GET_DATA(sizeof(cp_info_dup) +
+    pcfs->constant_pool[1] = HEAP_GET_DATA(sizeof(cp_info_mem_align) +
                                            sizeof(CONSTANT_Utf8_info) -
                                            sizeof(cp_info), rtrue);
     CONSTANT_Utf8_info *putf =PTR_THIS_CP_Utf8(pcfs->constant_pool[1]);
@@ -159,7 +160,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
     putf->bytes[0] = basetype; /* single (u1) character */
 
     /* Allocate CONSTANT_Class_info member */
-    pcfs->constant_pool[2] = HEAP_GET_DATA(sizeof(cp_info_dup) +
+    pcfs->constant_pool[2] = HEAP_GET_DATA(sizeof(cp_info_mem_align) +
                                            sizeof(CONSTANT_Class_info) -
                                            sizeof(cp_info), rfalse);
     CONSTANT_Class_info *pci =PTR_THIS_CP_Class(pcfs->constant_pool[2]);
@@ -190,7 +191,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
     pcfs->methods = (method_info **) rnull;
 
     pcfs->attributes_count = 0;
-    pcfs->attributes = (attribute_info_dup **) rnull;
+    pcfs->attributes = (attribute_info_mem_align **) rnull;
 
     return(pcfs);
 
@@ -200,7 +201,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
 /*!
  * @def ALLOC_CP_INFO()
  *
- * @brief Allocate a cp_info_dup structure containing any generic
+ * @brief Allocate a cp_info_mem_align structure containing any generic
  * type of @c @b constant_pool entry.
  *
  * Allocate space from heap, populate from class file data,
@@ -225,12 +226,12 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
     misc_adj = sizeof(u1) * CP_INFO_NUM_EMPTIES;                       \
                                                                        \
     cf_item_size = sizeof(spec_typedef)-sizeof(struct binding_struct); \
-    pcpd = HEAP_GET_METHOD(misc_adj + sizeof(spec_typedef), rfalse);   \
-    portable_memcpy(((rbyte *) pcpd) + misc_adj,pcpbytes,cf_item_size);\
+    pcpma = HEAP_GET_METHOD(misc_adj + sizeof(spec_typedef), rfalse);  \
+    portable_memcpy(((rbyte *)pcpma) + misc_adj,pcpbytes,cf_item_size);\
                                                                        \
-    pcpd->empty[0] = FILL_INFO_DUP0;                                   \
-    pcpd->empty[1] = FILL_INFO_DUP1;                                   \
-    pcpd->empty[2] = FILL_INFO_DUP2; /* Extra ; */
+    pcpma->empty[0] = FILL_INFO_DUP0;                                  \
+    pcpma->empty[1] = FILL_INFO_DUP1;                                  \
+    pcpma->empty[2] = FILL_INFO_DUP2; /* Extra ; */
 
 
 /*!
@@ -263,7 +264,7 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
 #define ALLOC_CF_ITEM(spec_typedef, pbytes, pcfsi, binding_struct)     \
     cf_item_size = sizeof(spec_typedef) -                              \
                    sizeof(struct binding_struct) -                     \
-                   sizeof(attribute_info_dup **);                      \
+                   sizeof(attribute_info_mem_align **);                \
     pcfsi = HEAP_GET_METHOD(sizeof(spec_typedef), rfalse);             \
     portable_memcpy(((rbyte *) pcfsi),pbytes,cf_item_size);/*Extra ;*/
 
@@ -299,8 +300,8 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
  * value
  */
 #define CPTYPEIDX_RANGE_CHECK(type, pcfs, cpidx, msg)                  \
-    LOAD_SYSCALL_FAILURE(( /* ((((type *) &pcpd->cp)->cpidx) < 0) || */\
-                          ((((type *) &pcpd->cp)->cpidx) >=            \
+    LOAD_SYSCALL_FAILURE(( /* ((((type *)&pcpma->cp)->cpidx) < 0) || */\
+                          ((((type *) &pcpma->cp)->cpidx) >=           \
                                           pcfs->constant_pool_count)), \
                          msg,                                          \
                          rnull,                                        \
@@ -525,7 +526,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
      * because the proper class info should be accessed instead.
      */
      pcfs->constant_pool = HEAP_GET_METHOD(pcfs->constant_pool_count *
-                                               sizeof(cp_info_dup *),
+                                            sizeof(cp_info_mem_align *),
                                            rfalse);
 
     /*
@@ -533,7 +534,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
      * references (0th element)
      */
     pcfs->constant_pool[CONSTANT_CP_DEFAULT_INDEX] =
-        (cp_info_dup *) rnull;
+        (cp_info_mem_align *) rnull;
 
     /*
      * Iterate through class file's @c @b constant_pool and fill in
@@ -543,7 +544,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
          cpidx < pcfs->constant_pool_count + CONSTANT_CP_START_INDEX -1;
          cpidx++)
     {
-        cp_info_dup *pcpd;
+        cp_info_mem_align *pcpma;
 
         pu2 = (u2 *) pcpbytes;
 
@@ -566,7 +567,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                                       "CP name index");
 
                 /* Initialize late binding extension */
-                PTR_THIS_CP_Class(pcpd)->LOCAL_Class_binding.clsidxJVM =
+                PTR_THIS_CP_Class(pcpma)->LOCAL_Class_binding.clsidxJVM=
                                                    jvm_class_index_null;
 
                 break;
@@ -586,19 +587,19 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                                       "CP class index");
 
                 /* Initialize late binding extension */
-                PTR_THIS_CP_Fieldref(pcpd)
+                PTR_THIS_CP_Fieldref(pcpma)
                   ->LOCAL_Fieldref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
-                PTR_THIS_CP_Fieldref(pcpd)
+                PTR_THIS_CP_Fieldref(pcpma)
                   ->LOCAL_Fieldref_binding.fluidxJVM =
                                                     jvm_field_index_bad;
 
-                PTR_THIS_CP_Fieldref(pcpd)
+                PTR_THIS_CP_Fieldref(pcpma)
                   ->LOCAL_Fieldref_binding.oiflagJVM =
                                                 rneither_true_nor_false;
 
-                PTR_THIS_CP_Fieldref(pcpd)
+                PTR_THIS_CP_Fieldref(pcpma)
                   ->LOCAL_Fieldref_binding.jvaluetypeJVM =
                                                    LOCAL_BASETYPE_ERROR;
 
@@ -624,23 +625,23 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                                       "CP method name and type index");
 
                 /* Initialize late binding extension */
-                PTR_THIS_CP_Methodref(pcpd)
+                PTR_THIS_CP_Methodref(pcpma)
                   ->LOCAL_Methodref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
-                PTR_THIS_CP_Methodref(pcpd)
+                PTR_THIS_CP_Methodref(pcpma)
                   ->LOCAL_Methodref_binding.mthidxJVM =
                                                    jvm_method_index_bad;
 
-                PTR_THIS_CP_Methodref(pcpd)
+                PTR_THIS_CP_Methodref(pcpma)
                   ->LOCAL_Methodref_binding.codeatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                PTR_THIS_CP_Methodref(pcpd)
+                PTR_THIS_CP_Methodref(pcpma)
                   ->LOCAL_Methodref_binding.excpatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                PTR_THIS_CP_Methodref(pcpd)
+                PTR_THIS_CP_Methodref(pcpma)
                   ->LOCAL_Methodref_binding.nmordJVM =
                                          jvm_native_method_ordinal_null;
 
@@ -667,23 +668,23 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                              "CP interface method name and type index");
 
                 /* Initialize late binding extension */
-                PTR_THIS_CP_InterfaceMethodref(pcpd)
+                PTR_THIS_CP_InterfaceMethodref(pcpma)
                   ->LOCAL_InterfaceMethodref_binding.clsidxJVM =
                                                    jvm_class_index_null;
 
-                PTR_THIS_CP_InterfaceMethodref(pcpd)
+                PTR_THIS_CP_InterfaceMethodref(pcpma)
                   ->LOCAL_InterfaceMethodref_binding.mthidxJVM =
                                                    jvm_method_index_bad;
 
-                PTR_THIS_CP_InterfaceMethodref(pcpd)
+                PTR_THIS_CP_InterfaceMethodref(pcpma)
                   ->LOCAL_InterfaceMethodref_binding.codeatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                PTR_THIS_CP_InterfaceMethodref(pcpd)
+                PTR_THIS_CP_InterfaceMethodref(pcpma)
                   ->LOCAL_InterfaceMethodref_binding.excpatridxJVM =
                                                 jvm_attribute_index_bad;
 
-                PTR_THIS_CP_InterfaceMethodref(pcpd)
+                PTR_THIS_CP_InterfaceMethodref(pcpma)
                   ->LOCAL_InterfaceMethodref_binding.nmordJVM =
                                          jvm_native_method_ordinal_null;
 
@@ -732,7 +733,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                  * the unused slot.  Ignore this second slot, but
                  * make sure it does not contain garbage.
                  */
-                pcfs->constant_pool[cpidx] = pcpd;
+                pcfs->constant_pool[cpidx] = pcpma;
                 cpidx++;
 
                 break;
@@ -752,7 +753,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                  * the unused slot.  Ignore this second slot, but
                  * make sure it does not contain garbage.
                  */
-                pcfs->constant_pool[cpidx] = pcpd;
+                pcfs->constant_pool[cpidx] = pcpma;
                 cpidx++;
 
                 break;
@@ -790,7 +791,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                  * namely @c @b sizeof(info[1]), or 1 byte.
                  *
                  * The segment below copies each piece of the buffer
-                 * from @c @b *pcpbytes to @c @b *pcpd .
+                 * from @c @b *pcpbytes to @c @b *pcpma .
                  */
 
                 /* Size of structure to copy */
@@ -799,18 +800,18 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                                sizeof(u1);
 
                 /* Allocate heap for structure */
-                pcpd = HEAP_GET_METHOD(sizeof(u1) * CP_INFO_NUM_EMPTIES+
+                pcpma= HEAP_GET_METHOD(sizeof(u1) * CP_INFO_NUM_EMPTIES+
                                            tmplenutf + cf_item_size,
                                        rfalse);
 
                 /* Copy structure, including @b empty bytes */
-                portable_memcpy(((rbyte *)pcpd) +
+                portable_memcpy(((rbyte *)pcpma) +
                                 sizeof(u1) * CP_INFO_NUM_EMPTIES,
                                 pcpbytes,
                                 cf_item_size);
-                pcpd->empty[0] = FILL_INFO_DUP0;
-                pcpd->empty[1] = FILL_INFO_DUP1;
-                pcpd->empty[2] = FILL_INFO_DUP2;
+                pcpma->empty[0] = FILL_INFO_DUP0;
+                pcpma->empty[1] = FILL_INFO_DUP1;
+                pcpma->empty[2] = FILL_INFO_DUP2;
 
                 /*
                  * Byte swap contents of
@@ -820,7 +821,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                 CP_ITEM_SWAP_U2(CONSTANT_Utf8_info, length);
 
                 /* Copy UTF string itself (No byte reversal needed.) */
-                portable_memcpy(PTR_THIS_CP_Utf8(pcpd)->bytes,
+                portable_memcpy(PTR_THIS_CP_Utf8(pcpma)->bytes,
                                ((CONSTANT_Utf8_info *) pcpbytes)->bytes,
                                 tmplenutf);
 
@@ -856,7 +857,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
         } /* switch ... */
 
         /* Point to storage area for this @c @b constant_pool[] item */
-        pcfs->constant_pool[cpidx] = pcpd;
+        pcfs->constant_pool[cpidx] = pcpma;
 
         /* Now point past this CONSTANT_Xxxxxx_info area */
         pcpbytes += cf_item_size;
@@ -1108,7 +1109,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
             {
                 /* Quite possible for small objects */
                 pcfs->fields[fldidx]->attributes =
-                                          (attribute_info_dup **) rnull;
+                                    (attribute_info_mem_align **) rnull;
             }
             else
             {
@@ -1269,7 +1270,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
             {
                 /* Quite possible for small objects */
                 pcfs->methods[mthidx]->attributes =
-                                          (attribute_info_dup **) rnull;
+                                    (attribute_info_mem_align **) rnull;
             }
             else
             {
@@ -1279,7 +1280,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                 pcfs->methods[mthidx]->attributes =
                     HEAP_GET_METHOD(
                         pcfs->methods[mthidx]->attributes_count *
-                            sizeof(attribute_info_dup *),
+                            sizeof(attribute_info_mem_align *),
                         rtrue);
 
                 /*
@@ -1390,7 +1391,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
     if (0 == pcfs->attributes_count)
     {
         /* Not really possible, and theoretically faulty */
-        pcfs->attributes = (attribute_info_dup **) rnull;
+        pcfs->attributes = (attribute_info_mem_align **) rnull;
     }
     else
     {

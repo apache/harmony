@@ -191,15 +191,13 @@ typedef struct
 /*@{ */ /* Begin grouped definitions */
 
 #define CP_INFO_NUM_EMPTIES 3 /**< Size of padding for cp_info
-                  * structures in size of cp_info_dup structure */
+                  * structures in size of cp_info_mem_align structure */
 
 /*!
  * @brief Pad cp_info structures for proper multi-byte field
  * address boundary alignment.
  * @see FILL_INFO_DUP0 et al.
  *
- * @todo HARMONY-6-jvm-classfile.h-9 Rename cp_info_dup to become
- * cp_info_mem_align
  */
 typedef struct
 {
@@ -211,12 +209,12 @@ typedef struct
                   *   all items except @p @b tag are on even addresses.
                   *   This assumes they are all u2 or u4.
                   */
-} cp_info_dup;
+} cp_info_mem_align;
 
 
 #define ATTRIBUTE_INFO_NUM_EMPTIES 2 /**< Size of padding for
                   * attribute_info structures in size of
-                  * attribute_info_dup structure */
+                  * attribute_info_mem_align structure */
 /*!
  * @brief Pad attribute_info structures for proper multi-byte field
  * address boundary alignment.
@@ -239,7 +237,7 @@ typedef struct
                   * alignment.
                   */
 
-} attribute_info_dup;
+} attribute_info_mem_align;
 
 /*@} */ /* End of grouped definitions */
 
@@ -267,7 +265,7 @@ typedef struct
 
     u2 attributes_count; /**< Size of @p @b attributes */
 
-    attribute_info_dup **attributes; /**< Field attributes array.
+    attribute_info_mem_align **attributes; /**< Field attributes array.
                        * The spec pseudo-code defines this as:
             <b><code>attributes_info fields[attributes_count]</code></b>
                        * but it is implemented as a pointer to an array
@@ -276,7 +274,7 @@ typedef struct
                        *
                        * Notice that the @c @b attribute_info
                        * structure is found with this
-                       * @c @b attribute_info_dup structure.
+                       * @c @b attribute_info_mem_align structure.
                        * The purpose for this is proper byte alignment
                        * of multi-byte items such as 2- and 4-byte
                        * integers on machine architectures that demand
@@ -350,7 +348,7 @@ typedef struct
 
     u2 attributes_count; /**< Size of @p @b attributes */
 
-    attribute_info_dup **attributes; /**< Method attributes array.
+    attribute_info_mem_align **attributes; /**< Method attributes array.
                        * The spec pseudo-code defines this as:
             <b><code>attributes_info fields[attributes_count]</code></b>
                        * but it is implemented as a pointer to an array
@@ -359,7 +357,7 @@ typedef struct
                        *
                        * Notice that the @c @b attribute_info
                        * structure is found with this
-                       * @c @b attribute_info_dup structure.
+                       * @c @b attribute_info_mem_align structure.
                        * The purpose for this is proper byte alignment
                        * of multi-byte items such as 2- and 4-byte
                        * integers on machine architectures that demand
@@ -472,8 +470,8 @@ typedef struct
                        * pointer.
                        */
 
-    cp_info_dup **constant_pool; /**< Constant pool array.  The spec
-                       * pseudo-code defines this as:
+    cp_info_mem_align **constant_pool; /**< Constant pool array.  The
+                       * spec pseudo-code defines this as:
       <b><code>cp_info constant_pool[constant_pool_count - 1]</code></b>
                        * but it is implemented as a pointer to an array
                        * of pointers.  The length of this array is 
@@ -481,7 +479,7 @@ typedef struct
                        * elements.
                        *
                        * Notice that the @c @b cp_info structure
-                       * is found with this @c @b cp_info_dup
+                       * is found with this @c @b cp_info_mem_align
                        * structure.  The purpose for this is proper
                        * byte alignment of multi-byte items such as
                        * 2- and 4-byte integers on machine architectures
@@ -536,8 +534,8 @@ typedef struct
 
     u2 attributes_count; /**< Size of @p @b attributes */
 
-    attribute_info_dup **attributes; /**< Class file attributes array.
-                       * The spec pseudo-code defines this as:
+    attribute_info_mem_align **attributes; /**< Class file attributes
+                       * array. The spec pseudo-code defines this as:
                     @c @b attributes_info @c @b fields[attributes_count]
                        * but it is implemented as a pointer to an array
                        * of pointers.  The length of this array is 
@@ -545,7 +543,7 @@ typedef struct
                        *
                        * Notice that the @c @b attribute_info
                        * structure is found with this
-                       * @c @b attribute_info_dup structure.
+                       * @c @b attribute_info_mem_align structure.
                        * The purpose for this is proper byte alignment
                        * of multi-byte items such as 2- and 4-byte
                        * integers on machine architectures that demand
@@ -1784,7 +1782,7 @@ typedef struct
                        @c @b exception_table[exception_table_length]; */
 
     u2 attributes_count;
-    attribute_info_dup **attributes; /**< Spec pseudo-code:
+    attribute_info_mem_align **attributes; /**< Spec pseudo-code:
       <b><code>attribute_info attributes[attributes_count]</code></b> */
 
 } Code_attribute;
@@ -2876,11 +2874,11 @@ extern u1 *cfattrib_load_annotation(ClassFile            *pcfs,
 extern void cfattrib_unload_annotation(ClassFile            *pcfs,
                                        annotation_mem_align *dst);
 
-extern u1 *cfattrib_load_attribute(ClassFile           *pcfs,
-                                   attribute_info_dup **dst,
-                                   attribute_info      *src);
-extern rvoid cfattrib_unload_attribute(ClassFile          *pcfs,
-                                       attribute_info_dup *dst);
+extern u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
+                                   attribute_info_mem_align **dst,
+                                   attribute_info            *src);
+extern rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
+                                       attribute_info_mem_align *dst);
 
 extern classfile_attribute_enum cfattrib_atr2enum(ClassFile *pcfs,
                               u2 attribute_attribute_name_index);
@@ -2891,9 +2889,9 @@ extern rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 /* Prototypes for functions in 'cfmsgs.c' */
 extern rvoid cfmsgs_typemsg(rchar *fn, ClassFile *pcfs, u2 idx);
 extern rvoid cfmsgs_show_constant_pool(ClassFile *pcfs);
-extern rvoid cfmsgs_atrmsg(rchar *fn,
-                           ClassFile *pcfs,
-                           attribute_info_dup *atr);
+extern rvoid cfmsgs_atrmsg(rchar                    *fn,
+                           ClassFile                *pcfs,
+                           attribute_info_mem_align *atr);
 
 /*!
  * @internal Remove effects of packing pragma on other code.
