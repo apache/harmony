@@ -11,9 +11,9 @@
  *
  * @section Control
  *
- * \$URL: https://svn.apache.org/repos/asf/incubator/harmony/enhanced/trunk/sandbox/contribs/bootjvm/bootJVM/org/apache/harmony/Copyright.java $
+ * \$URL$
  *
- * \$Id: Copyright.java 326505 2005-10-19 09:35:33Z dlydick $
+ * \$Id$
  *
  * Copyright 2005 The Apache Software Foundation
  * or its licensors, as applicable.
@@ -32,11 +32,11 @@
  * See the License for the specific language governing permissions
  * and limitations under the License.
  *
- * @version \$LastChangedRevision: 326505 $
+ * @version \$LastChangedRevision$
  *
- * @date \$LastChangedDate: 2005-10-19 04:35:33 -0500 (Wed, 19 Oct 2005) $
+ * @date \$LastChangedDate$
  *
- * @author Apache Software Foundation \$LastChangedBy: dlydick $
+ * @author Apache Software Foundation \$LastChangedBy$
  *
  * @section Reference
  *
@@ -51,8 +51,8 @@ package org.apache.harmony;
 class localPackageVisibleCopyright
 {
     static final String copyright =
-"\0$URL: https://svn.apache.org/repos/asf/incubator/harmony/enhanced/trunk/sandbox/contribs/bootjvm/bootJVM/org/apache/harmony/Copyright.java $ " +
-"$Id: Copyright.java 326505 2005-10-19 09:35:33Z dlydick $ " +
+"\0$URL$ " +
+"$Id$ " +
         Copyright.copyrightText;
 
 } /* END of localPackageVisibleCopyright */
