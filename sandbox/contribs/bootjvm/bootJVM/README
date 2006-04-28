@@ -702,9 +702,9 @@ defined as not being used, so it is always a NULL pointer.)
 For purposes of real machine word alignment, type 'cp_info' and
 'attribute_info' have been embedded in a _slightly_ larger structure
 to keep 2- and 4-byte member references on the correct real machine
-address boundaries.  The embedding structures are called 'cp_info_dup'
-and 'attribute_info_dup', respectively, as they duplicate the contents
-of the smaller structure, if you will.
+address boundaries.  The embedding structures are called
+'cp_info_mem_align' and 'attribute_info_mem_align', respectively, as
+they contain the smaller structure, but with long word memory alignment.
 
 All symbol definitions that are not _explicitly_ found in the spec
 are locally defined for use in this implementation.  They are prefixed
