@@ -77,7 +77,7 @@
 # function properly.
 #
 #/
-0.0.2
+0.0.3
 #/ /* 
 # (Use  #! and #/ with dox-filter.sh to fool Doxygen into
 # parsing this non-source text file for the documentation set.
