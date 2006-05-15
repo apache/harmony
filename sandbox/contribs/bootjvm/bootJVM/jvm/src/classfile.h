@@ -196,7 +196,7 @@ typedef struct
 /*!
  * @brief Pad cp_info structures for proper multi-byte field
  * address boundary alignment.
- * @see FILL_INFO_DUP0 et al.
+ * @see FILL_INFO_MEM_ALIGN0 et al.
  *
  */
 typedef struct
@@ -218,7 +218,7 @@ typedef struct
 /*!
  * @brief Pad attribute_info structures for proper multi-byte field
  * address boundary alignment.
- * @see FILL_INFO_DUP0 et al.
+ * @see FILL_INFO_MEM_ALIGN0 et al.
  *
  */
 typedef struct

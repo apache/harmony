@@ -72,8 +72,8 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * @see ARCH_ODD2_ADDRESS_SIGSEGV
  *
  *
- * @param pcpinfodup Pointer to a @c @b constant_pool entry, typically
- *                   @c @b &pcfs->constant_pool[n]
+ * @param pcpinfomemalign Pointer to a @c @b constant_pool entry,
+ *                   typically @c @b &pcfs->constant_pool[n]
  *
  *
  * @returns Pointer to the @c @b ->cp member, typed as
@@ -83,38 +83,38 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
 
 /*@{ */ /* Begin grouped definitions */
 
-#define PTR_THIS_CP_Class(pcpinfodup) \
-    ((CONSTANT_Class_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Class(pcpinfomemalign) \
+    ((CONSTANT_Class_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Fieldref(pcpinfodup) \
-    ((CONSTANT_Fieldref_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Fieldref(pcpinfomemalign) \
+    ((CONSTANT_Fieldref_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Methodref(pcpinfodup) \
-    ((CONSTANT_Methodref_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Methodref(pcpinfomemalign) \
+    ((CONSTANT_Methodref_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_InterfaceMethodref(pcpinfodup) \
-    ((CONSTANT_InterfaceMethodref_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_InterfaceMethodref(pcpinfomemalign) \
+    ((CONSTANT_InterfaceMethodref_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_String(pcpinfodup) \
-    ((CONSTANT_String_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_String(pcpinfomemalign) \
+    ((CONSTANT_String_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Integer(pcpinfodup) \
-    ((CONSTANT_Integer_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Integer(pcpinfomemalign) \
+    ((CONSTANT_Integer_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Float(pcpinfodup) \
-    ((CONSTANT_Float_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Float(pcpinfomemalign) \
+    ((CONSTANT_Float_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Long(pcpinfodup) \
-    ((CONSTANT_Long_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Long(pcpinfomemalign) \
+    ((CONSTANT_Long_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Double(pcpinfodup) \
-    ((CONSTANT_Double_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Double(pcpinfomemalign) \
+    ((CONSTANT_Double_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_NameAndType(pcpinfodup) \
-    ((CONSTANT_NameAndType_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_NameAndType(pcpinfomemalign) \
+    ((CONSTANT_NameAndType_info *) &(pcpinfomemalign)->cp)
 
-#define PTR_THIS_CP_Utf8(pcpinfodup) \
-    ((CONSTANT_Utf8_info *) &(pcpinfodup)->cp)
+#define PTR_THIS_CP_Utf8(pcpinfomemalign) \
+    ((CONSTANT_Utf8_info *) &(pcpinfomemalign)->cp)
 
 /*@} */ /* End of grouped definitions */
 
@@ -899,7 +899,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  * address boundaries and pad the first few bytes so that all 2- and
  * 4-byte accesses are on 2- or 4-byte boundaries.
  *
- * There are three @b FILL_INFO_DUPx fill fields for padding and
+ * There are three @b FILL_INFO_MEM_ALIGNx fill fields for padding and
  * three @b FILL_INFO_NOTUSED_Ux fill fields for assigning values
  * to @b notusedXX fields.
  *
@@ -931,9 +931,9 @@ ARCH_HEADER_COPYRIGHT_APACHE(cfmacros, h,
  *
  */
 /*@{*/
-#define FILL_INFO_DUP0 0xbe
-#define FILL_INFO_DUP1 0xef
-#define FILL_INFO_DUP2 0x99
+#define FILL_INFO_MEM_ALIGN0 0xbe
+#define FILL_INFO_MEM_ALIGN1 0xef
+#define FILL_INFO_MEM_ALIGN2 0x99
 
 /*
  * Same for 1-, 2- and 4-byte @b notusedX fields.

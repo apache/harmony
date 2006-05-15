@@ -103,9 +103,9 @@ cp_info_mem_align *nts_prchar2utf(rchar *inbfr)
 
     portable_memcpy((jubyte *) pcpui->bytes, inbfr, len);
 
-    rc->empty[0] = FILL_INFO_DUP0;
-    rc->empty[1] = FILL_INFO_DUP1;
-    rc->empty[2] = FILL_INFO_DUP2;
+    rc->empty[0] = FILL_INFO_MEM_ALIGN0;
+    rc->empty[1] = FILL_INFO_MEM_ALIGN1;
+    rc->empty[2] = FILL_INFO_MEM_ALIGN2;
 
     return(rc);
 
@@ -245,9 +245,9 @@ cp_info_mem_align *nts_prchar2utf_classname(rchar         *inbfr,
 
     portable_memcpy((jubyte *) &pcpui->bytes[utfidx], inbfr, inbfrlen);
 
-    rc->empty[0] = FILL_INFO_DUP0;
-    rc->empty[1] = FILL_INFO_DUP1;
-    rc->empty[2] = FILL_INFO_DUP2;
+    rc->empty[0] = FILL_INFO_MEM_ALIGN0;
+    rc->empty[1] = FILL_INFO_MEM_ALIGN1;
+    rc->empty[2] = FILL_INFO_MEM_ALIGN2;
 
     pcpui->bytes[utfidx + inbfrlen]     = BASETYPE_CHAR_L_TERM;
     pcpui->bytes[utfidx + inbfrlen + 1] = '\0';

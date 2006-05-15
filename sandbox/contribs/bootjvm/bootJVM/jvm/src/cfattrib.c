@@ -907,8 +907,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
      * Also investigate attribute type constraints using a
      * string-based @c @b switch .
      */
-    (*dst)->empty[0] = FILL_INFO_DUP0;
-    (*dst)->empty[1] = FILL_INFO_DUP1;
+    (*dst)->empty[0] = FILL_INFO_MEM_ALIGN0;
+    (*dst)->empty[1] = FILL_INFO_MEM_ALIGN1;
     (*dst)->ai.attribute_name_index = tmpatr.attribute_name_index;
     (*dst)->ai.attribute_length = tmpatr.attribute_length;
 
