@@ -1149,7 +1149,7 @@ typedef jshort        jvm_pc_offset_actual_size;
  * @brief Invalid program counter offset
  *
  */
-extern  jvm_pc_offset jvm_pc_offset_bad;
+extern const jvm_pc_offset jvm_pc_offset_bad;
 
 /*@} */ /* End of grouped definitions */
 
