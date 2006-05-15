@@ -304,7 +304,7 @@ typedef struct
                                    OBJECT_STATUS_MLOCK@endlink is set
                                  */
 
-    jvm_object_hash objhash_superclass; /**< Instance of
+    jvm_object_hash objhash_super_class; /**< Instance of
                                  * of this object's superclass, namely
                                  * the @c @b super object.
                                  * @link #JVMCFG_NULL_OBJECT
