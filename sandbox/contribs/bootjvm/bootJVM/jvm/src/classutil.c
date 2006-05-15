@@ -92,13 +92,18 @@ ARCH_SOURCE_COPYRIGHT_APACHE(classutil, c,
 /*@{ */ /* Begin grouped definitions */
 
 /*!
- * @brief Examine whether or not one class is a subclass of another
+ * @brief Check is class @b clsidx1 is a subclass of class @b clsidx2 .
  *
  * This effectively asks the OO hierarchy question, "Is @c @b clsidx1
  * a @c @b clsidx2 ?" For an @link #rtrue rtrue@endlink comparison,
  * class @c @b clsidx1 must be either the same class as class
  * @c @b clsidx2 or a subclass of it.  In other words, the true
  * comparison affirms "@c @b clsidx1 is a @c @b clsidx2 ."
+ *
+ * The superclass of all array types @e must be java.lang.Object
+ * per JVM spec section 2.15.  (They "may" be assigned this type, if
+ * any at all, but in this implementation, they @e always are so that
+ * they have a definite objct type.)
  *
  *
  * @returns @link #rtrue rtrue@endlink if @c @b clsidx1 is the same
@@ -127,6 +132,16 @@ rboolean classutil_class_is_a(jvm_class_index clsidx1,
     }
 
     /*
+     * Check arrays for a superclass of _only_ java.lang.Object
+     */
+    if (CLASS(clsidx1).status & CLASS_STATUS_ARRAY)
+    {
+        return((clsidx2 == pjvm->class_java_lang_Object)
+               ? rtrue
+               : rfalse);
+    }
+
+    /*
      * Scan for superclasses of @c @b clsidx1
      */
     jvm_class_index clsidxCLS = clsidx1;
@@ -143,7 +158,7 @@ rboolean classutil_class_is_a(jvm_class_index clsidx1,
          * If found top of hierarchy, namely java.lang.Object, then
          * search failed.
          */
-        if (CONSTANT_CP_DEFAULT_INDEX == pcfs->super_class)
+        if (jvm_constant_pool_index_null == pcfs->super_class)
         {
             break;
         }
@@ -176,7 +191,7 @@ rboolean classutil_class_is_a(jvm_class_index clsidx1,
 
 
 /*!
- * @brief Examine whether or not a class implements an interface
+ * @brief Check if class @b clsidx1 implements interface @b clsidx2 .
  *
  * For an @link #rtrue rtrue@endlink comparison, the class @c @b clsidx1
  * must implement the interface defined by class @c @b clsidx2 .
@@ -202,6 +217,14 @@ rboolean classutil_class_implements_interface(jvm_class_index clsidx1,
         (jvm_class_index_null == clsidx2))
     {
         return(rfalse);
+    }
+
+    /*
+     * Check arrays for implementation of required interfaces
+     */
+    if (CLASS(clsidx1).status & CLASS_STATUS_ARRAY)
+    {
+        return(classutil_interface_implemented_by_arrays(clsidx2));
     }
 
     /*
@@ -250,7 +273,7 @@ rboolean classutil_class_implements_interface(jvm_class_index clsidx1,
          * If found top of hierarchy, namely java.lang.Object class
          * or highest-level interface, then search cannot succeed.
          */
-        if (CONSTANT_CP_DEFAULT_INDEX == pcfs3->super_class)
+        if (jvm_constant_pool_index_null == pcfs3->super_class)
         {
             break;
         }
@@ -282,8 +305,8 @@ rboolean classutil_class_implements_interface(jvm_class_index clsidx1,
 
 
 /*!
- * @brief Examine whether or not a class is a superinterface of another
- * class or interface.
+ * @brief Check if class @b clsidx1 is a superinterface of class or
+ * interface @b clsidx2 .
  *
  * For an @link #rtrue rtrue@endlink comparison, the class index
  * @c @b clsidx1 must be a valid superinterface of that defined
@@ -312,6 +335,14 @@ rboolean classutil_class_is_superinterface_of(jvm_class_index clsidx1,
         return(rfalse);
     }
 
+    /*
+     * Arrays are not interfaces and so cannot be superinterfaces
+     */
+    if (CLASS(clsidx1).status & CLASS_STATUS_ARRAY)
+    {
+        return(rfalse);
+    }
+
     /* Can only be true if comparator class index is an interface */
     pcfs1 = CLASS_OBJECT_LINKAGE(clsidx1)->pcfs;
     if (!(pcfs1->access_flags & ACC_INTERFACE))
@@ -333,7 +364,7 @@ rboolean classutil_class_is_superinterface_of(jvm_class_index clsidx1,
      */
     pcfs2 = CLASS_OBJECT_LINKAGE(clsidx2)->pcfs;
 
-    if (CONSTANT_CP_DEFAULT_INDEX == pcfs2->super_class)
+    if (jvm_constant_pool_index_null == pcfs2->super_class)
     {
         return(rfalse);
     }
@@ -358,7 +389,7 @@ rboolean classutil_class_is_superinterface_of(jvm_class_index clsidx1,
          * If found top of hierarchy, namely java.lang.Object class
          * or highest-level interface, then search cannot succeed.
          */
-        if (CONSTANT_CP_DEFAULT_INDEX == pcfs3->super_class)
+        if (jvm_constant_pool_index_null == pcfs3->super_class)
         {
             break;
         }
@@ -389,7 +420,7 @@ rboolean classutil_class_is_superinterface_of(jvm_class_index clsidx1,
 
 
 /*!
- * @brief Examine whether or not a class may be accessed by another
+ * @brief Check if class @b clsidx1 is accessible to class @b clsidx2 .
  *
  * For an @link #rtrue rtrue@endlink comparison, the class @c @b clsidx1
  * must either be public or must be in the same runtime package
@@ -412,6 +443,12 @@ rboolean classutil_class_is_accessible_to(jvm_class_index clsidx1,
     {
         return(rtrue);
     }
+
+    /*
+     * @todo   HARMONY-6-jvm-classutil.c-3 Is there anything here that
+     *         needs to be done specifically for arrays like is done
+     *         in other functions in this source file?
+     */
 
     /*
      * Class is accessible if it is in the same runtime package.
@@ -488,11 +525,12 @@ rboolean classutil_class_is_accessible_to(jvm_class_index clsidx1,
 
 
 /*!
- * @brief Examine whether or not an array class implements one of
- *        the interfaces that are valid for arrays
+ * @brief Check if interface class @b clsidx1 is one of
+ *        the interfaces that must be implemented by arrays.
  *
  * For an @link #rtrue rtrue@endlink comparison, the class @c @b clsidx1
- * must be one of the interfaces defined in the JVM spec section 2.15.
+ * must be one of the interfaces defined in the JVM spec section 2.15
+ * that are required to be implemented for all array types.
  *
  *
  * @returns @link #rtrue rtrue@endlink if @c @b clsidx1 is one of
