@@ -679,6 +679,10 @@ static jvm_thread_index thread_new(jvm_class_index      clsidx,
  * prepare to invoke @c @b static methods, and prepare
  * to start thread.
  *
+ * Because no check for CLASS_STATUS_ARRAY or OBJECT_STATUS_ARRAY
+ * is performed, this permits all array classes to fully load, that is,
+ * the class for each dimension of the array.
+ *
  * Classes loaded through this function will not be marked as
  * referenced, but will also not be marked for garbage collection,
  * either.
@@ -767,7 +771,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
      * Make special exception for @c @b java.lang.Object,
      * no superclass
      */
-    if (CONSTANT_CP_DEFAULT_INDEX == pcfs_recurse->super_class)
+    if (jvm_constant_pool_index_null == pcfs_recurse->super_class)
     {
         pcfs_recurse = (ClassFile *) rnull;
     }
@@ -801,7 +805,7 @@ jvm_thread_index thread_class_load(rchar            *clsname,
          * the possibility of a class circularity error is probably
          * almost 100%.
          */
-        if (CONSTANT_CP_DEFAULT_INDEX == pcfs_recurse->super_class)
+        if (jvm_constant_pool_index_null == pcfs_recurse->super_class)
         {
             break;
         }
