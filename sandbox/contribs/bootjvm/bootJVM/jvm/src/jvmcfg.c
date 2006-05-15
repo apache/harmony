@@ -118,7 +118,7 @@ const jvm_native_method_ordinal jvm_native_method_ordinal_unregister =
                                          JVMCFG_JLOBJECT_NMO_UNREGISTER;
 
 /*! @brief Real machine BAD program counter value in class */
-jvm_pc_offset jvm_pc_offset_bad = CODE_CONSTRAINT_CODE_LENGTH_MAX;
+const jvm_pc_offset jvm_pc_offset_bad = CODE_CONSTRAINT_CODE_LENGTH_MAX;
 
 /*! @brief Real machine BAD unicode string index in class */
 const jvm_unicode_string_index jvm_unicode_string_index_bad =
