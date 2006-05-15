@@ -179,7 +179,9 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
                              * @todo  HARMONY-6-jvm-classfile.c-5 Is
                              *         this assumption valid/meaningful?
                              */
-    pcfs->super_class = 0;  /* No superclass, imply java.lang.Object */
+
+                            /* No superclass, imply java.lang.Object */
+    pcfs->super_class = jvm_constant_pool_index_null;
 
     pcfs->interfaces_count = 0;
     pcfs->interfaces = (u2 *) rnull;
@@ -229,9 +231,9 @@ ClassFile *classfile_allocate_primative(jvm_basetype basetype)
     pcpma = HEAP_GET_METHOD(misc_adj + sizeof(spec_typedef), rfalse);  \
     portable_memcpy(((rbyte *)pcpma) + misc_adj,pcpbytes,cf_item_size);\
                                                                        \
-    pcpma->empty[0] = FILL_INFO_DUP0;                                  \
-    pcpma->empty[1] = FILL_INFO_DUP1;                                  \
-    pcpma->empty[2] = FILL_INFO_DUP2; /* Extra ; */
+    pcpma->empty[0] = FILL_INFO_MEM_ALIGN0;                            \
+    pcpma->empty[1] = FILL_INFO_MEM_ALIGN1;                            \
+    pcpma->empty[2] = FILL_INFO_MEM_ALIGN2; /* Extra ; */
 
 
 /*!
@@ -533,7 +535,7 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
      * Dummy entry for @c @b java.lang.Object constant pool
      * references (0th element)
      */
-    pcfs->constant_pool[CONSTANT_CP_DEFAULT_INDEX] =
+    pcfs->constant_pool[jvm_constant_pool_index_null] =
         (cp_info_mem_align *) rnull;
 
     /*
@@ -809,9 +811,9 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                                 sizeof(u1) * CP_INFO_NUM_EMPTIES,
                                 pcpbytes,
                                 cf_item_size);
-                pcpma->empty[0] = FILL_INFO_DUP0;
-                pcpma->empty[1] = FILL_INFO_DUP1;
-                pcpma->empty[2] = FILL_INFO_DUP2;
+                pcpma->empty[0] = FILL_INFO_MEM_ALIGN0;
+                pcpma->empty[1] = FILL_INFO_MEM_ALIGN1;
+                pcpma->empty[2] = FILL_INFO_MEM_ALIGN2;
 
                 /*
                  * Byte swap contents of
@@ -1483,7 +1485,8 @@ rvoid classfile_unload_classdata(ClassFile *pcfs)
     if ((0 < pcfs->attributes_count) && (rnull != pcfs->attributes))
     {
         for (atridx = pcfs->attributes_count - 1;
-             atridx != JVMCFG_BAD_ATTRIBUTE; /* wrap-around when done */
+                                             /* wrap-around when done */
+             atridx != jvm_attribute_index_bad;
              atridx--)
         {
             /*
@@ -1503,7 +1506,7 @@ rvoid classfile_unload_classdata(ClassFile *pcfs)
     if ((0 < pcfs->methods_count) && (rnull != pcfs->methods))
     {
         for (mthidx = pcfs->methods_count - 1;
-             mthidx != JVMCFG_BAD_METHOD; /* wrap-around when done */
+             mthidx != jvm_method_index_bad; /* wrap-around when done */
              mthidx--)
         {
             /*
@@ -1519,7 +1522,7 @@ rvoid classfile_unload_classdata(ClassFile *pcfs)
             {
                 for (atridx = pcfs->methods[mthidx]->attributes_count-1;
                                              /* wrap-around when done */
-                     atridx != JVMCFG_BAD_ATTRIBUTE;
+                     atridx != jvm_attribute_index_bad;
                      atridx--)
                 {
                     /*
@@ -1546,7 +1549,7 @@ rvoid classfile_unload_classdata(ClassFile *pcfs)
     if ((0 < pcfs->fields_count) && (rnull != pcfs->fields))
     {
         for (fldidx = pcfs->fields_count - 1;
-             fldidx != JVMCFG_BAD_FIELD; /* wrap-around when done */
+             fldidx != jvm_field_index_bad; /* wrap-around when done */
              fldidx--)
         {
             /*
@@ -1562,7 +1565,7 @@ rvoid classfile_unload_classdata(ClassFile *pcfs)
             {
                 for (atridx = pcfs->fields[fldidx]->attributes_count -1;
                                              /* wrap-around when done */
-                     atridx != JVMCFG_BAD_ATTRIBUTE;
+                     atridx != jvm_attribute_index_bad;
                      atridx--)
                 {
                     /*
@@ -1589,7 +1592,7 @@ rvoid classfile_unload_classdata(ClassFile *pcfs)
     if ((0 < pcfs->constant_pool_count)&&(rnull != pcfs->constant_pool))
     {
         for (cpidx = pcfs->constant_pool_count - 1;
-             cpidx > CONSTANT_CP_DEFAULT_INDEX;
+             cpidx > jvm_constant_pool_index_null;
              cpidx--)
         {
             /*
