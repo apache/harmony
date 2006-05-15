@@ -359,7 +359,7 @@ rvoid object_new_setup(jvm_object_hash objhash)
     OBJECT(objhash).mlock_thridx  = jvm_thread_index_null;
 
     /* No superclass */
-    OBJECT(objhash).objhash_superclass = jvm_object_hash_null;
+    OBJECT(objhash).objhash_super_class = jvm_object_hash_null;
 
     /* No access flag context */
     OBJECT(objhash).access_flags = LOCAL_ACC_EMPTY;
@@ -891,18 +891,7 @@ jvm_object_hash object_instance_new(rushort          special_obj,
      * After allocating slot, instantiate superclass first,
      * then load up remainder of this object.
      */
-    /*!
-     * @todo  HARMONY-6-jvm-object.c-7 Does a multi-dimensional
-     *        array have a superclass object?  Or even a ONE-dimensional
-     *        array have a superclass object?  Should such be reserved
-     *        for the array components _only_, where applicable?  Or
-     *        should some or all array objects themselves have
-     *        superclass objects so they eventually inherit the various
-     *        methods from java.lang.Object (except .clone() method )
-     *        and java.lang.Cloneable and java.io.Serializable (see
-     *        spec section 2.15 on these implementations).
-     */
-    if (CONSTANT_CP_DEFAULT_INDEX != pcfs->super_class)
+    if (jvm_constant_pool_index_null != pcfs->super_class)
     {
         /*
          * WARNING!  RECURSIVE CALL!  This will recurse until
@@ -911,13 +900,17 @@ jvm_object_hash object_instance_new(rushort          special_obj,
          * by the calling method, so class loading does not
          * need recursion.
          */
-        jvm_class_index clsidxsuper =
+        /*!
+         * @todo  HARMONY-6-jvm-object.c-10 The CLASS_STATUS_ARRAY logic
+         *        needs unit testing with real data.
+         */
+        jvm_class_index clsidxsuper_class =
             class_find_by_cp_entry(PTR_CP_SLOT(pcfs, 
                                                PTR_CP_ENTRY_CLASS(pcfs,
                                                       pcfs->super_class)
                                                  ->name_index));
 
-        if (jvm_object_hash_null == clsidxsuper)
+        if (jvm_object_hash_null == clsidxsuper_class)
         {
             /*!
              * @todo  HARMONY-6-jvm-object.c-6 Which is better, throw
@@ -927,20 +920,26 @@ jvm_object_hash object_instance_new(rushort          special_obj,
 #if 0
             return(jvm_object_hash_null);
 #else
-        exit_throw_exception(EXIT_JVM_THREAD,
-                             JVMCLASS_JAVA_LANG_INTERNALERROR);
+            exit_throw_exception(EXIT_JVM_THREAD,
+                                 JVMCLASS_JAVA_LANG_INTERNALERROR);
 /*NOTREACHED*/
 #endif
         }
 
-        jvm_table_linkage *ptl = CLASS_OBJECT_LINKAGE(clsidxsuper);
+        jvm_table_linkage *ptl =CLASS_OBJECT_LINKAGE(clsidxsuper_class);
 
         /* Construct a superclass object instance for this object */
-        /*
+
+        /*!
+         * @internal  Explicitly permit array types to load up their
+         *            lower-dimension peers, even though they are
+         *            @e not superclasses since all arrays have a
+         *            superclass of java.lang.Object .
+         *
          * @warning  Recursive call, <b># of superclasses</b>
          *           levels deep.
          */
-        OBJECT(objhash).objhash_superclass =
+        OBJECT(objhash).objhash_super_class =
             object_instance_new(
              /*!
               * @todo  HARMONY-6-jvm-object.c-9 Do I need this logic, or
@@ -961,7 +960,7 @@ jvm_object_hash object_instance_new(rushort          special_obj,
                 OBJECT_STATUS_EMPTY,
 
                 ptl->pcfs,
-                clsidxsuper,
+                clsidxsuper_class,
                 LOCAL_CONSTANT_NO_ARRAY_DIMS,
                 (jint *) rnull,
                 run_init_,
@@ -970,8 +969,9 @@ jvm_object_hash object_instance_new(rushort          special_obj,
 
         (rvoid) GC_OBJECT_MKREF_FROM_OBJECT(
                     objhash,
-                    OBJECT(objhash).objhash_superclass);
-    }
+                    OBJECT(objhash).objhash_super_class);
+
+    } /* if pcfs->super_class */
 
     (rvoid) GC_CLASS_MKREF_FROM_OBJECT(
                 objhash,
@@ -1327,16 +1327,16 @@ jvm_object_hash object_instance_delete(jvm_object_hash objhash,
 
         /* OBJECT(objhash).mlock_count   = 0; */
         /* OBJECT(objhash).mlock_thridx  = jvm_thread_index_null; */
-        if (jvm_object_hash_null != OBJECT(objhash).objhash_superclass)
+        if (jvm_object_hash_null != OBJECT(objhash).objhash_super_class)
         {
             if (rtrue == rmref)
             {
                 (rvoid) GC_OBJECT_RMREF_FROM_OBJECT(
                             objhash,
-                            OBJECT(objhash).objhash_superclass);
+                            OBJECT(objhash).objhash_super_class);
             }
         }
-        /* OBJECT(objhash).objhash_superclass = jvm_object_hash_null; */
+        /* OBJECT(objhash).objhash_super_class = jvm_object_hash_null;*/
         /* OBJECT(objhash).access_flags  = LOCAL_ACC_EMPTY; */
 
         (rvoid) GC_CLASS_RMREF_FROM_OBJECT(
@@ -1427,7 +1427,7 @@ rvoid object_shutdown()
 
             (rvoid) GC_OBJECT_RMREF_FROM_OBJECT(
                         objhash,
-                        OBJECT(objhash).objhash_superclass);
+                        OBJECT(objhash).objhash_super_class);
 
             (rvoid) GC_OBJECT_RMREF_FROM_OBJECT(jvm_object_hash_null,
                                                 objhash);
