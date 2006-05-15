@@ -1677,7 +1677,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
     /*                                                          \
      * Don't need a lower bound test since offset is unsigned   \
      */                                                         \
-    if (CODE_CONSTRAINT_CODE_LENGTH_MAX < pc->offset)           \
+    if (jvm_pc_offset_bad < pc->offset)                         \
     {                                                           \
         thread_throw_exception(thridx,                          \
                                THREAD_STATUS_THREW_ERROR,       \
