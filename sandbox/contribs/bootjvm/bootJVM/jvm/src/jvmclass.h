@@ -57,7 +57,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvmclass, h,
  *
  * @brief Java classes used internally by the JVM.
 
- * Each of these classes is required internall in some way by the
+ * Each of these classes is required internally in some way by the
  * Java Virtual Machine.
  *
  * Make sure whether or not these should be included
