@@ -265,6 +265,11 @@ jvoid jlObject_waittimed(jvm_object_hash objhashthis,
  *       @b SecurityException in outer JVM loop when
  *       @link #jfalse jfalse@endlink.
  *
+ * @todo HARMONY-6-jvm-jlObject.c-6  Need to add a method of some
+ *       sort to implement clone() for array types.  Call it something
+ *       like jlObject_clone_array_implements() and any time that
+ *       an array wants to call a xxx_clone() method, call it.
+ *
  */
 
 jvm_object_hash jlObject_clone(jvm_object_hash objhashthis)
