@@ -252,11 +252,25 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                 break;
                             }
 
-                            /* Otherwise search superclass */
+                            /*
+                             * Otherwise search superclass
+                             * (which is java.lang.Object for arrays)
+                             */
+                            /*!
+                             * @todo HARMONY-6-jvm-linkage.c-6 The array
+                             *       test branch needs unit testing with
+                             *       real data.
+                             */
                             clsidxFIND =
-                                CLASS_OBJECT_LINKAGE(clsidxFIND)
-                                  ->pcfs
-                                    ->super_class;
+#if 0 /* Explicitly allow resolution of lower-dimension array types */
+                                (CLASS(clsidxFIND).status &
+                                 CLASS_STATUS_ARRAY)
+                                ? class_java_lang_Object
+                                :
+#endif
+                                  CLASS_OBJECT_LINKAGE(clsidxFIND)
+                                    ->pcfs
+                                      ->super_class;
 
                             pcpma_Fieldref
                               ->LOCAL_Fieldref_binding.clsidxJVM =
@@ -441,11 +455,25 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                 break;
                             }
 
-                            /* Otherwise search superclass */
+                            /*
+                             * Otherwise search superclass
+                             * (which is java.lang.Object for arrays)
+                             */
+                            /*!
+                             * @todo HARMONY-6-jvm-linkage.c-7 The array
+                             *       test branch needs unit testing with
+                             *       real data.
+                             */
                             clsidxFIND =
-                                CLASS_OBJECT_LINKAGE(clsidxFIND)
-                                  ->pcfs
-                                    ->super_class;
+#if 0 /* Explicitly allow resolution of lower-dimension array types */
+                                (CLASS(clsidxFIND).status &
+                                 CLASS_STATUS_ARRAY)
+                                ? class_java_lang_Object
+                                :
+#endif
+                                  CLASS_OBJECT_LINKAGE(clsidxFIND)
+                                    ->pcfs
+                                      ->super_class;
 
                             pcpma_Methodref
                               ->LOCAL_Methodref_binding.clsidxJVM =
@@ -606,11 +634,25 @@ rboolean linkage_resolve_class(jvm_class_index clsidx,
                                 break;
                             }
 
-                            /* Otherwise search superclass */
+                            /*
+                             * Otherwise search superclass
+                             * (which is java.lang.Object for arrays)
+                             */
+                            /*!
+                             * @todo HARMONY-6-jvm-linkage.c-8 The array
+                             *       test branch needs unit testing with
+                             *       real data.
+                             */
                             clsidxFIND =
-                                CLASS_OBJECT_LINKAGE(clsidxFIND)
-                                  ->pcfs
-                                    ->super_class;
+#if 0 /* Explicitly allow resolution of lower-dimension array types */
+                                (CLASS(clsidxFIND).status &
+                                 CLASS_STATUS_ARRAY)
+                                ? class_java_lang_Object
+                                :
+#endif
+                                  CLASS_OBJECT_LINKAGE(clsidxFIND)
+                                    ->pcfs
+                                      ->super_class;
 
                             pcpma_InterfaceMethodref
                               ->LOCAL_InterfaceMethodref_binding
