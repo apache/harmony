@@ -87,7 +87,7 @@ rvoid cfmsgs_typemsg(rchar *fn,
     jdouble  vald;
     rint     star_len, star_len2;
 
-    if (CONSTANT_CP_DEFAULT_INDEX == cpidx)
+    if (jvm_constant_pool_index_null == cpidx)
     {
         /*!
          * @todo  HARMONY-6-jvm-cfmsgs.c-1 Widen pointer format

@@ -231,7 +231,7 @@ static rvoid jvmutil_print_stack_common(jvm_thread_index  thridx,
 
         if (jvm_attribute_index_bad == atridx)
         {
-            cpidx = CONSTANT_CP_DEFAULT_INDEX;
+            cpidx = jvm_constant_pool_index_null;
 
             star_len_src = 7; /* Length of "unknown" */
 
