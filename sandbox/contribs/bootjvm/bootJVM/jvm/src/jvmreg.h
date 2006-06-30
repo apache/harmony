@@ -81,7 +81,7 @@ ARCH_HEADER_COPYRIGHT_APACHE(jvmreg, h,
 
 typedef struct
 {
-    jvm_class_index     clsidx;   /**< class[clsidx] of code location*/
+    jvm_class_index     clsidx;   /**< class[clsidx] of code location */
     jvm_method_index    mthidx;   /**< method[mthidx] of code location*/
     jvm_attribute_index codeatridx;/**< attributes[atridx] of code */
     jvm_attribute_index excpatridx;/**< attributes[atridx] of
@@ -176,9 +176,15 @@ typedef u2 jvm_exception_index_table_index;
 #define JVMREG_STACK_FP_OFFSET JVMREG_STACK_GC_OFFSET \
                                + JVMREG_STACK_FP_HEIGHT
 
-/*! Offsets from current FP of stack pointer */
+/*! Offsets from current FP of program counter */
 #define JVMREG_STACK_PC_OFFSET JVMREG_STACK_FP_OFFSET \
                                + JVMREG_STACK_PC_HEIGHT
+
+/*!
+ * Offsets from current FP of top of stack frame,
+ * less operand stack parms.
+ */
+#define JVMREG_STACK_SP_TOP_OFFSET JVMREG_STACK_PC_OFFSET + 0
 
 /*@} */ /* End of grouped definitions */
 
@@ -208,6 +214,9 @@ typedef u2 jvm_exception_index_table_index;
 
 
 #define PUT_SP_IMMEDIATE(thridx, value) THREAD(thridx).sp = value
+
+#define PUT_SP_STRIP_OPERAND_STACK(thridx) \
+   PUT_SP_IMMEDIATE(thridx, GET_FP(thridx) + JVMREG_STACK_SP_TOP_OFFSET)
 
 /*@} */ /* End of grouped definitions */
 
