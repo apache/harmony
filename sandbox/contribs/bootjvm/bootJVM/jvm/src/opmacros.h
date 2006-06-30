@@ -1462,9 +1462,19 @@ ARCH_HEADER_COPYRIGHT_APACHE(opmacros, h,
                                                                        \
     pcfsmisc       = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;           \
     fluidxmisc     = pcpma_Fieldref->LOCAL_Fieldref_binding.fluidxJVM; \
-    pfld           = pcfsmisc                                          \
-                       ->fields[CLASS(clsidxmisc)                      \
-                                 .class_static_field_lookup[fluidxmisc]]
+                                                                       \
+    if (rtrue == pcpma_Fieldref->LOCAL_Fieldref_binding.fluidxJVM)     \
+    {                                                                  \
+        pfld = pcfsmisc->fields[CLASS(clsidxmisc)                      \
+                                  .object_instance_field_lookup        \
+                                     [fluidxmisc]];                    \
+    }                                                                  \
+    else                                                               \
+    {                                                                  \
+        pfld = pcfsmisc->fields[CLASS(clsidxmisc)                      \
+                                  .class_static_field_lookup           \
+                                     [fluidxmisc]];                    \
+    }
 
 
 /*!
@@ -2794,6 +2804,483 @@ static char *opcode_names[OPCODE_COUNT] =
     "UNUSED",       "UNUSED",          "UNUSED",        "UNUSED",
     "UNUSED",       "UNUSED",          "IMPDEP1",       "IMPDEP2"
 };
+
+/*!
+ * @brief Return number of operand bytes used by this opcode.
+ *
+ * @param pcode     Pointer to code array being disassembled
+ * @param pc        Program counter of code to disassemble
+ * @param iswide    This opcode is now in the context of a WIDE opcode.
+ *
+ * @returns Number of operand bytes needed by this opcode.  In the
+ *          case of the @b LOOKUPSWITCH and @b TABLESWITCH opcodes,
+ *          only the first few operands are shown.
+ */
+static int operand_bytecount(jvm_virtual_opcode *pcode,
+                             jvm_pc             *pc,
+                             rboolean            iswide)
+{
+    jvm_virtual_opcode opcode;
+
+    switch(pcode[pc->offset]) /* opcode */
+    {
+        case OPCODE_00_NOP:
+        case OPCODE_01_ACONST_NULL:
+        case OPCODE_02_ICONST_M1:
+        case OPCODE_03_ICONST_0:
+        case OPCODE_04_ICONST_1:
+        case OPCODE_05_ICONST_2:
+        case OPCODE_06_ICONST_3:
+        case OPCODE_07_ICONST_4:
+        case OPCODE_08_ICONST_5:
+        case OPCODE_09_LCONST_0:
+        case OPCODE_0A_LCONST_1:
+        case OPCODE_0B_FCONST_0:
+        case OPCODE_0C_FCONST_1:
+        case OPCODE_0D_FCONST_2:
+        case OPCODE_0E_DCONST_0:
+        case OPCODE_0F_DCONST_1:
+        case OPCODE_1A_ILOAD_0:
+        case OPCODE_1B_ILOAD_1:
+        case OPCODE_1C_ILOAD_2:
+        case OPCODE_1D_ILOAD_3:
+        case OPCODE_1E_LLOAD_0:
+        case OPCODE_1F_LLOAD_1:
+        case OPCODE_20_LLOAD_2:
+        case OPCODE_21_LLOAD_3:
+        case OPCODE_22_FLOAD_0:
+        case OPCODE_23_FLOAD_1:
+        case OPCODE_24_FLOAD_2:
+        case OPCODE_25_FLOAD_3:
+        case OPCODE_26_DLOAD_0:
+        case OPCODE_27_DLOAD_1:
+        case OPCODE_28_DLOAD_2:
+        case OPCODE_29_DLOAD_3:
+        case OPCODE_2A_ALOAD_0:
+        case OPCODE_2B_ALOAD_1:
+        case OPCODE_2C_ALOAD_2:
+        case OPCODE_2D_ALOAD_3:
+        case OPCODE_2E_IALOAD:
+        case OPCODE_2F_LALOAD:
+        case OPCODE_30_FALOAD:
+        case OPCODE_31_DALOAD:
+        case OPCODE_32_AALOAD:
+        case OPCODE_33_BALOAD:
+        case OPCODE_34_CALOAD:
+        case OPCODE_35_SALOAD:
+        case OPCODE_3B_ISTORE_0:
+        case OPCODE_3C_ISTORE_1:
+        case OPCODE_3D_ISTORE_2:
+        case OPCODE_3E_ISTORE_3:
+        case OPCODE_3F_LSTORE_0:
+        case OPCODE_40_LSTORE_1:
+        case OPCODE_41_LSTORE_2:
+        case OPCODE_42_LSTORE_3:
+        case OPCODE_43_FSTORE_0:
+        case OPCODE_44_FSTORE_1:
+        case OPCODE_45_FSTORE_2:
+        case OPCODE_46_FSTORE_3:
+        case OPCODE_47_DSTORE_0:
+        case OPCODE_48_DSTORE_1:
+        case OPCODE_49_DSTORE_2:
+        case OPCODE_4A_DSTORE_3:
+        case OPCODE_4B_ASTORE_0:
+        case OPCODE_4C_ASTORE_1:
+        case OPCODE_4D_ASTORE_2:
+        case OPCODE_4E_ASTORE_3:
+        case OPCODE_4F_IASTORE:
+        case OPCODE_50_LASTORE:
+        case OPCODE_51_FASTORE:
+        case OPCODE_52_DASTORE:
+        case OPCODE_53_AASTORE:
+        case OPCODE_54_BASTORE:
+        case OPCODE_55_CASTORE:
+        case OPCODE_56_SASTORE:
+        case OPCODE_57_POP:
+        case OPCODE_58_POP2:
+        case OPCODE_59_DUP:
+        case OPCODE_5A_DUP_X1:
+        case OPCODE_5B_DUP_X2:
+        case OPCODE_5C_DUP2:
+        case OPCODE_5D_DUP2_X1:
+        case OPCODE_5E_DUP2_X2:
+        case OPCODE_5F_SWAP:
+        case OPCODE_60_IADD:
+        case OPCODE_61_LADD:
+        case OPCODE_62_FADD:
+        case OPCODE_63_DADD:
+        case OPCODE_64_ISUB:
+        case OPCODE_65_LSUB:
+        case OPCODE_66_FSUB:
+        case OPCODE_67_DSUB:
+        case OPCODE_68_IMUL:
+        case OPCODE_69_LMUL:
+        case OPCODE_6A_FMUL:
+        case OPCODE_6B_DMUL:
+        case OPCODE_6C_IDIV:
+        case OPCODE_6D_LDIV:
+        case OPCODE_6E_FDIV:
+        case OPCODE_6F_DDIV:
+        case OPCODE_70_IREM:
+        case OPCODE_71_LREM:
+        case OPCODE_72_FREM:
+        case OPCODE_73_DREM:
+        case OPCODE_74_INEG:
+        case OPCODE_75_LNEG:
+        case OPCODE_76_FNEG:
+        case OPCODE_77_DNEG:
+        case OPCODE_78_ISHL:
+        case OPCODE_79_LSHL:
+        case OPCODE_7A_ISHR:
+        case OPCODE_7B_LSHR:
+        case OPCODE_7C_IUSHR:
+        case OPCODE_7D_LUSHR:
+        case OPCODE_7E_IAND:
+        case OPCODE_7F_LAND:
+        case OPCODE_80_IOR:
+        case OPCODE_81_LOR:
+        case OPCODE_82_IXOR:
+        case OPCODE_83_LXOR:
+        case OPCODE_85_I2L:
+        case OPCODE_86_I2F:
+        case OPCODE_87_I2D:
+        case OPCODE_88_L2I:
+        case OPCODE_89_L2F:
+        case OPCODE_8A_L2D:
+        case OPCODE_8B_F2I:
+        case OPCODE_8C_F2L:
+        case OPCODE_8D_F2D:
+        case OPCODE_8E_D2I:
+        case OPCODE_8F_D2L:
+        case OPCODE_90_D2F:
+        case OPCODE_91_I2B:
+        case OPCODE_92_I2C:
+        case OPCODE_93_I2S:
+        case OPCODE_94_LCMP:
+        case OPCODE_95_FCMPL:
+        case OPCODE_96_FCMPG:
+        case OPCODE_97_DCMPL:
+        case OPCODE_98_DCMPG:
+        case OPCODE_AC_IRETURN:
+        case OPCODE_AD_LRETURN:
+        case OPCODE_AE_FRETURN:
+        case OPCODE_AF_DRETURN:
+        case OPCODE_B0_ARETURN:
+        case OPCODE_B1_RETURN:
+        case OPCODE_BA_XXXUNUSEDXXX1:
+        case OPCODE_BE_ARRAYLENGTH:
+        case OPCODE_BF_ATHROW:
+        case OPCODE_CA_BREAKPOINT:
+        case OPCODE_CB_UNUSED:
+        case OPCODE_CC_UNUSED:
+        case OPCODE_CD_UNUSED:
+        case OPCODE_CE_UNUSED:
+        case OPCODE_CF_UNUSED:
+        case OPCODE_D0_UNUSED:
+        case OPCODE_D1_UNUSED:
+        case OPCODE_D2_UNUSED:
+        case OPCODE_D3_UNUSED:
+        case OPCODE_D4_UNUSED:
+        case OPCODE_D5_UNUSED:
+        case OPCODE_D6_UNUSED:
+        case OPCODE_D7_UNUSED:
+        case OPCODE_D8_UNUSED:
+        case OPCODE_D9_UNUSED:
+        case OPCODE_DA_UNUSED:
+        case OPCODE_DB_UNUSED:
+        case OPCODE_DC_UNUSED:
+        case OPCODE_DD_UNUSED:
+        case OPCODE_DE_UNUSED:
+        case OPCODE_DF_UNUSED:
+        case OPCODE_E0_UNUSED:
+        case OPCODE_E1_UNUSED:
+        case OPCODE_E2_UNUSED:
+        case OPCODE_E3_UNUSED:
+        case OPCODE_E4_UNUSED:
+        case OPCODE_E5_UNUSED:
+        case OPCODE_E6_UNUSED:
+        case OPCODE_E7_UNUSED:
+        case OPCODE_E8_UNUSED:
+        case OPCODE_E9_UNUSED:
+        case OPCODE_EA_UNUSED:
+        case OPCODE_EB_UNUSED:
+        case OPCODE_EC_UNUSED:
+        case OPCODE_ED_UNUSED:
+        case OPCODE_EE_UNUSED:
+        case OPCODE_EF_UNUSED:
+        case OPCODE_F0_UNUSED:
+        case OPCODE_F1_UNUSED:
+        case OPCODE_F2_UNUSED:
+        case OPCODE_F3_UNUSED:
+        case OPCODE_F4_UNUSED:
+        case OPCODE_F5_UNUSED:
+        case OPCODE_F6_UNUSED:
+        case OPCODE_F7_UNUSED:
+        case OPCODE_F8_UNUSED:
+        case OPCODE_F9_UNUSED:
+        case OPCODE_FA_UNUSED:
+        case OPCODE_FB_UNUSED:
+        case OPCODE_FC_UNUSED:
+        case OPCODE_FD_UNUSED:
+        case OPCODE_FE_IMPDEP1:
+        case OPCODE_FF_IMPDEP2:
+            return(0);
+
+        case OPCODE_10_BIPUSH:
+        case OPCODE_12_LDC:
+        case OPCODE_BC_NEWARRAY:
+            return(1);
+
+        case OPCODE_11_SIPUSH:
+        case OPCODE_13_LDC_W:
+        case OPCODE_14_LDC2_W:
+        case OPCODE_84_IINC:
+        case OPCODE_99_IFEQ:
+        case OPCODE_9A_IFNE:
+        case OPCODE_9B_IFLT:
+        case OPCODE_9C_IFGE:
+        case OPCODE_9D_IFGT:
+        case OPCODE_9E_IFLE:
+        case OPCODE_9F_IF_ICMPEQ:
+        case OPCODE_A0_IF_ICMPNE:
+        case OPCODE_A1_IF_ICMPLT:
+        case OPCODE_A2_IF_ICMPGE:
+        case OPCODE_A3_IF_ICMPGT:
+        case OPCODE_A4_IF_ICMPLE:
+        case OPCODE_A5_IF_ACMPEQ:
+        case OPCODE_A6_IF_ACMPNE:
+        case OPCODE_A7_GOTO:
+        case OPCODE_A8_JSR:
+        case OPCODE_B2_GETSTATIC:
+        case OPCODE_B3_PUTSTATIC:
+        case OPCODE_B4_GETFIELD:
+        case OPCODE_B5_PUTFIELD:
+        case OPCODE_B6_INVOKEVIRTUAL:
+        case OPCODE_B7_INVOKESPECIAL:
+        case OPCODE_B8_INVOKESTATIC:
+        case OPCODE_BB_NEW:
+        case OPCODE_BD_ANEWARRAY:
+        case OPCODE_C0_CHECKCAST:
+        case OPCODE_C1_INSTANCEOF:
+        case OPCODE_C6_IFNULL:
+        case OPCODE_C7_IFNONNULL:
+            return(2);
+
+        case OPCODE_C2_MONITORENTER:
+        case OPCODE_C3_MONITOREXIT:
+        case OPCODE_C4_WIDE:
+        case OPCODE_C5_MULTIANEWARRAY:
+            return(3);
+
+        case OPCODE_B9_INVOKEINTERFACE:
+        case OPCODE_C8_GOTO_W:
+        case OPCODE_C9_JSR_W:
+            return(4);
+
+        case OPCODE_15_ILOAD:
+        case OPCODE_16_LLOAD:
+        case OPCODE_17_FLOAD:
+        case OPCODE_18_DLOAD:
+        case OPCODE_19_ALOAD:
+        case OPCODE_36_ISTORE:
+        case OPCODE_37_LSTORE:
+        case OPCODE_38_FSTORE:
+        case OPCODE_39_DSTORE:
+        case OPCODE_3A_ASTORE:
+        case OPCODE_A9_RET:
+            return((rtrue == iswide) ? 1 : 2);
+
+
+        case OPCODE_AA_TABLESWITCH:
+                return(/* pad byte count */
+                       (sizeof(u4) - sizeof(opcode) -
+                        (pc->offset & (sizeof(u4) - sizeof(opcode))))
+
+                       + 16); /* Always at least 16 bytes of operands */
+
+
+        case OPCODE_AB_LOOKUPSWITCH:
+                return(/* pad byte count */
+                       (sizeof(u4) - sizeof(opcode) -
+                        (pc->offset & (sizeof(u4) - sizeof(opcode))))
+
+                       + 16); /* Always at least 16 bytes of operands */
+
+        default:
+/*NOTREACHED*/
+            return(0); /* There are no other possible cases */
+
+    } /* switch(opcode) */
+
+/*NOTREACHED*/
+
+} /* End of operand_bytecount() */
+
+
+#include "util.h" /* For definition of sysDbgMsg() */
+
+/*!
+ * @brief Opcode execution context, without operands
+ */
+#define OPCODE_MSG_FORMAT "thr=%04.4x " \
+                          "SP=%04.4x TOS=%08.8x FP=%04.4x " \
+                          " /OFP=%04.4x GC=%08.8x LS=%04.4x/  " \
+                          "PC=%04.4x.%04.4x.%04.4x.%04.4x.%04.4x  " \
+                          "%-15.15s %02.2x "
+
+/*!
+ * @brief Fixed group of debug print parameters.
+ *
+ */
+#define OPCODE_MSG_FIXED_PARMS              \
+    level,                                  \
+    fn,                                     \
+    format,                                 \
+    thridx,                                 \
+    GET_SP(thridx),                         \
+    GET_SP_WORD(thridx, 0, jint),           \
+    GET_FP(thridx),                         \
+    GET_FP_WORD(thridx,                     \
+                JVMREG_STACK_LS_HEIGHT      \
+                  + JVMREG_STACK_GC_HEIGHT  \
+                  + JVMREG_STACK_GC_HEIGHT, \
+                jint),                      \
+    GET_FP_WORD(thridx,                     \
+                JVMREG_STACK_LS_HEIGHT      \
+                  + JVMREG_STACK_GC_HEIGHT, \
+                jint),                      \
+    GET_FP_WORD(thridx,                     \
+                JVMREG_STACK_LS_HEIGHT,     \
+                jint),                      \
+    pc->clsidx,                             \
+    pc->mthidx,                             \
+    pc->codeatridx,                         \
+    pc->excpatridx,                         \
+    pc->offset,                             \
+    opcode_names[pcode[pc->offset]],        \
+    pcode[pc->offset + 0 /* opcode */]
+
+/*!
+ * @brief Shortcut expression for addressing operand bytes
+ *
+ * @param  operand     Offset from opcode to index an operand byte
+ *
+ * @returns Java byte code operany byte at offset
+ */
+#define OPR(operand) (pcode[pc->offset + operand])
+
+/*!
+ * @brief disassemble opcode and show all operand bytes
+ *
+ * @param level     Messge debug level needed for display.
+ * @param fn        Function name calling this utility.
+ * @param thridx    Thread table index of code to disassemble.
+ * @param pcode     Pointer to code array being disassembled.
+ * @param pc        Program counter into the code being disassembled.
+ * @param iswide    This opcode is now in the context of a WIDE opcode.
+ *
+ * @returns @link #rvoid rvoid@endlink
+ *
+ */
+static void opcode_disassemble(jvm_debug_level_enum  level,
+                               const char           *fn,
+                               jvm_thread_index      thridx,
+                               jvm_virtual_opcode   *pcode,
+                               jvm_pc               *pc,
+                               rboolean              iswide)
+{
+    ARCH_FUNCTION_NAME(opcode_disassemble);
+    rint num_operand_bytes;
+    char *format;
+
+    num_operand_bytes = operand_bytecount(pcode, pc, iswide);
+
+
+    switch(num_operand_bytes)
+    {
+        case 19:
+            format = OPCODE_MSG_FORMAT " %02.2x%02.2x%02.2x\n"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS, OPR(1), OPR(2), OPR(3),
+                      OPR(4),  OPR(5),  OPR(6),  OPR(7),
+                      OPR(8),  OPR(9),  OPR(10), OPR(11),
+                      OPR(12), OPR(13), OPR(14), OPR(15),
+                      OPR(16), OPR(17), OPR(18), OPR(19));
+            return;
+
+        case 18:
+            format = OPCODE_MSG_FORMAT " %02.2x%02.2x\n"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS, OPR(1), OPR(2),
+                      OPR(3),  OPR(4),  OPR(5),  OPR(6),
+                      OPR(7),  OPR(8),  OPR(9),  OPR(10),
+                      OPR(11), OPR(12), OPR(13), OPR(14),
+                      OPR(15), OPR(16), OPR(17), OPR(18));
+            return;
+
+        case 17:
+            format = OPCODE_MSG_FORMAT " %02.2x\n"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS, OPR(1),
+                      OPR(2),  OPR(3),  OPR(4),  OPR(5),
+                      OPR(6),  OPR(7),  OPR(8),  OPR(9),
+                      OPR(10), OPR(11), OPR(12), OPR(13),
+                      OPR(14), OPR(15), OPR(16), OPR(17));
+            return;
+
+        case 16:
+            format = OPCODE_MSG_FORMAT "\n"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x"
+                                       " %02.2x%02.2x%02.2x%02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS,
+                      OPR(1),  OPR(2),  OPR(3),  OPR(4),
+                      OPR(5),  OPR(6),  OPR(7),  OPR(8),
+                      OPR(9),  OPR(10), OPR(11), OPR(12),
+                      OPR(13), OPR(14), OPR(15), OPR(16));
+            return;
+
+        case 4:
+            format = OPCODE_MSG_FORMAT " %02.2x %02.2x %02.2x %02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS,
+                      OPR(1), OPR(2), OPR(3), OPR(4));
+            return;
+
+        case 3:
+            format = OPCODE_MSG_FORMAT " %02.2x %02.2x %02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS, OPR(1), OPR(2), OPR(3));
+            return;
+
+        case 2:
+            format = OPCODE_MSG_FORMAT " %02.2x %02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS, OPR(1), OPR(2));
+            return;
+
+        case 1:
+            format = OPCODE_MSG_FORMAT " %02.2x";
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS, OPR(1));
+            return;
+
+        case 0:
+        default:  /* Should have no other cases, but just in case */
+            format = OPCODE_MSG_FORMAT;
+            sysDbgMsg(OPCODE_MSG_FIXED_PARMS);
+            return;
+    }
+
+/*NOTREACHED*/
+
+} /* END of opcode_disassemble() */
 
 #endif /* I_AM_OPCODE_C */
 
