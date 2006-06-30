@@ -85,6 +85,10 @@ ARCH_HEADER_COPYRIGHT_APACHE(portable, h,
                                            remapped into the
                                            portability library. */
 
+#define lseek PLEASE_USE_portable_lseek /**< @c @b lseek(2) has been
+                                           remapped into the
+                                           portability library. */
+
 #define read PLEASE_USE_portable_read   /**< @c @b read(2) has been
                                            remapped into the
                                            portability library. */
@@ -196,6 +200,7 @@ extern rvoid *portable_stat(const rchar *path
 extern rlong  portable_stat_get_st_size(rvoid *statbfr);
 extern rint   portable_open(const rchar *path,
                             rint oflag /* , ... not impl/not needed */);
+extern rlong  portable_lseek(rint fildes, rlong offset, rint whence);
 extern rlong  portable_read(rint fildes, rvoid *buf, rlong nbyte);
 extern rint   portable_close(rint fildes);
 
