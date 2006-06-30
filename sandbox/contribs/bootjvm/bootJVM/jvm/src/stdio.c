@@ -112,7 +112,7 @@ int sysDbgMsg(rint dml, const rchar *fn, rchar *fmt, ...)
         return(0);
     }
 
-    if (jvmutil_get_dml() < dml)
+    if (!(DBGMSG_PRINT(dml)))
     {
         return(0);
     }
