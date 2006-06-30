@@ -1007,11 +1007,10 @@ jvm_class_index class_load_primative(u1 basetype)
  * @name DEFAULT SYSTEM CLASS LOADER:
  *
  * @brief perform the duties of @c @b java.lang.ClassLoader
-
  * Using either null-terminated strings or UTF strings from
  * @link #CONSTANT_Utf8_info CONSTANT_Utf8_info@endlink or
  * @link #CONSTANT_Class_info CONSTANT_Class_info@endlink
- * @c @b constant_pool entries, the following three functions function
+ * @c @b constant_pool entries, the following three functions act
  * as the system default class loader that can be invoked three
  * different ways.  It searches @b CLASSPATH, reads in a class
  * file, parses its contents, and loads it into the class table
@@ -1421,17 +1420,14 @@ jvm_class_index
 /*NOTREACHED*/
     }
 
-    rchar *prchar_clsname =
-        utf_utf2prchar(
-            PTR_THIS_CP_Utf8(
-                &pcfs->constant_pool
-                 [PTR_THIS_CP_Class(clsname)->name_index]));
+    cp_info_mem_align *cp_clsname = XXX_XXXXXX2utf(clsname);
 
-    jvm_class_index clsidx = class_load_from_prchar(prchar_clsname,
-                                                   find_registerNatives,
-                                                    arraylength);
+    jvm_class_index clsidx =
+        class_load_from_cp_entry_utf(cp_clsname,
+                                     find_registerNatives,
+                                     arraylength);
 
-    HEAP_FREE_DATA(prchar_clsname);
+    HEAP_FREE_DATA(cp_clsname);
 
     return(clsidx);
 
@@ -1512,14 +1508,15 @@ jvm_class_index
  *        standard industry file naming practices, and/or (b) that
  *        no array processing happens in the lower levels.
  *
- * @todo  HARMONY-6-jvm-class.c-20 Make a version of this function
- *        that can accept a UTF8 class name, call class_load_from_utf(),
- *        and call a common function that it shares with the existing
- *        function that contains all further logic.  This will run
- *        faster than converting UTF strings to (rchar *) and calling
- *        the existing function.  This is a similar approach to what
- *        is done in @link jvm/src/thread.c thread.c@endlink to create
- *        a normal thread versus a system thread.
+ * @todo  HARMONY-6-jvm-class.c-20 Make a version of this
+ *        function that can accept a UTF8 class name, call
+ *        class_load_from_cp_entry_utf(), and call a common
+ *        function that it shares with the existing function
+ *        that contains all further logic.  This will run faster
+ *        than converting UTF strings to (rchar *) and calling
+ *        the existing function.  This is a similar approach to
+ *        what is done in @link jvm/src/thread.c thread.c@endlink
+ *        to create a normal thread versus a system thread.
  *        
  *
  */
