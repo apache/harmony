@@ -905,10 +905,12 @@ jvm_object_hash object_instance_new(rushort          special_obj,
          *        needs unit testing with real data.
          */
         jvm_class_index clsidxsuper_class =
-            class_find_by_cp_entry(PTR_CP_SLOT(pcfs, 
+            class_load_from_cp_entry_utf(PTR_CP_SLOT(pcfs, 
                                                PTR_CP_ENTRY_CLASS(pcfs,
                                                       pcfs->super_class)
-                                                 ->name_index));
+                                                  ->name_index),
+                                     rfalse,
+                                     arraylength);
 
         if (jvm_object_hash_null == clsidxsuper_class)
         {
