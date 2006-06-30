@@ -236,6 +236,8 @@ typedef union
  *
  * @returns  16-bit value at *ptr2, properly byte swapped.
  *
+ * @see bytegames_getrs2_le()
+ *
  */
 rushort bytegames_getrs2(rushort *ptr2)
 {
@@ -255,6 +257,43 @@ rushort bytegames_getrs2(rushort *ptr2)
     return(wholeval._usval);
 
 } /* END of bytegames_getrs2() */
+
+
+/*!
+ * @brief Retrieve any generic 2-byte value (16 bits), source buffer
+ * ordered <b>little endian</b>, whether or not its is aligned on
+ * a 2-byte (that is, even address) boundary.
+ *
+ * This function is distinct from @b bytegames_getrs2() in that it
+ * assumes @b little endian source data instead of @b big endian
+ * source data.
+ *
+ *
+ * @param  ptr2   Pointer to @link #rushort rushort@endlink location.
+ *
+ *
+ * @returns  16-bit value at *ptr2, properly byte swapped.
+ *
+ * @see bytegames_getrs2()
+ */
+rushort bytegames_getrs2_le(rushort *ptr2)
+{
+    ARCH_FUNCTION_NAME(bytegames_getrs2_le);
+
+    twobyte wholeval;
+
+    rbyte *ptr1 = (rbyte *) ptr2;
+
+    wholeval._byteval.a = *ptr1++;
+    wholeval._byteval.b = *ptr1;
+
+#ifdef ARCH_BIT_ENDIAN
+    wholeval._usval = bytegames_swap2(wholeval._usval);
+#endif
+
+    return(wholeval._usval);
+
+} /* END of bytegames_getrs2_le() */
 
 
 /*!
@@ -309,6 +348,8 @@ rvoid bytegames_putrs2(rushort *ptr2, rushort val2)
  *
  * @returns 32-bit value at *ptr4, properly byte swapped.
  *
+ * @see bytegames_getri4_le()
+ *
  */
 ruint bytegames_getri4(ruint *ptr4)
 {
@@ -330,6 +371,46 @@ ruint bytegames_getri4(ruint *ptr4)
     return(wholeval._ruival);
 
 } /* END of bytegames_getri4() */
+
+
+/*!
+ * @brief 4-byte version of
+ * @link #bytegames_getrs2() bytegames_getrs2()@endlink, source
+ * buffer order <b>little endian</b>, and performs two odd-byte
+ * accesses, not just one.
+ *
+ * This function is distinct from @b bytegames_getri4() in that it
+ * assumes @b little endian source data instead of @b big endian
+ * source data.
+ *
+ * @param   ptr4   Pointer to @link #ruint ruint@endlink location.
+ *
+ *
+ * @returns 32-bit value at *ptr4, properly byte swapped.
+ *
+ * @see bytegames_getri4()
+ *
+ */
+ruint bytegames_getri4_le(ruint *ptr4)
+{
+    ARCH_FUNCTION_NAME(bytegames_getri4);
+
+    fourbyte wholeval;
+
+    rbyte *ptr1 = (rbyte *) ptr4;
+
+    wholeval._byteval.a = *ptr1++;
+    wholeval._byteval.b = *ptr1++;
+    wholeval._byteval.c = *ptr1++;
+    wholeval._byteval.d = *ptr1;
+
+#ifdef ARCH_BIG_ENDIAN
+    wholeval._ruival = bytegames_swap4(wholeval._ruival);
+#endif
+
+    return(wholeval._ruival);
+
+} /* END of bytegames_getri4_le() */
 
 
 /*!
