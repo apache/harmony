@@ -52,6 +52,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(cfattrib, c,
 
 #include <string.h>
 #include "jvmcfg.h"
+#include "attribute.h"
 #include "cfmacros.h"
 #include "classfile.h"
 #include "util.h"
@@ -243,125 +244,6 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 
 
 /*!
- * @name Attribute deferencing support.
- *
- */
-
-/*@{ */ /* Begin grouped definitions */
-
-/*!
- * @brief Conveniently reference the XXX_attribute contained in
- * an indirect <b><code>attribute_info_mem_align **dst</code></b>.
- *
- * After putting in the 4-byte access alignment changes,
- * it became obvious that what was once (*dst)->member
- * had become quite cumbersome.  Therefore, in order to
- * simplify access through (attribute_info_mem_align *)->ai.member
- * constructions, including appropriate casting, the following
- * macro is offered to take care of the most common usage.
- * The few other references are unchanged, and the code is
- * easier to understand.
- *
- * Notice that @link #DST_CODE_AI() DST_XXX_AI()@endlink references
- * a <b><code>attribute_info_mem_align *dst</code></b>, while 
- * @link #DST_CODE_AI() PTR_DST_XXX_AI()@endlink
- * references a <b><code>attribute_info_mem_align **dst</code></b>.
- */
-#define PTR_DST_CONSTANTVALUE_AI(dst) \
-                               ((ConstantValue_attribute *) &(*dst)->ai)
-#define PTR_DST_CODE_AI(dst)            ((Code_attribute *) &(*dst)->ai)
-#define PTR_DST_EXCEPTIONS_AI(dst) ((Exceptions_attribute *)&(*dst)->ai)
-#define PTR_DST_INNERCLASSES_AI(dst) \
-                                 ((InnerClasses_attribute *)&(*dst)->ai)
-#define PTR_DST_ENCLOSINGMETHOD_AI(dst) \
-                              ((EnclosingMethod_attribute *)&(*dst)->ai)
-#define PTR_DST_SIGNATURE_AI(dst)   ((Signature_attribute *)&(*dst)->ai)
-#define PTR_DST_SOURCEFILE_AI(dst) ((SourceFile_attribute *)&(*dst)->ai)
-#define PTR_DST_LINENUMBERTABLE_AI(dst) \
-                              ((LineNumberTable_attribute *)&(*dst)->ai)
-#define PTR_DST_LOCALVARIABLETABLE_AI(dst) \
-                           ((LocalVariableTable_attribute *)&(*dst)->ai)
-#define PTR_DST_LOCALVARIABLETYPETABLE_AI(dst) \
-                       ((LocalVariableTypeTable_attribute *)&(*dst)->ai)
-#define PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst) \
-                    ((RuntimeVisibleAnnotations_attribute *)&(*dst)->ai)
-#define PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst) \
-                  ((RuntimeInvisibleAnnotations_attribute *)&(*dst)->ai)
-#define PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst) \
-           ((RuntimeVisibleParameterAnnotations_attribute *)&(*dst)->ai)
-#define PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst) \
-         ((RuntimeInvisibleParameterAnnotations_attribute *)&(*dst)->ai)
-#define PTR_DST_ANNOTATIONDEFAULT_AI(dst) \
-                           ((AnnotationDefault_attribute *)&(*dst)->ai)
-#define PTR_DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst) \
-                  ((AnnotationDefault_attribute_mem_align *)&(*dst)->ai)
-
-/*!
- * @brief Conveniently reference an
- * @link Code_attribute Xxx_attribute@endlink contained in
- * a <b><code>attribute_info_mem_align *dst</code></b>, namely, with
- * less pointer indirection.
- *
- * This is a counterpart for cfattrib_unload_attribute() where
- * no indirection is needed.  Notice that
- * @link #PTR_DST_CODE_AI() PTR_DST_XXX_AI()@endlink references
- * a <b><code>attribute_info_mem_align **dst</code></b>, while this
- * macro references a <b><code>attribute_info_mem_align *dst</code></b>.
- *
- */
-#define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
-#define     DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst) \
-                    ((RuntimeVisibleAnnotations_attribute *) &dst->ai)
-#define     DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst) \
-                  ((RuntimeInvisibleAnnotations_attribute *) &dst->ai)
-#define     DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst) \
-           ((RuntimeVisibleParameterAnnotations_attribute *) &dst->ai)
-#define     DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst) \
-           ((RuntimeInvisibleParameterAnnotations_attribute *) &dst->ai)
-#define     DST_ANNOTATIONDEFAULT_AI(dst) \
-                           ((AnnotationDefault_attribute *) &dst->ai)
-#define     DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst) \
-                    ((AnnotationDefault_attribute_mem_align *) &dst->ai)
-
-/*@{ */ /* Begin grouped definitions */
-
-/*!
- * @brief Conveniently reference the Exceptions_attribute contained in
- * an indirect <b><code>attribute_info_mem_align **dst</code></b>.
- *
- * After putting in the 4-byte access alignment changes,
- * it became obvious that what was once (*dst)->member
- * had become quite cumbersome.  Therefore, in order to
- * simplify access through (attribute_info_mem_align *)->ai.member
- * constructions, including appropriate casting, the following
- * macro is offered to take care of the most common usage.
- * The few other references are unchanged, and the code is
- * easier to understand.
- *
- * Notice that @link #DST_CODE_AI() DST_CODE_AI()@endlink references
- * a <b><code>attribute_info_mem_align *dst</code></b>, while this
- * macro references a <b><code>attribute_info_mem_align **dst</code></b>.
- */
-#define PTR_DST_CODE_AI(dst) ((Code_attribute *) &(*dst)->ai)
-
-/*!
- * @brief Conveniently reference the Code_attribute contained in
- * a <b><code>attribute_info_mem_align *dst</code></b>, namely, with
- * less pointer indirection.
- *
- * This is a counterpart for cfattrib_unload_attribute() where
- * no indirection is needed.  Notice that
- * @link #PTR_DST_CODE_AI() PTR_DST_CODE_AI()@endlink references
- * a <b><code>attribute_info_mem_align **dst</code></b>, while this
- * macro references a <b><code>attribute_info_mem_align *dst</code></b>.
- *
- */
-#define     DST_CODE_AI(dst) ((Code_attribute *) &dst->ai)
-
-/*@} */ /* End of grouped definitions */
-
-
-/*!
  * @brief Load an annotation's element_value and minimally verify
  * that it has either valid contents.
  *
@@ -370,13 +252,13 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to an element_value_pair_mem_align[]
+ * @param  pevpma    Pointer to an element_value_pair_mem_align[]
  *                   address telling where in the heap this
  *                   element_value will be copied from the source area.
  *
- * @param  src       Pointer to an element_value in class file image.
+ * @param  pev       Pointer to an element_value in class file image.
  *                   This data will be stored in the heap at
- *                   location @c @b *dst .
+ *                   location @c @b *pevpma .
  *
  *
  * @returns Point to first byte past this annotation,
@@ -388,8 +270,8 @@ rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
  */
 
 u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
-                               element_value_mem_align *dst,
-                               element_value           *src)
+                               element_value_mem_align *pevpma,
+                               element_value           *pev)
 {
     ARCH_FUNCTION_NAME(cfattrib_load_elementvalue);
 
@@ -397,17 +279,17 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
     jbyte *pabytes;
     u2    *pu2;
 
-    pabytes = (jbyte *) src;
+    pabytes = (jbyte *) pev;
 
     /*
      * Retrieve element_value tag, then process value type
      */
-    dst->empty[0] = FILL_ELEMENT_VALUES_MEM_ALIGN0;
-    dst->empty[1] = FILL_ELEMENT_VALUES_MEM_ALIGN1;
-    dst->empty[2] = FILL_ELEMENT_VALUES_MEM_ALIGN2;
+    pevpma->empty[0] = FILL_ELEMENT_VALUES_MEM_ALIGN0;
+    pevpma->empty[1] = FILL_ELEMENT_VALUES_MEM_ALIGN1;
+    pevpma->empty[2] = FILL_ELEMENT_VALUES_MEM_ALIGN2;
 
     ev_tag = *pabytes++;
-    dst->tag = ev_tag;
+    pevpma->tag = ev_tag;
 
     /*!
      * @todo HARMONY-6-jvm-cfattrib.c-39 Should a check
@@ -426,31 +308,31 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
         case BASETYPE_CHAR_Z:
         case BASETYPE_CHAR_s:
             MAKE_PU2(pu2, pabytes);
-            dst->_value._const_value_index = GETRS2(pu2);
+            pevpma->_value._const_value_index = GETRS2(pu2);
             pabytes += sizeof(jvm_constant_pool_index);
             break;
 
         case BASETYPE_CHAR_e:
             MAKE_PU2(pu2, pabytes);
-            dst->_value._enum_const_value.type_name_index =
+            pevpma->_value._enum_const_value.type_name_index =
                                                     GETRS2(pu2);
             pabytes += sizeof(jvm_constant_pool_index);
 
             MAKE_PU2(pu2, pabytes);
-            dst->_value._enum_const_value.const_name_index =
+            pevpma->_value._enum_const_value.const_name_index =
                                                     GETRS2(pu2);
             pabytes += sizeof(jvm_constant_pool_index);
             break;
 
         case BASETYPE_CHAR_c:
             MAKE_PU2(pu2, pabytes);
-            dst->_value._class_info_index = GETRS2(pu2);
+            pevpma->_value._class_info_index = GETRS2(pu2);
             pabytes += sizeof(jvm_constant_pool_index);
             break;
 
         case BASETYPE_CHAR_AT:
             /* Allocate one nested annotation */
-            dst->_value._pannotation_value =
+            pevpma->_value._pannotation_value =
                 HEAP_GET_METHOD(1 * sizeof(annotation_mem_align),rtrue);
 
             /*
@@ -464,7 +346,7 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
 
             pabytes =
                 cfattrib_load_annotation(pcfs,
-                                         dst->_value._pannotation_value,
+                                      pevpma->_value._pannotation_value,
                                          (annotation *) pabytes);
 
 
@@ -481,29 +363,29 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
              * Load an array_values[] slot, then point to
              * next array_values in class file image.
              */
-            dst->_value._array_value.empty[0] =
+            pevpma->_value._array_value.empty[0] =
                                            FILL_ARRAY_VALUES_MEM_ALIGN0;
-            dst->_value._array_value.empty[1] =
+            pevpma->_value._array_value.empty[1] =
                                            FILL_ARRAY_VALUES_MEM_ALIGN1;
 
             MAKE_PU2(pu2, pabytes);
-            dst->_value._array_value.num_values = GETRS2(pu2);
+            pevpma->_value._array_value.num_values = GETRS2(pu2);
             pu2++;
             pabytes = (jbyte *) pu2;
 
-            if (0 == dst->_value._array_value.num_values)
+            if (0 == pevpma->_value._array_value.num_values)
             {
                 /*
                  * Possible, but not theoretically reasonable,
                  * but not explicitly prohibited by spec
                  */
-                dst->_value._array_value.pvalues =
+                pevpma->_value._array_value.pvalues =
                     (element_value_mem_align **) rnull;
             }
             else
             {
-                dst->_value._array_value.pvalues =
-                    HEAP_GET_METHOD(dst->_value._array_value.num_values
+                pevpma->_value._array_value.pvalues =
+                  HEAP_GET_METHOD(pevpma->_value._array_value.num_values
                                     * sizeof(element_value_mem_align *),
                                     rtrue);
 
@@ -513,10 +395,10 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
                  */
                 u2 evidx;
                 for (evidx = 0;
-                     evidx < dst->_value._array_value.num_values;
+                     evidx < pevpma->_value._array_value.num_values;
                      evidx++)
                 {
-                    dst->_value._array_value.pvalues[evidx] =
+                    pevpma->_value._array_value.pvalues[evidx] =
                         HEAP_GET_METHOD(
                             sizeof(element_value_mem_align *),
                             rtrue);
@@ -531,7 +413,7 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
                      */
                     pabytes = cfattrib_load_elementvalue(
                                   pcfs,
-                                  dst
+                                  pevpma
                                     ->_value
                                       ._array_value
                                         .pvalues[evidx],
@@ -559,7 +441,7 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to a element_value_mem_align allocation
+ * @param  pevma     Pointer to a element_value_mem_align allocation
  *                   where this attribute is stored in the heap
  *
  *
@@ -571,24 +453,24 @@ u1 *cfattrib_load_elementvalue(ClassFile               *pcfs,
  */
 
 void cfattrib_unload_elementvalue(ClassFile               *pcfs,
-                                  element_value_mem_align *dst)
+                                  element_value_mem_align *pevma)
 {
     ARCH_FUNCTION_NAME(cfattrib_unload_elementvalue);
 
     u2 ptridx;
 
-    switch(dst->tag)
+    switch(pevma->tag)
     {
         case BASETYPE_CHAR_AT:
             cfattrib_unload_annotation(pcfs,
-                                       dst->_value._pannotation_value);
+                                      pevma->_value._pannotation_value);
 
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(pevma);
             break;
 
         case BASETYPE_CHAR_ARRAY:
             for (ptridx = 0;
-                 ptridx < dst->_value._array_value.num_values;
+                 ptridx < pevma->_value._array_value.num_values;
                  ptridx++)
             {
                 /*
@@ -600,15 +482,15 @@ void cfattrib_unload_elementvalue(ClassFile               *pcfs,
                  * actual depth is unknown at this point.
                  */
                 cfattrib_unload_elementvalue(pcfs,
-                              dst->_value._array_value.pvalues[ptridx]);
+                            pevma->_value._array_value.pvalues[ptridx]);
             }
-            HEAP_FREE_METHOD(dst->_value._array_value.pvalues);
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(pevma->_value._array_value.pvalues);
+            HEAP_FREE_METHOD(pevma);
             break;
 
         default:
             /* Nothing else has further heap allocation */
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(pevma);
             break;
 
     } /* switch(ev_tag) */
@@ -627,13 +509,13 @@ void cfattrib_unload_elementvalue(ClassFile               *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to an annotation_mem_align[] address
+ * @param  pnma      Pointer to an annotation_mem_align[] address
  *                   telling where in the heap this annotation will be
  *                   copied from the source area.
  *
- * @param  src       Pointer to an annotation in class file image.
+ * @param  pn        Pointer to an annotation in class file image.
  *                   This data will be stored in the heap at
- *                   location @c @b *dst .
+ *                   location @c @b *pnma .
  *
  *
  * @returns Point to first byte past this annotation,
@@ -645,8 +527,8 @@ void cfattrib_unload_elementvalue(ClassFile               *pcfs,
  */
 
 u1 *cfattrib_load_annotation(ClassFile            *pcfs,
-                             annotation_mem_align *dst,
-                             annotation           *src)
+                             annotation_mem_align *pnma,
+                             annotation           *pn)
 {
     ARCH_FUNCTION_NAME(cfattrib_load_annotation);
 
@@ -656,17 +538,17 @@ u1 *cfattrib_load_annotation(ClassFile            *pcfs,
     jvm_annotation_type_index    anttidx;
     u2                           numevp;
 
-    pabytes = (jbyte *) src;
+    pabytes = (jbyte *) pn;
 
     MAKE_PU2(pu2, pabytes);
 
     anttidx = GETRS2(pu2);
     pu2++;
-    dst->type_index = anttidx;
+    pnma->type_index = anttidx;
 
     numevp = GETRS2(pu2);
     pu2++;
-    dst->num_element_value_pairs = numevp;
+    pnma->num_element_value_pairs = numevp;
 
     MAKE_PU2(pu2, pabytes);
 
@@ -679,21 +561,21 @@ u1 *cfattrib_load_annotation(ClassFile            *pcfs,
          * Possible, but not theoretically reasonable,
          * but not explicitly prohibited by spec
          */
-        dst->element_value_pairs
+        pnma->element_value_pairs
             = (struct element_value_pair_mem_align_struct *) rnull;
     }
     else
     {
         rint evpbytes = numevp * sizeof(element_value_pair_mem_align);
 
-        dst->element_value_pairs = HEAP_GET_METHOD(evpbytes, rfalse);
+        pnma->element_value_pairs = HEAP_GET_METHOD(evpbytes, rfalse);
 
-        memset(dst->element_value_pairs,
+        memset(pnma->element_value_pairs,
                FILL_ELEMENT_VALUES_UNION,
                evpbytes);
 
 
-        element_value_pair_mem_align *evp = dst->element_value_pairs;
+        element_value_pair_mem_align *evp = pnma->element_value_pairs;
 
         jvm_element_value_pair_index evpidx;
         for (evpidx = 0; evpidx < numevp; evpidx++, evp++)
@@ -740,7 +622,7 @@ u1 *cfattrib_load_annotation(ClassFile            *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to an annotation_mem_align[] allocation
+ * @param  pnma      Pointer to an annotation_mem_align[] allocation
  *                   where this attribute is stored in the heap
  *
  *
@@ -752,16 +634,16 @@ u1 *cfattrib_load_annotation(ClassFile            *pcfs,
  */
 
 void cfattrib_unload_annotation(ClassFile            *pcfs,
-                                annotation_mem_align *dst)
+                                annotation_mem_align *pnma)
 {
     ARCH_FUNCTION_NAME(cfattrib_unload_annotation);
 
     jvm_element_value_pair_index evpidx;
     u2                           numevp;
 
-    element_value_pair_mem_align *evp = dst->element_value_pairs;
+    element_value_pair_mem_align *evp = pnma->element_value_pairs;
 
-    numevp = dst->num_element_value_pairs;
+    numevp = pnma->num_element_value_pairs;
 
     for (evpidx = 0; evpidx < numevp; evpidx++, evp++)
     {
@@ -776,8 +658,8 @@ void cfattrib_unload_annotation(ClassFile            *pcfs,
          */
         cfattrib_unload_elementvalue(pcfs, &evp->value);
     }
-    HEAP_FREE_METHOD(dst->element_value_pairs);
-    HEAP_FREE_METHOD(dst);
+    HEAP_FREE_METHOD(pnma->element_value_pairs);
+    HEAP_FREE_METHOD(pnma);
 
     return;
 
@@ -793,18 +675,18 @@ void cfattrib_unload_annotation(ClassFile            *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to a attribute_info_mem_align[] address
+ * @param  ppaima    Pointer to a attribute_info_mem_align[] address
  *                   telling where in the heap this attribute will be
  *                   copied from the source area.
  *
- * @param  src       Pointer to an attribute in class file image.
+ * @param  pai       Pointer to an attribute in class file image.
  *                   This data will be stored in the heap at
- *                   location @c @b *dst .
+ *                   location @c @b *ppaima .
  *
  *
  * @returns Point to first byte past this attribute,
  *          or @link #rnull rnull@endlink if parsing problem.
- *          The heap area @c @b *dst will contain a valid
+ *          The heap area @c @b *ppaima will contain a valid
  *          heap pointer only if there is a valid
  *          @link attribute_info.attribute_name_index
             attribute_name_index@endlink, else it will also
@@ -813,8 +695,8 @@ void cfattrib_unload_annotation(ClassFile            *pcfs,
  */
 
 u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
-                            attribute_info_mem_align **dst,
-                            attribute_info            *src)
+                            attribute_info_mem_align **ppaima,
+                            attribute_info            *pai)
 {
     ARCH_FUNCTION_NAME(cfattrib_load_attribute);
 
@@ -832,7 +714,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
     u2 parmtblidx;
     u2 parmtbllen;
 
-    jbyte *pnext_src = (jbyte *) src;
+    jbyte *pnext_ai = (jbyte *) pai;
 
     /*!
      * @internal The @c @b attribute_length member could be
@@ -845,8 +727,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
      * that if the name matches the expected string, then the
      * length will also be correct.
      */
-    tmpatr.attribute_name_index = GETRS2(&src->attribute_name_index);
-    tmpatr.attribute_length     = GETRI4(&src->attribute_length);
+    tmpatr.attribute_name_index = GETRS2(&pai->attribute_name_index);
+    tmpatr.attribute_length     = GETRI4(&pai->attribute_length);
 
     /* Convenient mapping for direct support of CMP_ATTRIBUTE() macro */
     attribute_name_index = tmpatr.attribute_name_index;
@@ -870,7 +752,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                         rnull,
                         rnull);
  
-    /* Calculate total size of this (attribute_info) area in src */
+    /* Calculate total size of this (attribute_info) area in pai */
     tmplen = sizeof(attribute_info)
              - sizeof(u1)
              + tmpatr.attribute_length;
@@ -879,19 +761,20 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
      * Skip past this item's header and contents to next attribute,
      * adjusting for dummy [info] field.
      */
-    pnext_src += tmplen;
+    pnext_ai += tmplen;
 
 
     /*
      * Calculate total size of this (attribute_info_mem_align) area
-     * in dst
+     * in ppaima
      */
     tmplen = sizeof(attribute_info_mem_align)
              - sizeof(u1)
              + tmpatr.attribute_length;
 
     /* Allocate a heap location to store this attribute */
-    *dst = (attribute_info_mem_align *) HEAP_GET_METHOD(tmplen, rfalse);
+    *ppaima = (attribute_info_mem_align *) HEAP_GET_METHOD(tmplen,
+                                                           rfalse);
 
     /*
      * Copy attribute data to heap.  The @b info item is optional,
@@ -907,13 +790,13 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
      * Also investigate attribute type constraints using a
      * string-based @c @b switch .
      */
-    (*dst)->empty[0] = FILL_INFO_MEM_ALIGN0;
-    (*dst)->empty[1] = FILL_INFO_MEM_ALIGN1;
-    (*dst)->ai.attribute_name_index = tmpatr.attribute_name_index;
-    (*dst)->ai.attribute_length = tmpatr.attribute_length;
+    (*ppaima)->empty[0] = FILL_INFO_MEM_ALIGN0;
+    (*ppaima)->empty[1] = FILL_INFO_MEM_ALIGN1;
+    (*ppaima)->ai.attribute_name_index = tmpatr.attribute_name_index;
+    (*ppaima)->ai.attribute_length = tmpatr.attribute_length;
 
     classfile_attribute_enum atrenum =
-        cfattrib_atr2enum(pcfs, (*dst)->ai.attribute_name_index);
+        cfattrib_atr2enum(pcfs, (*ppaima)->ai.attribute_name_index);
 
     switch (atrenum)
     {
@@ -923,15 +806,15 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * unit testing.
              */
 
-            PTR_DST_CONSTANTVALUE_AI(dst)->constantvalue_index =
-                GETRS2(&((ConstantValue_attribute *) src)
+            PTR_ATR_CONSTANTVALUE_AI(ppaima)->constantvalue_index =
+                GETRS2(&((ConstantValue_attribute *) pai)
                           ->constantvalue_index);
 
             /* Verify contents of @c @b attribute_name_index string */
             if (0 == CMP_ATTRIBUTE(
                                  CONSTANT_UTF8_CONSTANTVALUE_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -942,28 +825,28 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * structure, allocating array[] pieces in that same manner.
              *
              * @note  You can get away with referencing
-             *        @c @b src->member here because these first
+             *        @c @b pai->member here because these first
              *        few members are of fixed length.  You @e still
              *        must use GETRS2() or GETRI4() because they are in
              *        a byte-stream class file, which has no guaranteed
              *        word alignment.
              */
-            PTR_DST_CODE_AI(dst)->max_stack =
-                GETRS2(&((Code_attribute *) src)->max_stack);
+            PTR_ATR_CODE_AI(ppaima)->max_stack =
+                GETRS2(&((Code_attribute *) pai)->max_stack);
 
-            PTR_DST_CODE_AI(dst)->max_locals =
-                GETRS2(&((Code_attribute *) src)->max_locals);
+            PTR_ATR_CODE_AI(ppaima)->max_locals =
+                GETRS2(&((Code_attribute *) pai)->max_locals);
 
-            PTR_DST_CODE_AI(dst)->code_length =
-                GETRI4(&((Code_attribute *) src)->code_length);
+            PTR_ATR_CODE_AI(ppaima)->code_length =
+                GETRI4(&((Code_attribute *) pai)->code_length);
 
-            if (0 == PTR_DST_CODE_AI(dst)->code_length)
+            if (0 == PTR_ATR_CODE_AI(ppaima)->code_length)
             {
                 /*
                  * Possible, but not theoretically reasonable,
                  * thus prohibited by spec
                  */
-                PTR_DST_CODE_AI(dst)->code = (u1 *) rnull;
+                PTR_ATR_CODE_AI(ppaima)->code = (u1 *) rnull;
             }
             else
             {
@@ -972,22 +855,23 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                  * issues here due to single-byte data width for
                  * all items in array.
                  */
-                PTR_DST_CODE_AI(dst)->code =
-                    HEAP_GET_METHOD(PTR_DST_CODE_AI(dst)->code_length *
-                                        sizeof(u1),
+                PTR_ATR_CODE_AI(ppaima)->code =
+                    HEAP_GET_METHOD(PTR_ATR_CODE_AI(ppaima)
+                                      ->code_length * sizeof(u1),
                                     rfalse);
 
                 /* Notice this is copy TO *ptr and FROM *bfr,not *ptr!*/
-                portable_memcpy( PTR_DST_CODE_AI(dst)->code,
+                portable_memcpy( PTR_ATR_CODE_AI(ppaima)->code,
                             /* 1st var len fld in class file code area*/
-                            &((Code_attribute *)  src)->code,
-                           (PTR_DST_CODE_AI(dst)->code_length)
+                            &((Code_attribute *)  pai)->code,
+                           (PTR_ATR_CODE_AI(ppaima)->code_length)
                             * sizeof(u1));
 
             }
 
-            pabytes  = (jbyte *) &((Code_attribute *) src)->code;
-            pabytes += PTR_DST_CODE_AI(dst)->code_length * sizeof(u1);
+            pabytes  = (jbyte *) &((Code_attribute *) pai)->code;
+            pabytes += PTR_ATR_CODE_AI(ppaima)->code_length *
+                       sizeof(u1);
 
             /*!
              * @todo HARMONY-6-jvm-cfattrib.c-23 Loading the exception
@@ -1011,17 +895,18 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_CODE_AI(dst)->exception_table_length = atbllen;
+            PTR_ATR_CODE_AI(ppaima)->exception_table_length = atbllen;
             if (0 == atbllen)
             {
                 /* Possible, and theoretically reasonable */
-                PTR_DST_CODE_AI(dst)->exception_table = (rvoid *) rnull;
+                PTR_ATR_CODE_AI(ppaima)->exception_table =
+                    (rvoid *) rnull;
             }
             else
             {
                 exception_table_entry *pete;
 
-                PTR_DST_CODE_AI(dst)->exception_table =
+                PTR_ATR_CODE_AI(ppaima)->exception_table =
                     HEAP_GET_METHOD(atbllen *
                                           sizeof(exception_table_entry),
                                     rfalse);
@@ -1031,7 +916,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                 {
                     MAKE_PU2(pu2, pabytes);
 
-                    pete = &(PTR_DST_CODE_AI(dst)
+                    pete = &(PTR_ATR_CODE_AI(ppaima)
                                ->exception_table)[atblidx];
 
                     pete->start_pc = GETRS2(pu2);
@@ -1060,17 +945,17 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_CODE_AI(dst)->attributes_count = atbllen;
+            PTR_ATR_CODE_AI(ppaima)->attributes_count = atbllen;
 
             if (0 == atbllen)
             {
-                PTR_DST_CODE_AI(dst)->attributes =
+                PTR_ATR_CODE_AI(ppaima)->attributes =
                     (attribute_info_mem_align **) rnull;
             }
             else
             {
-                PTR_DST_CODE_AI(dst)->attributes =
-                    HEAP_GET_METHOD(PTR_DST_CODE_AI(dst)
+                PTR_ATR_CODE_AI(ppaima)->attributes =
+                    HEAP_GET_METHOD(PTR_ATR_CODE_AI(ppaima)
                                       ->attributes_count *
                                     sizeof(attribute_info_mem_align *),
                                     rtrue);
@@ -1087,7 +972,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                 jvm_attribute_index atridx;
 
                 for (atridx = 0;
-                     atridx < PTR_DST_CODE_AI(dst)->attributes_count;
+                     atridx < PTR_ATR_CODE_AI(ppaima)->attributes_count;
                      atridx++)
                 {
                     /*
@@ -1108,14 +993,14 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                         cfattrib_load_attribute(
                             pcfs,
                             (attribute_info_mem_align **)
-                                &(PTR_DST_CODE_AI(dst)
+                                &(PTR_ATR_CODE_AI(ppaima)
                                     ->attributes)[atridx],
                             (attribute_info *) pabytes);
 
                     LOAD_SYSCALL_FAILURE_ATTRIB((rnull == pabytes),
                                                 "load field attribute",
-                                                *dst,
-                                                PTR_DST_CODE_AI(dst)
+                                                *ppaima,
+                                                PTR_ATR_CODE_AI(ppaima)
                                                   ->attributes);
 
                 } /* for (atridx) */
@@ -1124,7 +1009,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             /* Verify contents of @c @b attribute_name_index string */
             if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_CODE_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1134,7 +1019,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * unit testing.
              */
 
-            pabytes = (jbyte *) &((Exceptions_attribute *) src)
+            pabytes = (jbyte *) &((Exceptions_attribute *) pai)
                                    ->number_of_exceptions;
 
             MAKE_PU2(pu2, pabytes);
@@ -1144,7 +1029,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_EXCEPTIONS_AI(dst)->number_of_exceptions = atbllen;
+            PTR_ATR_EXCEPTIONS_AI(ppaima)->number_of_exceptions =
+                atbllen;
             if (0 != atbllen)
             {
                 /*
@@ -1153,7 +1039,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                  * @b attribute_length field above as parm to
                  * HEAP_GET_METHOD() above @c @b switch() statement.
                  */
-                patblu2 = &(PTR_DST_EXCEPTIONS_AI(dst)
+                patblu2 = &(PTR_ATR_EXCEPTIONS_AI(ppaima)
                               ->exception_index_table)[0];
                 for (atblidx = 0; atblidx < atbllen; atblidx++)
                 {
@@ -1169,7 +1055,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             /* Verify contents of @c @b attribute_name_index string */
             if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_EXCEPTIONS_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1178,7 +1064,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-25 Needs unit testing.
              */
 
-            pabytes = (jbyte *) &((InnerClasses_attribute *) src)
+            pabytes = (jbyte *) &((InnerClasses_attribute *) pai)
                                    ->number_of_classes;
 
             MAKE_PU2(pu2, pabytes);
@@ -1188,7 +1074,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_INNERCLASSES_AI(dst)->number_of_classes = atbllen;
+            PTR_ATR_INNERCLASSES_AI(ppaima)->number_of_classes =
+                atbllen;
             if (0 != atbllen)
             {
                 inner_class_table_entry *picte;
@@ -1203,7 +1090,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                 {
                     MAKE_PU2(pu2, pabytes);
 
-                    picte = &(PTR_DST_INNERCLASSES_AI(dst)
+                    picte = &(PTR_ATR_INNERCLASSES_AI(ppaima)
                                 ->classes)[atblidx];
 
                     picte->inner_class_info_index   = GETRS2(pu2);
@@ -1226,7 +1113,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                                   CONSTANT_UTF8_INNERCLASSES_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1235,7 +1122,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-30 Needs unit testing.
              */
 
-            pabytes = (jbyte *) &((LineNumberTable_attribute *) src)
+            pabytes = (jbyte *) &((LineNumberTable_attribute *) pai)
                                    ->line_number_table_length;
 
             MAKE_PU2(pu2, pabytes);
@@ -1245,7 +1132,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_LINENUMBERTABLE_AI(dst)->line_number_table_length =
+            PTR_ATR_LINENUMBERTABLE_AI(ppaima)
+              ->line_number_table_length =
                 atbllen;
             if (0 != atbllen)
             {
@@ -1261,7 +1149,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                 {
                     MAKE_PU2(pu2, pabytes);
 
-                    plnte = &(PTR_DST_LINENUMBERTABLE_AI(dst)
+                    plnte = &(PTR_ATR_LINENUMBERTABLE_AI(ppaima)
                                 ->line_number_table)[atblidx];
 
                     plnte->start_pc   = GETRS2(pu2);
@@ -1278,7 +1166,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                                CONSTANT_UTF8_LINENUMBERTABLE_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1287,7 +1175,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * @todo HARMONY-6-jvm-cfattrib.c-31 Needs unit testing.
              */
 
-            pabytes = (jbyte *) &((LocalVariableTable_attribute *) src)
+            pabytes = (jbyte *) &((LocalVariableTable_attribute *) pai)
                                    ->local_variable_table_length;
 
             MAKE_PU2(pu2, pabytes);
@@ -1297,7 +1185,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_LOCALVARIABLETABLE_AI(dst)
+            PTR_ATR_LOCALVARIABLETABLE_AI(ppaima)
               ->local_variable_table_length = atbllen;
             if (0 != atbllen)
             {
@@ -1313,7 +1201,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                 {
                     MAKE_PU2(pu2, pabytes);
 
-                    plvte = &(PTR_DST_LOCALVARIABLETABLE_AI(dst)
+                    plvte = &(PTR_ATR_LOCALVARIABLETABLE_AI(ppaima)
                                 ->local_variable_table)[atblidx];
 
                     plvte->start_pc         = GETRS2(pu2);
@@ -1339,7 +1227,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                             CONSTANT_UTF8_LOCALVARIABLETABLE_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1349,7 +1237,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
 
             pabytes = (jbyte *)
-                      &((LocalVariableTypeTable_attribute *) src)
+                      &((LocalVariableTypeTable_attribute *) pai)
                          ->local_variable_type_table_length;
 
             MAKE_PU2(pu2, pabytes);
@@ -1359,7 +1247,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
             pabytes = (jbyte *) pu2;
 
-            PTR_DST_LOCALVARIABLETYPETABLE_AI(dst)
+            PTR_ATR_LOCALVARIABLETYPETABLE_AI(ppaima)
               ->local_variable_type_table_length = atbllen;
             if (0 != atbllen)
             {
@@ -1375,7 +1263,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                 {
                     MAKE_PU2(pu2, pabytes);
 
-                    plvtte = &(PTR_DST_LOCALVARIABLETYPETABLE_AI(dst)
+                    plvtte = &(PTR_ATR_LOCALVARIABLETYPETABLE_AI(ppaima)
                                 ->local_variable_type_table)[atblidx];
 
                     plvtte->start_pc        = GETRS2(pu2);
@@ -1401,7 +1289,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                         CONSTANT_UTF8_LOCALVARIABLETYPETABLE_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1413,7 +1301,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             /* Verify contents of @c @b attribute_name_index string */
             if (0 == CMP_ATTRIBUTE(CONSTANT_UTF8_DEPRECATED_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1423,38 +1311,40 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
 
             pabytes = (jbyte *)
-                      &((RuntimeVisibleAnnotations_attribute *) src)
+                      &((RuntimeVisibleAnnotations_attribute *) pai)
                          ->num_annotations;
 
             MAKE_PU2(pu2, pabytes);
 
             atbllen = GETRS2(pu2);
             pu2++;
-            PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+            PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
               ->num_annotations = atbllen;
 
             pabytes = (jbyte *) pu2;
 
             if (0 == atbllen)
             {
-                PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
                   ->annotations =
                     (annotation_mem_align **) rnull;
             }
             else
             {
-                PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)->annotations =
+                PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
+                  ->annotations =
                     HEAP_GET_METHOD(
-                               PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
-                                   ->num_annotations *
-                                 sizeof(annotation_mem_align *),
-                               rtrue);
+                            PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
+                                      ->num_annotations *
+                                    sizeof(annotation_mem_align *),
+                                    rtrue);
 
                 jvm_annotation_index antidx;
 
                 for (antidx = 0;
                      antidx <
-             PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)->num_annotations;
+             PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
+               ->num_annotations;
                      antidx++)
                 {
                     /*
@@ -1465,15 +1355,15 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                         cfattrib_load_annotation(
                             pcfs,
                             /* (annotation_mem_align **) */
-                             (PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                           (PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
                                  ->annotations)[antidx],
                             (annotation *) pabytes);
 
                     LOAD_SYSCALL_FAILURE_ANNOTATION(
                         (rnull == pabytes),
                         "load runtime visible annotation",
-                        *dst,
-                        PTR_DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                        *ppaima,
+                        PTR_ATR_RUNTIMEVISIBLEANNOTATIONS_AI(ppaima)
                           ->annotations);
                 } /* for (antidx) */
             }
@@ -1483,7 +1373,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                      CONSTANT_UTF8_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1493,30 +1383,30 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
 
             pabytes = (jbyte *)
-                      &((RuntimeInvisibleAnnotations_attribute *) src)
+                      &((RuntimeInvisibleAnnotations_attribute *) pai)
                          ->num_annotations;
 
             MAKE_PU2(pu2, pabytes);
 
             atbllen = GETRS2(pu2);
             pu2++;
-            PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+            PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)
               ->num_annotations = atbllen;
 
             pabytes = (jbyte *) pu2;
 
             if (0 == atbllen)
             {
-                PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)
                   ->annotations =
                     (annotation_mem_align **) rnull;
             }
             else
             {
-                PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)
                   ->annotations =
                     HEAP_GET_METHOD(
-                             PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                          PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)
                                  ->num_annotations *
                                sizeof(annotation_mem_align *),
                              rtrue);
@@ -1525,7 +1415,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                 for (antidx = 0;
                      antidx <
-           PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)->num_annotations;
+        PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)->num_annotations;
                      antidx++)
                 {
                     /*
@@ -1536,15 +1426,15 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                         cfattrib_load_annotation(
                             pcfs,
                             /* (annotation_mem_align **) */
-                            (PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                         (PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)
                                  ->annotations)[antidx],
                             (annotation *) pabytes);
 
                     LOAD_SYSCALL_FAILURE_ANNOTATION(
                         (rnull == pabytes),
                         "load runtime invisible annotation",
-                        *dst,
-                        PTR_DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                        *ppaima,
+                        PTR_ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(ppaima)
                           ->annotations);
                 } /* for (antidx) */
             }
@@ -1554,7 +1444,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                    CONSTANT_UTF8_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1564,30 +1454,30 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
 
             pabytes = (jbyte *)
-                 &((RuntimeVisibleParameterAnnotations_attribute *) src)
+                 &((RuntimeVisibleParameterAnnotations_attribute *) pai)
                          ->num_parameters;
 
             MAKE_PU2(pu2, pabytes);
 
             parmtbllen = GETRS2(pu2);
             pu2++;
-            PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+            PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
               ->num_parameters = parmtbllen;
 
             pabytes = (jbyte *) pu2;
 
             if (0 == parmtbllen)
             {
-                PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                   ->parameter_annotations = 
                     (parameter_annotation **) rnull;
             }
             else
             {
-                PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                   ->parameter_annotations = 
                     HEAP_GET_METHOD(
-                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                         ->num_parameters *
                           sizeof(parameter_annotation *),
                       rtrue);
@@ -1603,7 +1493,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                     atbllen = GETRS2(pu2);
                     pu2++;
-                    PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                       ->parameter_annotations[parmtblidx]
                         ->num_annotations = atbllen;
 
@@ -1611,18 +1501,18 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                     if (0 == atbllen)
                     {
-                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                           ->parameter_annotations[parmtblidx]
                             ->annotations =
                             (annotation_mem_align **) rnull;
                     }
                     else
                     {
-                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                         ->parameter_annotations[parmtblidx]
                           ->annotations =
                             HEAP_GET_METHOD(
-                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                         ->parameter_annotations[parmtblidx]
                           ->num_annotations *
                                          sizeof(annotation_mem_align *),
@@ -1632,7 +1522,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                         for (antidx = 0;
                              antidx <
-                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                                ->parameter_annotations[parmtblidx]
                                  ->num_annotations;
                              antidx++)
@@ -1645,7 +1535,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                                 cfattrib_load_annotation(
                                     pcfs,
                                     /* (annotation_mem_align **) */
-                     (PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                  (PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                                      ->parameter_annotations[parmtblidx]
                                        ->annotations)[antidx],
                                     (annotation *) pabytes);
@@ -1653,8 +1543,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                             LOAD_SYSCALL_FAILURE_ANNOTATION(
                                 (rnull == pabytes),
                             "load runtime visible parameter annotation",
-                                *dst,
-                      PTR_DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                                *ppaima,
+                   PTR_ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                                   ->parameter_annotations[parmtblidx]
                                     ->annotations);
                         } /* for (antidx) */
@@ -1667,7 +1557,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
             CONSTANT_UTF8_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1677,30 +1567,30 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
 
             pabytes = (jbyte *)
-               &((RuntimeInvisibleParameterAnnotations_attribute *) src)
+               &((RuntimeInvisibleParameterAnnotations_attribute *) pai)
                          ->num_parameters;
 
             MAKE_PU2(pu2, pabytes);
 
             parmtbllen = GETRS2(pu2);
             pu2++;
-            PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+            PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
               ->num_parameters = parmtbllen;
 
             pabytes = (jbyte *) pu2;
 
             if (0 == parmtbllen)
             {
-                PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                   ->parameter_annotations = 
                     (parameter_annotation **) rnull;
             }
             else
             {
-                PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                   ->parameter_annotations = 
                     HEAP_GET_METHOD(
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                         ->num_parameters *
                           sizeof(parameter_annotation *),
                       rtrue);
@@ -1716,7 +1606,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                     atbllen = GETRS2(pu2);
                     pu2++;
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                       ->parameter_annotations[parmtblidx]
                         ->num_annotations = atbllen;
 
@@ -1724,18 +1614,18 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                     if (0 == atbllen)
                     {
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                           ->parameter_annotations[parmtblidx]
                             ->annotations =
                             (annotation_mem_align **) rnull;
                     }
                     else
                     {
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                         ->parameter_annotations[parmtblidx]
                           ->annotations =
                             HEAP_GET_METHOD(
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                         ->parameter_annotations[parmtblidx]
                           ->num_annotations *
                                          sizeof(annotation_mem_align *),
@@ -1745,7 +1635,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
 
                         for (antidx = 0;
                              antidx <
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                                ->parameter_annotations[parmtblidx]
                                  ->num_annotations;
                              antidx++)
@@ -1758,7 +1648,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                                 cfattrib_load_annotation(
                                     pcfs,
                                     /* (annotation_mem_align **) */
-                   (PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                (PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                                      ->parameter_annotations[parmtblidx]
                                        ->annotations)[antidx],
                                     (annotation *) pabytes);
@@ -1766,8 +1656,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
                             LOAD_SYSCALL_FAILURE_ANNOTATION(
                                 (rnull == pabytes),
                             "load runtime visible parameter annotation",
-                                *dst,
-                    PTR_DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                                *ppaima,
+                 PTR_ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(ppaima)
                                   ->parameter_annotations[parmtblidx]
                                     ->annotations);
                         } /* for (antidx) */
@@ -1780,7 +1670,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
           CONSTANT_UTF8_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE))
             {
-              return(pnext_src);
+              return(pnext_ai);
             }
             break;
 
@@ -1790,12 +1680,12 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
 
             pabytes = (jbyte *)
-                      &((AnnotationDefault_attribute *) src)
+                      &((AnnotationDefault_attribute *) pai)
                          ->default_value;
 
 
             pabytes = cfattrib_load_elementvalue(pcfs,
-                              &PTR_DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst)
+                           &PTR_ATR_ANNOTATIONDEFAULTMEMALIGN_AI(ppaima)
                                                  ->default_value, 
                                              (element_value *) pabytes);
 
@@ -1804,7 +1694,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
             if (0 == CMP_ATTRIBUTE(
                              CONSTANT_UTF8_ANNOTATIONDEFAULT_ATTRIBUTE))
             {
-                return(pnext_src);
+                return(pnext_ai);
             }
             break;
 
@@ -1826,8 +1716,8 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              */
             if (0 != tmpatr.attribute_length)
             {
-                portable_memcpy(&(*dst)->ai.info,
-                                &src->info,
+                portable_memcpy(&(*ppaima)->ai.info,
+                                &pai->info,
                                 tmpatr.attribute_length);
             }
 
@@ -1836,14 +1726,14 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
              * that needs to be verified since contents is an
              * unknown attribute.
              */
-            return(pnext_src);
+            return(pnext_ai);
 
     } /* switch atrenum */
 
     /*
      * Something went wrong here. free heap allocation and report error
      */
-    HEAP_FREE_METHOD(*dst);
+    HEAP_FREE_METHOD(*ppaima);
     return((u1 *) rnull);
 
 } /* END of cfattrib_load_attribute() */
@@ -1854,7 +1744,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
  *
  * @param  pcfs      Pointer to (partially) parsed ClassFile area
  *
- * @param  dst       Pointer to a attribute_info_mem_align allocation
+ * @param  paima     Pointer to a attribute_info_mem_align allocation
  *                   where this attribute is stored in the heap
  *
  *
@@ -1866,7 +1756,7 @@ u1 *cfattrib_load_attribute(ClassFile                 *pcfs,
  */
 
 rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
-                                attribute_info_mem_align *dst)
+                                attribute_info_mem_align *paima)
 {
     ARCH_FUNCTION_NAME(cfattrib_unload_attribute);
 
@@ -1877,7 +1767,7 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
     annotation_mem_align **pa;
 
     /* Ignore any NULL pointers, nothing to do (should NEVER happen) */
-    if ((rnull == pcfs) || (rnull == dst))
+    if ((rnull == pcfs) || (rnull == paima))
     {
         return;
     }
@@ -1898,7 +1788,7 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
      */
 
     classfile_attribute_enum atrenum =
-        cfattrib_atr2enum(pcfs, dst->ai.attribute_name_index);
+        cfattrib_atr2enum(pcfs, paima->ai.attribute_name_index);
 
     switch (atrenum)
     {
@@ -1911,7 +1801,7 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
              * were made.)
              */
 
-            if (0 == DST_CODE_AI(dst)->attributes_count)
+            if (0 == ATR_CODE_AI(paima)->attributes_count)
             {
                 /*
                  * Possible, and theoretically reasonable.
@@ -1931,7 +1821,7 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
                 jvm_attribute_index atridx;
 
                 for (atridx = 0;
-                     atridx < DST_CODE_AI(dst)->attributes_count;
+                     atridx < ATR_CODE_AI(paima)->attributes_count;
                      atridx++)
                 {
                     /*
@@ -1948,14 +1838,14 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
                      */
 
                     cfattrib_unload_attribute(pcfs,
-                                  DST_CODE_AI(dst)->attributes[atridx]);
+                                ATR_CODE_AI(paima)->attributes[atridx]);
 
                 } /* for (atridx) */
 
-                HEAP_FREE_METHOD(DST_CODE_AI(dst)->attributes);
+                HEAP_FREE_METHOD(ATR_CODE_AI(paima)->attributes);
             }
 
-            if (0 == DST_CODE_AI(dst)->exception_table_length)
+            if (0 == ATR_CODE_AI(paima)->exception_table_length)
             {
                 /*
                  * Possible, and theoretically reasonable.
@@ -1965,10 +1855,10 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
             }
             else
             {
-                HEAP_FREE_METHOD(DST_CODE_AI(dst)->exception_table);
+                HEAP_FREE_METHOD(ATR_CODE_AI(paima)->exception_table);
             }
 
-            if (0 == DST_CODE_AI(dst)->code_length)
+            if (0 == ATR_CODE_AI(paima)->code_length)
             {
                 /*
                  * Possible, but not theoretically reasonable,
@@ -1980,34 +1870,34 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
             }
             else
             {
-                HEAP_FREE_METHOD(DST_CODE_AI(dst)->code);
+                HEAP_FREE_METHOD(ATR_CODE_AI(paima)->code);
             }
 
 
             /* Finally, free the main attribute area itself */
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
 
             break;
 
         case LOCAL_EXCEPTIONS_ATTRIBUTE:
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
 
             break;
 
         case LOCAL_INNERCLASSES_ATTRIBUTE:
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_LOCALVARIABLETYPETABLE_ATTRIBUTE:
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE:
@@ -2016,18 +1906,18 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
              */
 
             num_pointers =
-             DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)->num_annotations;
+             ATR_RUNTIMEVISIBLEANNOTATIONS_AI(paima)->num_annotations;
 
             for (ptridx = 0; ptridx < num_pointers; ptridx++)
             {
                 cfattrib_unload_annotation(
                     pcfs,
-                    DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+                    ATR_RUNTIMEVISIBLEANNOTATIONS_AI(paima)
                       ->annotations[ptridx]);
             }
-            HEAP_FREE_METHOD(DST_RUNTIMEVISIBLEANNOTATIONS_AI(dst)
+            HEAP_FREE_METHOD(ATR_RUNTIMEVISIBLEANNOTATIONS_AI(paima)
                                ->annotations);
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
@@ -2036,19 +1926,19 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
              */
 
             num_pointers =
-                DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(paima)
                   ->num_annotations;
 
             for (ptridx = 0; ptridx < num_pointers; ptridx++)
             {
                 cfattrib_unload_annotation(
                     pcfs,
-                    DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+                    ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(paima)
                       ->annotations[ptridx]);
             }
-            HEAP_FREE_METHOD(DST_RUNTIMEINVISIBLEANNOTATIONS_AI(dst)
+            HEAP_FREE_METHOD(ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(paima)
                                ->annotations);
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
@@ -2057,10 +1947,10 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
              */
 
             num_pointers =
-                DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(paima)
                   ->num_parameters;
 
-            ppa = DST_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(dst)
+            ppa = ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(paima)
                     ->parameter_annotations;
 
             for (ptridx = 0; ptridx < num_pointers; ptridx++)
@@ -2075,7 +1965,7 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
                 HEAP_FREE_METHOD(pa);
             }
             HEAP_FREE_METHOD(ppa);
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
@@ -2084,10 +1974,10 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
              */
 
             num_pointers =
-                DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+                ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(paima)
                   ->num_parameters;
 
-            ppa = DST_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(dst)
+            ppa = ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(paima)
                     ->parameter_annotations;
 
             for (ptridx = 0; ptridx < num_pointers; ptridx++)
@@ -2102,14 +1992,14 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
                 HEAP_FREE_METHOD(pa);
             }
             HEAP_FREE_METHOD(ppa);
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
             cfattrib_unload_elementvalue(
                 pcfs,
-               &DST_ANNOTATIONDEFAULTMEMALIGN_AI(dst)->default_value);
-            HEAP_FREE_METHOD(dst);
+               &ATR_ANNOTATIONDEFAULTMEMALIGN_AI(paima)->default_value);
+            HEAP_FREE_METHOD(paima);
             break;
 
         case LOCAL_CONSTANTVALUE_ATTRIBUTE:
@@ -2126,7 +2016,7 @@ rvoid cfattrib_unload_attribute(ClassFile                *pcfs,
              * needs to be invoked for freeing up the heap areas.  The
              * constant-size attributes are simply freed.
              */
-            HEAP_FREE_METHOD(dst);
+            HEAP_FREE_METHOD(paima);
             break;
 
     } /* switch atrenum */
