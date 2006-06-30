@@ -947,6 +947,7 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
         field_info              *pfld;
         method_info             *pmth;
         Code_attribute          *pca;
+        exception_table_entry   *pet;
 
         ClassFile              *pcfsmisc;
         jvm_class_index         clsidxmisc;
@@ -956,6 +957,7 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
         jvm_field_lookup_index  fluidxmisc;
         rchar                  *prchar_clsname;
         rushort                 special_obj_misc;
+        jvm_sp                  fptmp;
 
 
         /* Calls @c @b setjmp(3) to arm handler */
@@ -983,17 +985,18 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
                    ((rfalse == check_timeslice) || /* or if true and */
                     (rfalse == pjvm->timeslice_expired)))
             {
-                sysDbgMsg(DMLNORM - 1,
-                          arch_function_name,
-   "thr=%04.4x PC=%04.4x.%04.4x.%04.4x.%04.4x.%04.4x  opcode=%02.2x %s",
-                          thridx,
-                          pc->clsidx,
-                          pc->mthidx,
-                          pc->codeatridx,
-                          pc->excpatridx,
-                          pc->offset,
-                          pcode[pc->offset],
-                          opcode_names[pcode[pc->offset]]);
+
+#if 1
+                if (DBGMSG_PRINT(DMLNORM - 1))
+                {
+                    opcode_disassemble(DMLNORM - 1,
+                                       arch_function_name,
+                                       thridx,
+                                       pcode,
+                                       pc,
+                                       iswide);
+                }
+#endif
 
                 /* Retrieve next virtual opcode */
                 opcode = pcode[pc->offset++];
@@ -1004,9 +1007,6 @@ PORTABLE_LONGJMP(THREAD(thridx).pportable_nonlocal_ThrowableEvent, rc)
  * of code with out breaking up expressions with the intention of
  * creating better readability of the code.
  */
-
-static void dummy1(void) { char *p, *dummy2; dummy2 = p; dummy1(); }
-#define STUB { dummy1(); }
 
 switch(opcode)
 {
@@ -2756,6 +2756,16 @@ case OPCODE_B8_INVOKESTATIC:
             break;
 
         case OPCODE_B7_INVOKESPECIAL:
+            /*!
+             * @todo HARMONY-6-jvm-opcode.c-152 Add CHECK_CLINIT_METHOD
+             * (or) CHECK_INIT_METHOD type macro.  But more important,
+             * add bits to late binding to check this for all methods
+             * at load time and set one of these two bits in late
+             * binding.  Then modify CHECK_NOT_[CL]INIT_METHOD macros
+             * to check a bit instead of strcmp on the method name.
+             * This is sort of like checking the ACC_ABSTRACT and
+             * ACC_PUBLIC bits.
+             */
             /* Must be an instance method */
             CHECK_INSTANCE_METHOD;
 
@@ -2825,6 +2835,14 @@ case OPCODE_B8_INVOKESTATIC:
          * @todo HARMONY-6-jvm-opcode.c-136 Needs unit testing
          *       w/ real data
          */
+
+        /*
+         * Make SURE a native method relinquishes after execution,
+         * especially when SYNCHRONIZE_METHOD_INVOCATION breaks out.
+         * This way the opcode will not re-execute while waiting on
+         * an event that will not take place in this thread.
+         */
+        pjvm->timeslice_expired = rtrue;
 
         /* This macro conditionally uses 'break' to exit the switch() */
         SYNCHRONIZE_METHOD_INVOCATION;
@@ -3277,8 +3295,179 @@ case OPCODE_BE_ARRAYLENGTH:
     break;
 
 case OPCODE_BF_ATHROW:
-    /*! @todo HARMONY-6-jvm-opcode.c-72 Write this opcode */
-    STUB;
+ /*! @todo HARMONY-6-jvm-opcode.c-150 Needs unit testing w/ real data */
+#warning Need to test the ATHROW code with real stack frame data...
+
+    /* Retrieve object reference to examine */
+    POP(thridx, jotmp1, jvm_object_hash);
+
+    /*
+     * Thrown object must _not_ be NULL,
+     * else throw java.lang.NullPointerException
+     * instead of class of parameter from stack
+     */
+    if (jvm_object_hash_null != jotmp1)
+    {
+        clsidxmisc = OBJECT_CLASS_LINKAGE(jotmp1)->clsidx;
+
+        pcfsmisc   = OBJECT_CLASS_LINKAGE(jotmp1)->pcfs;
+
+        /* Check if operand is a java.lang.Throwable or subclass */
+        clsidxmisc2 =
+            class_load_from_prchar(JVMCLASS_JAVA_LANG_THROWABLE,
+                                   rfalse,
+                                   (jint *) rnull);
+
+        if (rfalse == classutil_class_is_a(clsidxmisc, clsidxmisc2))
+        {
+            exit_throw_exception(EXIT_JVM_CLASS,
+                                 JVMCLASS_JAVA_LANG_VERIFYERROR);
+        }
+    }
+    else
+    {
+        /* Loading NPE will load java.lang.Throwable also */
+        clsidxmisc = class_load_from_prchar(
+                                JVMCLASS_JAVA_LANG_NULLPOINTEREXCEPTION,
+                                            rfalse,
+                                            (jint *) rnull);
+
+        pcfsmisc   = CLASS_OBJECT_LINKAGE(clsidxmisc)->pcfs;
+
+        /* Will not need to load, but still need to find */
+        clsidxmisc2 =class_find_by_prchar(JVMCLASS_JAVA_LANG_THROWABLE);
+
+        jotmp1 = object_instance_new(OBJECT_STATUS_EMPTY,
+                                     pcfsmisc,
+                                     clsidxmisc,
+                                     0,
+                                     (jint *) rnull,
+                                     rtrue,
+                                     thridx,
+                                     (CONSTANT_Utf8_info *) rnull);
+    }
+
+    /*
+     * Examine the exception table for the current method,
+     * looking for a handler that is of class 'clsidxmisc'.
+     * If found, clear operand stack, push operand again (or
+     * its substituted value), and transfer control to that
+     * address.  If not, work up the stack frame until one
+     * is found.  If not found, then call the default
+     * ThreadGroup.uncaughtException() later in this function.
+     */
+    fptmp = GET_FP(thridx);
+    pcfsmisc = CLASS_OBJECT_LINKAGE(pc->clsidx)->pcfs;
+    pca = (Code_attribute *)
+             &pcfsmisc->methods[pc->mthidx]->attributes[pc->codeatridx];
+    pet = pca->exception_table;
+
+#define GET_FPTMP_PC_WORD(thridx, idx) \
+        GET_FP_WORD(thridx, fptmp + JVMREG_STACK_PC_##idx##_OFFSET,jint)
+
+    while (rtrue)
+    {
+        if (rnull != pet)
+        {
+            rboolean                  handler_found = rfalse;
+
+            jvm_exception_table_index etidx;
+
+            for(etidx = 0; etidx < pca->exception_table_length; etidx++)
+            {
+                /*
+                 * Where pc currently points PAST this opcode:
+                 *
+                 * Check range:  start_pc     <= pc - 1 <  end_pc
+                 *
+                 * (from spec section 4.8.3:  The 'start_pc' is
+                 * inclusive and 'end_pc' is exclusive)
+                 *
+                 * The reason for this is that pc->offset by this time
+                 * points to the NEXT INSTRUCTION, not the CURRENT one.
+                 */
+                if (pet[etidx].start_pc > pc->offset - 1)
+                {
+                    /* PC is below coverage range of handler */
+                    continue;
+                }
+
+                if (pet[etidx].end_pc < pc->offset - 1)
+                {
+                    /* PC is above coverage range of handler */
+                    continue;
+                }
+
+                /* Use this handler if default or match */
+                if (CODE_DEFAULT_CATCH_TYPE != pet[etidx].catch_type)
+                {
+                    pcpma_Class = PTR_CP_ENTRY_CLASS(pcfsmisc,
+                                                pet[etidx].catch_type);
+
+                    /*!
+                     * @todo: HARMONY-6-jvm-opcode.c-151 Does this need
+                     *         to invoke late binding linkage?  That is,
+                     *         is there any possibility of a null class
+                     *         index in this place?
+                     */
+                    if (rfalse ==
+                        classutil_class_is_a(clsidxmisc,
+                                             pcpma_Class
+                                               ->LOCAL_Class_binding
+                                                 .clsidxJVM))
+                    {
+                        /* Thrown class is not one of these */
+                        continue;
+                    }
+                }
+
+                /* This handler is the one to invoke.  Go run its code*/
+                PUT_SP_STRIP_OPERAND_STACK(thridx);
+
+                pc->offset = pet[etidx].handler_pc;
+
+                handler_found = rtrue;
+
+                break; /* Leave the for(etidx) loop */
+
+            } /* for (etidx) */
+
+            /* ALSO leave the while(rtrue) loop when handler located */
+
+            if (rtrue == handler_found)
+            {
+                break;
+            }
+
+        } /* if (pet) */
+
+        /* Strip operand stack */
+        PUT_SP_STRIP_OPERAND_STACK(thridx);
+
+        /* Tear down this stack frame */
+        POP_FRAME(thridx);
+        fptmp = GET_FP(thridx);
+
+        /* If traversed to bottom of stack, handler not found */
+        if (THREAD(thridx).fp_end_program < fptmp)
+        {
+            /* Kill thread due to unhandled exception */
+            PORTABLE_LONGJMP(&opcode_end_thread_nonlocal_return,
+                             EXIT_JVM_THROWABLE);
+        }
+
+        /* Set up pointers to look at next stack frame */
+        pcfsmisc =
+            CLASS_OBJECT_LINKAGE(GET_FPTMP_PC_WORD(thridx, CLSIDX))
+              ->pcfs;
+
+        pca = (Code_attribute *)
+             &pcfsmisc->methods[GET_FPTMP_PC_WORD(thridx, MTHIDX)]
+                ->attributes[GET_FPTMP_PC_WORD(thridx, CODEATRIDX)];
+        pet = pca->exception_table;
+
+    } /* while (rtrue) */
+
     break;
 
 case OPCODE_C0_CHECKCAST:
