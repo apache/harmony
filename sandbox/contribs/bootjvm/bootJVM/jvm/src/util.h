@@ -105,9 +105,13 @@ ARCH_HEADER_COPYRIGHT_APACHE(util, h,
 
 
 /* Prototypes for functions in 'bytegames.c' */
-extern rushort bytegames_getrs2(rushort *ptr2);
-extern ruint   bytegames_getri4(ruint   *ptr4);
-extern rulong  bytegames_getrl8(rulong  *ptr8);
+extern rushort bytegames_getrs2(rushort    *ptr2);
+extern rushort bytegames_getrs2_le(rushort *ptr2);
+
+extern ruint   bytegames_getri4(ruint      *ptr4);
+extern ruint   bytegames_getri4_le(ruint   *ptr4);
+
+extern rulong  bytegames_getrl8(rulong    *ptr8);
 
 extern rvoid   bytegames_putrs2(rushort *ptr2, rushort val2);
 extern rvoid   bytegames_putri4(ruint   *ptr4, ruint   val4);
@@ -236,6 +240,8 @@ extern rvoid argv_showmsg(rvoid);
 
 
 /* Prototypes for small utility functions in 'jvmutil.c' */
+
+#define DBGMSG_PRINT(dml) (jvmutil_get_dml() >= dml)
 
 extern rvoid                jvmutil_set_dml(jvm_debug_level_enum level);
 extern jvm_debug_level_enum jvmutil_get_dml(rvoid);
