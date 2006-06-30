@@ -1140,7 +1140,16 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                             pcfs,
                             &pcfs->fields[fldidx]->attributes[atridx],
                             (attribute_info *) pfbytes);
-
+#if 1
+                    if (rnull != pfbytes)
+                    {
+                        cfmsgs_atrmsg(arch_function_name,
+                                      pcfs,
+                                      pcfs
+                                        ->fields[fldidx]
+                                          ->attributes[atridx]);
+                    }
+#endif
                     LOAD_SYSCALL_FAILURE((rnull == pfbytes),
                                          "load field attribute",
                                          rnull,
@@ -1304,6 +1313,16 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
                             pcfs,
                             &pcfs->methods[mthidx]->attributes[atridx],
                             (attribute_info *) pmbytes);
+#if 1
+                    if (rnull != pmbytes)
+                    {
+                        cfmsgs_atrmsg(arch_function_name,
+                                      pcfs,
+                                      pcfs
+                                        ->methods[mthidx]
+                                          ->attributes[atridx]);
+                    }
+#endif
 
                     LOAD_SYSCALL_FAILURE((rnull == pmbytes),
                                          "verify member attribute",
@@ -1420,11 +1439,17 @@ ClassFile *classfile_load_classdata(u1       *pclassfile_image)
              */
 
             pcbytes =
-                cfattrib_load_attribute(
-                    pcfs,
-                    &pcfs->attributes[atridx],
-                    (attribute_info *) pcbytes);
-
+                cfattrib_load_attribute(pcfs,
+                                        &pcfs->attributes[atridx],
+                                        (attribute_info *) pcbytes);
+#if 1
+            if (rnull != pcbytes)
+            {
+                cfmsgs_atrmsg(arch_function_name,
+                              pcfs,
+                              pcfs->attributes[atridx]);
+            }
+#endif
             LOAD_SYSCALL_FAILURE((rnull == pcbytes),
                                  "verify file attribute",
                                  rnull,
