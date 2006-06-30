@@ -267,14 +267,44 @@ rint portable_open(const rchar *path, rint oflag)
 
 
 /*!
+ * @brief Portable replacement for @c @b lseek(2) system call
+ *
+ *
+ * @param[in]  fildes  Integer file handle of open file.
+ *
+ * @param[in]  offset  Offset in bytes of distance into file.
+ *
+ * @param[in]  whence  Seek mode-- SEEK_SET, SEEK_CUR, SEEK_END.
+ *
+ *
+ * @returns Requested offset into file or -1 with @c @b errno set
+ *          to report the error that occurred.
+ *
+ */
+rlong portable_lseek(rint fildes, rlong offset, rint whence)
+{
+    ARCH_FUNCTION_NAME(portable_lseek);
+
+    int   fildeslocal = (int)   fildes;
+    off_t offsetlocal = (off_t) offset;
+    int   whencelocal = (int)   whence;
+
+    long rc = lseek(fildeslocal, offsetlocal, whencelocal);
+
+    return((rlong) rc);
+
+} /* END of portable_lseek() */
+
+
+/*!
  * @brief Portable replacement for @c @b read(2) system call
  *
  *
- * @param[in] fildes  Integer file handle of open file.
+ * @param[in]  fildes  Integer file handle of open file.
  *
- * @param[out] buf    Location to store data read in.
+ * @param[out] buf     Location to store data read in.
  *
- * @param[in] nbyte   Number of bytes to read.
+ * @param[in]  nbyte   Number of bytes to read.
  *
  *
  * @returns Number of bytes read or -1 with @c @b errno set
