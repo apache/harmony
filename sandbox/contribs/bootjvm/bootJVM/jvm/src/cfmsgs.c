@@ -50,6 +50,7 @@ ARCH_SOURCE_COPYRIGHT_APACHE(cfmsgs, c,
 
 
 #include "jvmcfg.h"
+#include "attribute.h"
 #include "cfmacros.h"
 #include "classfile.h"
 #include "util.h"
@@ -548,7 +549,7 @@ rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
  *
  * @param  pcfs   ClassFile to dump contents
  *
- * @param  atr    Pointer to an attribute area.  WARNING:  This
+ * @param  paima  Pointer to an attribute area.  WARNING:  This
  *                pointer MUST be 4-byte aligned to suppress
  *                @b SIGSEGV.  Such logic is already taken care of by
  *                virtue of it being an (attribute_info_mem_align *)
@@ -560,15 +561,15 @@ rvoid cfmsgs_show_constant_pool(ClassFile *pcfs)
  *
  *
  * @returns @link #rvoid rvoid@endlink The
- *          @c @b atr->ai.attribute_index @c @b constant_pool entry
+ *          @c @b paima->ai.attribute_index @c @b constant_pool entry
  *          must be valid for this to produce any meaningful
  *          results.
  *
  */
 
-rvoid cfmsgs_atrmsg(rchar                    *fn,
+rvoid cfmsgs_atrmsg(const rchar              *fn,
                     ClassFile                *pcfs,
-                    attribute_info_mem_align *atr)
+                    attribute_info_mem_align *paima)
 {
     ARCH_FUNCTION_NAME(cfmsgs_atrmsg);
 
@@ -582,10 +583,18 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
     jdouble  vald;
     rint     star_len;
 
+    exception_table_entry *pete;
+    u2                     etblidx;
+    u2                     etbllen;
+    u2                     etblentry;
+
+    classfile_attribute_enum cae;
+
     rchar *msg_hdr = HEAP_GET_DATA(JVMCFG_STDIO_BFR, rfalse);
 
-    u2 cpidx = atr->ai.attribute_name_index;
-    u4 len = atr->ai.attribute_length;
+    u2 cpidx = paima->ai.attribute_name_index;
+    u4 len   = paima->ai.attribute_length;
+    u2 constantvalue_index;
 
     star_len = (jvm_class_index_null == pcfs->this_class)
                    ? 7 /* Length of string "unknown" as used below */
@@ -594,7 +603,7 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                                      pcfs->this_class,
                                      name_index);
     sprintfLocal(msg_hdr,
-                 "%*.*s cpidx=%02x len=%d ",
+                 "%*.*s cpidx=0x%02x len=%d ",
                  star_len, star_len,
                  (jvm_class_index_null == pcfs->this_class)
                     ? ((rchar *) "unknown")
@@ -605,10 +614,13 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                  cpidx,
                  len);
 
-    switch(cfattrib_atr2enum(pcfs, atr->ai.attribute_name_index))
+    cae = cfattrib_atr2enum(pcfs, cpidx);
+    switch(cae)
     {
         case LOCAL_CONSTANTVALUE_ATTRIBUTE:
-            switch((int) CP_TAG(pcfs, cpidx))
+            constantvalue_index =
+                       ATR_CONSTANTVALUE_AI(paima)->constantvalue_index;
+            switch((int) CP_TAG(pcfs, constantvalue_index))
             {
 /*!
  * @todo  HARMONY-6-jvm-cfmsgs.c-5 Verify (jlong) retrieval
@@ -618,10 +630,12 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
 
                     pu4h = &PTR_CP_ENTRY_TYPE(CONSTANT_Long_info,
                                               pcfs,
-                                              cpidx)->high_bytes;
+                                              constantvalue_index)
+                                ->high_bytes;
                     pu4l = &PTR_CP_ENTRY_TYPE(CONSTANT_Long_info,
                                               pcfs,
-                                              cpidx)->low_bytes;
+                                              constantvalue_index)
+                                ->low_bytes;
 
                     /*
                      * if WORDSIZE/32/64 mismatches -m32/-m64,
@@ -664,7 +678,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
 
                     pu4 = &PTR_CP_ENTRY_TYPE(CONSTANT_Float_info,
                                              pcfs,
-                                             cpidx)->bytes;
+                                             constantvalue_index)
+                               ->bytes;
                     valf = (jfloat) (jint) *pu4;
 
                     sysDbgMsg(DMLNORM,
@@ -682,10 +697,12 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
 
                     pu4h = &PTR_CP_ENTRY_TYPE(CONSTANT_Double_info,
                                               pcfs,
-                                              cpidx)->high_bytes;
+                                              constantvalue_index)
+                                ->high_bytes;
                     pu4l = &PTR_CP_ENTRY_TYPE(CONSTANT_Double_info,
                                               pcfs,
-                                              cpidx)->low_bytes;
+                                              constantvalue_index)
+                                ->low_bytes;
 
                     /*
                      * if WORDSIZE/32/64 mismatches -m32/-m64,
@@ -728,7 +745,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
 
                     pu4 = &PTR_CP_ENTRY_TYPE(CONSTANT_Integer_info,
                                              pcfs,
-                                             cpidx)->bytes;
+                                             constantvalue_index)
+                               ->bytes;
                     vali = (jint) *pu4;
 
                     sysDbgMsg(DMLNORM,
@@ -740,17 +758,17 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
 
                 case CONSTANT_String:
 
-                    star_len = CP_THIS_STRLEN(pcfs, cpidx);
+                    star_len =CP_THIS_STRLEN(pcfs, constantvalue_index);
                     sysDbgMsg(DMLNORM,
                               fn,
-                        "%s %s String cpidx=0x%02x len=%d UTF8='%*.*s'",
+                        "%s %s String len=%d UTF8='%*.*s'",
                               msg_hdr,
                               CONSTANT_UTF8_CONSTANTVALUE_ATTRIBUTE,
-                              cpidx,
                               star_len,
 
                               star_len, star_len,
-                              PTR_CP_THIS_STRNAME(pcfs, cpidx));
+                              PTR_CP_THIS_STRNAME(pcfs,
+                                                  constantvalue_index));
                     break;
 
                 default:
@@ -760,37 +778,77 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                               "%s %s  unknown tag=%d",
                               msg_hdr,
                               LOCAL_CONSTANT_UTF8_UNKNOWN_ATTRIBUTE,
-                              CP_TAG(pcfs, cpidx));
+                              CP_TAG(pcfs, constantvalue_index));
                     break;
 
-            } /* switch CP_TAG(pcfs, cpidx) */
+            } /* switch CP_TAG(pcfs, constantvalue_index) */
 
             break;
 
         case LOCAL_CODE_ATTRIBUTE:
 
+            etbllen = ATR_CODE_AI(paima)->exception_table_length;
+
             sysDbgMsg(DMLNORM,
                       fn,
-                      "%s %s stack=%d locals=%d len=%d",
+         "%s %s   stack=0x%04x locals=0x%04x codelen=0x%04x excplen=%d",
                       msg_hdr,
                       CONSTANT_UTF8_CODE_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(Code_attribute, pcfs, cpidx)
-                        ->max_stack,
-                      PTR_CP_ENTRY_TYPE(Code_attribute, pcfs, cpidx)
-                        ->max_locals,
-                      PTR_CP_ENTRY_TYPE(Code_attribute, pcfs, cpidx)
-                        ->code_length);
+                      ATR_CODE_AI(paima)->max_stack,
+                      ATR_CODE_AI(paima)->max_locals,
+                      ATR_CODE_AI(paima)->code_length,
+                      etbllen);
+
+            /* Display exception table, if present */
+            if (0 < etbllen)
+            {
+                /* Load up exception table one entry at a time */
+                for (etblidx = 0; etblidx < etbllen; etblidx++)
+                {
+                    pete = &(ATR_CODE_AI(paima)
+                               ->exception_table)[etblidx];
+                    sysDbgMsg(DMLNORM,
+                      fn,
+                      "%s %s     excpidx=%d "
+                  "PC: start=0x%04x end=0x%04x hdlr=0x%04x type=0x%04x",
+                      msg_hdr,
+                      CONSTANT_UTF8_CODE_ATTRIBUTE,
+                      etblidx,
+                      pete->start_pc,
+                      pete->end_pc,
+                      pete->handler_pc,
+                      pete->catch_type);
+                }
+            }
             break;
 
         case LOCAL_EXCEPTIONS_ATTRIBUTE:
 
+            etbllen = ATR_EXCEPTIONS_AI(paima)->number_of_exceptions;
             sysDbgMsg(DMLNORM,
                       fn,
-                      "%s %s num=%d",
+                      "%s %s numexcp=%d",
                       msg_hdr,
-                      CONSTANT_UTF8_CODE_ATTRIBUTE,
-                     PTR_CP_ENTRY_TYPE(Exceptions_attribute, pcfs,cpidx)
-                        ->number_of_exceptions);
+                      CONSTANT_UTF8_EXCEPTIONS_ATTRIBUTE,
+                      etbllen);
+
+            /* Display exception index table, if present */
+            if (0 < etbllen)
+            {
+                for (etblidx = 0; etblidx < etbllen; etblidx++)
+                {
+                    etblentry = (ATR_EXCEPTIONS_AI(paima)
+                                   ->exception_index_table)[etblidx];
+
+                    sysDbgMsg(DMLNORM,
+                              fn,
+                              "%s %s excpidx[%d]=0x%x",
+                              msg_hdr,
+                              CONSTANT_UTF8_EXCEPTIONS_ATTRIBUTE,
+                              etblidx,
+                              etblentry);
+                }
+            }
             break;
 
         case LOCAL_INNERCLASSES_ATTRIBUTE:
@@ -800,9 +858,7 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s num=%d",
                       msg_hdr,
                       CONSTANT_UTF8_INNERCLASSES_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(InnerClasses_attribute,
-                                        pcfs,
-                                        cpidx)->number_of_classes);
+                      ATR_INNERCLASSES_AI(paima)->number_of_classes);
             break;
 
         case LOCAL_ENCLOSINGMETHOD_ATTRIBUTE:
@@ -812,12 +868,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s clsidx=%d mthidx=%d",
                       msg_hdr,
                       CONSTANT_UTF8_ENCLOSINGMETHOD_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(EnclosingMethod_attribute,
-                                        pcfs,
-                                        cpidx)->class_index,
-                      PTR_CP_ENTRY_TYPE(EnclosingMethod_attribute,
-                                        pcfs,
-                                        cpidx)->method_index);
+                      ATR_ENCLOSINGMETHOD_AI(paima)->class_index,
+                      ATR_ENCLOSINGMETHOD_AI(paima)->method_index);
             break;
 
         case LOCAL_SYNTHETIC_ATTRIBUTE:
@@ -833,24 +885,20 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
 
             sysDbgMsg(DMLNORM,
                       fn,
-                      "%s %s cpidx=0x%02x",
+                      "%s %s sigidx=0x%02x",
                       msg_hdr,
                       CONSTANT_UTF8_SIGNATURE_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(Signature_attribute,
-                                        pcfs,
-                                        cpidx)->signature_index);
+                      ATR_SIGNATURE_AI(paima)->signature_index);
             break;
 
         case LOCAL_SOURCEFILE_ATTRIBUTE:
 
             sysDbgMsg(DMLNORM,
                       fn,
-                      "%s %s cpidx=0x%02x",
+                      "%s %s srcidx=0x%02x",
                       msg_hdr,
                       CONSTANT_UTF8_SOURCEFILE_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(SourceFile_attribute,
-                                        pcfs,
-                                        cpidx)->sourcefile_index);
+                      ATR_SOURCEFILE_AI(paima)->sourcefile_index);
             break;
 
         case LOCAL_LINENUMBERTABLE_ATTRIBUTE:
@@ -860,9 +908,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s len=%d",
                       msg_hdr,
                       CONSTANT_UTF8_LINENUMBERTABLE_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(LineNumberTable_attribute,
-                                        pcfs,
-                                      cpidx)->line_number_table_length);
+                      ATR_LINENUMBERTABLE_AI(paima)
+                        ->line_number_table_length);
             break;
 
         case LOCAL_LOCALVARIABLETABLE_ATTRIBUTE:
@@ -872,9 +919,7 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s len=%d",
                       msg_hdr,
                       CONSTANT_UTF8_LOCALVARIABLETABLE_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(LocalVariableTable_attribute,
-                                        pcfs,
-                                        cpidx)
+                      ATR_LOCALVARIABLETABLE_AI(paima)
                         ->local_variable_table_length);
             break;
 
@@ -885,10 +930,7 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s len=%d",
                       msg_hdr,
                       CONSTANT_UTF8_LOCALVARIABLETYPETABLE_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(
-                                       LocalVariableTypeTable_attribute,
-                                       pcfs,
-                                       cpidx)
+                      ATR_LOCALVARIABLETYPETABLE_AI(paima)
                         ->local_variable_type_table_length);
             break;
 
@@ -908,10 +950,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s num=%d",
                       msg_hdr,
                       CONSTANT_UTF8_RUNTIMEVISIBLEANNOTATIONS_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(
-                                    RuntimeVisibleAnnotations_attribute,
-                                        pcfs,
-                                        cpidx)->num_annotations);
+                      ATR_RUNTIMEVISIBLEANNOTATIONS_AI(paima)
+                        ->num_annotations);
             break;
 
         case LOCAL_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE:
@@ -921,10 +961,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s num=%d",
                       msg_hdr,
                     CONSTANT_UTF8_RUNTIMEINVISIBLEANNOTATIONS_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(
-                                  RuntimeInvisibleAnnotations_attribute,
-                                        pcfs,
-                                        cpidx)->num_annotations);
+                      ATR_RUNTIMEINVISIBLEANNOTATIONS_AI(paima)
+                        ->num_annotations);
             break;
 
         case LOCAL_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
@@ -934,10 +972,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s num=%d",
                       msg_hdr,
              CONSTANT_UTF8_RUNTIMEVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE,
-               PTR_CP_ENTRY_TYPE(
-                           RuntimeVisibleParameterAnnotations_attribute,
-                                 pcfs,
-                                 cpidx)->num_parameters);
+                      ATR_RUNTIMEVISIBLEPARAMETERANNOTATIONS_AI(paima)
+                        ->num_parameters);
             break;
 
         case LOCAL_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE:
@@ -947,10 +983,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s num=%d",
                       msg_hdr,
            CONSTANT_UTF8_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(
-                         RuntimeInvisibleParameterAnnotations_attribute,
-                                        pcfs,
-                                        cpidx)->num_parameters);
+                      ATR_RUNTIMEINVISIBLEPARAMETERANNOTATIONS_AI(paima)
+                        ->num_parameters);
             break;
 
         case LOCAL_ANNOTATIONDEFAULT_ATTRIBUTE:
@@ -960,9 +994,8 @@ rvoid cfmsgs_atrmsg(rchar                    *fn,
                       "%s %s tag=%d",
                       msg_hdr,
                       CONSTANT_UTF8_ANNOTATIONDEFAULT_ATTRIBUTE,
-                      PTR_CP_ENTRY_TYPE(AnnotationDefault_attribute,
-                                        pcfs,
-                                        cpidx)->default_value.tag);
+                      ATR_ANNOTATIONDEFAULT_AI(paima)
+                        ->default_value.tag);
             break;
 
         case LOCAL_UNKNOWN_ATTRIBUTE:
