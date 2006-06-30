@@ -2889,7 +2889,7 @@ extern rboolean cfattrib_iscodeattribute(ClassFile *pcfs,
 /* Prototypes for functions in 'cfmsgs.c' */
 extern rvoid cfmsgs_typemsg(rchar *fn, ClassFile *pcfs, u2 idx);
 extern rvoid cfmsgs_show_constant_pool(ClassFile *pcfs);
-extern rvoid cfmsgs_atrmsg(rchar                    *fn,
+extern rvoid cfmsgs_atrmsg(const rchar              *fn,
                            ClassFile                *pcfs,
                            attribute_info_mem_align *atr);
 
