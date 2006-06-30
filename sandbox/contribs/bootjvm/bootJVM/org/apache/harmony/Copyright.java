@@ -65,7 +65,7 @@ class localPackageVisibleCopyright
 public interface Copyright
 {
     public static final String copyrightText =
-"Copyright 2005 The Apache Software Foundation or its licensors, as applicable.";
+"Copyright 2005-2006 The Apache Software Foundation or its licensors, as applicable.";
 
 
 } /* END of Copyright */

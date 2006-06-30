@@ -62,7 +62,7 @@
  */
 
 #define ARCH_COPYRIGHT_TEXT_APACHE \
-"Copyright 2005 The Apache Software Foundation or its licensors, as applicable."
+"Copyright 2005-2006 The Apache Software Foundation or its licensors, as applicable."
 
 
 /*!
