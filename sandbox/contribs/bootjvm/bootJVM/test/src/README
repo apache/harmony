@@ -1,7 +1,0 @@
-Eclipse users will want to perform the following command
-for accessing Java packages located in the top-level directory:
-
-    ln -s ../../org org
-
-This will permit org.apache.harmony to be located.  The
-normal project Makefile already makes this provision.

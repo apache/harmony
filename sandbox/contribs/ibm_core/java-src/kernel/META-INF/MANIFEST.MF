@@ -1,5 +1,0 @@
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: kernel
-Bundle-Version: 1.0.0
-Bundle-ClassPath: .
-Export-Package: java.lang, java.lang.reflect, java.lang.ref, java.security, com.ibm.oti.vm
