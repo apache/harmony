@@ -47,7 +47,7 @@
         <delete dir="working_classlib"/>
         <delete dir="working_vm"/>
 
-        <exec executable="svn.exe" dir="." failonerror="true">
+        <exec executable="svn" dir="." failonerror="true">
             <arg line="update" />
         </exec>
 
@@ -61,7 +61,7 @@
        Switches the working_vm directory to vm choice
        ================================================================================= -->
     <target name="switch_svn_vm">
-        <exec executable="svn.exe" dir="working_vm" failonerror="true">
+        <exec executable="svn" dir="working_vm" failonerror="true">
             <arg line="switch" />
             <arg line="${vm.svn.url}" />
         </exec>
@@ -71,7 +71,7 @@
        Switches the working_classlib directory to classlib choice
        ================================================================================= -->
     <target name="switch_svn_classlib">
-        <exec executable="svn.exe" dir="working_classlib" failonerror="true">
+        <exec executable="svn" dir="working_classlib" failonerror="true">
             <arg line="switch" />
             <arg line="${classlib.svn.url}" />
         </exec>
