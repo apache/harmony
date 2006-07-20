@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright 2006 The Apache Software Foundation or its licensors, as applicable
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<project name="build-harmony" default="default" basedir=".">
+
+    <!-- name of the target directory to use for building and final assembly -->
+    <property name="target.dir" value="target" />
+
+    <!-- SVN URL for classlib default -->
+    <property name="classlib.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/classlib/trunk" />
+
+    <!-- SVN URL for VM default -->
+    <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/drlvm/trunk" />
+
+    <description>
+        Apache Harmony subproject federation script
+    </description>
+
+    <target name="default"
+        description="setup and build complete implementation"
+        depends="setup, switch_svn_vm, switch_svn_classlib"/>
+
+    <target name="setup" depends="init">
+
+        <mkdir dir="${target.dir}"/>
+
+    </target>
+
+    <target name="reset"
+        description="removes vm and classlib dirs and resets"
+        depends="clean">
+
+        <!-- delete the working directories and then do an svn update to reset them -->
+        <delete dir="working_classlib"/>
+        <delete dir="working_vm"/>
+
+        <exec executable="svn.exe" dir="." failonerror="true">
+            <arg line="update" />
+        </exec>
+
+    </target>
+
+    <target name="clean">
+        <delete dir="${target.dir}" failonerror="false"/>
+    </target>
+
+    <!-- ===============================================================================
+       Switches the working_vm directory to vm choice
+       ================================================================================= -->
+    <target name="switch_svn_vm">
+        <exec executable="svn.exe" dir="working_vm" failonerror="true">
+            <arg line="switch" />
+            <arg line="${vm.svn.url}" />
+        </exec>
+    </target>
+
+    <!-- ===============================================================================
+       Switches the working_classlib directory to classlib choice
+       ================================================================================= -->
+    <target name="switch_svn_classlib">
+        <exec executable="svn.exe" dir="working_classlib" failonerror="true">
+            <arg line="switch" />
+            <arg line="${classlib.svn.url}" />
+        </exec>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - -
+          target: init
+         - - - - - - - - - - - - - - - - - -->
+    <target name="init">
+        <!-- Determine our operating system -->
+        <condition property="is.windows">
+            <os family="windows" />
+        </condition>
+
+        <condition property="is.linux">
+            <os name="linux" />
+        </condition>
+    </target>
+
+
+</project>
