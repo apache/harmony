@@ -171,7 +171,19 @@
     <!-- ================================================================================ -->
     <target name="build_classlib">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" />
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false"/>
+
+        <!-- for now, build the awt stuff specially -->
+        <antcall target="build_classlib_special_awt_deps"/>
+
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
+            <property name="with.awt.swing" value="true"/>
+        </ant>
+    </target>
+
+    <target name="build_classlib_special_awt_deps" depends="init" if="is.unix">
+        <exec executable="sh" dir="working_classlib" >
+            <arg line="depends/libs/build/fetch-awt-depends.sh"/>
+        </exec>
     </target>
 
     <!-- ================================================================================ -->
