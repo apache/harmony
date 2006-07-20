@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     Copyright 2006 The Apache Software Foundation or its licensors, as applicable
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<project name="build-harmony" default="default" basedir=".">
+
+    <!-- name of the target directory to use for building and final assembly -->
+    <property name="target.dir" value="target" />
+
+    <!-- SVN URL for classlib default -->
+    <property name="classlib.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/classlib/trunk" />
+
+    <!-- SVN URL for VM default -->
+    <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/drlvm/trunk" />
+
+    <description>
+        Apache Harmony subproject federation script
+    </description>
+
+    <!-- ================================================================================ -->
+    <!--     main target - should checkout, build and package hdk and jre                 -->
+    <!-- ================================================================================ -->
+    <target name="default"
+        description="setup and build complete implementation"
+        depends="setup,
+                 switch_svn_vm,
+                 switch_svn_classlib,
+                 build_classlib,
+                 build_drlvm,
+                 assemble_artifacts,
+                 bundle_hdk,
+                 bundle_jre"/>
+
+    <!-- ================================================================================ -->
+    <!--     creates the HDK bundle appropriate for the platform                          -->
+    <!-- ================================================================================ -->
+    <target name="bundle_hdk" depends="assemble_hdk_doc,bundle_hdk_tgz,bundle_hdk_zip"/>
+
+    <target name="bundle_hdk_tgz" depends="init" if="is.unix">
+
+        <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
+             and setting exec bits as needed -->
+        <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip" basedir="${target.dir}">
+            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}" mode="755">
+                <include name="jdk/jre/bin/java"/>
+                <include name="jdk/jre/bin/java.exec"/>
+                <include name="jdk/jre/bin/eclipse.sh"/>
+             </tarfileset>
+            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}">
+                <include name="**"/>
+                <exclude name="jdk/jre/bin/java"/>
+                <exclude name="jdk/jre/bin/java.exec"/>
+                <exclude name="jdk/jre/bin/eclipse.sh"/>
+            </tarfileset>
+        </tar>
+
+        <checksum file="${target.dir}/${deploy.hdk.tar}" fileext=".md5"/>
+
+    </target>
+
+    <target name="bundle_hdk_zip" depends="init" unless="is.unix">
+        <!-- TODO over on win box  -->
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--     creates the JRE bundle appropriate for the platform                          -->
+    <!-- ================================================================================ -->
+    <target name="bundle_jre" depends="assemble_jre_doc,bundle_jre_tgz,bundle_jre_zip"/>
+
+    <target name="bundle_jre_tgz" depends="init" if="is.unix">
+
+        <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" basedir="${target.dir}">
+            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}" mode="755">
+                <include name="bin/java"/>
+                <include name="bin/java.exec"/>
+                <include name="bin/eclipse.sh"/>
+            </tarfileset>
+            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}">
+                <include name="**"/>
+                <exclude name="bin/java"/>
+                <exclude name="bin/java.exec"/>
+                <exclude name="bin/eclipse.sh"/>
+            </tarfileset>
+        </tar>
+
+        <checksum file="${target.dir}/${deploy.jre.tar}" fileext=".md5"/>
+
+    </target>
+
+    <target name="bundle_jre_zip" depends="init" unless="is.unix">
+
+                <!-- TODO over on win box  -->
+    </target>
+
+
+    <!-- ================================================================================ -->
+    <!--    from the classlib and vm builds, creates the hdk and jre                      -->
+    <!-- ================================================================================ -->
+    <target name="assemble_artifacts">
+
+        <!-- create the top-level hdk directory -->
+        <mkdir dir="${target.dir}/hdk"/>
+
+        <!-- copy the classlib/deploy tree as the hdk
+             filtering out the jre, as that comes from
+             working_vm -->
+        <copy todir="${target.dir}/hdk">
+            <fileset dir="working_classlib/deploy">
+                <exclude name="**/jre/**/*" />
+            </fileset>
+        </copy>
+
+        <!-- now copy the drlvm/build/deploy/jre
+             contents into the jre in the HDK -->
+        <copy todir="${target.dir}/hdk/jdk/jre">
+            <fileset dir="working_vm/build/deploy/jre"/>
+        </copy>
+
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    copy license and notices into the root of the hdk                             -->
+    <!-- ================================================================================ -->
+    <target name="assemble_hdk_doc">
+
+        <copy todir="${target.dir}/hdk">
+            <fileset dir="./">
+                <include name="COPYRIGHT" />
+                <include name="LICENSE" />
+                <include name="NOTICE" />
+                <include name="THIRD_PARTY_NOTICES.txt" />
+                <include name="INCUBATOR_NOTICE.txt" />
+            </fileset>
+        </copy>
+
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    copy license and notices into the root of the jre                             -->
+    <!-- ================================================================================ -->
+    <target name="assemble_jre_doc">
+
+        <copy todir="${target.dir}/hdk/jdk/jre">
+            <fileset dir="./">
+                <include name="COPYRIGHT" />
+                <include name="LICENSE" />
+                <include name="NOTICE" />
+                <include name="THIRD_PARTY_NOTICES.txt" />
+                <include name="INCUBATOR_NOTICE.txt" />
+            </fileset>
+        </copy>
+
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    build the classlib - ensure depends are up to date an then rebuild            -->
+    <!-- ================================================================================ -->
+    <target name="build_classlib">
+        <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" />
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false"/>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    build the vm - ensure depends are up to date an then rebuild            -->
+    <!-- ================================================================================ -->
+    <target name="build_drlvm">
+        <exec executable="sh" dir="working_vm/build" >
+            <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+        </exec>
+        <exec executable="sh" dir="working_vm/build" >
+            <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+        </exec>
+        <exec executable="sh" dir="working_vm/build" >
+            <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+        </exec>
+    </target>
+
+
+    <!-- ================================================================================ -->
+    <!--    trivial setup                                                                 -->
+    <!-- ================================================================================ -->
+    <target name="setup" depends="init">
+        <mkdir dir="${target.dir}"/>
+    </target>
+
+
+    <!-- ================================================================================ -->
+    <!--    hard reset - remove checked out classlib and vm tree- be sure you want this   -->
+    <!-- ================================================================================ -->
+    <target name="reset"
+        description="removes vm and classlib dirs and resets - BE SURE YOU WANT TO DO THIS"
+        depends="clean">
+
+        <!-- delete the working directories and then do an svn update to reset them -->
+        <delete dir="working_classlib"/>
+        <delete dir="working_vm"/>
+
+        <exec executable="svn" dir="." failonerror="true">
+            <arg line="update" />
+        </exec>
+
+    </target>
+
+    <target name="clean">
+        <delete dir="${target.dir}" failonerror="false"/>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    Switches the working_vm directory to vm choice - wired for DRLVM for now      -->
+    <!-- ================================================================================ -->
+        <target name="switch_svn_vm">
+        <exec executable="svn" dir="working_vm" failonerror="true">
+            <arg line="switch" />
+            <arg line="${vm.svn.url}" />
+        </exec>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    Switches the working_vm directory to classlib choice                          -->
+    <!-- ================================================================================ -->
+    <target name="switch_svn_classlib">
+        <exec executable="svn" dir="working_classlib" failonerror="true">
+            <arg line="switch" />
+            <arg line="${classlib.svn.url}" />
+        </exec>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--   init :                                                                         -->
+    <!--     basic setup - reused stuff from classlib/properties.xml for expediency       -->
+    <!-- ================================================================================ -->
+    <target name="init" depends="svn-prop">
+        <!-- Determine our operating system -->
+        <condition property="is.windows">
+            <os family="windows" />
+        </condition>
+
+        <condition property="is.unix">
+            <os name="linux" />
+        </condition>
+
+        <condition property="is.linux">
+            <os name="linux" />
+        </condition>
+
+        <!-- this special case makes sense -->
+        <condition property="hy.os" value="windows">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="hy.os" value="linux">
+            <os name="linux" />
+        </condition>
+
+        <property name="hy.os" value="${os.name}" />
+
+        <!-- Conditions for different architectures -->
+        <condition property="is.x86_64">
+            <os arch="x86_64"/>
+        </condition>
+        <condition property="is.x86">
+            <or>
+                <os arch="x86"/>
+                <os arch="i386"/>
+            </or>
+        </condition>
+        <condition property="is.ia64">
+            <os arch="ia64" />
+        </condition>
+        <condition property="is.64bit">
+            <or>
+                <os arch="ia64" />
+                <os arch="x86_64"/>
+            </or>
+        </condition>
+        <condition property="is.32bit">
+            <or>
+                <os arch="x86"/>
+            </or>
+        </condition>
+        <condition property="hy.bits" value="32">
+            <isset property="is.32bit" />
+        </condition>
+        <property name="hy.bits" value="64" />
+
+        <!-- Normalized architecture name -->
+        <condition property="hy.arch" value="x86">
+            <isset property="is.x86" />
+        </condition>
+        <property name="hy.arch" value="${os.arch}" />
+
+
+        <property name="deploy.hdk.file.prefix"
+                 value="incubator-harmony-hdk-r${svn.revision}" />
+        <property name="deploy.hdk.tar"
+                 value="${deploy.hdk.file.prefix}-${hy.os}-${hy.arch}-snapshot.tar.gz" />
+        <property name="deploy.hdk.zip"
+                 value="${deploy.hdk.file.prefix}-${hy.os}-${hy.arch}-snapshot.zip" />
+
+        <property name="deploy.jre.file.prefix"
+                 value="incubator-harmony-jre-r${svn.revision}" />
+        <property name="deploy.jre.tar"
+                 value="${deploy.jre.file.prefix}-${hy.os}-${hy.arch}-snapshot.tar.gz" />
+        <property name="deploy.jre.zip"
+                 value="${deploy.jre.file.prefix}-${hy.os}-${hy.arch}-snapshot.zip" />
+
+    </target>
+
+    <!-- ================================================================================ -->
+    <!-- svn-prop : get svn revision number                                               -->
+    <!--         taken from classlib/properties.xml, because of uncertainty               -->
+    <!--         of state of the working_classlib dir, I need a copy                      -->
+    <!--   TODO - we want to be able to pass property in to ant so we don't need a        -->
+    <!--      pause and it's reproducable                                                 -->
+    <!-- ================================================================================ -->
+    <target name="svn-prop">
+        <exec executable="svn">
+            <arg value="--non-interactive" />
+            <arg value="info" />
+            <redirector outputproperty="svn.revision">
+                <outputfilterchain>
+                    <linecontains>
+                        <contains value="Revision: " />
+                    </linecontains>
+                    <tokenfilter>
+                        <replacestring from="Revision: " to=""/>
+                    </tokenfilter>
+                </outputfilterchain>
+            </redirector>
+        </exec>
+    </target>
+
+</project>
