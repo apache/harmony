@@ -40,7 +40,7 @@
                  switch_svn_vm,
                  switch_svn_classlib,
                  build_classlib,
-                 build_drlvm,
+                 build_vm,
                  assemble_artifacts,
                  bundle_hdk,
                  bundle_jre"/>
@@ -54,7 +54,7 @@
 
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
-        <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip" basedir="${target.dir}">
+        <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}" mode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/jre/bin/java.exec"/>
@@ -83,7 +83,7 @@
 
     <target name="bundle_jre_tgz" depends="init" if="is.unix">
 
-        <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" basedir="${target.dir}">
+        <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" >
             <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}" mode="755">
                 <include name="bin/java"/>
                 <include name="bin/java.exec"/>
@@ -177,15 +177,18 @@
     <!-- ================================================================================ -->
     <!--    build the vm - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_drlvm">
+    <target name="build_vm">
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <env key="BUILD_CFG" value="release"/>
         </exec>
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <env key="BUILD_CFG" value="release"/>
         </exec>
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <env key="BUILD_CFG" value="release"/>
         </exec>
     </target>
 
