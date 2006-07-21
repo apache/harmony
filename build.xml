@@ -73,7 +73,23 @@
     </target>
 
     <target name="bundle_hdk_zip" depends="init" unless="is.unix">
-        <!-- TODO over on win box  -->
+        <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
+             and setting exec bits as needed -->
+        <zip destfile="${target.dir}/${deploy.hdk.zip}" >
+            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}" filemode="755">
+                <include name="jdk/jre/bin/java"/>
+                <include name="jdk/jre/bin/java.exec"/>
+                <include name="jdk/jre/bin/eclipse.sh"/>
+             </zipfileset>
+            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}">
+                <include name="**"/>
+                <exclude name="jdk/jre/bin/java"/>
+                <exclude name="jdk/jre/bin/java.exec"/>
+                <exclude name="jdk/jre/bin/eclipse.sh"/>
+            </zipfileset>
+        </zip>
+
+        <checksum file="${target.dir}/${deploy.hdk.zip}" fileext=".md5"/>
     </target>
 
     <!-- ================================================================================ -->
@@ -102,8 +118,20 @@
     </target>
 
     <target name="bundle_jre_zip" depends="init" unless="is.unix">
-
-                <!-- TODO over on win box  -->
+        <zip destfile="${target.dir}/${deploy.jre.zip}">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}" filemode="755">
+                <include name="bin/java"/>
+                <include name="bin/java.exec"/>
+                <include name="bin/eclipse.sh"/>
+            </zipfileset>
+            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}">
+                <include name="**"/>
+                <exclude name="bin/java"/>
+                <exclude name="bin/java.exec"/>
+                <exclude name="bin/eclipse.sh"/>
+            </zipfileset>
+        </zip>
+        <checksum file="${target.dir}/${deploy.jre.zip}" fileext=".md5"/>
     </target>
 
 
@@ -176,6 +204,7 @@
         <antcall target="build_classlib_special_awt_deps"/>
 
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
+            <!-- TODO fix to use the set property -->
             <property name="with.awt.swing" value="true"/>
         </ant>
     </target>
@@ -184,12 +213,16 @@
         <exec executable="sh" dir="working_classlib" >
             <arg line="depends/libs/build/fetch-awt-depends.sh"/>
         </exec>
+
+        <property name="build.with.awt.swing" value="true"/>
     </target>
 
     <!-- ================================================================================ -->
     <!--    build the vm - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_vm">
+    <target name="build_vm" depends="build_vm_unix,build_vm_windows"/>
+
+    <target name="build_vm_unix" if="is.unix">
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
             <env key="BUILD_CFG" value="release"/>
@@ -204,6 +237,24 @@
         </exec>
     </target>
 
+    <target name="build_vm_windows" unless="is.unix">
+
+        <exec executable="cmd" dir="working_vm/build" >
+            <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <env key="BUILD_CFG" value="release"/>
+            <env key="CXX" value="msvc"/>
+        </exec>
+        <exec executable="cmd" dir="working_vm/build" >
+            <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <env key="BUILD_CFG" value="release"/>
+            <env key="CXX" value="msvc"/>
+        </exec>
+        <exec executable="cmd" dir="working_vm/build" >
+            <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <env key="BUILD_CFG" value="release"/>
+            <env key="CXX" value="msvc"/>
+        </exec>
+    </target>
 
     <!-- ================================================================================ -->
     <!--    trivial setup                                                                 -->
