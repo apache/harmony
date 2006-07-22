@@ -68,7 +68,7 @@
             </tarfileset>
         </tar>
 
-        <md5sum file="${target.dir}/${deploy.hdk.tar}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.hdk.tar}"/>
 
     </target>
 
@@ -89,7 +89,7 @@
             </zipfileset>
         </zip>
 
-        <md5sum file="${target.dir}/${deploy.hdk.zip}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.hdk.zip}" />
     </target>
 
     <!-- ================================================================================ -->
@@ -113,7 +113,7 @@
             </tarfileset>
         </tar>
 
-        <md5sum file="${target.dir}/${deploy.jre.tar}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.jre.tar}" />
 
     </target>
 
@@ -131,7 +131,7 @@
                 <exclude name="bin/eclipse.sh"/>
             </zipfileset>
         </zip>
-        <md5sum file="${target.dir}/${deploy.jre.zip}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.jre.zip}"/>
     </target>
 
 
