@@ -68,7 +68,7 @@
             </tarfileset>
         </tar>
 
-        <checksum file="${target.dir}/${deploy.hdk.tar}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.hdk.tar}" fileext=".md5"/>
 
     </target>
 
@@ -89,7 +89,7 @@
             </zipfileset>
         </zip>
 
-        <checksum file="${target.dir}/${deploy.hdk.zip}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.hdk.zip}" fileext=".md5"/>
     </target>
 
     <!-- ================================================================================ -->
@@ -113,7 +113,7 @@
             </tarfileset>
         </tar>
 
-        <checksum file="${target.dir}/${deploy.jre.tar}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.jre.tar}" fileext=".md5"/>
 
     </target>
 
@@ -131,7 +131,7 @@
                 <exclude name="bin/eclipse.sh"/>
             </zipfileset>
         </zip>
-        <checksum file="${target.dir}/${deploy.jre.zip}" fileext=".md5"/>
+        <md5sum file="${target.dir}/${deploy.jre.zip}" fileext=".md5"/>
     </target>
 
 
@@ -422,5 +422,18 @@
             </redirector>
         </exec>
     </target>
+
+    <!-- ================================================================================ -->
+    <!-- produces a nicer looking checksum - taken from classlib/build.xml                -->
+    <!-- ================================================================================ -->
+    <macrodef name="md5sum">
+        <attribute name="file" />
+        <attribute name="type" default="md5" />
+        <sequential>
+            <checksum property="@{file}.@{type}" file="@{file}" />
+            <echo file="@{file}.@{type}"
+                  message="${@{file}.@{type}}  @{file}" />
+        </sequential>
+    </macrodef>
 
 </project>
