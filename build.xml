@@ -288,8 +288,9 @@
     <!-- ================================================================================ -->
     <!--    Switches the working_vm directory to vm choice - wired for DRLVM for now      -->
     <!-- ================================================================================ -->
-        <target name="switch_svn_vm">
+    <target name="switch_svn_vm" depends="init">
         <exec executable="svn" dir="working_vm" failonerror="true">
+            <arg line="-r${svn.revision}"/>
             <arg line="switch" />
             <arg line="${vm.svn.url}" />
         </exec>
@@ -298,8 +299,9 @@
     <!-- ================================================================================ -->
     <!--    Switches the working_vm directory to classlib choice                          -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_classlib">
+    <target name="switch_svn_classlib" depends="init">
         <exec executable="svn" dir="working_classlib" failonerror="true">
+            <arg line="-r${svn.revision}"/>
             <arg line="switch" />
             <arg line="${classlib.svn.url}" />
         </exec>
@@ -324,14 +326,14 @@
         </condition>
 
         <!-- this special case makes sense -->
-        <condition property="hy.os" value="windows">
+        <condition property="harmony.os" value="windows">
             <isset property="is.windows"/>
         </condition>
-        <condition property="hy.os" value="linux">
+        <condition property="harmony.os" value="linux">
             <os name="linux" />
         </condition>
 
-        <property name="hy.os" value="${os.name}" />
+        <property name="harmony.os" value="${os.name}" />
 
         <!-- Conditions for different architectures -->
         <condition property="is.x86_64">
@@ -355,47 +357,59 @@
         <condition property="is.32bit">
             <or>
                 <os arch="x86"/>
+                <os arch="i386"/>
             </or>
         </condition>
-        <condition property="hy.bits" value="32">
+        <condition property="harmony.bits" value="32">
             <isset property="is.32bit" />
         </condition>
-        <property name="hy.bits" value="64" />
+        <property name="harmony.bits" value="64" />
 
         <!-- Normalized architecture name -->
-        <condition property="hy.arch" value="x86">
+        <condition property="harmony.arch" value="x86">
             <isset property="is.x86" />
         </condition>
-        <property name="hy.arch" value="${os.arch}" />
+        <property name="harmony.arch" value="${os.arch}" />
 
 
         <property name="deploy.hdk.file.prefix"
                  value="incubator-harmony-hdk-r${svn.revision}" />
         <property name="deploy.hdk.tar"
-                 value="${deploy.hdk.file.prefix}-${hy.os}-${hy.arch}-snapshot.tar.gz" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-{$harmony.bits}-snapshot.tar.gz" />
         <property name="deploy.hdk.zip"
-                 value="${deploy.hdk.file.prefix}-${hy.os}-${hy.arch}-snapshot.zip" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.zip" />
 
         <property name="deploy.jre.file.prefix"
                  value="incubator-harmony-jre-r${svn.revision}" />
         <property name="deploy.jre.tar"
-                 value="${deploy.jre.file.prefix}-${hy.os}-${hy.arch}-snapshot.tar.gz" />
+                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.tar.gz" />
         <property name="deploy.jre.zip"
-                 value="${deploy.jre.file.prefix}-${hy.os}-${hy.arch}-snapshot.zip" />
+                 value="${deploy.jre.file.prefix}-${harmonyy.os}-${harmonyy.arch}-${harmony.bits}-snapshot.zip" />
 
+        <echo>
+                   Apache Harmony Federated Build
+            ==========================================
+            svn rev          :  r${svn.revision}
+            operating system :  ${harmony.os}
+            architecture     :  ${harmony.arch}-${harmony.bits}
+            ant os name/arch :  ${os.name}/${os.arch}
+            output location  :  ${target.dir}
+        </echo>
     </target>
 
     <!-- ================================================================================ -->
-    <!-- svn-prop : get svn revision number                                               -->
+    <!-- svn-prop : get svn revision number of the build.xml file                         -->
+    <!--                                                                                  -->
     <!--         taken from classlib/properties.xml, because of uncertainty               -->
     <!--         of state of the working_classlib dir, I need a copy                      -->
     <!--   TODO - we want to be able to pass property in to ant so we don't need a        -->
     <!--      pause and it's reproducable                                                 -->
     <!-- ================================================================================ -->
     <target name="svn-prop">
-        <exec executable="svn">
+        <exec executable="svn" dir=".">
             <arg value="--non-interactive" />
             <arg value="info" />
+            <arg value="build.xml" />
             <redirector outputproperty="svn.revision">
                 <outputfilterchain>
                     <linecontains>
