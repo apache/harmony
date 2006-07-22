@@ -27,6 +27,9 @@
     <!-- SVN URL for VM default -->
     <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/drlvm/trunk" />
 
+    <!-- classlib location to tell DRLVM build -->
+    <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
+
     <description>
         Apache Harmony subproject federation script
     </description>
@@ -205,35 +208,47 @@
         <antcall target="build_classlib_special_awt_deps"/>
 
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
-            <!-- TODO fix to use the set property -->
-            <property name="with.awt.swing" value="true"/>
+            <property name="with.awt.swing" value="${build.with.awt.swing}"/>
         </ant>
     </target>
 
-    <target name="build_classlib_special_awt_deps" depends="init" if="is.unix">
+    <target name="build_classlib_special_awt_deps" depends="init,
+                                                            build_classlib_special_awt_deps_unix,
+                                                            build_classlib_special_awt_deps_win" />
+
+    <target name="build_classlib_special_awt_deps_unix" if="is.unix">
         <exec executable="sh" dir="working_classlib" >
             <arg line="depends/libs/build/fetch-awt-depends.sh"/>
         </exec>
-
         <property name="build.with.awt.swing" value="true"/>
+    </target>
+
+    <target name="build_classlib_special_awt_deps_win" if="is.windows">
+
+        <!-- TODO - fix for win
+        <exec executable="sh" dir="working_classlib" >
+            <arg line="depends/libs/build/fetch-awt-depends.sh"/>
+        </exec>
+        -->
+        <property name="build.with.awt.swing" value="false"/>
     </target>
 
     <!-- ================================================================================ -->
     <!--    build the vm - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_vm" depends="build_vm_unix,build_vm_windows"/>
+    <target name="build_vm" depends="init,build_vm_unix,build_vm_windows"/>
 
     <target name="build_vm_unix" if="is.unix">
         <exec executable="sh" dir="working_vm/build" >
-            <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
         </exec>
         <exec executable="sh" dir="working_vm/build" >
-            <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
         </exec>
         <exec executable="sh" dir="working_vm/build" >
-            <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
         </exec>
     </target>
@@ -241,17 +256,17 @@
     <target name="build_vm_windows" unless="is.unix">
 
         <exec executable="cmd" dir="working_vm/build" >
-            <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
             <env key="CXX" value="msvc"/>
         </exec>
         <exec executable="cmd" dir="working_vm/build" >
-            <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
             <env key="CXX" value="msvc"/>
         </exec>
         <exec executable="cmd" dir="working_vm/build" >
-            <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=../../../working_classlib"/>
+            <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
             <env key="CXX" value="msvc"/>
         </exec>
@@ -260,7 +275,7 @@
     <!-- ================================================================================ -->
     <!--    trivial setup                                                                 -->
     <!-- ================================================================================ -->
-    <target name="setup" depends="init">
+    <target name="setup" depends="init, show_props">
         <delete dir="${target.dir}"/>
         <mkdir dir="${target.dir}"/>
     </target>
@@ -387,7 +402,9 @@
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.tar.gz" />
         <property name="deploy.jre.zip"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.zip" />
+    </target>
 
+    <target name="show_props" depends="init">
         <echo>
                    Apache Harmony Federated Build
             ==========================================
@@ -396,6 +413,7 @@
             architecture     :  ${harmony.arch}-${harmony.bits}
             ant os name/arch :  ${os.name}/${os.arch}
             output location  :  ${target.dir}
+            DRLVM classlib   :  ${drlvm.classlib.offset}
         </echo>
     </target>
 
