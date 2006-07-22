@@ -65,6 +65,7 @@
                 <exclude name="jdk/jre/bin/java"/>
                 <exclude name="jdk/jre/bin/java.exec"/>
                 <exclude name="jdk/jre/bin/eclipse.sh"/>
+                <exclude name="jdk/jre/bin/eclipse.sh"/>
             </tarfileset>
         </tar>
 
@@ -260,6 +261,7 @@
     <!--    trivial setup                                                                 -->
     <!-- ================================================================================ -->
     <target name="setup" depends="init">
+        <delete dir="${target.dir}"/>
         <mkdir dir="${target.dir}"/>
     </target>
 
