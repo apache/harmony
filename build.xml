@@ -69,7 +69,7 @@
             </tarfileset>
         </tar>
 
-        <md5sum file="${target.dir}/${deploy.hdk.tar}"/>
+        <md5sum dir="${target.dir}" file="${deploy.hdk.tar}"/>
 
     </target>
 
@@ -90,7 +90,7 @@
             </zipfileset>
         </zip>
 
-        <md5sum file="${target.dir}/${deploy.hdk.zip}" />
+        <md5sum dir="${target.dir}" file="${deploy.hdk.zip}" />
     </target>
 
     <!-- ================================================================================ -->
@@ -114,7 +114,7 @@
             </tarfileset>
         </tar>
 
-        <md5sum file="${target.dir}/${deploy.jre.tar}" />
+        <md5sum dir="${target.dir}" file="${deploy.jre.tar}" />
 
     </target>
 
@@ -132,7 +132,7 @@
                 <exclude name="bin/eclipse.sh"/>
             </zipfileset>
         </zip>
-        <md5sum file="${target.dir}/${deploy.jre.zip}"/>
+        <md5sum dir="${target.dir}" file="${deploy.jre.zip}"/>
     </target>
 
 
@@ -377,7 +377,7 @@
         <property name="deploy.hdk.file.prefix"
                  value="incubator-harmony-hdk-r${svn.revision}" />
         <property name="deploy.hdk.tar"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-{$harmony.bits}-snapshot.tar.gz" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.tar.gz" />
         <property name="deploy.hdk.zip"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.zip" />
 
@@ -386,7 +386,7 @@
         <property name="deploy.jre.tar"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.tar.gz" />
         <property name="deploy.jre.zip"
-                 value="${deploy.jre.file.prefix}-${harmonyy.os}-${harmonyy.arch}-${harmony.bits}-snapshot.zip" />
+                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.zip" />
 
         <echo>
                    Apache Harmony Federated Build
@@ -429,11 +429,12 @@
     <!-- produces a nicer looking checksum - taken from classlib/build.xml                -->
     <!-- ================================================================================ -->
     <macrodef name="md5sum">
+        <attribute name="dir" />
         <attribute name="file" />
         <attribute name="type" default="md5" />
         <sequential>
-            <checksum property="@{file}.@{type}" file="@{file}" />
-            <echo file="@{file}.@{type}"
+            <checksum property="@{file}.@{type}" file="@{dir}/@{file}" />
+            <echo file="@{dir}/@{file}.@{type}"
                   message="${@{file}.@{type}}  @{file}" />
         </sequential>
     </macrodef>
