@@ -207,9 +207,6 @@
         <!-- for now, build the awt stuff specially -->
         <antcall target="build_classlib_special_awt_deps"/>
 
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
-            <property name="with.awt.swing" value="${build.with.awt.swing}"/>
-        </ant>
     </target>
 
     <target name="build_classlib_special_awt_deps" depends="init,
@@ -220,7 +217,10 @@
         <exec executable="sh" dir="working_classlib" >
             <arg line="depends/libs/build/fetch-awt-depends.sh"/>
         </exec>
-        <property name="build.with.awt.swing" value="true"/>
+
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
+            <property name="with.awt.swing" value="true"/>
+        </ant>
     </target>
 
     <target name="build_classlib_special_awt_deps_win" if="is.windows">
@@ -230,7 +230,11 @@
             <arg line="depends/libs/build/fetch-awt-depends.sh"/>
         </exec>
         -->
-        <property name="build.with.awt.swing" value="false"/>
+
+        <!-- don't mention the war... -->
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false"/>
+
+
     </target>
 
     <!-- ================================================================================ -->
