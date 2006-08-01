@@ -431,7 +431,6 @@
     <!-- ================================================================================ -->
     <target name="svn-prop">
         <exec executable="svn" dir=".">
-            <arg value="--non-interactive" />
             <arg value="info" />
             <arg value="build.xml" />
             <redirector outputproperty="svn.revision">
