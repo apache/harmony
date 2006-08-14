@@ -243,15 +243,24 @@
     <!-- ================================================================================ -->
     <target name="build_vm" depends="init,build_vm_unix,build_vm_windows"/>
 
-    <target name="build_vm_unix" if="is.unix">
+    <target name="build_vm_unix" if="is.unix" depends="build_vm_unix_update, build_vm_unix_clean, build_vm_unix_build">
+    </target>
+
+    <target name="build_vm_unix_update" depends="init" if="is.unix">
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
         </exec>
+    </target>
+
+    <target name="build_vm_unix_clean"  depends="init" if="is.unix">
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
         </exec>
+    </target>
+
+    <target name="build_vm_unix_build" depends="init" if="is.unix">
         <exec executable="sh" dir="working_vm/build" >
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <env key="BUILD_CFG" value="release"/>
