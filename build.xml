@@ -160,7 +160,9 @@
         <!-- now copy the drlvm/build/deploy/jre
              contents into the jre in the HDK -->
         <copy todir="${target.dir}/hdk/jdk/jre">
-            <fileset dir="working_vm/build/deploy/jre"/>
+            <fileset dir="working_vm/build/deploy/jre">
+                <exclude name="**/*.pdb"/>
+            </fileset>
         </copy>
 
     </target>
