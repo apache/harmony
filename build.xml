@@ -49,6 +49,12 @@
                  bundle_hdk,
                  bundle_jre"/>
 
+    <!-- =============================================================================== -->
+    <!--     populates the source directories, working_classlib and working_vm           -->
+    <!-- =============================================================================== -->
+    <target name="populate_source" depends="init, show_props, switch_svn_vm, switch_svn_classlib"
+            description="checkout the class library and VM source trees"/>
+
     <!-- ================================================================================ -->
     <!--     creates the HDK bundle appropriate for the platform                          -->
     <!-- ================================================================================ -->
