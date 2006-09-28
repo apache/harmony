@@ -234,14 +234,19 @@
 
     <target name="build_classlib_special_awt_deps_win" if="is.windows">
 
-        <!-- TODO - fix for win
-        <exec executable="sh" dir="working_classlib" >
-            <arg line="depends/libs/build/fetch-awt-depends.sh"/>
-        </exec>
-        -->
+	<echo>
+************************************************************************
+NOTE : to build, you need to have the dependencies for Swing/AWT built 
+       and installed in working_classlib.  Please see 
+         working_classlib/depends/libs/build
+       for more information
+*************************************************************************
+        </echo>
 
         <!-- don't mention the war... -->
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false"/>
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
+            <property name="with.awt.swing" value="true"/>
+	</ant>
 
 
     </target>
