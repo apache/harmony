@@ -80,7 +80,8 @@
             </tarfileset>
         </tar>
 
-        <md5sum dir="${target.dir}" file="${deploy.hdk.tar}"/>
+        <chksum dir="${target.dir}" file="${deploy.hdk.tar}" />
+        <chksum dir="${target.dir}" file="${deploy.hdk.tar}" type="sha" />
 
     </target>
 
@@ -101,7 +102,8 @@
             </zipfileset>
         </zip>
 
-        <md5sum dir="${target.dir}" file="${deploy.hdk.zip}" />
+        <chksum dir="${target.dir}" file="${deploy.hdk.zip}" />
+        <chksum dir="${target.dir}" file="${deploy.hdk.zip}" type="sha" />
     </target>
 
     <!-- ================================================================================ -->
@@ -125,7 +127,8 @@
             </tarfileset>
         </tar>
 
-        <md5sum dir="${target.dir}" file="${deploy.jre.tar}" />
+        <chksum dir="${target.dir}" file="${deploy.jre.tar}" />
+        <chksum dir="${target.dir}" file="${deploy.jre.tar}" type="sha" />
 
     </target>
 
@@ -143,7 +146,8 @@
                 <exclude name="bin/eclipse.sh"/>
             </zipfileset>
         </zip>
-        <md5sum dir="${target.dir}" file="${deploy.jre.zip}"/>
+        <chksum dir="${target.dir}" file="${deploy.jre.zip}" />
+        <chksum dir="${target.dir}" file="${deploy.jre.zip}" type="sha" />
     </target>
 
 
@@ -214,42 +218,7 @@
     <target name="build_classlib">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" />
 
-        <!-- for now, build the awt stuff specially -->
-        <antcall target="build_classlib_special_awt_deps"/>
-
-    </target>
-
-    <target name="build_classlib_special_awt_deps" depends="init,
-                                                            build_classlib_special_awt_deps_unix,
-                                                            build_classlib_special_awt_deps_win" />
-
-    <target name="build_classlib_special_awt_deps_unix" if="is.unix">
-        <exec executable="sh" dir="working_classlib" >
-            <arg line="depends/libs/build/fetch-awt-depends.sh"/>
-        </exec>
-
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
-            <property name="with.awt.swing" value="true"/>
-        </ant>
-    </target>
-
-    <target name="build_classlib_special_awt_deps_win" if="is.windows">
-
-	<echo>
-************************************************************************
-NOTE : to build, you need to have the dependencies for Swing/AWT built 
-       and installed in working_classlib.  Please see 
-         working_classlib/depends/libs/build
-       for more information
-*************************************************************************
-        </echo>
-
-        <!-- don't mention the war... -->
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false">
-            <property name="with.awt.swing" value="true"/>
-	</ant>
-
-
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" />
     </target>
 
     <!-- ================================================================================ -->
@@ -479,14 +448,16 @@ NOTE : to build, you need to have the dependencies for Swing/AWT built
     <!-- ================================================================================ -->
     <!-- produces a nicer looking checksum - taken from classlib/build.xml                -->
     <!-- ================================================================================ -->
-    <macrodef name="md5sum">
+    <macrodef name="chksum">
         <attribute name="dir" />
         <attribute name="file" />
         <attribute name="type" default="md5" />
         <sequential>
-            <checksum property="@{file}.@{type}" file="@{dir}/@{file}" />
+            <checksum property="@{file}.@{type}"
+                      file="@{dir}/@{file}"
+                      algorithm="@{type}" />
             <echo file="@{dir}/@{file}.@{type}"
-                  message="${@{file}.@{type}}  @{file}" />
+                  message="${@{file}.@{type}}  @{file}${line.separator}" />
         </sequential>
     </macrodef>
 
