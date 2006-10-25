@@ -32,6 +32,9 @@
     <!-- classlib location to tell DRLVM build -->
     <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
 
+    <!-- release property file which is added to source release -->
+    <property file="release.properties" />
+
     <description>
         Apache Harmony subproject federation script
     </description>
@@ -66,12 +69,12 @@
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
         <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
-            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}" mode="755">
+            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" mode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/jre/bin/java.exec"/>
                 <include name="jdk/jre/bin/eclipse.sh"/>
              </tarfileset>
-            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}">
+            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
                 <exclude name="jdk/jre/bin/java.exec"/>
@@ -89,12 +92,12 @@
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
         <zip destfile="${target.dir}/${deploy.hdk.zip}" >
-            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}" filemode="755">
+            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" filemode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/jre/bin/java.exec"/>
                 <include name="jdk/jre/bin/eclipse.sh"/>
              </zipfileset>
-            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-r${svn.revision}">
+            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
                 <exclude name="jdk/jre/bin/java.exec"/>
@@ -114,12 +117,12 @@
     <target name="bundle_jre_tgz" depends="init" if="is.unix">
 
         <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" >
-            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}" mode="755">
+            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" mode="755">
                 <include name="bin/java"/>
                 <include name="bin/java.exec"/>
                 <include name="bin/eclipse.sh"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}">
+            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java"/>
                 <exclude name="bin/java.exec"/>
@@ -134,12 +137,12 @@
 
     <target name="bundle_jre_zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.jre.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}" filemode="755">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" filemode="755">
                 <include name="bin/java"/>
                 <include name="bin/java.exec"/>
                 <include name="bin/eclipse.sh"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-r${svn.revision}">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java"/>
                 <exclude name="bin/java.exec"/>
@@ -308,7 +311,7 @@
     <!-- ================================================================================ -->
     <!--    Switches the working_vm directory to vm choice - wired for DRLVM for now      -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_vm" depends="init">
+    <target name="switch_svn_vm" depends="init" if="is.svn">
         <exec executable="svn" dir="working_vm" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
@@ -319,7 +322,7 @@
     <!-- ================================================================================ -->
     <!--    Switches the working_vm directory to classlib choice                          -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_classlib" depends="init">
+    <target name="switch_svn_classlib" depends="init" if="is.svn">
         <exec executable="svn" dir="working_classlib" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
@@ -391,27 +394,35 @@
         </condition>
         <property name="harmony.arch" value="${os.arch}" />
 
-
+        <property name="harmony.deploy.suffix" value="-snapshot" />
+        
         <property name="deploy.hdk.file.prefix"
-                 value="incubator-harmony-hdk-r${svn.revision}" />
+                 value="incubator-harmony-hdk-${harmony.version}" />
         <property name="deploy.hdk.tar"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.tar.gz" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.zip" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
-                 value="incubator-harmony-jre-r${svn.revision}" />
+                 value="incubator-harmony-jre-${harmony.version}" />
         <property name="deploy.jre.tar"
-                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.tar.gz" />
+                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jre.zip"
-                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}-snapshot.zip" />
+                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
+
+        <property name="deploy.src.file.prefix"
+                 value="incubator-harmony-src-${harmony.version}" />
+        <property name="deploy.src.tar"
+                 value="${deploy.src.file.prefix}${harmony.deploy.suffix}.tar.gz" />
+        <property name="deploy.src.zip"
+                 value="${deploy.src.file.prefix}${harmony.deploy.suffix}.zip" />
     </target>
 
     <target name="show_props" depends="init">
         <echo>
                    Apache Harmony Federated Build
             ==========================================
-            svn rev          :  r${svn.revision}
+            svn rev          :  ${harmony.version}
             operating system :  ${harmony.os}
             architecture     :  ${harmony.arch}-${harmony.bits}
             ant os name/arch :  ${os.name}/${os.arch}
@@ -429,10 +440,13 @@
     <!--      pause and it's reproducable                                                 -->
     <!-- ================================================================================ -->
     <target name="svn-prop">
-        <exec executable="svn" dir=".">
+        <exec executable="svn"
+              dir="."
+              failifexecutionfails="false"
+              resultproperty="svn.rc">
             <arg value="info" />
             <arg value="build.xml" />
-            <redirector outputproperty="svn.revision">
+            <redirector outputproperty="svn.revision.tmp">
                 <outputfilterchain>
                     <linecontains>
                         <contains value="Revision: " />
@@ -443,8 +457,60 @@
                 </outputfilterchain>
             </redirector>
         </exec>
+        <condition property="is.svn" value="true">
+            <equals arg1="${svn.rc}" arg2="0" />
+        </condition>
+        <condition property="svn.revision" value="${svn.revision.tmp}" >
+            <equals arg1="${svn.rc}" arg2="0" />
+        </condition>
+        <property name="svn.revision" value="unknown" />
+	<property name="harmony.version" value="r${svn.revision}" />
     </target>
 
+    <target name="bundle_src"
+            depends="setup,copy_source,bundle_src_tgz,bundle_src_zip"/>
+
+    <target name="bundle_src_tgz" depends="init" if="is.unix">
+
+        <tar tarfile="${target.dir}/${deploy.src.tar}" compression="gzip"
+             longfile="gnu" >
+            <tarfileset dir="${target.dir}/src" prefix="harmony-src-${harmony.version}">
+                <include name="**"/>
+            </tarfileset>
+        </tar>
+
+        <chksum dir="${target.dir}" file="${deploy.src.tar}" />
+        <chksum dir="${target.dir}" file="${deploy.src.tar}" type="sha" />
+
+    </target>
+
+    <target name="bundle_src_zip" depends="init" unless="is.unix">
+        <zip destfile="${target.dir}/${deploy.src.zip}">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-src-${harmony.version}">
+                <include name="**"/>
+            </zipfileset>
+        </zip>
+        <chksum dir="${target.dir}" file="${deploy.src.zip}" />
+        <chksum dir="${target.dir}" file="${deploy.src.zip}" type="sha" />
+    </target>
+
+    <target name="copy_source" depends="init,populate_source">
+        <exec executable="svn">
+            <arg value="export" />
+            <arg value="." />
+            <arg value="target/src" />
+        </exec>
+        <exec executable="svn">
+            <arg value="export" />
+            <arg value="working_classlib/modules/concurrent/standard" />
+            <arg value="target/src/working_classlib/modules/concurrent/standard" />
+        </exec>
+        <echo file="target/src/release.properties">
+harmony.version=${harmony.version}
+harmony.deploy.suffix=${harmony.deploy.suffix}
+        </echo>
+    </target>
+            
     <!-- ================================================================================ -->
     <!-- produces a nicer looking checksum - taken from classlib/build.xml                -->
     <!-- ================================================================================ -->
