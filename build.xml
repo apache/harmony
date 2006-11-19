@@ -24,10 +24,10 @@
     <property name="target.dir" value="target" />
 
     <!-- SVN URL for classlib default -->
-    <property name="classlib.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/classlib/trunk" />
+    <property name="classlib.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/trunk" />
 
     <!-- SVN URL for VM default -->
-    <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/incubator/harmony/enhanced/drlvm/trunk" />
+    <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/drlvm/trunk" />
 
     <!-- classlib location to tell DRLVM build -->
     <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
@@ -192,7 +192,6 @@
                 <include name="LICENSE" />
                 <include name="NOTICE" />
                 <include name="THIRD_PARTY_NOTICES.txt" />
-                <include name="INCUBATOR_NOTICE.txt" />
             </fileset>
         </copy>
 
@@ -209,7 +208,6 @@
                 <include name="LICENSE" />
                 <include name="NOTICE" />
                 <include name="THIRD_PARTY_NOTICES.txt" />
-                <include name="INCUBATOR_NOTICE.txt" />
             </fileset>
         </copy>
 
@@ -397,21 +395,21 @@
         <property name="harmony.deploy.suffix" value="-snapshot" />
         
         <property name="deploy.hdk.file.prefix"
-                 value="incubator-harmony-hdk-${harmony.version}" />
+                 value="apache-harmony-hdk-${harmony.version}" />
         <property name="deploy.hdk.tar"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
-                 value="incubator-harmony-jre-${harmony.version}" />
+                 value="apache-harmony-jre-${harmony.version}" />
         <property name="deploy.jre.tar"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jre.zip"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.src.file.prefix"
-                 value="incubator-harmony-src-${harmony.version}" />
+                 value="apache-harmony-src-${harmony.version}" />
         <property name="deploy.src.tar"
                  value="${deploy.src.file.prefix}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.src.zip"
