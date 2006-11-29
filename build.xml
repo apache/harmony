@@ -32,6 +32,9 @@
     <!-- SVN URL for jdktools default -->
     <property name="jdktools.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/jdktools/trunk" />
 
+    <!-- SVN URL for common_resources default -->
+    <property name="commonresources.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/common_resources" />
+
     <!-- classlib location to tell DRLVM build -->
     <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
 
@@ -51,6 +54,7 @@
                  switch_svn_vm,
                  switch_svn_classlib,
                  switch_svn_jdktools,
+                 switch_svn_commonresources,
                  build_classlib,
                  build_vm,
                  assemble_artifacts,
@@ -60,7 +64,8 @@
     <!-- =============================================================================== -->
     <!--     populates the source directories, working_classlib and working_vm           -->
     <!-- =============================================================================== -->
-    <target name="populate_source" depends="init, show_props, switch_svn_vm, switch_svn_classlib, switch_svn_jdktools"
+    <target name="populate_source" depends="init, show_props, switch_svn_vm, switch_svn_classlib, 
+        									switch_svn_jdktools, switch_svn_commonresources"
             description="checkout the class library and VM source trees"/>
 
     <!-- ================================================================================ -->
@@ -340,6 +345,17 @@
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
             <arg line="${jdktools.svn.url}" />
+        </exec>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    Switches the common_resources directory to common_resources                   -->
+    <!-- ================================================================================ -->
+    <target name="switch_svn_commonresources" depends="init" if="is.svn">
+        <exec executable="svn" dir="common_resources" failonerror="true">
+            <arg line="-r${svn.revision}"/>
+            <arg line="switch" />
+            <arg line="${commonresources.svn.url}" />
         </exec>
     </target>
 
