@@ -29,6 +29,9 @@
     <!-- SVN URL for VM default -->
     <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/drlvm/trunk" />
 
+    <!-- SVN URL for jdktools default -->
+    <property name="jdktools.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/jdktools/trunk" />
+
     <!-- classlib location to tell DRLVM build -->
     <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
 
@@ -47,6 +50,7 @@
         depends="setup,
                  switch_svn_vm,
                  switch_svn_classlib,
+                 switch_svn_jdktools,
                  build_classlib,
                  build_vm,
                  assemble_artifacts,
@@ -56,7 +60,7 @@
     <!-- =============================================================================== -->
     <!--     populates the source directories, working_classlib and working_vm           -->
     <!-- =============================================================================== -->
-    <target name="populate_source" depends="init, show_props, switch_svn_vm, switch_svn_classlib"
+    <target name="populate_source" depends="init, show_props, switch_svn_vm, switch_svn_classlib, switch_svn_jdktools"
             description="checkout the class library and VM source trees"/>
 
     <!-- ================================================================================ -->
@@ -325,6 +329,17 @@
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
             <arg line="${classlib.svn.url}" />
+        </exec>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    Switches the working_jdktools directory to jdktools                           -->
+    <!-- ================================================================================ -->
+    <target name="switch_svn_jdktools" depends="init" if="is.svn">
+        <exec executable="svn" dir="working_jdktools" failonerror="true">
+            <arg line="-r${svn.revision}"/>
+            <arg line="switch" />
+            <arg line="${jdktools.svn.url}" />
         </exec>
     </target>
 
