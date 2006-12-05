@@ -183,7 +183,30 @@
         <!-- now copy the drlvm/build/deploy/jre
              contents into the jre in the HDK -->
         <copy todir="${target.dir}/hdk/jdk/jre">
-            <fileset dir="working_vm/build/deploy/jre">
+            <fileset dir="working_vm/build/deploy/jdk/jre">
+                <exclude name="**/*.pdb"/>
+            </fileset>
+        </copy>
+
+     </target>
+        
+     <target name="assemble_jdk">
+         
+        <!-- create the top-level jdk directory -->
+        <mkdir dir="${target.dir}/jdk"/>
+
+        <!-- now copy the drlvm/build/deploy/jre
+             contents into the jre in the JDK -->
+        <copy todir="${target.dir}/jdk/jre">
+            <fileset dir="working_vm/build/deploy/jdk/jre">
+                <exclude name="**/*.pdb"/>
+            </fileset>
+        </copy>
+
+        <!-- now copy the drlvm/build/deploy/jre
+             contents into the jre in the JDK -->
+        <copy todir="${target.dir}/jdk/">
+            <fileset dir="working_jdktools/deploy/jdk">
                 <exclude name="**/*.pdb"/>
             </fileset>
         </copy>
