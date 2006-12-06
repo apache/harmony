@@ -57,7 +57,7 @@
                  switch_svn_commonresources,
                  build_classlib,
                  build_vm,
-                 assemble_artifacts,
+        		 assemble_artifacts,
                  bundle_hdk,
                  bundle_jre"/>
 
@@ -71,7 +71,7 @@
     <!-- ================================================================================ -->
     <!--     creates the HDK bundle appropriate for the platform                          -->
     <!-- ================================================================================ -->
-    <target name="bundle_hdk" depends="assemble_hdk_doc,bundle_hdk_tgz,bundle_hdk_zip"/>
+    <target name="bundle_hdk" depends="assemble_artifacts, assemble_hdk_doc,bundle_hdk_tgz,bundle_hdk_zip"/>
 
     <target name="bundle_hdk_tgz" depends="init" if="is.unix">
 
@@ -166,8 +166,9 @@
     <!-- ================================================================================ -->
     <!--    from the classlib and vm builds, creates the hdk and jre                      -->
     <!-- ================================================================================ -->
-    <target name="assemble_artifacts">
+    <target name="assemble_artifacts" depends="init, assemble_stuff, chmod_stuff"/>
 
+    <target name="assemble_stuff">
         <!-- create the top-level hdk directory -->
         <mkdir dir="${target.dir}/hdk"/>
 
@@ -177,18 +178,29 @@
         <copy todir="${target.dir}/hdk">
             <fileset dir="working_classlib/deploy">
                 <exclude name="**/jre/**/*" />
+                <exclude name="**/jdk/lib/*" />
             </fileset>
         </copy>
 
-        <!-- now copy the drlvm/build/deploy/jre
-             contents into the jre in the HDK -->
+        <!-- now copy the drlvm/build/deploy/jre -->
         <copy todir="${target.dir}/hdk/jdk/jre">
             <fileset dir="working_vm/build/deploy/jdk/jre">
                 <exclude name="**/*.pdb"/>
             </fileset>
         </copy>
 
+        <!-- now copy the working_jdktools/deploy/jdk -->
+        <copy todir="${target.dir}/hdk/jdk/">
+            <fileset dir="working_jdktools/deploy/jdk">
+                <exclude name="**/*.pdb"/>
+            </fileset>
+        </copy>
      </target>
+    
+    <target name="chmod_stuff" if="is.unix">
+        <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
+        <chmod file="${target.dir}/hdk/jdk/jre/bin/java*" perm="ugo+x" />
+    </target>
         
      <target name="assemble_jdk">
          
