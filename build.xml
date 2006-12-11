@@ -46,7 +46,7 @@
     </description>
 
     <!-- ================================================================================ -->
-    <!--     main target - should checkout, build and package hdk and jre                 -->
+    <!--     main target - should checkout, build and package hdk, jdk and jre            -->
     <!-- ================================================================================ -->
     <target name="default"
         description="setup and build complete implementation"
@@ -59,6 +59,7 @@
                  build_vm,
         		 assemble_artifacts,
                  bundle_hdk,
+        		 bundle_jdk,
                  bundle_jre"/>
 
     <!-- =============================================================================== -->
@@ -77,7 +78,7 @@
 
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
-        <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
+        <tar tarfile="${ta	rget.dir}/${deploy.hdk.tar}" compression="gzip">
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" mode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/jre/bin/java.exec"/>
@@ -119,9 +120,55 @@
     </target>
 
     <!-- ================================================================================ -->
+    <!--     creates the JDK bundle appropriate for the platform                          -->
+    <!-- ================================================================================ -->    
+    <target name="bundle_jdk" depends="assemble_jdk_doc,bundle_jdk_tgz,bundle_jdk_zip"/>
+
+    <target name="bundle_jdk_tgz" depends="init" if="is.unix">
+
+        <tar tarfile="${target.dir}/${deploy.jdk.tar}" compression="gzip" >
+            <tarfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" mode="755">
+                <include name="jre/bin/java"/>
+                <include name="bin/*"/>
+            </tarfileset>
+            <tarfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}">
+                <include name="**"/>
+                <exclude name="jre/bin/java"/>
+                <exclude name="jre/bin/java.exec"/>
+                <exclude name="jre/bin/eclipse.sh"/>
+                <exclude name="bin/*"/>
+            </tarfileset>
+        </tar>
+
+        <chksum dir="${target.dir}" file="${deploy.jdk.tar}" />
+        <chksum dir="${target.dir}" file="${deploy.jdk.tar}" type="sha" />
+
+    </target>
+
+    <target name="bundle_jdk_zip" depends="init" unless="is.unix">
+        <zip destfile="${target.dir}/${deploy.jdk.zip}">
+            <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" filemode="755">
+                <include name="jre/bin/java.exe"/>
+                <include name="jre/bin/javaw.exe"/>
+                 <include name="bin/*"/>
+            </zipfileset>
+            <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}">
+                <include name="**"/>
+                <exclude name="jre/bin/java.exe"/>
+                <exclude name="jre/bin/javaw.exe"/>
+                <exclude name="jre/bin/eclipse.sh"/>
+                <exclude name="bin/*"/>
+            </zipfileset>
+        </zip>
+        <chksum dir="${target.dir}" file="${deploy.jdk.zip}" />
+        <chksum dir="${target.dir}" file="${deploy.jdk.zip}" type="sha" />
+    </target>
+
+    <!-- ================================================================================ -->
     <!--     creates the JRE bundle appropriate for the platform                          -->
     <!-- ================================================================================ -->
     <target name="bundle_jre" depends="assemble_jre_doc,bundle_jre_tgz,bundle_jre_zip"/>
+
 
     <target name="bundle_jre_tgz" depends="init" if="is.unix">
 
@@ -184,8 +231,8 @@
         </copy>
 
         <!-- now copy the drlvm/build/deploy/jre -->
-        <copy todir="${target.dir}/hdk/jdk/jre">
-            <fileset dir="working_vm/build/deploy/jdk/jre">
+        <copy todir="${target.dir}/hdk/jdk">
+            <fileset dir="working_vm/build/deploy/jdk">
                 <exclude name="**/*.pdb"/>
             </fileset>
         </copy>
@@ -243,7 +290,7 @@
     </target>
 
     <!-- ================================================================================ -->
-    <!--    copy license and notices into the root of the jre                             -->
+    <!--    copy license and notices into the root of the JDK and JRE                     -->
     <!-- ================================================================================ -->
     <target name="assemble_jre_doc">
 
@@ -255,7 +302,17 @@
                 <include name="THIRD_PARTY_NOTICES.txt" />
             </fileset>
         </copy>
-
+    </target>
+    
+    <target name="assemble_jdk_doc">    
+        <copy todir="${target.dir}/hdk/jdk/">
+            <fileset dir="./">
+                <include name="COPYRIGHT" />
+                <include name="LICENSE" />
+                <include name="NOTICE" />
+                <include name="THIRD_PARTY_NOTICES.txt" />
+            </fileset>
+        </copy>
     </target>
 
     <!-- ================================================================================ -->
@@ -467,6 +524,13 @@
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
+
+        <property name="deploy.jdk.file.prefix"
+                 value="apache-harmony-jdk-${harmony.version}" />
+        <property name="deploy.jdk.tar"
+                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
+        <property name="deploy.jdk.zip"
+                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
                  value="apache-harmony-jre-${harmony.version}" />
