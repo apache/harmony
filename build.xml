@@ -179,6 +179,7 @@
             <fileset dir="working_classlib/deploy">
                 <exclude name="**/jre/**/*" />
                 <exclude name="**/jdk/lib/*" />
+                <exclude name="**/jdk/include/*" />
             </fileset>
         </copy>
 
