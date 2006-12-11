@@ -459,3 +459,94 @@ copyright holder.
 ===============================================================================
 ===============================================================================
 
+
+Notice for IETF RFC
+===================
+
+Portions of Apache Harmony reference RFC 3280 - "Internet X.509 Public
+Key Infrastructure, Certificate and Certificate Revocation List (CRL) Profile".
+Portions of RFC 3280 are included in Harmony Javadoc for reference, and in
+accordance with the licensing terms for RFC3280, the license is included here :
+
+   Copyright (C) The Internet Society (2002).  All Rights Reserved.
+
+   This document and translations of it may be copied and furnished to
+   others, and derivative works that comment on or otherwise explain it
+   or assist in its implementation may be prepared, copied, published
+   and distributed, in whole or in part, without restriction of any
+   kind, provided that the above copyright notice and this paragraph are
+   included on all such copies and derivative works.  However, this
+   document itself may not be modified in any way, such as by removing
+   the copyright notice or references to the Internet Society or other
+   Internet organizations, except as needed for the purpose of
+   developing Internet standards in which case the procedures for
+   copyrights defined in the Internet Standards process must be
+   followed, or as required to translate it into languages other than
+   English.
+
+   The limited permissions granted above are perpetual and will not be
+   revoked by the Internet Society or its successors or assigns.
+
+   This document and the information contained herein is provided on an
+   "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
+   TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
+   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
+   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+
+===============================================================================
+===============================================================================
+
+
+Notice for MX4J 3.0.1
+=====================
+
+Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.
+
+This product includes software developed by the MX4J project
+(http://mx4j.sourceforge.net).
+
+The license terms for MX4J are available at
+http://mx4j.sourceforge.net/docs/ch01s06.html
+
+
+===============================================================================
+===============================================================================
+
+
+Notice for Apache Yoko
+======================
+
+This distribution may contain software that is based in part on Apache Yoko
+for which the following notice applies:
+
+Apache Yoko is an effort undergoing incubation at the Apache Software
+Foundation (ASF). Incubation is required of all newly accepted projects until
+a further review indicates that the infrastructure, communications, and decision
+making process have stabilized in a manner consistent with other successful
+ASF projects. While incubation status is not necessarily a reflection of the
+completeness or stability of the code, it does indicate that the project has
+yet to be fully endorsed by the ASF.
+
+http://incubator.apache.org/yoko/
+
+
+===============================================================================
+===============================================================================
+
+
+Notice for the Eclipse JDT Core Batch Compiler
+==============================================
+
+The license terms for the Eclipse JDT Core Batch Compiler are available at
+	http://www.eclipse.org/legal/epl-v10.html
+
+
+Source code for the Eclipse JDT Core Batch Compiler can be found at:
+	http://download.eclipse.org/eclipse/downloads/
+
+Navigate to the version of ECJ used in this distribution, and the source is
+provided in a ZIP file in the section titled "JDT Core Batch Compiler".
+
+
