@@ -78,7 +78,7 @@
 
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
-        <tar tarfile="${ta	rget.dir}/${deploy.hdk.tar}" compression="gzip">
+        <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" mode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/jre/bin/java.exec"/>
