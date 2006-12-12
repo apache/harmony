@@ -44,7 +44,7 @@
     <description>
         Apache Harmony subproject federation script
     </description>
-
+	
     <!-- ================================================================================ -->
     <!--     main target - should checkout, build and package hdk, jdk and jre            -->
     <!-- ================================================================================ -->
@@ -57,6 +57,8 @@
                  switch_svn_commonresources,
                  build_classlib,
                  build_vm,
+                 build_commonresources,
+                 build_jdktools,
         		 assemble_artifacts,
                  bundle_hdk,
         		 bundle_jdk,
@@ -376,6 +378,20 @@
             <env key="BUILD_CFG" value="release"/>
             <env key="CXX" value="msvc"/>
         </exec>
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    build the common resources - ensure depends are up to date an then rebuild            -->
+    <!-- ================================================================================ -->
+    <target name="build_commonresources">
+        <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" />
+    </target>
+
+    <!-- ================================================================================ -->
+    <!--    build the common resources - ensure depends are up to date an then rebuild            -->
+    <!-- ================================================================================ -->
+    <target name="build_jdktools">
+        <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" />
     </target>
 
     <!-- ================================================================================ -->
