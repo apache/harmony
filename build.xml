@@ -335,7 +335,7 @@
     </target>
 
     <target name="build_vm_unix_update" depends="init" if="is.unix">
-        <exec executable="sh" dir="working_vm/build" >
+        <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="release"/>
@@ -343,7 +343,7 @@
     </target>
 
     <target name="build_vm_unix_clean"  depends="init" if="is.unix">
-        <exec executable="sh" dir="working_vm/build" >
+        <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="release"/>
@@ -351,7 +351,7 @@
     </target>
 
     <target name="build_vm_unix_build" depends="init" if="is.unix">
-        <exec executable="sh" dir="working_vm/build" >
+        <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="release"/>
@@ -360,19 +360,19 @@
 
     <target name="build_vm_windows" unless="is.unix">
 
-        <exec executable="cmd" dir="working_vm/build" >
+        <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="release"/>
             <env key="CXX" value="msvc"/>
         </exec>
-        <exec executable="cmd" dir="working_vm/build" >
+        <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="release"/>
             <env key="CXX" value="msvc"/>
         </exec>
-        <exec executable="cmd" dir="working_vm/build" >
+        <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="release"/>
