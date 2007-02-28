@@ -518,6 +518,13 @@
         <condition property="harmony.arch" value="x86">
             <isset property="is.x86" />
         </condition>
+        <condition property="harmony.arch" value="x86_64">
+            <or>
+                <os arch="x86_64"/>
+                <os arch="amd64"/>
+                <os arch="em64t"/>
+            </or>
+        </condition>
         <property name="harmony.arch" value="${os.arch}" />
 
         <property name="harmony.deploy.suffix" value="-snapshot" />
