@@ -83,15 +83,12 @@
         <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" mode="755">
                 <include name="jdk/jre/bin/java"/>
-                <include name="jdk/jre/bin/java.exec"/>
-                <include name="jdk/jre/bin/eclipse.sh"/>
+                <include name="jdk/bin/*"/>
              </tarfileset>
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
-                <exclude name="jdk/jre/bin/java.exec"/>
-                <exclude name="jdk/jre/bin/eclipse.sh"/>
-                <exclude name="jdk/jre/bin/eclipse.sh"/>
+                <exclude name="jdk/bin/*"/>
             </tarfileset>
         </tar>
 
@@ -105,15 +102,15 @@
              and setting exec bits as needed -->
         <zip destfile="${target.dir}/${deploy.hdk.zip}" >
             <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" filemode="755">
-                <include name="jdk/jre/bin/java"/>
-                <include name="jdk/jre/bin/java.exec"/>
-                <include name="jdk/jre/bin/eclipse.sh"/>
+                <include name="jdk/jre/bin/java.exe"/>
+                <include name="jdk/jre/bin/javaw.exe"/>
+                <include name="jdk/bin/*"/>
              </zipfileset>
             <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
                 <include name="**"/>
-                <exclude name="jdk/jre/bin/java"/>
-                <exclude name="jdk/jre/bin/java.exec"/>
-                <exclude name="jdk/jre/bin/eclipse.sh"/>
+                <exclude name="jdk/jre/bin/java.exe"/>
+                <exclude name="jdk/jre/bin/javaw.exe"/>
+                <exclude name="jdk/bin/*"/>
             </zipfileset>
         </zip>
 
@@ -136,8 +133,6 @@
             <tarfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java"/>
-                <exclude name="jre/bin/java.exec"/>
-                <exclude name="jre/bin/eclipse.sh"/>
                 <exclude name="bin/*"/>
             </tarfileset>
         </tar>
@@ -152,13 +147,12 @@
             <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" filemode="755">
                 <include name="jre/bin/java.exe"/>
                 <include name="jre/bin/javaw.exe"/>
-                 <include name="bin/*"/>
+                <include name="bin/*"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java.exe"/>
                 <exclude name="jre/bin/javaw.exe"/>
-                <exclude name="jre/bin/eclipse.sh"/>
                 <exclude name="bin/*"/>
             </zipfileset>
         </zip>
@@ -177,14 +171,10 @@
         <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" >
             <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" mode="755">
                 <include name="bin/java"/>
-                <include name="bin/java.exec"/>
-                <include name="bin/eclipse.sh"/>
             </tarfileset>
             <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java"/>
-                <exclude name="bin/java.exec"/>
-                <exclude name="bin/eclipse.sh"/>
             </tarfileset>
         </tar>
 
@@ -196,15 +186,13 @@
     <target name="bundle_jre_zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.jre.zip}">
             <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" filemode="755">
-                <include name="bin/java"/>
-                <include name="bin/java.exec"/>
-                <include name="bin/eclipse.sh"/>
+                <include name="bin/java.exe"/>
+                <include name="bin/javaw.exe"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}">
                 <include name="**"/>
-                <exclude name="bin/java"/>
-                <exclude name="bin/java.exec"/>
-                <exclude name="bin/eclipse.sh"/>
+                <exclude name="bin/java.exe"/>
+                <exclude name="bin/javaw.exe"/>
             </zipfileset>
         </zip>
         <chksum dir="${target.dir}" file="${deploy.jre.zip}" />
