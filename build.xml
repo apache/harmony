@@ -41,6 +41,9 @@
     <!-- release property file which is added to source release -->
     <property file="release.properties" />
 
+    <!-- debug or release version -->
+    <property name="hy.cfg" value="release" />
+
     <description>
         Apache Harmony subproject federation script
     </description>
@@ -309,9 +312,13 @@
     <!--    build the classlib - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
     <target name="build_classlib">
-        <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" />
+        <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
 
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" />
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
     </target>
 
     <!-- ================================================================================ -->
@@ -326,7 +333,7 @@
         <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="release"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
     </target>
 
@@ -334,7 +341,7 @@
         <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="release"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
     </target>
 
@@ -342,7 +349,7 @@
         <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="release"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
     </target>
 
@@ -351,19 +358,19 @@
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="release"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
             <env key="CXX" value="msvc"/>
         </exec>
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="release"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
             <env key="CXX" value="msvc"/>
         </exec>
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="release"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
             <env key="CXX" value="msvc"/>
         </exec>
     </target>
@@ -372,14 +379,18 @@
     <!--    build the common resources - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
     <target name="build_commonresources">
-        <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" />
+        <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
     </target>
 
     <!-- ================================================================================ -->
     <!--    build the common resources - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
     <target name="build_jdktools">
-        <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" />
+        <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
     </target>
 
     <!-- ================================================================================ -->
@@ -566,6 +577,7 @@
             operating system :  ${harmony.os}
             architecture     :  ${harmony.arch}-${harmony.bits}
             ant os name/arch :  ${os.name}/${os.arch}
+            build mode       :  ${hy.cfg}
             output location  :  ${target.dir}
             DRLVM classlib   :  ${drlvm.classlib.offset}
         </echo>
