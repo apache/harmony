@@ -24,7 +24,11 @@
     <property name="target.dir" value="target" />
 
     <!-- SVN URL for classlib default -->
-    <property name="classlib.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/trunk" />
+    <condition property="classlib.svn.url"
+               value="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/branches/java6-branch"
+               else="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/trunk">
+        <isset property="java6" />
+    </condition>
 
     <!-- SVN URL for VM default -->
     <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/drlvm/trunk" />
