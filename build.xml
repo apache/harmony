@@ -224,30 +224,31 @@
                 <exclude name="**/jre/**/*" />
                 <exclude name="**/jdk/lib/*" />
                 <exclude name="**/jdk/include/*" />
+                <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
 
         <!-- now copy the drlvm/build/deploy/jre -->
         <copy todir="${target.dir}/hdk/jdk">
             <fileset dir="working_vm/build/deploy/jdk">
-                <exclude name="**/*.pdb"/>
+                <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
 
         <!-- now copy the working_jdktools/deploy/jdk -->
         <copy todir="${target.dir}/hdk/jdk/">
             <fileset dir="working_jdktools/deploy/jdk">
-                <exclude name="**/*.pdb"/>
+                <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
-     </target>
+    </target>
     
     <target name="chmod_stuff" if="is.unix">
         <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/java*" perm="ugo+x" />
     </target>
         
-     <target name="assemble_jdk">
+    <target name="assemble_jdk">
          
         <!-- create the top-level jdk directory -->
         <mkdir dir="${target.dir}/jdk"/>
@@ -256,7 +257,7 @@
              contents into the jre in the JDK -->
         <copy todir="${target.dir}/jdk/jre">
             <fileset dir="working_vm/build/deploy/jdk/jre">
-                <exclude name="**/*.pdb"/>
+                <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
 
@@ -264,7 +265,7 @@
              contents into the jre in the JDK -->
         <copy todir="${target.dir}/jdk/">
             <fileset dir="working_jdktools/deploy/jdk">
-                <exclude name="**/*.pdb"/>
+                <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
 
@@ -571,6 +572,12 @@
                  value="${deploy.src.file.prefix}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.src.zip"
                  value="${deploy.src.file.prefix}${harmony.deploy.suffix}.zip" />
+
+        <!-- copy symbol debug info to debug build on Windows -->
+        <condition property="copy.progdb">
+            <equals arg1="${hy.cfg}" arg2="debug" />
+        </condition>
+
     </target>
 
     <target name="show_props" depends="init">
