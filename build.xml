@@ -25,7 +25,7 @@
 
     <!-- SVN URL for classlib default -->
     <condition property="classlib.svn.url"
-               value="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/branches/java6-branch"
+               value="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/branches/java6"
                else="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/trunk">
         <isset property="java6" />
     </condition>
