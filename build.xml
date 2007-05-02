@@ -66,9 +66,9 @@
                  build_vm,
                  build_commonresources,
                  build_jdktools,
-        		 assemble_artifacts,
+                 assemble_artifacts,
                  bundle_hdk,
-        		 bundle_jdk,
+                 bundle_jdk,
                  bundle_jre"/>
 
     <!-- =============================================================================== -->
