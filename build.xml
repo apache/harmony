@@ -393,6 +393,9 @@
     <!--    build the common resources - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
     <target name="build_jdktools">
+        <ant antfile="working_jdktools/build.xml" target="fetch-depends" inheritall="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
         <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
