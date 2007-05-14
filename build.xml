@@ -316,12 +316,20 @@
     <!-- ================================================================================ -->
     <!--    build the classlib - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_classlib">
-        <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
+    <target name="build_classlib" depends="auto_fetch_classlib_libs">
+        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
+    </target>
 
-        <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
+    <target name="auto_fetch_classlib_libs" if="auto.fetch">
+        <ant target="fetch_classlib_libs">
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
+    </target>
+
+    <target name="fetch_classlib_libs">
+        <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
     </target>
@@ -331,7 +339,7 @@
     <!-- ================================================================================ -->
     <target name="build_vm" depends="init,build_vm_unix,build_vm_windows"/>
 
-    <target name="build_vm_unix" if="is.unix" depends="build_vm_unix_update, build_vm_unix_clean, build_vm_unix_build">
+    <target name="build_vm_unix" if="is.unix" depends="build_vm_unix_auto_update, build_vm_unix_clean, build_vm_unix_build">
     </target>
 
     <target name="build_vm_unix_update" depends="init" if="is.unix">
@@ -340,6 +348,10 @@
             <arg line="-Ddeploy.canonical.flag=true"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
+    </target>
+
+    <target name="build_vm_unix_auto_update" if="auto.fetch">
+        <ant target="build_vm_unix_update" inheritall="true"/>
     </target>
 
     <target name="build_vm_unix_clean"  depends="init" if="is.unix">
@@ -358,14 +370,8 @@
         </exec>
     </target>
 
-    <target name="build_vm_windows" unless="is.unix">
+    <target name="build_vm_windows" depends="build_vm_windows_auto_update" unless="is.unix">
 
-        <exec executable="cmd" dir="working_vm/build" failonerror="true">
-            <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-            <env key="CXX" value="msvc"/>
-        </exec>
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
@@ -380,6 +386,19 @@
         </exec>
     </target>
 
+    <target name="build_vm_windows_update" unless="is.unix">
+        <exec executable="cmd" dir="working_vm/build" failonerror="true">
+            <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
+            <arg line="-Ddeploy.canonical.flag=true"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
+            <env key="CXX" value="msvc"/>
+        </exec>
+    </target>
+
+    <target name="build_vm_windows_auto_update" if="auto.fetch">
+        <ant target="build_vm_windows_update" inheritall="true"/>
+    </target>
+
     <!-- ================================================================================ -->
     <!--    build the common resources - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
@@ -392,11 +411,20 @@
     <!-- ================================================================================ -->
     <!--    build the common resources - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_jdktools">
-        <ant antfile="working_jdktools/build.xml" target="fetch-depends" inheritall="false" >
+    <target name="build_jdktools" depends="auto_fetch_jdktools_libs">
+        <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
-        <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
+    </target>
+
+    <target name="auto_fetch_jdktools_libs" if="auto.fetch">
+        <ant target="fetch_jdktools_libs" inheritall="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+        </ant>
+    </target>
+
+    <target name="fetch_jdktools_libs" if="auto.fetch">
+        <ant antfile="working_jdktools/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
     </target>
