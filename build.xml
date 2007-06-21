@@ -319,18 +319,24 @@
     <target name="build_classlib" depends="auto_fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
     <target name="auto_fetch_classlib_libs" if="auto.fetch">
         <ant target="fetch_classlib_libs">
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
     <target name="fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -366,6 +372,7 @@
         <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
+            <arg line="-Dsvn.revision=${harmony.version}" />
             <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
     </target>
@@ -405,6 +412,8 @@
     <target name="build_commonresources">
         <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -414,6 +423,8 @@
     <target name="build_jdktools" depends="auto_fetch_jdktools_libs">
         <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -658,7 +669,33 @@
             <equals arg1="${svn.rc}" arg2="0" />
         </condition>
         <property name="svn.revision" value="unknown" />
-	<property name="harmony.version" value="r${svn.revision}" />
+	<property name="harmony.version" value="${svn.revision}" />
+
+        <exec executable="svn"
+              failifexecutionfails="false"
+              resultproperty="svn.rc">
+            <arg value="info" />
+            <redirector outputproperty="svn.info.tmp">
+                <outputfilterchain>
+                    <linecontainsregexp>
+                        <regexp pattern="Repository Root:|Revision:" />
+                    </linecontainsregexp>
+                    <tokenfilter>
+                        <replacestring from="Repository Root: " to=""/>
+                        <replacestring from="Revision: " to=" "/>
+                    </tokenfilter>
+                    <striplinebreaks/>
+                </outputfilterchain>
+            </redirector>
+        </exec>
+        <condition property="svn.info" value="${svn.info.tmp}" >
+            <equals arg1="${svn.rc}" arg2="0" />
+        </condition>
+        <tstamp>
+            <format property="svn.info"
+                    pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
+        </tstamp>
+	<property name="harmony.long.version" value="${svn.info}" />
     </target>
 
     <target name="bundle_src"
@@ -701,6 +738,7 @@
         </exec>
         <echo file="target/src/release.properties">
 harmony.version=${harmony.version}
+harmony.long.version=${harmony.long.version}
 harmony.deploy.suffix=${harmony.deploy.suffix}
         </echo>
     </target>
