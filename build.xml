@@ -588,28 +588,28 @@
         <property name="harmony.deploy.suffix" value="-snapshot" />
         
         <property name="deploy.hdk.file.prefix"
-                 value="apache-harmony-hdk-${harmony.version}" />
+                 value="apache-harmony-hdk-r${harmony.version}" />
         <property name="deploy.hdk.tar"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jdk.file.prefix"
-                 value="apache-harmony-jdk-${harmony.version}" />
+                 value="apache-harmony-jdk-r${harmony.version}" />
         <property name="deploy.jdk.tar"
                  value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jdk.zip"
                  value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
-                 value="apache-harmony-jre-${harmony.version}" />
+                 value="apache-harmony-jre-r${harmony.version}" />
         <property name="deploy.jre.tar"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jre.zip"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.src.file.prefix"
-                 value="apache-harmony-src-${harmony.version}" />
+                 value="apache-harmony-src-r${harmony.version}" />
         <property name="deploy.src.tar"
                  value="${deploy.src.file.prefix}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.src.zip"
