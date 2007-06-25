@@ -705,7 +705,7 @@
 
         <tar tarfile="${target.dir}/${deploy.src.tar}" compression="gzip"
              longfile="gnu" >
-            <tarfileset dir="${target.dir}/src" prefix="harmony-src-${harmony.version}">
+            <tarfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
                 <include name="**"/>
             </tarfileset>
         </tar>
@@ -717,7 +717,7 @@
 
     <target name="bundle_src_zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.src.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-src-${harmony.version}">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="apache-harmony-src-r${harmony.version}">
                 <include name="**"/>
             </zipfileset>
         </zip>
