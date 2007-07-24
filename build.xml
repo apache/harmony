@@ -345,8 +345,9 @@
     <!-- ================================================================================ -->
     <target name="build_vm" depends="init,build_vm_unix,build_vm_windows"/>
 
-    <target name="build_vm_unix" if="is.unix" depends="build_vm_unix_auto_update, build_vm_unix_clean, build_vm_unix_build">
-    </target>
+    <target name="build_vm_unix"
+            depends="build_vm_unix_auto_update, build_vm_unix_clean, build_vm_unix_build"
+            if="is.unix" />
 
     <target name="build_vm_unix_update" depends="init" if="is.unix">
         <exec executable="sh" dir="working_vm/build" failonerror="true">
@@ -377,21 +378,9 @@
         </exec>
     </target>
 
-    <target name="build_vm_windows" depends="build_vm_windows_auto_update" unless="is.unix">
-
-        <exec executable="cmd" dir="working_vm/build" failonerror="true">
-            <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-            <env key="CXX" value="msvc"/>
-        </exec>
-        <exec executable="cmd" dir="working_vm/build" failonerror="true">
-            <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-            <env key="CXX" value="msvc"/>
-        </exec>
-    </target>
+    <target name="build_vm_windows"
+            depends="build_vm_windows_auto_update, build_vm_windows_clean, build_vm_windows_build"
+            unless="is.unix" />
 
     <target name="build_vm_windows_update" unless="is.unix">
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
@@ -404,6 +393,24 @@
 
     <target name="build_vm_windows_auto_update" if="auto.fetch">
         <ant target="build_vm_windows_update" inheritall="true"/>
+    </target>
+
+    <target name="build_vm_windows_clean" depends="init" unless="is.unix">
+        <exec executable="cmd" dir="working_vm/build" failonerror="true">
+            <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
+            <arg line="-Ddeploy.canonical.flag=true"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
+            <env key="CXX" value="msvc"/>
+        </exec>
+    </target>
+
+    <target name="build_vm_windows_build" depends="init" unless="is.unix">
+        <exec executable="cmd" dir="working_vm/build" failonerror="true">
+            <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
+            <arg line="-Ddeploy.canonical.flag=true"/>
+            <env key="BUILD_CFG" value="${hy.cfg}"/>
+            <env key="CXX" value="msvc"/>
+        </exec>
     </target>
 
     <!-- ================================================================================ -->
