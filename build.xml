@@ -321,6 +321,7 @@
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
+            <property name="keep.working" value="true" />
         </ant>
     </target>
 
@@ -340,10 +341,32 @@
         </ant>
     </target>
 
+    <target name="clean_classlib">
+        <ant antfile="working_classlib/build.xml" target="clean" inheritAll="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+            <property name="keep.working" value="true" />
+        </ant>
+    </target>
+
+    <target name="init_classlib_hdk">
+        <ant antfile="working_classlib/make/build-native.xml"
+                target="copy-makefile-includes" inheritAll="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+            <property name="keep.working" value="true" />
+        </ant>
+    </target>
+
     <!-- ================================================================================ -->
     <!--    build the vm - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
     <target name="build_vm" depends="init,build_vm_unix,build_vm_windows"/>
+
+    <target name="clean_vm"
+            depends="init,build_vm_unix_clean,build_vm_windows_clean"/>
 
     <target name="build_vm_unix"
             depends="build_vm_unix_auto_update, build_vm_unix_clean, build_vm_unix_build"
@@ -447,6 +470,14 @@
         </ant>
     </target>
 
+    <target name="clean_jdktools">
+        <ant antfile="working_jdktools/build.xml" target="clean" inheritall="false" >
+            <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+        </ant>
+    </target>
+
     <!-- ================================================================================ -->
     <!--    trivial setup                                                                 -->
     <!-- ================================================================================ -->
@@ -473,8 +504,9 @@
 
     </target>
 
-    <target name="clean">
-        <delete dir="${target.dir}" failonerror="false"/>
+    <target name="clean"
+            depends="init_classlib_hdk,clean_jdktools,clean_classlib,clean_vm" >
+        <delete dir="${target.dir}" failonerror="false" />
     </target>
 
     <!-- ================================================================================ -->
