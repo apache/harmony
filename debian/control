@@ -1,0 +1,20 @@
+Source: apache-harmony
+Section: unknown
+Priority: extra
+Maintainer: Mark Hindess <mark.hindess@googlemail.com>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.7.2
+
+Package: apache-harmony-jre
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: apache-harmony-jdk
+Description: Apache Harmony JRE
+ <insert long description, indented with spaces>
+
+Package: apache-harmony-jdk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: apache-harmony-jre
+Description: Apache Harmony JDK
+ <insert long description, indented with spaces>

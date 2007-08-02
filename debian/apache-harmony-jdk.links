@@ -1,0 +1,5 @@
+/usr/bin/jarsigner-harmony /usr/lib/apache-harmony-jdk/bin/jarsigner
+/usr/bin/java-harmony /usr/lib/apache-harmony-jdk/bin/java
+/usr/bin/javac-harmony /usr/lib/apache-harmony-jdk/bin/javac
+/usr/bin/javah-harmony /usr/lib/apache-harmony-jdk/bin/javah
+/usr/bin/keytool-harmony /usr/lib/apache-harmony-jdk/bin/keytool

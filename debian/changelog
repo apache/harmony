@@ -1,0 +1,6 @@
+apache-harmony (0.0r562079-1) unstable; urgency=low
+
+  * Initial attempt at Debian package.  Still needs a lot of work.
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Thu,  2 Aug 2007 12:16:25 +0100
+
