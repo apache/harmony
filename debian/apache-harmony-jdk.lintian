@@ -1,0 +1,2 @@
+apache-harmony-jdk: shlib-without-PT_GNU_STACK-section usr/lib/apache-harmony-jdk/jre/bin/libicudata.so.34
+apache-harmony-jdk: shared-lib-without-dependency-information ./usr/lib/apache-harmony-jdk/jre/bin/libicudata.so.34

@@ -88,10 +88,16 @@ install-arch:
 	mkdir -p $(JDKDIR)/usr/lib
 	cp -pr $(CURDIR)/target/hdk/jdk/* \
 	    $(JDKDIR)/usr/lib/apache-harmony-jdk
+	mkdir -p $(JDKDIR)/usr/share/lintian/overrides
+	cp -pr $(CURDIR)/debian/apache-harmony-jdk.lintian \
+	    $(JDKDIR)/usr/share/lintian/overrides/apache-harmony-jdk
 
 	mkdir -p $(JREDIR)/usr/lib
 	cp -lpr $(JDKDIR)/usr/lib/apache-harmony-jdk/jre/* \
 	    $(JREDIR)/usr/lib/apache-harmony-jre
+	mkdir -p $(JREDIR)/usr/share/lintian/overrides
+	cp -pr $(CURDIR)/debian/apache-harmony-jre.lintian \
+	    $(JREDIR)/usr/share/lintian/overrides/apache-harmony-jre
 
 	dh_install -s
 # Must not depend on anything. This is to be called by
