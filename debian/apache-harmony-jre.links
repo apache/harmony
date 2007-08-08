@@ -1,1 +1,1 @@
-/usr/bin/java-harmony /usr/lib/apache-harmony-jre/bin/java
+/usr/lib/apache-harmony-java5/jdk/jre/bin/java /usr/bin/java-harmony

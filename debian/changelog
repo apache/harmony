@@ -1,3 +1,11 @@
+apache-harmony (0.0r563886-1) unstable; urgency=low
+
+  * Added hdk.
+  * Make hdk require jdk which in turn requires jre.
+  * Add lintian overrides for icu libraries.
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Wed,  8 Aug 2007 14:58:28 +0100
+
 apache-harmony (0.0r562079-1) unstable; urgency=low
 
   * Initial attempt at Debian package.  Still needs a lot of work.

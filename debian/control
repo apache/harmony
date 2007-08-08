@@ -8,13 +8,19 @@ Standards-Version: 3.7.2
 Package: apache-harmony-jre
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: apache-harmony-jdk
+Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime
 Description: Apache Harmony JRE
  <insert long description, indented with spaces>
 
 Package: apache-harmony-jdk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: apache-harmony-jre
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache-harmony-jre
+Provides: java-compiler, java2-compiler
 Description: Apache Harmony JDK
+ <insert long description, indented with spaces>
+
+Package: apache-harmony-hdk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, apache-harmony-jdk
+Description: Apache Harmony HDK
  <insert long description, indented with spaces>
