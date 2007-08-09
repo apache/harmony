@@ -1,4 +1,10 @@
-harmony-5.0 (0.0r564137-1) unstable; urgency=low
+harmony-5.0 (0.0r564155-1) unstable; urgency=low
+
+  * Fixing source package name.
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Thu,  9 Aug 2007 10:31:18 +0100
+
+harmony-5.0 (0.0r564139-1) unstable; urgency=low
 
   * Changed package name.
 
