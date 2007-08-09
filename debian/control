@@ -5,22 +5,22 @@ Maintainer: Mark Hindess <mark.hindess@googlemail.com>
 Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
-Package: apache-harmony-jre
+Package: harmony-5.0-jre
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime
 Description: Apache Harmony JRE
  <insert long description, indented with spaces>
 
-Package: apache-harmony-jdk
+Package: harmony-5.0-jdk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache-harmony-jre
+Depends: ${shlibs:Depends}, ${misc:Depends}, harmony-5.0-jre
 Provides: java-compiler, java2-compiler
 Description: Apache Harmony JDK
  <insert long description, indented with spaces>
 
-Package: apache-harmony-hdk
+Package: harmony-5.0-hdk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, apache-harmony-jdk
+Depends: ${shlibs:Depends}, ${misc:Depends}, harmony-5.0-jdk
 Description: Apache Harmony HDK
  <insert long description, indented with spaces>

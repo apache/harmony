@@ -1,3 +1,9 @@
+harmony-5.0 (0.0r564135-1) unstable; urgency=low
+
+  * Changed package name.
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Thu,  9 Aug 2007 09:23:37 +0100
+
 apache-harmony (0.0r563886-1) unstable; urgency=low
 
   * Added hdk.

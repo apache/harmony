@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for apache-harmony-jre
+# postinst script for harmony-5.0-jre
 #
 # see: dh_installdeb(1)
 

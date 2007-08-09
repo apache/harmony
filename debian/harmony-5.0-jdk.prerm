@@ -1,5 +1,5 @@
 #!/bin/sh
-# prerm script for apache-harmony-jre
+# prerm script for harmony-5.0-jdk
 #
 # see: dh_installdeb(1)
 
@@ -19,7 +19,9 @@ set -e
 
 case "$1" in
     remove|deconfigure)
-        update-alternatives --remove java /usr/bin/java-harmony
+        for f in jarsigner java javac javah keytool ; do
+            update-alternatives --remove $f /usr/bin/$f-harmony
+        done
     ;;
 
     upgrade)

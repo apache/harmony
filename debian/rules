@@ -10,9 +10,9 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
-JREDIR=$(CURDIR)/debian/apache-harmony-jre
-JDKDIR=$(CURDIR)/debian/apache-harmony-jdk
-HDKDIR=$(CURDIR)/debian/apache-harmony-hdk
+JREDIR=$(CURDIR)/debian/harmony-5.0-jre
+JDKDIR=$(CURDIR)/debian/harmony-5.0-jdk
+HDKDIR=$(CURDIR)/debian/harmony-5.0-hdk
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
@@ -83,17 +83,17 @@ install-arch:
 	dh_clean -k -s  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 	dh_installdirs -s
 
-	mkdir -p $(JREDIR)/usr/lib/apache-harmony-java5/jdk
-	mv $(CURDIR)/target/hdk/jdk/jre $(JREDIR)/usr/lib/apache-harmony-java5/jdk
+	mkdir -p $(JREDIR)/usr/lib/harmony-5.0/jdk
+	mv $(CURDIR)/target/hdk/jdk/jre $(JREDIR)/usr/lib/harmony-5.0/jdk
 	mkdir -p $(JREDIR)/usr/share/lintian/overrides
-	cp -pr $(CURDIR)/debian/apache-harmony-jre.lintian \
-	    $(JREDIR)/usr/share/lintian/overrides/apache-harmony-jre
+	cp -pr $(CURDIR)/debian/harmony-5.0-jre.lintian \
+	    $(JREDIR)/usr/share/lintian/overrides/harmony-5.0-jre
 
-	mkdir -p $(JDKDIR)/usr/lib/apache-harmony-java5
-	mv $(CURDIR)/target/hdk/jdk $(JDKDIR)/usr/lib/apache-harmony-java5
+	mkdir -p $(JDKDIR)/usr/lib/harmony-5.0
+	mv $(CURDIR)/target/hdk/jdk $(JDKDIR)/usr/lib/harmony-5.0
 
 	mkdir -p $(HDKDIR)/usr/lib
-	mv $(CURDIR)/target/hdk $(HDKDIR)/usr/lib/apache-harmony-java5
+	mv $(CURDIR)/target/hdk $(HDKDIR)/usr/lib/harmony-5.0
 
 	dh_install -s
 # Must not depend on anything. This is to be called by
