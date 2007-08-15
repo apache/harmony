@@ -51,25 +51,39 @@
     <description>
         Apache Harmony subproject federation script
     </description>
-	
+
     <!-- ================================================================================ -->
     <!--     main target - should checkout, build and package hdk, jdk and jre            -->
     <!-- ================================================================================ -->
     <target name="default"
         description="setup and build complete implementation"
         depends="setup,
-                 switch_svn_vm,
-                 switch_svn_classlib,
-                 switch_svn_jdktools,
-                 switch_svn_commonresources,
-                 build_classlib,
-                 build_vm,
-                 build_commonresources,
-                 build_jdktools,
+                 populate_source,
+                 build-all,
                  assemble_artifacts,
                  bundle_hdk,
                  bundle_jdk,
                  bundle_jre"/>
+    
+    <target name="make-snapshot"
+        description="setup and build complete src + binaries set"
+        depends="bundle_src,
+                 build-all,
+                 assemble_artifacts,
+                 bundle_hdk,
+                 bundle_jdk,
+                 bundle_jre"/>
+
+    <target name="build-all"
+        description="build complete implementation"
+        depends="build_classlib,
+                 build_vm,
+                 build_commonresources,
+                 build_jdktools"/>
+    
+    <target name="bundle_src" 
+        description="assemble source snapshot"
+        depends="setup,copy_source,bundle_src_tgz,bundle_src_zip" />
 
     <!-- =============================================================================== -->
     <!--     populates the source directories, working_classlib and working_vm           -->
@@ -91,7 +105,7 @@
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" mode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/bin/*"/>
-             </tarfileset>
+            </tarfileset>
             <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
@@ -112,7 +126,7 @@
                 <include name="jdk/jre/bin/java.exe"/>
                 <include name="jdk/jre/bin/javaw.exe"/>
                 <include name="jdk/bin/*"/>
-             </zipfileset>
+            </zipfileset>
             <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java.exe"/>
@@ -127,7 +141,7 @@
 
     <!-- ================================================================================ -->
     <!--     creates the JDK bundle appropriate for the platform                          -->
-    <!-- ================================================================================ -->    
+    <!-- ================================================================================ -->
     <target name="bundle_jdk" depends="assemble_jdk_doc,bundle_jdk_tgz,bundle_jdk_zip"/>
 
     <target name="bundle_jdk_tgz" depends="init" if="is.unix">
@@ -242,14 +256,14 @@
             </fileset>
         </copy>
     </target>
-    
+
     <target name="chmod_stuff" if="is.unix">
         <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/java*" perm="ugo+x" />
     </target>
-        
+
     <target name="assemble_jdk">
-         
+
         <!-- create the top-level jdk directory -->
         <mkdir dir="${target.dir}/jdk"/>
 
@@ -301,8 +315,8 @@
             </fileset>
         </copy>
     </target>
-    
-    <target name="assemble_jdk_doc">    
+
+    <target name="assemble_jdk_doc">
         <copy todir="${target.dir}/hdk/jdk/">
             <fileset dir="./">
                 <include name="COPYRIGHT" />
@@ -625,7 +639,7 @@
         <property name="harmony.arch" value="${os.arch}" />
 
         <property name="harmony.deploy.suffix" value="-snapshot" />
-        
+
         <property name="deploy.hdk.file.prefix"
                  value="apache-harmony-hdk-r${harmony.version}" />
         <property name="deploy.hdk.tar"
@@ -669,6 +683,7 @@
             operating system :  ${harmony.os}
             architecture     :  ${harmony.arch}-${harmony.bits}
             ant os name/arch :  ${os.name}/${os.arch}
+            hosting Java     :  ${java.version} (${java.vendor})
             build mode       :  ${hy.cfg}
             output location  :  ${target.dir}
             DRLVM classlib   :  ${drlvm.classlib.offset}
@@ -708,7 +723,7 @@
             <equals arg1="${svn.rc}" arg2="0" />
         </condition>
         <property name="svn.revision" value="unknown" />
-	<property name="harmony.version" value="${svn.revision}" />
+        <property name="harmony.version" value="${svn.revision}" />
 
         <exec executable="svn"
               failifexecutionfails="false"
@@ -734,11 +749,8 @@
             <format property="svn.info"
                     pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
         </tstamp>
-	<property name="harmony.long.version" value="${svn.info}" />
+        <property name="harmony.long.version" value="${svn.info}" />
     </target>
-
-    <target name="bundle_src"
-            depends="setup,copy_source,bundle_src_tgz,bundle_src_zip"/>
 
     <target name="bundle_src_tgz" depends="init" if="is.unix">
 
@@ -756,7 +768,7 @@
 
     <target name="bundle_src_zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.src.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="apache-harmony-src-r${harmony.version}">
+            <zipfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
                 <include name="**"/>
             </zipfileset>
         </zip>
@@ -781,7 +793,7 @@ harmony.long.version=${harmony.long.version}
 harmony.deploy.suffix=${harmony.deploy.suffix}
         </echo>
     </target>
-            
+
     <!-- ================================================================================ -->
     <!-- produces a nicer looking checksum - taken from classlib/build.xml                -->
     <!-- ================================================================================ -->
