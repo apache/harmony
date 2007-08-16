@@ -780,14 +780,14 @@
         <exec executable="svn">
             <arg value="export" />
             <arg value="." />
-            <arg value="target/src" />
+            <arg value="${target.dir}/src" />
         </exec>
         <exec executable="svn">
             <arg value="export" />
             <arg value="working_classlib/modules/concurrent/standard" />
-            <arg value="target/src/working_classlib/modules/concurrent/standard" />
+            <arg value="${target.dir}/src/working_classlib/modules/concurrent/standard" />
         </exec>
-        <echo file="target/src/release.properties">
+        <echo file="${target.dir}/src/release.properties">
 harmony.version=${harmony.version}
 harmony.long.version=${harmony.long.version}
 harmony.deploy.suffix=${harmony.deploy.suffix}
