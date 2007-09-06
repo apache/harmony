@@ -242,9 +242,9 @@
             </fileset>
         </copy>
 
-        <!-- now copy the drlvm/build/deploy/jre -->
+        <!-- now copy the drlvm/build/deploy -->
         <copy todir="${target.dir}/hdk/jdk">
-            <fileset dir="working_vm/build/deploy/jdk">
+            <fileset dir="working_vm/build/deploy">
                 <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
