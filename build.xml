@@ -243,7 +243,7 @@
         </copy>
 
         <!-- now copy the drlvm/build/deploy -->
-        <copy todir="${target.dir}/hdk/jdk">
+        <copy todir="${target.dir}/hdk">
             <fileset dir="working_vm/build/deploy">
                 <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
