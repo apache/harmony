@@ -243,7 +243,8 @@
         </copy>
 
         <!-- now copy the drlvm/build/deploy -->
-        <copy todir="${target.dir}/hdk">
+        <!-- set overwrite flag to take hythr from VM -->
+        <copy todir="${target.dir}/hdk" overwrite="true">
             <fileset dir="working_vm/build/deploy">
                 <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
