@@ -23,22 +23,6 @@
     <!-- name of the target directory to use for building and final assembly -->
     <property name="target.dir" value="target" />
 
-    <!-- SVN URL for classlib default -->
-    <condition property="classlib.svn.url"
-               value="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/branches/java6"
-               else="https://svn.apache.org/repos/asf/harmony/enhanced/classlib/trunk">
-        <isset property="java6" />
-    </condition>
-
-    <!-- SVN URL for VM default -->
-    <property name="vm.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/drlvm/trunk" />
-
-    <!-- SVN URL for jdktools default -->
-    <property name="jdktools.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/jdktools/trunk" />
-
-    <!-- SVN URL for common_resources default -->
-    <property name="commonresources.svn.url" value="https://svn.apache.org/repos/asf/harmony/enhanced/common_resources" />
-
     <!-- classlib location to tell DRLVM build -->
     <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
 
@@ -688,6 +672,7 @@
             build mode       :  ${hy.cfg}
             output location  :  ${target.dir}
             DRLVM classlib   :  ${drlvm.classlib.offset}
+            SVN root         :  ${svn.root}
         </echo>
     </target>
 
@@ -730,20 +715,19 @@
               failifexecutionfails="false"
               resultproperty="svn.rc">
             <arg value="info" />
-            <redirector outputproperty="svn.info.tmp">
+            <redirector outputproperty="svn.root.tmp">
                 <outputfilterchain>
                     <linecontainsregexp>
-                        <regexp pattern="Repository Root:|Revision:" />
+                        <regexp pattern="Repository Root:" />
                     </linecontainsregexp>
                     <tokenfilter>
                         <replacestring from="Repository Root: " to=""/>
-                        <replacestring from="Revision: " to=" "/>
                     </tokenfilter>
                     <striplinebreaks/>
                 </outputfilterchain>
             </redirector>
         </exec>
-        <condition property="svn.info" value="${svn.info.tmp}" >
+        <condition property="svn.info" value="${svn.root.tmp} ${svn.revision}" >
             <equals arg1="${svn.rc}" arg2="0" />
         </condition>
         <tstamp>
@@ -751,6 +735,23 @@
                     pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
         </tstamp>
         <property name="harmony.long.version" value="${svn.info}" />
+
+        <condition property="svn.root" value="${svn.root.tmp}" >
+            <equals arg1="${svn.rc}" arg2="0" />
+        </condition>
+
+        <!-- default SVN URLs -->
+        <property name="svn.root" value="http://svn.apache.org/repos/asf"/>
+
+        <condition property="classlib.svn.url"
+                   value="${svn.root}/harmony/enhanced/classlib/branches/java6"
+                   else="${svn.root}/harmony/enhanced/classlib/trunk">
+            <isset property="java6" />
+        </condition>
+
+        <property name="vm.svn.url" value="${svn.root}/harmony/enhanced/drlvm/trunk" />
+        <property name="jdktools.svn.url" value="${svn.root}/harmony/enhanced/jdktools/trunk" />
+        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/common_resources" />
     </target>
 
     <target name="bundle_src_tgz" depends="init" if="is.unix">
