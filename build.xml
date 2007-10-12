@@ -60,7 +60,8 @@
 
     <target name="build-all"
         description="build complete implementation"
-        depends="build_classlib,
+        depends="show_props,
+                 build_classlib,
                  build_vm,
                  build_commonresources,
                  build_jdktools"/>
@@ -396,6 +397,7 @@
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <arg line="-Dsvn.revision=${harmony.version}" />
+            <arg line="${custom.props}"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
     </target>
@@ -430,6 +432,7 @@
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
+            <arg line="${custom.props}"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
             <env key="CXX" value="msvc"/>
         </exec>
@@ -656,6 +659,12 @@
         <!-- copy symbol debug info to debug build on Windows -->
         <condition property="copy.progdb">
             <equals arg1="${hy.cfg}" arg2="debug" />
+        </condition>
+        
+        <!-- workaround for drlvm build till it starts with a script-->
+        <condition property="custom.props" value="-Dhy.javac.compiler=${hy.javac.compiler}"
+            else="">
+            <isset property="hy.javac.compiler"/>
         </condition>
 
     </target>
