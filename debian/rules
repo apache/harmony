@@ -44,7 +44,7 @@ build-arch: build-arch-stamp
 build-arch-stamp: configure-stamp 
 
 	# Add here commands to compile the arch part of the package.
-	ant -Dauto.fetch=true
+	ant -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true
 	touch $@
 
 build-indep: build-indep-stamp
@@ -60,7 +60,7 @@ clean:
 	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
 
 	# Add here commands to clean up after the build process.
-	ant clean
+	ant -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true clean
 
 	dh_clean  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 
