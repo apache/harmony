@@ -32,6 +32,8 @@
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
+    <property name="hy.no.sig" value="false" />
+
     <description>
         Apache Harmony subproject federation script
     </description>
@@ -319,6 +321,7 @@
     <target name="build_classlib" depends="auto_fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -328,6 +331,7 @@
     <target name="auto_fetch_classlib_libs" if="auto.fetch">
         <ant target="fetch_classlib_libs">
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -336,6 +340,7 @@
     <target name="fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -344,6 +349,7 @@
     <target name="clean_classlib">
         <ant antfile="working_classlib/build.xml" target="clean" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
+            <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -397,6 +403,7 @@
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <arg line="-Dsvn.revision=${harmony.version}" />
+            <arg line="-Dhy.no.sig=${hy.no.sig}"/>
             <arg line="${custom.props}"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
@@ -432,6 +439,7 @@
         <exec executable="cmd" dir="working_vm/build" failonerror="true">
             <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
+            <arg line="-Dhy.no.sig=${hy.no.sig}"/>
             <arg line="${custom.props}"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
             <env key="CXX" value="msvc"/>
