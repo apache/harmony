@@ -761,7 +761,15 @@
         <property name="harmony.long.version" value="${svn.info}" />
 
         <condition property="svn.root" value="${svn.root.tmp}" >
-            <equals arg1="${svn.rc}" arg2="0" />
+            <and>
+                <equals arg1="${svn.rc}" arg2="0" />
+                <!-- check length: it is an empty string             --> 
+                <!-- if svn output doesn't contain "Repository Root" -->
+                <length string="${svn.root.tmp}"
+                        trim="true"
+                        when="greater"
+                        length="0" />
+            </and>
         </condition>
 
         <!-- default SVN URLs -->
