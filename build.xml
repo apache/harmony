@@ -319,12 +319,17 @@
     <!-- ================================================================================ -->
     <!--    build the classlib - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
+
+    <propertyset id="required.pops">
+        <propertyref name="hy.cfg" />
+        <propertyref name="hy.no.sig" />
+        <propertyref name="hy.local.zlib" />
+        <propertyref name="use.libstdc++6" />
+    </propertyset>
+    
     <target name="build_classlib" depends="auto_fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
-            <property name="hy.no.sig" value="${hy.no.sig}"/>
-            <property name="hy.local.zlib" value="${hy.local.zlib}"/>
-            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
+            <propertyset refid="required.pops" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -333,10 +338,7 @@
 
     <target name="auto_fetch_classlib_libs" if="auto.fetch">
         <ant target="fetch_classlib_libs">
-            <property name="hy.cfg" value="${hy.cfg}"/>
-            <property name="hy.no.sig" value="${hy.no.sig}"/>
-            <property name="hy.local.zlib" value="${hy.local.zlib}"/>
-            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
+            <propertyset refid="required.pops" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -344,10 +346,7 @@
 
     <target name="fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
-            <property name="hy.no.sig" value="${hy.no.sig}"/>
-            <property name="hy.local.zlib" value="${hy.local.zlib}"/>
-            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
+            <propertyset refid="required.pops" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -355,10 +354,7 @@
 
     <target name="clean_classlib">
         <ant antfile="working_classlib/build.xml" target="clean" inheritAll="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
-            <property name="hy.no.sig" value="${hy.no.sig}"/>
-            <property name="hy.local.zlib" value="${hy.local.zlib}"/>
-            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
+            <propertyset refid="required.pops" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
