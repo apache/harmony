@@ -324,6 +324,7 @@
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="hy.local.zlib" value="${hy.local.zlib}"/>
+            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -335,6 +336,7 @@
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="hy.local.zlib" value="${hy.local.zlib}"/>
+            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -345,6 +347,7 @@
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="hy.local.zlib" value="${hy.local.zlib}"/>
+            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -355,6 +358,7 @@
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="hy.no.sig" value="${hy.no.sig}"/>
             <property name="hy.local.zlib" value="${hy.local.zlib}"/>
+            <property name="use.libstdc++6" value="${use.libstdc++6}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -410,6 +414,7 @@
             <arg line="-Dsvn.revision=${harmony.version}" />
             <arg line="-Dhy.no.sig=${hy.no.sig}"/>
             <arg line="-Dhy.local.zlib=${hy.local.zlib}"/>
+            <arg line="-Duse.libstdc++6=${use.libstdc++6}"/>
             <arg line="${custom.props}"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
