@@ -408,13 +408,20 @@
     </target>
 
     <target name="build_vm_unix_build" depends="init" if="is.unix">
+
+        <condition property="use.libstdc++6.argline"
+                   value="-Duse.libstdc++6=${use.libstdc++6}"
+                   else="">
+            <isset property="use.libstdc++6" />
+        </condition>
+        
         <exec executable="sh" dir="working_vm/build" failonerror="true">
             <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
             <arg line="-Ddeploy.canonical.flag=true"/>
             <arg line="-Dsvn.revision=${harmony.version}" />
             <arg line="-Dhy.no.sig=${hy.no.sig}"/>
             <arg line="-Dhy.local.zlib=${hy.local.zlib}"/>
-            <arg line="-Duse.libstdc++6=${use.libstdc++6}"/>
+            <arg line="${use.libstdc++6.argline}"/>
             <arg line="${custom.props}"/>
             <env key="BUILD_CFG" value="${hy.cfg}"/>
         </exec>
