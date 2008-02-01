@@ -23,9 +23,6 @@
     <!-- name of the target directory to use for building and final assembly -->
     <property name="target.dir" value="target" />
 
-    <!-- classlib location to tell DRLVM build -->
-    <property name="drlvm.classlib.offset" value="../../../working_classlib"/>
-
     <!-- release property file which is added to source release -->
     <property file="release.properties" />
 
@@ -233,7 +230,7 @@
         <!-- now copy the drlvm/build/deploy -->
         <!-- set overwrite flag to take hythr from VM -->
         <copy todir="${target.dir}/hdk" overwrite="true">
-            <fileset dir="working_vm/build/deploy">
+            <fileset dir="working_vm/deploy">
                 <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
@@ -320,7 +317,7 @@
     <!--    build the classlib - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
 
-    <propertyset id="required.pops">
+    <propertyset id="required.props">
         <propertyref name="hy.cfg" />
         <propertyref name="hy.no.sig" />
         <propertyref name="hy.local.zlib" />
@@ -329,7 +326,7 @@
     
     <target name="build_classlib" depends="auto_fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
-            <propertyset refid="required.pops" />
+            <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -338,7 +335,7 @@
 
     <target name="auto_fetch_classlib_libs" if="auto.fetch">
         <ant target="fetch_classlib_libs">
-            <propertyset refid="required.pops" />
+            <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -346,7 +343,7 @@
 
     <target name="fetch_classlib_libs">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
-            <propertyset refid="required.pops" />
+            <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
@@ -354,7 +351,7 @@
 
     <target name="clean_classlib">
         <ant antfile="working_classlib/build.xml" target="clean" inheritAll="false" >
-            <propertyset refid="required.pops" />
+            <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
@@ -374,91 +371,38 @@
     <!-- ================================================================================ -->
     <!--    build the vm - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_vm" depends="init,build_vm_unix,build_vm_windows"/>
-
-    <target name="clean_vm"
-            depends="init,build_vm_unix_clean,build_vm_windows_clean"/>
-
-    <target name="build_vm_unix"
-            depends="build_vm_unix_auto_update, build_vm_unix_clean, build_vm_unix_build"
-            if="is.unix" />
-
-    <target name="build_vm_unix_update" depends="init" if="is.unix">
-        <exec executable="sh" dir="working_vm/build" failonerror="true">
-            <arg line="build.sh update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-        </exec>
+    <target name="build_vm" depends="auto_fetch_vm_libs">
+        <ant antfile="working_vm/build.xml" target="rebuild" inheritAll="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+            <property name="deploy.canonical.flag" value="true"/>
+        </ant>
     </target>
 
-    <target name="build_vm_unix_auto_update" if="auto.fetch">
-        <ant target="build_vm_unix_update" inheritall="true"/>
+    <target name="auto_fetch_vm_libs" if="auto.fetch">
+        <ant target="fetch_vm_libs">
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+        </ant>
     </target>
 
-    <target name="build_vm_unix_clean"  depends="init" if="is.unix">
-        <exec executable="sh" dir="working_vm/build" failonerror="true">
-            <arg line="build.sh clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-        </exec>
+    <target name="fetch_vm_libs">
+        <ant antfile="working_vm/build.xml" target="fetch-depends" inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+        </ant>
     </target>
 
-    <target name="build_vm_unix_build" depends="init" if="is.unix">
-
-        <condition property="use.libstdc++6.argline"
-                   value="-Duse.libstdc++6=${use.libstdc++6}"
-                   else="">
-            <isset property="use.libstdc++6" />
-        </condition>
-        
-        <exec executable="sh" dir="working_vm/build" failonerror="true">
-            <arg line="build.sh -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <arg line="-Dsvn.revision=${harmony.version}" />
-            <arg line="-Dhy.no.sig=${hy.no.sig}"/>
-            <arg line="-Dhy.local.zlib=${hy.local.zlib}"/>
-            <arg line="${use.libstdc++6.argline}"/>
-            <arg line="${custom.props}"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-        </exec>
-    </target>
-
-    <target name="build_vm_windows"
-            depends="build_vm_windows_auto_update, build_vm_windows_clean, build_vm_windows_build"
-            unless="is.unix" />
-
-    <target name="build_vm_windows_update" unless="is.unix">
-        <exec executable="cmd" dir="working_vm/build" failonerror="true">
-            <arg line="/c build.bat update -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-            <env key="CXX" value="msvc"/>
-        </exec>
-    </target>
-
-    <target name="build_vm_windows_auto_update" if="auto.fetch">
-        <ant target="build_vm_windows_update" inheritall="true"/>
-    </target>
-
-    <target name="build_vm_windows_clean" depends="init" unless="is.unix">
-        <exec executable="cmd" dir="working_vm/build" failonerror="true">
-            <arg line="/c build.bat clean -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-            <env key="CXX" value="msvc"/>
-        </exec>
-    </target>
-
-    <target name="build_vm_windows_build" depends="init" unless="is.unix">
-        <exec executable="cmd" dir="working_vm/build" failonerror="true">
-            <arg line="/c build.bat -Dexternal.dep.CLASSLIB.loc=${drlvm.classlib.offset}"/>
-            <arg line="-Ddeploy.canonical.flag=true"/>
-            <arg line="-Dhy.no.sig=${hy.no.sig}"/>
-            <arg line="-Dhy.local.zlib=${hy.local.zlib}"/>
-            <arg line="${custom.props}"/>
-            <env key="BUILD_CFG" value="${hy.cfg}"/>
-            <env key="CXX" value="msvc"/>
-        </exec>
+    <target name="clean_vm">
+        <ant antfile="working_vm/build.xml" target="clean" inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.version" value="${harmony.version}"/>
+            <property name="deploy.canonical.flag" value="true"/>
+        </ant>
     </target>
 
     <!-- ================================================================================ -->
@@ -473,7 +417,7 @@
     </target>
 
     <!-- ================================================================================ -->
-    <!--    build the common resources - ensure depends are up to date an then rebuild            -->
+    <!--    build the jdktools - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
     <target name="build_jdktools" depends="auto_fetch_jdktools_libs">
         <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
@@ -546,7 +490,7 @@
     </target>
 
     <!-- ================================================================================ -->
-    <!--    Switches the working_vm directory to classlib choice                          -->
+    <!--    Switches the working_classlib directory to classlib                          -->
     <!-- ================================================================================ -->
     <target name="switch_svn_classlib" depends="init" if="is.svn">
         <exec executable="svn" dir="working_classlib" failonerror="true">
@@ -703,7 +647,6 @@
             hosting Java     :  ${java.version} (${java.vendor})
             build mode       :  ${hy.cfg}
             output location  :  ${target.dir}
-            DRLVM classlib   :  ${drlvm.classlib.offset}
             SVN root         :  ${svn.root}
         </echo>
     </target>
