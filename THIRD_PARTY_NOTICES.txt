@@ -49,14 +49,14 @@ their respective owners.
 
 
 
-License Notice for ICU4J version 3.4
+License Notice for ICU4J version 3.8
 ====================================
 
 ICU4J license - ICU4J 1.3.1 and later
 
 COPYRIGHT AND PERMISSION NOTICE
 
-Copyright (c) 1995-2005 International Business Machines Corporation and others 
+Copyright (c) 1995-2007 International Business Machines Corporation and others 
 
 All rights reserved. 
 
@@ -197,11 +197,16 @@ License Notice for ZLIB version 1.2.3
 
 
 
+
 Visual C++ Runtime Files
 ========================
 
 The file msvcr71.dll is the Microsoft(R) C Runtime Library.
-This file is redistributed from Microsoft(R) Visual Studio 7.1.
+The file msvcp71.dll is the Microsoft Multithreaded Standard C++ Library.
+
+These files are redistributed from Microsoft(R) Visual Studio 7.1 as described in
+the file "redist.txt" available with that product.
+
 
 
 
@@ -210,7 +215,8 @@ This file is redistributed from Microsoft(R) Visual Studio 7.1.
 
 
 
-License Notice for Bouncy Castle version 133
+
+License Notice for Bouncy Castle version 1.38
 ============================================
 
 Copyright (c) 2000 - 2006 The Legion Of The Bouncy Castle (http://www.bouncycastle.org)
@@ -233,10 +239,15 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
 
 
+
+
 ===============================================================================
 ===============================================================================
 
-License Notice for MX4J 3.0.1.
+
+
+
+License Notice for MX4J 3.0.2.
 ==============================
 
 The MX4J License, Version 1.0
@@ -291,8 +302,12 @@ are met:
  MX4J, please see the MX4J website (http://mx4j.sourceforge.net/).
 
 
+
+
 ===============================================================================
 ===============================================================================
+
+
 
 
 Notice for The Independent JPEG Group's JPEG software
@@ -338,8 +353,12 @@ commercial products, provided that all warranty or liability claims are
 assumed by the product vendor.
 
 
+
+
 ===============================================================================
 ===============================================================================
+
+
 
 
 Notice for Little CMS
@@ -369,8 +388,12 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 
+
+
 ===============================================================================
 ===============================================================================
+
+
 
 
 Notice for libpng
@@ -416,8 +439,12 @@ source code in a product, acknowledgment is not required but would be
 appreciated.
 
 
+
+
 ===============================================================================
 ===============================================================================
+
+
 
 
 Notice for Unicode Character Database
@@ -456,19 +483,47 @@ these Data Files or Software without prior written authorization of the
 copyright holder. 
 
 
+
+
 ===============================================================================
 ===============================================================================
 
 
-Notice for IETF RFC
-===================
 
-Portions of Apache Harmony reference RFC 3280 - "Internet X.509 Public
-Key Infrastructure, Certificate and Certificate Revocation List (CRL) Profile".
-Portions of RFC 3280 are included in Harmony Javadoc for reference, and in
-accordance with the licensing terms for RFC3280, the license is included here :
 
-   Copyright (C) The Internet Society (2002).  All Rights Reserved.
+Notice for IETF RFCs prior to 2005
+==================================
+
+This distribution may contain software that is based in part on the work of
+the following IETF RFCs.  Portions of the IETF RFC specifications may be
+included in source code comments for reference, and in accordance with
+the licensing terms, the licenses are reproduced here:
+
+
+RFC 2313 - PKCS #1: RSA Encryption
+           Copyright (C) The Internet Society (1998).  All Rights Reserved.
+
+RFC 2315 - PKCS #7: Cryptographic Message Syntax
+           Copyright (C) The Internet Society (1998).  All Rights Reserved.
+
+RFC 2781 - UTF-16, an encoding of ISO 10646
+           Copyright (C) The Internet Society (2000).  All Rights Reserved.
+
+RFC 2891 - LDAP Control Extension for Server Side Sorting of Search Results
+           Copyright (C) The Internet Society (2000).  All Rights Reserved.
+
+RFC 2985 - PKCS #9: Selected Object Classes and Attribute Types
+           Copyright (C) The Internet Society (2000).  All Rights Reserved.
+
+RFC 3161 - Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)
+           Copyright (C) The Internet Society (2001).  All Rights Reserved.
+
+RFC 3280 - Internet X.509 Public Key Infrastructure, Certificate and
+           Certificate Revocation List (CRL) Profile
+           Copyright (C) The Internet Society (2002).  All Rights Reserved.
+
+
+The following statement applies to each RFC:
 
    This document and translations of it may be copied and furnished to
    others, and derivative works that comment on or otherwise explain it
@@ -495,24 +550,64 @@ accordance with the licensing terms for RFC3280, the license is included here :
    MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 
+Notice for IETF RFCs from 2005 onwards
+======================================
+
+This distribution may contain software that is based in part on the work of
+the following IETF RFCs.  Portions of the IETF RFC specifications may be
+included in source code comments for reference, and in accordance with
+the licensing terms, the licenses are reproduced here:
+
+RFC 4122 - A Universally Unique Identifier (UUID) URN Namespace
+           Copyright (C) The Internet Society (2005).
+
+
+The following statement applies to this RFC:
+      
+      Copyright (C) The Internet Society (2005).
+
+      This document is subject to the rights, licenses and restrictions
+      contained in BCP 78, and except as set forth therein, the authors
+      retain all their rights.
+
+      This document and the information contained herein are provided
+      on an "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE
+      REPRESENTS OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND
+      THE INTERNET ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES,
+      EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT
+      THE USE OF THE INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR
+      ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+      PARTICULAR PURPOSE.
+
+
+
+
 ===============================================================================
 ===============================================================================
 
 
-Notice for MX4J 3.0.1
-=====================
 
-Copyright (c) 2001-2004 by the MX4J contributors.  All rights reserved.
 
-This product includes software developed by the MX4J project
-(http://mx4j.sourceforge.net).
+Notice for RSA Public-Key Cryptography Standards 
+================================================
 
-The license terms for MX4J are available at
-http://mx4j.sourceforge.net/docs/ch01s06.html
+Portions of Apache Harmony reference RSA Public-Key Cryptography Standards:
+PKCS#7, PKCS#8 and PKSC#10. Portions of these standards are included 
+in Harmony Javadoc for reference, and in accordance with the licensing terms 
+for PKCS#7, PKCS#8 and PKSC#10, the full copyright statement is here:
+
+Copyright © 1991-1993 RSA Laboratories, a division of RSA Data Security, Inc.
+License to copy this document is granted provided that it is identified as
+"RSA Data Security, Inc. Public-Key Cryptography Standards (PKCS)" in all
+material mentioning or referencing this document.
+
+
 
 
 ===============================================================================
 ===============================================================================
+
+
 
 
 Notice for Apache Yoko
@@ -532,8 +627,12 @@ yet to be fully endorsed by the ASF.
 http://incubator.apache.org/yoko/
 
 
+
+
 ===============================================================================
 ===============================================================================
+
+
 
 
 Notice for the Eclipse JDT Core Batch Compiler
@@ -550,14 +649,19 @@ Navigate to the version of ECJ used in this distribution, and the source is
 provided in a ZIP file in the section titled "JDT Core Batch Compiler".
 
 
+
+
 ===============================================================================
 ===============================================================================
+
+
 
 
 License notice for the DejaVu fonts package
 ==============================================
 
-Fonts are (c) Bitstream (see below). DejaVu changes are in public domain. Glyphs imported from Arev fonts are (c) Tavmjung Bah (see below)
+Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
+Glyphs imported from Arev fonts are (c) Tavmjung Bah (see below)
 
 Bitstream Vera Fonts Copyright
 ------------------------------
