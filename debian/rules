@@ -10,6 +10,8 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
+ANT_FLAGS = -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true \
+            -Dhy.zip.api=false -Dhy.no.thr=false -Dauto.fetch=true
 JREDIR=$(CURDIR)/debian/harmony-5.0-jre
 JDKDIR=$(CURDIR)/debian/harmony-5.0-jdk
 HDKDIR=$(CURDIR)/debian/harmony-5.0-hdk
@@ -44,7 +46,7 @@ build-arch: build-arch-stamp
 build-arch-stamp: configure-stamp 
 
 	# Add here commands to compile the arch part of the package.
-	ant -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true
+	ant $(ANT_FLAGS)
 	touch $@
 
 build-indep: build-indep-stamp
@@ -60,7 +62,7 @@ clean:
 	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
 
 	# Add here commands to clean up after the build process.
-	ant -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true clean
+	ant $(ANT_FLAGS) clean
 
 	dh_clean  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 
