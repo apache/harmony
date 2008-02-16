@@ -42,47 +42,59 @@
     <target name="default"
         description="setup and build complete implementation"
         depends="setup,
-                 populate_source,
+                 populate-src,
                  build-all,
-                 assemble_artifacts,
-                 bundle_hdk,
-                 bundle_jdk,
-                 bundle_jre"/>
+                 assemble-artifacts,
+                 bundle-hdk,
+                 bundle-jdk,
+                 bundle-jre"/>
     
     <target name="make-snapshot"
         description="setup and build complete src + binaries set"
-        depends="bundle_src,
+        depends="bundle-src,
                  build-all,
-                 assemble_artifacts,
-                 bundle_hdk,
-                 bundle_jdk,
-                 bundle_jre"/>
+                 assemble-artifacts,
+                 bundle-hdk,
+                 bundle-jdk,
+                 bundle-jre"/>
 
     <target name="build-all"
         description="build complete implementation"
-        depends="show_props,
-                 build_classlib,
-                 build_vm,
-                 build_commonresources,
-                 build_jdktools"/>
+        depends="show-props,
+                 build-classlib,
+                 build-vm,
+                 build-commonresources,
+                 build-jdktools"/>
     
-    <target name="bundle_src" 
+    <target name="bundle-src" 
         description="assemble source snapshot"
-        depends="setup,copy_source,bundle_src_tgz,bundle_src_zip" />
+        depends="setup,
+                 copy-src,
+                 bundle-src-tgz,
+                 bundle-src-zip" />
 
     <!-- =============================================================================== -->
     <!--     populates the source directories, working_classlib and working_vm           -->
     <!-- =============================================================================== -->
-    <target name="populate_source" depends="init, show_props, switch_svn_vm, switch_svn_classlib, 
-        									switch_svn_jdktools, switch_svn_commonresources"
-            description="checkout the class library and VM source trees"/>
+    <target name="populate-src" 
+        description="checkout the class library and VM source trees"
+        depends="init,
+                 show-props,
+                 switch-svn-vm,
+                 switch-svn-classlib,
+                 switch-svn-jdktools,
+                 switch-svn-commonresources" />
 
     <!-- ================================================================================ -->
     <!--     creates the HDK bundle appropriate for the platform                          -->
     <!-- ================================================================================ -->
-    <target name="bundle_hdk" depends="assemble_artifacts, assemble_hdk_doc,bundle_hdk_tgz,bundle_hdk_zip"/>
+    <target name="bundle-hdk" 
+        depends="assemble-artifacts,
+                 assemble-hdk-doc,
+                 bundle-hdk-tgz,
+                 bundle-hdk-zip" />
 
-    <target name="bundle_hdk_tgz" depends="init" if="is.unix">
+    <target name="bundle-hdk-tgz" depends="init" if="is.unix">
 
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
@@ -103,7 +115,7 @@
 
     </target>
 
-    <target name="bundle_hdk_zip" depends="init" unless="is.unix">
+    <target name="bundle-hdk-zip" depends="init" unless="is.unix">
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
         <zip destfile="${target.dir}/${deploy.hdk.zip}" >
@@ -127,9 +139,12 @@
     <!-- ================================================================================ -->
     <!--     creates the JDK bundle appropriate for the platform                          -->
     <!-- ================================================================================ -->
-    <target name="bundle_jdk" depends="assemble_jdk_doc,bundle_jdk_tgz,bundle_jdk_zip"/>
+    <target name="bundle-jdk"
+        depends="assemble-jdk-doc,
+                 bundle-jdk-tgz,
+                 bundle-jdk-zip" />
 
-    <target name="bundle_jdk_tgz" depends="init" if="is.unix">
+    <target name="bundle-jdk-tgz" depends="init" if="is.unix">
 
         <tar tarfile="${target.dir}/${deploy.jdk.tar}" compression="gzip" >
             <tarfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" mode="755">
@@ -148,7 +163,7 @@
 
     </target>
 
-    <target name="bundle_jdk_zip" depends="init" unless="is.unix">
+    <target name="bundle-jdk-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.jdk.zip}">
             <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" filemode="755">
                 <include name="jre/bin/java.exe"/>
@@ -169,10 +184,13 @@
     <!-- ================================================================================ -->
     <!--     creates the JRE bundle appropriate for the platform                          -->
     <!-- ================================================================================ -->
-    <target name="bundle_jre" depends="assemble_jre_doc,bundle_jre_tgz,bundle_jre_zip"/>
+    <target name="bundle-jre" 
+        depends="assemble-jre-doc,
+                 bundle-jre-tgz,
+                 bundle-jre-zip" />
 
 
-    <target name="bundle_jre_tgz" depends="init" if="is.unix">
+    <target name="bundle-jre-tgz" depends="init" if="is.unix">
 
         <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" >
             <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" mode="755">
@@ -189,7 +207,7 @@
 
     </target>
 
-    <target name="bundle_jre_zip" depends="init" unless="is.unix">
+    <target name="bundle-jre-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.jre.zip}">
             <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" filemode="755">
                 <include name="bin/java.exe"/>
@@ -209,9 +227,12 @@
     <!-- ================================================================================ -->
     <!--    from the classlib and vm builds, creates the hdk and jre                      -->
     <!-- ================================================================================ -->
-    <target name="assemble_artifacts" depends="init, assemble_stuff, chmod_stuff"/>
+    <target name="assemble-artifacts"
+        depends="init,
+                 assemble-stuff,
+                 chmod-stuff"/>
 
-    <target name="assemble_stuff">
+    <target name="assemble-stuff">
         <!-- create the top-level hdk directory -->
         <mkdir dir="${target.dir}/hdk"/>
 
@@ -243,12 +264,12 @@
         </copy>
     </target>
 
-    <target name="chmod_stuff" if="is.unix">
+    <target name="chmod-stuff" if="is.unix">
         <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/java*" perm="ugo+x" />
     </target>
 
-    <target name="assemble_jdk">
+    <target name="assemble-jdk">
 
         <!-- create the top-level jdk directory -->
         <mkdir dir="${target.dir}/jdk"/>
@@ -274,7 +295,7 @@
     <!-- ================================================================================ -->
     <!--    copy license and notices into the root of the hdk                             -->
     <!-- ================================================================================ -->
-    <target name="assemble_hdk_doc">
+    <target name="assemble-hdk-doc">
 
         <copy todir="${target.dir}/hdk">
             <fileset dir="./">
@@ -290,7 +311,7 @@
     <!-- ================================================================================ -->
     <!--    copy license and notices into the root of the JDK and JRE                     -->
     <!-- ================================================================================ -->
-    <target name="assemble_jre_doc">
+    <target name="assemble-jre-doc">
 
         <copy todir="${target.dir}/hdk/jdk/jre">
             <fileset dir="./">
@@ -302,7 +323,7 @@
         </copy>
     </target>
 
-    <target name="assemble_jdk_doc">
+    <target name="assemble-jdk-doc">
         <copy todir="${target.dir}/hdk/jdk/">
             <fileset dir="./">
                 <include name="COPYRIGHT" />
@@ -324,7 +345,7 @@
         <propertyref name="use.libstdc++6" />
     </propertyset>
     
-    <target name="build_classlib" depends="auto_fetch_classlib_libs">
+    <target name="build-classlib" depends="auto-fetch-classlib-libs">
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -333,15 +354,15 @@
         </ant>
     </target>
 
-    <target name="auto_fetch_classlib_libs" if="auto.fetch">
-        <ant target="fetch_classlib_libs">
+    <target name="auto-fetch-classlib-libs" if="auto.fetch">
+        <ant target="fetch-classlib-libs">
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
-    <target name="fetch_classlib_libs">
+    <target name="fetch-classlib-libs">
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -349,7 +370,7 @@
         </ant>
     </target>
 
-    <target name="clean_classlib">
+    <target name="clean-classlib">
         <ant antfile="working_classlib/build.xml" target="clean" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -358,7 +379,7 @@
         </ant>
     </target>
 
-    <target name="init_classlib_hdk">
+    <target name="init-classlib-hdk">
         <ant antfile="working_classlib/make/build-native.xml"
                 target="copy-makefile-includes" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
@@ -371,7 +392,7 @@
     <!-- ================================================================================ -->
     <!--    build the vm - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_vm" depends="auto_fetch_vm_libs">
+    <target name="build-vm" depends="auto-fetch-vm-libs">
         <ant antfile="working_vm/build.xml" target="rebuild" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -380,15 +401,15 @@
         </ant>
     </target>
 
-    <target name="auto_fetch_vm_libs" if="auto.fetch">
-        <ant target="fetch_vm_libs">
+    <target name="auto-fetch-vm-libs" if="auto.fetch">
+        <ant target="fetch-vm-libs">
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.version" value="${harmony.version}"/>
         </ant>
     </target>
 
-    <target name="fetch_vm_libs">
+    <target name="fetch-vm-libs">
         <ant antfile="working_vm/build.xml" target="fetch-depends" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -396,7 +417,7 @@
         </ant>
     </target>
 
-    <target name="clean_vm">
+    <target name="clean-vm">
         <ant antfile="working_vm/build.xml" target="clean" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -408,7 +429,7 @@
     <!-- ================================================================================ -->
     <!--    build the common resources - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_commonresources">
+    <target name="build-commonresources">
         <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -419,7 +440,7 @@
     <!-- ================================================================================ -->
     <!--    build the jdktools - ensure depends are up to date an then rebuild            -->
     <!-- ================================================================================ -->
-    <target name="build_jdktools" depends="auto_fetch_jdktools_libs">
+    <target name="build-jdktools" depends="auto-fetch-jdktools-libs">
         <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -427,19 +448,19 @@
         </ant>
     </target>
 
-    <target name="auto_fetch_jdktools_libs" if="auto.fetch">
-        <ant target="fetch_jdktools_libs" inheritall="false" >
+    <target name="auto-fetch-jdktools-libs" if="auto.fetch">
+        <ant target="fetch-jdktools-libs" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
     </target>
 
-    <target name="fetch_jdktools_libs" if="auto.fetch">
+    <target name="fetch-jdktools-libs" if="auto.fetch">
         <ant antfile="working_jdktools/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
     </target>
 
-    <target name="clean_jdktools">
+    <target name="clean-jdktools">
         <ant antfile="working_jdktools/build.xml" target="clean" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -450,7 +471,7 @@
     <!-- ================================================================================ -->
     <!--    trivial setup                                                                 -->
     <!-- ================================================================================ -->
-    <target name="setup" depends="init, show_props">
+    <target name="setup" depends="init, show-props">
         <delete dir="${target.dir}"/>
         <mkdir dir="${target.dir}"/>
     </target>
@@ -474,14 +495,17 @@
     </target>
 
     <target name="clean"
-            depends="init_classlib_hdk,clean_jdktools,clean_classlib,clean_vm" >
+        depends="init-classlib-hdk,
+                 clean-jdktools,
+                 clean-classlib,
+                 clean-vm" >
         <delete dir="${target.dir}" failonerror="false" />
     </target>
 
     <!-- ================================================================================ -->
     <!--    Switches the working_vm directory to vm choice - wired for DRLVM for now      -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_vm" depends="init" if="is.svn">
+    <target name="switch-svn-vm" depends="init" if="is.svn">
         <exec executable="svn" dir="working_vm" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
@@ -492,7 +516,7 @@
     <!-- ================================================================================ -->
     <!--    Switches the working_classlib directory to classlib                          -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_classlib" depends="init" if="is.svn">
+    <target name="switch-svn-classlib" depends="init" if="is.svn">
         <exec executable="svn" dir="working_classlib" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
@@ -503,7 +527,7 @@
     <!-- ================================================================================ -->
     <!--    Switches the working_jdktools directory to jdktools                           -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_jdktools" depends="init" if="is.svn">
+    <target name="switch-svn-jdktools" depends="init" if="is.svn">
         <exec executable="svn" dir="working_jdktools" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
@@ -514,7 +538,7 @@
     <!-- ================================================================================ -->
     <!--    Switches the common_resources directory to common_resources                   -->
     <!-- ================================================================================ -->
-    <target name="switch_svn_commonresources" depends="init" if="is.svn">
+    <target name="switch-svn-commonresources" depends="init" if="is.svn">
         <exec executable="svn" dir="common_resources" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
@@ -636,7 +660,7 @@
 
     </target>
 
-    <target name="show_props" depends="init">
+    <target name="show-props" depends="init">
         <echo>
                    Apache Harmony Federated Build
             ==========================================
@@ -737,7 +761,7 @@
         <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/common_resources/trunk" />
     </target>
 
-    <target name="bundle_src_tgz" depends="init" if="is.unix">
+    <target name="bundle-src-tgz" depends="init" if="is.unix">
 
         <tar tarfile="${target.dir}/${deploy.src.tar}" compression="gzip"
              longfile="gnu" >
@@ -751,7 +775,7 @@
 
     </target>
 
-    <target name="bundle_src_zip" depends="init" unless="is.unix">
+    <target name="bundle-src-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.src.zip}">
             <zipfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
                 <include name="**"/>
@@ -761,7 +785,7 @@
         <chksum dir="${target.dir}" file="${deploy.src.zip}" type="sha" />
     </target>
 
-    <target name="copy_source" depends="init,populate_source">
+    <target name="copy-src" depends="init,populate-src">
         <exec executable="svn">
             <arg value="export" />
             <arg value="." />
