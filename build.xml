@@ -757,7 +757,13 @@
         </condition>
 
         <property name="vm.svn.url" value="${svn.root}/harmony/enhanced/drlvm/trunk" />
-        <property name="jdktools.svn.url" value="${svn.root}/harmony/enhanced/jdktools/trunk" />
+
+        <condition property="jdktools.svn.url"
+                   value="${svn.root}/harmony/enhanced/jdktools/branches/java6"
+                   else="${svn.root}/harmony/enhanced/jdktools/trunk">
+            <isset property="java6" />
+        </condition>
+
         <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/common_resources/trunk" />
     </target>
 
