@@ -2,7 +2,7 @@ Source: harmony-5.0
 Section: unknown
 Priority: extra
 Maintainer: Mark Hindess <mark.hindess@googlemail.com>
-Build-Depends: debhelper (>= 5), ecj, ant, subversion, ant-optional, liblcms1-dev, libjpeg62-dev, libpng-dev, libxft-dev, libxml2-dev
+Build-Depends: debhelper (>= 5), ecj, ant, subversion, ant-optional, liblcms1-dev, libjpeg62-dev, libpng-dev, libxft-dev, libxml2-dev, libxtst-dev, libxext-dev
 Standards-Version: 3.7.2
 
 Package: harmony-5.0-jre
