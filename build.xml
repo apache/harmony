@@ -771,8 +771,12 @@
 
         <tar tarfile="${target.dir}/${deploy.src.tar}" compression="gzip"
              longfile="gnu" >
+            <tarfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}" mode="755">
+                <include name="debian/rules"/>
+            </tarfileset>
             <tarfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
                 <include name="**"/>
+                <exclude name="debian/rules"/>
             </tarfileset>
         </tar>
 
@@ -783,8 +787,12 @@
 
     <target name="bundle-src-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.src.zip}">
+            <zipfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}" filemode="755">
+                <include name="debian/rules"/>
+            </zipfileset>
             <zipfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
                 <include name="**"/>
+                <exclude name="debian/rules"/>
             </zipfileset>
         </zip>
         <chksum dir="${target.dir}" file="${deploy.src.zip}" />
@@ -807,6 +815,7 @@ harmony.version=${harmony.version}
 harmony.long.version=${harmony.long.version}
 harmony.deploy.suffix=${harmony.deploy.suffix}
         </echo>
+        <chmod file="${target.dir}/src/debian/rules" perm="ugo+x" />
     </target>
 
     <!-- ================================================================================ -->
