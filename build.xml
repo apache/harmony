@@ -349,7 +349,7 @@
         <ant antfile="working_classlib/build.xml" target="rebuild" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
         </ant>
     </target>
@@ -358,7 +358,7 @@
         <ant target="fetch-classlib-libs">
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -366,7 +366,7 @@
         <ant antfile="working_classlib/build.xml" target="fetch-depends" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -374,7 +374,7 @@
         <ant antfile="working_classlib/build.xml" target="clean" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
         </ant>
     </target>
@@ -384,7 +384,7 @@
                 target="copy-makefile-includes" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
         </ant>
     </target>
@@ -396,7 +396,7 @@
         <ant antfile="working_vm/build.xml" target="rebuild" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
             <property name="deploy.canonical.flag" value="true"/>
         </ant>
     </target>
@@ -405,7 +405,7 @@
         <ant target="fetch-vm-libs">
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -413,7 +413,7 @@
         <ant antfile="working_vm/build.xml" target="fetch-depends" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -421,7 +421,7 @@
         <ant antfile="working_vm/build.xml" target="clean" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
             <property name="deploy.canonical.flag" value="true"/>
         </ant>
     </target>
@@ -433,7 +433,7 @@
         <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -444,7 +444,7 @@
         <ant antfile="working_jdktools/build.xml" target="rebuild" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
@@ -464,7 +464,7 @@
         <ant antfile="working_jdktools/build.xml" target="clean" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.version" value="${harmony.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 
