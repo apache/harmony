@@ -10,7 +10,9 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
-ANT_FLAGS = -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true \
+# -lib /usr/share/java ensures that ant finds ecj.jar, etc
+ANT_FLAGS = -lib /usr/share/java \
+            -Dhy.no.sig=true -Duse.libstdc++6=true -Dhy.local.zlib=true \
             -Dhy.zip.api=false -Dhy.no.thr=false -Dauto.fetch=true
 JREDIR=$(CURDIR)/debian/harmony-5.0-jre
 JDKDIR=$(CURDIR)/debian/harmony-5.0-jdk
@@ -125,7 +127,7 @@ binary-common:
 #	dh_perl
 	dh_makeshlibs
 	dh_installdeb
-	dh_shlibdeps
+	LD_LIBRARY_PATH=$(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin/default:$LD_LIBRARY_PATH dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
