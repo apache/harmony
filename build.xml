@@ -76,7 +76,6 @@ Usage:
                  populate-src,
                  clean,
                  build,
-                 assemble-artifacts,
                  bundle-hdk,
                  bundle-jdk,
                  bundle-jre"/>
@@ -86,7 +85,6 @@ Usage:
         depends="bundle-src,
                  clean,
                  build,
-                 assemble-artifacts,
                  bundle-hdk,
                  bundle-jdk,
                  bundle-jre"/>
@@ -97,7 +95,8 @@ Usage:
                  build-classlib,
                  build-vm,
                  build-commonresources,
-                 build-jdktools"/>
+                 build-jdktools,
+                 assemble-artifacts"/>
     
     <target name="bundle-src" 
         description="assemble source snapshot"
