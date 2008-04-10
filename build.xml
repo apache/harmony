@@ -140,7 +140,7 @@ Usage:
         description="Fetches dependencies. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2."
         depends="fetch-classlib-libs,
                  fetch-vm-libs,
-                 build-commonresources,
+                 fetch-commonresources,
                  fetch-jdktools-libs"/>
 
     <target name="bundle-hdk-tgz" depends="init" if="is.unix">
