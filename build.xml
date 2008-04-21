@@ -735,79 +735,43 @@ Usage:
 
     <!-- ============================================================== -->
     <!-- svn-prop: gets svn revision number of the build.xml file       -->
-    <!--                                                                -->
-    <!-- taken from classlib/properties.xml, because of uncertainty     -->
-    <!-- of the state of the working_classlib dir, I need a copy        -->
-    <!-- TODO - we want to be able to pass property in to ant           -->
-    <!--        so we don't need a pause and it's reproducable          -->
     <!-- ============================================================== -->
     <target name="svn-prop">
-        <exec executable="svn"
-              dir="."
-              failifexecutionfails="false"
-              resultproperty="svn.rc">
-            <arg value="info" />
-            <arg value="build.xml" />
-            <redirector outputproperty="svn.revision.tmp">
-                <outputfilterchain>
-                    <linecontains>
-                        <contains value="Revision: " />
-                    </linecontains>
-                    <tokenfilter>
-                        <replacestring from="Revision: " to=""/>
-                    </tokenfilter>
-                </outputfilterchain>
-            </redirector>
+        
+        <tempfile suffix=".xml" property="svn.tmp"/>
+        <exec executable="svn" output="${svn.tmp}" resultproperty="svn.rc">
+            <arg line="info ${basedir} --non-interactive --xml" />
         </exec>
-        <condition property="is.svn" value="true">
-            <equals arg1="${svn.rc}" arg2="0" />
+        <condition property="svn.info.file" value="${svn.tmp}">
+            <equals arg1="0" arg2="${svn.rc}"/>
         </condition>
-        <condition property="svn.revision" value="${svn.revision.tmp}" >
-            <equals arg1="${svn.rc}" arg2="0" />
-        </condition>
-        <property name="svn.revision" value="unknown" />
-        <property name="harmony.version" value="${svn.revision}" />
+        <xmlproperty file="${svn.info.file}" prefix="federated" 
+            keeproot="no" collapseAttributes="yes"/>
+        <delete file="${svn.tmp}" quiet="true"/>
 
-        <exec executable="svn"
-              failifexecutionfails="false"
-              resultproperty="svn.rc">
-            <arg value="info" />
-            <redirector outputproperty="svn.root.tmp">
-                <outputfilterchain>
-                    <linecontainsregexp>
-                        <regexp pattern="Repository Root:" />
-                    </linecontainsregexp>
-                    <tokenfilter>
-                        <replacestring from="Repository Root: " to=""/>
-                    </tokenfilter>
-                    <striplinebreaks/>
-                </outputfilterchain>
-            </redirector>
-        </exec>
-        <condition property="svn.info" value="${svn.root.tmp} ${svn.revision}" >
-            <equals arg1="${svn.rc}" arg2="0" />
+        <condition property="is.svn">
+            <isset property="federated.svn.revision"/>
+        </condition>
+        <condition property="svn.revision" value="${federated.svn.revision}" else="unknown">
+            <isset property="is.svn"/>
+        </condition>
+            <condition property="svn.root" 
+                value="${federated.svn.repository.root}"
+                else="http://svn.apache.org/repos/asf">
+                <isset property="is.svn"/>
+            </condition>
+
+        <condition property="svn.info" value="${svn.root} ${svn.revision}">
+            <isset property="is.svn"/>
         </condition>
         <tstamp>
-            <format property="svn.info"
-                    pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
+            <format property="svn.info" pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
         </tstamp>
+
+        <property name="harmony.version" value="${svn.revision}" />
         <property name="harmony.long.version" value="${svn.info}" />
 
-        <condition property="svn.root" value="${svn.root.tmp}" >
-            <and>
-                <equals arg1="${svn.rc}" arg2="0" />
-                <!-- check length: it is an empty string             --> 
-                <!-- if svn output doesn't contain "Repository Root" -->
-                <length string="${svn.root.tmp}"
-                        trim="true"
-                        when="greater"
-                        length="0" />
-            </and>
-        </condition>
-
         <!-- default SVN URLs -->
-        <property name="svn.root" value="http://svn.apache.org/repos/asf"/>
-
         <condition property="classlib.svn.url"
                    value="${svn.root}/harmony/enhanced/classlib/branches/java6"
                    else="${svn.root}/harmony/enhanced/classlib/trunk">
