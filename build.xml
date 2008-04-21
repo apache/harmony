@@ -750,13 +750,13 @@ Usage:
         <delete file="${svn.tmp}" quiet="true"/>
 
         <condition property="is.svn">
-            <isset property="federated.svn.revision"/>
+            <isset property="federated.entry.revision"/>
         </condition>
-        <condition property="svn.revision" value="${federated.svn.revision}" else="unknown">
+        <condition property="svn.revision" value="${federated.entry.revision}" else="unknown">
             <isset property="is.svn"/>
         </condition>
             <condition property="svn.root" 
-                value="${federated.svn.repository.root}"
+                value="${federated.entry.repository.root}"
                 else="http://svn.apache.org/repos/asf">
                 <isset property="is.svn"/>
             </condition>
