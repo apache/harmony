@@ -100,7 +100,8 @@ Usage:
     
     <target name="bundle-src" 
         description="assemble source snapshot"
-        depends="setup,
+        depends="clean,
+                 setup,
                  copy-src,
                  bundle-src-tgz,
                  bundle-src-zip" />
