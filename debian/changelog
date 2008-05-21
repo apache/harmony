@@ -1,3 +1,21 @@
+harmony-5.0 (0.0r653525-1) unstable; urgency=low
+
+  * Milestone 6 release
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Tue, 20 May 2008 14:03:47 +0100
+
+harmony-5.0 (0.0r629320-2) unstable; urgency=low
+
+  * Fixed dependency metadata.
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Fri,  7 Mar 2008 08:50:49 +0000
+
+harmony-5.0 (0.0r629320-1) unstable; urgency=low
+
+  * Milestone 5 release
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Mon,  3 Mar 2008 12:47:15 +0000
+
 harmony-5.0 (0.0r580890-1) unstable; urgency=low
 
   * Fixing source package name.

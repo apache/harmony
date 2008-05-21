@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: harmony-5.0-jre
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6
+Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, zlib1g-dev, libxext6, libxmu6
 Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime
 Description: Apache Harmony JRE
  <insert long description, indented with spaces>
