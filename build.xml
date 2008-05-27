@@ -514,7 +514,7 @@ Usage:
         </ant>
     </target>
 
-    <target name="fetch-jdktools-libs" if="auto.fetch">
+    <target name="fetch-jdktools-libs">
         <ant antfile="working_jdktools/build.xml" target="fetch-depends" inheritall="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
         </ant>
