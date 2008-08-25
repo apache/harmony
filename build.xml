@@ -616,7 +616,7 @@ Usage:
         </condition>
 
         <condition property="is.unix">
-            <os name="linux" />
+            <os family="unix" />
         </condition>
 
         <condition property="is.linux">
