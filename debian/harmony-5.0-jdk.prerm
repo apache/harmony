@@ -19,7 +19,8 @@ set -e
 
 case "$1" in
     remove|deconfigure)
-        for f in jarsigner java javac javah keytool ; do
+        for f in appletviewer jarsigner java javac javadoc \
+                 javah javap keytool policytool unpack200 ; do
             update-alternatives --remove $f /usr/bin/$f-harmony
         done
     ;;
