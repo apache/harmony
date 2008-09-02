@@ -29,7 +29,6 @@
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
-    <property name="hy.no.sig" value="false" />
     <property name="hy.local.zlib" value="false" />
 
     <description>
@@ -390,7 +389,6 @@ Usage:
 
     <propertyset id="required.props">
         <propertyref name="hy.cfg" />
-        <propertyref name="hy.no.sig" />
         <propertyref name="hy.local.zlib" />
         <propertyref name="use.libstdc++6" />
     </propertyset>
