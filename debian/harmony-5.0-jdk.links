@@ -1,6 +1,5 @@
 /usr/lib/harmony-5.0/jdk/bin/appletviewer /usr/bin/appletviewer-harmony
 /usr/lib/harmony-5.0/jdk/bin/jarsigner /usr/bin/jarsigner-harmony
-/usr/lib/harmony-5.0/jdk/bin/java /usr/bin/java-harmony
 /usr/lib/harmony-5.0/jdk/bin/javac /usr/bin/javac-harmony
 /usr/lib/harmony-5.0/jdk/bin/javadoc /usr/bin/javadoc-harmony
 /usr/lib/harmony-5.0/jdk/bin/javah /usr/bin/javah-harmony
