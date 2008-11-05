@@ -319,6 +319,7 @@ Usage:
         <chmod file="${target.dir}/hdk/jdk/jre/bin/keytool*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/policytool*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/unpack200*" perm="ugo+x" />
+        <chmod file="${target.dir}/hdk/jdk/jre/bin/pack200*" perm="ugo+x" />
     </target>
 
     <target name="assemble-jdk">
