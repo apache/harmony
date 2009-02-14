@@ -12,8 +12,8 @@
 
 # -lib /usr/share/java ensures that ant finds ecj.jar, etc
 ANT_FLAGS = -lib /usr/share/java \
-            -Duse.libstdc++6=true -Dhy.local.zlib=true \
-            -Dhy.zip.api=false -Dhy.no.thr=false -Dauto.fetch=true
+            -Dhy.local.zlib=true -Dhy.zip.api=false   \
+            -Dhy.no.thr=false -Dauto.fetch=true
 JREDIR=$(CURDIR)/debian/harmony-5.0-jre
 JDKDIR=$(CURDIR)/debian/harmony-5.0-jdk
 HDKDIR=$(CURDIR)/debian/harmony-5.0-hdk

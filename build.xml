@@ -394,7 +394,7 @@ Usage:
     <propertyset id="required.props">
         <propertyref name="hy.cfg" />
         <propertyref name="hy.local.zlib" />
-        <propertyref name="use.libstdc++6" />
+        <propertyref name="use.libstdc++5" />
     </propertyset>
     
     <target name="build-classlib" depends="auto-fetch-classlib-libs">
