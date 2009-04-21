@@ -1,5 +1,5 @@
 #!/bin/sh
-# prerm script for harmony-5.0-jre
+# prerm script for harmony-5.0-jdk
 #
 # see: dh_installdeb(1)
 
@@ -19,9 +19,8 @@ set -e
 
 case "$1" in
     remove|deconfigure)
-        for f in java keytool policytool unpack200 ; do
-            update-alternatives --remove $f /usr/bin/$f-harmony
-        done
+        update-alternatives --remove harmony-vm \
+                                     /usr/lib/harmony-5.0/jdk/jre/bin/drlvm
     ;;
 
     upgrade)

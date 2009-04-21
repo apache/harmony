@@ -1,3 +1,10 @@
+harmony-5.0 (0.0r761593-1) unstable; urgency=low
+
+  * Milestone 9 release.
+  * Splitting of jre into three packages.
+
+ -- Mark Hindess <mark.hindess@googlemail.com>  Mon, 20 Apr 2009 14:37:56 +0100
+
 harmony-5.0 (0.0r681495-1) unstable; urgency=low
 
   * Milestone 7 release

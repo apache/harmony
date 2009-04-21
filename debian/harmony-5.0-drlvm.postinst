@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for harmony-5.0-jre
+# postinst script for harmony-5.0-jdk
 #
 # see: dh_installdeb(1)
 
@@ -20,12 +20,9 @@ set -e
 
 case "$1" in
     configure)
-        for f in java keytool policytool unpack200 ; do
-            update-alternatives \
-                --install /usr/bin/$f $f /usr/bin/$f-harmony 30 \
-                --slave /usr/share/man/man1/$f.1.gz $f.1.gz \
-                        /usr/share/man/man1/$f-harmony.1.gz
-        done
+        update-alternatives \
+            --install /usr/lib/harmony-5.0/jdk/jre/bin/default harmony-vm \
+                      /usr/lib/harmony-5.0/jdk/jre/bin/drlvm 100
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

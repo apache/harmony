@@ -14,6 +14,8 @@
 ANT_FLAGS = -lib /usr/share/java \
             -Dhy.local.zlib=true -Dhy.zip.api=false   \
             -Dhy.no.thr=false -Dauto.fetch=true
+VMDIR=$(CURDIR)/debian/harmony-5.0-drlvm
+CLDIR=$(CURDIR)/debian/harmony-5.0-classlib
 JREDIR=$(CURDIR)/debian/harmony-5.0-jre
 JDKDIR=$(CURDIR)/debian/harmony-5.0-jdk
 HDKDIR=$(CURDIR)/debian/harmony-5.0-hdk
@@ -31,7 +33,7 @@ CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
-	CFLAGS += -O2
+	CFLAGS += -O1
 endif
 
 configure: configure-stamp
@@ -87,11 +89,21 @@ install-arch:
 	dh_clean -k -s  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 	dh_installdirs -s
 
-	mkdir -p $(JREDIR)/usr/lib/harmony-5.0/jdk
-	mv $(CURDIR)/target/hdk/jdk/jre $(JREDIR)/usr/lib/harmony-5.0/jdk
-	mkdir -p $(JREDIR)/usr/share/lintian/overrides
-	cp -pr $(CURDIR)/debian/harmony-5.0-jre.lintian \
-	    $(JREDIR)/usr/share/lintian/overrides/harmony-5.0-jre
+	mkdir -p $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin
+	mv $(CURDIR)/target/hdk/jdk/jre/bin/default \
+	    $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin/drlvm
+	mv $(CURDIR)/target/hdk/jdk/jre/bin/libhythr.so \
+	    $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin
+	mkdir -p $(VMDIR)/usr/share/lintian/overrides
+	cp -pr $(CURDIR)/debian/harmony-5.0-drlvm.lintian \
+	    $(VMDIR)/usr/share/lintian/overrides/harmony-5.0-drlvm
+
+	mkdir -p $(CLDIR)/usr/lib/harmony-5.0/jdk
+	mv $(CURDIR)/target/hdk/jdk/jre $(CLDIR)/usr/lib/harmony-5.0/jdk
+
+	mkdir -p $(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin
+	mv $(CLDIR)/usr/lib/harmony-5.0/jdk/jre/bin/java \
+	   $(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin
 
 	mkdir -p $(JDKDIR)/usr/lib/harmony-5.0
 	mv $(CURDIR)/target/hdk/jdk $(JDKDIR)/usr/lib/harmony-5.0
@@ -127,7 +139,7 @@ binary-common:
 #	dh_perl
 	dh_makeshlibs
 	dh_installdeb
-	LD_LIBRARY_PATH=$(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin/default:$LD_LIBRARY_PATH dh_shlibdeps
+	LD_LIBRARY_PATH=debian/harmony-5.0-drlvm/usr/lib/harmony-5.0/jdk/jre/bin:debian/harmony-5.0-drlvm/usr/lib/harmony-5.0/jdk/jre/bin/drlvm:$LD_LIBRARY_PATH dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
