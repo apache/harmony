@@ -49,14 +49,14 @@ their respective owners.
 
 
 
-License Notice for ICU4J version 3.8
+License Notice for ICU4J version 4.0
 ====================================
 
-ICU4J license - ICU4J 1.3.1 and later
+ICU4J license - ICU4J 1.8.1 and later
 
 COPYRIGHT AND PERMISSION NOTICE
 
-Copyright (c) 1995-2007 International Business Machines Corporation and others 
+Copyright (c) 1995-2008 International Business Machines Corporation and others 
 
 All rights reserved. 
 
