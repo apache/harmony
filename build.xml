@@ -727,7 +727,8 @@ Usage:
             ==========================================
             svn rev          :  ${harmony.version}
             operating system :  ${harmony.os}
-            architecture     :  ${harmony.arch}-${harmony.bits}
+            CPU architecture :  ${harmony.arch}
+            word length      :  ${harmony.bits}
             ant os name/arch :  ${os.name}/${os.arch}
             hosting Java     :  ${java.version} (${java.vendor})
             build mode       :  ${hy.cfg}
