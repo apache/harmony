@@ -156,6 +156,11 @@ Usage:
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
                 <exclude name="jdk/bin/*"/>
+                <exclude name="jdk/jre/README"/>
+            </tarfileset>
+            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="harmony-hdk-${harmony.version}">
+                <include name="README"/>
             </tarfileset>
         </tar>
 
@@ -178,6 +183,11 @@ Usage:
                 <exclude name="jdk/jre/bin/java.exe"/>
                 <exclude name="jdk/jre/bin/javaw.exe"/>
                 <exclude name="jdk/bin/*"/>
+                <exclude name="jdk/jre/README"/>
+            </zipfileset>
+            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="harmony-hdk-${harmony.version}">
+                <include name="README"/>
             </zipfileset>
         </zip>
 
@@ -204,6 +214,11 @@ Usage:
                 <include name="**"/>
                 <exclude name="jre/bin/java"/>
                 <exclude name="bin/*"/>
+                <exclude name="jre/README"/>
+            </tarfileset>
+            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="harmony-jdk-${harmony.version}">
+                <include name="README"/>
             </tarfileset>
         </tar>
 
@@ -224,6 +239,11 @@ Usage:
                 <exclude name="jre/bin/java.exe"/>
                 <exclude name="jre/bin/javaw.exe"/>
                 <exclude name="bin/*"/>
+                <exclude name="jre/README"/>
+            </zipfileset>
+            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="harmony-jdk-${harmony.version}">
+                <include name="README"/>
             </zipfileset>
         </zip>
         <chksum dir="${target.dir}" file="${deploy.jdk.zip}" />
@@ -350,7 +370,7 @@ Usage:
     <!-- ============================================================== -->
     <target name="assemble-hdk-doc">
 
-        <copy todir="${target.dir}/hdk">
+        <copy todir="${target.dir}/hdk" overwrite="true">
             <fileset dir="./">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
@@ -364,7 +384,7 @@ Usage:
     <!-- ============================================================== -->
     <target name="assemble-jre-doc">
 
-        <copy todir="${target.dir}/hdk/jdk/jre">
+        <copy todir="${target.dir}/hdk/jdk/jre" overwrite="true">
             <fileset dir="./">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
@@ -373,7 +393,7 @@ Usage:
     </target>
 
     <target name="assemble-jdk-doc">
-        <copy todir="${target.dir}/hdk/jdk/">
+        <copy todir="${target.dir}/hdk/jdk/" overwrite="true">
             <fileset dir="./">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
@@ -398,6 +418,15 @@ Usage:
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
         </ant>
+        <!-- hack to make sure the vm doesn't use the classlib
+             LICENSE/NOTICE files as they don't cover ICU4C
+          -->
+        <copy todir="working_classlib/deploy" overwrite="true">
+            <fileset dir=".">
+                <include name="LICENSE" />
+                <include name="NOTICE" />
+            </fileset>
+        </copy>                                                             
     </target>
 
     <target name="auto-fetch-classlib-libs" if="auto.fetch">
