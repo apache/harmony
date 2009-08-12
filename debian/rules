@@ -90,6 +90,7 @@ install-arch:
 	dh_installdirs -s
 
 	mkdir -p $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin
+	-rm -rf $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin/drlvm
 	mv $(CURDIR)/target/hdk/jdk/jre/bin/default \
 	    $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin/drlvm
 	mv $(CURDIR)/target/hdk/jdk/jre/bin/libhythr.so \
@@ -99,6 +100,7 @@ install-arch:
 	    $(VMDIR)/usr/share/lintian/overrides/harmony-5.0-drlvm
 
 	mkdir -p $(CLDIR)/usr/lib/harmony-5.0/jdk
+	-rm -rf $(CLDIR)/usr/lib/harmony-5.0/jdk/jre
 	mv $(CURDIR)/target/hdk/jdk/jre $(CLDIR)/usr/lib/harmony-5.0/jdk
 
 	mkdir -p $(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin
@@ -106,9 +108,11 @@ install-arch:
 	   $(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin
 
 	mkdir -p $(JDKDIR)/usr/lib/harmony-5.0
+	-rm -rf $(JDKDIR)/usr/lib/harmony-5.0/jdk
 	mv $(CURDIR)/target/hdk/jdk $(JDKDIR)/usr/lib/harmony-5.0
 
 	mkdir -p $(HDKDIR)/usr/lib
+	-rm -rf $(HDKDIR)/usr/lib/harmony-5.0
 	mv $(CURDIR)/target/hdk $(HDKDIR)/usr/lib/harmony-5.0
 
 	dh_install -s
