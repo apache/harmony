@@ -455,8 +455,8 @@ Usage:
     </target>
 
     <target name="init-classlib-hdk">
-        <ant antfile="working_classlib/make/build-native.xml"
-                target="copy-makefile-includes" inheritAll="false" >
+        <ant antfile="working_classlib/build.xml"
+                target="-init-hdk" inheritAll="false" >
             <property name="hy.cfg" value="${hy.cfg}"/>
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
