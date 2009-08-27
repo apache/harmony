@@ -47,3 +47,16 @@ an agency of the United States Department of Commerce, and adapted by
 International Business Machines Corporation in accordance with the NIST
 Software Acknowledgment and Redistribution document at
 http://www.itl.nist.gov/div897/ctg/sql_form.htm
+
+
+
+
+Portions of the Apache Portable Runtime used by DRLVM were
+developed at the National Center for Supercomputing Applications
+(NCSA) at the University of Illinois at Urbana-Champaign.
+
+This software contains code derived from the RSA Data Security
+Inc. MD5 Message-Digest Algorithm.
+
+This software contains code derived from UNIX V7, Copyright(C)
+Caldera International Inc.
