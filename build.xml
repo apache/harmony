@@ -148,18 +148,21 @@ Usage:
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
         <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
-            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" mode="755">
+            <tarfileset dir="${target.dir}/hdk"
+                        prefix="${archive.dir.prefix}hdk-${harmony.version}"
+                        mode="755">
                 <include name="jdk/jre/bin/java"/>
                 <include name="jdk/bin/*"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
+            <tarfileset dir="${target.dir}/hdk"
+                        prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
                 <exclude name="jdk/bin/*"/>
                 <exclude name="jdk/jre/README"/>
             </tarfileset>
             <tarfileset dir="${target.dir}/hdk/jdk/jre"
-                        prefix="harmony-hdk-${harmony.version}">
+                        prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="README"/>
             </tarfileset>
         </tar>
@@ -173,12 +176,15 @@ Usage:
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
         <zip destfile="${target.dir}/${deploy.hdk.zip}" >
-            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}" filemode="755">
+            <zipfileset dir="${target.dir}/hdk"
+                        prefix="${archive.dir.prefix}hdk-${harmony.version}"
+                        filemode="755">
                 <include name="jdk/jre/bin/java.exe"/>
                 <include name="jdk/jre/bin/javaw.exe"/>
                 <include name="jdk/bin/*"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk" prefix="harmony-hdk-${harmony.version}">
+            <zipfileset dir="${target.dir}/hdk"
+                        prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java.exe"/>
                 <exclude name="jdk/jre/bin/javaw.exe"/>
@@ -186,7 +192,7 @@ Usage:
                 <exclude name="jdk/jre/README"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk/jdk/jre"
-                        prefix="harmony-hdk-${harmony.version}">
+                        prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="README"/>
             </zipfileset>
         </zip>
@@ -206,18 +212,21 @@ Usage:
     <target name="bundle-jdk-tgz" depends="init" if="is.unix">
 
         <tar tarfile="${target.dir}/${deploy.jdk.tar}" compression="gzip" >
-            <tarfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" mode="755">
+            <tarfileset dir="${target.dir}/hdk/jdk"
+                        prefix="${archive.dir.prefix}jdk-${harmony.version}"
+                        mode="755">
                 <include name="jre/bin/java"/>
                 <include name="bin/*"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}">
+            <tarfileset dir="${target.dir}/hdk/jdk"
+                        prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java"/>
                 <exclude name="bin/*"/>
                 <exclude name="jre/README"/>
             </tarfileset>
             <tarfileset dir="${target.dir}/hdk/jdk/jre"
-                        prefix="harmony-jdk-${harmony.version}">
+                        prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="README"/>
             </tarfileset>
         </tar>
@@ -229,12 +238,15 @@ Usage:
 
     <target name="bundle-jdk-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.jdk.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}" filemode="755">
+            <zipfileset dir="${target.dir}/hdk/jdk"
+                        prefix="${archive.dir.prefix}jdk-${harmony.version}"
+                        filemode="755">
                 <include name="jre/bin/java.exe"/>
                 <include name="jre/bin/javaw.exe"/>
                 <include name="bin/*"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk" prefix="harmony-jdk-${harmony.version}">
+            <zipfileset dir="${target.dir}/hdk/jdk"
+                        prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java.exe"/>
                 <exclude name="jre/bin/javaw.exe"/>
@@ -242,7 +254,7 @@ Usage:
                 <exclude name="jre/README"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk/jdk/jre"
-                        prefix="harmony-jdk-${harmony.version}">
+                        prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="README"/>
             </zipfileset>
         </zip>
@@ -262,10 +274,13 @@ Usage:
     <target name="bundle-jre-tgz" depends="init" if="is.unix">
 
         <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" >
-            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" mode="755">
+            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="${archive.dir.prefix}jre-${harmony.version}"
+                        mode="755">
                 <include name="bin/java"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}">
+            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="${archive.dir.prefix}jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java"/>
             </tarfileset>
@@ -278,11 +293,14 @@ Usage:
 
     <target name="bundle-jre-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.jre.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}" filemode="755">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="${archive.dir.prefix}jre-${harmony.version}"
+                        filemode="755">
                 <include name="bin/java.exe"/>
                 <include name="bin/javaw.exe"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk/jre" prefix="harmony-jre-${harmony.version}">
+            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+                        prefix="${archive.dir.prefix}jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java.exe"/>
                 <exclude name="bin/javaw.exe"/>
@@ -704,29 +722,39 @@ Usage:
 
         <property name="harmony.deploy.suffix" value="-snapshot" />
 
+        <condition property="harmony.java.version" value="6.0" else="5.0">
+            <isset property="java6" />
+        </condition>
+
+        <property name="deploy.file.prefix"
+                  value="apache-harmony-${harmony.java.version}-" />
+
+        <property name="archive.dir.prefix"
+                  value="harmony-${harmony.java.version}-" />
+
         <property name="deploy.hdk.file.prefix"
-                 value="apache-harmony-hdk-r${harmony.version}" />
+                 value="${deploy.file.prefix}hdk-r${harmony.version}" />
         <property name="deploy.hdk.tar"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
                  value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jdk.file.prefix"
-                 value="apache-harmony-jdk-r${harmony.version}" />
+                 value="${deploy.file.prefix}jdk-r${harmony.version}" />
         <property name="deploy.jdk.tar"
                  value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jdk.zip"
                  value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
-                 value="apache-harmony-jre-r${harmony.version}" />
+                 value="${deploy.file.prefix}jre-r${harmony.version}" />
         <property name="deploy.jre.tar"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jre.zip"
                  value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.src.file.prefix"
-                 value="apache-harmony-src-r${harmony.version}" />
+                 value="${deploy.file.prefix}src-r${harmony.version}" />
         <property name="deploy.src.tar"
                  value="${deploy.src.file.prefix}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.src.zip"
@@ -821,10 +849,10 @@ Usage:
 
         <tar tarfile="${target.dir}/${deploy.src.tar}" compression="gzip"
              longfile="gnu" >
-            <tarfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}" mode="755">
+            <tarfileset dir="${target.dir}/src" prefix="${deploy.file.prefix}src-r${harmony.version}" mode="755">
                 <include name="debian/rules"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
+            <tarfileset dir="${target.dir}/src" prefix="${deploy.file.prefix}src-r${harmony.version}">
                 <include name="**"/>
                 <exclude name="debian/rules"/>
             </tarfileset>
@@ -837,10 +865,13 @@ Usage:
 
     <target name="bundle-src-zip" depends="init" unless="is.unix">
         <zip destfile="${target.dir}/${deploy.src.zip}">
-            <zipfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}" filemode="755">
+            <zipfileset dir="${target.dir}/src"
+                        prefix="${deploy.file.prefix}src-r${harmony.version}"
+                        filemode="755">
                 <include name="debian/rules"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/src" prefix="apache-harmony-src-r${harmony.version}">
+            <zipfileset dir="${target.dir}/src"
+                        prefix="${deploy.file.prefix}src-r${harmony.version}">
                 <include name="**"/>
                 <exclude name="debian/rules"/>
             </zipfileset>
@@ -859,6 +890,7 @@ Usage:
 harmony.version=${harmony.version}
 harmony.long.version=${harmony.long.version}
 harmony.deploy.suffix=${harmony.deploy.suffix}
+harmony.java.version=${harmony.java.version}
         </echo>
         <chmod file="${target.dir}/src/debian/rules" perm="ugo+x" />
     </target>
