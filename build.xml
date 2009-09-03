@@ -427,6 +427,7 @@ Usage:
         <propertyref name="hy.cfg" />
         <propertyref name="hy.local.zlib" />
         <propertyref name="use.libstdc++5" />
+        <propertyref name="harmony.java.version" />
     </propertyset>
     
     <target name="build-classlib" depends="auto-fetch-classlib-libs">
