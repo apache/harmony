@@ -723,9 +723,7 @@ Usage:
 
         <property name="harmony.deploy.suffix" value="-snapshot" />
 
-        <condition property="harmony.java.version" value="6.0" else="5.0">
-            <isset property="java6" />
-        </condition>
+        <property name="harmony.java.version" value="6.0" />
 
         <property name="deploy.file.prefix"
                   value="apache-harmony-${harmony.java.version}-" />
@@ -829,21 +827,17 @@ Usage:
         <property name="harmony.long.version" value="${svn.info}" />
 
         <!-- default SVN URLs -->
-        <condition property="classlib.svn.url"
-                   value="${svn.root}/harmony/enhanced/classlib/branches/java6"
-                   else="${svn.root}/harmony/enhanced/classlib/trunk">
-            <isset property="java6" />
-        </condition>
+        <property name="classlib.svn.url"
+                  value="${svn.root}/harmony/enhanced/classlib/branches/java6"/>
 
-        <property name="vm.svn.url" value="${svn.root}/harmony/enhanced/drlvm/trunk" />
+        <property name="vm.svn.url"
+                  value="${svn.root}/harmony/enhanced/drlvm/trunk" />
 
-        <condition property="jdktools.svn.url"
-                   value="${svn.root}/harmony/enhanced/jdktools/branches/java6"
-                   else="${svn.root}/harmony/enhanced/jdktools/trunk">
-            <isset property="java6" />
-        </condition>
+        <property name="jdktools.svn.url"
+                  value="${svn.root}/harmony/enhanced/jdktools/branches/java6"/>
 
-        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/common_resources/trunk" />
+        <property name="commonresources.svn.url"
+                  value="${svn.root}/harmony/enhanced/common_resources/trunk" />
     </target>
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
