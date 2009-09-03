@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for harmony-5.0-jdk
+# postinst script for harmony-6.0-jdk
 #
 # see: dh_installdeb(1)
 
@@ -23,9 +23,9 @@ case "$1" in
         for f in appletviewer jar jarsigner javac javadoc javah javap \
                  rmic rmid rmiregistry ; do
             update-alternatives \
-                --install /usr/bin/$f $f /usr/bin/$f-harmony 30 \
+                --install /usr/bin/$f $f /usr/bin/$f-harmony-6.0 30 \
                 --slave /usr/share/man/man1/$f.1.gz $f.1.gz \
-                        /usr/share/man/man1/$f-harmony.1.gz
+                        /usr/share/man/man1/$f-harmony-6.0.1.gz
         done
     ;;
 

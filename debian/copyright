@@ -1,5 +1,5 @@
 This package was debianized by Mark Hindess <mark.hindess@googlemail.com> on
-2 August 2007.
+27 August 2009.
 
 It was downloaded from the Apache Harmony subversion repository.  (See
 http://harmony.apache.org/)
@@ -214,5 +214,4 @@ Copyright:
    See the License for the specific language governing permissions and
    limitations under the License.
 
-See also the THIRD_PARTY_NOTICES.txt file in the /usr/share/doc directory
-for this package.
+See also the LICENSE file in the /usr/share/doc directory for this package.

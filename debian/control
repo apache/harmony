@@ -1,40 +1,40 @@
-Source: harmony-5.0
+Source: harmony-6.0
 Section: devel
 Priority: extra
 Maintainer: Mark Hindess <mark.hindess@googlemail.com>
 Build-Depends: debhelper (>= 5), ecj-bootstrap | libecj-java, junit, ant (>= 1.7.0), subversion, ant-optional, liblcms1-dev, libjpeg62-dev, libpng-dev, libxft-dev, libxml2-dev, libxtst-dev, libxext-dev
 Standards-Version: 3.7.2
 
-Package: harmony-5.0-drlvm
+Package: harmony-6.0-drlvm
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, zlib1g-dev
-Provides: harmony-5.0-vm
-Suggests: harmony-5.0-jre
+Provides: harmony-6.0-vm
+Suggests: harmony-6.0-jre
 Description: Apache Harmony DRL Virtual Machine
  <insert long description, indented with spaces>
 
-Package: harmony-5.0-classlib
+Package: harmony-6.0-classlib
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, libxext6, libxmu6
 Description: Apache Harmony Java Class Libraries
  <insert long description, indented with spaces>
 
-Package: harmony-5.0-jre
+Package: harmony-6.0-jre
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, zlib1g-dev, libxext6, libxmu6, harmony-5.0-vm, harmony-5.0-classlib
+Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, zlib1g-dev, libxext6, libxmu6, harmony-6.0-vm, harmony-6.0-classlib
 Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime
 Description: Apache Harmony JRE
  <insert long description, indented with spaces>
 
-Package: harmony-5.0-jdk
+Package: harmony-6.0-jdk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, harmony-5.0-jre
+Depends: ${shlibs:Depends}, ${misc:Depends}, harmony-6.0-jre
 Provides: java-compiler, java2-compiler
 Description: Apache Harmony JDK
  <insert long description, indented with spaces>
 
-Package: harmony-5.0-hdk
+Package: harmony-6.0-hdk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, harmony-5.0-jdk
+Depends: ${shlibs:Depends}, ${misc:Depends}, harmony-6.0-jdk
 Description: Apache Harmony HDK
  <insert long description, indented with spaces>

@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for harmony-5.0-jdk
+# postinst script for harmony-6.0-jdk
 #
 # see: dh_installdeb(1)
 
@@ -21,8 +21,8 @@ set -e
 case "$1" in
     configure)
         update-alternatives \
-            --install /usr/lib/harmony-5.0/jdk/jre/bin/default harmony-vm \
-                      /usr/lib/harmony-5.0/jdk/jre/bin/drlvm 100
+            --install /usr/lib/harmony-6.0/jdk/jre/bin/default harmony-6.0-vm \
+                      /usr/lib/harmony-6.0/jdk/jre/bin/drlvm 100
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

@@ -1,0 +1,5 @@
+/usr/lib/harmony-6.0/jdk/jre/bin/java /usr/bin/java-harmony-6.0
+/usr/lib/harmony-6.0/jdk/jre/bin/keytool /usr/bin/keytool-harmony-6.0
+/usr/lib/harmony-6.0/jdk/jre/bin/pack200 /usr/bin/pack200-harmony-6.0
+/usr/lib/harmony-6.0/jdk/jre/bin/policytool /usr/bin/policytool-harmony-6.0
+/usr/lib/harmony-6.0/jdk/jre/bin/unpack200 /usr/bin/unpack200-harmony-6.0
