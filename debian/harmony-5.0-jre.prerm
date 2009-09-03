@@ -19,7 +19,7 @@ set -e
 
 case "$1" in
     remove|deconfigure)
-        for f in java keytool policytool unpack200 ; do
+        for f in java keytool pack200 policytool unpack200 ; do
             update-alternatives --remove $f /usr/bin/$f-harmony
         done
     ;;

@@ -40,6 +40,7 @@ configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
+	patch -p0 <debian/patches/01-ignore.suffix.on.samsa.tools.diff
 	touch configure-stamp
 
 

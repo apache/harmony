@@ -20,7 +20,8 @@ set -e
 
 case "$1" in
     configure)
-        for f in appletviewer jarsigner javac javadoc javah javap ; do
+        for f in appletviewer jar jarsigner javac javadoc javah javap \
+                 rmic rmid rmiregistry ; do
             update-alternatives \
                 --install /usr/bin/$f $f /usr/bin/$f-harmony 30 \
                 --slave /usr/share/man/man1/$f.1.gz $f.1.gz \
