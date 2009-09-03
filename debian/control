@@ -2,7 +2,7 @@ Source: harmony-5.0
 Section: devel
 Priority: extra
 Maintainer: Mark Hindess <mark.hindess@googlemail.com>
-Build-Depends: debhelper (>= 5), ecj-bootstrap | libecj-java, ant, subversion, ant-optional, liblcms1-dev, libjpeg62-dev, libpng-dev, libxft-dev, libxml2-dev, libxtst-dev, libxext-dev
+Build-Depends: debhelper (>= 5), ecj-bootstrap | libecj-java, junit, ant (>= 1.7.0), subversion, ant-optional, liblcms1-dev, libjpeg62-dev, libpng-dev, libxft-dev, libxml2-dev, libxtst-dev, libxext-dev
 Standards-Version: 3.7.2
 
 Package: harmony-5.0-drlvm

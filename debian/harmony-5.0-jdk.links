@@ -1,9 +1,10 @@
 /usr/lib/harmony-5.0/jdk/bin/appletviewer /usr/bin/appletviewer-harmony
+/usr/lib/harmony-5.0/jdk/bin/jar /usr/bin/jar-harmony
 /usr/lib/harmony-5.0/jdk/bin/jarsigner /usr/bin/jarsigner-harmony
 /usr/lib/harmony-5.0/jdk/bin/javac /usr/bin/javac-harmony
 /usr/lib/harmony-5.0/jdk/bin/javadoc /usr/bin/javadoc-harmony
 /usr/lib/harmony-5.0/jdk/bin/javah /usr/bin/javah-harmony
 /usr/lib/harmony-5.0/jdk/bin/javap /usr/bin/javap-harmony
-/usr/lib/harmony-5.0/jdk/bin/keytool /usr/bin/keytool-harmony
-/usr/lib/harmony-5.0/jdk/bin/policytool /usr/bin/policytool-harmony
-/usr/lib/harmony-5.0/jdk/bin/unpack200 /usr/bin/unpack200-harmony
+/usr/lib/harmony-5.0/jdk/bin/rmic /usr/bin/rmic-harmony
+/usr/lib/harmony-5.0/jdk/bin/rmid /usr/bin/rmid-harmony
+/usr/lib/harmony-5.0/jdk/bin/rmiregistry /usr/bin/rmiregistry-harmony
