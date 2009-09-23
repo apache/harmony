@@ -326,12 +326,16 @@ Usage:
         <!-- copy the classlib/deploy tree as the hdk
              filtering out the jre, as that comes from
              working_vm -->
+        <!-- TODO: classlib files should come from classlib.  So we
+             should filter out classlib files when copying out of
+             working_vm and *not* when copying out of
+             working_classlib.  And if necessary add specific excludes
+             so we know exactly why it is not done in the obvious
+             way. -->
         <copy todir="${target.dir}/hdk">
             <fileset dir="working_classlib/deploy">
                 <exclude name="**/jre/**/*" />
-                <exclude name="**/jdk/lib/*" />
                 <exclude name="**/jdk/include/*" />
-                <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
 
@@ -339,15 +343,14 @@ Usage:
         <!-- set overwrite flag to take hythr from VM -->
         <copy todir="${target.dir}/hdk" overwrite="true">
             <fileset dir="working_vm/deploy">
+                <!-- TODO: where should these .pdb files go? -->
                 <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
         </copy>
 
         <!-- now copy the working_jdktools/deploy/jdk -->
         <copy todir="${target.dir}/hdk/jdk/">
-            <fileset dir="working_jdktools/deploy/jdk">
-                <exclude name="**/*.pdb" unless="copy.progdb" />
-            </fileset>
+            <fileset dir="working_jdktools/deploy/jdk" />
         </copy>
     </target>
 
