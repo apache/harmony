@@ -144,7 +144,7 @@ binary-common:
 #	dh_perl
 	dh_makeshlibs
 	dh_installdeb
-	LD_LIBRARY_PATH=debian/harmony-5.0-drlvm/usr/lib/harmony-5.0/jdk/jre/bin:debian/harmony-5.0-drlvm/usr/lib/harmony-5.0/jdk/jre/bin/drlvm:$LD_LIBRARY_PATH dh_shlibdeps
+	LD_LIBRARY_PATH=debian/harmony-5.0-drlvm/usr/lib/harmony-5.0/jdk/jre/bin:debian/harmony-5.0-drlvm/usr/lib/harmony-5.0/jdk/jre/bin/drlvm:$(LD_LIBRARY_PATH) dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
