@@ -690,12 +690,29 @@ the following IETF RFCs.  Portions of the IETF RFC specifications may be
 included in source code comments for reference, and in accordance with
 the licensing terms, the licenses are reproduced here:
 
+RFC 1779 -  A String Representation of Distinguished Names
+
+RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of 
+           Internet Message Bodies
+
+RFC 2251 - Lightweight Directory Access Protocol (v3)
+           Copyright (C) The Internet Society (1997).  All Rights Reserved.
+
+RFC 2253 - Lightweight Directory Access Protocol (v3): UTF-8 String 
+           Representation of Distinguished Names
+           Copyright (C) The Internet Society (1997).  All Rights Reserved.
 
 RFC 2313 - PKCS #1: RSA Encryption
            Copyright (C) The Internet Society (1998).  All Rights Reserved.
 
 RFC 2315 - PKCS #7: Cryptographic Message Syntax
            Copyright (C) The Internet Society (1998).  All Rights Reserved.
+
+RFC 2459 - Internet X.509 Public Key Infrastructure Certificate and CRL Profile
+           Copyright (C) The Internet Society (1999).  All Rights Reserved.
+
+RFC 2616 - Hypertext Transfer Protocol -- HTTP/1.1
+           Copyright (C) The Internet Society (1999). All Rights Reserved.
 
 RFC 2781 - UTF-16, an encoding of ISO 10646
            Copyright (C) The Internet Society (2000).  All Rights Reserved.
@@ -713,6 +730,9 @@ RFC 3280 - Internet X.509 Public Key Infrastructure, Certificate and
            Certificate Revocation List (CRL) Profile
            Copyright (C) The Internet Society (2002).  All Rights Reserved.
 
+INTERNET-DRAFT - Persistent Search: A Simple LDAP Change Notification Mechanism
+           <draft-ietf-ldapext-psearch-03.txt>
+           Copyright (C) The Internet Society (1997-2000). All Rights Reserved.
 
 The following statement applies to each RFC:
 
