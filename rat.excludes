@@ -1,5 +1,3 @@
-rat.excludes
-release.properties
 **/*.dirs
 **/*.links
 **/*.rect
@@ -22,6 +20,8 @@ release.properties
 **/x/print/javax.print.*
 **/x/swing/text/html/cssparser/*.java
 **/x/swing/text/rtf/*.java
+rat.excludes
+release.properties
 working_classlib/modules/archive/src/main/native/zlib/windows/hyzlib.def
 working_classlib/modules/archive/src/main/native/zlib/windows/hyzlib.rc
 working_classlib/modules/concurrent/src/main/java/java/util/concurrent/**
@@ -29,10 +29,11 @@ working_classlib/modules/concurrent/src/test/java/**
 working_classlib/modules/luni/src/main/native/fdlibm/shared/s_lib_version.c
 working_classlib/modules/luni/src/main/native/include/fdlibm.h
 working_classlib/modules/nio/META-INF/services/java.nio.channels.spi.SelectorProvider
+working_classlib/modules/nio_char/make/excludesfile
 working_classlib/modules/portlib/src/test/native/hymmap/shared/emptyFile
 working_classlib/modules/portlib/src/test/native/hymmap/shared/testFile
+working_jdktools/modules/jpda/src/test/java/org/apache/harmony/jpda/tests/jdwp/VirtualMachine/RedefineByteCode_Debuggee001
 working_vm/vm/gc_gen/src/mark_sweep/sspace_compact.cpp
 working_vm/vm/gc_gen/src/mark_sweep/sspace_mark_concurrent.cpp
 working_vm/vm/include/jit_import.h
 working_vm/vm/include/jit_intf.h
-working_jdktools/modules/jpda/src/test/java/org/apache/harmony/jpda/tests/jdwp/VirtualMachine/RedefineByteCode_Debuggee001
