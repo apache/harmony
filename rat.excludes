@@ -1,3 +1,5 @@
+rat.excludes
+release.properties
 **/*.dirs
 **/*.links
 **/*.rect
@@ -29,3 +31,8 @@ working_classlib/modules/luni/src/main/native/include/fdlibm.h
 working_classlib/modules/nio/META-INF/services/java.nio.channels.spi.SelectorProvider
 working_classlib/modules/portlib/src/test/native/hymmap/shared/emptyFile
 working_classlib/modules/portlib/src/test/native/hymmap/shared/testFile
+working_vm/vm/gc_gen/src/mark_sweep/sspace_compact.cpp
+working_vm/vm/gc_gen/src/mark_sweep/sspace_mark_concurrent.cpp
+working_vm/vm/include/jit_import.h
+working_vm/vm/include/jit_intf.h
+working_jdktools/modules/jpda/src/test/java/org/apache/harmony/jpda/tests/jdwp/VirtualMachine/RedefineByteCode_Debuggee001
