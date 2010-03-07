@@ -1,5 +1,3 @@
-**/*.dirs
-**/*.links
 **/*.rect
 **/*.ser
 **/*.shape
@@ -11,6 +9,13 @@
 **/.project
 **/.settings
 **/MANIFEST.MF
+**/debian/*.dirs
+**/debian/*.links
+**/debian/*.lintian
+**/debian/compat
+**/debian/control
+**/debian/dirs
+**/debian/docs
 **/excludes/exclude.*
 **/make/*.policy
 **/make/exclude.*
