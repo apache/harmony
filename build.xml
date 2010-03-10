@@ -353,7 +353,7 @@ Usage:
 
         <!-- copy the classlib/deploy tree as the hdk
              filtering out specific files overriden by the VM -->
-        <copy todir="${target.dir}/hdk" verbose="true">
+        <copy todir="${target.dir}/hdk">
             <fileset dir="working_classlib/deploy">
                 <excludesfile
                      name="${vm.dir.loc}/make/classlib.override.file.patterns"
@@ -364,7 +364,7 @@ Usage:
 
         <!-- now copy the drlvm/build/deploy/jre/bin/default -->
         <!-- plus specific file that the VM overrides -->
-        <copy todir="${target.dir}/hdk" verbose="true">
+        <copy todir="${target.dir}/hdk">
             <fileset dir="${vm.dir.loc}/deploy">
                 <exclude name="**/jre/bin/*" />
 
