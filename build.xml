@@ -859,7 +859,7 @@ Usage:
             <isset property="java6" />
         </condition>
 
-        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/common_resources/trunk" />
+        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/trunk/common_resources" />
     </target>
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
