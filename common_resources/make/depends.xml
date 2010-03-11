@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied.  See the License for the specific language governing
+  permissions and limitations under the License.
+
+ -->
+
+<project name="external-deps">
+    
+    <dirname property="ed.basedir" file="${ant.file.external-deps}"/>
+    <import file="${ed.basedir}/properties.xml"/>
+    
+    <loadproperties srcfile="${ed.basedir}/depends.properties">
+      <filterchain>
+        <filterreader classname="org.apache.tools.ant.filters.ReplaceTokens">
+            <param type="token" name="${hy.arch}" value=""/>
+            <param type="token" name="${hy.os.family}" value=""/>
+            <param type="token" name="${hy.platform}" value=""/>
+            <param type="token" name="${hy.platform.variant}" value=""/>
+        </filterreader>
+      </filterchain>
+    </loadproperties>
+
+    <macrodef name="poll-modules" 
+        description="directory-based macros for polling sub-builds">
+        <attribute name="target" />
+        <attribute name="dir" />
+        <attribute name="includes" default="${build.module}"/>
+        <attribute name="excludes" default="${exclude.module}"/>
+        <attribute name="antfile" default="*.xml"/>
+        <sequential>
+            <!-- convert dirset pattern to fileset pattern-->
+            <property name="@{dir}.loc" location="@{dir}"/>
+            <pathconvert property="list.@{dir}.@{target}" 
+                pathsep="${file.separator}@{antfile}," setonempty="no">
+                <path>
+                    <dirset dir="@{dir}"
+                            includes="@{includes}"
+                            excludes="@{excludes}">
+                        <exclude name=".*" />
+                    </dirset>
+                </path>
+                <map from="${@{dir}.loc}${file.separator}" to=""/>
+            </pathconvert>
+            <!-- append antfile suffix to last item in the list, if any -->
+            <condition property="poll.@{dir}.@{target}"
+                value="${list.@{dir}.@{target}}${file.separator}@{antfile}" 
+                else="">
+                <isset property="list.@{dir}.@{target}"/>
+            </condition>
+            <poll-build target="@{target}" dir="@{dir}" 
+                includes="${poll.@{dir}.@{target}}"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="poll-build"
+        description="plain-filter macros for polling sub-builds">
+        <attribute name="target" />
+        <attribute name="dir" />
+        <attribute name="includes" default="**/*.xml"/>
+        <attribute name="excludes" default=""/>
+        <sequential>
+            <echo message="polling @{includes}"/>
+            <subant target="@{target}">
+                <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}">
+                    <containsregexp expression="&lt;target[^&gt;]*name=&quot;@{target}&quot;"/>
+                </fileset>
+            </subant>
+        </sequential>
+    </macrodef>
+
+    <target name="fetch">
+        <fetch dep="${dependency}"/>
+    </target>
+    
+    <macrodef name="fetch">
+        <attribute name="dep" />
+        <sequential>
+            <dirname file="${@{dep}}" property="@{dep}.dir"/>
+            <mkdir dir="${@{dep}.dir}"/>
+            <download-one-file dest="${@{dep}}" 
+                src="${@{dep}.url}" md5="${@{dep}.md5}"/>
+            <unzip-one-file dep="@{dep}"/>
+        </sequential>
+    </macrodef>
+    
+    <target name="-really-unzip" unless="unzipped" if="unzip.path">
+        <tempfile destdir="${dest}" property="tmp"/>
+        <unzip src="${src}" dest="${tmp}" >
+            <patternset includes="${unzip.path}"/>
+        </unzip>
+        <touch>
+            <fileset dir="${tmp}">
+                <patternset includes="${unzip.path}"/>
+            </fileset>
+        </touch>
+        <move todir="${dest}" flatten="yes" failonerror="no">
+            <fileset dir="${tmp}">
+                <patternset includes="${unzip.path}"/>
+            </fileset>
+        </move>
+        <delete dir="${tmp}" />
+    </target>
+    
+    <macrodef name="unzip-one-file">
+        <attribute name="dep" />
+        <sequential>
+            <dirname file="${@{dep}}" property="@{dep}.dir"/>
+            <!-- quite tricky way to detect if unzip operation is pending,
+                still not very robust ...
+                Life could be simpler if unzip supported nested mappers
+            -->
+            <basename file="${@{dep}}" property="@{dep}.basename"/>
+            <basename file="${@{dep}.unzip.path}" property="@{dep}.unzip.basename"/>
+            <pathconvert property="@{dep}.matching.list" setonempty="no">
+                <path><fileset dir="${@{dep}.dir}" includes="${@{dep}.unzip.basename}"/></path>
+            </pathconvert>
+            <pathconvert property="@{dep}.uptodate.list" setonempty="no">
+                <path>
+                    <fileset dir="${@{dep}.dir}" includes="${@{dep}.unzip.basename}">
+                        <depend targetdir="${@{dep}.dir}">
+                            <mapper type="merge" to="${@{dep}.basename}"/>
+                        </depend>
+                    </fileset>
+                </path>
+            </pathconvert>
+            <condition property="@{dep}.unzipped">
+                <equals arg1="${@{dep}.uptodate.list}" arg2="${@{dep}.matching.list}"/>
+                <!--uptodate srcfile="${@{dep}}"
+                        targetfile="${@{dep}.dir}/${@{dep}.unzip.basename}"/-->
+            </condition>
+
+            <antcall target="-really-unzip">
+                <param name="src" value="${@{dep}}" />
+                <param name="dest" value="${@{dep}.dir}" />
+                <propertyset>
+                  <propertyref prefix="@{dep}.unzip"/>
+                  <globmapper from="@{dep}.*" to="*"/>
+                </propertyset>
+            </antcall>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="download-one-file">
+        <attribute name="src" />
+        <attribute name="dest" />
+        <attribute name="md5" />
+        <attribute name="md5-deprecated" default="" />
+        <sequential>
+            <echo>Checking @{dest}</echo>
+            <available file="@{dest}" type="file"
+                       property="@{dest}.exists" />
+            <antcall target="-really-download">
+                <param name="src" value="@{src}" />
+                <param name="dest" value="@{dest}" />
+            </antcall>
+            <checksum file="@{dest}" property="@{dest}.md5" />
+            <condition property="@{dest}.md5.verified" value="true">
+                <or>
+                    <equals arg1="${@{dest}.md5}" arg2="@{md5}" />
+                    <equals arg1="${@{dest}.md5}" arg2="@{md5-deprecated}" />
+                </or>
+            </condition>
+            <antcall target="-remove-file-if-bad">
+                <param name="jar" value="@{dest}" />
+            </antcall>
+        <fail unless="@{dest}.md5.verified">
+...
+
+File @{dest} has incorrect md5 checksum.
+    Expected: @{md5} (or @{md5-deprecated})
+    Found:    ${@{dest}.md5}
+
+Your previous download may have failed to get the entire file. Either
+delete the partial download and try again, or manually download that
+file and put it in the specified directory.
+    Recommended URL: @{src}
+
+            </fail>
+            <echo>Checksum verified (${@{dest}.md5.verified})</echo>
+        </sequential>
+    </macrodef>
+
+    <target name="-really-download" unless="${dest}.exists">
+        <echo>Fetching ${dest}</echo>
+    <get src="${src}" dest="${dest}" usetimestamp="true" verbose="true" />
+    </target>
+
+    <target name="-remove-file-if-bad" unless="${dest}.md5.verified">
+        <delete file="${dest}" />
+    </target>
+
+    <macrodef name="check-one-file">
+        <attribute name="src" />
+        <attribute name="dest" />
+        <sequential>
+            <echo level="info">Checking for @{dest}</echo>
+        <available file="@{dest}" type="file"
+                       property="@{dest}.exists" />
+        <fail>
+        <condition>
+            <not>
+            <isset property="@{dest}.exists" />
+            </not>
+        </condition>
+...
+
+Missing dependency.  The file from:
+
+  @{src}
+
+should be downloaded (extracted) to:
+
+  @{dest}
+
+Run "ant fetch-depends" to automatically fetch dependencies.
+Note: Some of Harmony's dependencies are licensed under terms other
+than the Apache License v2.
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="check-one-link">
+        <attribute name="src" />
+        <attribute name="dest" />
+        <attribute name="message" />
+        <sequential>
+            <echo>Checking for @{dest}</echo>
+        <available file="@{dest}" type="file"
+                       property="@{dest}.exists" />
+        <available file="@{src}" type="file"
+                       property="@{src}.exists" />
+        <fail>
+        <condition>
+                    <and>
+                <not>
+                <isset property="@{dest}.exists" />
+                        </not>
+                        <not>
+                <isset property="@{src}.exists" />
+                </not>
+                    </and>
+        </condition>
+...
+
+Missing dependency.  The file from:
+
+  @{src}
+
+should be linked to:
+
+  @{dest}
+
+But @{src} doesn't exist.
+@{message}
+            </fail>
+            <antcall target="-really-link">
+                <param name="src" value="@{src}" />
+                <param name="dest" value="@{dest}" />
+            </antcall>
+        </sequential>
+    </macrodef>
+
+    <target name="-really-link" unless="${dest}.exists">
+        <echo>Linking ${dest}</echo>
+        <symlink resource="${src}" link="${dest}" />
+    </target>
+
+    
+    <!--macrodef name="chksum">
+        <attribute name="file" />
+        <attribute name="type" default="md5" />
+        <sequential>
+            <checksum property="@{file}.@{type}" file="@{file}"
+                      algorithm="@{type}" />
+            <echo file="@{file}.@{type}"
+                  message="${@{file}.@{type}}  @{file}${line.separator}" />
+        </sequential>
+    </macrodef-->
+</project>

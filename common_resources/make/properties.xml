@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied.  See the License for the specific language governing
+  permissions and limitations under the License.
+
+ -->
+
+<project name="Common property definitions" default="echo">
+    <description>
+        Ant file of common properties to be imported by other ant files
+    </description>
+
+    <property file="${user.home}/.harmony.properties" />
+    <dirname property="common.basedir"
+             file="${ant.file.Common property definitions}/.."/>
+
+    <import file="${common.basedir}/make/platform.xml"/>
+    <import file="${common.basedir}/make/svn.xml"/>
+
+
+    <!-- Root directory of the common dependemcy pool -->
+    <property name="base.dep.dir" location="${common.basedir}/depends"/>
+
+    <!-- Debug or release version -->
+    <property name="hy.cfg" value="debug" />
+
+    <!-- Javac properties -->
+    <!-- Explicitly set to ECJ as the default compiler. -->
+    <property name="hy.javac.compiler"
+              value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+    <property name="hy.javac.source" value="1.5" />
+    <property name="hy.javac.target" value="1.5" />
+    <property name="hy.javac.maxmem" value="384M" />
+
+    <!-- Temporarily always include class file debug info -->
+    <condition property="hy.javac.debug" value="on" else="on">
+        <equals arg1="${hy.cfg}" arg2="debug" />
+    </condition>
+
+    <!-- Local variable tables should be available in debug, and
+         omitted in release modes. -->
+    <condition property="build.compilerarg" value="-nowarn -g"
+               else="-nowarn -g:lines,source">
+        <equals arg1="${hy.cfg}" arg2="debug" />
+    </condition>
+
+    <!-- During packaging, these files must be copied into the meta-inf dir -->
+    <fileset id="hy.required.metainf-files" dir="${hy.hdk}">
+        <include name="NOTICE" />
+        <include name="LICENSE" />
+    </fileset>
+
+    <!-- Test run property -->
+    <property name="hy.test.forkmode" value="once" />
+    <property name="hy.test.timeout" value="900000" />
+    <property name="hy.test.vmargs" value="" />
+
+    <condition property="hy.platform.suffix" value=".libstdc++5">
+        <isset property="use.libstdc++5"/>
+    </condition>
+    <condition property="hy.platform.suffix" value=".8x">
+        <!-- matches would be better but debian stable has ant 1.6.5
+             and matches was only added to 1.7.0 and above -->
+        <and>
+            <equals arg1="FreeBSD" arg2="${os.name}" casesensitive="false" /> 
+            <contains substring="8." string="${os.version}"/>
+        </and>
+    </condition>
+    <condition property="hy.platform.suffix" value=".7x">
+        <!-- matches would be better but debian stable has ant 1.6.5
+             and matches was only added to 1.7.0 and above -->
+        <and>
+            <equals arg1="FreeBSD" arg2="${os.name}" casesensitive="false" /> 
+            <contains substring="7." string="${os.version}"/>
+        </and>
+    </condition>
+    <property name="hy.platform.suffix" value="" />
+    <property name="hy.platform.variant"
+              value="${hy.platform}${hy.platform.suffix}" />
+
+    <condition property="png.home" value="/usr/local">
+        <isset property="is.freebsd"/>
+    </condition>
+    <condition property="png.home" value="/sw">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="png.home" value="/usr" />
+
+    <condition property="lcms.home" value="/usr/local">
+        <isset property="is.freebsd"/>
+    </condition>
+    <condition property="lcms.home" value="/sw">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="lcms.home" value="/usr" />
+
+    <condition property="jpeg.home" value="/usr/local">
+        <isset property="is.freebsd"/>
+    </condition>
+    <condition property="jpeg.home" value="/sw">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="jpeg.home" value="/usr" />
+    
+    <!-- default property for call-modules macro - i.e. all modules -->
+    <property name="build.module" value="*" />
+    <property name="exclude.module" value="nothing" />
+
+    <!-- names of exclude lists, used by prepare-exclude-list macro -->
+    <property name="common.exclude.file" value="exclude.common" />
+    <property name="common.exclude.interm" value="exclude.interm" />
+    <property name="platform.exclude.file"
+              value="exclude.${hy.platform}.${hy.test.vm.name}" />
+    <property name="platform.exclude.interm"
+              value="exclude.${hy.platform}.${hy.test.vm.name}.interm" />
+
+    <!-- flags -->
+    <property name="hy.no.thr" value="false" />
+    <condition property="hy.skip.thr" value="true">
+        <not>
+            <equals arg1="${hy.no.thr}" arg2="false" />
+        </not>
+    </condition>
+
+    <property name="hy.local.zlib" value="false" />
+    <condition property="hy.skip.zlib" value="true">
+        <not>
+            <equals arg1="${hy.local.zlib}" arg2="false" />
+        </not>
+    </condition>
+
+    <property name="hy.zip.api" value="false" />
+    <condition property="hy.skip.zip.api" value="true">
+        <not>
+            <equals arg1="${hy.zip.api}" arg2="true" />
+        </not>
+     </condition>
+
+    <target name="echo" depends="svn-info, test-jre-vm-info"
+            description="Display the properties defined by this ant file" >
+        <echo>
+Harmony release configuration property:
+
+  hy.cfg = ${hy.cfg}
+
+Harmony javac properties:
+
+  hy.javac.compiler = ${hy.javac.compiler}
+  hy.javac.target = ${hy.javac.target}
+  hy.javac.source = ${hy.javac.source}
+  hy.javac.debug  = ${hy.javac.debug}
+  hy.javac.maxmem = ${hy.javac.maxmem}
+  build.compilerarg = ${build.compilerarg}
+
+Harmony test properties:
+
+    hy.test.forkmode = ${hy.test.forkmode}
+    hy.test.timeout = ${hy.test.timeout}
+    hy.test.vm.name = ${hy.test.vm.name}
+    hy.test.vmargs = ${hy.test.vmargs}
+
+Harmony platform properties:
+
+  hy.os = ${hy.os}
+  hy.os.family = ${hy.os.family}
+  hy.arch = ${hy.arch}
+  hy.bits = ${hy.bits}
+  hy.platform = ${hy.platform}
+  hy.platform.path = ${hy.platform.path}
+
+  is.windows = ${is.windows}
+  is.unix = ${is.unix}
+  is.linux = ${is.linux}
+  is.freebsd = ${is.freebsd}
+  is.macosx = ${is.macosx}
+  is.aix = ${is.aix}
+  is.zos = ${is.zos}
+  is.32bit = ${is.32bit}
+  is.64bit = ${is.64bit}
+  is.x86 = ${is.x86}
+  is.x86_64 = ${is.x86_64}
+  is.ia64 = ${is.ia64}
+  is.ppc32 = ${is.ppc32}
+  is.ppc64 = ${is.ppc64}
+  is.s390 = ${is.s390}
+  is.s390x = ${is.s390x}
+
+  exe.suffix = ${exe.suffix}
+  shlib.prefix = ${shlib.prefix}
+  shlib.suffix = ${shlib.suffix}
+  make.command = ${make.command}
+
+  hy.hdk = ${hy.hdk}
+
+
+The following properties are only set if the "svn-info" target has been
+called:
+
+  svn.revision = ${svn.revision}
+  svn.info = ${svn.info}
+
+Ant native properties, for information, but please use Harmony
+properties in preference to these:
+
+  os.name = ${os.name}
+  os.arch = ${os.arch}
+
+        </echo>
+    </target>
+
+    <target name="test-jre-vm-info" depends="-get-test-vm-output">
+        <!-- Add other runtime names here -->
+        <condition property="hy.test.vm.name" value="ri" >
+            <contains string="${test.vm.info.tmp}" substring="HotSpot"/>
+        </condition>
+        <condition property="hy.test.vm.name" value="jr" >
+            <contains string="${test.vm.info.tmp}" substring="JRockit"/>
+        </condition>
+        <!-- FIXME current behavior relies on the fact that J9 VM doesn't
+             support -version parameter -->
+        <condition property="hy.test.vm.name" value="drl" else="ibm" >
+            <contains string="${test.vm.info.tmp}" substring="harmony" />
+        </condition>
+        <echo level="info" message="hy.test.vm.name = ${hy.test.vm.name}" />
+    </target>
+
+    <target name="-get-test-vm-output">
+        <condition property="test.jre.home" value="${hy.jdk}/jre">
+            <not><isset property="test.jre.home" /></not>
+        </condition>
+        <exec executable="${test.jre.home}/bin/java" failifexecutionfails="false">
+            <arg value="-version" />
+            <redirector outputproperty="test.vm.info.tmp"/>
+        </exec>
+    </target>
+
+    <macrodef name="call-modules">
+        <attribute name="target" />
+        <sequential>
+            <subant target="@{target}">
+                <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
+                <dirset dir="modules"
+                        includes="${build.module}"
+                        excludes="${exclude.module}">
+                    <exclude name=".*" />
+                </dirset>
+            </subant>
+        </sequential>
+    </macrodef>
+
+    <condition property="make.arg" value="/nologo">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="make.arg" value="" />
+
+    <macrodef name="make">
+        <attribute name="dir" />
+        <attribute name="target" default="" />
+        <element name="make-elements" optional="true" />
+        <sequential>
+            <echo>Making "@{target}" in @{dir}</echo>
+            <exec failonerror="true"
+                  executable="${make.command}"
+                  dir="@{dir}">
+                <env key="HY_ZIP_API" value="${hy.zip.api}" />
+                <env key="HY_PORTLIB_STUBS" value="${hy.portlib.stubs}" />
+                <env key="HY_HDK" value="${hy.hdk}" />
+                <env key="HY_CFG" value="${hy.cfg}" />
+                <env key="HY_ARCH" value="${hy.arch}" />
+                <env key="HY_OS" value="${hy.os}" />
+                <env key="HY_PLATFORM" value="${hy.platform}" />
+                <env key="HY_NO_THR" value="${hy.no.thr}" />
+                <env key="HY_THR_NO_DEPLOY" value="${hy.thr.nodeploy}" />
+                <env key="HY_LOCAL_ZLIB" value="${hy.local.zlib}" />
+                <env key="HY_SHLIB_SUFFIX" value="${shlib.suffix}" />
+                <env key="HY_LINKLIB_SUFFIX" value="${linklib.suffix}" />
+                <arg line="${make.arg}" />
+                <arg line="@{target}" />
+                <make-elements />
+            </exec>
+        </sequential>
+    </macrodef>
+
+
+    <!-- To use with -Dtest.case=... option                   -->
+    <!-- if ${test.case} is provided in package+class form    -->
+    <!-- it is converted to dir+filename form                 -->
+    <macrodef name="convert-test">
+        <attribute name="from"/>
+        <attribute name="to"/>
+        <sequential>
+            <pathconvert property="@{to}" setonempty="no">
+                <path path="${@{from}}"/>
+                <chainedmapper>
+                    <filtermapper>
+                        <replaceregex pattern="\.java$$"/>
+                    </filtermapper>
+                    <unpackagemapper from="${basedir}${file.separator}*" to="*.java"/>
+                </chainedmapper>
+            </pathconvert>
+        </sequential>
+    </macrodef>
+    <convert-test from="test.case" to="converted.tc" />
+    
+    <!-- Concatenate several exclude lists into single list -->
+    <macrodef name="prepare-exclude-list">
+       <attribute name="moduleName"/>
+       <!-- directory with exclude lists for the module -->
+       <attribute name="dir"/>
+       <!-- name of concatenated list, should be an absolute pathname -->
+       <attribute name="result"/>
+       <sequential>
+           <dirname file="@{result}" property="@{result}.dir" />
+           <mkdir dir="${@{result}.dir}" />
+
+           <echo message="" file="@{result}"/>
+           <concat destfile="@{result}" force="yes" fixlastline="yes" append="true">
+               <fileset dir="@{dir}">
+                   <include name="${common.exclude.file}"/> 
+                   <include name="${platform.exclude.file}"/>
+                   <include name="${common.exclude.interm}" if="exclude.interm" />
+                   <include name="${platform.exclude.interm}" if="exclude.interm" />
+                   <size value="0" when="more"/>
+               </fileset>
+           </concat>
+       </sequential>
+   </macrodef>
+    
+    <macrodef name="ensure-javac">
+        <sequential>
+            <fail>
+                <condition>
+                    <and>
+                        <equals arg1="${hy.javac.compiler}" arg2="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+                        <not>
+                            <available classname="${hy.javac.compiler}"/>
+                        </not>
+                    </and>
+                </condition>
+The Eclipse compiler class for Ant could not be found. Please place the ECJ JAR in ANT_HOME/lib.
+The JAR can be downloaded directly from eclipse.org or copied from COMMON_RESOURCES/depends/jars/ecj_3.x folder after the fetch-depends target for JDKTOOLS has been run.
+Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.compiler=modern' for classic javac.                
+            </fail>
+        </sequential>
+    </macrodef>
+   
+    <presetdef name="hy.javac">
+        <javac target="${hy.javac.target}" source="${hy.javac.source}" 
+               compiler="${hy.javac.compiler}" debug="${hy.javac.debug}"
+               memoryMaximumSize="${hy.javac.maxmem}">
+            <compilerarg line="${build.compilerarg}" />
+        </javac>
+    </presetdef>
+
+    <presetdef name="hy.jar.bin">
+        <jar compress="${hy.jar.compress}">
+            <manifest>
+                <attribute name="Implementation-Title" value="Apache Harmony"/>
+                <attribute name="Implementation-Vendor"
+                           value="The Apache Software Foundation"/>
+                <attribute name="Implementation-Vendor-Id"
+                           value="org.apache.harmony"/>
+                <attribute name="Implementation-URL"
+                           value="http://harmony.apache.org"/>
+                <attribute name="Implementation-Version" value="${svn.info}"/> 
+                <attribute name="X-Compile-Source-JDK"
+                           value="${hy.javac.source}"/> 
+                <attribute name="X-Compile-Target-JDK"
+                           value="${hy.javac.target}"/> 
+            </manifest>
+            <metainf refid="hy.required.metainf-files"/>
+        </jar>
+    </presetdef>
+
+    <presetdef name="hy.jar.src">
+        <jar compress="${hy.jar.compress}">
+            <manifest>
+                <attribute name="Implementation-Title" value="Apache Harmony"/>
+                <attribute name="Implementation-Vendor"
+                           value="The Apache Software Foundation"/>
+                <attribute name="Implementation-Vendor-Id"
+                           value="org.apache.harmony"/>
+                <attribute name="Implementation-URL"
+                           value="http://harmony.apache.org"/>
+                <attribute name="Implementation-Version" value="${svn.info}"/> 
+            </manifest>
+            <metainf refid="hy.required.metainf-files"/>
+        </jar>
+    </presetdef>
+
+</project>
