@@ -718,10 +718,6 @@ Usage:
                 <os arch="i386"/>
             </or>
         </condition>
-        <condition property="harmony.bits" value="32">
-            <isset property="is.32bit" />
-        </condition>
-        <property name="harmony.bits" value="64" />
 
         <!-- Normalized architecture name -->
         <condition property="harmony.arch" value="x86">
@@ -751,23 +747,23 @@ Usage:
         <property name="deploy.hdk.file.prefix"
                  value="${deploy.file.prefix}hdk-r${harmony.version}" />
         <property name="deploy.hdk.tar"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
+                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jdk.file.prefix"
                  value="${deploy.file.prefix}jdk-r${harmony.version}" />
         <property name="deploy.jdk.tar"
-                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
+                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jdk.zip"
-                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
+                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
                  value="${deploy.file.prefix}jre-r${harmony.version}" />
         <property name="deploy.jre.tar"
-                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.tar.gz" />
+                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jre.zip"
-                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}-${harmony.bits}${harmony.deploy.suffix}.zip" />
+                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.src.file.prefix"
                  value="${deploy.file.prefix}src-r${harmony.version}" />
@@ -796,7 +792,6 @@ Usage:
             svn rev          :  ${harmony.version}
             operating system :  ${harmony.os}
             CPU architecture :  ${harmony.arch}
-            word length      :  ${harmony.bits}
             ant os name/arch :  ${os.name}/${os.arch}
             hosting Java     :  ${java.version} (${java.vendor})
             build mode       :  ${hy.cfg}
