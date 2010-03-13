@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied.  See the License for the specific language governing
+  permissions and limitations under the License.
+
+ -->
+
+<project name="Platform property definitions">
+
+    <!-- Conditions for operating systems -->
+    <condition property="is.windows">
+        <os family="Windows" />
+    </condition>
+    <condition property="is.linux">
+        <os name="linux" />
+    </condition>
+    <condition property="is.macosx">
+        <os name="mac os x" />
+    </condition>
+    <condition property="is.freebsd">
+        <os name="freebsd" />
+    </condition>
+    <condition property="is.aix">
+        <os name="aix" />
+    </condition>
+    <condition property="is.unix">
+        <os family="unix" />
+    </condition>
+    <condition property="is.zos">
+        <os name="z/OS" />
+    </condition>
+
+    <!-- Normalized operating system family -->
+    <condition property="hy.os.family" value="windows">
+        <isset property="is.windows" />
+    </condition>
+    <property name="hy.os.family" value="unix" />
+
+    <!-- Normalized operating system name -->
+
+    <!-- this special case makes sense -->
+    <condition property="hy.os" value="windows">
+        <isset property="is.windows"/>
+    </condition>
+    <condition property="hy.os" value="linux">
+        <os name="linux" />
+    </condition>
+    <condition property="hy.os" value="freebsd">
+        <os name="freebsd" />
+    </condition>
+    <condition property="hy.os" value="macosx">
+        <isset property="is.macosx"/>
+    </condition>
+    <condition property="hy.os" value="aix">
+        <os name="aix" />
+    </condition>
+    <condition property="hy.os" value="zos">
+        <isset property="is.zos"/>
+    </condition>
+
+    <property name="hy.os" value="${os.name}" />
+
+    <!-- Conditions for different architectures -->
+    <condition property="is.x86_64">
+        <or>
+            <equals arg1="x86_64" arg2="${os.arch}"/>
+            <equals arg1="amd64" arg2="${os.arch}"/>
+        </or>
+    </condition>
+    <condition property="is.x86">
+	<and>
+	    <not>
+                <isset property="is.x86_64" />
+            </not>
+            <or>
+                <equals arg1="x86" arg2="${os.arch}"/>
+                <equals arg1="i386" arg2="${os.arch}"/>
+                <equals arg1="i686" arg2="${os.arch}"/>
+            </or>
+        </and>
+    </condition>
+    <condition property="is.ia64">
+        <equals arg1="ia64" arg2="${os.arch}"/>
+    </condition>
+    <condition property="is.ppc32">
+        <or>
+            <equals arg1="${os.arch}" arg2="ppc32" />
+            <equals arg1="${os.arch}" arg2="ppc" />
+        </or>
+    </condition>
+    <condition property="is.ppc64">
+        <equals arg1="${os.arch}" arg2="ppc64" />
+    </condition>
+    <condition property="is.s390x">
+        <equals arg1="${os.arch}" arg2="s390x" />
+    </condition>
+    <condition property="is.s390">
+        <equals arg1="${os.arch}" arg2="s390" />
+    </condition>
+
+    <condition property="is.unix.x86_64">
+        <and>
+            <isset property="is.unix"/>
+            <isset property="is.x86_64"/>
+        </and>
+    </condition>
+    <condition property="is.unix.x86">
+        <and>
+            <isset property="is.unix"/>
+            <isset property="is.x86"/>
+        </and>
+    </condition>
+    <condition property="is.unix.ia64">
+        <and>
+            <isset property="is.unix"/>
+            <isset property="is.ia64"/>
+        </and>
+    </condition>
+    <condition property="is.windows.x86">
+        <and>
+            <isset property="is.windows"/>
+            <isset property="is.x86"/>
+        </and>
+    </condition>
+    <condition property="is.windows.x86_64">
+        <and>
+            <isset property="is.windows"/>
+            <isset property="is.x86_64"/>
+        </and>
+    </condition>
+    <condition property="is.windows.ia64">
+        <and>
+            <isset property="is.windows"/>
+            <isset property="is.ia64"/>
+        </and>
+    </condition>
+
+    <condition property="is.64bit">
+        <or>
+            <isset property="is.ia64" />
+            <isset property="is.x86_64" />
+            <isset property="is.ppc64" />
+            <isset property="is.s390x" />
+        </or>
+    </condition>
+    <condition property="is.32bit">
+        <or>
+            <isset property="is.x86" />
+            <isset property="is.ppc32" />
+            <isset property="is.s390" /> <!-- 31bit of course -->
+        </or>
+    </condition>
+    <condition property="hy.bits" value="32">
+        <isset property="is.32bit" />
+    </condition>
+    <property name="hy.bits" value="64" />
+
+    <!-- Normalized architecture name -->
+    <condition property="hy.arch" value="x86_64">
+        <isset property="is.x86_64" />
+    </condition>
+    <condition property="hy.arch" value="x86">
+        <and>
+            <isset property="is.x86" />
+            <isset property="is.32bit" />
+        </and>
+    </condition>
+    <condition property="hy.arch" value="ppc32">
+        <isset property="is.ppc32" />
+    </condition>
+    <property name="hy.arch" value="${os.arch}" />
+    
+    <!-- Normalized platform name -->
+    <property name="hy.platform" value="${hy.os}.${hy.arch}"/>
+    <property name="hy.platform.path" value="${hy.os}/${hy.arch}"/>
+    
+    <condition property="exe.suffix" value=".exe">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="exe.suffix" value="" />
+
+    <condition property="shlib.prefix" value="">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="shlib.prefix" value="lib" />
+
+    <condition property="shlib.suffix" value=".dll">
+        <isset property="is.windows"/>
+    </condition>
+    <condition property="shlib.suffix" value=".dylib">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="shlib.suffix" value=".so" />
+
+    <condition property="progdb.suffix" value=".pdb">
+        <isset property="is.windows" />
+    </condition>
+
+    <condition property="object.suffix" value=".obj">
+        <isset property="is.windows" />
+    </condition>
+    <property name="object.suffix" value=".o" />
+    
+    <condition property="linklib.prefix" value="">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="linklib.prefix" value="lib" />
+
+    <condition property="linklib.suffix" value=".lib">
+        <isset property="is.windows"/>
+    </condition>
+    <condition property="linklib.suffix" value=".x">
+        <isset property="is.zos" />
+    </condition>
+    <condition property="linklib.suffix" value=".dylib">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="linklib.suffix" value=".so" />
+    
+    <condition property="shlib.is.linklib">
+        <equals arg1="${shlib.suffix}" arg2="${linklib.suffix}"/>
+    </condition>
+
+    <condition property="lib.prefix" value="">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="lib.prefix" value="lib" />
+
+    <condition property="lib.suffix" value=".lib">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="lib.suffix" value=".a" />
+
+    <property name="manifest.suffix" value=".manifest" />
+
+    <condition property="make.command" value="nmake.exe">
+        <isset property="is.windows"/>
+    </condition>
+    <condition property="make.command" value="gmake">
+        <or>
+            <isset property="is.aix"/>
+            <isset property="is.freebsd"/>
+        </or>
+    </condition>
+    <property name="make.command" value="make" />
+
+</project>
