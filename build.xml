@@ -847,7 +847,7 @@ Usage:
         <property name="jdktools.svn.url"
                   value="${svn.root}/harmony/enhanced/jdktools/branches/java6"/>
 
-        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/trunk/common_resources" />
+        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/branches/java6/common_resources" />
     </target>
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
