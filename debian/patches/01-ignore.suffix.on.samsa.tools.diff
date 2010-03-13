@@ -1,7 +1,7 @@
-Index: working_jdktools/modules/samsa/src/main/native/samsa/samsa.c
+Index: jdktools/modules/samsa/src/main/native/samsa/samsa.c
 ===================================================================
---- working_jdktools/modules/samsa/src/main/native/samsa/samsa.c	(revision 808406)
-+++ working_jdktools/modules/samsa/src/main/native/samsa/samsa.c	(working copy)
+--- jdktools/modules/samsa/src/main/native/samsa/samsa.c	(revision 808406)
++++ jdktools/modules/samsa/src/main/native/samsa/samsa.c	(working copy)
 @@ -149,6 +149,10 @@
          return 1;
      }
