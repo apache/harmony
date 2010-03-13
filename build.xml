@@ -29,6 +29,16 @@
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
+    <!-- property to identify when components are being built by the 
+         federated build -->
+    <property name="is.federated.build" value="true" />
+
+    <property name="vm.dir" value="working_vm" />
+    <property name="vm.dir.loc" location="${vm.dir}" />
+    <condition property="is.svn.vm" value="true">
+        <available file="${vm.dir.loc}/.svn" type="dir" />
+    </condition>
+
     <property name="hy.local.zlib" value="false" />
 
     <description>
@@ -342,28 +352,27 @@ Usage:
         <mkdir dir="${target.dir}/hdk"/>
 
         <!-- copy the classlib/deploy tree as the hdk
-             filtering out the jre, as that comes from
-             working_vm -->
-        <!-- TODO: classlib files should come from classlib.  So we
-             should filter out classlib files when copying out of
-             working_vm and *not* when copying out of
-             working_classlib.  And if necessary add specific excludes
-             so we know exactly why it is not done in the obvious
-             way. -->
+             filtering out specific files overriden by the VM -->
         <copy todir="${target.dir}/hdk">
             <fileset dir="working_classlib/deploy">
-                <exclude name="**/jre/**/*" />
-                <exclude name="**/jdk/include/*" />
+                <excludesfile
+                     name="${vm.dir.loc}/make/classlib.override.file.patterns"
+                     />
+                <include name="**/*" />
             </fileset>
         </copy>
 
-        <!-- now copy the drlvm/build/deploy -->
-        <!-- set overwrite flag to take hythr from VM -->
-        <copy todir="${target.dir}/hdk" overwrite="true">
-            <fileset dir="working_vm/deploy">
+        <!-- now copy the drlvm/build/deploy/jre/bin/default -->
+        <!-- plus specific file that the VM overrides -->
+        <copy todir="${target.dir}/hdk">
+            <fileset dir="${vm.dir.loc}/deploy">
+                <exclude name="**/jre/bin/*" />
+
                 <!-- TODO: where should these .pdb files go? -->
                 <exclude name="**/*.pdb" unless="copy.progdb" />
             </fileset>
+            <fileset dir="${vm.dir.loc}/deploy"
+                includesfile="${vm.dir.loc}/make/classlib.override.file.patterns" />
         </copy>
 
         <!-- now copy the working_jdktools/deploy/jdk -->
@@ -379,29 +388,6 @@ Usage:
         <chmod file="${target.dir}/hdk/jdk/jre/bin/policytool*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/unpack200*" perm="ugo+x" />
         <chmod file="${target.dir}/hdk/jdk/jre/bin/pack200*" perm="ugo+x" />
-    </target>
-
-    <target name="assemble-jdk">
-
-        <!-- create the top-level jdk directory -->
-        <mkdir dir="${target.dir}/jdk"/>
-
-        <!-- now copy the drlvm/build/deploy/jre
-             contents into the jre in the JDK -->
-        <copy todir="${target.dir}/jdk/jre">
-            <fileset dir="working_vm/build/deploy/jdk/jre">
-                <exclude name="**/*.pdb" unless="copy.progdb" />
-            </fileset>
-        </copy>
-
-        <!-- now copy the drlvm/build/deploy/jre
-             contents into the jre in the JDK -->
-        <copy todir="${target.dir}/jdk/">
-            <fileset dir="working_jdktools/deploy/jdk">
-                <exclude name="**/*.pdb" unless="copy.progdb" />
-            </fileset>
-        </copy>
-
     </target>
 
     <!-- ============================================================== -->
@@ -449,6 +435,7 @@ Usage:
         <propertyref name="hy.local.zlib" />
         <propertyref name="use.libstdc++5" />
         <propertyref name="harmony.java.version" />
+        <propertyref name="is.federated.build" />
     </propertyset>
     
     <target name="build-classlib" depends="auto-fetch-classlib-libs">
@@ -508,7 +495,8 @@ Usage:
     <!-- ensures that dependencies are up to date and then builds a vm  -->
     <!-- ============================================================== -->
     <target name="build-vm" depends="auto-fetch-vm-libs">
-        <ant antfile="working_vm/build.xml" target="build" inheritAll="false" >
+        <ant antfile="${vm.dir.loc}/build.xml"
+             target="build" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -525,7 +513,8 @@ Usage:
     </target>
 
     <target name="fetch-vm-libs">
-        <ant antfile="working_vm/build.xml" target="fetch-depends" inheritall="false" >
+        <ant antfile="${vm.dir.loc}/build.xml"
+             target="fetch-depends" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -533,7 +522,8 @@ Usage:
     </target>
 
     <target name="clean-vm">
-        <ant antfile="working_vm/build.xml" target="clean" inheritall="false" >
+        <ant antfile="${vm.dir.loc}/build.xml"
+             target="clean" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -607,16 +597,20 @@ Usage:
     <!-- ============================================================== -->
     <target name="reset"
         description="removes vm and classlib dirs and resets - BE SURE YOU WANT TO DO THIS"
-        depends="clean">
+        depends="clean,reset-vm">
 
-        <!-- delete the working directories and then do an svn update to reset them -->
+        <!-- delete the working directories -->
         <delete dir="working_classlib"/>
-        <delete dir="working_vm"/>
 
+        <!-- do an svn update to reset them -->
         <exec executable="svn" dir="." failonerror="true">
             <arg line="update" />
         </exec>
 
+    </target>
+
+    <target name="reset-vm" if="is.svn.vm">
+        <delete dir="${vm.dir.loc}" />
     </target>
 
     <target name="clean"
@@ -629,10 +623,10 @@ Usage:
     </target>
 
     <!-- ============================================================== -->
-    <!-- switches the working_vm directory to vm module (DRLVM for now) -->
+    <!-- switches the vm.dir directory to vm module (DRLVM for now) -->
     <!-- ============================================================== -->
     <target name="switch-svn-vm" depends="init" if="is.svn">
-        <exec executable="svn" dir="working_vm" failonerror="true">
+        <exec executable="svn" dir="${vm.dir.loc}" failonerror="true">
             <arg line="-r${svn.revision}"/>
             <arg line="switch" />
             <arg line="${vm.svn.url}" />
@@ -828,6 +822,7 @@ Usage:
         <condition property="is.svn">
             <isset property="federated.entry.revision"/>
         </condition>
+
         <condition property="svn.revision" value="${federated.entry.revision}" else="unknown">
             <isset property="is.svn"/>
         </condition>
