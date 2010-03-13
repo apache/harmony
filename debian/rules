@@ -69,13 +69,13 @@ clean:
 	# Add here commands to clean up after the build process.
 	ant $(ANT_FLAGS) clean
 
-	dh_clean  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
+	dh_clean  --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 
 install: install-indep install-arch
 install-indep:
 	dh_testdir
 	dh_testroot
-	dh_clean -k -i  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
+	dh_clean -k -i  --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 	dh_installdirs -i
 
 	# Add here commands to install the indep part of the package into
@@ -87,7 +87,7 @@ install-indep:
 install-arch:
 	dh_testdir
 	dh_testroot
-	dh_clean -k -s  --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./working_classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./working_classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
+	dh_clean -k -s  --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/Makefile.orig --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/fdlibm.h.orig --exclude ./classlib/modules/luni/src/main/native/fdlibm_dist/s_lib_version.c.orig --exclude ./classlib/modules/archive/src/main/native/zlib_dist/Makefile.orig
 	dh_installdirs -s
 
 	mkdir -p $(VMDIR)/usr/lib/harmony-5.0/jdk/jre/bin
