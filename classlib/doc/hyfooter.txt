@@ -1,0 +1,9 @@
+<hr size="1">
+<address style="text-align: center;">
+  <small>
+    <p>Genereated on $datetime by Doxygen.</p>
+    <p>(c) Copyright 2005, 2008 The Apache Software Foundation or its licensors, as applicable. </p>
+  </small>
+</address>
+</body>
+</html>

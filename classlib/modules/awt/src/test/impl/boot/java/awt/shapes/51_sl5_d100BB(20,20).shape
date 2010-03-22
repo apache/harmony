@@ -1,0 +1,272 @@
+move 175.0 175.0
+line 195.0 175.0
+line 195.0 75.0
+line 175.0 75.0
+line 175.0 175.0
+close
+move 215.0 175.0
+line 235.0 175.0
+line 235.0 75.0
+line 215.0 75.0
+line 215.0 175.0
+close
+move 255.0 175.0
+line 275.0 175.0
+line 275.0 75.0
+line 255.0 75.0
+line 255.0 175.0
+close
+move 295.0 175.0
+line 315.0 175.0
+line 315.0 75.0
+line 295.0 75.0
+line 295.0 175.0
+close
+move 335.0 175.0
+line 355.0 175.0
+line 355.0 75.0
+line 335.0 75.0
+line 335.0 175.0
+close
+move 375.0 175.0
+line 395.0 175.0
+line 395.0 75.0
+line 375.0 75.0
+line 375.0 175.0
+close
+move 415.0 175.0
+line 435.0 175.0
+line 435.0 75.0
+line 415.0 75.0
+line 415.0 175.0
+close
+move 455.0 175.0
+line 475.0 175.0
+line 475.0 75.0
+line 455.0 75.0
+line 455.0 175.0
+close
+move 495.0 175.0
+line 515.0 175.0
+line 515.0 75.0
+line 495.0 75.0
+line 495.0 175.0
+close
+move 535.0 175.0
+line 555.0 175.0
+line 555.0 75.0
+line 535.0 75.0
+line 535.0 175.0
+close
+move 575.0 175.0
+line 595.0 175.0
+line 595.0 75.0
+line 575.0 75.0
+line 575.0 175.0
+close
+move 615.0 175.0
+line 635.0 175.0
+line 635.0 75.0
+line 615.0 75.0
+line 615.0 175.0
+close
+move 655.0 175.0
+line 675.0 175.0
+line 675.0 75.0
+line 655.0 75.0
+line 655.0 175.0
+close
+move 695.0 175.0
+line 715.0 175.0
+line 715.0 75.0
+line 695.0 75.0
+line 695.0 175.0
+close
+move 715.0 75.0
+line 695.0 75.0
+line 695.0 175.0
+line 715.0 175.0
+line 715.0 75.0
+close
+move 675.0 75.0
+line 655.0 75.0
+line 655.0 175.0
+line 675.0 175.0
+line 675.0 75.0
+close
+move 635.0 75.0
+line 615.0 75.0
+line 615.0 175.0
+line 635.0 175.0
+line 635.0 75.0
+close
+move 595.0 75.0
+line 575.0 75.0
+line 575.0 175.0
+line 595.0 175.0
+line 595.0 75.0
+close
+move 555.0 75.0
+line 535.0 75.0
+line 535.0 175.0
+line 555.0 175.0
+line 555.0 75.0
+close
+move 515.0 75.0
+line 495.0 75.0
+line 495.0 175.0
+line 515.0 175.0
+line 515.0 75.0
+close
+move 475.0 75.0
+line 455.0 75.0
+line 455.0 175.0
+line 475.0 175.0
+line 475.0 75.0
+close
+move 435.0 75.0
+line 415.0 75.0
+line 415.0 175.0
+line 435.0 175.0
+line 435.0 75.0
+close
+move 395.0 75.0
+line 375.0 75.0
+line 375.0 175.0
+line 395.0 175.0
+line 395.0 75.0
+close
+move 355.0 75.0
+line 335.0 75.0
+line 335.0 175.0
+line 355.0 175.0
+line 355.0 75.0
+close
+move 315.0 75.0
+line 295.0 75.0
+line 295.0 175.0
+line 315.0 175.0
+line 315.0 75.0
+close
+move 275.0 175.0
+line 295.0 175.0
+line 295.0 75.0
+line 275.0 75.0
+line 275.0 175.0
+close
+move 315.0 175.0
+line 335.0 175.0
+line 335.0 75.0
+line 315.0 75.0
+line 315.0 175.0
+close
+move 355.0 175.0
+line 375.0 175.0
+line 375.0 75.0
+line 355.0 75.0
+line 355.0 175.0
+close
+move 395.0 175.0
+line 415.0 175.0
+line 415.0 75.0
+line 395.0 75.0
+line 395.0 175.0
+close
+move 435.0 175.0
+line 455.0 175.0
+line 455.0 75.0
+line 435.0 75.0
+line 435.0 175.0
+close
+move 475.0 175.0
+line 495.0 175.0
+line 495.0 75.0
+line 475.0 75.0
+line 475.0 175.0
+close
+move 515.0 175.0
+line 535.0 175.0
+line 535.0 75.0
+line 515.0 75.0
+line 515.0 175.0
+close
+move 555.0 175.0
+line 575.0 175.0
+line 575.0 75.0
+line 555.0 75.0
+line 555.0 175.0
+close
+move 595.0 175.0
+line 615.0 175.0
+line 615.0 75.0
+line 595.0 75.0
+line 595.0 175.0
+close
+move 615.0 75.0
+line 595.0 75.0
+line 595.0 175.0
+line 615.0 175.0
+line 615.0 75.0
+close
+move 575.0 75.0
+line 555.0 75.0
+line 555.0 175.0
+line 575.0 175.0
+line 575.0 75.0
+close
+move 535.0 75.0
+line 515.0 75.0
+line 515.0 175.0
+line 535.0 175.0
+line 535.0 75.0
+close
+move 495.0 75.0
+line 475.0 75.0
+line 475.0 175.0
+line 495.0 175.0
+line 495.0 75.0
+close
+move 455.0 75.0
+line 435.0 75.0
+line 435.0 175.0
+line 455.0 175.0
+line 455.0 75.0
+close
+move 415.0 75.0
+line 395.0 75.0
+line 395.0 175.0
+line 415.0 175.0
+line 415.0 75.0
+close
+move 375.0 75.0
+line 355.0 75.0
+line 355.0 175.0
+line 375.0 175.0
+line 375.0 75.0
+close
+move 335.0 75.0
+line 325.0 75.0
+line 315.0 75.0
+line 315.0 175.0
+line 325.0 175.0
+line 335.0 175.0
+line 335.0 75.0
+close
+move 295.0 75.0
+line 275.0 75.0
+line 275.0 175.0
+line 295.0 175.0
+line 295.0 75.0
+close
+move 255.0 75.0
+line 235.0 75.0
+line 235.0 175.0
+line 255.0 175.0
+line 255.0 75.0
+close
+move 215.0 75.0
+line 195.0 75.0
+line 195.0 175.0
+line 215.0 175.0
+line 215.0 75.0
+close

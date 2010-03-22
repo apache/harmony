@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="bin/main" path="src/main/java"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/api/windows"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/api/common"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/api/unix"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/resources"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/impl/windows"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/impl/common"/>
+	<classpathentry kind="src" output="bin/test" path="src/test/impl/unix"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins">
+		<accessrules>
+			<accessrule kind="accessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="HARMONY_CLASSLIB/deploy/jdk/jre/lib/boot/luni-kernel-stubs.jar"/>
+	<classpathentry kind="output" path="bin/main"/>
+</classpath>

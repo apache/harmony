@@ -1,0 +1,333 @@
+<!DOCTYPE html public "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<LINK rel="Stylesheet" type="text/css" media="all" href="../harmony.css">
+<title>Design of the regex processing framework</title>
+</head>
+<body>
+
+  <h1 align=center><a name="Top"></a>Regex Processing Framework</h1>
+  <p class="TOCHeading"><A href="#Revision_History">Revision History</A></p>
+  <p class="TOCHeading"><A href="#Disclaimer">Disclaimer</A></p>
+  <p class="TOCHeading"><A href="#About_this_document">About this Document</A> 
+  </p>
+  <p class="TOC"><A href="#Purpose">Purpose </A> </p>
+  <p class="TOC"><A href="#Intended_Audience">Intended Audience </A> </p>
+  <p class="TOC"><A href="#Documentation_Conventions">Documentation Conventions</A></p>
+  <p class="TOCHeading"><a href="#Introduction">Introduction to Pattern Matching</a></p>
+  <p class="TOCHeading"><a href="#AbstractSetIntro">AbstractSet Interface</a></p>
+  <p class="TOC"><a href="#Characteristics">Characteristics</a></p>
+  <p class="TOC"><a href="#MethodsUsed">Methods Used</a></p>
+  <p class="TOC"><a href="#ClassHierarchy">Class Hierarchy</a></p>
+  <p class="TOC"><a href="#Optimizations">Optimizations</a></p>
+  
+<p class="TOCHeading"><a href="#UsageExamples">Usage Examples</a></p>
+<p class="TOCHeading"><A href="#References">References</A> </p>
+  <H1><A name="Revision_History"></A>Revision History</H1>
+  <TABLE width="100%">
+    <TR> 
+      <TD class="TableHeading" width="25%"> Version </TD>
+      <TD class="TableHeading" width="50%"> Version Information </TD>
+      <TD class="TableHeading"> Date </TD>
+    </TR>
+    <TR> 
+      <TD class="TableCell" width="25%"> Initial version </TD>
+      <TD class="TableCell" width="25%"> Nadya Morozova, Nikolay Kuznetsov: document 
+        created.</TD>
+      <TD class="TableCell"> December 16, 2005</TD>
+    </TR>
+ </TABLE>
+ <H1><A name="Disclaimer"></A>Disclaimer and Legal Information</H1>
+<P>Copyright 2005 The Apache Software Foundation or its licensors, as applicable.</P>
+<P>Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you 
+  may not use this file except in compliance with the License. You may obtain 
+  a copy of the License at <A href="http://www.apache.org/licenses/LICENSE-2.0"> 
+  http://www.apache.org/licenses/LICENSE-2.0</A>. </P>
+<P>Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES 
+  OR CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.</P>
+  <h1><a name="About_this_document"></a>About This Document</h1>
+  <h2><a name="Purpose"></a>Purpose</h2>
+  <p>This document describes the <code>java.util.regex</code> package delivered as part of 
+    the Harmony classlibrary project. This document provides an overview
+    of the overall architecture with focus on the aspects improving performance. 
+  </p>
+  <h2><a name="Intended_Audience"></a>Intended Audience</h2>
+  
+<p>The target audience for the document includes a wide community of engineers 
+  interested in using regular expression package and in further work with the 
+  product to contribute to its development. The document assumes that readers 
+  are familiar with Regular expressions [<a href="#Fri02">1</a>, <a href="#MY60">2</a>, 
+  <a href="#THO68">3</a>], finite automata theory [<a href="#ASU86">4</a>], basic 
+  compiler techniques [<a href="#ASU86">4</a>] and the Java<a
+href="#*">*</a> programming language [<a href="#JavaSite">5</a>]. </p>
+  <h2><a name="Documentation_Conventions"></a>Documentation Conventions</h2>
+  <p>This document uses the <a
+href="../conventions.htm">unified conventions</a> for the Harmony documentation kit.</p>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+  
+<h1><a name="Introduction"></a>Introduction to Pattern Matching </h1>
+  
+<p>To analyze text in search of sequences matching preset patterns, you can choose 
+  from a variety of techniques, such as the wide-spread <i>regular expressions</i> 
+  (RE) [<a href="#Fri02">1</a>], <em>exact string matching</em>, for example, the Boyer-Moore algorithm 
+  (BM) [<a href="#BM77">6</a>], and others. However, the RE engine is rather complex, and significantly 
+  impacts performance, whereas the exact string matching techniques have a limited 
+  application. </p>
+  
+<p>For example, the regular expression <code>.*world</code> is used to find the 
+  last instance of <i>world</i> in a sentence. The BM string searching algorithm is more 
+  appropriate for solving the task than the RE technique, and is more effective 
+  from the performance perspective. To optimize using pattern matching techniques 
+  with different tasks, Harmony provides a unified interface that applies to any part
+  of a regular expression, including the whole expression. </p>
+  
+<p>In terms of the Finite Automata theory, which is the basis of regular expression 
+  processing, a part of regular expression is a <i>node</i>. The Harmony regex framework
+  treats every distinctive part of a regular expression and the whole expression 
+  as a node. Each node implements the unified interface adjusted for a specific 
+  technique. For instance, for the regular expression in the example, the Harmony
+  framework includes a special class SequenceSet, which has a unified interface 
+  called <code>AbstractSet</code>, and implements the Boyer-Moore algorithm in 
+  searching for a word.</p>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+  <h1><a name="AbstractSetIntro"></a>AbstractSet Interface</h1>
+  
+<p>The key feature of the Harmony regex framework the single super interface, <code>AbstractSet</code>,
+  shared by all types of nodes. Individual nodes are independent, so that every 
+  node of the automaton incorporates its own find-match algorithm optimized for 
+  a specific type of nodes. You can use methods implemented in the <code>AbstractSet</code> 
+  interface subclasses or override these methods to use your own more efficient 
+  algorithm.</p>
+
+  <h2><a name="Characteristics"></a>Characteristics</h2>
+  
+<p>The <code>AbstractSet</code> interface has the following key characteristics: 
+</p>
+
+<ul>
+  <li> <b>Unified structure:</b> General contract for all nodes including node 
+    chains. This enables the framework to support new features and optimizations 
+    for a specific construction of RE without impacting other parts of the framework. 
+  <li><b>Simplicity:</b> Every node of an automaton is simple and handles a specific 
+    optimization or functionality. The resulting automaton is straight-forward 
+    and includes no multi-purpose functionality. To enable support of new functionality, 
+    create a new class. 
+    <p class="note">NOTE: </p>
+    <p class="notetext">Because new features and optimizations are implemented 
+      independently, expansion of the framework has no negative impact on the 
+      overall performance. </p>
+  <li><b>Independence</b>:The matching and finding procedures are incorporated 
+    into the interface and require no external logic. The interface allows using 
+    the same find-match methods for all types of nodes, and at the same time enables 
+    optimizing the find-match algorithm for individual node types to improve performance. 
+</ul>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<h2><a name="MethodsUsed"></a>Methods Used </h2>
+  
+<p>The <code>AbstractSet</code> interface defines the matching and finding methods, 
+  and the service methods supporting them, as follows. </p>
+ <p class="class">Service Methods</p>
+<dl>
+  <dt>accept()</dt>
+  <dd>Checks whether the current node matches the current string symbol(s) to 
+    ensure that the automaton can proceed with the current state. The method returns 
+    the number of accepted symbols. This method is designed for nodes representing 
+    tokens, which mostly use the default match procedure. To optimize the match 
+    procedure for a specific type of token, you only need to override the <code>accept()</code> 
+    method, see <a href="#Example1">Example 1</a>.</dd> 
+  <dt>first()</dt>
+  <dd>Checks whether the first symbol of the current node intersects with previous 
+    one. If not, then the previous node is quantified possessively without <i>backtrack</i> 
+    (the option of restarting the search from the previous position). </dd>
+  <dt>next()</dt>
+  <dd>Returns the next node of the automaton.  </dd>
+</dl>
+<p class="class">Matching and Finding Methods</p>
+<dl>
+  <dt>matches()</dt>
+  <dd>Runs the match procedure starting from the current state. This is the only 
+    method you need to override in order to introduce new functionality. By default, 
+    the <code>matches()</code> method does the following when working with terms (see <a href="#ClassHierarchy">Class 
+    Hierarchy</a>): 
+    <ol>
+      <li> Calls the <code>accept()</code> method and proceeds if the method returns 
+        a positive value. </li>
+      <li> Calls the match of the next node with the shift obtained from the <code>accept()</code> 
+        method.</li>
+      <li> Returns <code>TRUE</code> in case of a successful match. </li>
+    </ol>
+  </dd>
+  <dt>find()</dt>
+  <dd>Checks whether the pattern can match any part of the string in the following 
+    way: 
+    <ol>
+      <li>Finds the next position in the input string, for which the <code>accept()</code> 
+        method returns a positive value. If no matches are found, the method terminates 
+        and returns a negative value.</li>
+      <li>From this position, runs the <code>matches()</code> method.</li>
+    </ol>
+  </dd>
+  <dt>findBack()</dt>
+  <dd>Does the same as the <code>find()</code> method but<code></code> starts 
+    from the end of the string or from the nearest new-line symbol. This method 
+    optimizes the find procedure when the current node of the pattern fits the 
+    rest of the string. In such cases, it is necessary to find the last occurrence 
+    of the pattern represented by the next node, as in the case of the <code>.*world 
+    </code> pattern. </dd>
+</dl>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+  <h2><a name="ClassHierarchy"></a>Class Hierarchy</h2>
+  
+<p><a href="#figure1">Figure 1</a> shows the class hierarchy based on the <code>AbstractSet</code> 
+  interface. As mentioned in its <a href="#AbstractSetIntro">description</a>, 
+  the whole hierarchy is based on this interface. The other classes of the framework 
+  are divided into the following categories: </p>
+  
+<ul>
+  <li><b>Tokens or Leafs</b> (<code>LeafSet</code> in the figure): nodes representing 
+    ordinal symbols, substrings, ranges, character classes, and other basic units 
+    of regular expressions. 
+  <li><b>Quantifiers</b> (<code>QuantifierSet</code> in the figure): set of nodes responsible 
+    for quantification of terms. Terms are simple and usually represent only one 
+    symbol. Therefore, terms are quantified without recursion, and backtracks are 
+    processed on the basis of the underlying pattern length. 
+  <li><b>Groups </b>(<code>JointSet</code> in the figure): sets derived from parenthetic constructions. 
+    These nodes represent alternations of other sets. 
+  <li><b>Group Quantifiers </b>(<code>GroupQuantifier</code> in the figure): special 
+    quantifiers over Groups. Because the length of a groups can vary, backtracks 
+    require recursion. 
+</ul>
+<p align=center><img border=0 alt="Hierarchy of classes in regexp framework" src="images/picture1.gif"></p>
+  <p class="special"><a name="figure1"></a>Figure 1. Class Hierarchy</p>
+  
+<p>Figure 1 displays only the basics of the regex framework. This framework also 
+  includes other nodes responsible for different optimizations. For more details, 
+  see the comments inlined in code. </p>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+  <h2><a name="Optimizations"></a>Optimizations</h2>
+  
+<p>In the current implementation, most optimizations are based on the node representation 
+  to improve efficiency of the framework. It is noteworthy that an optimal finite 
+  automaton is built during compile time, so that the constructed automaton does 
+  not spend additional time on decision-making overhead during match time. The 
+  regex framework optimizations improve different aspects, such as: </p>
+<ul>
+  <li> <b>Character or String find methods: </b>The methods <code>find()</code> 
+    and <code>findBack()</code> of certain nodes use exact pattern matching algorithms, 
+    specifically, the Boyer-Moore fast string search algorithm. 
+  <li> <b>Quantified dot term:</b> This term (<code>.*</code>) covers the rest 
+    of the string and can therefore run <code>findBack()</code> from the end of 
+    the string. If the <code>findBack()</code> method of the following node implements 
+    a special algorithm, the pattern matching speed for this chain increases, 
+    otherwise the operation runs at the same speed. 
+  <li> <b>Quantified non-intersecting states:</b> If the quantified node does 
+    not intersect with the first character of the next one, the framework treats 
+    the quantifier as the possessive quantifier because no backtracks can occur. 
+    Possessive quantification is based on loops instead of recursion and works 
+    faster. 
+</ul>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+
+<h1><a name="UsageExamples"></a>Usage Examples</h1>
+<P>This part on the document illustrates usage of the Harmony regex framework. </P>
+<h3><a name="Example1"></a>Example 1</h3>
+<p>This example illustrates using the <code>CharSet</code> class, which includes all nodes accepting characters to create a new type of tokens. For that, the class uses the <code>LeafSet</code> class, which is the basic class for tokens. This example shows that the only method you need to override in order to present a new type of tokens is the  <code>accept()</code> method. </p>
+<pre>class CharSet extends LeafSet {
+    ...
+    public int accept(int strIndex, CharSequence testString) {
+        // checks that the current symbol of the input string is the one this 
+        // instance represents and returns 1 (the number of
+        // accepted symbols) or -1 if accept fails:
+        return (this.ch == testString.charAt(strIndex)) ? 1 : -1;
+    }
+    ...
+}
+</pre>
+<h3>Example 2</h3>
+<p>The following example demonstrates independent implementation of the <code>find()</code> method for <code>SequenceSet</code>.</p>
+<p class="note">Note: </p>
+<p class="notetext">This changes the find procedure for nodes representing character 
+  sequences and at the same time does not affect the find-match algorithms of 
+  other types of nodes. </p>
+<pre>class SequenceSet extends LeafSet {
+    ...
+    protected int indexOf(CharSequence str, int from) {
+        // Boyer-Moore algorithm 
+        ...
+    }
+    
+    public int find(int strIndex, CharSequence testString,
+            MatchResultImpl matchResult) {
+        ...
+        while (strIndex <= strLength) {
+            // call the fast search method instead of default implementation
+            strIndex = indexOf(testStr, strIndex);
+            if (strIndex < 0) {
+                return -1;
+            }
+            if (next.matches(strIndex + charCount, testString, matchResult) >= 0) {
+                return strIndex;
+            }
+            strIndex++;
+        }
+        return -1;
+    }
+    ...
+}
+</pre>
+
+
+<h3>Example 3 </h3>
+<p>This example illustrates how to turn the match procedure of the <code>.*</code> 
+  patterns into the find procedure, which is potentially faster. </p>
+  
+<pre>class DotQuantifierSet extends LeafQuantifierSet {
+    ...     
+    public int matches(int stringIndex, CharSequence testString,
+            MatchResultImpl matchResult) {
+        ...
+        // find line terminator, since .* represented by this node accepts all characters
+        // except line terminators 
+        int startSearch = findLineTerminator(stringIndex, strLength, testString);
+        ...
+        // run findBack method of the next node, because the previous 
+        // part of the string is accepted by .* and no matter where
+        // the next part of pattern is found, the procedure works OK.  
+        return next.findBack(stringIndex, startSearch, testString, matchResult);
+    }
+}
+</pre>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+
+<h1><a name="References"></a>References</h1>
+ <p>[<a name="Fri02"></a>1] Jeffrey E. F. Friedl., <em>Mastering regular expressions</em>, 
+  2nd Edition., July 2002, O'Reilly, ISBN 0-596-00289-0 </p>
+<p>[<a name="MY60"></a>2] McNaughton, R. and Yamada, H. <em>Regular Expressions 
+  and State Graphs for Automata</em>, IRA Trans. on Electronic Computers, Vol. 
+  EC-9, No. 1, Mar. 1960, pp 39-47. </p>
+  
+<p>[<a name="THO68"></a>3] Thompson, K., <em>Regular Expression search Algorithm</em>, 
+  Communication ACM 11:6 (1968), pp. 419-422. </p>
+  
+<p>[<a name="ASU86"></a>4] Alfred V. Aho, Ravi Sethi, Jeffrey 
+  D. Ullman, <em>Compilers, Principles Techniques and Tools</em>, Addison-Wesley 
+  Publishing Company, Inc., 1985, ISBN 0-201-10088-6 </p>
+  
+<p>[<a name="JavaSite"></a>5] Java Technology site, <a href="http://java.sun.com" target="_blank">http://java.sun.com</a> 
+</p>
+  
+<p>[<a name="BM77"></a>6] R. Boyer and S. Moore. A fast string searching algorithm. C. ACM, 20:762-772, 1977. </p>
+  
+<p>[<a name="KMP77"></a>7] D.E. Knuth, .I. Morris, and V. Pratt. Fast pattern 
+  matching in strings. SIAM J on Computing, 6:323-350, 1977. </p>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<P class="backtotop">&nbsp;</P>
+
+
+<P><A name="*">*</A> Other brands and names are the property of their respective 
+  owners.</P>
+</body>
+</html>

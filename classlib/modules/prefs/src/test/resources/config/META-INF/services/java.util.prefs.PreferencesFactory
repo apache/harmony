@@ -1,0 +1,6 @@
+              
+# It's comments
+
+org.apache.harmony.prefs.tests.java.util.prefs.MockPreferencesFactory # mock provider
+
+only first class name is loaded

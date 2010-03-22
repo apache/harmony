@@ -1,0 +1,7 @@
+org/apache/harmony/lang/management/tests/java/lang/management/ThreadMXBeanTest.java
+
+# The following tests crash on heavy loaded machines. 
+# Excluded till the further investigation.
+org/apache/harmony/lang/management/ThreadMXBeanImplTest.java
+org/apache/harmony/lang/management/tests/java/lang/management/ManagementFactoryTest.java
+

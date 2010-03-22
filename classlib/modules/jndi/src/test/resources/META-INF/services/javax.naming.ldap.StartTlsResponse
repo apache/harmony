@@ -1,0 +1,26 @@
+# some comment
+
+Do.Not.Exist
+
+## Another comment
+
+# some empty lines
+
+# not a StartTlsResponse class
+org.apache.harmony.jndi.tests.javax.naming.ldap.StartTlsRequestTest
+
+# throws Exception while initializing
+org.apache.harmony.jndi.tests.javax.naming.ldap.StartTlsRequestTest$MockStartTlsResponse1
+
+# has protected constructor
+org.apache.harmony.jndi.tests.javax.naming.ldap.StartTlsRequestTest$MockStartTlsResponse2
+
+# package-access class
+org.apache.harmony.jndi.tests.javax.naming.ldap.StartTlsRequestTest$MockStartTlsResponse3
+
+
+## and now valid class name edged by spaces and tabs ##
+	  	org.apache.harmony.jndi.tests.javax.naming.spi.mock.ldap.MockStartTlsResponse	  	
+
+
+# that's it

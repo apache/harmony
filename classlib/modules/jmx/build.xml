@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<project name="JMX Build" default="build" basedir=".">
+    <description>Build for JMX component</description>
+
+    <property name="hy.module" value="jmx" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
+
+    <target name="build" depends="check-depends" />
+
+    <target name="clean" depends="clean-java" />
+
+    <target name="check-depends" depends="-check,-extract,-copy-jars" />
+
+    <target name="-check">
+        <check-one-file src="${mx4j.url}" dest="${mx4j.zip}" />
+    </target>
+
+    <target name="fetch-depends">
+        <mkdir dir="${mx4j.dir}" />
+        <download-one-file src="${mx4j.url}" dest="${mx4j.zip}"
+                           md5="${mx4j.md5}" />
+    </target>
+
+    <target name="-extract" depends="-extract-props,-extract-mx4j" />
+
+    <target name="-extract-props">
+        <uptodate property="mx4j.uptodate"
+                  srcfile="${mx4j.zip}"
+                  targetfile="${mx4j.jar}" />
+    </target>
+
+    <target name="-extract-mx4j" unless="mx4j.uptodate">
+
+        <!-- This doesn't work for me since my ant doesn't support
+             mapper in unzip.
+
+        <unzip src="${mx4j.zip}" dest="${mx4j.dir}">
+            <patternset>
+                <include name="**/mx4j.jar"/>
+                <include name="**/mx4j-remote.jar"/>
+            </patternset>
+            <mapper type="flatten" />
+        </unzip>
+          -->
+
+        <unzip src="${mx4j.zip}" dest="${mx4j.dir}.tmp" />
+        <copy todir="${mx4j.dir}" flatten="yes">
+            <fileset dir="${mx4j.dir}.tmp/mx4j-${mx4j.version}/lib">
+                <include name="mx4j.jar"/>
+                <include name="mx4j-remote.jar"/>
+            </fileset>
+        </copy>
+        <delete dir="${mx4j.dir}.tmp" />
+	<touch file="${mx4j.jar}" />
+    </target>
+
+    <target name="-copy-jars">
+        <copy todir="${hy.jdk}/jre/lib/boot">
+            <fileset dir="${depends.jars}">
+                <patternset includes="mx4j_${mx4j.version}/*.jar" />
+            </fileset>
+        </copy>
+        <copy todir="${hy.jdk}/jre/lib/boot/mx4j_${mx4j.version}/META-INF">
+            <fileset dir="META-INF" />
+        </copy>
+    </target>
+
+    <target name="test" />
+
+    <target name="clean-java">
+        <delete dir="${hy.jdk}/jre/lib/boot/mx4j_${mx4j.version}" />
+    </target>
+
+</project>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+     
+      http://www.apache.org/licenses/LICENSE-2.0
+     
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied.  See the License for the specific language governing
+  permissions and limitations under the License.
+
+ -->
+
+<project name="Top-Level dependency definitions" default="check" basedir="..">
+    <description>
+    Confirm that dependencies are present and fetch missing dependencies
+    where possible.
+    </description>
+
+    <property name="hy.hdk" location="${basedir}/deploy" />
+
+    <import file="${basedir}/make/properties.xml" />
+    <import file="${basedir}/make/depends-common.xml" />
+
+    <target name="check" description="Check whether dependencies are available"
+            depends="-check,-check-win,-extract" />
+
+    <target name="-check">
+        <check-one-file src="${xalan.url}" dest="${xalan.orig.jar}" />
+        <check-one-file src="${xerces.url}" dest="${xerces.zip}" />
+        <check-one-file src="${junit.url}" dest="${junit.jar}" />
+        <check-one-file src="${hamcrest-library.url}" dest="${hamcrest-library.jar}" />
+        <check-one-file src="${findbugs.url}" dest="${findbugs.zip}" />
+        <check-one-file src="${bcprov.url}" dest="${bcprov.jar}" />
+        <check-one-file src="${jetty.url}" dest="${jetty.jar}" />
+        <check-one-file src="${jetty-util.url}" dest="${jetty-util.jar}" />
+        <check-one-file src="${servlet-api.url}" dest="${servlet-api.jar}" />
+        <check-one-file src="${icu4j.url}" dest="${icu4j.jar}" />
+        <check-one-file src="${icu4j-charsets.url}" dest="${icu4j-charsets.jar}" />    
+    </target>
+
+    <target name="-check-win" if="is.windows">
+        <property environment="hyenv" />
+
+        <check-one-file src="${msvcr.url}" dest="${msvcr.dll}" />
+        <check-one-file src="${msvcp.url}" dest="${msvcp.dll}" />
+    </target>
+
+    <target name="-extract"
+         depends="-extract-props,-extract-xerces,-fix-xalan-manifest,-extract-findbugs" />
+
+    <target name="-extract-props">
+        <uptodate property="xerces.uptodate"
+                  srcfile="${xerces.zip}"
+                  targetfile="${xerces.dir}/xercesImpl.jar" />
+        <uptodate property="xalan.uptodate"
+                  srcfile="${xalan.orig.jar}"
+                  targetfile="${xalan.jar}" />
+        <uptodate property="findbugs.uptodate"
+                  srcfile="${findbugs.zip}"
+                  targetfile="${findbugs.dir}/uptodate" />
+    </target>
+
+    <target name="-extract-xerces" unless="xerces.uptodate">
+        <unzip src="${xerces.zip}" dest="${xerces.dir}.tmp" />
+        <copy todir="${xerces.dir}" flatten="yes">
+            <fileset dir="${xerces.dir}.tmp/xerces-2_9_1">
+                <include name="resolver.jar" />
+		<include name="xercesImpl.jar" />
+		<include name="xml-apis.jar" />
+            </fileset>
+        </copy>
+        <delete dir="${xerces.dir}.tmp" />
+	<touch file="${xerces.dir}/xercesImpl.jar" />
+    </target>
+
+    <target name="-fix-xalan-manifest" unless="xalan.uptodate">
+        <unjar src="${xalan.orig.jar}" dest="${xalan.dir}.tmp" />
+        <delete file="${xalan.jar}" />
+        <replace file="${xalan.dir}.tmp/META-INF/MANIFEST.MF"
+                 token="Class-Path: xercesImpl.jar xml-apis.jar serializer.jar"
+                 value="" />
+        <jar destfile="${xalan.jar}" basedir="${xalan.dir}.tmp"
+             manifest="${xalan.dir}.tmp/META-INF/MANIFEST.MF" />
+        <delete dir="${xalan.dir}.tmp" />
+    </target>
+
+    <target name="-extract-findbugs" unless="findbugs.uptodate">
+        <!-- Note that FindBugs contains a top level dir name -->
+        <unzip src="${findbugs.zip}" dest="${findbugs.dir}/.." />
+        <touch file="${findbugs.dir}/uptodate" />
+    </target>
+
+    <target name="download" description="Download required jars"
+            depends="-download,-download-win" />
+
+    <target name="-download">
+
+        <mkdir dir="${xalan.dir}" />
+        <download-one-file src="${xalan.url}" dest="${xalan.orig.jar}"
+                           md5="${xalan.md5}" />
+
+        <mkdir dir="${xerces.dir}" />
+        <download-one-file src="${xerces.url}" dest="${xerces.zip}"
+                           md5="${xerces.md5}" />
+
+        <mkdir dir="${junit.dir}" />
+        <download-one-file src="${junit.url}" dest="${junit.jar}"
+                           md5="${junit.md5}" />
+
+        <mkdir dir="${hamcrest-library.dir}" />
+        <download-one-file src="${hamcrest-library.url}"
+                           dest="${hamcrest-library.jar}"
+                           md5="${hamcrest-library.md5}" />
+
+        <mkdir dir="${findbugs.dir}" />
+        <download-one-file src="${findbugs.url}"
+                           dest="${findbugs.zip}"
+                           md5="${findbugs.md5}" />
+
+        <mkdir dir="${bcprov.dir}" />
+        <download-one-file src="${bcprov.url}" dest="${bcprov.jar}"
+                           md5="${bcprov.md5}" />
+
+        <mkdir dir="${jetty.dir}" />
+        <download-one-file src="${jetty.url}" dest="${jetty.jar}"
+                           md5="${jetty.md5}" />
+ 
+        <download-one-file src="${jetty-util.url}" dest="${jetty-util.jar}"
+                           md5="${jetty-util.md5}" />
+
+        <download-one-file src="${servlet-api.url}" dest="${servlet-api.jar}"
+                           md5="${servlet-api.md5}" />
+
+        <mkdir dir="${icu4j.dir}" />
+        <download-one-file src="${icu4j.url}"
+                           dest="${icu4j.jar}"
+                           md5="${icu4j.md5}" />
+        <download-one-file src="${icu4j-charsets.url}"
+                           dest="${icu4j-charsets.jar}"
+                           md5="${icu4j-charsets.md5}" />
+    </target>
+
+    <target name="-download-win" if="is.windows">
+
+        <property environment="hyenv" />
+
+        <mkdir dir="${msvcr.dir}" />
+        <download-one-file src="${msvcr.url}"
+                           dest="${msvcr.dll}"
+                           md5="${msvcr.md5}"
+                           md5-deprecated="${msvcr.md5.deprecated}" />
+
+        <mkdir dir="${msvcp.dir}" />
+        <download-one-file src="${msvcp.url}"
+                           dest="${msvcp.dll}"
+                           md5="${msvcp.md5}"
+                           md5-deprecated="${msvcp.md5.deprecated}" />
+
+    </target>
+
+</project>

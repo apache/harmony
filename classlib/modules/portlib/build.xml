@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="PORTLIB Build" default="build" basedir=".">
+    <description>Build for PORTLIB component</description>
+
+    <property name="hy.module" value="portlib" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+
+    <property file="../../make/depends.properties" />
+
+    <available property="hythr.available"
+        file="${hy.jdk}/jre/bin/default/${shlib.prefix}hythr${shlib.suffix}" />
+    <condition property="test.portlib">
+        <and>
+            <isset property="is.32bit" />
+            <isset property="hythr.available" />
+        </and>
+    </condition>
+
+    <target name="build" />
+
+    <target name="clean" depends="clean-native,clean-test" />
+
+    <target name="test" depends="-test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <target name="-test-module"
+            depends="-make-report-dir,-compile-native-tests,-run-native-tests" />
+
+    <target name="copy-native-includes"
+            depends="-copy-thread-include,-copy-thread-stub-include, -copy-ascii-ebcdic-include" >
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/include/shared">
+                <include name="hyport.h" />
+                <include name="hycomp.h" />
+                <include name="hyporterror.h" />
+                <include name="hypool.h" />
+                <include name="exceptions.h" />
+                <include name="iohelp.h" />
+                <include name="libglob.h" />
+                <include name="strhelp.h" />
+                <include name="utf8decode.h" />
+                <include name="utf8encode.h" />
+            </fileset>
+        </copy>
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/include/${hy.os.family}">
+                <include name="hymutex.h" />
+                <include name="hysock.h" />
+                <include name="hyportpg.h" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-copy-thread-include" unless="hy.skip.thr" >
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/include/shared">
+                <include name="hythread.h" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-copy-thread-stub-include" if="hy.skip.thr" >
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/thrstub/shared">
+                <include name="hythread.h" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-copy-ascii-ebcdic-include" if="is.zos" >
+        <copy todir="${hy.hdk}/include" overwrite="yes">
+            <fileset dir="src/main/native/a2e/${hy.os.family}/headers">
+                <include name="atoe.h" />
+                <include name="ctype.h" />
+                <include name="dirent.h" />
+                <include name="dll.h" />
+                <include name="dlfcn.h" />
+                <include name="fcntl.h" />
+                <include name="grp.h" />
+                <include name="langinfo.h" />
+                <include name="locale.h" />
+                <include name="netdb.h" />
+                <include name="pwd.h" />
+                <include name="stdio.h" />
+                <include name="stdlib.h" />
+                <include name="string.h" />
+                <include name="time.h" />
+                <include name="utime.h" />
+                <include name="unistd.h" />
+                <include name="arpa/inet.h" />
+                <include name="sys/ipc.h" />
+                <include name="sys/stat.h" />
+                <include name="sys/time.h" />
+                <include name="sys/utsname.h" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Build the portlib native components -->
+    <target name="build-native"
+        depends="-build-native,-build-native-thread,-build-native-thrstub,-build-native-port" />
+    <target name="-build-native" depends="-build-ascii-ebcdic">
+       <!-- Build common lib -->
+        <make dir="src/main/native/common/${hy.os.family}" />
+
+        <!-- Build pool lib -->
+        <make dir="src/main/native/pool/${hy.os.family}" />
+    </target>
+
+    <target name="-build-ascii-ebcdic" if="is.zos" >
+        <!-- Build a2e lib for zOS platforms -->
+        <make dir="src/main/native/a2e/${hy.os.family}" />
+    </target>
+
+    <target name="-build-native-thread" unless="hy.skip.thr">
+        <!-- Build thread dll -->
+        <make dir="src/main/native/thread/${hy.os.family}" />
+
+        <antcall target="-build-copy-thread" />
+
+        <!-- Copy link exports file on z/OS -->
+        <copy todir="${hy.hdk}/lib" preservelastmodified="true">
+            <fileset dir="src/main/native/thread/${hy.os.family}">
+                <include name="*${linklib.suffix}" if="is.zos" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-build-copy-thread" unless="hy.thr.nodeploy">
+        <copy todir="${hy.jdk}/jre/bin" preservelastmodified="true">
+            <fileset dir="src/main/native/thread">
+                <include name="*${shlib.suffix}*" />
+                <include name="*${progdb.suffix}*" if="is.windows" />
+                <exclude name="*${manifest.suffix}"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-build-native-thrstub" if="hy.skip.thr">
+        <!-- Build thread dll -->
+        <make dir="src/main/native/thrstub/${hy.os.family}" />
+    </target>
+
+    <target name="-build-native-port">
+        <!-- Build port dll -->
+        <make dir="src/main/native/port/${hy.os.family}" />
+    </target>
+
+    <!-- Clean natives -->
+    <target name="clean-native" depends="clean-native-includes, -clean-native-ascii-ebcdic">
+        <make dir="src/main/native/thread/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/thrstub/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/port/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/common/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/pool/${hy.os.family}" target="clean" />
+    </target>
+
+    <target name="-clean-native-ascii-ebcdic" if="is.zos" >
+        <!-- Clean a2e lib for zOS platforms -->
+        <make dir="src/main/native/a2e/${hy.os.family}" target="clean" />
+    </target>
+
+    <target name="clean-native-includes" depends="-clean-ascii-ebcdic-includes">
+        <delete failonerror="false">
+            <fileset dir="${hy.hdk}/include">
+                <include name="hyport.h" />
+                <include name="hythread.h" />
+                <include name="hymutex.h" />
+                <include name="hycomp.h" />
+                <include name="hyporterror.h" />
+                <include name="hysock.h" />
+                <include name="hyportpg.h" />
+                <include name="hypool.h" />
+                <include name="exceptions.h" />
+                <include name="iohelp.h" />
+                <include name="libglob.h" />
+                <include name="strhelp.h" />
+                <include name="utf8decode.h" />
+                <include name="utf8encode.h" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="-clean-ascii-ebcdic-includes" if="is.zos" >
+        <delete failonerror="false">
+            <fileset dir="${hy.hdk}/include">
+                <include name="atoe.h" />
+                <include name="ctype.h" />
+                <include name="dirent.h" />
+                <include name="dll.h" />
+                <include name="dlfcn.h" />
+                <include name="fcntl.h" />
+                <include name="grp.h" />
+                <include name="langinfo.h" />
+                <include name="locale.h" />
+                <include name="netdb.h" />
+                <include name="pwd.h" />
+                <include name="stdio.h" />
+                <include name="stdlib.h" />
+                <include name="string.h" />
+                <include name="time.h" />
+                <include name="utime.h" />
+                <include name="unistd.h" />
+                <include name="arpa/inet.h" />
+                <include name="sys/ipc.h" />
+                <include name="sys/stat.h" />
+                <include name="sys/time.h" />
+                <include name="sys/utsname.h" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="-make-report-dir">
+        <mkdir dir="${tests.output}" />
+    </target>
+
+    <target name="-compile-native-tests" if="test.portlib">
+        <make dir="src/test/native/init/${hy.os.family}" />
+        <make dir="src/test/native/hycpu/${hy.os.family}" />
+        <make dir="src/test/native/hyerror/${hy.os.family}" />
+        <make dir="src/test/native/hyfile/${hy.os.family}" />
+        <make dir="src/test/native/hyfiletext/${hy.os.family}" />
+        <make dir="src/test/native/hygp/${hy.os.family}" />
+        <make dir="src/test/native/hymem/${hy.os.family}" />
+        <make dir="src/test/native/hynls/${hy.os.family}" />
+        <make dir="src/test/native/hyport/${hy.os.family}" />
+        <make dir="src/test/native/hystr/${hy.os.family}" />
+        <make dir="src/test/native/hytime/${hy.os.family}" />
+        <make dir="src/test/native/hysysinfo/${hy.os.family}" />
+        <make dir="src/test/native/hyipcmutex/${hy.os.family}" />
+        <make dir="src/test/native/hymmap/${hy.os.family}" />
+    </target>
+
+    <target name="-run-native-tests" if="test.portlib">
+        <property environment="env"/>
+        <condition property="hy.thr.libpath"
+                   value="${path.separator}${hy.jdk}/jre/bin/default" else="">
+            <equals arg1="${hy.no.thr}" arg2="true" />
+        </condition>
+        <!-- <exec-native test="init" /> -->
+        <exec-native test="hycpu" />
+        <exec-native test="hyerror" />
+        <exec-native test="hyfile" />
+        <exec-native test="hyfiletext" />
+        <exec-native test="hygp" />
+        <exec-native test="hymem" />
+        <exec-native test="hynls" />
+        <exec-native test="hyport" />
+        <exec-native test="hystr" />
+        <exec-native test="hytime" />
+        <exec-native test="hysysinfo" />
+        <exec-native test="hyipcmutex" />
+        <exec-native test="hymmap" />
+	
+        <copy todir="${tests.output}" outputencoding="UTF-8">
+            <fileset dir=".">
+                <include name="TEST-*.xml"/>
+            </fileset>
+        </copy>
+
+        <delete>
+            <fileset dir="." includes="TEST-*.xml" />
+        </delete>
+
+        <antcall target="touch-errors-file" />
+    </target>
+
+    <target name="clean-test" >
+        <make dir="src/test/native/init/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hycpu/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hyerror/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hyfile/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hyfiletext/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hygp/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hymem/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hynls/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hyport/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hystr/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hytime/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hysysinfo/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hyipcmutex/${hy.os.family}" 
+              target="clean" />
+        <make dir="src/test/native/hymmap/${hy.os.family}" 
+              target="clean" />
+    </target>
+
+    <target name="touch-errors-file" if="test.errors">
+        <echo file="${tests.output}/test.errors"
+            append="true">portlib${line.separator}</echo>
+    </target>
+
+    <macrodef name="exec-native">
+        <attribute name="test" />
+        <sequential>
+            <property name="@{test}.name"
+                      value="native.portlib.@{test}" />
+            
+            <!--
+              The following three conditions are a way of working around Ant's
+              environment variable handling on Windows. Windows environment variables
+              are NOT case-sensitive, but Ant's 'env.XXX' variables are case-sensitive.
+              -->
+            <condition property="exec.env.path.name" value="path">
+                <isset property="env.path" />
+            </condition>
+            <condition property="exec.env.path.value" value="${env.path}">
+                <isset property="env.path" />
+            </condition>
+            
+            <condition property="exec.env.path.name" value="Path">
+                <isset property="env.Path" />
+            </condition>
+            <condition property="exec.env.path.value" value="${env.Path}">
+                <isset property="env.Path" />
+            </condition>
+            
+            <condition property="exec.env.path.name" value="PATH">
+                <isset property="env.PATH" />
+            </condition>
+            <condition property="exec.env.path.value" value="${env.PATH}">
+                <isset property="env.PATH" />
+            </condition>
+            
+            <exec executable="${basedir}/src/test/native/@{test}/@{test}${exe.suffix}"
+                  failonerror="false"
+                  outputproperty="@{test}.output"
+                  resultproperty="@{test}.resultcode" >
+                <env key="${exec.env.path.name}"
+                     path="${exec.env.path.value}:${hy.jdk}/jre/bin${hy.thr.libpath}" />
+                <env key="LD_LIBRARY_PATH"
+                     path="${hy.jdk}/jre/bin${hy.thr.libpath}" />
+            </exec>
+            <condition property="@{test}.result" value="passed" else="FAILED">
+                <equals arg1="${@{test}.resultcode}" arg2="0" />
+            </condition>
+            <condition property="@{test}.errorcount" value="0" else="1">
+                <equals arg1="${@{test}.resultcode}" arg2="0" />
+            </condition>
+            <condition property="test.errors" value="1">
+                <not>
+                    <equals arg1="${@{test}.resultcode}" arg2="0" />
+                </not>
+            </condition>
+            <echo>@{test}: ${@{test}.result}${line.separator}</echo>
+<!--            <echo file="${tests.output}/TEST-${@{test}.name}.xml"
+                 >&lt;?xml version='1.0' encoding='UTF-8' ?&gt;
+&lt;testsuite tests="1" errors='${@{test}.errorcount}' failures='0'
+    name='${@{test}.name}' time='0'&gt;
+  &lt;testcase classname='${@{test}.name}' name='${@{test}.name}'
+       time='0.0' /&gt;
+  &lt;system-out&gt;&lt;![CDATA[${@{test}.output}]]&gt;&lt;/system-out&gt;
+&lt;/testsuite&gt;${line.separator}</echo>   -->
+        </sequential>
+    </macrodef>
+
+</project>

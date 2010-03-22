@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<!-- ====================================================================== 
+     build-java-source    
+     Compile the Java source and package in component archives.
+     ====================================================================== -->
+<project name="build-java-source" default="default" basedir="..">
+    <description>
+        Compile the Java source and package in component archives.
+    </description>
+
+    <property name="hy.hdk" location="deploy" />
+
+    <!-- import common properties -->
+    <import file="${basedir}/make/properties.xml" />
+
+    <property name="build.output" location="build/classes" />
+    <property name="depends.jars" location="depends/jars" />
+    <property name="depends.manifests" location="depends/manifests" />
+    <property name="depends.files" location="depends/files" />
+    <property file="make/depends.properties" />
+
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" 
+        description="Compile the Java source and package in component archives." 
+        depends="clean, build" />
+
+    <!-- ================================= 
+          target: build
+         ================================= -->
+    <target name="build" depends="-layout, -compile"
+            description="Compile Java source and construct deploy directory." />
+
+    <!-- ================================= 
+          target: clean            
+         ================================= -->
+    <target name="clean" depends="-clean-bin, -clean-layout"
+        description="Remove compiled classes and delete the deploy directory."/>
+
+    <!-- ================================= 
+          target: -clean-bin
+          Delete all built classes
+         ================================= -->
+    <target name="-clean-bin"
+            depends="-modules-clean-bin,
+                     -clean-bin-catch-all-test,
+                     -clean-bin-catch-all"/>
+
+    <target name="-modules-clean-bin">
+        <poll-modules target="clean-java" />
+    </target>
+
+    <target name="-clean-bin-catch-all-test">
+        <!-- without this test the pathconvert in the catch all clean
+             target fails -->
+        <available property="catch.all.required"
+                   file="${build.output}" type="dir" />
+    </target>
+
+    <target name="-clean-bin-catch-all" if="catch.all.required">
+        <fileset id="built.files" dir="${build.output}">
+            <include name="**/**" />
+        </fileset>
+        <pathconvert property="built.files.list"
+                     refid="built.files"
+                     pathsep="${line.separator}" />
+        <condition property="built.files.exist">
+            <not>
+                <equals arg1="${built.files.list}" arg2="" />
+            </not>
+        </condition>
+
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset refid="built.files" />
+        </delete>
+
+        <condition property="continue">
+            <equals arg1="${keep.working}" arg2="true" />
+        </condition>
+
+        <fail if="built.files.exist" unless="continue">
+...
+
+Built files still exist after module clean targets have run.  This
+probably means that one or more patternsets are incomplete.  The
+remaining files are:
+
+${built.files.list}
+
+        </fail>
+    </target>
+
+    <!-- =================================
+          target: -compile
+         ================================= -->
+    <target name="-compile" depends="-prepare-depends, -layout">
+        <ensure-javac/>
+        <mkdir dir="${build.output}" />
+
+        <hy.javac destdir="${build.output}"
+               includeAntRuntime="no">
+            
+            <src path="modules/accessibility/src/main/java/" />
+            <src path="modules/annotation/src/main/java/" />
+            <src path="modules/applet/src/main/java" />
+            <src path="modules/archive/src/main/java" />
+            <src path="modules/auth/src/main/java/${hy.os.family}" />
+            <src path="modules/auth/src/main/java/common" />
+            <src path="modules/awt/src/main/java/${hy.os.family}" />
+            <src path="modules/awt/src/main/java/common" />
+            <src path="modules/beans/src/main/java" />
+            <src path="modules/concurrent/src/main/java/" />
+            <src path="modules/crypto/src/main/java" />
+            <src path="modules/instrument/src/main/java" />
+            <src path="modules/imageio/src/main/java" />
+            <src path="modules/jndi/src/main/java" />
+            <src path="modules/logging/src/main/java" />
+            <src path="modules/lang-management/src/main/java/" />
+            <src path="modules/luni-kernel/src/main/java" />
+            <src path="modules/luni/src/main/java" />
+            <src path="modules/math/src/main/java" />
+            <src path="modules/misc/src/main/java" />
+            <src path="modules/nio/src/main/java/common" />
+            <src path="modules/nio/src/main/java/${hy.os.family}" />
+            <src path="modules/nio_char/src/main/java" />
+            <!-- pack200 uses customized build script and 
+                 should not be built from top-level build.xml -->
+            <!--src path="modules/pack200/src/main/java" /-->
+            <src path="modules/prefs/src/main/java" />
+            <src path="modules/print/src/main/java/${hy.os.family}" />
+            <src path="modules/print/src/main/java/common" />
+            <src path="modules/regex/src/main/java" />
+            <src path="modules/rmi/src/main/java" />
+            <src path="modules/security-kernel/src/main/java" />
+            <src path="modules/security/src/main/java/${hy.os.family}" />
+            <src path="modules/security/src/main/java/common" />
+            <src path="modules/sound/src/main/java" />
+            <src path="modules/sql/src/main/java" />
+            <src path="modules/suncompat/src/main/java" />
+            <src path="modules/swing/src/main/java/${hy.os.family}" />
+            <src path="modules/swing/src/main/java/common" />
+            <src path="modules/text/src/main/java" />
+            <src path="modules/x-net/src/main/java/" />
+
+            <classpath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                    <exclude name="**/*-src.jar" />
+                </fileset>
+            </classpath>
+
+            <!-- We need to set some BCP to avoid the compiler picking
+                 up the JRE's JARs -->
+            <bootclasspath>
+                <fileset dir="${depends.jars}">
+                    <!-- FIXME: picked mx4j arbitrarily, needs to be non-empty set -->
+                    <include name="**/mx4j.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+
+        <poll-modules target="build" />
+    </target>
+
+
+    <!-- ================================= 
+          target: -layout              
+          Construct the correct directory structure for the class libs
+         ================================= -->
+    <target name="-layout" depends="-prepare-depends">
+
+        <!-- Create the structure -->
+        <mkdir dir="${hy.jdk}/jre/bin" />
+        <mkdir dir="${hy.jdk}/jre/lib/boot" />
+        <mkdir dir="${hy.jdk}/jre/lib/ext" />
+        <mkdir dir="${hy.jdk}/jre/lib/security" />
+
+        <!-- Copy across the required files -->
+        <copy file="LICENSE" todir="${hy.hdk}" verbose="yes" />
+        <copy file="NOTICE" todir="${hy.hdk}" verbose="yes" />
+
+        <!-- Copy across the boot dependency jars --><!-- TOFIX clean these? -->
+        <copy todir="${hy.jdk}/jre/lib/boot">
+            <fileset dir="${depends.jars}">
+                <patternset includes="icu4j_4.2.1/*.jar" />
+                <patternset includes="xalan-j_2.7.0/xalan.jar" />
+                <patternset includes="xerces_2.9.1/*.jar" />
+            </fileset>
+            <fileset dir="${depends.manifests}"/>
+        </copy>
+
+        <!-- Copy across the extension dependency jars -->
+        <copy tofile="${hy.jdk}/jre/lib/ext/bcprov.jar" verbose="true"
+              flatten="yes" overwrite="true">
+            <fileset file="${bcprov.jar}" />
+        </copy>
+
+        <!-- Copy across the support files -->
+        <copy todir="${hy.jdk}/jre/lib">
+            <fileset dir="${depends.files}">
+                <include name="content-types.properties" />
+            </fileset>
+        </copy>
+
+        <copy todir="${hy.jdk}/jre/lib/boot">
+            <fileset dir="${depends.files}">
+                <include name="bootclasspath.properties" />
+            </fileset>
+        </copy>
+        <fixcrlf srcdir="${hy.jdk}/jre/lib/boot"
+            includes="bootclasspath.properties" />
+
+        <copy todir="${hy.jdk}/jre/lib/security">
+             <fileset dir="${depends.files}">
+                 <include name="java.policy" />
+                 <include name="java.security" />
+             </fileset>
+         </copy>
+
+        <copy todir="${hy.jdk}/jre/lib">
+            <fileset dir="${depends.files}">
+                <include name="net.properties" />
+            </fileset>
+        </copy>
+
+        <copy todir="${hy.jdk}/jre/lib">
+            <fileset dir="${depends.files}">
+                <include name="rowset.properties" />
+            </fileset>
+        </copy>
+
+    </target>
+
+
+    <!-- ================================= 
+          target: -clean-layout              
+         ================================= -->
+    <target name="-clean-layout">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${hy.jdk}">
+                <exclude name="jre/bin/default/**" />
+                <exclude name="jre/bin/**" />
+                <exclude name="jre/lib/ext/**" />
+            </fileset>
+            <fileset dir="${hy.hdk}">
+                <include name="LICENSE" />
+                <include name="NOTICE" />
+            </fileset>
+        </delete>
+    </target>
+
+    <!-- =================================
+         target: -prepare-depends
+         Check for jars required to compile prefs
+         ================================= --> 
+    <target name="-prepare-depends">
+
+        <ant antfile="make/depends.xml" inheritall="false" target="check"/>
+        <poll-modules target="check-depends" />
+
+    </target>
+
+</project>

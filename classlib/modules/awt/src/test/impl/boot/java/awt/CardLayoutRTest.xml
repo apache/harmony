@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!DOCTYPE Test SYSTEM "test.dtd">
+<!--
+Author:  Dmitry A. Durnev
+-->
+<Test
+       ID="CardLayoutRTest"
+       date-of-creation="2006-04-03"
+       timeout="1"
+       >       
+               <Copyright value="Intel Corporation"/>
+               <Author value="Dmitry A. Durnev"/>
+               <Description>
+                       Regression test testFirst() for bug #7545#
+                       Regression test testGetLayoutAlignmentX1() for bug #7545#               
+                       Regression test testGetLayoutAlignmentX2() for bug #7545#               
+                       Regression test testGetLayoutAlignmentY1() for bug #7545#               
+                       Regression test testGetLayoutAlignmentY2() for bug #7545#
+                       Regression test testLast() for bug #7545#                                       
+                       Regression test testLayoutContainer() for bug #7545#                            
+                       Regression test testMaximumLayoutSize1() for bug #7545#         
+                       Regression test testMaximumLayoutSize2() for bug #7545#         
+                       Regression test testMinimumLayoutSize() for bug #7545#
+                       Regression test testNext() for bug #7545#                       
+                       Regression test testPreferredLayoutSize() for bug #7545#
+                       Regression test testPrevious() for bug #7545#
+                       Regression test testRemoveLayoutComponent() for bug #7545#                      
+               </Description>
+
+               <Keyword name="regression"/>
+               <Source name="CardLayoutRTest.java"/>
+                       
+               <Runner ID="JUExec">
+                       <Param name="JUnit" value="java.awt.CardLayoutRTest"/>
+               </Runner>
+
+</Test>

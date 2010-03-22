@@ -1,0 +1,126 @@
+move 165.0 75.5
+line 235.0 75.5
+line 235.0 74.5
+line 165.0 74.5
+line 165.0 75.5
+close
+move 245.0 75.5
+line 275.0 75.5
+line 275.0 74.5
+line 245.0 74.5
+line 245.0 75.5
+close
+move 345.0 75.5
+line 355.0 75.5
+line 355.0 74.5
+line 345.0 74.5
+line 345.0 75.5
+close
+move 385.0 75.5
+line 455.0 75.5
+line 455.0 74.5
+line 385.0 74.5
+line 385.0 75.5
+close
+move 465.0 75.5
+line 475.0 75.5
+line 475.0 75.0
+line 474.5 75.0
+line 474.5 95.0
+line 475.5 95.0
+line 475.5 75.0
+line 475.5 74.5
+line 475.0 74.5
+line 465.0 74.5
+line 465.0 75.5
+close
+move 474.5 165.0
+line 474.5 175.0
+line 475.5 175.0
+line 475.5 165.0
+line 474.5 165.0
+close
+move 474.5 205.0
+line 474.5 275.0
+line 475.5 275.0
+line 475.5 205.0
+line 474.5 205.0
+close
+move 474.5 285.0
+line 474.5 315.0
+line 475.5 315.0
+line 475.5 285.0
+line 474.5 285.0
+close
+move 474.5 385.0
+line 474.5 395.0
+line 475.5 395.0
+line 475.5 385.0
+line 474.5 385.0
+close
+move 475.0 424.5
+line 405.0 424.5
+line 405.0 425.5
+line 475.0 425.5
+line 475.0 424.5
+close
+move 395.0 424.5
+line 365.0 424.5
+line 365.0 425.5
+line 395.0 425.5
+line 395.0 424.5
+close
+move 295.0 424.5
+line 285.0 424.5
+line 285.0 425.5
+line 295.0 425.5
+line 295.0 424.5
+close
+move 255.0 424.5
+line 185.0 424.5
+line 185.0 425.5
+line 255.0 425.5
+line 255.0 424.5
+close
+move 175.0 424.5
+line 145.0 424.5
+line 145.0 425.5
+line 175.0 425.5
+line 175.0 424.5
+close
+move 125.5 375.0
+line 125.5 365.0
+line 124.5 365.0
+line 124.5 375.0
+line 125.5 375.0
+close
+move 125.5 335.0
+line 125.5 265.0
+line 124.5 265.0
+line 124.5 335.0
+line 125.5 335.0
+close
+move 125.5 255.0
+line 125.5 225.0
+line 124.5 225.0
+line 124.5 255.0
+line 125.5 255.0
+close
+move 125.5 155.0
+line 125.5 145.0
+line 124.5 145.0
+line 124.5 155.0
+line 125.5 155.0
+close
+move 125.5 115.0
+line 125.5 75.0
+line 125.0 75.0
+line 125.0 75.5
+line 135.0 75.5
+line 135.0 74.5
+line 125.0 74.5
+line 124.5 74.5
+line 124.5 75.0
+line 124.5 115.0
+line 125.5 115.0
+close

@@ -1,0 +1,54 @@
+How to Run The Tests
+====================
+
+This is a work in progress.
+
+The objective is to make it easy to run unit tests
+for any part of the classlibrary, and be able to also
+run all the tests and do easy reporting.
+
+Requirements : 
+
+1) JUnit.jar - any modern version. http://www.junit.org
+   
+   Put this on your ant/lib directory.
+   
+2) Ensure you have the build time dependencies installed, these
+   can be downloaded using the following command:
+
+   ant fetch-depends
+
+   Warning: Some of the dependencies are made available under
+            licences other than the ASLv2.
+  
+3) J9 VM from IBM (evaluation)
+    
+      http://www-128.ibm.com/developerworks/java/jdk/harmony/index.html
+      
+   Warning - this is not open source, and you must go through a minor 
+   registration process.
+   
+   This is IBM's VM that works with the Harmony class libraries.
+   We will use this until our own VM efforts come up to speed.
+   
+   Installation - drop into deploy/jdk/jre/bin/default
+   
+
+ Once the prereqs are there : 
+ 
+ 1) Build the classlibrary : 
+ 
+    $ ant
+    
+    This should build and install all java and native components
+    
+ 2) Test : 
+ 
+    
+    $ ant test
+    
+    and wait.  You can find a html report in
+    
+       build/test_report/html/index.html
+       
+   when it's finished.

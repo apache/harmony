@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.6
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony RMI
+Bundle-SymbolicName: org.apache.harmony.rmi
+Bundle-Version: 1.0.0
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.lang.ref,
+ java.lang.reflect,
+ java.net,
+ java.nio,
+ java.security,
+ java.security.cert,
+ java.util,
+ java.util.logging,
+ javax.net,
+ javax.net.ssl,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional
+Export-Package: java.rmi,
+ java.rmi.activation,
+ java.rmi.dgc,
+ java.rmi.registry,
+ java.rmi.server,
+ javax.activity,
+ org.apache.harmony.rmi.activation,
+ org.apache.harmony.rmi.compiler,
+ org.apache.harmony.rmi.registry,
+ org.apache.harmony.rmi.transport;hy_usage=suncompat;mandatory:=hy_usage

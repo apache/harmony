@@ -1,0 +1,513 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<HTML><HEAD><TITLE>Keytool description</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META http-equiv=Content-Language content=en-us>
+<STYLE type=text/css>P {
+	FONT-SIZE: 10pt; MARGIN: 5pt 0in 5pt 15pt; FONT-FAMILY: "Arial MT", Arial
+}
+H1 {
+	PADDING-LEFT: 4px; FONT-WEIGHT: normal; FONT-SIZE: 16pt; TEXT-TRANSFORM: uppercase; FONT-FAMILY: Arial, Helvetica, sans-serif
+}
+H2 {
+	PADDING-LEFT: 4px; FONT-WEIGHT: normal; FONT-SIZE: 10pt; MARGIN: 5pt 0in 5pt 15pt; TEXT-TRANSFORM: uppercase; FONT-FAMILY: Arial, Helvetica, sans-serif
+}
+PRE {
+	BORDER-RIGHT: #828da6 thin solid; PADDING-RIGHT: 12pt; BORDER-TOP: #828da6 thin solid; PADDING-LEFT: 12pt; FONT-SIZE: 11pt; BACKGROUND: #f3f5f7; PADDING-BOTTOM: 12pt; MARGIN: 5pt; BORDER-LEFT: #828da6 thin solid; PADDING-TOP: 12pt; BORDER-BOTTOM: #828da6 thin solid; FONT-FAMILY: Courier
+}
+.code {
+	FONT-WEIGHT: normal; FONT-SIZE: 12pt; MARGIN: 10pt 0in 10pt 0.025in; COLOR: #000000; TEXT-INDENT: 0in; LINE-HEIGHT: 1.25; FONT-FAMILY: "Arial", "Courier New", Courier "misc fixed", "sony fixed", monospaced; TEXT-ALIGN: left
+}
+DL {
+	MARGIN: 0pt
+}
+DD {
+	BORDER-RIGHT: medium none; BORDER-TOP: #828da6 1px solid; FONT-WEIGHT: normal; FONT-SIZE: 10pt; PADDING-BOTTOM: 8px; MARGIN: 5pt 20pt 5pt 65pt; BORDER-LEFT: medium none; BORDER-BOTTOM: medium none; FONT-FAMILY: Arial
+}
+DT {
+	BORDER-RIGHT: medium none; BORDER-TOP: medium none; FONT-WEIGHT: bolder; FONT-SIZE: 10pt; MARGIN: 5pt 0pt 5pt 20pt; BORDER-LEFT: medium none; BORDER-BOTTOM: medium none; FONT-FAMILY: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif
+}
+</STYLE>
+
+<META content="MSHTML 6.00.2900.2912" name=GENERATOR></HEAD>
+<BODY>
+<H1>Keytool </H1>
+<H2 style="FONT-WEIGHT: bold">Short Description </H2>
+<P>Keytool is a tool for managing key pairs, secret keys and certificates. </P>
+<H2 style="FONT-WEIGHT: bold">Keytool usage </H2><PRE>keytool {-&lt;command_name&gt;} {-&lt;command_option&gt;} {&lt;option_value&gt;}... -J&lt;java_option&gt; 
+</PRE>
+<H2 style="FONT-WEIGHT: bold">Description </H2>
+<P>The Keytool utility enables managing keys and X.509 certificates used for 
+authentication of an entity or self-authentication. The tool stores the 
+certificates and keys in a <EM>keystore</EM> database. Keystore is usually 
+implemented as a file and protected with a password. For a more detailed 
+description of the tool, see <A 
+href="http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html" 
+target=_blank>http://java.sun.com/j2se/1.5.0/docs/tooldocs/windows/keytool.html</A>. 
+The current implementation fully fits this description and features some 
+additional functionality. </P>
+<H2><STRONG>Document Overview</STRONG></H2>
+<P>This document focuses on the usage aspects of the Harmony implementation of 
+the tool. Currently, the doc lists the Keytool <A 
+href="file:///C:/Documents%20and%20Settings/adrusano/Local%20Settings/Temporary%20Internet%20Files/OLK14A/Keytool_help.htm#Commands">commands</A> 
+and <A 
+href="file:///C:/Documents%20and%20Settings/adrusano/Local%20Settings/Temporary%20Internet%20Files/OLK14A/Keytool_help.htm#Common_Options">options</A>. 
+</P>
+<H2 style="FONT-WEIGHT: bold"><A name=Common_Options></A>options </H2>
+<P>This section lists all the options that the current Keytool implementation 
+can use. Each option has a name, a description, and sometimes the default value 
+specified. If the option has no default value and is critical for the command its 
+value 
+is prompted for. The "Y" mark in the <STRONG>Shared</STRONG> column indicates that 
+the option is common for two or more commands. Options and commands can be 
+provided in any order. </P>
+<TABLE border=1>
+  <TBODY>
+  <TR>
+    <TH align=middle>Option </TH>
+    <TH align=middle>Shared </TH>
+    <TH align=middle>Description </TH>
+    <TH align=middle>Default value </TH></TR>
+  <TR>
+    <TD><CODE>-alias</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The name of the alias used for a specific action. </P></TD>
+    <TD><P><CODE>"mykey"</CODE></P></TD></TR>
+  <TR>
+    <TD><CODE>-keystore</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The path to the keystore file.</P></TD>
+    <TD><P><CODE>{USER_HOME}/.keystore</CODE></P></TD></TR>
+  <TR>
+    <TD><CODE>-keysize</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The size of the key.</P></TD>
+    <TD><P><CODE>1024</CODE></P> </TD></TR>
+  <TR>
+    <TD><CODE>-keyalg</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The key pair or key generation algorithm used. </P></TD>
+    <TD><P><CODE>"DSA"</CODE></P></TD></TR>
+  <TR>
+    <TD><CODE>-keypass</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The key entry password. If not equal to the keystore password, you are 
+      prompted to enter it. </P></TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-storetype</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>Type of the keystore. </P></TD>
+    <TD>
+      <P>The value of <CODE>keystore.type</CODE> property in the 
+      <CODE>{JAVA_HOME}/lib/security/java.security</CODE> file</P></TD></TR>
+  <TR>
+    <TD><CODE>-storepass</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The password used to protect keystore integrity. If a new keystore is 
+      created, the value must be 6 characters or more. If Keytool works with an 
+      existing keystore, the password can be of any length. If the password is 
+      not given in command line it is prompted for. </P></TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-cacerts</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The path to the &quot;cacerts&quot; file with the keystore containing certificates 
+      of widely known Certificate Authorities (CAs).</P></TD>
+    <TD><P><CODE>{<I>JAVA_HOME</I>}/lib/security/cacerts</CODE></P></TD></TR>
+  <TR>
+    <TD><CODE>-cacertspass</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The password used to protect integrity of cacerts keystore. See 
+      -storepass option description. </P></TD>
+    <TD><P><CODE>"changeit"</CODE></P> </TD></TR>
+  <TR>
+    <TD><CODE>-provider</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The name of the security provider to use when performing an action. If 
+      no provider is given for the action, one of security providers available 
+      in the system is used.</P></TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-certprovider, -keyprovider, -mdprovider, -sigprovider,
+      -ksprovider, -convprovider</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The name of the specific provider used for performing an action. <CODE>-certprovider</CODE> 
+		- for certificates, <CODE>-keyprovider</CODE> - for key or key pair generation, <CODE>-mdprovider</CODE> 
+		- for message digest generation (used when printing certificates), <CODE>-sigprovider</CODE> 
+		- for signature generation, <CODE>-ksprovider</CODE> - for keystore operations, <CODE>-convprovider</CODE> 
+		- provider to create and save the converted keystore. </P></TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-certserial</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The serial number of the generated certificate.</P></TD>
+    <TD>
+      <P>A random integer value</P></TD></TR>
+  <TR>
+    <TD><CODE>-convtype<CODE></TD>
+    <TD>&nbsp;</TD>
+    <TD>
+      <P>The type to convert the keystore to.</P></TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-convkeystore</CODE></TD>
+    <TD>&nbsp;</TD>
+    <TD>
+      <P>The path to put the result of keystore converting. </P></TD>
+    <TD><P><CODE>{<i>USER_HOME</i>}/{<i>type_to_convert_to</i>}_converted.keystore</CODE>, 
+	E.g. &quot;<CODE>C:\users\Joe\jks_converted.keystore&quot;</CODE></P></TD></TR>
+  <TR>
+    <TD><CODE>-convstorepass</CODE></TD>
+    <TD>&nbsp;</TD>
+    <TD>
+      <P>Password to protect the integrity of the keystore which is the result of keystore 
+		converting and its entries. </P></TD>
+    <TD>&nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-convkeys</CODE></TD>
+    <TD>
+      &nbsp;</TD>
+    <TD>
+      <P>If the option is specified, Keytool tries to convert key entries just as 
+		trusted certificate entries. Keystore password is used to recover the 
+		keys.<P></TD>
+    <TD>
+      &nbsp;</TD></TR>
+  <TR>
+    <TD><CODE>-sigalg</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The signature algorithm. </P></TD>
+    <TD>
+      <P><CODE>SHA1withDSA</CODE> if <CODE>-keyalg=DSA</CODE> for the 
+      certificate issuer <BR><CODE>MD5withRSA</CODE> if <CODE>-keyalg=RSA</CODE> 
+      </P></TD></TR>
+  <TR>
+    <TD><CODE>-validity</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The validity period of the certificate to generate. </P></TD>
+    <TD><P><CODE>90</CODE></P> </TD></TR>
+  <TR>
+    <TD><CODE>-x509version</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The version of the X.509 certificate to generate. </P></TD>
+    <TD><P><CODE>3</CODE></P></TD></TR>
+  <tr>
+    <TD><CODE>-dname</CODE></TD>
+    <TD>
+       <P>Y</P></TD>
+    <TD><P>X.500 Distinguished Name to use when generating a new X.509 
+	certificate. If it is not set Keytool prompts to input the values of its 
+	parts. </P></TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <tr>
+    <TD><CODE>-ca</CODE></TD>
+    <TD>
+       <P>Y</P></TD>
+    <TD><P>If the option is specified, it will be possible to use the generated 
+	certificate to issue another certificates.</TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <tr>
+    <TD><CODE>-issuer</CODE></TD>
+    <TD>
+       &nbsp;</TD>
+    <TD><P>The alias associated with private key entry which contains the certificate that belongs to the principal which is to be used as certificate issuer.</P></TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <tr>
+    <TD><CODE>-issuerpass</CODE></TD>
+    <TD>
+       &nbsp;</TD>
+    <TD><P>Password for the entry associated with alias specified after <CODE>-issuer</CODE> option. 
+	If it is not equal to the keystore password, you are prompted to enter it.</P></TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <tr>
+    <TD><CODE>-file</CODE></TD>
+    <TD>
+       <P>Y</P></TD>
+    <TD><P>
+      The name of the file to use as input or output. E.g. to read a CSR 
+		contents from or to print a certificate contents to.</P></TD>
+    <TD><P>
+      <CODE>stdin</CODE> for input, <CODE>stdout</CODE> for 
+  output</P></TD>
+	</tr>
+  <TR>
+    <TD><CODE>-v</CODE></TD>
+    <TD>
+       <P>Y</P></TD>
+    <TD>
+      <P>Makes the Keytool be "verbose", i.e. print additional information when performing an action. </P></TD>
+    <TD>
+      &nbsp;</TD></TR>
+  <tr>
+    <TD><CODE>-rfc</CODE></TD>
+    <TD>
+	  <P>Y</P></TD>
+    <TD>
+      <P>Makes Keytool print the certificate or CSR in printable (PEM) encoding. The option cannot be used if <CODE>-v</CODE> option is used. </P></TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <tr>
+    <TD><CODE>-crlfile</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD>
+      <P>The name of the file containing the CRL to work with. </P></TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <TR>
+    <TD><CODE>-noprompt</CODE></TD>
+    <TD>
+      &nbsp;</TD>
+    <TD><P>
+      If the option is specified, Keytool adds the 
+		certificate to the keystore even if an equal certificate is in keystore or the 
+		certificate issuer's certificate is not in the keystore (and in &quot;cacerts&quot; if 
+		<CODE>-trustcacerts</CODE> option is specified). Otherwise, you are asked to 
+		confirm that the certificate should be imported.</P></TD>
+    <TD>
+      &nbsp;</TD></TR>
+  <tr>
+    <TD><CODE>-trustcacerts</CODE></TD>
+    <TD>
+      <P>Y</P></TD>
+    <TD><P>
+      If the option is specified, additional certificates from the file named &quot;cacerts&quot; are used as trusted certificates.</P></TD>
+    <TD>
+      &nbsp;</TD>
+	</tr>
+  <TR>
+    <TD><CODE>-dest</CODE></TD>
+    <TD>
+      &nbsp;</TD>
+    <TD><P>
+      Sets alias to copy an entry to.</P></TD>
+    <TD><P><CODE>
+      "mykey"</CODE></P></TD></TR>
+  <TR>
+    <TD><CODE>-new</CODE></TD>
+    <TD>
+    	<P>Y</P></TD>
+    <TD>
+    	<P>Sets the new password.</P></TD>
+    <TD>
+      &nbsp;</TD></TR></TBODY></TABLE>
+<H2><STRONG><A name=Commands></A>Commands </STRONG></H2>
+<P>This section lists the Keytool commands with allowed options and a 
+description. If no command is specified &quot;-help&quot; command is assumed. </P><PRE><B>-certreq</B> {-alias &lt;alias&gt;} {-file &lt;csr_file&gt;} 
+{-sigalg &lt;signature_algorithm&gt;} {-keypass &lt;key_password&gt;} 
+{-sigprovider &lt;signature_provider_name&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} {-v} 
+{-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;}
+</PRE>
+<P>Generates a certificate signing request (CSR) based on data taken from the 
+keystore entry associated with the given <CODE>&lt;alias&gt;</CODE>. The 
+certificate request is printed to the file <CODE>&lt;csr_file&gt;</CODE>, if its 
+name is supplied; otherwise, printed to <CODE>stdout</CODE>. </P><PRE><B>-checkcrl</B> {-file &lt;certificate_file&gt;} {-crlfile &lt;crl_file&gt;} 
+{-certprovider &lt;cert_provider_name&gt;} {-mdprovider &lt;MD_provider_name&gt;} {-ksprovider 
+&lt;keystore_provider_name&gt;} {-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} 
+{-storepass &lt;store_password&gt;} {-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} 
+{-cacertspass &lt;cacerts_password&gt;}
+</PRE>
+<P>Checks wheter the certificate given in <CODE>&lt;certificate_file&gt;</CODE> 
+is in the CRL, which is stored in the <CODE>&lt;crl_file&gt;</CODE> file. If the 
+file name is not given, <CODE>stdin</CODE> is used. </P><PRE><B>-convert</B> {-convtype &lt;result_type&gt;} {-convkeystore &lt;result_store&gt;}
+{-convstorepass &lt;result_store_pass&gt;} {-convkeys} {-convprovider &lt;convert_provider_name&gt;} 
+{-ksprovider &lt;keystore_provider_name&gt;} {-provider &lt;provider_name&gt;} 
+{-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} {-v} {-storetype 
+&lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;}</PRE>
+<P>Converts keystore to the type <CODE>&lt;result_type&gt;</CODE> and saves it 
+to <CODE>&lt;result_store&gt;</CODE> and protects with password 
+<CODE>&lt;result_store_pass&gt;</CODE>. If 
+<CODE>&lt;result_store_pass&gt;</CODE> is not set, 
+<CODE>&lt;store_password&gt;</CODE> is used. If </CODE>-convkeys</CODE> option 
+is specified, Keytool tries to convert key entries. Only entries with 
+<CODE>password</CODE> equal to the keystore password are converted. </P><PRE><B>-delete</B> {-alias &lt;alias&gt;} {-ksprovider &lt;keystore_provider_name&gt;}
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} 
+{-storepass &lt;store_password&gt;} {-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} 
+{-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Removes from the keystore the entry associated with 
+<CODE>&lt;alias&gt;</CODE>. </P><PRE><B>-export</B> {-rfc | -v} {-alias &lt;alias&gt;} {-file &lt;certificate_file&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} 
+{-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Reads an X.509 certificate associated with <CODE>&lt;alias&gt;</CODE> and 
+prints it into the given <CODE>&lt;certificate_file&gt;</CODE> file. If the file 
+name is not given, the certificate is printed to <CODE>stdout</CODE>. If 
+<CODE>-rfc</CODE> option is used, the certificate is printed in the printable 
+BASE64 encoding (PEM); otherwise, it is printed in the binary encoding (DER). 
+<BR>Options <CODE>-rfc</CODE> and <CODE>-v</CODE> are not required. </P><PRE><B>-genkey</B> {-alias &lt;alias&gt;} {-keyalg 
+&lt;key_algorithm&gt;} {-keysize &lt;key_size&gt;} {-sigalg &lt;signature_algorithm&gt;} 
+{-validity &lt;validity_period&gt;} {-dname &lt;X500_distinguished_dname&gt;} 
+{-x509version &lt;X509_version&gt;} {-ca} {-certserial &lt;cert_serial_number&gt;} 
+{-secretkey} {-keypass &lt;key_password&gt;} {-issuer &lt;issuer_alias&gt;} {-issuerpass 
+&lt;issuer_password&gt;} {-keyprovider &lt;key_provider_name&gt;} {-certprovider &lt;cert_provider_name&gt;} 
+{-sigprovider &lt;signature_provider_name&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} 
+{-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;}  </PRE>
+<P>Generates a key pair or a secret key. </P>
+<DL>
+  <DT>Generating a key pair 
+  <DD>
+  <P>A key pair is composed of a private and a public key. For generating a key 
+  pair, Keytool does the following: </P>
+  <OL>
+    <LI>Wraps the public key into a self-signed X.509 (v1, v2, v3) certificate. 
+    <LI>Puts the certificate into a single-element certificate chain<BR>OR signs 
+    the certificate with private key from another key entry 
+    <CODE>&lt;issuer_alias&gt;.</CODE> 
+    <LI>Adds its chain to the newly generated certificate. <BR>Keytool uses 
+    <CODE>&lt;issuer_password&gt;</CODE> to recover the 
+    <CODE>&lt;issuer_alias&gt; entry.</CODE> 
+    <LI>Adds a new entry with the generated private key and the chain with alias 
+    <CODE>&lt;alias&gt;</CODE> and protected with 
+    <CODE>&lt;key_password&gt;</CODE> to the keystore. </LI></OL>
+  <P>The subject of the new certificate is generated based on 
+  <CODE>&lt;X500_distinguished_dname&gt;</CODE>. If it is not given on the 
+  command line, a prompt appears. The certificate validity period is set to 
+  <CODE>&lt;validity_period&gt;</CODE>. The X.509 certificate version is set to 
+  <CODE>&lt;X509_version&gt;</CODE> and the certificate serial number is set to 
+  <CODE>&lt;cert_serial_number&gt;</CODE>. If "-ca" option is specified, the 
+  certificate can be used to sign another certificates. </P>
+  <DT>Generating a secret key 
+  <DD>
+  <P>If a secret key is generated, it is put into a secret key entry, with a 
+  null certificate chain. If the <CODE>-secretkey</CODE> option is specified, a 
+  secret key is generated instead of the key pair and certificate generated by 
+  default.</P></DD></DL><PRE><B>-help</B> {&lt;command_name&gt;}</PRE>
+<P>Shows a help message for the specified command name with usage details and a 
+description. If no command name is given, the command shows the list of the 
+commands with their short descriptions. </P><PRE><B>-import</B> {-alias &lt;alias&gt;} {-file &lt;certificate_file&gt;} 
+{-noprompt} {-trustcacerts} {-keypass &lt;key_password&gt;} {-cacerts &lt;cacerts_path&gt;} 
+{-cacertspass &lt;cacerts_password&gt;} {-certprovider &lt;cert_provider_name&gt;} 
+{-mdprovider &lt;MD_provider_name&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} 
+{-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Reads an X.509 certificate or a PKCS#7 formatted certificate chain from the 
+file <CODE>&lt;certificate_file&gt;</CODE> and puts it into the entry identified 
+by <CODE>&lt;alias&gt;</CODE>. If the input file is not specified, Keytool reads 
+the certificates from the standard input. If <CODE>&lt;alias&gt;</CODE> already 
+exists, the imported certificate chain is interpreted as a reply to CSR 
+generated for the certificate associated with <CODE>&lt;alias&gt;</CODE>. 
+Otherwise, it is considered to be a trusted certificate. </P>
+<P>If the <CODE>-noprompt</CODE> option is specified, Keytool adds the 
+certificate to the keystore even if an equal certificate is in keystore or the 
+certificate issuer's certificate is not in the keystore (and in cacerts if 
+<CODE>-trustcacerts</CODE> option is specified). Otherwise, you are asked to 
+confirm that the certificate should be imported. </P><PRE><B>-keyclone</B> {-alias &lt;alias&gt;} {-dest &lt;dest_alias&gt;} {-new &lt;new_password&gt;}
+{-keypass &lt;key_password&gt;} {-ksprovider &lt;keystore_provider_name&gt;} {-provider &lt;provider_name&gt;}
+{-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} {-v} 
+{-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Copies the key and the certificate chain (if any) from the keystore entry 
+identified by <CODE>&lt;alias&gt;</CODE> into a newly created one with alias 
+<CODE>&lt;dest_alias&gt;</CODE> and protected with password 
+<CODE>&lt;new_password&gt;</CODE>. If any of <CODE>&lt;dest_alias&gt;</CODE> or 
+<CODE>&lt;new_password&gt;</CODE> is not specified it is prompted for. </P><PRE><B>-keypasswd</B> {-alias &lt;alias&gt;} {-keypass 
+&lt;old_key_password&gt;} {-new &lt;new_password&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} 
+{-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Changes the key password of the entry associated with alias 
+<CODE>&lt;alias&gt;</CODE> to <CODE>&lt;new_password&gt;</CODE>. </P><PRE><B>-list</B> {-rfc | -v} {-alias &lt;alias&gt;} 
+{-mdprovider &lt;MD_provider_name&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} 
+{-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Prints the contents of the entry associated with the 
+<CODE>&lt;alias&gt;</CODE>. If no alias is specified, the contents of the entire 
+keystore is printed. If the <CODE>-rfc</CODE> option is used, certificates are 
+printed in printable BASE64 encoding (PEM). Otherwise, Keytool prints these in 
+binary encoding (DER). The <CODE>-rfc</CODE> and <CODE>-v</CODE> options may not 
+be specified. </P><PRE><B>-printcert</B> {-v} {-file &lt;certificate_file&gt;} {-certprovider &lt;cert_provider_name&gt;}
+{-mdprovider &lt;MD_provider_name&gt;} {-provider &lt;provider_name&gt;}      </PRE>
+<P>Prints a detailed description of the certificate contained in file 
+<CODE>&lt;certificate_file&gt;</CODE> in a human-readable format: its owner and 
+issuer, the serial number, the validity period and fingerprints. Keystore is not 
+used. </P><PRE><B>-selfcert</B> {-alias &lt;alias&gt;} {-dname &lt;X500_distinguished_dname&gt;} 
+{-validity &lt;validity_period&gt;} {-sigalg &lt;signature_algorithm&gt;} 
+{-keypass &lt;key_password&gt;} {-ca} {-certserial &lt;cert_serial_number&gt;} {-sigprovider 
+&lt;signature_provider_name&gt;} {-ksprovider &lt;keystore_provider_name&gt;} 
+{-provider &lt;provider_name&gt;} {-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} 
+{-v} {-storetype &lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>Generates an X.509 (v1, v2, v3) self-signed certificate using a key pair 
+associated with <CODE>&lt;alias&gt;</CODE>. If X.500 Distinguished Name is 
+supplied, it is used as both the subject and issuer of the certificate. 
+Otherwise, the distinguished name associated with <CODE>&lt;alias&gt;</CODE> is 
+used. Keytool can get the signature algorithm, the validity period and the 
+certificate serial number from the command line or from the keystore entry 
+identified by <CODE>&lt;alias&gt;</CODE>. </P>
+<P>If the <CODE>-ca</CODE> option is specified, the generated certificate can be 
+used for signing other certifictes. If the <CODE>-secretkey</CODE> option is 
+specified, a secret key is generated instead of the key pair and a certificate 
+generated by default. </P><PRE><B>-storepasswd</B>  {-new &lt;new_password&gt;} 
+{-ksprovider &lt;keystore_provider_name&gt;} {-provider &lt;provider_name&gt;} 
+{-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} {-v} {-storetype 
+&lt;store_type&gt;} {-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;}  </PRE>
+<P>Changes the keystore password to <CODE>&lt;new_password&gt;</CODE>. </P><PRE><B>-verify</B> {-file &lt;certificate_file&gt;} 
+{-crlfile &lt;crl_file&gt;} {-trustcacerts} {-cacerts &lt;cacerts_path&gt;} 
+{-cacertspass &lt;cacerts_password&gt;} {-certprovider &lt;cert_provider_name&gt;} 
+{-sigprovider &lt;signature_provider_name&gt;} {-mdprovider &lt;MD_provider_name&gt;}
+{-ksprovider &lt;keystore_provider_name&gt;} {-provider &lt;provider_name&gt;} 
+{-keystore &lt;keystore_path&gt;} {-storepass &lt;store_password&gt;} {-v} {-storetype &lt;store_type&gt;} 
+{-cacerts &lt;cacerts_path&gt;} {-cacertspass &lt;cacerts_password&gt;} </PRE>
+<P>A cerificate chain is built by looking up the certificate of the issuer of 
+the current certificate. If a certificate is self-signed, it is assumed to be 
+the root CA. After that, Keytool searches the certificates in the lists of 
+revoked certificates. Certificate signatures are checked and the certificate 
+path is built in the same way as in the import operation. If an error occurs, 
+Keytool does not stop the flow unless an attempt to continue is made. The 
+results of the verification are printed to <CODE>stdout</CODE>. 
+</P></BODY></HTML>

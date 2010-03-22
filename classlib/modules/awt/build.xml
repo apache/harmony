@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="AWT Build" default="build" basedir=".">
+    <description>Build for AWT component</description>
+
+    <property name="hy.module" value="awt" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
+
+    <property file="../../make/depends.properties" />
+
+    <target name="build"
+            depends="check-depends,compile-java,copy-resources,build-jar" />
+
+    <target name="clean" depends="clean-java,clean-native,clean-test" />
+
+    <target name="check-depends" depends="-check-depends,-extract" />
+
+    <target name="-check-depends"
+            depends="-check-win-depends,-check-unix-depends">
+        <check-one-file src="${dejavu-fonts.url}" dest="${dejavu-fonts.zip}" />
+    </target>
+
+    <target name="-check-win-depends" if="is.windows">
+        <check-one-file src="${jpeg.url}" dest="${jpeg.tar}" />
+        <check-one-file src="${lcms.url}" dest="${lcms.tar}" />
+        <check-one-file src="${png.url}" dest="${png.tar}" />
+    </target>
+
+    <target name="-check-unix-depends" if="is.unix">
+        <property name="jpeg.msg"
+                  value="libjpeg development package not installed
+${line.separator}For Debian/Ubuntu try: apt-get install libjpeg62-dev
+${line.separator}For Fedora try: yum install libjpeg-devel" />
+        <check-os-file src="${jpeg.home}/include/jconfig.h"
+                       message="${jpeg.msg}" />
+
+        <property name="lcms.msg"
+                  value="liblcms development package not installed
+${line.separator}For Debian/Ubuntu try: apt-get install liblcms1-dev
+${line.separator}For Fedora try: yum install lcms-devel" />
+        <check-os-file src="${lcms.home}/include/lcms.h"
+                       message="${lcms.msg}" />
+
+        <property name="png.msg"
+                  value="libpng development package not installed
+${line.separator}For Debian/Ubuntu try: apt-get install libpng12-dev
+${line.separator}For Fedora try: yum install libpng-devel" />
+        <check-os-file src="${png.home}/include/png.h"
+                       message="${png.msg}" />
+    </target>
+
+    <target name="-extract"
+            depends="-extract-props,-extract-dejavu-fonts,-extract-win" />
+
+    <target name="-extract-props">
+        <uptodate property="dejavu-fonts.uptodate"
+                  srcfile="${dejavu-fonts.zip}"
+                  targetfile="${dejavu-fonts.fonts.dir}/DejaVuSerif.ttf" />
+    </target>
+
+    <target name="-extract-dejavu-fonts" unless="dejavu-fonts.uptodate">
+        <unzip src="${dejavu-fonts.zip}" dest="${dejavu-fonts.dir}" />
+        <touch file="${dejavu-fonts.fonts.dir}/DejaVuSerif.ttf" />
+    </target>
+
+    <target name="-extract-win"
+            depends="-ext-props,-ext-jpeg,-ext-lcms,-ext-png" />
+
+    <target name="-ext-props" if="is.windows">
+        <uptodate property="jpeg.uptodate"
+                  srcfile="${jpeg.tar}"
+                  targetfile="${jpeg.testfile}" />
+        <uptodate property="lcms.uptodate"
+                  srcfile="${lcms.tar}"
+                  targetfile="${lcms.testfile}" />
+        <uptodate property="png.uptodate"
+                  srcfile="${png.tar}"
+                  targetfile="${png.testfile}" />
+    </target>
+
+    <target name="-ext-jpeg" if="is.windows" unless="jpeg.uptodate">
+        <echo>Extracting jpeg dependencies</echo>
+        <untar src="${jpeg.tar}" dest="${depends.lib.dir}" compression="gzip" />
+        <touch file="${jpeg.testfile}" />
+    </target>
+    <target name="-ext-lcms" if="is.windows" unless="lcms.uptodate">
+        <echo>Extracting lcms dependencies</echo>
+        <untar src="${lcms.tar}" dest="${depends.lib.dir}" compression="gzip" />
+        <touch file="${lcms.testfile}" />
+    </target>
+    <target name="-ext-png" if="is.windows" unless="png.uptodate">
+        <echo>Extracting png dependencies</echo>
+        <untar src="${png.tar}" dest="${depends.lib.dir}" compression="gzip" />
+        <touch file="${png.testfile}" />
+    </target>
+
+    <target name="fetch-depends" depends="-fetch-win-depends">
+        <mkdir dir="${dejavu-fonts.dir}" />
+        <download-one-file src="${dejavu-fonts.url}" dest="${dejavu-fonts.zip}"
+                           md5="${dejavu-fonts.md5}" />
+    </target>
+
+    <target name="-fetch-win-depends" if="is.windows">
+        <mkdir dir="${jpeg.dir}" />
+        <download-one-file src="${jpeg.url}"
+                           dest="${jpeg.tar}"
+                           md5="${jpeg.md5}" />
+        <mkdir dir="${lcms.dir}" />
+        <download-one-file src="${lcms.url}"
+                           dest="${lcms.tar}"
+                           md5="${lcms.md5}" />
+        <mkdir dir="${png.dir}" />
+        <download-one-file src="${png.url}"
+                           dest="${png.tar}"
+                           md5="${png.md5}" />
+    </target>
+
+    <target name="test" depends="-test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.failures" />
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <!-- internal target for local and global test run sequence -->
+    <target name="-test-module" depends="build, run-tests" />
+
+    <target name="clean-java" depends="class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/awt.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/awt-src.jar" />    
+        <delete dir="${hy.jdk}/jre/lib/cmm" quiet="true" />
+        <delete dir="${hy.jdk}/jre/lib/fonts" quiet="true" />
+        <delete failonerror="false">
+            <fileset refid="classes" />
+        </delete>
+        <delete-patternset module="${hy.module}" />
+    </target>
+
+    <target name="clean-test">
+        <delete dir="${tests.hdk.dir}" failonerror="false" />
+        <delete failonerror="false" dir="bin"/>
+    </target>
+
+    <target name="compile-java">
+        <echo message="Compiling ${hy.module} classes" />
+
+        <mkdir dir="../../build/classes" />
+
+        <hy.javac sourcepath=""
+                  destdir="../../build/classes">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <src>
+                <pathelement location="src/main/java/common"/>
+                <pathelement location="src/main/java/${hy.os.family}" />
+            </src>
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+    </target>
+
+    <target name="copy-resources" depends="-copy-win-resources">
+
+        <mkdir dir="${hy.jdk}/jre/lib/cmm" />
+        <copy todir="${hy.jdk}/jre/lib/cmm">
+            <fileset dir="src/main/resources/cmm"/>
+        </copy>
+        
+        <mkdir dir="${hy.jdk}/jre/lib/fonts" />
+        <copy todir="${hy.jdk}/jre/lib/fonts">
+            <fileset dir="${dejavu-fonts.fonts.dir}">
+                <include name="DejaVuSans.ttf" />
+                <include name="DejaVuSans-*.ttf" />
+                <exclude name="DejaVuSans-ExtraLight.ttf" />
+                <include name="DejaVuSerif.ttf" />
+                <include name="DejaVuSerif-*.ttf" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="-copy-win-resources" if="is.windows">
+        <mkdir dir="${hy.jdk}/jre/lib" />
+        <copy file="src/main/resources/font.properties.xp"
+              tofile="${hy.jdk}/jre/lib/font.properties"/>
+    </target>
+
+    <target name="findbugs" depends="build-jar">
+        <run-findBugs
+            jarFile="${hy.jdk}/jre/lib/boot/awt.jar"
+            excludeFilter="make/findbugs-exclude-filter.xml"
+            outputFile="${findBugs.report}/awt.xml"/>
+    </target>
+
+    <target name="build-jar" depends="svn-info,class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/awt.jar"
+                    manifest="META-INF/MANIFEST.MF">
+            <fileset refid="classes" />
+            <fileset refid="common.resources" />
+        </hy.jar.bin>
+
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/awt-src.jar">
+            <fileset dir="src/main/java/common" />
+            <fileset dir="src/main/java/${hy.os.family}" />
+        </hy.jar.src>
+    </target>
+
+    <target name="build-native" depends="build-native-all" />
+    <target name="build-native-all"
+        depends="-build-native-common,-build-native-unix,-build-native-windows" />
+        
+    <target name="-build-native-common">
+        <make dir="src/main/native/lcmm/${hy.os.family}">
+            <make-elements>
+                <env key="HY_LCMS_VER" value="${lcms.ver}" />
+            </make-elements>
+        </make>
+
+        <make dir="src/main/native/jpegdecoder/${hy.os.family}">
+            <make-elements>
+                <env key="HY_JPEG_VER" value="${jpeg.ver}" />
+            </make-elements>
+        </make>
+
+        <make dir="src/main/native/gl/${hy.os.family}">
+            <make-elements>
+                <env key="HY_PNG_VER" value="${png.ver}" />
+            </make-elements>
+        </make>
+        
+        <make dir="src/main/native/oglwrapper/${hy.os.family}" />
+        <make dir="src/main/native/fontlib/${hy.os.family}" />
+    </target>
+
+    <target name="-build-native-unix" if="is.unix">
+        <make dir="src/main/native/x11wrapper/${hy.os.family}" />
+        <make dir="src/main/native/linuxfont/${hy.os.family}" />
+    </target>
+
+    <target name="-build-native-windows" if="is.windows">
+        <make dir="src/main/native/win32wrapper/${hy.os.family}" />
+        <make dir="src/main/native/winfont/${hy.os.family}" />
+    </target>
+
+    <target name="clean-native"
+            depends="-clean-native-unix,-clean-native-windows">
+        <make dir="src/main/native/lcmm/${hy.os.family}"
+              target="clean"/>
+        <make dir="src/main/native/jpegdecoder/${hy.os.family}"
+              target="clean"/>
+        <make dir="src/main/native/gl/${hy.os.family}"
+              target="clean"/>
+        <make dir="src/main/native/oglwrapper/${hy.os.family}"
+              target="clean"/>
+        <make dir="src/main/native/fontlib/${hy.os.family}"
+              target="clean"/>
+    </target>
+
+    <target name="-clean-native-unix" if="is.unix">
+        <make dir="src/main/native/x11wrapper/${hy.os.family}"
+              target="clean"/>
+        <make dir="src/main/native/linuxfont/${hy.os.family}"
+              target="clean"/>
+    </target>
+
+    <target name="-clean-native-windows" if="is.windows">
+        <make dir="src/main/native/win32wrapper/${hy.os.family}"
+              target="clean"/>
+        <make dir="src/main/native/winfont/${hy.os.family}"
+              target="clean"/>
+    </target>
+
+    <target name="test-jar" depends="svn-info,compile-tests">
+        <mkdir dir="${tests.hdk.dir}" />
+        <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
+        
+        <hy.jar.bin destfile="${tests.hdk.dir}/awt_boot_tests.jar">
+            <fileset dir="bin/test/boot">
+                <exclude name="**/*Headless*Test.class" />
+            </fileset>
+        </hy.jar.bin>
+        <hy.jar.bin destfile="${tests.hdk.dir}/awt_tests.jar">
+            <fileset dir="bin/test/classes" />
+        </hy.jar.bin>
+        <hy.jar.bin destfile="${tests.hdk.dir}/awt_headless_tests.jar">
+            <fileset dir="bin/test/boot">
+                <include name="**/*Headless*Test.class" />
+            </fileset>
+        </hy.jar.bin>
+
+        <mkdir dir="${tests.excludes.hdk.dir}"/>
+        <copy todir="${tests.excludes.hdk.dir}">
+            <fileset dir="make" includes="exclude*"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\.java" replace="\.class" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+
+        <mkdir dir="${tests.resources.hdk.dir}" />
+        <copy todir="${tests.resources.hdk.dir}" includeemptydirs="false">
+            <fileset dir="src/test/api/resources" />
+        </copy>
+    </target>
+
+    <target name="compile-tests">
+        <compile-tests description="awt boot tests"
+                       destdir="bin/test/boot">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/impl/boot" />
+                </src>
+            </javac-elements>
+        </compile-tests>
+        <compile-tests description="awt tests"
+                       destdir="bin/test/classes">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/api/java" />
+                    <pathelement location="src/test/impl/${hy.os.family}" />
+                </src>
+            </javac-elements>
+        </compile-tests>
+    </target>
+
+    <target name="run-tests" depends="test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
+    </target>
+
+    <target name="class-patternset">
+        <make-patternset module="${hy.module}" />
+    </target>
+
+</project>

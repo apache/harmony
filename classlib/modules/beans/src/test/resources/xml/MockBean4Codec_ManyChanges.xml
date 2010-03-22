@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="${version}" class="java.beans.XMLDecoder">
+    <object id="MockBean4Codec0" class="${classname}">
+  <void property="b"> 
+   <byte>127</byte> 
+  </void> 
+  <void property="backRef"> 
+   <object idref="MockBean4Codec0"/> 
+  </void> 
+  <void property="bobj"> 
+   <byte>127</byte> 
+  </void> 
+  <void property="bool"> 
+   <boolean>false</boolean> 
+  </void> 
+  <void property="boolobj"> 
+   <boolean>true</boolean> 
+  </void> 
+  <void property="bornFriend"> 
+   <void property="clazz"> 
+    <class>java.lang.Exception</class> 
+   </void> 
+   <void property="zarr"> 
+    <void index="0"> 
+     <int>888</int> 
+    </void> 
+   </void> 
+  </void> 
+  <void property="c"> 
+   <char>Z</char> 
+  </void> 
+  <void property="clazz"> 
+   <class>java.lang.String</class> 
+  </void> 
+  <void property="cobj"> 
+   <char>z</char> 
+  </void> 
+  <void property="d"> 
+   <double>123.456</double> 
+  </void> 
+  <void property="dobj"> 
+   <double>123.456</double> 
+  </void> 
+  <void property="f"> 
+   <float>12.34</float> 
+  </void> 
+  <void property="fobj"> 
+   <float>12.34</float> 
+  </void> 
+  <void property="friend"> 
+   <object class="${classname}" id="MockBean4Codec1">
+    <void property="clazz"> 
+    <class>${classname}</class>
+    </void> 
+   </object> 
+  </void> 
+  <void property="i"> 
+   <int>999</int> 
+  </void> 
+  <void property="iobj"> 
+   <int>999</int> 
+  </void> 
+  <void property="l"> 
+   <long>8888888</long> 
+  </void> 
+  <void property="lobj"> 
+   <long>8888888</long> 
+  </void> 
+  <void property="name"> 
+   <string>Li Yang</string> 
+  </void> 
+  <void property="nill"> 
+   <null/> 
+  </void> 
+  <void property="s"> 
+   <short>55</short> 
+  </void> 
+  <void property="sobj"> 
+   <short>55</short> 
+  </void> 
+  <void property="zarr"> 
+   <array class="int" length="3"> 
+    <void index="0"> 
+     <int>3</int> 
+    </void> 
+    <void index="1"> 
+     <int>2</int> 
+    </void> 
+    <void index="2"> 
+     <int>1</int> 
+    </void> 
+   </array> 
+  </void> 
+  <void property="zarrarr"> 
+   <array class="[Ljava.lang.String;" length="1"> 
+    <void index="0"> 
+     <array class="java.lang.String" length="3"> 
+      <void index="0"> 
+       <string>6</string> 
+      </void> 
+      <void index="1"> 
+       <string>6</string> 
+      </void> 
+      <void index="2"> 
+       <string>6</string> 
+      </void> 
+     </array> 
+    </void> 
+   </array> 
+  </void> 
+ </object> 
+</java> 

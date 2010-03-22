@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony SAAJ API
+Bundle-SymbolicName: org.apache.harmony.saaj-api
+Bundle-Version: 1.3
+Bundle-ClassPath: axis2-saaj-api-1.3.jar
+Export-Package: javax.xml.soap
+Import-Package: java.io,
+  java.util,
+  javax.activation,
+  javax.xml.namespace,
+  javax.xml.transform,
+  javax.xml.transform.dom,
+  org.w3c.dom
+  
+  
+  

@@ -1,0 +1,13 @@
+ldap:///o=University%20of%20Michigan,c=US
+ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US
+ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US?postalAddress
+ldap://ldap.itd.umich.edu/o=University%20of%20Michigan,c=US?postalAddress,objectClass
+ldap://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)
+ldap://ldap.itd.umich.edu/c=GB?objectClass?one
+ldap://ldap.question.com/o=Question%3f,c=US?mail
+ldap://ldap.netscape.com/o=Babsco,c=US???(int=%5c00%5c00%5c00%5c04)
+ldap://ldap.question.com/cn=hello????2.3.3=sdfsf
+ldap://ldap.question.com/cn=hello????2.3.3=sdfsf,3.2.2=dfdfdf
+ldaps://host.com:6666/o=University%20of%20Michigan,c=US??sub?(cn=Babs%20Jensen)
+ldaps://ldap.question.com/cn=hello????2.3.3=sdfsf
+

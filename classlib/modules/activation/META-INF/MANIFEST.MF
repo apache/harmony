@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Specification-Title: JavaBeans Activation Framework Specification
+Specification-Version: 1.1
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Geronimo Activation
+Bundle-SymbolicName: org.apache.harmony.activation
+Bundle-Version: 1.0.2
+Bundle-ClassPath: geronimo-activation_1.1_spec-1.0.2.jar
+Eclipse-JREBundle: true
+Export-Package: javax.activation
+Import-Package: java.awt.datatransfer,
+  java.io,
+  java.lang,
+  java.net,
+  java.util

@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Specification-Title: Java Architecture for XML Binding
+Specification-Version: 2.1
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Geronimo JAXB
+Bundle-SymbolicName: org.apache.harmony.jaxb
+Bundle-Version: 1.0
+Bundle-ClassPath: geronimo-jaxb_2.1_spec-1.0.jar
+Eclipse-JREBundle: true
+Export-Package: javax.xml.bind,
+  javax.xml.bind.annotation,
+  javax.xml.bind.annotation.adapters,
+  javax.xml.bind.attachment,
+  javax.xml.bind.helpers,
+  javax.xml.bind.util
+Import-Package: java.io,
+  java.lang,
+  java.lang.annotation,
+  java.lang.reflect,
+  java.math,
+  java.net,
+  java.util,
+  javax.activation,
+  javax.xml.namespace,
+  javax.xml.parsers,
+  javax.xml.stream,
+  javax.xml.transform,
+  javax.xml.transform.dom,
+  javax.xml.transform.sax,
+  javax.xml.transform.stream,
+  javax.xml.validation,
+  org.w3c.dom,
+  org.xml.sax,
+  org.xml.sax.ext,
+  org.xml.sax.helpers

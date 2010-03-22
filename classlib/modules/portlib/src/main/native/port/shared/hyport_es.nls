@@ -1,0 +1,55 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=No se ha podido asignar memoria.
+
+HYNLS_PORT_SL_UNKOWN_ERROR=Error desconocido al cargar la biblioteca compartida
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=No se ha podido cargar el m\u00f3dulo dependiente %s
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=Anomal\u00eda en la resoluci\u00f3n de s\u00edmbolo
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=No se ha podido cargar el m\u00f3dulo
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=Formato de m\u00f3dulo incorrecto
+HYNLS_PORT_SL_NOT_A_MODULE=No es un m\u00f3dulo
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=Arquitectura de m\u00f3dulo incorrecta
+HYNLS_PORT_SL_FILE_NOT_FOUND=No se ha encontrado el archivo
+HYNLS_PORT_SL_PERMISSION_DENIED=Permiso denegado
+HYNLS_PORT_SL_OUT_OF_MEMORY=Memoria agotada
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=Error: la funci\u00f3n de 68 K tiene establecido el bit PACE.
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=No se ha encontrado la tabla de DLL
+HYNLS_PORT_SL_DLL_NOT_FOUND=No se ha encontrado la DLL
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=No se han podido resolver referencias de DLL - es posible que falte una DLL de prerrequisito
+HYNLS_PORT_SL_INTERNAL_ERROR=Error interno %i
+
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=Operaci\u00f3n con error: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=Operaci\u00f3n con error: %1$d (%2$s con error: %3$d)
+
+
+
+

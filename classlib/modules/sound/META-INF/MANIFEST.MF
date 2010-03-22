@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.6
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Sound
+Bundle-SymbolicName: org.apache.harmony.sound
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.lang.annotation,
+ java.net,
+ java.security,
+ java.util,
+ java.util.jar,
+ java.util.zip,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util
+Export-Package: javax.sound.midi,
+ javax.sound.midi.spi,
+ javax.sound.sampled

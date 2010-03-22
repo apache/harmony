@@ -1,0 +1,839 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!--
+Author:  Nadezhda Morozova, Stepan M. Mishura
+-->
+<!DOCTYPE html public "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<TITLE>ASN.1 Framework</TITLE>
+<LINK rel="Stylesheet" type="text/css" media="all" href="../harmony.css">
+</HEAD>
+<BODY>
+<H1 align="center"><A name="Top"></A>ASN.1 Framework</H1>
+<p class="TOCHeading"><A href="#Revision_History">Revision History</A></p>
+<p class="TOCHeading"><A href="#Disclaimer">Disclaimer</A></p>
+<p class="TOCHeading"><A href="#About_this_document">About this Document</A> </p>
+<p class="TOC"><A href="#Purpose">Purpose </A> </p>
+<p class="TOC"><A href="#Intended_Audience">Intended Audience </A> </p>
+<p class="TOC"><A href="#Documentation_Conventions">Documentation Conventions</A></p>
+<p class="TOCHeading"><A href="#Overview">Introduction to ASN.1</A> </p>
+<p class="TOC"><A href="#About">About</A> </p>
+<p class="TOC"><A href="#Basic_Types">ASN.1 Basic Types</A> </p>
+<p class="TOCHeading"><A href="#Implementation">ASN.1 Framework in Harmony</A></p>
+<p class="TOC"><a href="#About_ASN_Framework">About</a></p>
+<p class="TOC"><A href="#Mapping_ASN_Java">Mapping between ASN.1 and Java Types</A></p>
+<p class="TOC"><A href="#Harmony_Classes">Harmony ASN.1 Classes</A></p>
+<p class="TOC"><A href="#Encoding_Rules">Encoding Rules</A> </p>
+<p class="TOC"><A href="#Notations_Implementation">Implementing ASN.1 Notations</A></p>
+<p class="TOCHeading"><A href="#Appendix">Appendix: Usage Examples</A> </p>
+<p class="TOCHeading"><A href="#References">References</A> </p>
+<H1><A name="Revision_History"></A>Revision History</H1>
+<TABLE width="100%">
+  <TR> 
+    <TD class="TableHeading" width="25%"> Version </TD>
+    <TD class="TableHeading" width="50%"> Version Information </TD>
+    <TD class="TableHeading"> Date </TD>
+  </TR>
+  <TR> 
+    <TD class="TableCell" width="25%"> Initial version </TD>
+    <TD class="TableCell" width="25%"> Nadya Morozova, Stepan Mishura: document 
+      created<br>
+	  Special thanks to Sergey Dmitriev for assistance</TD>
+    <TD class="TableCell"> November 16, 2005</TD>
+  </TR>
+   <TR> 
+    <TD class="TableCell" width="25%"> </TD>
+    <TD class="TableCell" width="25%"> </TD>
+    <TD class="TableCell"> </TD>
+  </TR>
+</TABLE>
+<H1><A name="Disclaimer"></A>Disclaimer and Legal Information</H1>
+<P>Copyright 2005 The Apache Software Foundation or its licensors, as applicable.</P>
+<P>Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you 
+  may not use this file except in compliance with the License. You may obtain 
+  a copy of the License at <A href="http://www.apache.org/licenses/LICENSE-2.0"> 
+  http://www.apache.org/licenses/LICENSE-2.0</A>. </P>
+<P>Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES 
+  OR CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.</P>
+<H1><A name="About_this_document"></A>About This Document</H1>
+<H2><A name="Purpose"></A>Purpose</H2>
+<P>This document introduces the ASN.1 (Abstract Syntax Notation) framework delivered 
+  as part of the Harmony classlibrary. This document provides
+  an overview of ASN.1 types and encoding rules with focus on the characteristics 
+  of the current implementation. The document gives details on the framework design 
+  and provides an overall description of the ASN.1 package. </p>
+<H2><A name="Intended_Audience"></A>Intended Audience</H2>
+<P>The target audience for the document includes a wide community of engineers 
+  interested in using ASN.1 and in further work with the product to contribute 
+  to its development. The document assumes that readers are familiar with the 
+  ASN.1 notation and the Java<a href="#*">*</a> programming language. </P>
+<H2><A name="Documentation_Conventions"></A>Documentation Conventions</H2>
+<P>This document uses the <A href="../conventions.htm">unified conventions</A> for 
+  the Harmony documentation kit.</P>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<H1><A name="Overview"></A>Introduction to ASN.1</H1>
+<H2><A name="About"></A>About</H2>
+<P>ASN.1 (Abstract Syntax Notation One) is an international standard of notation 
+  used to specify data structures with a high level of abstraction, which is reflected in the ASN.1 specification 
+  [<a href="#ASN_SPEC">2</a>]. ASN.1 is fully 
+  platform- and language-independent. ASN.1 goes with the <I>encoding rules</I>, which 
+  determine how to represent a value of an abstract type as a string of octets 
+  [<a href="#RULES_SPEC">3</a>]. </P>
+<P>The Java<A href="#*">*</A> API specification [<a href="#JAVA_API_SPEC">1</a>] 
+  employs ASN.1 in the following ways:</P>
+<UL>
+  <LI><I>Directly</I>: by providing the ASN.1 notation for used data and by specifying its encoding rule
+  <LI><I>Indirectly</I>: by refereeing to another (external) specification that uses the ASN.1 notation
+</UL>
+
+<p>To learn more about ASN.1, you can use online documentation [<a href="#INFO_SITE">4</a>],
+  [<a href="#LAYMAN_GUIDE">5</a>], and publications [<a href="#EBOOK1">6</a>],
+  [<a href="#EBOOK2">7</a>].
+</p>
+
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<H2><A name="Basic_Types"></A>ASN.1 Basic Types</H2>
+<P>ASN.1 has the following basic types:</P>
+<UL>
+  <LI><A href="#String"><I>String</I></A> and <A href="#Primitive"><I>primitive</I></A> types represent raw data.
+  <LI><A href="#Constructed"><I>Constructed</I></A> types serve as containers for a number of type components, which can be optional or can have default values.
+  <LI><A href="#Tagged"><I>Tagged</I></A> types are used to derive one ASN.1 type from another.
+  <LI><A href="#Other"><I>Other</I></A> types are <CODE>ANY</CODE> and <CODE>CHOICE</CODE>. 
+</UL>
+<P>These types are used to specify a wide range of other abstract types, as shown in Example 1. </P>
+<H3><a name="example1"></a>Example 1</H3>
+<p>This example is based on RFC 3280 [<a href="#RFC">8</a>]. </p>
+<blockquote>
+<PRE>
+Extensions ::= SEQUENCE SIZE (1..MAX) OF Extension
+
+Extension ::= SEQUENCE {
+    extnID OBJECT IDENTIFIER,
+    critical BOOLEAN DEFAULT FALSE,
+    extnValue OCTET STRING
+}
+
+Version ::= INTEGER { v1(0), v2(1), v3(2) }
+</PRE>
+</blockquote>
+
+<P>In this example, the basic ASN.1 types <CODE>SEQUENCE</CODE>, <CODE>OBJECT 
+  IDENTIFIER</CODE>, <CODE>BOOLEAN</CODE> and <CODE>OCTET STRING</CODE> are used 
+  to specify a new abstract type <CODE>Extension</CODE>. The newly created type 
+  is then used with another basic type <CODE>SEQUENCE OF</CODE> to describe the 
+  <CODE>Extensions</CODE> type. The ASN.1 <CODE>INTEGER</CODE> type is used to 
+  specify the <CODE>Version</CODE> abstract type and to provide constraints for 
+  this type.</P>
+
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<H1><A name="Implementation"></A>ASN.1 Framework in Harmony</H1>
+<P>This section part of the document describes the ASN.1 framework as a whole,
+  defines the mapping principles to establish the correspondence between ASN.1 
+  and Java<A href="#*">*</A> types, and represents the hierarchy of ASN.1 types 
+  representation in the current framework.</P>
+<H2><A name="About_ASN_Framework"></A>About</H2>
+<P>The ASN.1 framework provides a common, easy and efficient approach for working 
+  with ASN.1 basic types, notations and encoding rules. This framework can be 
+  described as a layer between a Java<A href="#*">*</A> object and its ASN.1 encoded 
+  form, as shown in Figure 1. </P>
+<P></P>
+<P align="center"><IMG src="images/ASN_framework.gif" alt="overview"></P>
+<P  class="special" style="text-align: center" >Figure 1: ASN.1 Framework Layer</P>
+<P>The Harmony ASN.1 framework is characterized by:</P>
+<UL>
+  <LI>A clear API for decoding and encoding objects 
+  <LI>Low resource consuming 
+  <LI>Thread safety 
+</UL>
+<P>The framework enables the following:</P>
+<UL>
+  <LI>Create a Java<A href="#*">*</A> object instance from its encoded octet string 
+  <LI>Verify that an octet string is a valid encoded string 
+  <LI>Generate an encoded octet string for a particular object 
+</UL>
+<P class="note">Note</P>
+<P class="notetext">The current ASN.1 framework is a partial implementation of 
+  the ASN.1 and encoding rules specifications. This framework covers certain ASN.1 
+  basic types and basic encoding rules (BER), and provides most restrictions employed 
+  by the distinguished encoding rules (DER).</P>
+<H2><A name="Mapping_ASN_Java"></A>Mapping between ASN.1 and Java<A href="#*">*</A> Types</H2>
+<P>The framework maps all ASN.1 abstract types and notations to Java<A href="#*">*</A> primitive types or 
+   Java<A href="#*">*</A> classes.</P>
+<H3><a name="example2"></a>Example 2 </H3> 
+<P>The notations in <a href="#example1">Example 1</a> can be represented as the 
+  following Java<A href="#*">*</A> classes:</p>
+<blockquote>
+<PRE>
+public class Extension {
+    private String extnID;
+    private boolean critical;
+    private byte extnValue[];
+}
+
+public class Extensions {
+    // contains elements of Extension class
+    private List extensions;
+}
+</PRE>
+</blockquote>
+<P>The <CODE>Extension</CODE> notation corresponds to a Java<A href="#*">*</A> 
+  class with three fields, where every field corresponds to one entry in the <CODE>Extension</CODE> 
+  notation. For example, the <CODE>critical BOOLEAN DEFAULT FALSE</CODE> field 
+  in the <CODE>Extension</CODE> notation corresponds to the <CODE>boolean critical</CODE> 
+  field in the Java<A href="#*">*</A> class. The <CODE>Extensions</CODE> notation 
+  equals to a Java<A href="#*">*</A> class with a field that contains an ordered 
+  collection of the instances of the <code>Extension</code> class.</P>
+<P>The table below describes the default mapping ASN.1 types to Java<A href="#*">*</A> 
+  types, and indicates the class providing the specified mapping in the current 
+  framework. </P>
+<TABLE border="1" cellspacing="0" cellpaDDing="0" align="center" width="60%">
+  <TR> 
+    <TD valign="top" class="TableHeading" colspan="2"> ASN.1 
+        Type </TD>
+    <TD valign="top" class="TableHeading" style="text-align: center" width="25%"> 
+      Java<A href="#*">*</A> Type </TD>
+    <TD valign="top" class="TableHeading" width="30%"> 
+        Framework Class </TD>
+  </TR>
+  <TR> 
+    <TD rowspan="5" class="TableCell" width="11%"><A name="Primitive">Primitive</A> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>INTEGER</CODE></TD>
+    <TD align="center" width="25%"> <CODE>byte[]</CODE> </TD>
+    <TD width="25%"> <CODE><A href="#ASN1Integer">ASN1Integer</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>ENUMERATED</CODE></TD>
+    <TD align="center" width="25%"> <CODE>byte[]</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1Enumerated">ASN1Enumerated</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>OBJECT IDENTIFIER</CODE></TD>
+    <TD align="center" width="25%"> <CODE>int[]</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1Oid">ASN1Oid</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>BOOLEAN</CODE></TD>
+    <TD align="center" width="25%"> <CODE>java.lang.Boolean</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1Boolean">ASN1Boolean</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD class="TableCell" rowspan="12" width="11%"><A name="String">String</A> 
+    </TD>
+    <TD valign="top" width="30%"> <CODE>BitString</CODE></TD>
+    <TD valign="top" align="center" width="25%"> <CODE>asn1.BitString</CODE> </TD>
+    <TD valign="top" width="30%"> <CODE><A href="#ASN1BitString">ASN1BitString</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>OctetString</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>byte[]</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1OctetString">ASN1OctetString</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>PrintableString</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</a></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>T61String</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+     <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</a></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>IA5String</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> 
+    </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</a></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>UTF8String</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>BMPString</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>GeneralString</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>TeletexString</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>UniversalString</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.lang.String</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1StringType">ASN1StringType</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>UTCTime</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.util.Date</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1UTCTime">ASN1UTCTime</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>GeneralizedTime</CODE> </TD>
+    <TD align="center" width="25%"> <CODE>java.util.Date</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1UTCTime">ASN1GeneralizedTime</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD rowspan="3" class="TableCell"> <A name="Constructed">Constructed</A> 
+    </TD>
+    <TD width="30%"> <CODE>SEQUENCE</CODE></TD>
+    <TD align="center" width="25%"> <CODE>Object[]</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1Sequence">ASN1Sequence</A></CODE> </TD>
+  </TR>
+  
+  <TR> 
+    <TD width="30%"> <CODE>SEQUENCE OF</CODE></TD>
+    <TD align="center" width="25%"> <CODE>java.util.List</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1SequenceOf">ASN1SequenceOf</A></CODE> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>SET OF</CODE></TD>
+    <TD width="25%" align="center"> <CODE>java.util.List</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#ASN1SetOf">ASN1SetOf</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD rowspan="2" width="11%" class="TableCell"><A name="Tagged">Tagged</A> 
+    </TD>
+    <TD width="30%"> <CODE>EXPLICIT</CODE> </TD>
+    <TD width="25%" style="text-align: center"> <I> based 
+        type</I> 
+    </TD>
+    <TD width="30%"><A href="#ASN1Explicit"> <CODE>ASN1Explicit</CODE> </A> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>IMPLICIT</CODE></TD>
+    <TD align="center" width="25%"  style="text-align: center"><I> 
+        based type</I> </TD>
+    <TD width="30%"><A href="#Class_ASNImplicit"> <CODE>ASN1Implicit</CODE></A> 
+    </TD>
+  </TR>
+  <TR> 
+    <TD rowspan="2" width="11%" class="TableCell"><A name="Other">Other</A> </TD>
+    <TD width="30%"> <CODE>ANY</CODE></TD>
+    <TD align="center" width="25%"> <CODE>byte[]</CODE> </TD>
+    <TD width="30%"> <CODE><A href="#Class_ASNAny">ASN1Any</A></CODE> </TD>
+  </TR>
+  <TR> 
+    <TD width="30%"> <CODE>CHOICE</CODE></TD>
+    <TD align="center" width="25%" style="text-align: center"><I> 
+        one of chosen types </I> </TD>
+    <TD width="30%"> <CODE><A href="#Class_ASNChoice">ASN1Choice</A></CODE> </TD>
+  </TR>
+</TABLE>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<H2><A name="Harmony_Classes"></A>Harmony ASN.1 Classes</H2>
+<P>Basic ASN.1 types are in the <CODE>org.apache.harmony.security.asn1</CODE> package 
+  in accordance with the hierarchy shown in Figure 2.</P>
+<P align="center"><IMG src="images/package_content.gif" alt="package" width="469" height="352"></P>
+<P class="special" >Figure 2: Class Hierarchy</P>
+<P>The subsequent sections provide as short description of the classes included 
+  in the package.</P>
+ 
+<P class="class"><A name="Primitive_Types"></A>Primitive Types</P>
+<DL>
+ 
+  <DT><A name="ASN1Integer"></A>ASN1Integer</DT>
+  <DD>This class represents the ASN.1 <code>INTEGER</code> type that denotes an 
+    arbitrary integer with positive, negative, or zero values and any magnitude. 
+    Because an integer value is not restricted, it is up to the application class 
+    to choose the Java<A href="#*">*</A> type for storing the integer value, for 
+    example, an instance of the <CODE>java.math.BigInteger</CODE> class. By default, 
+    an integer value is stored in an array of bytes. </DD>
+  <DT><A name="ASN1Enumerated"></A> ASN1Enumerated</DT>
+  <DD> This class represents the ASN.1 <code>ENUMERATED</code> type that denotes 
+    a set of integer values. The implementation of this class is similar to that 
+    of the <CODE>ASN1Integer</CODE> class. </DD>
+  <DT><A name="ASN1Oid"></A>ASN1Oid </DT>
+  <DD>This class implements the ASN.1 <code>OBJECT IDENTIFIER</code> type. This 
+    type is a sequence of integer components that identifies an entity, such as 
+    an organization or an algorithm. Integer components have no negative values. 
+    An <code>OBJECT IDENTIFIER</code> value includes at least two components. 
+    The corresponding Java<A href="#*">*</A> type is an array of integer values. 
+  </DD>
+  <DT><A name="ASN1Boolean"></A> ASN1Boolean</DT>
+  <DD>This class implements the ASN.1 <code>BOOLEAN</code> type, which corresponds to the <CODE>java.lang.Boolean</CODE> 
+    Java<A href="#*">*</A> class. </DD>
+</DL>
+
+<p class="class"><A name="String_Types"></A>String Types</p>
+<DL>
+  <DT><a name="ASN1StringType"></a>ASN1StringType</DT>
+  <DD>This is an abstract class that contains common functionality for all ASN.1 
+    string types, and includes the implementation of the following types: <CODE>BMPString, 
+    IA5String, GeneralString, PrintableString, TeletexString, UniversalString,</CODE> 
+    and <CODE>UTF8String</CODE>. The class maps all these types to the <CODE>java.lang.String</CODE> 
+    object. 
+
+    <P class="note">Note</P>
+    <P class="notetext">The current implementation does not verify allowed characters 
+     for any of ASN.1 restricted characters types. The class only stores and retrieves 
+     contents bytes to and from the <CODE>String</CODE> object.</P>
+  </DD>
+</DL>
+<DL>
+  <DT><A name="ASN1BitString"></A>ASN1BitString </DT>
+  <DD>This class represents the ASN.1 <CODE>BitString</CODE> type. The corresponding 
+    Java<A href="#*">*</A> class is <CODE>BitString</CODE> included in the <code>asn1</code> 
+    package. The class provides implementation for decoding or encoding <CODE>BitString</CODE> 
+    objects.
+<P class="note">Note</P>
+<P class="notetext">A special use case for this ASN.1 type exists, when the type 
+  is declared as <CODE>Named BitString</CODE>. For example:</P>
+
+<blockquote> 
+<blockquote> 
+<PRE>
+    Keys ::= BIT STRING {
+        Key1 (0),
+        Key2 (1),
+        MyKey (2)
+    }
+</PRE>
+</blockquote>
+</blockquote>
+<p class="notetext">In this case, the BER specification [<a href="#RULES_SPEC">3</a>] 
+  enables adding and removing any number of trailing to and from the basic encoding. 
+  To provide a correct type implementation, use the <code>ASN1Bitstring.ASN1NamedBitList</code> 
+  class. By default, the class maps the ASN.1 <CODE>Named BitString</CODE> type 
+  to an array of primitive boolean values.</p>
+
+ </DD> 
+  <DT><A name="ASN1OctetString"></A>ASN1OctetString </DT>
+  <DD>This class implements the ASN.1 <CODE>OctetString</CODE> type, which corresponds 
+    to the Java<a href="#*">*</a> type of an array of bytes.</DD></dl>
+
+<DL>
+  <dt><A name="ASN1UTCTime"></A> ASN1UTCTime </dt>
+  	<dd> This class represents the ASN.1 <CODE>UTCTime</CODE> type. The corresponding 
+    Java<A href="#*">*</A> class is <CODE>java.util.Date</CODE>. 
+ 	</dd>
+  <dt><A name="ASN1GeneralizedTime"></A>ASN1GeneralizedTime</dt>  
+  	<dd>This class represents the ASN.1 <CODE>GeneralizedTime</CODE> type. The corresponding 
+    Java<A href="#*">*</A> class is <CODE>java.util.Date</CODE>. 
+	</dd>
+</DL>
+
+<p class="class"><A name="Constructed_Types"></A>Constructed Types</p>
+<DL>
+  <dt><A name="ASN1Sequence"></A> ASN1Sequence </dt>
+  	<dd>The class represents a ASN.1 type consisting of an ordered collection of more than one type. 
+	A type in the collection can be optional or can have default values. If a type in the collection is marked 
+	as optional or default, then its value may be absent in the encoding of the sequence type. If a default type is absent, 
+	then its default value is used. 
+	<br>An instance of the class is initialized with a Java<A href="#*">*</A> array of ASN.1 classes 
+	that corresponds to the notation of a sequence type. The order of ASN.1 classes in an initialization array must 
+	strictly correspond to the type. 
+	<br>For example, if a sequence type has the following types collection: <CODE>integer</CODE>, <CODE>boolean</CODE>, <CODE>ANY</CODE>, then an initialization 
+	array must contain three class instances in the same order: <CODE>ASN1Boolean</CODE>, <CODE>ASN1Integer</CODE>, <CODE>ASN1Any</CODE>.</dd> 
+ <dt><A name="ASN1SequenceOf"></A>ASN1SequenceOf</dt>
+  	<dd>The <CODE>SEQUENCE OF</CODE> type denotes an ordered collection of one or 
+    more values of the selected ASN.1 type. An instance of the class is initialized 
+    with an instance of the ASN.1 class according to the type notation. The 
+    passed instance is used to decode or encode all values in an collection.
+	</dd>
+  <dt><A name="ASN1SetOf"></A>ASN1SetOf</dt>
+  	<dd>The <CODE>SET OF</CODE> type denotes an unordered collection of one or more 
+    values of the selected ASN.1 type. This class is similar to the <CODE>ASN1SequenceOf</CODE> 
+    class.
+	</dd>
+
+</DL>
+
+<p class="class"><a name="Tagged_Types"></a>Tagged Types</p>
+<DL>
+<dt><A name="ASN1Explicit"></A>ASN1Explicit</dt>
+  	<DD>The class implements the ASN.1 <CODE>EXPLICIT</CODE> type tagging. <em>Explicit tagging</em> denotes 
+	a type derived from another type by adding an outer tag to the base type. 
+	This type can be represented as a sequence type with only one component, so that the implementation class acts as a container for another ASN.1 type.
+	</DD>
+<DT><A name="Class_ASNImplicit"></A>ASN1Implicit</DT>
+  <DD>The class implements the ASN.1 <CODE>IMPLICIT</CODE> type tagging. An <em>implicitly tagged type</em> is a type derived from another type by 
+  changing a tag of the base type. The implementation class for this type changes only the tag when decoding or encoding the base type. 
+</DD>
+</DL>
+<p class="class"><a name="Other_Types"></a>Other Types</p>
+<DL>
+ <dt><A name="Class_ASNAny"></A>ASN1Any</dt>
+  <DD>The class implements the ASN.1 <CODE>ANY</CODE> type. The type denotes any 
+    ASN.1 type that can be defined by a value of the <CODE>OBJECT IDENTIFIER</CODE> 
+     or by an integer index. The class handles only raw data represented as 
+    a Java<A href="#*">*</A> byte array. It is up to the application class to 
+    select the appropriate decoder or encoder for retrieving or storing the content 
+    respectively.
+	</DD>
+ <dt><A name="Class_ASNChoice"></A>ASN1Choice</dt>
+	<DD>The class implements the ASN.1 <CODE>CHOICE</CODE> type. The type represents a list of one more type alternatives with distinct tags. 
+	an instance of the class is initialized with the Java<A href="#*">*</A> array of ASN.1 classes, which corresponds to a type notation. 
+	<br>For example, if a <CODE>CHOICE</CODE> type is specified as a list of <CODE>boolean</CODE>, <CODE>OctetString</CODE>  and <CODE>UTCTime</CODE>, 
+	then an initialization array contains instances of the <CODE>ASN1Boolean</CODE>, <CODE>ASN1OctetString</CODE> and <CODE>ASN1UTCTime</CODE> classes. 
+	During decoding or encoding, a required type alternative is selected. 
+	</DD>
+</DL>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+
+<H2><A name="Encoding_Rules"></A>Encoding Rules</H2>
+<P>Encoding rules specify how to represent an ASN.1 type as a sequence of octets. 
+  ASN.1 encoding rules are represented in the <CODE>org.apache.harmony.security.asn1</CODE> 
+  package, as follows: </P>
+<UL>
+  <LI> <CODE>BerInputStream</CODE> and <CODE>DerInputStream</CODE> provide decoding 
+    and verifying functionality for corresponding notation rules. 
+  <LI> <CODE>BerOutputStream</CODE> and <CODE>DerOutputStream</CODE> provide the 
+    encoding functionality. 
+</UL>
+
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+
+<H3><A name="Encoding"></A>Encoding</H3>
+<P><em>Encoding</em> an object is the process of extracting all required information 
+  from an object and storing it in a sequence of octets according to the specified 
+  ASN.1 notation and encoding rules. The common encoding functionality is implemented 
+  in the <CODE>BerOutputStream</CODE> class. Encoding for DER is represented by the <code>DEROutputStream</code> class. 
+</P>
+<P>The encoding of data for each ASN.1 type includes:</P>
+<UL>
+  <LI>identifier octets (for example, tag) 
+  <LI>length octets 
+  <LI>content octets 
+  <LI>end-of-content octets 
+</UL>
+<p class="note">DER Encoding</p>
+<P class="notetext">In contrast to BER, DER enables using only the definite form of length encoding. That is why, before encoding an ASN.1 type value, the ASN.1 framework must obtain the length of the value. This requirement determines the whole process of DER encoding: to calculate the length of a constructed ASN.1 type, the framework calculates lengths of its components, which can also be constructed, and so on.  DER encoding goes in the following stages: 
+ </P>
+<UL class="notetext">
+  <LI> <em>Collection</em>: Step by step, the DER encoder extracts all data to be encoded, processes the data, 
+ calculates an encoding length for each item, and stores all calculations and processed data. Then, 
+ the encoder calculates the overall encoding length and allocates required space.
+  <LI> <em>Encoding</em>: The DER encoder retrieves stored information, 
+ encodes it according to the rules and writes the encoding to the allocated byte array. 
+</UL>
+
+<H3><A name="Decoding"></A>Decoding</H3>
+<P><em>Decoding</em> or verifying the provided encoded form is a sequential process 
+  of parsing strings of octets according to the specified ASN.1 notation and encoding 
+  rules.</P>
+<P>An iteration of decoding an ASN.1 type includes decoding its tag, length, and 
+  content octets. The class <CODE>BerInputStream</CODE> provides a common decoding 
+  implementation for all basic ASN.1 types. To provide specific decoding for a 
+  basic ASN.1 type, a derived class must override one of the corresponding methods. 
+  For example, <CODE>DerInputStream</CODE> provides a custom implementation for 
+  decoding the <CODE>ASN.1 Boolean</CODE> type by overriding the method <CODE>readBoolean()</CODE>.</P>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+
+
+<H2><A name="Notations_Implementation"></A>Implementing ASN.1 Notations</H2>
+<H3><A name="Basic_Classes"></A>Basic Classes</H3>
+<P>In the current framework, the basic classes meet the following requirements:</P>
+<UL>
+  <LI>All basic classes are thread-safe classes.<BR>
+    This means that an instance of an ASN.1 class can be used by many threads 
+    simultaneously for decoding or encoding a particular class of Java<A href="#*">*</A> objects. An 
+    instance of an ASN.1 class does not keep any specific data for a selected 
+    object. It only provides a way for a decoder stream to store decoded data 
+    in a Java<A href="#*">*</A> object, and a way for an encoder stream to extract 
+    a data to be encoded from a Java<A href="#*">*</A> object. 
+  <LI>All classes for string and primitive ASN.1 types provide access to a reusable class instance via the static  
+    <CODE>getInstance()</CODE> method.<BR>
+    If a separate instance of an ASN.1 class is not required, this method is used 
+    instead of a constructor. A constructor is provided for inheritance purposes 
+    only. 
+</UL>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<H3><A name="Custom_classes"></A>Custom Classes</H3>
+<P>Classes from the <code>asn1</code> package that represent ASN.1 basic types 
+  are used as building blocks for implementing a <em>custom</em> ASN.1 encoding or decoding class. 
+  A custom ASN.1 class provides mapping of an abstract ASN.1 type to a definite Java<A href="#*">*</A> class.</p>
+<p>Two approaches for implementing custom ASN.1 classes are available. Custom classes can be designed as singleton Java<A href="#*">*</A> classes or not. 
+The choice depends on further use of the class decoder. The singleton approach is not efficient when decoding only one Java<A href="#*">*</A> object.
+However, for decoding a series of encodings (for example, with an application server), the singleton approach is rather effective 
+because only one reusable decoder instance exists. Creating a new decoder object for each decoded or encoded Java<A href="#*">*</A> object leads to performance penalties. </p>
+
+<p>To implement the singleton approach, a custom ASN.1 class must meet the following requirements:</p>
+<ul>
+<li>Class has only one reusable instance and provides a way to access it.
+<li>Class is thread-safe. Thread safety is provided by passing all required data via parameters of methods. All data specific for a Java<A href="#*">*</A> object is stored in the decoding or encoding stream. 
+</ul>
+
+<H3>Example 3</H3>
+<P>This example illustrates the singleton approach to static instances of ASN.1 custom classes for the <CODE>Extensions</CODE> and <CODE>Extension</CODE> classes used in <a href="#example2">Example 
+  2 </a>. For this, create an instance of a custom ASN.1 class as an instance of an anonymous class as shown below. </P>
+<blockquote>
+<PRE>
+class Extensions {
+    // instance of decoder/encoder
+    public static final ASN1SequenceOf ASN1 =
+        new ASN1SequenceOf(Extension.ASN1);
+
+    private List extensions;
+}
+
+class Extension {
+    // instance of decoder/encoder
+    public static final ASN1Sequence ASN1 = 
+        new ASN1Sequence(new ASN1Type[] {
+                             ASN1Oid.getInstance(),            // extnID
+                             ASN1Boolean.getInstance(),        // critical
+                             ASN1OctetString.getInstance()}) { // extnValue
+        // replace constructor
+        {
+            // set default value for critical field
+            // first parameter - a default value
+            // second parameter - an index of ASN.1 type in a sequence starting with 0
+            setDefault(Boolean.FALSE, 1);
+        }
+    };
+
+    private String extnID;
+    private boolean critical;
+    private byte extnValue[];
+
+}
+</PRE>
+</blockquote>
+
+<P>The <CODE>static final ASN1</CODE> field instance provides a mapping between 
+  the Java<A href="#*">*</A> <CODE>Extension</CODE> class and its ASN.1 notation. 
+  The field is initialized so that it reflects the ASN.1 notation of the class: 
+  it is the instance of the <CODE>ASN1Sequence</CODE> class that is initialized 
+  with instances of the <CODE>ASN1Oid</CODE>, <CODE>ASN1Boolean</CODE> and <CODE>ASN1OctetString</CODE> 
+  classes. </P>
+<P>The <CODE> Extensions</CODE> class has a similar field. The field also reflects 
+  the ASN.1 notation: it is the instance of the <CODE>ASN1SequenceOf</CODE> class 
+  and it is initialized by the <CODE>ASN1</CODE> field from the <CODE>Extension</CODE> 
+  class.</P>
+<P>Figure 3 displays the correspondence between the application object tree and 
+  the object tree of ASN.1 custom classes. </P>
+<P align="center"><img src="images/example3.gif" alt="Tree"></P>
+<P class="special">Figure 3: Java Object and ASN.1 Custom Class Trees</P>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+
+<H1>Appendix: <A name="Appendix"></A>Usage Examples</H1>
+<P>This section demonstrates the usage of the ASN.1 framework.</P>
+<H3>ASN.1 Boolean </H3>
+<p>An abstract type can be defined as <code>ASN.1 Boolean</code>, for example: 
+</p>
+<blockquote>
+<PRE>
+MyBooleanType ::= BOOLEAN;
+</PRE>
+</blockquote>
+<p>Then the following code can be used to decode and encode values of this type: 
+</p>
+<blockquote>
+<PRE>
+// represents encoded ASN.1 Boolean type: false value
+byte encoding[] = new byte[] {0x01, 0x01, 0x00};
+
+// get instance of ASN.1 Boolean decoder/encoder
+ASN1Type asn1 = ASN1Boolean.getInstance();
+
+// decoded value is Boolean.FALSE
+Boolean value = (Boolean)asn1.decode(encoding);
+
+// encode Boolean.TRUE value
+
+// an array value equals to {0x01, 0x01, 0xFF}
+byte enc[] = asn1.encode(Boolean.TRUE);
+</PRE>
+</blockquote>
+<H3>ASN.1 Tagged Types </H3>
+<p>The following ASN.1 notation can be used to define a tagged type: </p>
+
+<blockquote>
+<PRE>
+MyTaggedType ::= [APPLICATION 0] EXPLICIT BOOLEAN;
+</PRE>
+</blockquote>
+
+<p>By default, a tagged type, <code>MyTaggedType</code>, is mapped to the same 
+  Java<a href="#*">*</a> type as a basic type, see ASN.1 <code>BOOLEAN</code> above. </p>
+<p>Then the following code can be used to decode and encode the values of this 
+  type: </p>
+
+<blockquote>
+<PRE>
+// represents encoded explicitly tagged ASN.1 Boolean type: false value
+byte encoding[] = new byte[] {0x60, 0x03, 0x01, 0x01, 0x00};
+	
+// create an instance of custom decoder/encoder for tagged type
+ASN1Type asn1 = new ASN1Explicit(
+    ASN1Constants.CLASS_APPLICATION, // tagging class
+    0,                               // tag number
+    ASN1Boolean.getInstance()        // type to be tagged
+);
+
+// decoded value is Boolean.FALSE
+Boolean value = (Boolean)asn1.decode(encoding);
+
+// encode Boolean.TRUE value as explicitly tagged
+
+// an array value equals to {0x60, 0x03,0x01, 0x01, 0xFF}
+byte enc[] = asn1.encode(Boolean.TRUE);
+</PRE>
+</blockquote>
+<H3>ASN.1 Sequence Type</H3>
+     
+<p>A constructed ASN.1 type notation can go as follows.</p>
+
+<blockquote>
+<PRE>
+MyConstructedType ::= SEQUENCE {
+    classVersion INTEGER,
+    isExtendable BOOLEAN DEFAULT FALSE
+}
+</PRE>
+</blockquote>
+<p>By default, a sequence type is mapped to an array of objects. In the example, 
+  it is an array of two objects: the first object represents <code>classVersion</code> 
+  and the second object represents the <code>isExtendable</code> flag. </p>
+<p>The following code can be used to decode and encode the values of this type: 
+</p>
+<blockquote>
+<PRE>
+// create an instance custom decoder/encoder
+ASN1Type asn1 =
+    new ASN1Sequence(new ASN1Type[] {ASN1Integer.getInstance(),    // classVersion
+                                     ASN1Boolean.getInstance()}) { // isExtendable
+        // replace constructor
+        {
+            // set default value for isExtendable field
+            // first parameter - a default value
+            // second parameter - an index of ASN.1 type in a sequence starting with 0
+            setDefault(Boolean.FALSE, 1);
+        }
+    };
+		
+// decoded sequence value is mapped to array of objects
+Object value[] = (Object[])asn1.decode(someEncoding);
+
+// first value (ASN.1 Integer) is  mapped by default to an  array of bytes
+byte version[] = (byte[])value[0];
+
+// second value (ASN.1 Boolean) is mapped by default to a Boolean object
+Boolean isCritical = (Boolean)value[1]; 
+</PRE>
+</blockquote>
+<P>When it is necessary to change the default mapping of an array of objects for 
+  the ASN.1 <code>Sequence</code> type to a custom Java<A href="#*">*</A> class, two methods are 
+  overridden. </p>
+<blockquote>
+<PRE>
+// class for storing MyConstructedType values
+class A {
+    int version;
+    boolean isExtendable;
+}
+
+// create an instance custom decoder/encoder
+ASN1Type asn1 =
+    new ASN1Sequence(new ASN1Type[] {ASN1Integer.getInstance(),    // classVersion
+                                     ASN1Boolean.getInstance()}) { // isExtendable
+        // replace constructor
+        {
+            // set default value for isExtendable field
+            // first parameter - a default value
+            // second parameter - an index of ASN.1 type in a sequence starting with 0
+            setDefault(Boolean.FALSE, 1);
+        }
+
+        // for decoding
+        public Object getDecodedObject(BerInputStream in) throws IOException {
+            Object values[] = (Object[])in.content;
+
+            A a = new A();
+
+            // array of bytes to primitive int value
+            a.version = (new BigInteger((byte[])value[0])).intValue;
+
+            // Boolean object to primitive boolean
+            a.isExtendable = ((Boolean)value[1]).booleanValue();
+
+            return a;
+        }
+ 
+        // for encoding 
+        public void getValues(Object object, Object values[]) {
+            A a = (A)object;
+
+            // primitive int value to array of bytes
+            values[0] = BigInteger.valueOf(a.version).toByteArray();
+
+            // primitive boolean value to Boolean object
+            values[1] = Boolean.valueOf(a.isCritical);
+        }
+    };
+
+// decoded sequence value is mapped to custom A class
+A a1 = (A)asn1.decode(someEncoding);
+
+// encode an instance of A class
+A a2 = new A();
+a2.version = 5;
+a2.isExtendable = true;
+byte enc[] = asn1.encode(a);
+</PRE>
+</blockquote>
+
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<H1><A name="References"></A>References</H1>
+<P>[<a name="JAVA_API_SPEC"></a>1] Java API Specification, <a href="http://java.sun.com/j2se/1.5.0/docs/api/" target="_blank">http://java.sun.com/j2se/1.5.0/docs/api/</a></P>
+<P>[<a name="ASN_SPEC"></a>2] Abstract Syntax Notation One (ASN.1) Specification of Basic 
+  Notation ITU-T Rec. X.680 (2002) | ISO/IEC 8824-1:2002 </P>
+<P>[<a name="RULES_SPEC"></a>3] Specification of Basic Encoding Rules (BER), Canonical 
+  Encoding Rules (CER) and Distinguished Encoding Rules (DER) ITU-T Rec. X.690 
+  (2002) | ISO/IEC 8825-1:2002</P>
+<P>[<a name="INFO_SITE"></a>4] ASN.1 Information Site, <a href="http://asn1.elibel.tm.fr/en/standards/index.htm" target="_blank">http://asn1.elibel.tm.fr/en/standards/index.htm</a></P>
+<P>[<a name="LAYMAN_GUIDE"></a>5] <em>A Layman's Guide to a Subset of ASN.1, BER, 
+  and DER,</em> <a href="http://luca.ntop.org/Teaching/Appunti/asn1.html" target="_blank">http://luca.ntop.org/Teaching/Appunti/asn1.html</a></P>
+<P>[<a name="EBOOK1"></a>6] Olivier Dubuisson, translated by Philippe Fouquart, 
+  <em>ASN.1 - Communication between heterogeneous systems</em>, <a href="http://www.oss.com/asn1/dubuisson.html" target="_blank">http://www.oss.com/asn1/dubuisson.html</a></P>
+<p>[<a name="EBOOK2"></a>7] Professor John Larmouth, <em>ASN.1 Complete</em>, 
+  <a href="http://www.oss.com/asn1/larmouth.html" target="_blank">http://www.oss.com/asn1/larmouth.html</a></p>
+<p>[<a name="RFC"></a>8] The Internet Engineering Task Force, Requests for Comments, 
+  <a href="http://www.ietf.org/" target="_blank">http://www.ietf.org/</a></p>
+<P class="backtotop"><A href="#Top">Back to Top</A></P>
+<P></P>
+<P></P>
+<P><A name="*">*</A> Other brands and names are the property of their respective 
+  owners.</P>
+</BODY>
+</HTML>

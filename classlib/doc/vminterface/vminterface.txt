@@ -1,0 +1,123 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+/**
+\mainpage
+
+<h2>Porting Structure</h2>
+
+The class libraries use a number of external components to make them portable:
+<ul>
+<li>a Virtual Machine (VM),</li>
+<li>platform porting, threading, zip support, and pooling libraries, and</li>
+<li>existing open source floating point
+(<a href="http://www.netlib.org/fdlibm/readme">fdlibm</a>) and
+compression (<a href="http://www.gzip.org/zlib/">zlib</a>) libraries.</li>
+</ul>
+The figure below shows how these components relate to one another and identifies a "VM interface" which
+is explained in the next section.
+
+\image html vmport.gif "Porting Structure"
+\image latex vmport.pdf "Porting Structure"
+
+<h2>Porting to Alternate VMs</h2>
+<br>
+The class libraries are comprised of Java code and JNI native code. One of the design
+objectives of the class libraries enables them to be ported to alternate VMs.
+To support the class libraries, the VM Vendor must implement a C interface known as 
+the <a href="group__VMInterface.html">VM Interface</a> and a
+Java interface consisting of a small number of Java classes known as the
+<a href="../../kernel_doc/html/index.html#KernelJavaClasses">Kernel Java classes</a>.
+
+The Kernel classes are considered part of the VM component since the VM and these
+classes may understand each other's implementations rather than necessarily only using
+each other's external public interfaces.  The VM is responsible for providing the
+implementation of the Kernel classes, although reference implementations of parts of
+these classes are provided as a possible starting point.
+
+The C <a href="group__VMInterface.html">VM Interface</a> exposes VM entry points required by
+the class library JNI natives.
+
+\image html vminterfaces.gif "VM C and Java Interfaces"
+\image latex vminterfaces.pdf "VM C and Java Interfaces"
+
+Implementations of platform porting, threading, compression, and floating point libraries
+are provided with the class library code.  These libraries are described in the
+list of so-called <a href="modules.html">'modules'</a> generated from the source
+ code by doxygen.  A doxygen module is simply a named collection of items from the source code.
+The documented <a href="group__HarmonyNatives.html">Harmony Natives</a>,
+<a href="group__Port.html">Port</a>,
+<a href="group__Thread.html">Thread</a>,
+<a href="group__ZipSupport.html">Zip Support</a>,
+and <a href="group__Pool.html">Pool</a> modules are part of the contribution.
+The <a href="http://www.gzip.org/zlib/">zlib</a> compression library,
+used by the Zip Support, and the <a href="http://www.netlib.org/fdlibm/readme">fdlibm</a>
+floating point library come from existing open source projects.
+
+So the minimum that a VM Vendor must supply is an implementation of the VM Interface
+and Kernel Java Classes.
+
+<h2>Physical Packaging</h2>
+
+The packaging of Harmony code and a VM into executable programs and DLLs is shown
+below with an indication of how these link together.
+
+\image html packaging.gif "Physical Packaging"
+\image latex packaging.pdf "Physical Packaging"
+
+ <a name = "Booting"><h2>Booting</h2>
+
+A launcher is provided that demonstrates the boot sequence for the VM and class library code.
+The sample launcher can be used by any VM that implements the class library and VM interface.
+
+The sequence is shown below:
+
+<ol>
+	<li>\ref CreatePortLib "Create the port library."</li>
+	<li>
+	Load the
+	\ref HarmonyNatives "Natives library" and call
+	\ref jclglob_clear.c::JNI_OnLoad "JNI_OnLoad()"
+	to initialize the library. Note that the
+	\ref HarmonyNatives "VM library" will use the
+	\ref VMInterface "VM Interface".
+	</li>
+	<li>
+    The VM needs to be configured to use the boot classpath.
+	The boot classpath is a list of JAR files which contain the bootstrap Java class library code.
+	The launcher provides a command-line prepend of the kernel (VM-specific) classes to the VM
+    by specifying -Xbootclasspath/p to loads the kernel classes from the VM-specific subdirectory
+    of jre/bin.
+	The boot sequence configures the bootstrap class path in the JNI_OnLoad() function and
+    updates the "com.ibm.oti.system.class.path" system property using the
+	\ref VMInterface "VM Interface". Currently this is accomplished by reading the bootstrap
+    entries from the <i>bootclasspath.properties</i> file located in the
+	<i>jre/lib/boot</i> directory.
+    </li>
+	<li>
+	The VM should create the system ThreadGroup by calling 
+	the \ref java::lang::ThreadGroup::ThreadGroup "ThreadGroup constructor", and stores
+	it in a private field of java.lang.Thread.
+	</li>
+	<li>
+	The VM calls a private 
+	java.lang.Thread constructor to initialize a new Thread.
+	This constructor creates the "main" ThreadGroup by calling this
+	\ref java::lang::ThreadGroup::ThreadGroup "ThreadGroup constructor", 
+	and the rest of the class library is loaded as a side effect
+	of initializing the Thread object.
+	</li>
+</ol>
+*/

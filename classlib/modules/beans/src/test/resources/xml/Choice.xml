@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0" class="java.beans.XMLDecoder"> 
+ <object class="java.awt.Choice">
+  <void property="background"> 
+   <object class="java.awt.Color"> 
+    <int>0</int> 
+    <int>0</int> 
+    <int>255</int> 
+    <int>255</int> 
+   </object> 
+  </void> 
+  <void property="foreground"> 
+   <object class="java.awt.Color"> 
+    <int>0</int> 
+    <int>255</int> 
+    <int>0</int> 
+    <int>255</int> 
+   </object> 
+  </void> 
+  <void property="font"> 
+   <object class="java.awt.Font"> 
+    <string>Arial Bold</string> 
+    <int>2</int> 
+    <int>0</int> 
+   </object> 
+  </void> 
+  <void property="bounds"> 
+   <object class="java.awt.Rectangle"> 
+    <int>1</int> 
+    <int>2</int> 
+    <int>200</int> 
+    <int>100</int> 
+   </object> 
+  </void> 
+  <void property="name"> 
+   <string>choice</string> 
+  </void> 
+  <void method="add"> 
+   <string>addItem</string> 
+  </void> 
+  <void method="add"> 
+   <string>add</string> 
+  </void> 
+ </object> 
+</java>

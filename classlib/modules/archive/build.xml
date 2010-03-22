@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="ARCHIVE Build" default="build" basedir=".">
+    <description>Build for ARCHIVE component</description>
+
+    <property name="hy.module" value="archive" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+
+    <property file="../../make/depends.properties" />
+
+    <property name="zlib.zip" location="${depends.oss}/zlib_1.2.3.zip" />
+
+    <target name="build" depends="compile-java, build-jar" />
+    
+    <target name="clean" depends="clean-java,clean-native,clean-test" />
+
+    <target name="copy-native-includes"
+            depends="overlay-oss, copy-zipsup-include, copy-zlib-include" />
+
+    <target name="copy-zlib-include" unless="hy.skip.zlib">
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/zlib_dist">
+                <include name="zlib.h" />
+                <include name="zconf.h" />
+            </fileset>
+        </copy>
+    </target>
+	
+    <target name="copy-zipsup-include" if="hy.skip.zip.api">
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/include/shared">
+                <include name="zipsup.h" />
+            </fileset>
+        </copy>
+    </target>
+    
+    <target name="overlay-oss"
+            depends="-extract-props,-unzip-oss,-ascii2ebcdic-conversion"
+            unless="hy.skip.zlib" />
+
+    <target name="-extract-props">
+        <uptodate property="zlib.uptodate"
+                  srcfile="${zlib.zip}"
+                  targetfile="src/main/native/zlib_dist/README" />
+    </target>
+
+    <target name="-unzip-oss" unless="zlib.uptodate">
+        <mkdir dir="src/main/native/zlib_dist" />
+        <unzip src="${zlib.zip}" dest="src/main/native/zlib_dist" />
+        <chmod dir="src/main/native/zlib_dist" perm="ugo+r" />
+        <touch file="src/main/native/zlib_dist/README" />
+    </target>
+
+    <target name="-ascii2ebcdic-conversion" if="is.zos" unless="zlib.uptodate">
+        <move todir="src/main/native/zlib_dist_ascii">
+            <fileset dir="src/main/native/zlib_dist">
+                <include name="**/*" />
+                <exclude name="**/*.o" />
+            </fileset>
+        </move>
+        <copy todir="src/main/native/zlib_dist" outputencoding="IBM-1047" >
+            <fileset dir="src/main/native/zlib_dist_ascii">
+                <include name="**/*" />
+                <exclude name="**/*.o" />
+            </fileset>               
+        </copy>
+        <fixcrlf srcdir="src/main/native/zlib_dist" includes="**/*"  excludes="**/*.o" eol="unix" />
+        <delete dir="src/main/native/zlib_dist_ascii" />
+    </target>
+    
+    <!-- Build native code -->
+    <target name="build-native"
+            depends="-build-native-zip,-build-native-zlib,-build-native-archive" />
+
+    <target name="-build-native-zip" if="hy.skip.zip.api">
+        <make dir="src/main/native/zip/${hy.os.family}" />
+    </target>
+        
+    <target name="-build-native-zlib" unless="hy.skip.zlib">
+        <make dir="src/main/native/zlib/${hy.os.family}" />
+    </target>
+        
+    <target name="-build-native-archive">
+        <make dir="src/main/native/archive/${hy.os.family}" />
+    </target>
+    
+    <target name="clean-native"
+            depends="-clean-native-zip,-clean-native-zlib,clean-native-includes,clean-overlay-oss">
+        <make dir="src/main/native/archive/${hy.os.family}" target="clean" />
+    </target>
+
+    <target name="-clean-native-zip" if="hy.skip.zip.api">
+        <make dir="src/main/native/zip/${hy.os.family}" target="clean" />
+    </target>
+
+    <target name="-clean-native-zlib" unless="hy.skip.zlib">
+        <make dir="src/main/native/zlib/${hy.os.family}" target="clean" />
+    </target>
+
+    <target name="clean-native-includes">
+        <delete failonerror="false">
+            <fileset dir="${hy.hdk}/include">
+                <include name="zipsup.h" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="clean-overlay-oss" unless="hy.skip.zlib" >
+        <delete dir="src/main/native/zlib_dist" quiet="true" />
+    </target>
+    
+    <target name="test" depends="-test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.failures" />
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <!-- internal target for local and global test run sequence -->
+    <target name="-test-module" depends="build, run-tests" />
+
+    <target name="clean-java" depends="class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/archive.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/archive-src.jar" />
+        <delete failonerror="false">
+            <fileset refid="classes" />
+        </delete>
+        <delete-patternset module="${hy.module}" />
+    </target>
+
+    <target name="clean-test">
+        <delete dir="${tests.hdk.dir}" failonerror="false" />
+        <delete failonerror="false" dir="bin"/>
+    </target>
+
+    <target name="compile-java">
+        <echo message="Compiling ${hy.module} classes" />
+
+        <mkdir dir="../../build/classes" />
+
+        <hy.javac sourcepath=""
+               srcdir="src/main/java"
+               destdir="../../build/classes">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+    </target>
+
+    <target name="findbugs" depends="build-jar">
+        <run-findBugs
+            jarFile="${hy.jdk}/jre/lib/boot/archive.jar"
+            excludeFilter="make/findbugs-exclude-filter.xml"
+            outputFile="${findBugs.report}/archive.xml"/>
+    </target>
+
+    <target name="build-jar" depends="svn-info,class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/archive.jar"
+                    manifest="META-INF/MANIFEST.MF">
+            <fileset refid="classes" />
+            <fileset refid="resources" />
+        </hy.jar.bin>
+
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/archive-src.jar">
+            <fileset dir="src/main/java" />
+        </hy.jar.src>
+    </target>
+
+    <target name="test-jar" depends="svn-info,compile-tests">
+        <mkdir dir="${tests.hdk.dir}" />
+        
+        <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
+        
+        <hy.jar.bin destfile="${tests.hdk.dir}/archive_tests.jar">
+            <fileset dir="bin/test" />
+        </hy.jar.bin>
+
+        <hy.jar.bin destfile="${tests.hdk.dir}/archive_internal_tests.jar">
+            <fileset dir="bin/test-internal" />
+        </hy.jar.bin>
+
+        <mkdir dir="${tests.excludes.hdk.dir}"/>
+        <copy todir="${tests.excludes.hdk.dir}">
+            <fileset dir="make" includes="exclude*"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\.java" replace="\.class" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+
+        <copy todir="${tests.resources.hdk.dir}">
+            <fileset dir="src/test/resources" />
+        </copy>
+
+    </target>
+
+    <target name="compile-tests">
+        <compile-tests description="archive internal tests"
+                       destdir="bin/test-internal">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/java-internal" />
+                </src>
+            </javac-elements>
+        </compile-tests>
+        <compile-tests description="archive api tests">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/java" />
+                </src>
+            </javac-elements>
+        </compile-tests>
+    </target>
+
+    <target name="run-tests" depends="test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
+    </target>
+
+    <target name="class-patternset">
+        <make-patternset module="${hy.module}" />
+    </target>
+
+</project>

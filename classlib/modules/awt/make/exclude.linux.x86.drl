@@ -1,0 +1,8 @@
+org/apache/harmony/awt/gl/linux/XGraphics2DRTest.java
+java/awt/font/TextLayoutTest.java
+java/awt/font/TextMeasurerTest.java
+java/awt/ButtonRTest.java
+java/awt/KeyboardFocusManagerRTest.java
+
+# HARMONY-3443
+java/awt/font/LineBreakMeasurerTest.java

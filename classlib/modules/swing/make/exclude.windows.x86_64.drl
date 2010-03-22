@@ -1,0 +1,10 @@
+javax/swing/InputMapTest.java
+javax/swing/JCheckBoxMenuItemTest.java
+javax/swing/JDesktopPaneTest.java
+javax/swing/JFileChooserRTest.java
+javax/swing/JFileChooserTest.java
+
+#HARMONY-3968
+javax/swing/text/html/FormViewTest.java
+#HARMONY-3969
+javax/swing/text/html/HTMLEditorKitTest.java

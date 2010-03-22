@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry path="src/main/java" kind="src" output="bin/main"/>
+	<classpathentry path="src/test/resources/serialization" kind="src" output="bin/test/api"/>
+	<classpathentry path="src/test/support/common/java" kind="src"/>
+	<classpathentry path="src/test/impl/java.injected" kind="src" output="bin/test/impl.injected"/>
+	<classpathentry path="src/test/impl/java" kind="src" output="bin/test/impl"/>
+	<classpathentry path="src/test/api/java.injected" kind="src" output="bin/test/api.injected"/>
+	<classpathentry path="src/test/api/java" kind="src" output="bin/test/api"/>
+	<classpathentry path="org.eclipse.pde.core.requiredPlugins" kind="con"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry path="bin/main" kind="output"/>
+</classpath>

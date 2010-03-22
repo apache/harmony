@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.4.2_07" class="java.beans.XMLDecoder"> 
+ <object class="org.apache.harmony.beans.tests.java.beans.EncoderTest$SampleBean"> 
+  <void property="myid"> 
+   <string>&lt;Li Yang&gt; &amp; &quot;liyang&apos;</string> 
+  </void> 
+  <void property="ref"> 
+   <object class="org.apache.harmony.beans.tests.java.beans.EncoderTest$SampleBean"> 
+    <void property="myid"> 
+     <string>a child</string> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

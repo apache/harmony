@@ -1,0 +1,473 @@
+/*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
+/*
+Author: Anton Avtamonov, Alexey A. Ivanov
+*/
+
+options {
+  UNICODE_INPUT = true;
+  STATIC = false;
+}
+
+
+PARSER_BEGIN(CSSParser)
+package org.apache.harmony.x.swing.text.html.cssparser;
+
+import org.apache.harmony.x.swing.text.html.cssparser.metamodel.*;
+
+public class CSSParser {
+    private final CSSLogger logger = new CSSLogger();
+
+    public Sheet parse() throws ParseException {
+         return cssGrammar();
+    }
+
+    public RuleSet parseRuleSet() throws ParseException {
+        return ruleSet_recoverable();
+    }
+
+
+    private boolean skipTillDeclarationEnd() {
+        logger.logError(getToken(1));
+        return skipTillTokens(new int[] {CLOSE_BRACE, SEMICOLON}, false);
+    }
+
+    private boolean skipTillImportEnd() {
+        logger.logError(getToken(1));
+        return skipTillTokens(new int[] {SEMICOLON}, true);
+    }
+
+    private boolean skipTillRuleSetEnd() {
+        logger.logError(getToken(1));
+        return skipTillTokens(new int[] {CLOSE_BRACE}, true);
+    }
+
+
+    private boolean skipTillTokens(final int[] stopTokens, final boolean removeStopToken) {
+        Token currentToken = getToken(1);
+        while (currentToken != null && currentToken.kind != EOF) {
+            for (int i = 0; i < stopTokens.length; i++) {
+                if (currentToken.kind == stopTokens[i]) {
+                    if (removeStopToken) {
+                        getNextToken();
+                    }
+                    return true;
+                }
+            }
+            getNextToken();
+            currentToken = getToken(1);
+        }
+        return false;
+    }
+/*
+    private static String getTokenInfo(final Token t) {
+         return t.image + " at " + t.beginLine + "x" + t.beginColumn;
+    }
+    */
+}
+
+PARSER_END(CSSParser)
+
+SKIP :
+{
+   " "
+   |
+   "\t"
+   |
+   "\n"
+   |
+   "\r"
+   | 
+   "\f"
+   |
+   <HTML_COMMENT: "<!--" | "-->">
+}
+
+
+SKIP :
+{
+    "/*" : CSS_COMMENT
+}
+
+<CSS_COMMENT> SKIP :
+{
+    <~[]>
+}
+
+<CSS_COMMENT> SKIP :
+{
+    "*/" : DEFAULT
+}
+
+
+
+
+TOKEN : 
+{
+    <SEMICOLON: ";">
+    |
+    <COLON: ":">
+    |
+    <COMMA: ",">
+    |
+    <DOT: ".">
+    |
+    <HASH_CHAR: "#">
+    |
+    <OPEN_PARENSIS: "(">
+    |
+    <CLOSE_PARENSIS: ")">
+    |
+    <OPEN_BRACE: "{">
+    |
+    <CLOSE_BRACE: "}">
+    |
+    <SLASH: "/">
+    |
+    <PLUS: "+">
+    |
+    <MINUS: "-">
+}
+
+TOKEN : 
+{
+    <IMPORT: "@import">
+    |
+    <MEDIA: "@media">
+}
+
+
+TOKEN : 
+{
+  <EMS: <NUMBER> "em">
+  |
+  <EXS: <NUMBER> "ex">
+  |
+  <LENGTH: <NUMBER> ("pt" | "mm" | "cm" | "pc" | "in" | "px")>
+  |
+  <PERCENTAGE: <NUMBER> "%">
+  |
+  <NUMBER: (<DIGIT>)+ | ((<DIGIT>)* <DOT> (<DIGIT>)+)>
+  |
+  <RGB: "rgb" <OPEN_PARENSIS> <COLOR_COMPONENT> <COMMA> <COLOR_COMPONENT> <COMMA> <COLOR_COMPONENT> <CLOSE_PARENSIS>>
+  |
+  <URL: "url" <OPEN_PARENSIS> ([" ", "\n", "\r", "\t"])* (<STRING> | (~[" ", "\n", "\r", "'", "\"", ")"] | ("\\" [" ", "'", "\"", ")"]))+) ([" ", "\n", "\r", "\t"])* <CLOSE_PARENSIS>>
+  |
+  <HEX_COLOR: <HASH_CHAR> <UNICODE_CHAR> <UNICODE_CHAR> <UNICODE_CHAR> (<UNICODE_CHAR> <UNICODE_CHAR> <UNICODE_CHAR>)?>
+  |
+  <IDENT: <NMSTRT> (<NMCHAR>)*>
+  |
+  <ELEMENT_NAME: <IDENT> (<HASH> ((<CLASS>)? (<SOLITARY_PSEUDO_CLASS>)?) | (<CLASS> (<SOLITARY_PSEUDO_CLASS>)?)) | <SOLITARY_PSEUDO_CLASS>>
+  |
+  <SOLITARY_ID: <HASH> (<CLASS>)? (<SOLITARY_PSEUDO_CLASS>)?>
+  |
+  <SOLITARY_CLASS: <CLASS> (<SOLITARY_PSEUDO_CLASS>)?>
+  |
+  <SOLITARY_PSEUDO_CLASS: <COLON> ("link" | "visited" | "active")>
+  |
+  <PSEUDO_ELEMENT: (<IDENT> <COLON>) ("first-letter" | "first-line")>
+  |
+  <SOLITARY_PSEUDO_ELEMENT: <COLON> ("first-letter" | "first-line")>
+  |
+  <HASH: <HASH_CHAR> (<NAME> | <IDENT>)>
+  |
+  <CLASS: <DOT> (<NAME> | <IDENT>)>
+  |
+  <STRING: ("\"" (<STRING_CHAR> | "'")+ "\"") | ("'" (<STRING_CHAR> | "\"")+ "'")>
+  |                                                                  
+  <IMPORTANT_SYM: "!" ([" ", "\n", "\r", "\t"])* "important">
+  |
+  <#UNICODE_CHAR: <DIGIT> | ["a"-"f","A"-"F"]>
+  |
+  <#DIGIT: ["0"-"9"]>
+  |
+  <#COLOR_COMPONENT: ([" ", "\n", "\r", "\t"])* <NUMBER> ("%")? ([" ", "\n", "\r", "\t"])*>
+  |
+  <#LATIN1: ["\u007f"-"\uffff"]>
+  |
+  <#ESCAPE: <UNICODE> | ("\\" ([" "-"~"] | <LATIN1>))>
+  |
+  <#STRING_CHAR: <ESCAPE> | <LATIN1> | [" ", "!", "#", "$", "%", "&", "("-"~"]>
+  |
+  <#NMSTRT: ["a"-"z", "A"-"Z"] | <LATIN1> | <ESCAPE>>
+  |
+  <#NAME: (<NMCHAR>)+>
+  |
+  <#NMCHAR: ["-", "a"-"z", "A"-"Z"] | <DIGIT> | <LATIN1> | <ESCAPE>>
+  |
+  <#UNICODE: "\\" <UNICODE_CHAR> (<UNICODE_CHAR>)? (<UNICODE_CHAR>)? (<UNICODE_CHAR>)?>
+}
+
+
+TOKEN :
+{
+  <ANY: ~[]>
+}
+
+
+
+Sheet cssGrammar() :
+{Sheet result;}
+{
+  result = styleSheet() <EOF>
+  
+  {
+    return result;
+  }
+}
+
+Sheet styleSheet() :
+{ Sheet result = new Sheet(); String importURL; }
+{
+    (importURL = import_recoverable() {result.addImport(importURL);})* styleSheetBody(result)
+
+    {
+      return result;
+    }
+}
+
+String importStatement() :
+{ Token importValue; }
+{
+    <IMPORT> (importValue = <STRING> | importValue = <URL>) <SEMICOLON>
+
+    {
+        return TokenResolver.resolve(importValue);
+    }
+}
+
+String import_recoverable() :
+{ String result = null; }
+{
+    try {
+      result = importStatement()
+    } catch (ParseException e) {
+      skipTillImportEnd();
+    }
+
+    {
+      return result;
+    }
+}
+
+void styleSheetBody(final Sheet sheet) :
+{ RuleSet ruleSet; }
+{
+    (LOOKAHEAD({getToken(1).kind != EOF}) (ruleSet = ruleSet_recoverable() {sheet.addRuleSet(ruleSet);} | skipTillExpressionEnd()))* 
+}
+
+
+void mediaSet() :
+{}
+{
+    <MEDIA> <IDENT> <OPEN_BRACE> (ruleSet_recoverable())* <CLOSE_BRACE>
+}
+
+
+RuleSet ruleSet() :
+{ RuleSet result = new RuleSet(); String selector; Property p; }
+{
+   selector = selector() { result.addSelector(selector); } (<COMMA> selector = selector() { result.addSelector(selector); })* 
+   <OPEN_BRACE> 
+   p = declaration_recoverable() {result.addProperty(p);} (<SEMICOLON> p = declaration_recoverable() {result.addProperty(p);})* 
+   <CLOSE_BRACE>
+
+   {
+     return result;
+   }
+}
+
+RuleSet ruleSet_recoverable() :
+{ RuleSet result = null; }
+{
+   try {
+     result = ruleSet()
+   } catch (ParseException pe) {
+     skipTillRuleSetEnd();
+   }
+
+   {
+     return result;
+   }
+}
+
+String selector() :
+{ Token startToken = getToken(1); }
+{
+   (
+       (simple_selector())+ [pseudo_element() | solitary_pseudo_element()]
+       |
+       solitary_pseudo_element()
+   )
+
+   {
+     return TokenResolver.resolve(startToken, getToken(0), true);
+   }
+}
+
+void simple_selector() :
+{}
+{
+    (
+      element_name()
+      |
+      solitary_id()
+      |
+      solitary_class()
+      |
+      solitary_pseudo_class()
+    )
+}
+
+
+void element_name() :
+{}
+{
+    (
+      <ELEMENT_NAME>
+      |
+      <IDENT>
+    )
+}
+
+void solitary_pseudo_class() :
+{}
+{
+     <SOLITARY_PSEUDO_CLASS>
+}
+
+void solitary_class() :
+{}
+{
+    <SOLITARY_CLASS>
+}
+
+void pseudo_element() :
+{}
+{
+     <PSEUDO_ELEMENT>
+}
+
+void solitary_pseudo_element() :
+{}
+{
+     <SOLITARY_PSEUDO_ELEMENT>
+}
+
+void solitary_id() :
+{}
+{
+     (
+       <SOLITARY_ID>
+       |
+       <HASH>
+       |
+       <HEX_COLOR>
+     )
+}
+
+
+Property declaration() :
+{ String name; String value; boolean isImportant = false; }
+{
+    [name = property() <COLON> value = expr() [prio() {isImportant = true;}] { return new Property(name, value, isImportant); }]
+
+    {
+      return null;
+    }
+}
+
+Property declaration_recoverable() :
+{ Property result = null; }
+{
+    try {
+      result = declaration()
+    } catch (ParseException e) {
+      skipTillDeclarationEnd();
+    }
+
+    {
+      return result;
+    }
+}
+
+void prio() :
+{}
+{
+    <IMPORTANT_SYM>
+}
+
+String expr() :
+{ StringBuffer result = new StringBuffer(); String term; String oper; boolean operSet; }
+{
+    [term = term() {result.append(term);} ({operSet = false;} [oper = oper() {result.append(oper); operSet = true;}] term = term() {if (!operSet) {result.append(" ");} result.append(term);})*]
+
+    {
+      return result.toString();
+    }
+}
+
+String term() :
+{ Token startToken = getToken(1); }
+{
+    [unary_oper()] (<NUMBER> | <STRING> | <PERCENTAGE> | <LENGTH> | <EMS> | <EXS> | <IDENT> | <HEX_COLOR> | <URL> | <RGB>)
+
+    {
+      return TokenResolver.resolve(startToken, getToken(0), false);
+    }
+
+}
+
+String oper() :
+{ Token oper; }
+{
+    (
+      oper = <SLASH> 
+      | 
+      oper = <COMMA>
+    )
+
+    {
+      return TokenResolver.resolve(oper);
+    }
+}
+
+void unary_oper() :
+{}
+{
+    (
+      <MINUS> 
+      | 
+      <PLUS>
+    )
+}
+
+String property() :
+{ Token name; }
+{
+    name = <IDENT>
+
+    {
+      return TokenResolver.resolve(name);
+    }
+}
+
+
+JAVACODE
+void skipTillExpressionEnd() {
+    skipTillRuleSetEnd();
+}

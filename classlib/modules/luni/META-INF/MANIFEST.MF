@@ -1,0 +1,48 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.6
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony LUNI
+Bundle-SymbolicName: org.apache.harmony.luni;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Eclipse-ExtensibleAPI: true
+Import-Package: com.ibm.icu.lang,
+ java.lang.annotation,
+ java.math,
+ java.nio,
+ java.nio.channels,
+ java.nio.charset,
+ java.security,
+ java.security.cert,
+ java.text,
+ java.util.concurrent;resolution:=optional,
+ java.util.jar,
+ java.util.regex,
+ java.util.zip,
+ javax.net.ssl,
+ javax.xml.parsers,
+ org.apache.harmony.misc.accessors,
+ org.apache.harmony.nio,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ org.w3c.dom,
+ org.xml.sax,
+ tests.support;hy_usage=test;resolution:=optional,
+ tests.support.resource;hy_usage=test;resolution:=optional,
+ tests.util;hy_usage=test;resolution:=optional
+Export-Package: java.io,
+ java.lang,
+ java.lang.ref,
+ java.lang.reflect,
+ java.net,
+ java.util,
+ java.util.spi,
+ org.apache.harmony.luni.net,
+ org.apache.harmony.luni.platform,
+ org.apache.harmony.luni.util
+

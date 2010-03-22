@@ -1,0 +1,54 @@
+/* 
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This is the default system policy file
+// It should be named: ${java.home}/lib/security/java.policy
+
+// by default, all system extensions get AllPermission
+grant codeBase "file:${java.ext.dirs}/*" {
+    permission java.security.AllPermission;
+};
+
+// these are the default permissions granted to any codesource
+grant {
+    // Uncomment to allow use of the deprecated method java.lang.Thread.stop()
+    // permission java.lang.RuntimePermission "stopThread";
+
+    // allow anyone to bind to non-privileged ports
+    permission java.net.SocketPermission "localhost:1024-","listen";
+    
+    // system properies anyone should be allowed to read
+    permission java.util.PropertyPermission "file.separator","read";
+    permission java.util.PropertyPermission "line.separator","read";
+    permission java.util.PropertyPermission "path.separator","read";
+    permission java.util.PropertyPermission "java.class.version","read";
+    permission java.util.PropertyPermission "java.specification.version","read";
+    permission java.util.PropertyPermission "java.specification.vendor","read";
+    permission java.util.PropertyPermission "java.specification.name","read";
+    permission java.util.PropertyPermission "java.version","read";
+    permission java.util.PropertyPermission "java.vendor","read";
+    permission java.util.PropertyPermission "java.vendor.url","read";
+    permission java.util.PropertyPermission "java.vm.specification.vendor","read";
+    permission java.util.PropertyPermission "java.vm.specification.name","read";
+    permission java.util.PropertyPermission "java.vm.specification.version","read";
+    permission java.util.PropertyPermission "java.vm.version","read";
+    permission java.util.PropertyPermission "java.vm.vendor","read";
+    permission java.util.PropertyPermission "java.vm.name","read";
+    permission java.util.PropertyPermission "os.name","read";
+    permission java.util.PropertyPermission "os.version","read";
+    permission java.util.PropertyPermission "os.arch","read";
+};

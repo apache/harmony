@@ -1,0 +1,14 @@
+org/apache/harmony/awt/gl/linux/XGraphics2DRTest.java
+java/awt/font/TextLayoutTest.java
+java/awt/font/TextMeasurerTest.java
+
+# The following tests crash VM if all AWT tests are executed in a batch
+java/awt/ButtonRTest.java
+java/awt/BorderLayoutTest.java
+java/awt/CardLayoutTest.java
+java/awt/FlowLayoutTest.java
+java/awt/GridLayoutTest.java
+java/awt/GridBagLayoutTest.java
+java/awt/KeyboardFocusManagerRTest.java
+java/awt/ScrollPaneAdjustableTest.java
+java/awt/datatransfer/ClipboardTest.java

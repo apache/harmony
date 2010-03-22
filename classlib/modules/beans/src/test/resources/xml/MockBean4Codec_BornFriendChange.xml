@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="${version}" class="java.beans.XMLDecoder"> 
+    <object class="${classname}"> 
+  <void id="MockBean4CodecPrimitives0" property="bornFriend"> 
+   <void property="zarr"> 
+    <void index="0"> 
+     <int>888</int> 
+    </void> 
+   </void> 
+  </void> 
+  <void property="nill"> 
+   <object idref="MockBean4CodecPrimitives0"/> 
+  </void> 
+ </object> 
+</java> 

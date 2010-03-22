@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<project name="SCRIPT Build" default="build" basedir=".">
+    <description>Build for SCRIPT component</description>
+
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="hy.jdk" location="${hy.hdk}/jdk" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
+
+    <target name="build" depends="check-depends, -copy-jars" />
+
+    <target name="check-depends"
+            depends="-check-depends,-extract-props,-extract" />
+
+    <target name="-check-depends">
+        <check-one-file src="${bsf.url}" dest="${bsf.zip}" />
+    </target>
+
+    <target name="-extract-props">
+        <uptodate property="bsf.uptodate"
+                  srcfile="${bsf.zip}"
+                  targetfile="${bsf.jar}" />
+    </target>
+
+    <target name="-extract" unless="bsf.uptodate">
+        <unzip src="${bsf.zip}" dest="${bsf.dir}.tmp" />
+        <copy 
+             file="${bsf.dir}.tmp/bsf-${bsf.version}/lib/bsf-api-${bsf.version}.jar"
+             tofile="${bsf.jar}"  />
+        <delete dir="${bsf.dir}.tmp" />
+        <touch file="${bsf.jar}" />
+    </target>
+        
+    <target name="fetch-depends">
+
+        <mkdir dir="${bsf.dir}" />
+        <download-one-file src="${bsf.url}" dest="${bsf.zip}"
+                           md5="${bsf.md5}" />
+
+    </target>
+
+    <target name="-copy-jars">
+        <copy todir="${hy.jdk}/jre/lib/boot">
+            <fileset dir="${depends.jars}">
+                <patternset includes="bsf-${bsf.version}/*.jar" />
+            </fileset>
+        </copy>
+        <copy todir="${hy.jdk}/jre/lib/boot/bsf-${bsf.version}/META-INF">
+            <fileset dir="META-INF" />
+        </copy>
+    </target>
+
+    <target name="test" />
+
+    <target name="clean">
+        <delete dir="${hy.jdk}/jre/lib/boot/bsf-${bsf.version}" />
+    </target>
+
+</project>

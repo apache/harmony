@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Specification-Title: Web Services Metadata for the Java Specification
+Specification-Version: 2.00
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Geronimo JWS
+Bundle-SymbolicName: org.apache.harmony.jws
+Bundle-Version: 1.1.2
+Bundle-ClassPath: geronimo-ws-metadata_2.0_spec-1.1.2.jar
+Eclipse-JREBundle: true
+Export-Package: javax.jws,
+  javax.jws.soap
+Import-Package: java.lang,
+  java.lang.annotation

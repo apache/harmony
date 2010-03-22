@@ -1,0 +1,34 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Apache-XML-Security-J
+Bundle-SymbolicName: org.apache.harmony.xmlsec
+Bundle-Version: 1.4.3
+Bundle-ClassPath: xmlsec-1.4.3.jar, commons-logging.jar
+Eclipse-JREBundle: true
+Export-Package: javax.xml.crypto,
+  javax.xml.crypto.dom,
+  javax.xml.crypto.dsig,
+  javax.xml.crypto.dsig.dom,
+  javax.xml.crypto.dsig.keyinfo,
+  javax.xml.crypto.dsig.spec
+Import-Package: java.io,
+  java.lang,
+  java.lang.reflect,
+  java.math,
+  java.net,
+  java.security,
+  java.security.cert,
+  java.security.interfaces,
+  java.security.spec,
+  java.util,
+  java.util.logging,
+  javax.crypto,
+  javax.xml.parsers,
+  javax.xml.transform,
+  org.apache.xml.dtm,
+  org.apache.xml.utils,
+  org.apache.xpath,
+  org.apache.xpath.compiler,
+  org.w3c.dom,
+  org.w3c.dom.traversal,
+  org.xml.sax

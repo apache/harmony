@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony BSF
+Bundle-SymbolicName: org.apache.harmony.bsf
+Bundle-Version: 3.0-beta3
+Bundle-ClassPath: bsf-api.jar
+Eclipse-JREBundle: true
+Export-Package: javax.script
+Import-Package: java.io,
+  java.lang.reflect,
+  java.util,
+  javax.imageio.spi

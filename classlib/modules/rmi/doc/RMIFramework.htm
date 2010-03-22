@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content=
+      "text/html; charset=windows-1252">
+<title>DRL Remote Method Invocation Framework</title>
+<link href="drl.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<h1> <a name="top"></a>DRL Remote Method Invocation Framework</h1>
+<p class="TOCHeading"> <a href="#Revision_History">Revision History</a> </p>
+<p class="TOCHeading"> <a href="#Disclaimer_and_Legal">Disclaimer and Legal Information</a> 
+</p>
+<p class="TOCHeading"> <a href="#About_This_Document"> About This Document</a> 
+</p>
+<p class="TOC"> <a href="#Purpose">Purpose</a> </p>
+<p class="TOC"> <a href="#Intended_Audience">Intended Audience</a> </p>
+<p class="TOC"> <a href="#Documentation_Conventions">Documentation Conventions</a> 
+</p>
+<p class="TOCHeading"> <a href="#overview"> RMI Overview</a> </p>
+<p class="TOCHeading"> <a href="#drl">RMI in DRL</a> </p>
+<p class="TOC"> <a href="#about">About</a> </p>
+<p class="TOC"> <a href="#features">Features</a> </p>
+<p class="TOC"> <a href="#System Properties">System Properties</a> </p>
+<p class="TOC"> <a href="#RMI Registry">RMI Registry</a> </p>
+<p class="TOC"> <a href="#RMI activation">RMI Activation</a> </p>
+<p class="TOC"> <a href="#RMI compiler">RMI Compiler</a> </p>
+<p class="TOCHeading"> <a href="#References">References</a> </p>
+<h1> <a name="Revision_History"></a>Revision History </h1>
+<table border="0" cellpadding="0" width="100%">
+  <tr> 
+    <td width="24%" class="TableHeading"> Version </td>
+    <td width="49%" class="TableHeading"> Version Information </td>
+    <td class="TableHeading"> Date </td>
+  </tr>
+  <tr> 
+    <td width="24%" class="TableCell"> Initial version </td>
+    <td width="49%" class="TableCell"> Vasily Zakharov, Nadya Morozova, Svetlana 
+      Konovalova: document created. </td>
+    <td class="TableCell"> March 23, 2006 </td>
+  </tr>
+</table>
+<h1> <a name="Disclaimer_and_Legal"></a>Disclaimer and Legal Information </h1>
+<p> Copyright 2005-2006 The Apache Software Foundation or its licensors, as applicable. 
+</p>
+<p> Licensed under the Apache License, Version 2.0 (the License); you may not 
+  use this file except in compliance with the License. You may obtain a copy of 
+  the License at <a href="http://www.apache.org/licenses/LICENSE-2.0"> 
+  http://www.apache.org/licenses/LICENSE-2.0</a>. </p>
+<p> Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+  OF ANY KIND, either express or implied. See the License for the specific language 
+  governing permissions and limitations under the License. </p>
+<h1> <a name="About_This_Document"></a>About This Document </h1>
+<h2> <a name="Purpose"></a>Purpose </h2>
+<p>This document describes the DRL implementation of the Remote Method Invocation 
+  (RMI) framework [<a href="#RMISpec">1</a>] and gives details on the framework 
+  design.</p>
+<h2> <a name="Intended_Audience"></a>Intended Audience </h2>
+<p>The target audience for the document includes a wide community of engineers 
+  interested in using the RMI framework in their applications and in further work 
+  with the product to contribute to its development. The document assumes that 
+  readers are familiar with RMI and the Java<a href="#*">*</a> programming language.</p>
+<h2> <a name="Documentation_Conventions"></a>Documentation Conventions </h2>
+<p> This document uses the <a href= "conventions.htm" target=
+         "_blank">unified conventions</a> for the DRL documentation kit. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h1> <a name="overview"></a>RMI Overview </h1>
+<p>The Remote Method Invocation (RMI) framework enables an object in one virtual 
+  machine to call methods of an object in another one, to create applications 
+  distributed on various Java<a href="#*">*</a> virtual machines on the same or 
+  different hosts.</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h1> <a name="drl"></a>RMI in DRL</h1>
+<h2> <a name="about"></a>About </h2>
+<p>The RMI framework is an independent implementation of RMI [<a href="#RMISpec">1</a>]. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="Features"></a> Features </h2>
+<p>The DRL RMI implementation is based on public APIs only, so that plugging DRL 
+  RMI into other Java<a href="#*">*</a> class libraries requires no modifications. 
+  No native code or VM implementation dependencies are present. </p>
+<p>The DRL RMI framework supports versions 1.1 and 1.2 of the RMI protocol, but 
+  not the deprecated multiplexing protocol.</p>
+<p>The product implements the Java<a href="#*">*</a> 1.5.0 dynamic proxy stubs 
+  generation represented by:</p>
+<ul>
+  <li> The <code>java.rmi.server.UnicastRemoteObject</code> class 
+  <li> The <code>java.rmi.server.RemoteObjectInvocationHandler</code> class 
+</ul>
+<p>Fully-featured logging is implemented both through the command line and through 
+  the common logging mechanism in the <code>java.util.logging </code>package.</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="System Properties"></a> System Properties </h2>
+<p>The RMI framework supports the general <code>java.rmi.*</code> properties and the 
+implementation-specific <code>harmony.rmi.*</code> properties.
+ You can also consult additional resources
+ on RMI properties [<a href="#javarmi">2</a>] and [<a href="#sunrmi">3</a>].
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="RMI Registry"></a> RMI Registry</h2>
+<p>The RMI Registry maps names to remote objects, so that you can look them up 
+  by names later.</p>
+<p>The DRL RMI implementation does not contain the <code>rmiregistry </code>binary 
+  tool. </p>
+<p>Instead of this tool, run:</p>
+<pre>java org.apache.harmony.rmi.registry.RegistryImpl [port]</pre>
+<p>For <code>[port]</code>, use the number of the port where you need to start 
+  the registry. Otherwise, the registry starts at port 1099.</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="RMI Activation"></a> RMI Activation</h2>
+<p>The RMI activation framework is a mechanism for lazy initialization of RMI 
+  services. The activation framework consists of the RMI activation daemon (RMID) 
+  and a set of auxiliary classes in the <code>java.rmi.activation </code>package, 
+  which register services in RMID and use them.</p>
+<h3>RMI Activation Daemon</h3>
+<p>The DRL RMI framework does not contain the <code>rmid </code>binary tool. </p>
+<p>Instead of this tool, run:</p>
+<pre>java org.apache.harmony.rmi.activation.Rmid [options]</pre>
+<p>For <code>[options]</code>, you can use the the <code>rmid</code> binary tool 
+  options. The only exception is the<code><nobr> -J</nobr> </code>options, which 
+  you must pass directly to the Java<a href="#*">*</a> virtual machine. </p>
+<p class="class">RMID Monitoring</p>
+<p>You can plug an external agent to monitor the RMID internal state. To turn 
+  on this feature, use the <code><nobr>-monitor</nobr></code> command-line option.</p>
+<p>You can specify your own implementation of the <code>org.apache.harmony.rmi.activation.RmidMonitor</code> 
+  interface by defining the <code>org.apache.harmony.rmi.activation.monitor</code> 
+  property. Otherwise, the default empty monitor implementation is used.</p>
+<dl>
+  <dt>Example</dt>
+</dl>
+<pre>
+java <nobr>-Djava</nobr>.security.policy=rmid.policy
+     <nobr>-Dorg</nobr>.apache.harmony.rmi.activation.monitor=my.package.MyMonitor
+     org.apache.harmony.rmi.activation.Rmid -monitor</pre>
+<p class="class">Custom activation groups</p>
+<p>The DRL RMI daemon provides full support for custom activation groups in accordance 
+  with the specification [<a href="#RMISpec">1</a>]. </p>
+<p class="class">Persistence </p>
+<p>The RMI daemon saves its state into two files in the <code>log</code> subdirectory 
+  of the current directory on the hard drive.<br>
+  To change the default location of the files, use the <code><nobr>-log</nobr></code> 
+  option.</p>
+<p class="note">Note</p>
+<p class="notetext">The files' format is incompatible with the reference implementation format.</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2><a name="RMI Compiler"></a> RMI Compiler</h2>
+<p>The RMI compiler generates stubs and skeletons for remote objects.</p>
+<p>The DRL RMI framework does not contain the <code>rmic</code> binary tool. <br>
+  Instead of this tool, run:</p>
+<pre>java org.apache.harmony.rmi.compiler.Main [options] &lt;class name&gt; </pre>
+<h3> Class loading</h3>
+<p>During this operation, the RMI compiler uses the system class loader, which 
+  sets certain limitations on its configuration. If you use the <code><nobr>-classpath</nobr></code> 
+  or the <code><nobr>-bootclasspath</nobr></code> option, make sure that you set 
+  the corresponding options for Java<a href="#*">*</a> virtual machine running 
+  the compiler. If you do not specify the proper options, <i>Class not found </i> 
+  errors might occur or system classes might be used instead of the ones specified 
+  in the<code><nobr> -bootclasspath</nobr></code> option. </p>
+<dl>
+  <dt>Example</dt>
+</dl>
+<pre>java <nobr>-classpath</nobr> path1:path2 <nobr>-Xbootclasspath:path3:path4</nobr> 
+     org.apache.harmony.rmi.compiler.Main <nobr>-classpath</nobr> path1:path2
+     <nobr>-bootclasspath</nobr> path3:path4 [other options] &lt;class names></pre>
+<p class="note">Note</p>
+<p class="notetext"> The compiler does not support the <code> <nobr>-extdirs</nobr></code> 
+  option.</p>
+<h3>Locating the Java<a href="#*">*</a> compiler</h3>
+<p>To compile the generated stubs, DRL RMIC uses the Eclipse<a href="#*">*</a> 
+  compiler or another external Java<a href="#*">*</a> compiler. To locate the 
+  external compiler, the RMIC implementation uses the following algorithm, checking 
+  the following system properties and environment variables:</p>
+<ol>
+  <li>If the <code>org.apache.harmony.rmi.compiler.class</code> property is set, 
+    use the specified class as a Java<a href="#*">*</a> compiler class and move 
+    to the next step. Otherwise, move to step 3. 
+  <li>If the <code>org.apache.harmony.rmi.compiler.method</code> property is set, 
+    call the specified method and skip further steps. Otherwise, call the <code>main</code> 
+    method and skip further steps. The resulting method is the <code><nobr>compilerClass.compilerMethod(String[])</nobr></code> 
+    method. 
+  <li>If the <code>org.apache.harmony.rmi.compiler.executable</code> property 
+    is set, run the specified executable and skip further steps. 
+  <li> If the <code>CLASSPATH</code> contains the <code>org.eclipse.jdt.internal.compiler.batch.Main</code> 
+    Eclipse<a href="#*">*</a> compiler class, use the specified class and skip 
+    further steps. 
+  <li> If the <code>ECLIPSE_HOME</code> environment variable is set and the Eclipse<a href="#*">*</a> compiler
+    .jar file (<code>ECLIPSE_HOME/plugins/org.eclipse.jdt.core_*.jar</code>) is 
+    present, load the Eclipse<a href="#*">*</a> compiler class from the .jar archive 
+    and skip the last step. 
+  <li> If the <code>JAVA_HOME</code> environment variable is set and the <code>JAVA_HOME/bin/javac</code> 
+    executable is present, run the specified executable. 
+</ol>
+<p>If all the steps failed, RMIC executes <code>javac</code> to search for the 
+  compiler in the system <code>PATH</code> variable. If RMIC does not find the 
+  compiler, it aborts the operation with error.<br>
+</p>
+<h3>IIOP and IDL support</h3>
+<p>DRL RMIC does not support Internet inter-orb protocol (IIOP) and interactive 
+  data language (IDL) stub generation, and, consequently, the options<code> <nobr>-iiop</nobr>, 
+  <nobr>-idl</nobr>, <nobr>-always</nobr>, <nobr>-alwaysgenerate</nobr>, <nobr>-nolocalstubs</nobr></code>, and <code><nobr>-noValueMethods</nobr></code>.</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2><a name="References"></a> References</h2>
+<p>[<a name="RMISpec"></a>1] RMI Specification, <a href="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/spec/rmiTOC.html"
+title="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/spec/rmiTOC.html">http://java.sun.com/j2se/1.5.0/docs/guide/rmi/spec/rmiTOC.html</a> 
+</p>
+<p>[<a name="javarmi"></a>2] <code>java.rmi</code> Properties, <a
+href="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/javarmiproperties.html"
+title="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/javarmiproperties.html">http://java.sun.com/j2se/1.5.0/docs/guide/rmi/javarmiproperties.html</a></p>
+<p>[<a name="sunrmi"></a>3] <code>sun.rmi </code>Properties, <a
+href="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/sunrmiproperties.html"
+title="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/sunrmiproperties.html">http://java.sun.com/j2se/1.5.0/docs/guide/rmi/sunrmiproperties.html</a>  
+</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<p> (C) Copyright 2005-2006 Intel Corporation </p>
+<p> <a name="*">*</a> Other brands and names are the property of their respective 
+  owners. </p>
+</body>
+</html>

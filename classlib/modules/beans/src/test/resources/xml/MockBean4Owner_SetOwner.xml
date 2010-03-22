@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="${version}" class="java.beans.XMLDecoder">
+ <void id="MockBean4Owner_Owner0" property="owner"/>
+ <object class="${classname}">
+  <void property="v">
+   <object idref="MockBean4Owner_Owner0"/>
+  </void>
+ </object>
+</java>
