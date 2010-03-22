@@ -1,0 +1,12 @@
+javax/swing/JCheckBoxMenuItemTest.java
+javax/swing/LayoutFocusTraversalPolicyTest.java
+javax/swing/SpringLayoutTest.java
+javax/swing/plaf/basic/BasicCheckBoxMenuItemUITest.java
+javax/swing/plaf/basic/BasicMenuItemUITest.java
+javax/swing/plaf/basic/BasicMenuUITest.java
+# throws OutOfMemoryError : unable to create a new thread
+javax/swing/Timer_MultithreadedTest.java
+
+javax/swing/text/html/FormViewTest.java
+javax/swing/text/html/HTMLEditorKitTest.java
+javax/swing/text/WrappedPlainView_SimpleTest.java

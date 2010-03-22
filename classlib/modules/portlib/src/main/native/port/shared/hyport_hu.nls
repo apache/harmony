@@ -1,0 +1,54 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=Nem siker\u00fclt mem\u00f3ri\u00e1t lefoglalni.
+HYNLS_PORT_SL_UNKOWN_ERROR=Ismeretlen hiba a megosztott f\u00fcggv\u00e9nyt\u00e1r bet\u00f6lt\u00e9se k\u00f6zben
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=A(z) %s f\u00fcgg\u0151 modul nem t\u00f6lthet\u0151 be
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=Szimb\u00f3lumfelold\u00e1si hiba
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=A modul nem t\u00f6lthet\u0151 be
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=A modul form\u00e1tuma helytelen
+HYNLS_PORT_SL_NOT_A_MODULE=Nem modul
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=A modul architekt\u00far\u00e1ja helytelen
+HYNLS_PORT_SL_FILE_NOT_FOUND=A f\u00e1jl nem tal\u00e1lhat\u00f3
+HYNLS_PORT_SL_PERMISSION_DENIED=A jogosults\u00e1g megtagadva
+HYNLS_PORT_SL_OUT_OF_MEMORY=Elfogyott a mem\u00f3ria
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=Hiba: a 68K funkci\u00f3ban be van \u00e1ll\u00edtva a PACE bit.
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=A DLL t\u00e1bla nem tal\u00e1lhat\u00f3
+HYNLS_PORT_SL_DLL_NOT_FOUND=A DLL nem tal\u00e1lhat\u00f3
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=Nem oldhat\u00f3k fel a DLL hivatkoz\u00e1sok - lehet, hogy hi\u00e1nyzik egy el\u0151felt\u00e9tel DLL
+HYNLS_PORT_SL_INTERNAL_ERROR=Bels\u0151 hiba: %i
+
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=A m\u0171velet meghi\u00fasult: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=A m\u0171velet meghi\u00fasult: %1$d (%2$s meghi\u00fasult: %3$d)
+
+
+
+

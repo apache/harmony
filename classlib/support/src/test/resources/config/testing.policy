@@ -1,0 +1,9 @@
+grant {
+    // so we can remove the security manager
+    permission java.lang.RuntimePermission "setSecurityManager";
+    
+    permission java.io.SerializablePermission "enableSubclassImplementation";
+    
+    permission java.util.PropertyPermission "user.dir", "read";
+    permission java.io.FilePermission "${user.dir}${/}bin${/}tests${/}resources${/}-", "read";
+};

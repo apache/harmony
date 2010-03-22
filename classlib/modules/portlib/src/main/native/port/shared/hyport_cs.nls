@@ -1,0 +1,55 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=P\u0159id\u011blen\u00ed pam\u011bti se nezda\u0159ilo.
+
+HYNLS_PORT_SL_UNKOWN_ERROR=Nezn\u00e1m\u00e1 chyba p\u0159i zav\u00e1d\u011bn\u00ed sd\u00edlen\u00e9 knihovny.
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=Z\u00e1visl\u00fd modul %s nelze zav\u00e9st.
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=Rozli\u0161en\u00ed symbolu se nezda\u0159ilo.
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=Modul nelze zav\u00e9st.
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=Nespr\u00e1vn\u00fd form\u00e1t modulu.
+HYNLS_PORT_SL_NOT_A_MODULE=Nejde o modul.
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=Nespr\u00e1vn\u00e1 architektura modulu.
+HYNLS_PORT_SL_FILE_NOT_FOUND=Soubor nebyl nalezen.
+HYNLS_PORT_SL_PERMISSION_DENIED=Povolen\u00ed bylo odep\u0159eno.
+HYNLS_PORT_SL_OUT_OF_MEMORY=Nedostatek pam\u011bti.
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=Chyba: Funkce 68 k m\u00e1 nastaven bit PACE.
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=Tabulka knihovny DLL nebyla nalezena.
+HYNLS_PORT_SL_DLL_NOT_FOUND=Knihovna DLL nebyla nalezena.
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=Nelze rozli\u0161it odkazy DLL - pravd\u011bpodobn\u011b chyb\u00ed po\u017eadovan\u00e1 knihovna DLL.
+HYNLS_PORT_SL_INTERNAL_ERROR=Intern\u00ed chyba %i
+
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=Chyba p\u0159i operaci: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=Chyba p\u0159i operaci: %1$d (chyba p\u0159i %2$s: %3$d)
+
+
+
+

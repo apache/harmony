@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Prefs
+Bundle-SymbolicName: org.apache.harmony.prefs
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.lang.reflect;resolution:=optional,
+ java.net,
+ java.nio,
+ java.nio.channels,
+ java.nio.charset,
+ java.security,
+ java.util,
+ javax.xml.parsers,
+ javax.xml.transform,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ org.apache.xpath,
+ org.w3c.dom,
+ org.xml.sax
+Export-Package: java.util.prefs

@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Crypto
+Bundle-SymbolicName: org.apache.harmony.crypto
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.math,
+ java.nio,
+ java.security,
+ java.security.cert,
+ java.security.spec,
+ java.util,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.security;resolution:=optional,
+ org.apache.harmony.security.asn1,
+ org.apache.harmony.security.fortress,
+ org.apache.harmony.security.tests.support;hy_usage=test;resolution:=optional,
+ org.apache.harmony.security.utils,
+ org.apache.harmony.security.x509,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ tests.support.resource;hy_usage=test;resolution:=optional
+Export-Package: javax.crypto,
+ javax.crypto.interfaces,
+ javax.crypto.spec

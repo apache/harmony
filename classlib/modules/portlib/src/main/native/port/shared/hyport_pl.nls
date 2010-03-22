@@ -1,0 +1,55 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=Niepowodzenie przydzia\u0142u pami\u0119ci.
+
+HYNLS_PORT_SL_UNKOWN_ERROR=Nieznany b\u0142\u0105d podczas \u0142adowania biblioteki wsp\u00f3\u0142u\u017cytkowanej
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=Nie mo\u017cna za\u0142adowa\u0107 modu\u0142u zale\u017cnego %s
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=Niepowodzenie rozstrzygni\u0119cia symbolu
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=Nie mo\u017cna za\u0142adowa\u0107 modu\u0142u
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=Niepoprawny format modu\u0142u
+HYNLS_PORT_SL_NOT_A_MODULE=To nie jest modu\u0142
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=Niepoprawna architektura modu\u0142u
+HYNLS_PORT_SL_FILE_NOT_FOUND=Nie znaleziono pliku
+HYNLS_PORT_SL_PERMISSION_DENIED=Odmowa uprawnie\u0144
+HYNLS_PORT_SL_OUT_OF_MEMORY=Brak pami\u0119ci
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=B\u0142\u0105d: Funkcja 68K ma ustawiony bit PACE.
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=Nie znaleziono tabeli bibliotek DLL
+HYNLS_PORT_SL_DLL_NOT_FOUND=Nie znaleziono biblioteki DLL
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=Nie mo\u017cna rozstrzygn\u0105\u0107 odniesie\u0144 do bibliotek DLL - by\u0107 mo\u017ce brakuje wymaganej wst\u0119pnie biblioteki DLL
+HYNLS_PORT_SL_INTERNAL_ERROR=B\u0142\u0105d wewn\u0119trzny %i
+
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=Niepowodzenie operacji: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=Niepowodzenie operacji: %1$d (niepowodzenie %2$s: %3$d)
+
+
+
+

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0" class="java.beans.XMLDecoder"> 
+ <array class="int" length="2"> 
+  <void index="0"> 
+   <int>1</int> 
+  </void> 
+ </array> 
+</java> 

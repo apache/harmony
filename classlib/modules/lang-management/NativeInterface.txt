@@ -1,0 +1,411 @@
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+
+
+
+Native Interface Required for JLM Implementation
+------------------------------------------------------------
+
+The Java code contained in this implementation of the java.lang.management 
+package for Java SE 5.0 relies on a number of methods being available from 
+native libraries. The majority of these are for the getting and setting of VM
+properties and map to public API methods. For example, the operation 
+getLoadedClassCount() declared in the interface
+java.lang.management.ClassLoadingMXBean has a Java implementation in the class
+org.apache.harmony.lang.management.ClassLoadingMXBeanImpl that just calls a private native
+method getLoadedClassCountImpl() that returns the requested information from 
+the monitored VM. A basic pattern has been adopted where the name of the native
+method is the same as the public API method (as exposed in the
+java.lang.management interface) with the addition of the suffix "Impl". 
+
+Below is a list of all such getter/setter native calls grouped by implementation 
+class. This list is smaller than the list of all public methods available in the 
+java.lang.management *MXBean API as a number of methods could be realised in
+pure Java. 
+
+
+org.apache.harmony.lang.management.ClassLoadingMXBeanImpl
+----------------------------------------------------------------
+int getLoadedClassCountImpl()
+long getTotalLoadedClassCountImpl()
+long getUnloadedClassCountImpl()
+boolean isVerboseImpl
+void setVerboseImpl(boolean value)
+
+
+org.apache.harmony.lang.management.CompilationMXBeanImpl
+--------------------------------------------------------------
+long getTotalCompilationTimeImpl()
+boolean isCompilationTimeMonitoringSupportedImpl()
+
+
+org.apache.harmony.lang.management.GarbageCollectorMXBeanImpl
+--------------------------------------------------------------------
+long getCollectionCountImpl()
+long getCollectionTimeImpl()
+
+
+org.apache.harmony.lang.management.MemoryManagerMXBeanImpl
+--------------------------------------------------------------------
+boolean isValidImpl()
+
+
+org.apache.harmony.lang.management.MemoryMXBeanImpl
+----------------------------------------------------------
+MemoryUsage getHeapMemoryUsageImpl()
+MemoryUsage getNonHeapMemoryUsageImpl()
+int getObjectPendingFinalizationCountImpl()
+boolean isVerboseImpl()
+void setVerboseImpl(boolean value)
+
+
+org.apache.harmony.lang.management.MemoryPoolMXBeanImpl
+--------------------------------------------------------------
+MemoryUsage getCollectionUsageImpl()
+long getCollectionUsageThresholdImpl()
+long getCollectionUsageThresholdCountImpl()
+MemoryUsage getPeakUsageImpl()
+MemoryUsage getUsageImpl()
+long getUsageThresholdImpl()
+long getUsageThresholdCountImpl()
+boolean isCollectionUsageThresholdExceededImpl()
+boolean isCollectionUsageThresholdSupportedImpl()
+boolean isUsageThresholdExceededImpl()
+boolean isUsageThresholdSupportedImpl()
+boolean isValidImpl()
+void resetPeakUsageImpl()
+void setCollectionUsageThresholdImpl(long threshold)
+void setUsageThresholdImpl(long threshold)
+
+
+org.apache.harmony.lang.management.RuntimeMXBeanImpl
+----------------------------------------------------------
+String getNameImpl()
+long getStartTimeImpl()
+long getUptimeImpl()
+boolean isBootClassPathSupportedImpl()
+
+
+org.apache.harmony.lang.management.ThreadMXBeanImpl
+---------------------------------------------------------
+long[] findMonitorDeadlockedThreadsImpl()
+long[] getAllThreadIdsImpl()
+int getDaemonThreadCountImpl()
+int getPeakThreadCountImpl()
+int getThreadCountImpl()
+long getThreadCpuTimeImpl(long id)
+long getThreadUserTimeImpl(long id)
+long getTotalStartedThreadCountImpl()
+boolean isCurrentThreadCpuTimeSupportedImpl()
+boolean isThreadContentionMonitoringEnabledImpl()
+boolean isThreadContentionMonitoringSupportedImpl()
+boolean isThreadCpuTimeEnabledImpl()
+boolean isThreadCpuTimeSupportedImpl()
+void resetPeakThreadCountImpl()
+void setThreadContentionMonitoringEnabledImpl(boolean enable)
+void setThreadCpuTimeEnabledImpl(boolean enable)
+
+
+
+----------------------------------------------------------
+
+
+Below is a list of native calls used for internal support purposes; they do not have
+any basis in the public API. Calls are grouped by implementation class.
+
+org.apache.harmony.lang.management.CompilationMXBeanImpl
+--------------------------------------------------------------
+	/**
+	 * Query whether the VM is running with a JIT compiler enabled.
+	 * 
+	 * @return true if a JIT is enabled, false otherwise
+	 */
+	private static native boolean isJITEnabled();
+	
+	
+org.apache.harmony.lang.management.MemoryManagerMXBeanImpl
+--------------------------------------------------------------------
+    /**
+     * IMPORTANT : VM is the sole caller of this method.
+     * 
+     * Instantiate the MemoryPoolMXBeans representing the memory managed by
+     * this manager, and store them in the managedPoolList.
+     * 
+     * @param managerID
+     * @param memBean
+     */
+    private native void createMemoryPools(int managerID,
+            MemoryMXBeanImpl memBean);
+
+
+org.apache.harmony.lang.management.MemoryMXBeanImpl
+----------------------------------------------------------
+    /**
+     * IMPORTANT : VM is the sole caller of this method.
+     * 
+     * Instantiates MemoryManagerMXBean and GarbageCollectorMXBean
+     * instance(s) for the current VM configuration and stores them in
+     * memoryManagerList.
+     */
+    private native void createMemoryManagers();
+
+
+org.apache.harmony.lang.management.MemoryNotificationThread
+-----------------------------------------------------------------
+    /**
+     * Process notifications on an internal VM queue until a shutdown request is
+     * received.
+     * 
+     * @param internalID
+     *            The internal ID of the queue to service
+     */
+    private native void processNotificationLoop(int internalID);
+
+
+org.apache.harmony.lang.management.MemoryNotificationThreadShutdown
+-----------------------------------------------------------------------------
+    /**
+     * Wipes any pending notifications and puts a shutdown request notification
+     * on an internal notification queue.
+     * 
+     * @param id
+     *            The internal id of the queue to shut down
+     */
+    private native void sendShutdownNotification(int id);
+
+
+org.apache.harmony.lang.management.ThreadMXBeanImpl
+---------------------------------------------------------
+All of the support native methods below are called from within the
+getThreadInfoImpl(long, int) method. If the implementation of this method changes
+from its current Java form to a native form then all of these methods can be 
+removed from this class.
+
+    /**
+     * Returns the corresponding Thread instance for a given thread id
+     * 
+     * @param id
+     *            id of the thread (must be > 0)
+     * @return null if thread with the id specified does not exist
+     */
+    private native Thread getThreadByIdImpl(long id);
+
+    /**
+     * Returns the object the thread is either blocked or waiting on
+     * 
+     * @param thread
+     *            thread
+     * @return null if thread not blocked on an object
+     */
+    private native Object getObjectThreadIsBlockedOnImpl(Thread thread);
+
+    /**
+     * Returns the thread owning an object
+     * 
+     * @param obj
+     *            object
+     * @return null if object not owned, else Thread owner
+     */
+    private native Thread getThreadOwningObjectImpl(Object obj);
+
+    /**
+     * Returns whether the thread is suspended or not
+     * 
+     * @param thread
+     *            thread
+     * @return true if Thread.suspend() has been called on the thread, otherwise
+     *         false
+     */
+    private native boolean isSuspendedImpl(Thread thread);
+
+    /**
+     * Returns the amount of time the thread has waited (in milliseconds)
+     * 
+     * @param thread
+     *            thread
+     * @return time (in milliseconds) the thread has waited, or -1 if this
+     *         feature is not supported
+     * 
+     */
+    private native long getThreadWaitedTimeImpl(Thread thread);
+
+    /**
+     * Returns the amount of time the thread has blocked (in milliseconds)
+     * 
+     * @param thread
+     *            thread
+     * @return time (in milliseconds) the thread has blocked, or -1 if this
+     *         feature is not supported
+     * 
+     */
+    private native long getThreadBlockedTimeImpl(Thread thread);
+
+    /**
+     * Returns the number of times the thread has blocked on a monitor
+     * 
+     * @param thread
+     *            thread
+     * @return number of times the thread has blocked
+     * 
+     */
+    private native long getThreadBlockedCountImpl(Thread thread);
+
+    /**
+     * Create an instance of the ThreadInfo class
+     * 
+     * @param threadId
+     * @param threadName
+     * @param threadState
+     * @param suspended
+     * @param inNative
+     * @param blockedCount
+     * @param blockedTime
+     * @param waitedCount
+     * @param waitedTime
+     * @param lockName
+     * @param lockOwnerId
+     * @param lockOwnerName
+     * @param stackTrace
+     * @return
+     */
+    private native ThreadInfo createThreadInfoImpl(long threadId,
+            String threadName, Thread.State threadState, boolean suspended,
+            boolean inNative, long blockedCount, long blockedTime,
+            long waitedCount, long waitedTime, String lockName,
+            long lockOwnerId, String lockOwnerName,
+            StackTraceElement[] stackTrace);
+
+
+
+----------------------------------------------------------
+
+
+
+Java Fields Used by Native Code
+---------------------------------------
+
+The following private instance field is included in the Java source for use
+by the native code layer. Care must be taken not to remove this field.
+
+org.apache.harmony.lang.management.MemoryPoolMXBeanImpl
+--------------------------------------------------------------
+    /**
+     * IMPORTANT: bean identifier for use by VM
+     */
+    @SuppressWarnings("unused")
+    private final int id;
+
+
+
+----------------------------------------------------------
+
+
+
+Java Calls Used by Native Code
+--------------------------------------
+
+The following private methods are included in the Java source for use by the native
+layer. Care must be taken not to remove these methods.
+
+org.apache.harmony.lang.management.MemoryNotificationThread
+-----------------------------------------------------------------
+    /**
+     * A helper method called from within the native
+     * {@link #processNotificationLoop(int)} method to construct and dispatch
+     * notification objects.
+     * 
+     * @param min
+     *            the initial amount in bytes of memory that can be allocated by
+     *            this virtual machine
+     * @param used
+     *            the number of bytes currently used for memory
+     * @param committed
+     *            the number of bytes of committed memory
+     * @param max
+     *            the maximum number of bytes that can be used for memory
+     *            management purposes
+     * @param count
+     *            the number of times that the memory usage of the memory pool
+     *            in question has met or exceeded the relevant threshold
+     * @param sequenceNumber
+     *            the sequence identifier of the current notification
+     * @param isCollectionUsageNotification
+     *            a <code>boolean</code> indication of whether or not the new
+     *            notification is as a result of the collection threshold being
+     *            exceeded. If this value is <code>false</code> then the
+     *            implication is that a memory threshold has been exceeded.
+     */
+    @SuppressWarnings("unused")
+    // IMPORTANT: for use by VM
+    private void dispatchNotificationHelper(long min, long used,
+            long committed, long max, long count, long sequenceNumber,
+            boolean isCollectionUsageNotification)
+                        
+
+org.apache.harmony.lang.management.MemoryManagerMXBeanImpl
+--------------------------------------------------------------------
+    /**
+     * A helper method called from within the native
+     * {@link #createMemoryPools(int, MemoryMXBeanImpl)} method to construct
+     * new MemoryPoolMXBeans representing memory managed by this manager
+     * and add them to the {@link #managedPoolList}.
+     * 
+     * @param name
+     *            the name of the corresponding memory pool
+     * @param isHeap
+     *            boolean indication of the memory pool type. <code>true</code>
+     *            indicates that the memory is heap memory while
+     *            <code>false</code> indicates non-heap memory
+     * @param internalID
+     *            numerical identifier associated with the memory pool for the
+     *            benefit of the VM
+     * @param memBean
+     *            the {@link MemoryMXBeanImpl} that will send event
+     *            notifications related to this memory pool
+     */
+    @SuppressWarnings("unused")
+    // IMPORTANT: for use by VM
+    private void createMemoryPoolHelper(String name, boolean isHeap,
+            int internalID, MemoryMXBeanImpl memBean)
+
+
+org.apache.harmony.lang.management.MemoryMXBeanImpl
+----------------------------------------------------------
+    /**
+     * A helper method called from within the native
+     * {@link #createMemoryManagers()} method to construct new instances of
+     * MemoryManagerMXBean and GarbageCollectorMXBean and add them to the
+     * {@link #memoryManagerList}.
+     * 
+     * @param name
+     *            the name of the corresponding memory manager
+     * @param internalID
+     *            numerical identifier associated with the memory manager for
+     *            the benefit of the VM
+     * @param isGC
+     *            boolean indication of the memory manager type.
+     *            <code>true</code> indicates that the runtime type of the
+     *            object to be created is
+     *            <code>GarbageCollectorMXBeanImpl</code> while
+     *            <code>false</code> indicates a
+     *            <code>MemoryManagerMXBeanImpl</code>
+     */
+    @SuppressWarnings("unused")
+    // IMPORTANT: for use by VM
+    private void createMemoryManagerHelper(String name, int internalID,
+            boolean isGC)
+
+

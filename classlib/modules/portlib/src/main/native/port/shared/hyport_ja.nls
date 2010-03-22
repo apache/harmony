@@ -1,0 +1,55 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=\u30e1\u30e2\u30ea\u30fc\u306e\u5272\u308a\u632f\u308a\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002
+
+HYNLS_PORT_SL_UNKOWN_ERROR=\u5171\u7528\u30e9\u30a4\u30d6\u30e9\u30ea\u30fc\u306e\u30ed\u30fc\u30c9\u4e2d\u306b\u4e0d\u660e\u30a8\u30e9\u30fc\u304c\u767a\u751f\u3057\u307e\u3057\u305f
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=\u5f93\u5c5e\u30e2\u30b8\u30e5\u30fc\u30eb %s \u3092\u30ed\u30fc\u30c9\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=\u30b7\u30f3\u30dc\u30eb\u89e3\u6c7a\u5931\u6557
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=\u30e2\u30b8\u30e5\u30fc\u30eb\u3092\u30ed\u30fc\u30c9\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=\u30e2\u30b8\u30e5\u30fc\u30eb\u5f62\u5f0f\u304c\u6b63\u3057\u304f\u3042\u308a\u307e\u305b\u3093
+HYNLS_PORT_SL_NOT_A_MODULE=\u30e2\u30b8\u30e5\u30fc\u30eb\u3067\u306f\u3042\u308a\u307e\u305b\u3093
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=\u30e2\u30b8\u30e5\u30fc\u30eb\u30fb\u30a2\u30fc\u30ad\u30c6\u30af\u30c1\u30e3\u30fc\u304c\u6b63\u3057\u304f\u3042\u308a\u307e\u305b\u3093
+HYNLS_PORT_SL_FILE_NOT_FOUND=\u30d5\u30a1\u30a4\u30eb\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093
+HYNLS_PORT_SL_PERMISSION_DENIED=\u8a31\u53ef\u304c\u62d2\u5426\u3055\u308c\u307e\u3057\u305f
+HYNLS_PORT_SL_OUT_OF_MEMORY=\u30e1\u30e2\u30ea\u30fc\u4e0d\u8db3\u3067\u3059
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=\u30a8\u30e9\u30fc: 68K \u6a5f\u80fd\u306b PACE \u30d3\u30c3\u30c8\u304c\u8a2d\u5b9a\u3055\u308c\u3066\u3044\u307e\u3059\u3002
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=DLL \u30c6\u30fc\u30d6\u30eb\u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093
+HYNLS_PORT_SL_DLL_NOT_FOUND=DLL \u304c\u898b\u3064\u304b\u308a\u307e\u305b\u3093
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=DLL \u53c2\u7167\u3092\u89e3\u6c7a\u3067\u304d\u307e\u305b\u3093 - \u524d\u63d0 DLL \u304c\u6b20\u843d\u3057\u3066\u3044\u308b\u53ef\u80fd\u6027\u304c\u3042\u308a\u307e\u3059
+HYNLS_PORT_SL_INTERNAL_ERROR=\u5185\u90e8\u30a8\u30e9\u30fc %i
+
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=\u64cd\u4f5c\u306f\u5931\u6557\u3057\u307e\u3057\u305f: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=\u64cd\u4f5c\u306f\u5931\u6557\u3057\u307e\u3057\u305f: %1$d (%2$s \u306f\u5931\u6557\u3057\u307e\u3057\u305f: %3$d)
+
+
+
+

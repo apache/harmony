@@ -1,0 +1,515 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+options {
+//  DEBUG_PARSER = true;
+//  DEBUG_TOKEN_MANAGER = true;
+  STATIC = false;
+}
+
+PARSER_BEGIN(RTFParser)
+package org.apache.harmony.x.swing.text.rtf;
+
+import java.io.*;
+import java.util.Stack;
+import javax.swing.text.DefaultStyledDocument;
+
+public class RTFParser {
+
+  private RTFHandler handler;
+
+  private String encoding = RTFEncodings.DEFAULT_ENCODING;
+
+  private int ucValue = 1;
+  /**
+   * This stack contains only UC values as a scope parameter.
+   * It could be modified to contain additional parameters.
+   */
+  private Stack scopeStack = new Stack();
+
+  public static void main(String args[]) throws Exception {
+    InputStream in;
+
+    if (args.length > 0)
+      in = new FileInputStream(args[0]);
+    else
+      in = System.in;
+
+    RTFParser parser = new RTFParser(in);
+    RTFHandler handler = new DocumentRTFHandler(new DefaultStyledDocument(), 0);
+    parser.parse(handler);
+  }
+
+  private byte[] getBytes(String str) {
+    char[] chars = str.toCharArray();
+    byte[] bytes = new byte[chars.length];
+    for (int i = 0; i < chars.length; i++)
+      bytes[i] = (byte) chars[i];
+    return bytes;
+  }
+
+}
+
+PARSER_END(RTFParser)
+
+<DEFAULT>
+SKIP :
+{
+  "\n"
+| "\r"
+| "\t"
+}
+
+<*>
+TOKEN:
+{
+  <IGNORED_DESTINATION: "\\*"> : DEFAULT
+| <ESCAPED_OPEN_BRACE: "\\{"> : DEFAULT
+| <ESCAPED_CLOSE_BRACE: "\\}"> : DEFAULT
+| <ESCAPED_BACKSLASH: "\\\\"> : DEFAULT
+| <CONTROL_SYMBOL: "\\" ~["a"-"z", "A"-"Z", "0"-"9", " ", "\t",
+                          "{", "}", "\n", "\r"]> : DEFAULT
+|  <#HEX_DIGIT: ["0"-"9","a"-"f","A"-"F"]>
+| <HEX_CHAR: "\\'" <HEX_DIGIT> <HEX_DIGIT>> : DEFAULT
+}
+
+<*>
+MORE:
+{
+  <BACKSLASH: "\\"> : IN_CONTROL_WORD
+}
+
+<*>
+TOKEN:
+{
+  <OPEN_BRACE: "{"> : DEFAULT
+| <CLOSE_BRACE: "}"> : DEFAULT
+}
+
+<DEFAULT>
+TOKEN:
+{
+  <TEXT: (~["\\", "{", "}", "\n", "\r", "\t"])+>
+}
+
+<IN_CONTROL_WORD>
+SKIP:
+{
+  " " : DEFAULT
+| "\n" : DEFAULT
+| "\r" : DEFAULT
+| "\t" : DEFAULT
+}
+
+<IN_CONTROL_WORD>
+TOKEN:
+{
+  <RTF: "rtf">
+| <ANSI: "ansi">
+| <MAC: "mac">
+| <PC: "pc">
+| <PCA: "pca">
+| <ANSICPG: "ansicpg">
+| <UC: "uc">
+| <U: "u">
+| <UPR: "upr">
+| <UD: "ud">
+| <FONTTBL: "fonttbl">
+| <COLORTBL: "colortbl">
+| <STYLESHEET: "stylesheet">
+| <INFO: "info">
+| <B: "b">
+| <I: "i">
+| <UL: "ul">
+//|  <SECT: "sect">
+//|  <SUBDOCUMENT: "subdocument">
+| <PAR: "par">
+
+| <CONTROL_WORD: (["a"-"z", "A"-"Z"])+>
+| <PARAM: (["-"])? (["0"-"9"])+ (" ")?> : DEFAULT
+}
+
+<IN_CONTROL_WORD>
+SKIP:
+{
+ <~[]> : DEFAULT
+}
+
+public void parse(RTFHandler handler) :
+{}
+{
+  {
+    if (handler == null)
+      throw new NullPointerException("Parameter handler cannot be null");
+    this.handler = handler;
+  }
+  file() <EOF>
+}
+
+private int parameter() :
+{
+  Token param = null;
+}
+{
+  [param=<PARAM>]
+  {
+    return param == null ? -1 : Integer.parseInt(param.image.trim());
+  }
+}
+
+/**
+ * Catches all unhandled control words.
+ */
+private void unknownControlWord() :
+{}
+{
+  <CONTROL_WORD> [<PARAM>]
+}
+
+/**
+ * Catches all unhandled control symbols.
+ */
+void unknownControlSymbol() :
+{}
+{
+  <CONTROL_SYMBOL>
+}
+
+/**
+ * Group which starts with "{\*" and describes destination, currently this part
+ * is ignored.
+ */
+void ignoredDestination() :
+{}
+{
+  <OPEN_BRACE> <IGNORED_DESTINATION> ignoredBlock() <CLOSE_BRACE>
+}
+
+String parseText() :
+{
+  byte[] bytes;
+  String text;
+  ByteArrayOutputStream textBytes = new ByteArrayOutputStream();
+  StringBuffer parsedText = new StringBuffer();
+}
+{
+  (
+    (
+      // Here we collecting all the characters which should be decoded
+      // using specified encoding
+      (
+        bytes = parseHexBytes()
+      | bytes = parseTextBytes()
+      ) {
+          try {
+            textBytes.write(bytes);
+          } catch (IOException e) {}
+        }
+    )+
+    {
+      // Decoding collected characters using specified encoding
+      try {
+        parsedText.append(textBytes.toString(encoding));
+        textBytes.reset();
+      }
+      catch (UnsupportedEncodingException e) {
+        throw new ParseException("Unsupported encoding");
+      }
+    }
+  // Appending characters which don't require decoding to parsed text
+  | (
+      text = parseSpecialCharacter()
+    | text = parseUnicodeText()
+    ) { parsedText.append(text); }
+  )+
+  { return parsedText.toString(); }
+}
+
+byte[] parseHexBytes() :
+{
+  Token token;
+  byte[] result = new byte[1];
+}
+{
+  token = <HEX_CHAR>
+  {
+    result[0] = (byte) Integer.parseInt(token.image.substring(2), 16);
+    return result;
+  }
+}
+
+byte[] parseTextBytes() :
+{
+  Token token;
+}
+{
+  token = <TEXT>
+  {
+    return getBytes(token.image);
+  }
+}
+
+String parseSpecialCharacter() :
+{}
+{
+  <ESCAPED_OPEN_BRACE>  { return "{"; }
+| <ESCAPED_CLOSE_BRACE> { return "}"; }
+| <ESCAPED_BACKSLASH>   { return "\\"; }
+}
+
+String parseUnicodeText() :
+{
+  int param;
+  StringBuffer unicodeBuffer = new StringBuffer();
+}
+{
+  (
+    <U> param = parameter()
+    {
+      if (param < 0)
+        param += 65536;
+
+      unicodeBuffer.append((char) param);
+    }
+    skipAfterUnicode(ucValue)
+  )+
+  { return unicodeBuffer.toString(); }
+}
+
+void file() :
+{}
+{
+  <OPEN_BRACE> <RTF>[<PARAM>] document() <CLOSE_BRACE>
+}
+
+void document() :
+{
+  boolean skipped;
+  String text;
+}
+{
+  (
+    LOOKAHEAD(2)
+    header()
+  | paragraph()
+  | LOOKAHEAD(<OPEN_BRACE> <INFO>)
+    info()
+  | LOOKAHEAD(<OPEN_BRACE> <IGNORED_DESTINATION>)
+    ignoredDestination()
+  | documentGroup()
+  | unknownControlWord()
+  | unknownControlSymbol()
+  | text = parseText() { handler.addText(text); }
+  | skipped = handleUnexpectedControlWord() { if (!skipped) return; }
+  )+
+}
+
+/**
+ * A group.
+ */
+void documentGroup() :
+{}
+{
+  startGroup() document() endGroup()
+}
+
+void startGroup() :
+{}
+{
+  <OPEN_BRACE>
+  {
+    scopeStack.push(ucValue);
+    handler.startGroup();
+  }
+}
+
+void endGroup() :
+{}
+{
+  <CLOSE_BRACE>
+  {
+    ucValue = (Integer) scopeStack.pop();
+    handler.endGroup();
+  }
+}
+
+void header() :
+{}
+{
+  characterSet()
+| LOOKAHEAD(<OPEN_BRACE> <FONTTBL>)
+  fonttbl()
+| LOOKAHEAD(<OPEN_BRACE> <COLORTBL>)
+  colortbl()
+| LOOKAHEAD(<OPEN_BRACE> <STYLESHEET>)
+  stylesheet()
+}
+
+void characterSet() :
+{
+  int param;
+}
+{
+  <ANSI>    { encoding = "Cp1252"; }
+| <MAC>     { encoding = "MacRoman"; }
+| <PC>      { encoding = "Cp437"; }
+| <PCA>     { encoding = "Cp850"; }
+| <ANSICPG> param = parameter()
+  {
+    encoding = RTFEncodings.getEncoding(param);
+  }
+}
+
+/**
+ * Part which describes font table group.
+ */
+void fonttbl() :
+{}
+{
+  <OPEN_BRACE> <FONTTBL> ignoredBlock() <CLOSE_BRACE>
+}
+
+/**
+ * Part which describes color table group.
+ */
+void colortbl() :
+{}
+{
+  <OPEN_BRACE> <COLORTBL> ignoredBlock() <CLOSE_BRACE>
+}
+
+/**
+ * Part which describes the style sheet group.
+ */
+void stylesheet() :
+{}
+{
+  <OPEN_BRACE> <STYLESHEET> ignoredBlock() <CLOSE_BRACE>
+}
+
+/**
+ * Part which describes the information group inside document area.
+ */
+void info() :
+{}
+{
+  <OPEN_BRACE> <INFO> ignoredBlock() <CLOSE_BRACE>
+}
+
+void paragraph() :
+{}
+{
+  characterFormat()
+| <PAR> { handler.newParagraph(); }
+}
+
+void characterFormat() :
+{
+  int param;
+}
+{
+  <B> param = parameter() { handler.setBold(param != 0); }
+| <I> param = parameter() { handler.setItalic(param != 0); }
+| <UL> param = parameter() { handler.setUnderline(param != 0); }
+}
+
+JAVACODE
+/**
+ * Ignoring a block of RTF file enclosed in braces, it is using
+ * to ignore unknown or unnecessary parts of file.
+ */
+private void ignoredBlock() {
+  Token token;
+  int nesting = 1;
+  while (true) {
+    token = getToken(1);
+    if (token.kind == OPEN_BRACE)
+      nesting++;
+    else if (token.kind == CLOSE_BRACE) {
+      nesting--;
+      if (nesting == 0)
+        return;
+    }
+    getNextToken();
+  }
+}
+
+JAVACODE
+/**
+ * This function skips an unexpected control word defined as token
+ * and handle control words which could appear anywhere in a file.
+ *
+ * @return true if control was skipped or handled
+ */
+private boolean handleUnexpectedControlWord() {
+  Token token = getToken(1);
+
+  if (token.kind == UC) {
+    getNextToken();
+    token = getToken(1);
+    if (token.kind == PARAM) {
+      ucValue = Integer.parseInt(token.image);
+      getNextToken();
+    }
+    return true;
+  }
+
+  String text = token.image;
+  if (text.matches("\\\\[a-zA-Z]+")) {
+    getNextToken();
+    token = getToken(1);
+    if (token.kind == PARAM)
+      getNextToken();
+    return true;
+  }
+
+  return false;
+}
+
+JAVACODE
+/**
+ * This function skips n characters and/or control words and/or
+ * control symbols after Unicode character.
+ */
+private void skipAfterUnicode(int n) {
+  while (n-- > 0) {
+    Token token = getToken(1);
+    // If token is a control word or a control symbol
+    if (token.image.startsWith("\\")) {
+      getNextToken();
+      token = getToken(1);
+      // If control word has parameter
+      if (token.kind == PARAM)
+        getNextToken();
+      //TODO: Need to skip \bin data
+    }
+    else if (token.kind == HEX_CHAR)
+      getNextToken();
+    else if (token.kind == TEXT) {
+      String text = token.image;
+      if (text.length() <= n + 1) {
+        n -= text.length() - 1;
+        getNextToken();
+      }
+      else {
+        token.image = text.substring(n + 1);
+        return;
+      }
+    }
+    else throw new ParseException("Wrong token " + token + " while skipping data after Unicode character");
+  }
+}

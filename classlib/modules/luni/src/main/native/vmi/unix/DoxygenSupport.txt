@@ -1,0 +1,35 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+/*
+ * This file provides the group definitions required to create the Doxygen generated
+ * output for compounds.  There is one group per directory (port, pool, thread, etc.).
+ */
+ 
+/**
+ * @defgroup VMInterface VM Interface
+ * @brief The C VM Interface between \ref HarmonyNatives "Harmony natives" and the Java VM.
+ *
+ * The VM Interface must be implemented by the JVM vendor to support the \ref HarmonyNatives "Harmony natives".
+ * The VM vendor must export the following <a href='vmi_8h.html#VMIExports'>functions</a> from 
+ * the VM-Interface shared library.  The JVM vendor is free to add additional exports to this
+ * library for initialization purposes.
+ *
+ * The current implementation contains several temporary <a href='vmi_8h.html#VMITemporary'>functions</a>
+ * that will be removed in an upcoming revision.  The implementation of these temporary functions
+ * is trivial and described in the individual function comments. 
+ */
+
+

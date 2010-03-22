@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="SWING Build" default="build" basedir=".">
+    <description>Build for SWING component</description>
+
+    <property name="hy.module" value="swing" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+
+    <!-- List of private classes that cannot be mapped by above mappers -->
+    <fileset id="hidden.classes" dir="../../build/classes">
+        <include name="javax/swing/text/html/parser/ModelElement.class"/>
+        <include name="javax/swing/text/html/parser/Asn1ModelElement.class"/>
+        <include name="javax/swing/text/html/parser/Asn1ModelElement$1.class"/>
+        <include name="javax/swing/text/html/parser/CUP$ParserCup$actions.class"/>
+    </fileset>
+
+    <property file="../../make/depends.properties" />
+
+    <target name="build" depends="compile-java, build-jar" />
+
+    <target name="clean" depends="clean-java,clean-test" />
+
+    <target name="test" depends="-test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.failures" />
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <!-- internal target for local and global test run sequence -->
+    <target name="-test-module" depends="build, run-tests" />
+
+    <target name="clean-java" depends="class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/swing.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/swing-src.jar" />
+        <delete failonerror="false">
+            <fileset refid="classes" />
+            <fileset refid="hidden.classes"/>
+        </delete>
+        <delete-patternset module="${hy.module}" />
+    </target>
+
+    <target name="clean-test">
+        <delete dir="${tests.hdk.dir}" failonerror="false" />
+        <delete failonerror="false" dir="bin"/>
+    </target>
+
+    <target name="compile-java">
+        <echo message="Compiling ${hy.module} classes" />
+
+        <mkdir dir="../../build/classes" />
+
+        <hy.javac sourcepath=""
+                  destdir="../../build/classes">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <src>
+                <pathelement location="src/main/java/common"/>
+                <pathelement location="src/main/java/${hy.os.family}" />
+            </src>
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+    </target>
+
+    <target name="findbugs" depends="build-jar">
+        <run-findBugs
+            jarFile="${hy.jdk}/jre/lib/boot/swing.jar"
+            excludeFilter="make/findbugs-exclude-filter.xml"
+            outputFile="${findBugs.report}/swing.xml"/>
+    </target>
+
+    <target name="build-jar" depends="svn-info,class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/swing.jar"
+             manifest="META-INF/MANIFEST.MF">
+            <fileset refid="classes" />
+            <fileset refid="hidden.classes" />
+            <fileset refid="common.resources" />
+        </hy.jar.bin>
+
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/swing-src.jar">
+            <fileset dir="src/main/java/common" />
+        </hy.jar.src>
+    </target>
+
+    <target name="test-jar" depends="svn-info,compile-tests">
+        <mkdir dir="${tests.hdk.dir}" />
+        
+        <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
+        
+        <hy.jar.bin destfile="${tests.hdk.dir}/swing_tests.jar">
+            <fileset dir="bin/test" />
+        </hy.jar.bin>
+
+        <mkdir dir="${tests.excludes.hdk.dir}"/>
+        <copy todir="${tests.excludes.hdk.dir}">
+            <fileset dir="make" includes="exclude*"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\.java" replace="\.class" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+
+        <copy todir="${tests.resources.hdk.dir}">
+            <fileset dir="src/test/resources" />
+        </copy>
+    </target>
+
+    <target name="compile-tests">
+        <compile-tests description="swing tests">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/api/java.injected" />
+                </src>
+            </javac-elements>
+        </compile-tests>
+    </target>
+
+    <target name="run-tests" depends="test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
+    </target>
+
+    <target name="class-patternset">
+        <make-patternset module="${hy.module}" />
+    </target>
+
+</project>

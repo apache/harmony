@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Sun Compatibility
+Bundle-SymbolicName: org.apache.harmony.suncompat
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.awt.image,
+ java.io,
+ java.lang,
+ java.lang.reflect,
+ java.security,
+ javax.imageio,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.rmi.transport;hy_usage=suncompat,
+ org.apache.harmony.xnet.provider.jsse;hy_usage=suncompat
+Export-Package: com.sun.net.ssl.internal.ssl,
+ sun.misc

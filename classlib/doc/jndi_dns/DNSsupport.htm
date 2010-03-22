@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=windows-1252">
+  <title>DNS Service Provider</title>
+  <link rel="Stylesheet" type="text/css" href="../harmony.css">
+</head>
+<body>
+<p class="title"> <a name="top"></a>DNS Service Provider </p>
+<p class="TOCHeading"> <a href="#Revision_History">Revision History</a>
+</p>
+<p class="TOCHeading"> <a href="#Disclaimer_and_Legal">Disclaimer and
+Legal Information</a> </p>
+<p class="TOCHeading"> <a href="#About_This_Document">About This
+Document</a> </p>
+<p class="TOC"> <a href="#Purpose">Purpose</a> </p>
+<p class="TOC"> <a href="#Intended_Audience">Intended Audience</a> </p>
+<p class="TOC"> <a href="#Documentation_Conventions">Documentation
+Conventions</a> </p>
+<p class="TOCHeading"> <a href="#DNS_Provider_Overview">Introduction
+to DNS Provider </a> </p>
+<p class="TOCHeading"> <a href="#DNS_Provider_in_DRL">DNS Provider in
+DRL</a> </p>
+<p class="TOC"> <a href="#About_DRL_DNS">About</a> </p>
+<p class="TOC"> <a href="#DNS_URL_Syntax">DNS URL Syntax</a> </p>
+<p class="TOC"> <a href="#Attribute_Identifiers">Attribute Identifiers</a>
+</p>
+<p class="TOC"> <a href="#API_Mapping">API Mapping</a> </p>
+<p class="TOC"> <a href="#Environment_Properties">Environment
+Properties</a> </p>
+<p class="TOC"> <a href="#DNS_Resolver">DNS Resolver</a> </p>
+<p class="TOC"> <a href="#Federation">Federation</a> </p>
+<p class="TOCHeading"> <a href="#Appendix_Usage_Examples">Appendix:
+Usage Examples</a> </p>
+<p class="TOCHeading"> <a href="#References">References</a> </p>
+<h1> <a name="Revision_History"></a>Revision History </h1>
+<table border="0" cellpadding="0" width="100%">
+  <tbody>
+    <tr>
+      <td class="TableHeading" width="24%"> Version </td>
+      <td class="TableHeading" width="49%"> Version Information </td>
+      <td class="TableHeading"> Date </td>
+    </tr>
+    <tr>
+      <td class="TableCell" width="24%"> Initial version </td>
+      <td class="TableCell" width="49%"> Alexei Zakharov, Nadya
+Morozova: document created. </td>
+      <td class="TableCell">&nbsp; March 23, 2006 </td>
+    </tr>
+  </tbody>
+</table>
+<h1> <a name="Disclaimer_and_Legal"></a>Disclaimer and Legal
+Information </h1>
+<p> Copyright 2005-2006 The Apache Software Foundation or its
+licensors, as
+applicable. </p>
+<p> Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License. You may
+obtain a copy of the License at <a
+ href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank">
+http://www.apache.org/licenses/LICENSE-2.0</a>. </p>
+<p> Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing
+permissions and limitations under the License. </p>
+<h1> <a name="About_This_Document"></a>About This Document </h1>
+<h2> <a name="Purpose"></a>Purpose </h2>
+<p> This document introduces the DRL implementation of the DNS service
+provider for JNDI, the Java<a href="#*">*</a> Naming Directory
+Interface. The document gives details on the DNS provider design,
+includes an overall description of the package, and includes helpful
+usage examples.
+The description documents the first version of the DRL DNS service
+provider deployed in March 2006. </p>
+<h2> <a name="Intended_Audience"></a>Intended Audience </h2>
+<p> The target audience for the document includes a wide community of
+engineers interested in using the DNS service provider for JNDI and in
+further work with the product to contribute to its development. The
+document assumes that readers are familiar with the Java<a href="#*">*</a>
+programming language, the Java<a href="#*">*</a> Naming Directory
+Interface, and common concepts of the DNS protocol.
+</p>
+<h2> <a name="Documentation_Conventions"></a>Documentation Conventions
+</h2>
+<p> This document uses the <a href="conventions.htm">unified
+conventions</a> for the DRL documentation kit. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h1> <a name="DNS_Provider_Overview"></a>Introduction to DNS Provider </h1>
+<p> The DNS service provider enables Java<a href="#*">*</a>
+applications to access information stored in the Domain Name System
+database by means of the Java<a href="#*">*</a> Naming and Directory
+Interface [<a href="#JNDI">1</a>]. The provider presents the DNS
+namespace as a tree of JNDI directory contexts, and DNS resource
+records as JNDI attributes. </p>
+<p class="backtotop"><a href="#top">Back to Top</a> </p>
+<h1> <a name="DNS_Provider_in_DRL"></a>DNS Provider in DRL </h1>
+<p> This part of the document describes the DRL implementation of the
+DNS provider as a whole and defines the API mapping, environment
+properties usage, and other specific aspects.
+</p>
+<h2> <a name="About_DRL_DNS"></a>About </h2>
+<p><font face="Arial" size="2"><span
+ style="font-size: 10pt; font-family: Arial;" lang="EN-US">This is an
+independent implementation of the DNS service provider for JNDI. More
+detailed information on JNDI and JNDI service providers can be found at
+</span></font>[<a href="DNSsupport.htm#JNDI">1</a>]. </p>
+<p> In DRL, the DNS service provider is a directory context associated
+with a domain name. This way, DNS resource records correspond to JNDI
+attributes. The DNS support functionality is mainly represented by the
+following classes of the <code>org.apache.harmony.jndi.provider.dns</code>
+package: </p>
+<ul>
+  <li> The <code>DNSContext</code> class represents the DNS context
+and implements the <code>DirContext</code> interface </li>
+  <li> The <code>DNSName</code> class represents DNS names and
+implements the <code>Name</code> interface </li>
+  <li> The <code>DNSNameParser</code> class enables parsing DNS names
+and implements the <code>NameParser</code> interface </li>
+  <li> The <code>Resolver</code> class and the related set of classes
+contain DNS specific algorithms and protocol messages functionality </li>
+</ul>
+<h2> <a name="DNS_URL_Syntax"></a>DNS URL Syntax </h2>
+<p> The DNS URL, or <i>DNS Pseudo URL</i>, passes the initial
+information to the DNS context as a value for the <code>java.naming.provider.url</code>
+property or as an argument to a method of the initial context via the
+DNS URL provider. The DNS URL is defined in the following format: </p>
+<pre>dns:[//host[:port]][/domain]<br></pre>
+<p> A given combination of <code>host</code> and <code>port</code>
+indicates the DNS server to be used for serving requests about a given
+domain. Given partial data, the following values are used instead of
+missing parameters: </p>
+<ul>
+  <li> If <code>host</code> is missing, <code>localhost</code> is
+used. </li>
+  <li> If <code>port</code> is missing, <code>53</code> is taken by
+default. </li>
+  <li> If <code>host</code> and <code>port</code> are missing, the
+DNS server is set to the default of <code>localhost:53</code>. </li>
+  <li> If <code>domain</code> is missing, the root domain <code>.</code>
+is used. </li>
+</ul>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="Attribute_Identifiers"></a>Attribute Identifiers </h2>
+<p> Because this provider presents DNS resource records in the form of
+JNDI attributes, the exact format of attribute identifiers must be
+defined. These identifiers are accepted by different methods of the DNS
+provider. An identifier consists of the following combination of DNS
+class and type information: </p>
+<pre>[CLASS_IDENTIFIER] TYPE_IDENTIFIER<br></pre>
+<p> Currently supported class identifiers: </p>
+<ul>
+  <li> <code>IN</code> - Internet class </li>
+  <li> <code>HS</code> - Hesiod class (not tested) </li>
+</ul>
+<p> Currently supported type identifiers: </p>
+<ul>
+  <li> <code>A</code> - address record </li>
+  <li> <code>NS</code> - name server record </li>
+  <li> <code>CNAME</code> - canonical name for record </li>
+  <li> <code>SOA</code> - start of authority record </li>
+  <li> <code>PTR</code> - name pointer record </li>
+  <li> <code>MX</code> - mail exchange </li>
+  <li> <code>TXT</code> - text record </li>
+  <li> <code>HINFO</code> - host information </li>
+  <li> <code>SRV</code> - location of services record </li>
+</ul>
+<p> If the class identifier is missing, the provider assumes the <code>IN</code>
+class identifier. For an unsupported attribute type, calling <code>getAttributes()</code>
+returns a numerical value rather than its type ID. The symbol <code>""</code>
+indicates <code>ANY</code> type or class, so that an empty string
+stands for any type in any class. </p>
+<p> For more details about DNS resource record classes and types, see
+RFC 1035 [<a href="#RFC">2</a>]. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="API_Mapping"></a>API Mapping </h2>
+<p> The <code>DNSContext</code> class, the main class of the DRL DNS
+provider, implements the <code>DirContext</code> interface. Because
+DNS allows a read-only service, <code>DNSContext</code> provides only
+a part of the overall <code>DirContext</code> functionality. </p>
+<p> Below is the list of supported <code>DirContext</code> methods
+grouped by functionality. All other methods throw <code>javax.naming.OperationNotSupportedException</code>.
+</p>
+<p class="class"> Environment
+operations</p>
+<p class="notetext"> <code>addToEnvironment()</code> <br>
+<code>getEnvironent()</code><br>
+<code>removeFromEnvironment()</code> </p>
+<p class="class"> Operations with DNS names </p>
+<p class="notetext"> <code>composeName()</code><br>
+<code>getNameInNamespace()</code><br>
+<code>getNameParser()</code> </p>
+<p class="class"> Querying attribute values </p>
+<p class="notetext"> <code>getAttributes()</code> </p>
+<p> This method queries the attribute values from the remote DNS server
+or the local provider's cache. </p>
+<p class="class"> <a name="Lookup"></a>Lookup operations </p>
+<p class="notetext"> <code>lookup()</code><br>
+<code>lookupLink()</code> </p>
+<p> The lookup algorithm works as follows: </p>
+<ol>
+  <li> Determines the attribute identifier (ID) contained in the <code>org.apache.harmony.jndi.provider.dns.lookup.attr</code>
+property. If the property value contains no attribute identifier, the <code>TXT</code>
+attribute is used. </li>
+  <li> Calls <code>getAttributes()</code> to retrieve the values of
+attributes with the identifier determined at step 1 for the requested
+domain name. </li>
+  <li> Calls <code>DriverManager.getObjectInstance()</code> to obtain
+the object instance for the requested domain name and the retrieved
+attribute value(s). </li>
+  <li> Returns the object instance to the user application. </li>
+</ol>
+<p class="note"> Note </p>
+<p class="notetext"> The user object factory must be able to create
+object instances for an object of the <code>org.apache.harmony.jndi.provider.dns.DNSContext</code>
+class [<a href="#JNDI">1</a>]. If no object factories have been
+specified, the lookup methods return an instance of <code>DNSContext</code>.
+</p>
+<p class="class"> List operations </p>
+<p class="notetext"> <code>list()</code><br>
+<code>listBindings()</code> </p>
+<p> These methods list the entire content of the DNS zone via DNS zone
+transfer mechanism. </p>
+<p class="class"> Releasing all resources </p>
+<p class="notetext"> <code>close()</code> </p>
+<p class="note"> Note </p>
+<p class="notetext"> Currently, this method does nothing because it has
+nothing to release.<br>
+</p>
+<p class="backtotop"> <br>
+<a href="#top">Back to Top</a> </p>
+<h2> <a name="Environment_Properties"></a>Environment Properties </h2>
+<p> The DNS service provider accepts a number of environment properties
+as shown in the table below. </p>
+<table>
+  <tbody>
+    <tr>
+      <td colspan="1" class="TableHeading"> Property Name </td>
+      <td class="TableHeading" width="394"> Function </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code> java.naming.authoritative</code> </td>
+      <td class="TableCell">Sets the authoritative bit [<a href="#RFC">2</a>]
+for all outgoing messages when <code>TRUE</code>. </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code>org.apache.harmony.jndi.provider.dns.lookup.attr</code>
+      </td>
+      <td class="TableCell"> Specifies the attribute identifier to be
+used in the <a href="#Lookup">lookup algorithm</a>. </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code>org.apache.harmony.jndi.provider.dns.recursion</code>
+      </td>
+      <td class="TableCell">Sets the recursion bit for outgoing
+messages when <code>TRUE</code>. </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code>org.apache.harmony.jndi.provider.dns.timeout.initial</code>
+      </td>
+      <td class="TableCell">Indicates the initial timeout.
+      <p> When accessing remote data, the DNS client tries to query all
+possible remote servers with this value taken as a timeout. If this
+fails, the client increases the initial timeout value by two times. If
+this also fails, a value 4 times greater than the initial timeout is
+taken and so on (x8, x16, ... ) until the maximum number of timeout
+retries is reached, see the description of property <code>org.apache.harmony.jndi.provider.dns.timeout.retries</code>.
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code>org.apache.harmony.jndi.provider.dns.timeout.retries</code>
+      </td>
+      <td class="TableCell">Sets the number of timeout retries, that
+is, the maximum number of retries that can be performed when accessing
+a remote DNS server.
+      <p>If all attempts fail and the maximum number of retries is
+reached, the user gets an error message, see the description of
+property <code>org.apache.harmony.jndi.provider.dns.timeout.initial</code>.
+      </p>
+      </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code>org.apache.harmony.jndi.providers.dns.threads.max</code>
+      </td>
+      <td class="TableCell">Determines the maximum number of threads
+that can be started by a single instance of the DNS context. The
+default value is 7. </td>
+    </tr>
+    <tr>
+      <td class="TableCell"> <code>java.naming.provider.url</code> </td>
+      <td class="TableCell">Enumerates the initial DNS URLs.
+      <p>Multiple URLs must go in a space-separated list, see <a
+ href="#DNS_URL_Syntax">DNS URL Syntax</a>. During instantiation, the
+DNS provider fills its internal tables with the given DNS server and
+controlled domain pairs. The domain part of all URLs must be identical.
+The newly created DNS context is associated with this domain name.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="DNS_Resolver"></a>DNS Resolver </h2>
+<p> The DRL DNS provider includes an independent fully-functional DNS
+resolver with its own SLIST table and local cache. The SLIST table and
+the cache are singleton classes shared among all instances of the
+resolver. The resolver conforms with RFC 1034 on general principles and
+algorithms used by the resolver, and with RFC 1035 on respective
+records and message formats. The standards RFC 1123, 2181, and 2782 are
+also relevant [<a href="#RFC">2</a>]. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h2> <a name="Federation"></a>Federation </h2>
+<p> The DLR DNS provider has built-in federation support. Implicit next
+naming system is determined dynamically. If the DNS context encounters
+the border of the DNS namespace, it calls the <code>DirectoryManager.getContinuationContext</code><code>(</code><code>)</code>
+method and forwards the call to the obtained next naming system
+context. </p>
+<p>Unsupported methods, such as <code>bind(</code><code>) </code>and <code>rename()</code>,
+also perform the initial check. The user gets <code>javax.naming.OperationNotSupportedException</code>
+for these methods only if the requested name is entirely inside the DNS
+namespace. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h1> <a name="Appendix_Usage_Examples"></a>Appendix: Usage Examples </h1>
+<p> Below is an example of using the provider as the initial context.
+In the example, the <code>DNSContextFactory</code> class is specified
+as the default factory for producing initial contexts. </p>
+<pre>Hashtable env = new Hashtable();<br>DirectoryContext ctx;<br>Attributes attrs;<br><br>env.put(Context.INITIAL_CONTEXT_FACTORY, <br>        "org.apache.harmony.jndi.provider.dns.DNSContextFactory");<br>env.put(Context.PROVIDER_URL, <br>        "dns://dns01.example.com/subdomain.example.com");<br>ctx = new InitialDirContext(env);<br><br>// Obtain A and CNAME records for server1.subdomain.example.com <br>attrs = ctx.getAttributes("server1", new String[] {"A", "CNAME"});<br></pre>
+<p> The provider can also be accessed by passing a DNS URL to any
+initial context method that accepts string arguments. For that, set the
+following property before calling a method of the initial context: </p>
+<pre>env.put(Context.URL_PKG_PREFIXES, "org.apache.harmony.jndi.provider.dns");<br>ctx = new InitialDirContext(env);<br><br>// Add server with IP address 192.168.1.111 to SLIST as a server<br>// responsible for serving requests about host11.subdomain.example.com <br>// Retrieve A and HINFO records for host11.subdomin.example.com <br>attrs = ctx.getAttributes("dns://192.168.1.111/host11.subdomain.example.com",<br>                          new String[] {"A", "HINFO"});<br></pre>
+<p> The class <code>dnsURLContext</code> actually serves requests of
+this type. </p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<h1> <a name="References"></a>References </h1>
+<p>[<a name="JNDI"></a>1] Java<a href="#*">*</a> Naming And Directory
+Interface, <a
+ href="http://java.sun.com/j2se/1.5.0/docs/guide/jndi/index.html"
+ target="_blank">http://java.sun.com/j2se/1.5.0/docs/guide/jndi/index.html</a>
+</p>
+<p>[<a name="RFC"></a>2] Internet Engineering Task Force, Requests for
+Comments, <a href="http://www.ietf.org/" target="_blank">http://www.ietf.org/</a>
+</p>
+<p>&nbsp;</p>
+<p class="backtotop"> <a href="#top">Back to Top</a> </p>
+<p> <a name="*">*</a> Other brands and names are the property of their
+respective owners. </p>
+</body>
+</html>

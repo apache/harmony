@@ -1,0 +1,55 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Security
+Bundle-SymbolicName: org.apache.harmony.security;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Eclipse-ExtensibleAPI: true
+Import-Package: com.ibm.icu.text,
+ java.io,
+ java.lang,
+ java.lang.reflect,
+ java.math,
+ java.net,
+ java.nio,
+ java.nio.charset,
+ java.text,
+ java.util,
+ java.util.jar;resolution:=optional,
+ java.util.zip,
+ javax.crypto,
+ javax.crypto.spec,
+ javax.security.auth,
+ javax.security.auth.callback,
+ javax.security.auth.login,
+ javax.security.auth.x500,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ tests.support;hy_usage=test;resolution:=optional,
+ tests.support.resource;hy_usage=test;resolution:=optional,
+ tests.util;hy_usage=test;resolution:=optional
+Export-Package: java.security,
+ java.security.acl,
+ java.security.cert,
+ java.security.interfaces,
+ java.security.spec,
+ javax.security.cert,
+ org.apache.harmony.security;version="1.0.0",
+ org.apache.harmony.security.asn1;version="1.0.0",
+ org.apache.harmony.security.fortress;version="1.0.0",
+ org.apache.harmony.security.pkcs10;version="1.0.0",
+ org.apache.harmony.security.pkcs7;version="1.0.0",
+ org.apache.harmony.security.provider.cert;version="1.0.0",
+ org.apache.harmony.security.tests.support;hy_usage=test;version="1.0.0";mandatory:=hy_usage,
+ org.apache.harmony.security.utils;version="1.0.0",
+ org.apache.harmony.security.x501;version="1.0.0",
+ org.apache.harmony.security.x509;version="1.0.0",
+ org.apache.harmony.security.x509.tsp;version="1.0.0"

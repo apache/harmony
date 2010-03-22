@@ -1,0 +1,116 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+/**
+\mainpage
+<p>
+To port the class libraries to a new VM, the VM writer must implement certain
+<a href="#KernelJavaClasses">Kernel Java classes</a> to the full Java 1.4.2
+API specification. (The VM writer must also implement the documented C
+<a href="../../vm_doc/html/index.html">VM Interface</a> which contains the VM entry
+points required by other class library natives.)
+
+ <a name = "KernelJavaClasses"><h2>Kernel Java Classes</h2></a>
+
+<p>
+The Kernel Java classes are those classes which are tied to the structure of
+the VM, or whose structure is known by the VM.
+Most of these classes are defined by the Java 1.4.2 API specification. The IBM
+VM implementations of these classes are provided in open source. The IBM
+implementations rely on the presence of (typically) VM specific natives
+to implement the required Java APIs. Other VM writers can choose to use
+these implementations, but this forces the writer to use the reference design and
+the writer must then implement the natives, for which minimal documentation
+is provided.</p>
+
+All but one of the kernel classes are defined by the public Java 1.4.2 API.
+These classes, described further in the
+doxygen <a href="annotated.html">class list</a>, belong to the
+following packages:<br>
+
+<ul>
+  <li><span style="font-family: monospace;">java.lang</span></li>
+  <li><span style="font-family: monospace;">java.lang.reflect</span></li>
+  <li><span style="font-family: monospace;">java.lang.ref</span></li>
+  <li><span style="font-family: monospace;">java.security</span></li>
+</ul>
+
+The other class is in the <span style="font-family: monospace;">org.apache.harmony.kernel.vm</span>
+package.
+
+Some of the documented classes must be entirely implemented by the VM writer.
+For other classes the implementation is mostly provided. Some classes are documented
+so the implementation details can be used by the VM writer. Below is a summary of
+all the Kernel classes.
+
+ <a name = "KernelClassDetails"><h3>Kernel Class Details</h3></a>
+ 
+The VM writer is expected to entirely implement the classes below. A small number
+of non-public methods must be implemented in these classes to support other
+classes (such as <span style="font-family: monospace;">java.lang.SecurityManager</span>)
+as documented in the method descriptions.
+
+<ul>
+  <li><span style="font-family: monospace;">java.lang.Object</span></li>
+  <li><span style="font-family: monospace;">java.lang.Class</span></li>
+  <li><span style="font-family: monospace;">java.lang.ClassLoader</span></li>
+  <li><span style="font-family: monospace;">java.lang.Compiler</span></li>
+  <li><span style="font-family: monospace;">java.lang.Package</span></li>
+  <li><span style="font-family: monospace;">java.lang.Runtime</span></li>
+  <li><span style="font-family: monospace;">java.lang.Thread</span></li>
+  <li><span style="font-family: monospace;">java.lang.reflect.AccessibleObject</span>
+  	<ul>
+  		<li><span style="font-family: monospace;">java.lang.reflect.Constructor</span></li>
+  		<li><span style="font-family: monospace;">java.lang.reflect.Field</span></li>
+  		<li><span style="font-family: monospace;">java.lang.reflect.Method</span></li>
+  	</ul></li>
+  <li><span style="font-family: monospace;">java.lang.reflect.Array</span></li>
+  <li><span style="font-family: monospace;">java.lang.ref.Reference</span> (PhantomReference, SoftReference, WeakReference)</li>
+</ul>
+
+The implementation of <span style="font-family: monospace;">org.apache.harmony.kernel.vm.VM</span> must
+be provided by the VM writer. This class provides class loading and stack walking methods
+that are not available in the public Java API such as a method which enables its caller to
+obtain the caller's class loader. This class also provides an intern(String) method, which
+the intern() method of the String implementation in Harmony will call.
+
+The class <span style="font-family: monospace;">org.apache.harmony.luni.internal.process.SystemProcess</span> 
+is implemented, but is documented so the VM writer can use this class to implement
+<span style="font-family: monospace;">java.lang.Runtime.exec()</span>.
+
+The class <span style="font-family: monospace;">java.lang.ref.ReferenceQueue</span> is
+implemented, but is documented so the VM writer can use the non-public fields and methods
+in the implementation of
+<span style="font-family: monospace;">java.lang.ref.Reference</span> and its subclasses.
+
+The following classes are implemented, but require a small number of methods to be
+implemented by the VM writer to complete the implementation. Alternatively, the VM
+writer can provide their own implementations of these classes.
+
+<ul>
+  <li><span style="font-family: monospace;">java.lang.Throwable</span></li>
+  <li><span style="font-family: monospace;">java.security.AccessControlContext</span></li>
+  <li><span style="font-family: monospace;">java.security.AccessController</span></li>
+</ul>
+
+The class <span style="font-family: monospace;">java.lang.StackTraceElement</span> is
+implemented, but is documented so the VM writer can use the non-public fields and methods
+in the implementation of <span style="font-family: monospace;">java.lang.Throwable</span>.
+
+The implementation of <span style="font-family: monospace;">java.lang.ThreadGroup</span>
+is provided. Certain non-public methods are documented as they are used by the VM when
+booting the class libraries.
+
+*/

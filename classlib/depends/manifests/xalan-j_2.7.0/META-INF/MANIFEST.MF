@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony XML Xalan
+Bundle-SymbolicName: org.apache.harmony.xml.xalan
+Bundle-Version: 2.7.0
+Bundle-ClassPath: xalan.jar
+Eclipse-JREBundle: true
+Export-Package: org.apache.xpath,
+ org.apache.xpath.objects

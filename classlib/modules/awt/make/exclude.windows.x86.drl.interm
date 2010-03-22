@@ -1,0 +1,3 @@
+# CC reports about failures of these tests
+java/awt/ButtonRTest.java
+java/awt/ScrollPaneAdjustableTest.java

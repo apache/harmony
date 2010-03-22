@@ -1,0 +1,4 @@
+# excluded to avoid random failures 
+org/apache/harmony/auth/tests/module/Krb5LoginModuleTest.java
+# jndi provider does not exist now
+org/apache/harmony/auth/tests/module/JndiLoginModuleTest.java

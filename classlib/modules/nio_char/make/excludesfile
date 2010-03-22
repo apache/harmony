@@ -1,0 +1,5 @@
+# List of files to be *excluded* from the NIO_CHAR module
+# used to subset the available charsets.
+
+# e.g. uncomment this line to remove all additional charsets
+# org/apache/harmony/niochar/charset/additional/*

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<project name="Build-Harmony-Documentation" default="all" basedir=".">
+
+    <property name="vm.doc.dir" value="vm_doc" />
+    <property name="kernel.doc.dir" value="kernel_doc" />
+	<property name="classlib.doc.dir" value="classlib_doc" />
+
+    <!-- import share properties -->
+    <import file="${basedir}/../make/properties.xml" />
+
+    <!-- ================================= 
+          target: all
+         ================================= -->
+    <target name="all" 
+        description="Target to rebuild the Harmony doc from scratch." 
+        depends="doxygen-kernel, doxygen-classlib, doxygen-natives" />
+
+    <!-- ================================= 
+          target: properties
+         ================================= -->
+    <target name="properties" depends="windows-properties, unix-properties" />
+
+    <!-- ================================= 
+          target: windows-properties              
+         ================================= -->
+    <target name="windows-properties" if="is.windows">
+        <property name="target.platform" value="windows" />
+    </target>
+
+    <!-- ================================= 
+          target: unix-properties              
+         ================================= -->
+    <target name="unix-properties" if="is.unix">
+        <property name="target.platform" value="unix" />
+    </target>
+	
+    <!-- ================================= 
+          target: doxygen-kernel                      
+         ================================= -->
+    <target name="doxygen-kernel" 
+        depends="properties, clean-kernel" 
+        description="Invoke doxygen on contributed kernel source">
+        <exec executable="doxygen${exe.suffix}" dir="..">
+            <arg line="doc/kernel/kernel.cfg" />
+            <env key="HARMONY_DOC_DIR" value="${basedir}" />
+            <env key="HARMONY_OS" value="${hy.os.family}" />
+        </exec>
+    </target>
+
+	<!-- =================================
+	      target: doxygen-classlib
+	     ================================= -->
+	<target name="doxygen-classlib"
+		depends="properties, clean-classlib" 
+        description="Invoke doxygen on contributed classlib source">
+        <exec executable="doxygen${exe.suffix}" dir="..">
+            <arg line="doc/classlib/classlib.cfg" />
+            <env key="HARMONY_DOC_DIR" value="${basedir}" />
+            <env key="HARMONY_OS" value="${hy.os.family}" />
+        </exec>
+    </target>
+	
+    <!-- ================================= 
+          target: doxygen-natives                      
+         ================================= -->
+    <target name="doxygen-natives" 
+        depends="properties, clean-natives" 
+        description="Invoke doxygen on natives">
+        <exec executable="doxygen${exe.suffix}" dir="..">
+            <arg line="doc/vminterface/natives.cfg" />
+            <env key="HARMONY_DOC_DIR" value="${basedir}" />
+            <env key="HARMONY_LUNI_NATIVES_DIR" value="${basedir}/../modules/luni/src/main/native" />
+            <env key="HARMONY_ARCHIVE_NATIVES_DIR" value="${basedir}/../modules/archive/src/main/native" />
+            <env key="HARMONY_PORTLIB_NATIVES_DIR" value="${basedir}/../modules/portlib/src/main/native" />
+            <env key="HARMONY_TARGET_PLATFORM" value="${target.platform}" />
+        </exec>
+    </target>
+
+    <!-- ================================= 
+          target: jdocs
+          
+          The jdocs target is used to generate a .jdoc file description of the Harmony
+          API suitable for uploading to the JDocs.com website.
+          
+          It has a dependency on a new task defined in "jdocs.jar" and available to download
+          from http://www.jdocs.com/page/AntTask
+          
+          This is work in progress, and currently requires you to manually download and
+          extract the source code for MX4J, Yoko, and XML commons into a 'temp' directory.
+          Plans are to automate that once the doc generation is up and running ok.
+          
+          The task description for jdocs is similar to the javadoc task - so to test it
+          you can always temporarily change it to javadoc and view the output. 
+         ================================= -->
+    <target name="jdocs">
+        <property name="modules.dir" location="${basedir}/../modules"/>
+        <taskdef name="jdocs" classname="com.dzone.jdocs.ant.jdk15.task.Jdocs"/>
+        <jdocs destdir="${basedir}/javadoc"
+            overview="overview.html"
+            additionalparam=""
+            access="protected">
+
+            <!-- Source files maintained by Harmony -->
+            <packageset dir="${modules.dir}/accessibility/src/main/java/">
+                <!-- This patternset will exclude any non-API packages -->
+                <patternset id="sourcefiles">
+                    <exclude name="org/apache/harmony/**" />
+                    <exclude name="java/awt/dnd/peer" />
+                    <exclude name="java/awt/peer" />
+                </patternset>
+            </packageset>
+
+            <packageset dir="${modules.dir}/annotation/src/main/java/"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/applet/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/archive/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/auth/src/main/java/${hy.os.family}"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/auth/src/main/java/common"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/awt/src/main/java/${hy.os.family}"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/awt/src/main/java/common"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/beans/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/concurrent/src/main/java/"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/concurrent/standard/src/main/java/"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/crypto/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/instrument/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/imageio/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/jndi/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/logging/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/lang-management/src/main/java/"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/luni-kernel/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/luni/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/math/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/misc/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/nio/src/main/java/common"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/nio/src/main/java/${hy.os.family}"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/nio_char/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/pack200/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/pack200/src/main/java5"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/prefs/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/print/src/main/java/${hy.os.family}"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/print/src/main/java/common"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/regex/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/rmi/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/security-kernel/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/security/src/main/java/${hy.os.family}"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/security/src/main/java/common"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/sound/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/sql/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/swing/src/main/java/${hy.os.family}"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/swing/src/main/java/common"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/text/src/main/java"> <patternset refid="sourcefiles"/> </packageset>
+            <packageset dir="${modules.dir}/x-net/src/main/java/"> <patternset refid="sourcefiles"/> </packageset>
+
+            <!-- Source files for our API dependencies -->
+            <!-- MX4J -->
+            <packageset dir="${basedir}/temp/mx4j-3.0.2/src/core/">
+                <include name="javax/**" />
+            </packageset>
+
+            <!-- Apache Yoko -->
+            <packageset dir="${basedir}/temp/yoko-incubating-src-1.0-M2/rmi-spec/src/main/java">
+                <include name="javax/**" />
+            </packageset>
+            <packageset dir="${basedir}/temp/yoko-incubating-src-1.0-M2/yoko-spec-corba/src/main/java">
+                <include name="org/omg/**" />
+            </packageset>
+           
+            <!-- XML commons -->
+            <packageset dir="${basedir}/temp/xml-commons-external-1.3.04-src">
+                <include name="javax/**" />
+                <include name="org/w3c/dom" />
+                <include name="org/w3c/dom/bootstrap" />
+                <include name="org/w3c/dom/events" />
+                <include name="org/w3c/dom/ls" />
+                <include name="org/xml/sax/**" />
+            </packageset>
+            
+            <classpath>
+                <fileset dir="../deploy/jdk/jre/lib/boot">
+                    <include name="**/*.jar" />
+                    <exclude name="**/*-src.jar" />
+                </fileset>
+            </classpath>
+        </jdocs>
+    </target>
+    
+    <!-- ================================= 
+          target: clean-kernel    
+         ================================= -->
+    <target name="clean-kernel" description="Clean away the generated kernel documentation.">
+        <echo>Cleaning up kernel documentation directories</echo>
+        <delete failonerror="false" dir='${kernel.doc.dir}' />
+    	<delete failonerror="false" file='DoxygenKernelLog.txt' />
+    </target>
+	
+	<!-- ================================= 
+          target: clean-classlib    
+         ================================= -->
+    <target name="clean-classlib" description="Clean away the generated classlib documentation.">
+        <echo>Cleaning up classlib documentation directories</echo>
+        <delete failonerror="false" dir='${classlib.doc.dir}' />
+    	<delete failonerror="false" file='DoxygenClasslibLog.txt' />
+    </target>
+
+    <!-- ================================= 
+          target: clean-natives    
+         ================================= -->
+    <target name="clean-natives" description="Clean away the generated natives documentation.">
+        <echo>Cleaning up natives documentation directories</echo>
+        <delete failonerror="false" dir='${vm.doc.dir}' />
+    	<delete failonerror="false" file='DoxygenNativesLog.txt' />
+    </target>
+
+
+    <!-- ================================= 
+          target: clean         
+         ================================= -->
+    <target name="clean" 
+        depends="clean-kernel, clean-classlib, clean-natives" 
+        description="Clean away the generated documentation." />
+
+</project>

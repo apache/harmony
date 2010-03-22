@@ -1,0 +1,20 @@
+# see HARMONY-3483
+java/awt/BasicStrokeTest.java
+java/awt/ButtonRTest.java
+java/awt/font/TextLayoutTest.java
+java/awt/geom/AffineTransformTest.java
+java/awt/geom/Arc2DTest.java
+java/awt/geom/Ellipse2DTest.java
+java/awt/geom/GeneralPathTest.java
+java/awt/geom/RoundRectangle2DTest.java
+java/awt/image/BufferedImageFilterTest.java
+java/awt/image/MultiPixelPackedSampleModelTest.java
+java/awt/image/SinglePixelPackedSampleModelTest.java
+org/apache/harmony/awt/gl/MultiRectAreaLineCashTest.java
+org/apache/harmony/awt/tests/nativebridge/PointerPointerTest.java
+
+#HARMONY-4181
+java/awt/geom/AreaTest.java
+
+#HARMONY-4307
+org/apache/harmony/awt/ListenerListTest.java

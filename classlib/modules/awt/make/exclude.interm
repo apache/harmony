@@ -1,0 +1,9 @@
+# CC reports about failures of these tests
+java/awt/KeyboardFocusManagerRTest.java
+
+# HARMONY-2867, fails intermittently on IBM VME also
+java/awt/WindowTest.java
+
+# HARMONY-3987, fails intermittently
+java/awt/AccessibleAWTCanvasTest.java
+java/awt/AccessibleAWTWindowTest.java

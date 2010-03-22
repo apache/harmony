@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.4.2_07" class="java.beans.XMLDecoder"> 
+ <object class="org.apache.harmony.beans.tests.java.beans.XMLEncoderTest$DependencyBean"> 
+  <void id="intArray0" property="ints"> 
+   <void index="0"> 
+    <int>888</int> 
+   </void> 
+  </void> 
+  <void property="ref"> 
+   <object idref="intArray0"/> 
+  </void> 
+ </object> 
+</java> 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="${version}" class="java.beans.XMLDecoder">
+ <void class="${classname}">
+  <string>inst</string>
+  <void id="A0" method="get">
+   <null/>
+  </void>
+ </void>
+ <object idref="A0"/>
+</java>

@@ -1,0 +1,2 @@
+# HARMONY-3135, fails intermittently due some issues in libpng (probably)
+javax/imageio/ImageIOTest.java

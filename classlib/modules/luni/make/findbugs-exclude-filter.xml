@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!--
+        Licensed to the Apache Software Foundation (ASF) under one or more
+        contributor license agreements. See the NOTICE file distributed with
+        this work for additional information regarding copyright ownership.
+        The ASF licenses this file to You under the Apache License, Version
+        2.0 (the "License"); you may not use this file except in compliance
+        with the License. You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+        applicable law or agreed to in writing, software distributed under the
+        License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+        CONDITIONS OF ANY KIND, either express or implied. See the License for
+        the specific language governing permissions and limitations under the
+        License.
+    -->
+
+    <!-- Exclusion filter for running FindBugs against Apache Harmony -->
+
+    <!--
+        Format and code information is available here
+        http://findbugs.sourceforge.net/manual/filter.html
+    -->
+
+<FindBugsFilter>
+    <!-- Public semaphore in ReferenceQueue is okay -->
+    <Match>
+        <Class name="java.lang.ref.ReferenceQueue"></Class>
+        <Bug pattern="PS_PUBLIC_SEMAPHORES"></Bug>
+    </Match>
+
+    <!-- Number classes should be able to call Number constructors -->
+    <Match>
+        <Or>
+            <Class name="java.lang.Byte" />
+            <Class name="java.lang.Character" />
+            <Class name="java.lang.Integer" />
+            <Class name="java.lang.Long" />
+            <Class name="java.lang.Short" />
+        </Or>
+        <Bug pattern="DM_NUMBER_CTOR" />
+    </Match>
+
+    <!--
+        OK to use signed right shift instead of unsigned because numbers used
+        are positive
+    -->
+    <Match>
+        <Class name="java.lang.Character$UnicodeBlock" />
+        <Method name="of" />
+        <Bug code="IM" />
+    </Match>
+
+    <!--
+        Javadoc specifies that ByteArrayInputStream's constructors are
+        designed to take a mutable byte array as an argument and not copy it
+    -->
+    <Match>
+        <Class name="java.io.ByteArrayInputStream" />
+        <Bug pattern="EI_EXPOSE_REP2" />
+    </Match>
+
+    <!--
+        Javadoc specifies that CharArrayReader's constructors are designed to
+        take a mutable char array as an argument and not copy it
+    -->
+    <Match>
+        <Class name="java.io.CharArrayReader" />
+        <Bug pattern="EI_EXPOSE_REP2" />
+    </Match>
+
+    <!-- Fallthrough in switch statement is meant to be there -->
+    <Match>
+        <Class name="java.io.LineNumberInputStream" />
+        <Method name="read" />
+        <Bug code="SF" />
+    </Match>
+
+    <!-- Fallthrough in switch statement is meant to be there -->
+    <Match>
+        <Class name="java.io.LineNumberReader" />
+        <Method name="read" />
+        <Bug pattern="SF_SWITCH_FALLTHROUGH" />
+    </Match>
+
+    <!--
+        OK to compare Strings using using == or != in the String class itself
+    -->
+    <Match>
+        <Class name="java.lang.String" />
+        <Bug pattern="ES_COMPARING_STRINGS_WITH_EQ" />
+    </Match>
+    <Match>
+        <Class name="java.lang.String" />
+        <Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ" />
+    </Match>
+
+    <!-- Ignore this unused private method -->
+    <Match>
+        <Class name="java.lang.String" />
+        <Method name="indexOf" />
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    </Match>
+
+    <!--
+        Field h is required to be non-transient as part of the serialized form
+        specification for Proxy
+    -->
+    <Match>
+        <Class name="java.lang.reflect.Proxy" />
+        <Field name="h" />
+        <Bug code="Se" />
+    </Match>
+
+    <!--
+        Exceptions have to be ignored because method doesn't throw an
+        Exception in the spec
+    -->
+    <Match>
+        <Class name="java.lang.SecurityManager" />
+        <Method name="checkTopLevelWindow" />
+        <Bug pattern="DE_MIGHT_IGNORE" />
+    </Match>
+
+    <!-- OK to use mutable Objects for DatagramPacket -->
+    <Match>
+        <Class name="java.net.DatagramPacket" />
+        <Or>
+            <Method name="setData" />
+            <Method name="getData" />
+        </Or>
+        <Bug code="EI2, EI" />
+    </Match>
+
+    <!-- Spec requires that InetAddress readResolve is private -->
+    <Match>
+        <Class name="java.net.InetAddress" />
+        <Method name="readResolve" />
+        <Bug pattern="SE_PRIVATE_READ_RESOLVE_NOT_INHERITED" />
+    </Match>
+
+    <!-- Method is not static in the spec, so can't change it -->
+    <Match>
+        <Class name="java.net.URLConnection" />
+        <Method name="setDefaultUseCaches" />
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD" />
+    </Match>
+
+    <!-- Exceptions are supposed to be ignored -->
+    <Match>
+        <Class name="java.net.URLConnection" />
+        <Method name="getContentHandler" />
+        <Bug pattern="DE_MIGHT_IGNORE" />
+    </Match>
+
+    <!-- Exceptions are supposed to be ignored -->
+    <Match>
+        <Class name="java.net.URL" />
+        <Method name="setupStreamHandler" />
+        <Bug pattern="DE_MIGHT_IGNORE" />
+    </Match>
+
+    <!-- URLClassLoader needs to use URL.equals() method -->
+    <Match>
+        <Class name="java.net.URLClassLoader" />
+        <Bug pattern="DMI_BLOCKING_METHODS_ON_URL" />
+    </Match>
+
+    <!-- URLClassLoader deals with collections of URLs -->
+    <Match>
+        <Class name="java.net.URLClassLoader" />
+        <Bug pattern="DMI_COLLECTION_OF_URLS" />
+    </Match>
+    
+    <!-- OK for URLClassLoader to ignore the exception here -->
+    <Match>
+        <Class name="java.net.URLClassLoader" />
+        <Method name="findResources"/>
+        <Bug pattern="DE_MIGHT_IGNORE" />
+    </Match>
+
+    <!-- Ignoring exceptions in this method is ok -->
+    <Match>
+        <Class name="java.net.URL" />
+        <Method name="setupStreamHandler" />
+        <Bug pattern="DE_MIGHT_IGNORE" />
+    </Match>
+
+    <!--
+        It does make sense for AbstractList to have a transient field because
+        it has serializable subclasses
+    -->
+    <Match>
+        <Class name="java.util.AbstractList" />
+        <Bug code="Se" />
+    </Match>
+
+    <!-- False positive caused by compiler -->
+    <Match>
+        <Class name="java.util.AbstractList" />
+        <Method name="addAll" />
+        <Bug code="DLS" />
+    </Match>
+
+    <!-- Spec says this field is not set by deserialization -->
+    <Match>
+        <Class name="java.util.EventObject" />
+        <Field name="source" />
+        <Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED" />
+    </Match>
+
+    <!--
+        GregorianCalendar.equals does not need to check for null because it
+        delegates to its superclass, which does
+    -->
+    <Match>
+        <Class name="java.util.GregorianCalendar" />
+        <Method name="equals" />
+        <Bug code="NP" />
+    </Match>
+
+    <!--
+        The comparator field is part of the serialized form specification for
+        both TreeMap and PriorityQueue
+    -->
+    <Match>
+        <Or>
+            <Class name="java.util.TreeMap" />
+            <Class name="java.util.PriorityQueue" />
+        </Or>
+        <Field name="comparator" />
+        <Bug code="Se" />
+    </Match>
+
+    <!-- Ignore this unread field -->
+    <Match>
+        <Class name="java.util.Timer" />
+        <Field name="finalizer" />
+        <Bug pattern="URF_UNREAD_FIELD" />
+    </Match>
+
+    <!-- Exception is ignored on purpose -->
+    <Match>
+        <Class name="java.util.Timer$TimerImpl" />
+        <Method name="run" />
+        <Bug pattern="DE_MIGHT_IGNORE" />
+    </Match>
+
+    <!--
+        Initialization of Locale.availableLocales doesn't need to be
+        synchronized as it won't matter if it is initialized twice
+    -->
+    <Match>
+        <Class name="java.util.Locale" />
+        <Method name="getAvailableLocales" />
+        <Bug code="LI" />
+    </Match>
+
+    <!--
+        OK to use signed right shift instead of unsigned because all numbers
+        are positive
+    -->
+    <Match>
+        <Class name="java.util.Arrays" />
+        <Bug code="IM" />
+    </Match>
+
+    <!--
+        OK to use unsynchronized access in Hashtable.HashIterator and
+        Hashtable.HashEnumerator
+    -->
+    <!--
+        NOTE - it would be good to be able to make this exclusion a bit more
+        specific
+    -->
+    <Match>
+        <Class name="java.util.Hashtable" />
+        <Bug code="IS" />
+    </Match>
+
+    <!--
+        Comparators are generally Serializable so it's OK for this field not
+        to be transient
+    -->
+    <Match>
+        <Class name="java.util.Collections$ReverseComparatorWithComparator" />
+        <Bug code="Se" />
+    </Match>
+
+    <!-- Fall through in switch statements are meant to be there -->
+    <Match>
+        <Class name="org.apache.harmony.luni.util.FloatingPointParser" />
+        <Or>
+            <Method name="parseDblName" />
+            <Method name="parseFltName" />
+        </Or>
+        <Bug pattern="SF_SWITCH_FALLTHROUGH" />
+    </Match>
+
+    <!-- OK to throw a NullPointerException if one key is null -->
+    <Match>
+        <Class name="org.apache.harmony.luni.util.TwoKeyHashMap" />
+        <Bug code="NP" />
+    </Match>
+
+    <!-- Unread fields are used by native code -->
+    <Match>
+        <Class name="org.apache.harmony.luni.net.GenericIPMreq" />
+        <Or>
+            <Field name="interfaceAddr" />
+            <Field name="isIPV6Address" />
+            <Field name="interfaceIdx" />
+        </Or>
+        <Bug pattern="URF_UNREAD_FIELD" />
+    </Match>
+
+    <!-- Invocation of inherited method is intended -->
+    <Match>
+        <Class
+            name="org.apache.harmony.luni.internal.net.www.protocol.https.HttpsURLConnection$HttpsEngine" />
+        <Bug code="IA" />
+    </Match>
+
+    <!-- JarURLConnectionImpl needs to handle URLs -->
+    <Match>
+        <Class
+            name="org.apache.harmony.luni.internal.net.www.protocol.jar.JarURLConnectionImpl" />
+        <Bug pattern="DMI_COLLECTION_OF_URLS" />
+    </Match>
+
+</FindBugsFilter>
+

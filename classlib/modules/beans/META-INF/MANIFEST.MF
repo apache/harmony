@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Beans
+Bundle-SymbolicName: org.apache.harmony.beans
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.applet,
+ java.awt,
+ java.awt.dnd,
+ java.awt.event;resolution:=optional,
+ java.awt.font,
+ java.awt.image,
+ java.io,
+ java.lang,
+ java.lang.reflect,
+ java.net,
+ java.nio.charset;resolution:=optional,
+ java.security,
+ java.text,
+ java.util,
+ java.util.regex;resolution:=optional,
+ javax.accessibility;resolution:=optional,
+ javax.swing,
+ javax.swing.plaf.basic,
+ javax.swing.tree,
+ javax.xml.parsers,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ org.xml.sax,
+ org.xml.sax.helpers,
+ tests.util;hy_usage=test;resolution:=optional
+Export-Package: java.beans,
+ java.beans.beancontext

@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony NIO_Charset
+Bundle-SymbolicName: org.apache.harmony.nio_char
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: com.ibm.icu.charset,
+ java.io,
+ java.lang,
+ java.lang.ref,
+ java.lang.reflect,
+ java.net,
+ java.nio,
+ java.security,
+ java.util,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.nio,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ tests.util;hy_usage=test;resolution:=optional
+Export-Package: java.nio.charset,
+ java.nio.charset.spi

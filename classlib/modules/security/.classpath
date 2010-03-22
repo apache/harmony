@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java/common"/>
+	<classpathentry output="bin/main" kind="src" path="src/main/java/windows"/>
+	<classpathentry kind="src" path="src/test/support/common/java"/>
+	<classpathentry kind="src" path="src/test/impl/java.injected"/>
+	<classpathentry kind="src" path="src/test/impl/java"/>
+	<classpathentry kind="src" path="src/test/api/java.injected"/>
+	<classpathentry kind="src" path="src/test/api/java"/>
+	<classpathentry output="bin/test" kind="src" path="src/test/resources"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin/main"/>
+</classpath>

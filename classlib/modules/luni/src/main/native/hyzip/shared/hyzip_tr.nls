@@ -1,0 +1,34 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Externalised messages for the VM components of the JCL module.
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=ZIPS
+HYNLS.HEADER=hyzipnls.h
+
+# first argument is the name of the zip DLL
+# second argument is a platform error message
+HYNLS_ZIP_UNABLE_TO_OPEN_ZIP_DLL=%1$s a\u00e7\u0131lam\u0131yor (%2$s)
+
+HYNLS_ZIP_MISSING_EXPORT=%s a\u00e7\u0131lam\u0131yor (d\u0131\u015fa aktarma eksik)
+
+
+

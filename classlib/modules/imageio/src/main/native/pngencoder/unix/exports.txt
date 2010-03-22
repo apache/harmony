@@ -1,0 +1,2 @@
+Java_org_apache_harmony_x_imageio_plugins_png_PNGImageWriter_encode
+Java_org_apache_harmony_x_imageio_plugins_png_PNGImageWriter_initIDs

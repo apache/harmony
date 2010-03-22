@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="LUNI Build" default="build" basedir=".">
+    <description>Build for LUNI component</description>
+
+    <property name="hy.module" value="luni" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
+
+    <property file="../../make/depends.properties" />
+
+    <property name="fdlibm.dist" location="src/main/native/fdlibm_dist"/>
+
+    <target name="build" depends="compile-java, build-jar" />
+
+    <target name="clean" depends="clean-java,clean-native,clean-test" />
+
+    <target name="check-depends">
+        <check-one-file src="${fdlibm.url}" dest="${fdlibm.tar}" />
+    </target>
+
+
+    <target name="copy-native-includes">
+        <copy todir="${hy.hdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/include">
+                <include name="vmi.h" />
+                <include name="hyvmls.h" />
+                <include name="hysocket.h" />
+                <include name="gp.h" />
+                <include name="fdlibm.h" />
+                <include name="hymagic.h" />
+                <include name="vmizip.h"/>
+            </fileset>
+        </copy>
+        <copy todir="${hy.jdk}/include" preservelastmodified="true">
+            <fileset dir="src/main/native/include">
+                <include name="jni.h" />
+                <include name="jni_types.h" />
+                <include name="jvmti.h" />
+                <include name="jvmti_types.h" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Build native code -->
+    <target name="build-native"
+            depends="build-native-core, build-native-secondary" />
+
+    <!-- Build the core luni native components -->
+    <target name="build-native-core" >
+
+        <!-- Build vmi dll -->
+        <make dir="src/main/native/vmi/${hy.os.family}" />
+
+        <!-- On Linux we want to copy the libvmi.so into the
+             deploy/lib directory so that the natives can link
+             against it. This is only used at build time - at
+             runtime the libvmi.so provided by the VM
+             implementation is loaded
+          -->
+        <copy todir="${hy.hdk}/lib" failonerror="false"
+              preservelastmodified="true">
+            <fileset dir="src/main/native/vmi">
+                <include name="libvmi${shlib.suffix}"/>
+            </fileset>
+            <!-- Copy link exports file on z/OS -->
+            <fileset dir="src/main/native/vmi/${hy.os.family}">
+                <include name="*${linklib.suffix}" if="is.zos" />
+            </fileset>
+        </copy>
+    </target>
+
+    <!-- Build secondary native luni components -->
+    <target name="build-native-secondary"
+        depends="-build-native-secondary,-build-hyzip,-build-native-secondary2"
+        />
+
+    <target name="-build-native-secondary" >
+
+        <!-- Build fdlibm lib -->
+        <make dir="src/main/native/fdlibm/${hy.os.family}" />
+
+        <!-- Build luni dll -->
+        <make dir="src/main/native/luni/${hy.os.family}" />
+
+        <!-- Build vmls lib -->
+        <make dir="src/main/native/vmls/${hy.os.family}" />
+    </target>
+
+    <target name="-build-hyzip" unless="hy.skip.zip.api">
+        <!-- Build hyzip lib -->
+        <make dir="src/main/native/hyzip/${hy.os.family}" />
+    </target>
+
+    <target name="-build-native-secondary2" >
+        <!-- Build launcher executables -->
+        <make dir="src/main/native/launcher/${hy.os.family}" />
+    </target>
+
+    <!-- Overlay OSS packages into their required locations -->
+    <target name="overlay-oss" depends="-unzip-oss,-ascii2ebcdic-conversion" />
+
+    <target name="-unzip-oss">
+        <untar src="${fdlibm.tar}" compression="gzip" dest="${fdlibm.dist}">
+            <patternset>
+                <exclude name="fdlibm53"/>
+            </patternset>
+            <mapper type="flatten"/>
+        </untar>
+
+        <!-- These files are not used by Harmony, rename them in case misused -->
+        <move todir="${fdlibm.dist}">
+            <fileset dir="${fdlibm.dist}" >
+                <include name="fdlibm.h"/>
+                <include name="s_lib_version.c"/>
+                <include name="configure*"/>
+                <include name="Makefile*"/>
+            </fileset>
+            <mapper type="glob" from="*" to="*.orig" />
+        </move>
+
+        <chmod dir="src/main/native/fdlibm_dist" perm="ugo+r" />
+    </target>
+
+    <target name="-ascii2ebcdic-conversion" if="is.zos">
+        <move todir="src/main/native/fdlibm_dist_ascii">
+            <fileset dir="src/main/native/fdlibm_dist">
+                <include name="**/*" />
+                <exclude name="**/*.o" />
+            </fileset>
+        </move>
+        <copy todir="src/main/native/fdlibm_dist" outputencoding="IBM-1047" >
+            <fileset dir="src/main/native/fdlibm_dist_ascii">
+                <include name="**/*" />
+                <exclude name="**/*.o" />
+            </fileset>               
+        </copy>
+        <fixcrlf srcdir="src/main/native/fdlibm_dist" includes="**/*" excludes="**/*.o" eol="unix" />
+        <delete dir="src/main/native/fdlibm_dist_ascii" />
+    </target>
+
+    <target name="fetch-depends" >
+        <mkdir dir="${fdlibm.dir}" />
+        <download-one-file src="${fdlibm.url}" dest="${fdlibm.tar}"
+                           md5="${fdlibm.md5}" />
+    </target>
+
+    <target name="test" depends="-test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.failures" />
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <!-- internal target for local and global test run sequence -->
+    <target name="-test-module" depends="build, test-jar, run-tests" />
+
+    <target name="clean-java" depends="class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/luni.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/luni-src.jar" />
+        <delete failonerror="false">
+            <fileset refid="classes" />
+        </delete>
+        <delete-patternset module="${hy.module}" />
+    </target>
+
+    <target name="clean-native"
+            depends="clean-native-includes,clean-overlay-oss">
+        <make dir="src/main/native/fdlibm/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/vmi/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/luni/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/vmls/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/hyzip/${hy.os.family}" target="clean" />
+        <make dir="src/main/native/launcher/${hy.os.family}" target="clean" />
+    </target>
+
+    <target name="clean-native-includes">
+        <delete failonerror="false">
+            <fileset dir="${hy.hdk}/include">
+                <include name="vmi.h" />
+                <include name="hyvmls.h" />
+                <include name="hysocket.h" />
+                <include name="gp.h" />
+                <include name="fdlibm.h" />
+                <include name="hymagic.h" />
+            </fileset>
+        </delete>
+        <delete failonerror="false">
+            <fileset dir="${hy.jdk}/include">
+                <include name="jni.h" />
+                <include name="jni_types.h" />
+                <include name="jvmti.h" />
+                <include name="jvmti_types.h" />
+            </fileset>
+        </delete>
+    </target>
+
+    <!-- Clean overlaid OSS packages -->
+    <target name="clean-overlay-oss" >
+        <delete dir="src/main/native/fdlibm_dist" quiet="true" />
+    </target>
+
+    <target name="clean-test">
+        <delete dir="${tests.hdk.dir}" failonerror="false" />
+        <delete failonerror="false" dir="bin"/>
+    </target>
+
+    <target name="compile-java">
+        <echo message="Compiling ${hy.module} classes" />
+
+        <mkdir dir="../../build/classes" />
+
+        <hy.javac sourcepath=""
+               srcdir="src/main/java"
+               destdir="../../build/classes">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+    </target>
+
+    <target name="findbugs" depends="build-jar">
+        <run-findBugs
+            jarFile="${hy.jdk}/jre/lib/boot/luni.jar"
+            excludeFilter="make/findbugs-exclude-filter.xml"
+            outputFile="${findBugs.report}/luni.xml"/>
+    </target>
+
+    <target name="build-jar" depends="svn-info,class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/luni.jar"
+                    manifest="META-INF/MANIFEST.MF">
+            <fileset refid="classes" />
+            <fileset refid="resources" />
+        </hy.jar.bin>
+
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/luni-src.jar">
+            <fileset dir="src/main/java" />
+        </hy.jar.src>
+    </target>
+
+    <target name="test-jar" depends="compile-tests">
+        <mkdir dir="${tests.hdk.dir}"/>
+
+        <copy file="make/run-test.xml"
+              tofile="${tests.hdk.dir}/build.xml" />
+
+        <hy.jar.bin destfile="${tests.hdk.dir}/luni_tests_api.jar">
+            <fileset dir="bin/test/api" />
+        </hy.jar.bin>
+
+        <hy.jar.bin destfile="${tests.hdk.dir}/luni_tests_impl.jar">
+            <fileset dir="bin/test/impl" />
+        </hy.jar.bin>
+
+        <copy todir="${tests.resources.hdk.dir}">
+            <fileset dir="src/test/resources" >
+                <include name="org/**/*"/>
+                <include name="net.resources/**/*"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${tests.resources.hdk.dir}/config"/>
+        <copy file="../../support/src/test/resources/config/testing.policy"
+              todir="${hy.hdk}/build/test" outputencoding="UTF-8" />
+        <copy file="../../support/src/test/resources/config/localhosttest.ini"
+              todir="${tests.resources.hdk.dir}/config"/>
+
+        <copy todir="${tests.resources.hdk.dir}">
+            <fileset dir="src/test/resources" >
+                <include name="serialization/**/*"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${tests.excludes.hdk.dir}"/>
+        <copy todir="${tests.excludes.hdk.dir}">
+            <fileset dir="make" includes="exclude*"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\.java" replace="\.class" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+        <copy file="${jetty.jar}" todir="${hy.hdk}/build/test" />
+    </target>
+
+    <!-- compile both api tests and impl tests-->
+    <target name="compile-tests">
+        <compile-tests description="luni api tests" destdir="bin/test/api">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/api/common" />
+                    <pathelement location="src/test/api/${hy.os.family}" />
+                </src>
+                <include name="**/*.java" />
+            </javac-elements>
+        </compile-tests>
+        <compile-tests description="luni impl tests" destdir="bin/test/impl">
+            <javac-elements>
+                <src>
+                   <pathelement location="src/test/impl/common" />
+                   <pathelement location="src/test/impl/${hy.os.family}" />
+                </src>
+                <include name="**/*.java" />
+            </javac-elements>
+        </compile-tests>
+    </target>
+    
+    <!-- run both api tests and impl tests -->
+    <target name="run-tests" depends="test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
+    </target>
+
+    <target name="class-patternset">
+        <make-patternset module="${hy.module}" />
+    </target>
+
+</project>

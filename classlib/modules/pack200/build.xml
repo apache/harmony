@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="PACK200 Build" default="build" basedir=".">
+    <description>Build for PACK200 component</description>
+
+    <property name="hy.module" value="pack200" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
+
+    <property file="../../make/depends.properties" />
+
+    <target name="build" depends="check-depends, compile-java, build-jar" />
+
+    <target name="check-depends">
+        <check-one-file src="${asm.url}" dest="${asm.jar}" />
+        <copy todir="${hy.jdk}/jre/lib/boot">
+            <fileset dir="${depends.jars}">
+                <patternset includes="${asm.ver}/*.jar" />
+            </fileset>
+            <fileset dir="depends/manifests"/>
+        </copy>
+
+    </target>
+
+    <target name="fetch-depends">
+        <mkdir dir="${asm.dir}" />
+        <download-one-file src="${asm.url}" dest="${asm.jar}"
+                           md5="${asm.md5}" />
+    </target>
+
+    <target name="test" depends="-test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.failures" />
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <!-- internal target for local and global test run sequence -->
+    <target name="-test-module" depends="build, run-tests" />
+
+    <target name="clean" depends="clean-java,clean-test" />
+    
+    <target name="clean-java" depends="class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/pack200.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/pack200-src.jar" />
+        <delete failonerror="false">
+            <fileset refid="classes" />
+        </delete>
+        <delete-patternset module="${hy.module}" />
+    </target>
+
+    <target name="clean-test">
+        <delete dir="${tests.hdk.dir}" failonerror="false" />
+        <delete failonerror="false" dir="bin"/>
+    </target>
+
+    <target name="compile-java">
+        <echo message="Compiling ${hy.module} classes" />
+
+        <mkdir dir="../../build/classes" />
+
+    	<!-- Ordinary classes -->
+        <hy.javac sourcepath=""
+                  srcdir="src/main/java"
+                  destdir="../../build/classes"
+                  source="1.4"
+                  target="1.4">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+    	<!-- Java5 classes, with generics -->
+        <hy.javac sourcepath=""
+                  srcdir="src/main/java5"
+                  destdir="../../build/classes">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+        </hy.javac>
+    </target>
+
+    <target name="findbugs" depends="build-jar">
+        <run-findBugs
+            jarFile="${hy.jdk}/jre/lib/boot/pack200.jar"
+            excludeFilter="make/findbugs-exclude-filter.xml"
+            outputFile="${findBugs.report}/pack200.xml"/>
+    </target>
+
+    <target name="build-jar" depends="svn-info,class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/pack200.jar"
+             manifest="META-INF/MANIFEST.MF">
+            <manifest>
+                <attribute name="X-Compile-Source-JDK"
+                           value="${hy.javac.source} (parts 1.4)"/> 
+                <attribute name="X-Compile-Target-JDK"
+                           value="${hy.javac.target} (parts 1.4)"/> 
+            </manifest>
+            <fileset refid="classes" />
+            <fileset refid="resources" />
+        </hy.jar.bin>
+
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/pack200-src.jar">
+            <fileset dir="src/main/java" />
+            <fileset dir="src/main/java/../java5" />
+        </hy.jar.src>
+    </target>
+
+    <target name="test-jar" depends="svn-info,compile-tests">
+        <mkdir dir="${tests.hdk.dir}" />
+
+        <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
+
+        <hy.jar.bin destfile="${tests.hdk.dir}/pack200_tests.jar">
+            <fileset dir="bin/test" />
+        </hy.jar.bin>
+
+        <mkdir dir="${tests.excludes.hdk.dir}"/>
+        <copy todir="${tests.excludes.hdk.dir}">
+            <fileset dir="make" includes="exclude*"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\.java" replace="\.class" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
+
+        <copy todir="${tests.resources.hdk.dir}">
+            <fileset dir="src/test/resources" />
+        </copy>
+    </target>
+
+    <target name="compile-tests"> 
+        <mkdir dir="bin/test" />
+
+        <mkdir dir="${hy.hdk}/build/test" />
+        <copy file="${junit.jar}"
+              tofile="${hy.hdk}/build/test/junit.jar" />
+        <copy file="${hamcrest-library.jar}"
+              tofile="${hy.hdk}/build/test/hamcrest-library.jar" />
+
+        <echo message="Compiling ${hy.module} tests" />
+        <hy.javac srcdir="src/test/java"
+                  destdir="bin/test"
+                  sourcepath=""
+                  source="1.4" 
+                  target="1.4">
+
+            <compilerarg line="${build.compilerarg}" />
+
+            <bootclasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+            <classpath location="${hy.hdk}/build/test/junit.jar" />
+            <classpath location="${hy.hdk}/build/test/hamcrest-library.jar" />
+        </hy.javac>
+    </target>
+
+    <target name="run-tests" depends="test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
+    </target>
+
+    <target name="class-patternset">
+        <make-patternset module="${hy.module}" />
+    </target>
+
+</project>

@@ -1,0 +1,55 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=Bellek ayr\u0131lamad\u0131.
+
+HYNLS_PORT_SL_UNKOWN_ERROR=Payla\u015f\u0131lan kitapl\u0131k y\u00fcklenirken bilinmeyen hata
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=Ba\u011f\u0131ml\u0131 %s birimi y\u00fcklenemedi
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=Simgenin \u00e7\u00f6z\u00fclmesi ba\u015far\u0131s\u0131z oldu
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=Birim y\u00fcklenemedi
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=Birimin bi\u00e7imi yanl\u0131\u015f
+HYNLS_PORT_SL_NOT_A_MODULE=Bir birim de\u011fil
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=Birimin mimarisi yanl\u0131\u015f
+HYNLS_PORT_SL_FILE_NOT_FOUND=Dosya bulunamad\u0131
+HYNLS_PORT_SL_PERMISSION_DENIED=\u0130zin verilmedi
+HYNLS_PORT_SL_OUT_OF_MEMORY=Bellek yetersiz
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=Hata: 68K'l\u0131k i\u015flevde PACE ikili tan\u0131ml\u0131.
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=DLL \u00e7izelgesi bulunamad\u0131
+HYNLS_PORT_SL_DLL_NOT_FOUND=DLL bulunamad\u0131
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=DLL ba\u015fvurular\u0131 \u00e7\u00f6z\u00fclemiyor - \u00f6nko\u015ful olan bir DLL eksik olabilir
+HYNLS_PORT_SL_INTERNAL_ERROR=\u0130\u00e7 Hata %i
+
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=\u0130\u015flem ba\u015far\u0131s\u0131z oldu: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=\u0130\u015flem ba\u015far\u0131s\u0131z oldu: %1$d (%2$s ba\u015far\u0131s\u0131z: %3$d)
+
+
+
+

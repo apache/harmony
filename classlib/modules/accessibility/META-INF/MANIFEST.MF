@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Accessibility
+Bundle-SymbolicName: org.apache.harmony.accessibility
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: 
+ java.awt,
+ java.awt.datatransfer,
+ java.awt.event,
+ java.beans,
+ java.io,
+ java.lang,
+ java.util,
+ javax.swing.event,
+ javax.swing.text,
+ java.security,
+ org.apache.harmony.kernel.vm
+Export-Package: javax.accessibility
+

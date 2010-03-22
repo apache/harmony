@@ -1,0 +1,64 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony AWT
+Bundle-SymbolicName: org.apache.harmony.awt
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.beans,
+ java.io,
+ java.lang,
+ java.lang.ref,
+ java.lang.reflect,
+ java.math,
+ java.net,
+ java.nio,
+ java.nio.charset,
+ java.security,
+ java.text,
+ java.util,
+ java.util.prefs,
+ java.util.regex,
+ javax.accessibility,
+ javax.imageio,
+ javax.print,
+ javax.print.attribute,
+ javax.print.attribute.standard,
+ javax.swing,
+ javax.swing.event,
+ javax.swing.text,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.misc,
+ org.apache.harmony.misc.accessors,
+ org.apache.harmony.x.print,
+ tests.support.resource;hy_usage=test;resolution:=optional
+Export-Package: java.awt,
+ java.awt.color,
+ java.awt.datatransfer,
+ java.awt.dnd,
+ java.awt.dnd.peer,
+ java.awt.event,
+ java.awt.font,
+ java.awt.geom,
+ java.awt.im,
+ java.awt.im.spi,
+ java.awt.image,
+ java.awt.image.renderable,
+ java.awt.peer,
+ java.awt.print,
+ org.apache.harmony.awt,
+ org.apache.harmony.awt.gl,
+ org.apache.harmony.awt.gl.image,
+ org.apache.harmony.awt.gl.windows,
+ org.apache.harmony.awt.www.content.image,
+ org.apache.harmony.awt.nativebridge,
+ org.apache.harmony.awt.nativebridge.windows,
+ org.apache.harmony.awt.text
+

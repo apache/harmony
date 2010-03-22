@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Archive
+Bundle-SymbolicName: org.apache.harmony.archive
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.beans,
+ java.io,
+ java.lang,
+ java.lang.ref,
+ java.lang.reflect,
+ java.net,
+ java.nio,
+ java.nio.charset,
+ java.security,
+ java.security.cert,
+ java.util,
+ javax.security.auth.x500,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.platform,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.security.utils,
+ tests.support;hy_usage=test;resolution:=optional,
+ tests.support.resource;hy_usage=test;resolution:=optional
+Export-Package: java.util.jar,
+ java.util.zip

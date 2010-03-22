@@ -1,0 +1,13 @@
+javax/swing/DefaultCellEditorTest.java
+javax/swing/DefaultComboBoxModelTest.java
+javax/swing/JSpinnerTest.java
+javax/swing/Timer_MultithreadedTest.java
+javax/swing/border/CompoundBorderTest.java
+javax/swing/border/EtchedBorderTest.java
+javax/swing/border/LineBorderTest.java
+javax/swing/border/TitledBorderTest.java
+
+#HARMONY-3968
+javax/swing/text/html/FormViewTest.java
+#HARMONY-3969
+javax/swing/text/html/HTMLEditorKitTest.java

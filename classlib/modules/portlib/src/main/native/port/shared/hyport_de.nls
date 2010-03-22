@@ -1,0 +1,54 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Externalised messages for common elements of the port library
+# New messages MUST be added at the end of this file.
+# DO NOT delete messages from this file, as it will change their indices.
+# If you wish to remove a message, delete its text, but leave the key in place
+# NLS_MESSAGEFORMAT_NONE
+
+HYNLS.MODULE=PORT
+HYNLS.HEADER=portnls.h
+
+# Do not translate
+# used for unique number only
+HYNLS_PORT_NLS_FAILURE=
+
+HYNLS_PORT_FILE_MEMORY_ALLOCATE_FAILURE=Speicher konnte nicht zugeordnet werden.
+
+HYNLS_PORT_SL_UNKOWN_ERROR=Unbekannter Fehler beim Laden der gemeinsam genutzten Bibliothek
+# Note: argument is the name of dependant the DLL
+HYNLS_PORT_SL_ERROR_LOADING_DEPENDANT_MODULE=Abh\u00e4ngiges Modul %s konnte nicht geladen werden.
+HYNLS_PORT_SL_SYMBOL_RESOLUTION_FAILURE=Fehler bei der Symbolaufl\u00f6sung
+HYNLS_PORT_SL_COULD_NOT_LOAD_MODULE=Modul konnte nicht geladen werden.
+HYNLS_PORT_SL_MODULE_FORMAT_INCORRECT=Falsches Modulformat
+HYNLS_PORT_SL_NOT_A_MODULE=Kein Modul
+HYNLS_PORT_SL_MODULE_ARCHITECTURE_INCORRECT=Falsche Modularchitektur
+HYNLS_PORT_SL_FILE_NOT_FOUND=Datei nicht gefunden
+HYNLS_PORT_SL_PERMISSION_DENIED=Berechtigung verweigert
+HYNLS_PORT_SL_OUT_OF_MEMORY=Nicht gen\u00fcgend Speicherkapazit\u00e4t
+HYNLS_PORT_SL_ERROR_PACE_BIT_SET=Fehler: PACE-Bit wurde in 68 K-Funktion gesetzt.
+HYNLS_PORT_SL_DLL_TABLE_NOT_FOUND=DLL-Tabelle nicht gefunden
+HYNLS_PORT_SL_DLL_NOT_FOUND=DLL nicht gefunden
+HYNLS_PORT_SL_UNABLE_TO_RESOLVE_REFERENCES=DLL-Referenzen k\u00f6nnen nicht aufgel\u00f6st werden. M\u00f6glicherweise fehlt eine vorausgesetzte DLL.
+HYNLS_PORT_SL_INTERNAL_ERROR=Interner Fehler %i
+#Note: argument is OS errorCode
+HYNLS_PORT_ERROR_OPERATION_FAILED=Operation ist fehlgeschlagen: %d
+#Note: argument is errorCodeBeingLookedUp, OS Function Call, errorCodeFromFunctionCall
+HYNLS_PORT_ERROR_MESSAGE_LOOKUP_FAILED=Operation ist fehlgeschlagen: %1$d (%2$s ist fehlgeschlagen: %3$d)
+
+
+
+

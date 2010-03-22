@@ -1,0 +1,32 @@
+LIBRARY	HYZLIB
+
+SECTIONS
+	.data	READ WRITE
+	.text	EXECUTE READ
+
+EXPORTS
+	adler32
+	compress
+	crc32
+	deflate
+	deflateCopy
+	deflateEnd
+	deflateInit2_
+	deflateInit_
+	deflateParams
+	deflateReset
+	deflateSetDictionary
+	inflate
+	inflateEnd
+	inflateInit2_
+	inflateInit_
+	inflateReset
+	inflateSetDictionary
+	inflateSync
+	uncompress
+	zlibVersion
+	zError
+	inflateSyncPoint
+	get_crc_table
+	compress2
+

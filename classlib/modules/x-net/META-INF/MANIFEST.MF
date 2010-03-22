@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony X-Net
+Bundle-SymbolicName: org.apache.harmony.x_net
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.math,
+ java.net,
+ java.nio,
+ java.security,
+ java.security.cert,
+ java.security.interfaces,
+ java.security.spec,
+ java.util,
+ javax.crypto,
+ javax.crypto.interfaces,
+ javax.crypto.spec,
+ javax.security.auth.x500,
+ javax.security.cert,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util;hy_usage=test;resolution:=optional,
+ org.apache.harmony.security.fortress,
+ org.apache.harmony.security.tests.support;hy_usage=test;resolution:=optional,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ tests.support.resource;hy_usage=test;resolution:=optional
+Export-Package: javax.net,
+ javax.net.ssl,
+ org.apache.harmony.xnet.provider.jsse;hy_usage="suncompat";mandatory:="hy_usage"

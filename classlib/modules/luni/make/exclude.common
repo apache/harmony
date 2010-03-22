@@ -1,0 +1,2 @@
+org/apache/harmony/luni/tests/java/net/ExcludedProxyTest.java
+org/apache/harmony/luni/tests/internal/net/www/protocol/http/PersistenceTest.java

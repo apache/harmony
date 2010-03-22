@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Lang-Management
+Bundle-SymbolicName: org.apache.harmony.langmanagement
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.lang.reflect,
+ java.security,
+ java.util,
+ java.util.logging,
+ javax.management,
+ javax.management.modelmbean,
+ javax.management.openmbean
+Export-Package: java.lang.management

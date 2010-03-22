@@ -1,0 +1,8 @@
+hythread_create_library
+hythread_init_library
+hythread_shutdown_library
+hythread_startup_library
+hythread_allocate_library
+hythread_getSize
+hythread_getVersion
+hythread_isCompatible

@@ -1,0 +1,16 @@
+javax/print/GetAttributesTest.java
+javax/print/GetAttributeTest.java
+javax/print/GetDefaultAttributeValueTest.java
+javax/print/GetSupportedAttributeCategoriesTest.java
+javax/print/GetSupportedAttributeValuesTest.java
+javax/print/GetSupportedDocFlavorsTest.java
+javax/print/GetUnsupportedAttributesTest.java
+javax/print/IsAttributeCategorySupportedTest.java
+javax/print/IsAttributeValueSupportedTest.java
+javax/print/LookupDefaultPrintServiceTest.java
+javax/print/LookupPrintServicesTest.java
+javax/print/PrintAutosenseTest.java
+javax/print/PrintJpegTest.java
+javax/print/PrintTest.java
+javax/print/ValueTests.java
+javax/print/attribute/ExtendEnumSyntax.java

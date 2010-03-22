@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+     
+      http://www.apache.org/licenses/LICENSE-2.0
+     
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied.  See the License for the specific language governing
+  permissions and limitations under the License.
+
+ -->
+
+<project name="Common dependency definitions" default="none" basedir="..">
+    <description>
+    Confirm that dependencies are present and fetch missing dependencies
+    where possible.
+    </description>
+
+    <!-- temporary workaround for Ant bug 47382 - to be removed when that is resolved and released -->
+    <copy file="${basedir}/make/depends.properties" tofile="${basedir}/make/depends.properties.ascii" outputencoding="ISO-8859-1" />
+    <loadproperties srcfile="${basedir}/make/depends.properties.ascii" encoding="ISO-8859-1">
+      <filterchain>
+        <filterreader classname="org.apache.tools.ant.filters.ReplaceTokens">
+            <param type="token" name="${hy.arch}" value=""/>
+            <param type="token" name="${hy.os.family}" value=""/>
+            <param type="token" name="${hy.platform}" value=""/>
+            <param type="token" name="${hy.platform.variant}" value=""/>
+        </filterreader>
+      </filterchain>
+    </loadproperties>
+    <delete file="${basedir}/make/depends.properties.ascii" />
+
+    <macrodef name="download-one-file">
+        <attribute name="src" />
+        <attribute name="dest" />
+        <attribute name="md5" />
+        <attribute name="md5-deprecated" default="" />
+        <sequential>
+            <echo>Checking @{dest}</echo>
+            <available file="@{dest}" type="file"
+                       property="@{dest}.exists" />
+            <antcall target="-really-download">
+                <param name="src" value="@{src}" />
+                <param name="dest" value="@{dest}" />
+            </antcall>
+            <checksum file="@{dest}" property="@{dest}.md5" />
+            <condition property="@{dest}.md5.verified" value="true">
+                <or>
+                    <equals arg1="${@{dest}.md5}" arg2="@{md5}" />
+                    <equals arg1="${@{dest}.md5}" arg2="@{md5-deprecated}" />
+                </or>
+            </condition>
+            <antcall target="-remove-file-if-bad">
+                <param name="jar" value="@{dest}" />
+            </antcall>
+            <fail unless="@{dest}.md5.verified">
+...
+
+File @{dest} has incorrect md5 checksum.
+    Expected: @{md5} (or @{md5-deprecated})
+    Found:    ${@{dest}.md5}
+
+            </fail>
+            <echo>Checksum verified (${@{dest}.md5.verified})</echo>
+        </sequential>
+    </macrodef>
+
+    <target name="-really-download" unless="${dest}.exists">
+        <echo>Fetching ${dest}</echo>
+        <get src="${src}" dest="${dest}" verbose="true" />
+    </target>
+
+    <target name="-remove-file-if-bad" unless="${dest}.md5.verified">
+        <delete file="${dest}" />
+    </target>
+
+    <macrodef name="check-one-file">
+        <attribute name="src" />
+        <attribute name="dest" />
+        <sequential>
+            <echo level="info">Checking for @{dest}</echo>
+            <available file="@{dest}" type="file"
+                       property="@{dest}.exists" />
+            <fail>
+                <condition>
+                    <not>
+                        <isset property="@{dest}.exists" />
+                    </not>
+                </condition>
+...
+
+Missing dependency.  The jar from:
+
+  @{src}
+
+should be downloaded to:
+
+  @{dest}
+
+Run "ant fetch-depends" to automatically fetch dependencies.
+Note: Some of Harmony's dependencies are licensed under terms other
+than the Apache License v2.
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="check-os-file">
+        <attribute name="src" />
+        <attribute name="message" />
+        <sequential>
+            <echo level="info">Checking for system file @{src}</echo>
+            <available file="@{src}" type="file"
+                       property="@{src}.exists" />
+            <fail>
+                <condition>
+                    <not>
+                        <isset property="@{src}.exists" />
+                    </not>
+                </condition>
+...
+
+Missing dependency.  The system file:
+
+  @{src}
+
+is missing.
+
+@{message}
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="check-one-link">
+        <attribute name="src" />
+        <attribute name="dest" />
+        <attribute name="message" />
+        <sequential>
+            <echo>Checking for @{dest}</echo>
+            <available file="@{dest}" type="file"
+                       property="@{dest}.exists" />
+            <available file="@{src}" type="file"
+                       property="@{src}.exists" />
+            <fail>
+                <condition>
+                    <and>
+                        <not>
+                            <isset property="@{dest}.exists" />
+                        </not>
+                        <not>
+                            <isset property="@{src}.exists" />
+                        </not>
+                    </and>
+                </condition>
+...
+
+Missing dependency.  The file from:
+
+  @{src}
+
+should be linked to:
+
+  @{dest}
+
+But @{src} doesn't exist.
+@{message}
+            </fail>
+            <antcall target="-really-link">
+                <param name="src" value="@{src}" />
+                <param name="dest" value="@{dest}" />
+            </antcall>
+        </sequential>
+    </macrodef>
+
+    <target name="-really-link" unless="${dest}.exists">
+        <echo>Linking ${dest}</echo>
+        <symlink resource="${src}" link="${basedir}/${dest}" />
+    </target>
+
+</project>

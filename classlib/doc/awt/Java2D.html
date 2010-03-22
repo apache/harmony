@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=us-ascii">
+
+    <title>DRL Java 2D*</title>
+    <link href="../harmony.css"
+          rel="stylesheet"
+          type="text/css">
+</head>
+
+<body>
+    <h1 align="center"><a name="top"></a>DRL Java 2D*</h1>
+
+    <p class="TOCHeading"><a href="#Revision_History">Revision
+    History</a></p>
+
+    <p class="TOCHeading"><a href=
+    "#Disclaimer_and_Legal">Disclaimer and Legal
+    Information</a></p>
+
+    <p class="TOCHeading"><a href="#About_This_Document">About This
+    Document</a></p>
+
+    <p class="TOC"><a href="#Purpose">Purpose</a></p>
+
+    <p class="TOC"><a href="#Intended_Audience">Intended
+    Audience</a></p>
+
+    <p class="TOC"><a href=
+    "#Documentation_Conventions">Documentation Conventions</a></p>
+
+    <p class="TOCHeading"><a href=
+    "#Introduction_to_Java_2D*">Introduction to Java 2D*</a></p>
+
+    <p class="TOCHeading"><a href="#Java_2D*_in_DRL">Java 2D* in
+    DRL</a></p>
+
+    <p class="TOC"><a href="#About">About</a></p>
+
+    <p class="TOC"><a href="#Architecture_Overview">Architecture
+    Overview</a></p>
+
+    <p class="TOC"><a href="#Class_Relationship">Class
+    Relationship</a></p>
+
+    <p class="TOC"><a href=
+    "#CommonGraphics2D_Class_Internals">CommonGraphics2D Class
+    Internals</a></p>
+
+    <p class="TOC"><a href=
+    "#Platform_Specifics_in_DRL_Java_2D*_Graphics">Platform
+    Specifics in DRL Java 2D* Graphics</a></p>
+
+    <p class="TOC"><a href="#Java_2D*_Portability">Java 2D*
+    Portability</a></p>
+
+    <p class="TOCHeading"><a href="#References">References</a></p>
+
+    <h1><a name="Revision_History"></a>Revision History</h1>
+
+    <table border="0"
+           cellpadding="0"
+           width="100%">
+        <tr>
+            <td width="24%"
+                class="TableHeading">Version</td>
+
+            <td width="49%"
+                class="TableHeading">Version Information</td>
+
+            <td class="TableHeading">Date</td>
+        </tr>
+
+        <tr>
+            <td width="24%"
+                class="TableCell">Initial version</td>
+
+            <td width="49%"
+                class="TableCell">Alexey Petrenko, Svetlana
+                Konovalova: document created.</td>
+
+            <td class="TableCell">May 18, 2006</td>
+        </tr>
+    </table>
+
+    <h1><a name="Disclaimer_and_Legal"></a>Disclaimer and Legal
+    Information</h1>
+
+    <p>Copyright 2005-2006 The Apache Software Foundation or its
+    licensors, as applicable.</p>
+
+    <p>Licensed under the Apache License, Version 2.0 (the
+    License); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at
+       <a href="http://www.apache.org/licenses/LICENSE-2.0">
+	   http://www.apache.org/licenses/LICENSE-2.0</a>.</p>
+
+    <p>Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an AS
+    IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+    express or implied. See the License for the specific language
+    governing permissions and limitations under the License.</p>
+
+
+    <p>Portions, Copyright (C) 1991-2005 Unicode, Inc. The
+    following applies to Unicode </p>
+    <p>COPYRIGHT AND PERMISSION
+    NOTICE.</p>
+
+    <p>Copyright (C) 1991-2005 Unicode, Inc. All rights reserved.
+    Distributed under the Terms of Use in <a href=
+    "http://www.unicode.org/copyright.html">http://www.unicode.org/copyright.html</a>.
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of the Unicode data files and any associated
+    documentation (the "Data Files") or Unicode software and any
+    associated documentation (the "Software") to deal in the Data
+    Files or Software without restriction, including without
+    limitation the rights to use, copy, modify, merge, publish,
+    distribute, and/or sell copies of the Data Files or Software,
+    and to permit persons to whom the Data Files or Software are
+    furnished to do so, provided that (a) the above copyright
+    notice(s) and this permission notice appear with all copies of
+    the Data Files or Software, (b) both the above copyright
+    notice(s) and this permission notice appear in associated
+    documentation, and (c) there is clear notice in each modified
+    Data File or in the Software as well as in the documentation
+    associated with the Data File(s) or Software that the data or
+    software has been modified.</p>
+
+    <p>THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT
+    WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+    LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+    PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN
+    THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR
+    CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+    NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+    CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR
+    SOFTWARE.</p>
+
+    <p>Except as contained in this notice, the name of a copyright
+    holder shall not be used in advertising or otherwise to promote
+    the sale, use or other dealings in these Data Files or Software
+    without prior written authorization of the copyright
+    holder.</p>
+
+    <p>Additional Terms From the Database:</p>
+
+    <p>Copyright (C) 1995-1999 Unicode, Inc. All Rights
+    reserved.</p>
+
+    <p>Disclaimer:</p>
+
+    <p>The Unicode Character Database is provided as is by Unicode, Inc. No claims
+    are made as to fitness for any particular purpose. No
+    warranties of any kind are expressed or implied. The recipient
+    agrees to determine applicability of information provided. If
+    this file has been purchased on magnetic or optical media from
+    Unicode, Inc., the sole remedy for any claim will be exchange
+    of defective media within 90 days of receipt. This disclaimer
+    is applicable for all other data files accompanying the Unicode
+    Character Database, some of which have been compiled by the
+    Unicode Consortium, and some of which have been supplied by
+    other sources.</p>
+
+    <p>Limitations on Rights to Redistribute This
+    Data:</p>
+
+    <p>Recipient is granted the right to make copies in any form
+    for internal distribution and to freely use the information
+    supplied in the creation of products supporting the UnicodeTM
+    Standard. The files in the Unicode Character Database can be
+    redistributed to third parties or other organizations (whether
+    for profit or not) as long as this notice and the disclaimer
+    notice are retained. Information can be extracted from these
+    files and used in documentation or programs, as long as there
+    is an accompanying notice indicating the source.</p>
+
+    <h1><a name="About_This_Document"></a>About This Document</h1>
+
+    <h2><a name="Purpose"></a>Purpose</h2>
+
+    <p>This document introduces the Java 2D<a href="#*">*</a>
+    [<a href="#Java%202D*Tech">1</a>] implementation, supplied as
+    part of the DRL (Dynamic Runtime Layer) initiative, and gives
+    details on its design.</p>
+
+    <h2><a name="Intended_Audience"></a>Intended Audience</h2>
+
+    <p>The target audience for the document includes a wide
+    community of engineers interested in using Java 2D<a href=
+    "#*">*</a> and in further work with the product to contribute
+    to its development. The document assumes that readers are
+    familiar with the Java 2D<a href="#*">*</a> technology and the
+    Java<a href="#*">*</a> programming language.</p>
+
+    <h2><a name="Documentation_Conventions"></a>Documentation
+    Conventions</h2>
+
+    <p>This document uses the <a href="../conventions.html"
+       target="_blank">unified conventions</a> for the DRL
+       documentation kit.</p>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h1><a name="Introduction_to_Java_2D*"></a>Introduction to Java
+    2D<a href="#*">*</a></h1>
+
+    <p>The Java 2D<a href="#*">*</a> implementation is the
+    collection of classes for a high-performance two-dimensional
+    (2D) graphics and image processing. The package includes line
+    and shape drawing, text and image rendering.</p>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h1><a name="Java_2D*_in_DRL"></a> Java 2D<a href="#*">*</a> in
+    DRL</h1>
+
+    <h2><a name="About"></a>About</h2>
+
+    <p>DRL Java 2D<a href="#*">*</a> is a fast and easily portable
+    implementation of the Java 2D<a href="#*">*</a> technology,
+    consisting of a number of classes for advanced graphics and
+    image processing.</p>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h2><a name="Architecture_Overview"></a>Architecture
+    Overview</h2>
+
+    <p>DRL Java 2D<a href="#*">*</a> supports the
+       Windows<a href="#*">*</a> and Linux<a href="#*">*</a>
+       operating systems for the IA-32 architecture. The
+       Windows<a href="#*">*</a> version mostly uses the GDI+
+       (Graphics Device Interface plus) library, but can also use
+       the GDI library for better performance. For example, Java
+       2D<a href="#*">*</a> can use GDI instead of GDI+ to speed up
+       image processing. The Linux<a href="#*">*</a> version uses
+       Xlib and xft libraries.</p>
+
+    <p>DRL Java 2D<a href="#*">*</a> has portability in its design,
+    so that you can easily port it to other operating systems and
+    hardware architectures. For details and how to port Java
+    2D<a href="#*">*</a> on other platforms see <a href=
+    "#Java_2D*_Portability">Java 2D* Portability</a>.</p>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h2><a name="Class_Relationship"></a>Class Relationship</h2>
+
+    <p>Figure 1 below shows the Java 2D<a href="#*">*</a>
+    structure, demonstrating the inheritance relationship of the
+    <code>Graphics2D</code> classes:</p>
+
+    <p align="center"><img src="images/Hierarchy.gif"></p>
+
+    <p class="special">Figure 1: Inheritance Relationship of the
+    <code>Graphics2D</code> Classes</p>
+
+    <ul>
+        <li>The abstract classes <code>java.awt.Graphics</code> and
+        <code>java.awt.Graphics2D</code> define the public
+        interface for all <code>Graphics2D</code>
+        implementations.</li>
+
+        <li>The classes
+        <code>org.apache.harmony.awt.gl.windows.WinGDIPGraphics2D</code>
+        and
+        <code>org.apache.harmony.awt.gl.linux.XGraphics2D</code>
+        are the Windows<a href="#*">*</a> and Linux<a href=
+        "#*">*</a> versions respectively of the
+        <code>org.apache.harmony.awt.gl.CommonGraphics2D</code>
+        class, which implements the abstract methods of the
+        <code>Graphics2D</code> class.</li>
+
+        <li>The
+        <code>org.apache.harmony.awt.gl.image.BufferedImageGraphics2D</code>
+        class deals with drawing on buffered images.</li>
+    </ul>
+
+    <p>For more information on the classes see <a href=
+    "#Platform_Specifics_in_DRL_Java_2D*_Graphics">Platform
+    Specifics in DRL Java 2D* Graphics</a>.</p>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h2><a name=
+    "CommonGraphics2D_Class_Internals"></a><code>CommonGraphics2D</code>
+    Class Internals</h2>
+
+    <p>The section specifies the <code>CommonGraphics2D</code>
+    class internal areas and gives description on their tools.</p>
+
+    <h3><a name="Rasterizers"></a>Line and Shape Rasterizers</h3>
+
+    <p>The <code>CommonGraphics2D</code> class splits all shapes
+    into a set of rectangles to unify the drawing process for
+    different operating systems and architectures. For this purpose
+    Java 2D<a href="#*">*</a> uses the
+    <code>JavaShapeRasterizer</code> and the
+    <code>JavaLineRasterizer</code> classes from the
+    <code>org.apache.harmony.awt.gl.render</code> package. The
+    <code>JavaShapeRasterizer</code> class splits an object
+    implementing a Shape interface into a set of rectangles and
+    produces a MultiRectArea object. The
+    <code>JavaLineRasterizer</code> class makes line drawing more
+    accurate and processes lines with strokes, which are instances
+    of the BasicStroke class.</p>
+
+    <p>To port the shape drawing to another platform you just need
+    to override rectangle-drawing methods. However, if your
+    operating system has functions to draw particular shapes, you
+    can optimize your subclass of the <code>CommonGraphics2D</code>
+    class by using this functionality in overridden methods.</p>
+
+    <h3><a name="Blitters"></a>Blitters</h3>
+
+    <p>Blitter classes draw images on the display or buffered
+    images. All blitters inherit the
+    <code>org.apache.harmony.awt.gl.render.Blitter</code>
+    interface.</p>
+
+    <p>Blitters are divided into:</p>
+
+    <ul>
+        <li><i>Native blitters</i> for simple types of images,
+        which the underlying native library can draw.</li>
+
+        <li><i>Java<a href="#*">*</a> blitters</i> for those types
+        of images, which the underlying native library cannot
+        handle.</li>
+    </ul>
+
+    <p>DRL Java 2D<a href="#*">*</a> also uses blitters to fill the
+    shapes and the user-defined subclasses of the
+    <code>java.awt.Paint</code> class with paints, which the system
+    does not support.</p>
+
+    <h3><a name="Text_Renderers"></a>Text Renderers</h3>
+
+    <p>Text renderers draw strings and glyph vectors. All text
+    renderers are subclasses of the
+    <code>org.apache.harmony.awt.gl.TextRenderer</code> class.</p>
+
+    <p>Java 2D<a href="#*">*</a> does not have its own font
+    rendering engine and uses native libraries instead: the GDI
+    library on the Windows<a href="#*">*</a> OS and the Xft,
+    FontConfig and FreeType libraries on the Linux<a href=
+    "#*">*</a> OS. The <code>java.awt.font.NumericShaper</code> class uses data
+    from the Unicode
+    Character Database [<a href="#Unicode Character Database">2</a>] for retrieving character properties.</p>
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h2><a name=
+    "Platform_Specifics_in_DRL_Java_2D*_Graphics"></a>Platform
+    Specifics in DRL Java 2D<a href="#*">*</a> Graphics</h2>
+
+    <p>The Windows<a href="#*">*</a> implementation - the
+    <code>WinGDIPGraphics2D</code> class - for the most part is
+    based on the GDI+ library, which has the routines for drawing
+    all types of shapes filling them with a solid color brush and a
+    linear gradient brush, but it does not support an acyclic
+    gradient brush. The Java 2D<a href="#*">*</a> package doesn't
+    use the native library texture paint option, resorting to
+    <a href="#Blitters">Blitters</a> instead. However, the major
+    part of the shape drawing and filling routines is native in
+    this class.</p>
+
+    <p>As for the Linux<a href="#*">*</a> implementation - the
+    <code>XGraphics2D</code> class - the Xlib library has no
+    methods to draw and fill free-form shapes. So, the
+    corresponding <code>XGraphics2D</code> methods use <a href=
+    "#Rasterizers">Rasterizers</a>, inherited from the
+    <code>CommonGraphics2D</code> class.</p>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h2><a name="Java_2D*_Portability"></a>Java 2D<a href=
+    "#*">*</a> Portability</h2>
+
+    <p>The actions to port the DRL Java 2D<a href="#*">*</a>
+    package to another architecture or operating system, or to use
+    it with another library depend on the particular platform. The
+    main steps are the following:</p>
+
+    <ul>
+        <li>
+            Create a new subclass of
+            <code>org.apache.harmony.awt.gl.CommonGraphics2D</code>.
+            
+
+            <dl>
+                <dt>Example</dt>
+            </dl>
+            <pre>
+         org.apache.harmony.awt.gl.windows.&lt;SomeLib&gt;Graphics2D   
+         org.apache.harmony.awt.gl.&lt;SomeOS&gt;.&lt;SomeLib&gt;Graphics2D
+            </pre>
+        </li>
+
+        <li>Implement abstract methods of the super class in your
+        custom class.</li>
+
+        <li>Create platform-specific <a href=
+        "#Blitters">Blitters</a> and <a href="#Text_Renderers">Text
+        Renderers</a>.</li>
+    </ul>
+
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <h2><a name="References"></a> References</h2>
+
+    <p>[<a name="Java 2D*Tech"></a>1] Java 2D* Technology
+       <a href="http://java.sun.com/j2se/1.5.0/docs/guide/2d/index.html"
+       title=
+       "http://java.sun.com/j2se/1.5.0/docs/guide/2d/index.html">http://java.sun.com/j2se/1.5.0/docs/guide/2d/index.html</a></p>
+    
+	<p>[<a name="Unicode Character Database"></a>2] Unicode Character Database
+        <a href="http://www.unicode.org/ucd/"
+        title=
+		"http://www.unicode.org/ucd/">http://www.unicode.org/ucd/</a></p>
+		
+    <p class="backtotop"><a href="#top">Back to Top</a></p>
+
+    <p><a name="*">*</a> Other brands and names are the property of
+    their respective owners.</p>
+</body>
+</html>

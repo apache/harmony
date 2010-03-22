@@ -1,0 +1,46 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony SQL
+Bundle-SymbolicName: org.apache.harmony.sql
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io,
+ java.lang,
+ java.lang.reflect,
+ java.math,
+ java.net,
+ java.nio;resolution:=optional,
+ java.rmi,
+ java.security,
+ java.text,
+ java.util,
+ java.util.jar;resolution:=optional,
+ java.util.logging,
+ java.util.zip;resolution:=optional,
+ java.util.regex,
+ javax.naming,
+ javax.xml.parsers;resolution:=optional,
+ javax.xml.transform,
+ javax.xml.transform.dom,
+ javax.xml.transform.stream,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ org.w3c.dom;resolution:=optional,
+ org.xml.sax,
+ org.xml.sax.helpers,
+ tests.support;hy_usage=test;resolution:=optional
+Export-Package: java.sql,
+ javax.sql,
+ javax.sql.rowset,
+ javax.sql.rowset.spi,
+ javax.transaction,
+ javax.transaction.xa
+

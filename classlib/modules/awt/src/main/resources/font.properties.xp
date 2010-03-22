@@ -1,0 +1,212 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Logical to physical fonts mapping
+#
+# The format is:
+#   LogicalFontName[.StyleName].ComponentIndex=PlatformFontName,WindowsCharsetName
+#
+# LogicalFontName can be one of the following:
+#   serif, sanserif, monospaced, dialog, dialoginput
+#
+# StyleName: plain, bold, italic, bolditalic
+#
+# ComponentIndex is an integer number starting from zero. Fonts are tried in 
+# ascending order. If font with zero index cannot display given character or
+# this character is in the exclude range for given font then font with 
+# index one is tried. And so on. 
+# 
+# PlatformFontName is a Windows font name.
+#
+# WindowsCharsetName is not currently used by Harmony and is placed here for
+# compatibility reasons.
+
+
+# Fonts mapping in this particular configuration file organized in the
+# following way:
+#
+#   Component index 0 - font for European languages
+#                   1 - Chinese font
+#                   2 - Japanese font
+#                   3 - Korean font
+
+# Serif
+
+serif.plain.0=Times New Roman,DEFAULT_CHARSET
+serif.plain.1=MingLiU,DEFAULT_CHARSET
+serif.plain.2=MS Mincho,DEFAULT_CHARSET
+serif.plain.3=Batang,DEFAULT_CHARSET
+
+serif.bold.0=Times New Roman Bold,DEFAULT_CHARSET
+serif.bold.1=PMingLiU,DEFAULT_CHARSET
+serif.bold.2=MS Mincho,DEFAULT_CHARSET
+serif.bold.3=Batang,DEFAULT_CHARSET
+
+serif.italic.0=Times New Roman Italic,DEFAULT_CHARSET
+serif.italic.1=PMingLiU,DEFAULT_CHARSET
+serif.italic.2=MS Mincho,DEFAULT_CHARSET
+serif.italic.3=Batang,DEFAULT_CHARSET
+
+serif.bolditalic.0=Times New Roman Bold Italic,DEFAULT_CHARSET
+serif.bolditalic.1=PMingLiU,DEFAULT_CHARSET
+serif.bolditalic.2=MS Mincho,DEFAULT_CHARSET
+serif.bolditalic.3=Batang,DEFAULT_CHARSET
+
+# SanSerif
+
+sanserif.plain.0=Arial,DEFAULT_CHARSET
+sanserif.plain.1=MingLiU,DEFAULT_CHARSET
+sanserif.plain.2=MS Gothic,DEFAULT_CHARSET
+sanserif.plain.3=Gulim,DEFAULT_CHARSET
+
+sanserif.bold.0=Arial Bold,DEFAULT_CHARSET
+sanserif.bold.1=PMingLiU,DEFAULT_CHARSET
+sanserif.bold.2=MS Gothic,DEFAULT_CHARSET
+sanserif.bold.3=Gulim,DEFAULT_CHARSET
+
+sanserif.italic.0=Arial Italic,DEFAULT_CHARSET
+sanserif.italic.1=PMingLiU,DEFAULT_CHARSET
+sanserif.italic.2=MS Gothic,DEFAULT_CHARSET
+sanserif.italic.3=Gulim,DEFAULT_CHARSET
+
+sanserif.bolditalic.0=Arial Bold Italic,DEFAULT_CHARSET
+sanserif.bolditalic.1=PMingLiU,DEFAULT_CHARSET
+sanserif.bolditalic.2=MS Gothic,DEFAULT_CHARSET
+sanserif.bolditalic.3=Gulim,DEFAULT_CHARSET
+
+# Monospaced
+
+monospaced.plain.0=Courier New,DEFAULT_CHARSET
+monospaced.plain.1=MingLiU,DEFAULT_CHARSET
+monospaced.plain.2=MS Gothic,DEFAULT_CHARSET
+monospaced.plain.3=GulimChe,DEFAULT_CHARSET
+
+monospaced.bold.0=Courier New Bold,DEFAULT_CHARSET
+monospaced.bold.1=PMingLiU,DEFAULT_CHARSET
+monospaced.bold.2=MS Gothic,DEFAULT_CHARSET
+monospaced.bold.3=GulimChe,DEFAULT_CHARSET
+
+monospaced.italic.0=Courier New Italic,DEFAULT_CHARSET
+monospaced.italic.1=PMingLiU,DEFAULT_CHARSET
+monospaced.italic.2=MS Gothic,DEFAULT_CHARSET
+monospaced.italic.3=GulimChe,DEFAULT_CHARSET
+
+monospaced.bolditalic.0=Courier New Bold Italic,DEFAULT_CHARSET
+monospaced.bolditalic.1=PMingLiU,DEFAULT_CHARSET
+monospaced.bolditalic.2=MS Gothic,DEFAULT_CHARSET
+monospaced.bolditalic.3=GulimChe,DEFAULT_CHARSET
+
+# Dialog
+
+dialog.plain.0=Arial,DEFAULT_CHARSET
+dialog.plain.1=MingLiU,DEFAULT_CHARSET
+dialog.plain.2=MS Gothic,DEFAULT_CHARSET
+dialog.plain.3=Gulim,DEFAULT_CHARSET
+
+dialog.bold.0=Arial Bold,DEFAULT_CHARSET
+dialog.bold.1=PMingLiU,DEFAULT_CHARSET
+dialog.bold.2=MS Gothic,DEFAULT_CHARSET
+dialog.bold.3=Gulim,DEFAULT_CHARSET
+
+dialog.italic.0=Arial Italic,DEFAULT_CHARSET
+dialog.italic.1=PMingLiU,DEFAULT_CHARSET
+dialog.italic.2=MS Gothic,DEFAULT_CHARSET
+dialog.italic.3=Gulimv,DEFAULT_CHARSET
+
+dialog.bolditalic.0=Arial Bold Italic,DEFAULT_CHARSET
+dialog.bolditalic.1=PMingLiU,DEFAULT_CHARSET
+dialog.bolditalic.2=MS Gothic,DEFAULT_CHARSET
+dialog.bolditalic.3=Gulim,DEFAULT_CHARSET
+
+# DialogInput
+
+dialoginput.plain.0=Courier New,DEFAULT_CHARSET
+dialoginput.plain.1=MingLiU,DEFAULT_CHARSET
+dialoginput.plain.2=MS Gothic,DEFAULT_CHARSET
+dialoginput.plain.3=Gulim,DEFAULT_CHARSET
+
+dialoginput.bold.0=Courier New Bold,DEFAULT_CHARSET
+dialoginput.bold.1=PMingLiU,DEFAULT_CHARSET
+dialoginput.bold.2=MS Gothic,DEFAULT_CHARSET
+dialoginput.bold.3=Gulim,DEFAULT_CHARSET
+
+dialoginput.italic.0=Courier New Italic,DEFAULT_CHARSET
+dialoginput.italic.1=PMingLiU,DEFAULT_CHARSET
+dialoginput.italic.2=MS Gothic,DEFAULT_CHARSET
+dialoginput.italic.3=Gulim,DEFAULT_CHARSET
+
+dialoginput.bolditalic.0=Courier New Bold Italic,DEFAULT_CHARSET
+dialoginput.bolditalic.1=PMingLiU,DEFAULT_CHARSET
+dialoginput.bolditalic.2=MS Gothic,DEFAULT_CHARSET
+dialoginput.bolditalic.3=Gulim,DEFAULT_CHARSET
+
+
+# Font file names
+#
+# Entries in this section have the following format:
+#   filename.PlatformFontName=FileName
+#
+# All spaces in PlatformFontName (if any) should be replaced with underscore
+# character '_'. FileName is a font file name. 
+#
+# Example:
+# filename.Times_New_Roman=times.ttf
+# filename.MS_PMincho=msmincho.ttc
+
+# Please note that current Harmony implementation doesn't make use of this
+# filename property. Fonts are merely searched by its name among the fonts
+# available in operation system. However, in future versions of Harmony support
+# for this feature may be added.
+
+
+
+# Exclusion ranges
+#
+# The following unicode character sets are used in exclusion ranges defined
+# below:
+#
+# Chinese, Japanese, Korean
+#   Unified CJK ideographs (aka Chinense hieroglyphs): 4e00-9fbf
+#
+# Japanese
+#   Hiragana: 3040-309f
+#   Katakana: 30a0-30ff
+#   Katakana phonetic extenstion: 31f0-31ff
+#   Halfwidth katakana: ff65-ff9f
+#
+# Korean
+#   Hangul syllables: ac00-d7af
+#   Hangul jamo: 1100-11ff
+#   Hangul compatibility jamo: 3130-318f
+#   Halfwidth jamo: ffa0-ffdf
+
+
+# The idea of the following exclude ranges is to let Japanese fonts handle
+# kana symbols and Korean fonts handle Hangul.
+
+exclusion.serif.1=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf,3040-309f,30a0-30ff,31f0-31ff,30a0-30ff
+exclusion.serif.2=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf
+
+exclusion.sanserif.1=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf,3040-309f,30a0-30ff,31f0-31ff,30a0-30ff
+exclusion.sanserif.2=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf
+
+exclusion.monospaced.1=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf,3040-309f,30a0-30ff,31f0-31ff,30a0-30ff
+exclusion.monospaced.2=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf
+
+exclusion.dialog.1=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf,3040-309f,30a0-30ff,31f0-31ff,30a0-30ff
+exclusion.dialog.2=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf
+
+exclusion.dialoginput.1=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf,3040-309f,30a0-30ff,31f0-31ff,30a0-30ff
+exclusion.dialoginput.2=ac00-d7af,1100-11ff,3130-318f,ffa0-ffdf

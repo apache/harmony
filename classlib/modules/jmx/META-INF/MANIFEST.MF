@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony JMX MX4J
+Bundle-SymbolicName: org.apache.harmony.management.mx4j
+Bundle-Version: 3.0.2
+Bundle-ClassPath: mx4j.jar, mx4j-remote.jar
+Eclipse-JREBundle: true
+Export-Package: javax.management,
+ javax.management.loading,
+ javax.management.modelmbean,
+ javax.management.monitor,
+ javax.management.openmbean,
+ javax.management.relation,
+ javax.management.timer

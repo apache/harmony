@@ -1,0 +1,18 @@
+java/awt/ToolkitRTest.java
+java/awt/AccessibleAWTComponentTest.java
+java/awt/AccessibleAWTListChildTest.java
+java/awt/ChoiceTest.java
+java/awt/ContainerOrderFocusTraversalPolicyTest.java
+java/awt/ListTest.java
+java/awt/WinWindowRTest.java
+org/apache/harmony/awt/gl/render/JavaBlitterTest.java
+# Intermittent failure, seems RobotTest depends on
+# whether mouse or keyboard were touched during the test.
+# However, it fails too often to be in the intermittent list
+java/awt/RobotTest.java
+# ayza: constantly fails for me 
+java/awt/ComponentTest.java
+
+# Following tests fail if all AWT test are executed in a batch
+org/apache/harmony/awt/wtk/ShutdownWatchdogTest.java
+java/awt/event/ContainerEventTest.java

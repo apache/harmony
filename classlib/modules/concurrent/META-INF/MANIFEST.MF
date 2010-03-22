@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Concurrent
+Bundle-SymbolicName: org.apache.harmony.concurrent
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: 
+ java.io,
+ java.lang,
+ java.lang.reflect,
+ java.math,
+ java.net,
+ java.security,
+ java.util,
+ sun.misc
+Export-Package: java.util.concurrent,
+ java.util.concurrent.atomic,
+ java.util.concurrent.locks

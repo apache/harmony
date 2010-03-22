@@ -1,0 +1,84 @@
+move 125.0 125.0
+line 175.0 125.0
+line 175.0 25.0
+line 125.0 25.0
+line 125.0 125.0
+close
+move 225.0 125.0
+line 275.0 125.0
+line 275.0 25.0
+line 225.0 25.0
+line 225.0 125.0
+close
+move 325.0 125.0
+line 375.0 125.0
+line 375.0 25.0
+line 325.0 25.0
+line 325.0 125.0
+close
+move 425.0 125.0
+line 475.0 125.0
+line 475.0 25.0
+line 425.0 25.0
+line 425.0 125.0
+close
+move 425.0 125.0
+line 425.0 175.0
+line 525.0 175.0
+line 525.0 125.0
+line 425.0 125.0
+close
+move 425.0 225.0
+line 425.0 275.0
+line 525.0 275.0
+line 525.0 225.0
+line 425.0 225.0
+close
+move 425.0 325.0
+line 425.0 375.0
+line 525.0 375.0
+line 525.0 325.0
+line 425.0 325.0
+close
+move 475.0 375.0
+line 425.0 375.0
+line 425.0 475.0
+line 475.0 475.0
+line 475.0 375.0
+close
+move 375.0 375.0
+line 325.0 375.0
+line 325.0 475.0
+line 375.0 475.0
+line 375.0 375.0
+close
+move 275.0 375.0
+line 225.0 375.0
+line 225.0 475.0
+line 275.0 475.0
+line 275.0 375.0
+close
+move 175.0 375.0
+line 125.0 375.0
+line 125.0 475.0
+line 175.0 475.0
+line 175.0 375.0
+close
+move 175.0 375.0
+line 175.0 325.0
+line 75.0 325.0
+line 75.0 375.0
+line 175.0 375.0
+close
+move 175.0 275.0
+line 175.0 225.0
+line 75.0 225.0
+line 75.0 275.0
+line 175.0 275.0
+close
+move 175.0 175.0
+line 175.0 125.0
+line 75.0 125.0
+line 75.0 175.0
+line 175.0 175.0
+close

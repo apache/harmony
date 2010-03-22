@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Pack200
+Bundle-SymbolicName: org.apache.harmony.pack200
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.io;resolution:=optional,
+ java.lang;resolution:=optional,
+ java.util;resolution:=optional,
+ java.util.jar;resolution:=optional,
+ org.objectweb.asm
+Export-Package: org.apache.harmony.pack200,
+ org.apache.harmony.unpack200,
+ org.apache.harmony.unpack200.bytecode,
+ org.apache.harmony.unpack200.bytecode.forms
+Bundle-RequiredExecutionEnvironment: J2SE-1.4,
+ J2SE-1.5
+

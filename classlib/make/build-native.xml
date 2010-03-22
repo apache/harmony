@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<!-- ====================================================================== 
+     build-native-source    
+     Compile the native source into component shared libs.
+     ====================================================================== -->
+<project name="build-native-source" default="default" basedir="..">
+    <description>
+		Compile the native source into component shared libs.
+    </description>
+
+    <property name="hy.hdk" location="deploy" />
+
+    <!-- import common properties -->
+    <import file="${basedir}/make/properties.xml" />
+    <import file="${basedir}/make/depends.xml" />
+
+    <property name="depends.oss" location="depends/oss" />
+    <property name="depends.libs" location="depends/libs/${hy.platform}" />
+    <property name="depends.files" location="depends/files" />
+    <property name="native.lib.target" location="${hy.hdk}/lib" />
+    <condition property="needs.vme.v3.hack" value="true">
+        <or>
+            <equals arg1="${hy.platform}" arg2="windows.x86" />
+            <equals arg1="${hy.platform}" arg2="linux.x86" />
+        </or>
+    </condition>
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" 
+        description="Compile the native source into component shared libs." 
+        depends="clean, build" />
+
+
+    <!-- ================================= 
+          target: build
+         ================================= -->
+    <target name="build"
+            depends="overlay-oss,copy-includes,layout,build-modules" />
+
+
+    <!-- ================================= 
+          target: clean              
+         ================================= -->
+    <target name="clean" depends="clean-modules,clean-includes,clean-layout" />
+
+
+    <!-- This target invokes make on the all target to compile all natives -->
+    <target name="build-modules">
+    	
+    	<!-- These module targets take care of building and copying
+             their shared libs -->
+        <!-- these must be run in a specific order due to dependencies -->
+    	<ant dir="modules/portlib" target="build-native" />
+        <ant dir="modules/luni" target="build-native-core" />
+    	<ant dir="modules/archive" target="build-native" />
+    	<ant dir="modules/luni" target="build-native-secondary" />
+
+        <!-- the rest can be run in any order -->
+        <poll-modules target="build-native-all" />
+    </target>
+
+
+    <!-- ================================= 
+          target: make-clean              
+         ================================= -->
+    <target name="clean-modules">
+        <poll-modules target="clean-native" />
+    	<delete dir="${native.lib.target}" />
+    </target>
+
+
+    <!-- ================================= 
+          target: layout              
+         ================================= -->
+    <target name="layout" depends="-layout.windows,-layout.vme.v3.hack"
+        description="Construct the correct directory structure for native binaries">
+
+    	<!-- Create the target directory structure -->
+        <mkdir dir="${hy.jdk}/jre/bin" />
+        <mkdir dir="${hy.jdk}/include" />
+    	<mkdir dir="${native.lib.target}"/>
+
+    	<!-- NLS catalog files -->
+        <copy todir="${hy.jdk}/jre/bin" overwrite="yes">
+            <fileset dir="${depends.files}">
+                <include name="harmony*.properties" />
+            </fileset>
+        </copy>
+
+    </target>
+
+    <target name="-layout.windows" if="is.windows">
+        <!-- workaround until msdll is moved. -->
+        <copy file="${msvcr.dll}" todir="${hy.jdk}/jre/bin" overwrite="yes" />
+        <copy file="${msvcp.dll}" todir="${hy.jdk}/jre/bin" overwrite="yes" />
+    </target>
+
+    <target name="-layout.vme.v3.hack" if="needs.vme.v3.hack">
+        <echo>Deploying empty ICU dynamic library stub</echo>
+        <copy todir="${hy.jdk}/jre/bin" verbose="true">
+            <fileset dir="${depends.files}">
+                <include name="hyempty.dll" if="is.windows" />
+            </fileset>
+            <globmapper from="*hyempty.dll" to="*ICUInterface34.dll" />
+        </copy>
+        <copy todir="${hy.jdk}/jre/bin" verbose="true">
+            <fileset dir="${depends.files}">
+                <include name="libhyempty.so" if="is.linux" />
+            </fileset>
+            <globmapper from="*libhyempty.so" to="*libICUInterface34.so" />
+        </copy>
+    </target>
+
+    <!-- ================================= 
+          target: clean-layout              
+         ================================= -->
+    <target name="clean-layout">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${hy.jdk}">
+                <include name="**/bin/java${exe.suffix}" />
+                <include name="**/bin/javaw${exe.suffix}" />
+                <include name="**/bin/*${shlib.suffix}*" />
+                <include name="**/bin/*.pdb" />
+            	<include name="**/bin/harmony*.properties" />
+            </fileset>
+        </delete>
+    </target>
+
+
+    <!-- ================================= 
+          target: overlay-oss              
+         ================================= -->
+    <target name="overlay-oss">
+        <poll-modules target="overlay-oss" />
+    </target>
+
+    <!-- ================================= 
+          target: copy-includes              
+         ================================= -->
+    <target name="copy-includes" >
+	<!-- Call copy-native-includes targets to copy across
+	     global includes to deploy/includes/harmony -->
+        <poll-modules target="copy-native-includes" />
+
+    </target>
+	
+    <!-- ================================= 
+          target: clean-includes              
+         ================================= -->
+    <target name="clean-includes" >
+        <delete dir="${hy.hdk}/include" />
+        <delete dir="${hy.hdk}/jdk/include" />
+    </target>
+
+</project>

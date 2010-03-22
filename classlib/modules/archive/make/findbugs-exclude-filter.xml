@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to You under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+
+	<!-- Exclusion filter for running FindBugs against Apache Harmony -->
+
+	<!--
+		Format and code information is available here
+		http://findbugs.sourceforge.net/manual/filter.html
+	-->
+
+<FindBugsFilter>
+
+	<!-- Constructs a new instance instead of using super.clone() -->
+	<Match>
+		<Or>
+			<Class name="java.util.jar.Manifest" />
+			<Class name="java.util.zip.ZipEntry" />
+		</Or>
+		<Method name="clone" />
+		<Bug pattern="CN_IDIOM_NO_SUPER_CALL" />
+	</Match>
+
+	<!-- Exception is ignored on purpose -->
+	<Match>
+		<Class name="java.util.jar.JarVerifier" />
+		<Method name="verifyCertificate" />
+		<Bug code="DE" />
+	</Match>
+
+	<!-- OK to ignore return value as result is checked in next line -->
+	<Match>
+		<Class name="java.util.zip.ZipInputStream" />
+		<Method name="closeEntry" />
+		<Bug code="RR" />
+	</Match>
+
+	<!-- OK to return actual byte array as this matches RI's behaviour -->
+	<Match>
+		<Class name="java.util.zip.ZipEntry" />
+		<Method name="getExtra" />
+		<Bug code="EI" />
+	</Match>
+
+	<!-- OK to use actual byte array as this matches RI's behaviour -->
+	<Match>
+		<Class name="java.util.zip.ZipEntry" />
+		<Method name="setExtra" />
+		<Bug code="EI2" />
+	</Match>
+
+	<!-- OK to use actual byte array as this matches RI's behaviour -->
+	<Match>
+		<Class name="java.util.zip.Deflater" />
+		<Method name="setInput" />
+		<Bug code="EI2" />
+	</Match>
+
+	<!-- Intended to compare strings as == here. -->
+	<Match>
+		<Class name="org.apache.harmony.archive.util.Util" />
+		<Method name="asciiEqualsIgnoreCase" />
+		<Bug pattern="ES_COMPARING_PARAMETER_STRING_WITH_EQ" />
+	</Match>
+
+</FindBugsFilter>
+

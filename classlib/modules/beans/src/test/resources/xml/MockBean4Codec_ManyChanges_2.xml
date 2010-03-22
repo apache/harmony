@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="${version}" class="java.beans.XMLDecoder">
+ <object class="${classname}">
+  <void property="bornFriend">
+   <void property="clazz">
+    <class>java.lang.Exception</class>
+   </void>
+  </void>
+ </object>
+</java>

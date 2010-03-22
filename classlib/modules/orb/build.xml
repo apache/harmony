@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<project name="ORB Build" default="build" basedir=".">
+    <description>Build for ORB component</description>
+
+    <property name="hy.module" value="orb" />
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+    <property name="depends.dir" location="${basedir}/../../depends" />
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
+
+    <target name="build" depends="check-depends, -copy-jars" />
+
+    <target name="clean" depends="clean-java" />
+
+    <target name="check-depends">
+        <check-one-file src="${yoko.url}" dest="${yoko.jar}" />
+        <check-one-file src="${yoko-core.url}" dest="${yoko-core.jar}" />
+        <check-one-file src="${yoko-rmi-impl.url}"
+                        dest="${yoko-rmi-impl.jar}" />
+        <check-one-file src="${yoko-rmi-spec.url}"
+                        dest="${yoko-rmi-spec.jar}" />
+        <check-one-file src="${bcel.url}" dest="${bcel.jar}" />
+    </target>
+
+    <target name="fetch-depends">
+
+        <mkdir dir="${yoko.dir}" />
+        <download-one-file src="${yoko.url}" dest="${yoko.jar}"
+                           md5="${yoko.md5}" />
+        
+        <mkdir dir="${yoko-core.dir}" />
+        <download-one-file src="${yoko-core.url}" dest="${yoko-core.jar}"
+                           md5="${yoko-core.md5}" />
+        
+        <mkdir dir="${yoko-rmi-impl.dir}" />
+        <download-one-file src="${yoko-rmi-impl.url}"
+                           dest="${yoko-rmi-impl.jar}"
+                           md5="${yoko-rmi-impl.md5}" />
+        
+        <mkdir dir="${yoko-rmi-spec.dir}" />
+        <download-one-file src="${yoko-rmi-spec.url}"
+                           dest="${yoko-rmi-spec.jar}"
+                           md5="${yoko-rmi-spec.md5}" />
+
+        <mkdir dir="${bcel.dir}" />
+        <download-one-file src="${bcel.url}" dest="${bcel.jar}"
+                           md5="${bcel.md5}" />
+
+    </target>
+
+    <target name="-copy-jars">
+        <copy todir="${hy.jdk}/jre/lib/boot">
+            <fileset dir="${depends.jars}">
+                <patternset includes="yoko-${yoko.version}/*.jar" />
+                <patternset includes="bcel-${bcel.version}/*.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="test" />
+
+    <target name="clean-java">
+        <delete dir="${hy.jdk}/jre/lib/boot/yoko-${yoko.version}" />
+        <delete dir="${hy.jdk}/jre/lib/boot/bcel-${bcel.version}" />
+    </target>
+
+</project>

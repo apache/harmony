@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony Logging
+Bundle-SymbolicName: org.apache.harmony.logging
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .
+Eclipse-JREBundle: true
+Import-Package: java.beans,
+ java.io,
+ java.lang,
+ java.lang.management,
+ java.lang.reflect,
+ java.net,
+ java.nio;resolution:=optional,
+ java.nio.channels,
+ java.nio.channels.spi,
+ java.nio.charset,
+ java.security,
+ java.text,
+ java.util,
+ java.util.concurrent,
+ javax.management,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.testframework.serialization;hy_usage=test;resolution:=optional,
+ tests.util;hy_usage=test;resolution:=optional
+Export-Package: java.util.logging

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0" class="java.beans.XMLDecoder"> 
+ <int>1</int> 
+ <int>32</int> 
+ <int>2147483647</int> 
+ <int>-2147483648</int> 
+</java> 

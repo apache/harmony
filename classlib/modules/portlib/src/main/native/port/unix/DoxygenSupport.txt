@@ -1,0 +1,164 @@
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * This file provides the group definitions required to create the Doxygen generated
+ * output for compounds.  There is one group per directory (port, pool, thread, etc.).
+ */
+ 
+/**
+ * @defgroup Port Port
+ *
+@section Part1 Introduction
+
+The port library interacts with the native operating system to provide the Java virtual machine a platform independent 
+interface to operating system functionality.  Functionality such as file, socket and memory operations are incorporated 
+in the port library.  By utilizing the port library the Java virtual machine isolates all platform specific knowledge to one area, 
+thus allowing for rapid development of new platforms while promoting a large common code base between these platforms.
+
+The port library is implemented as a table of function pointers.  One advantage of a function pointer based table is the ability 
+to replace any functionality without recompiling the entire Java virtual machine.  For example if an application is experiencing
+a memory leak, the memory management functions of the port library can be replaced to help determine the root cause of this
+leak. Alternatively applications wishing to control all memory allocation can provide their own routines to override the platform
+specific allocation and deallocation of memory.
+
+Various implementations of the port library may choose not to implement all functionality contained in the port library table. 
+If a platform does not support sockets, and thus the Java virtual machine does not utilize sockets, the port library does not need
+to provide a valid socket behavior.  The port library contains @ref PortVersionControl "version control information" that enables applications 
+to determine if required functionality is supported.  In addition the version control information allows applications to determine if the 
+port library provided is compatible with the one which they were compiled against.
+
+
+@section CreatePortLib Creating a port library
+
+The port library is either allocated on the stack or allocated in a memory space via platform specific operations such as malloc.
+Since the size of the area allocated is dependent on the size of the structure compiled against, the port library provides 
+@ref PortVersionControl "version control information"  that applications use to request the 
+specific version they compiled against.  Backward compatibility between versions of the port library is maintained where possible,
+but the application must ensure they check this compatibility prior to invoking any port library functionality.  Failure to do so could
+result in catastrophic failure as application code accesses random port library functionality.
+
+Applications may use the port library with no modifications as follows.  In this example a port library is declared on the stack.
+Of course, the stack allocated data must remain valid for the duration of the port library usage. All utility functions and data
+structures related to the port library are defined in the header file @ref hyport.h "hyport.h".
+
+@code
+{
+    int rc;
+    HyPortLibrary hyportLibrary;
+    HyPortLibraryVersion portLibraryVersion;
+
+    // Use portlibrary version which we compiled against, and have allocated space
+    // for on the stack.  This version may be different from the one in the linked DLL.
+    HYPORT_SET_VERSION(&portLibraryVersion, HYPORT_CAPABILITY_MASK);
+
+    // Initialize and start the port library 
+    rc = hyport_init_library(&hyportLibrary, &portLibraryVersion, sizeof(HyPortLibrary));
+    if (0 != rc) {
+        // handle error condition
+    }
+
+    ...
+}
+@endcode
+
+Applications wishing to override port library functionality can do so by first allocating the port library table, then initializing it with
+the default values. They can then override specific function pointers as required and then finally start the port library.
+
+@code
+{
+    int rc;
+    HyPortLibrary hyportLibrary;
+    HyPortLibraryVersion portLibraryVersion;
+
+    // Use portlibrary version which we compiled against, and have allocated space
+    // for on the stack.  This version may be different from the one in the linked DLL.
+    HYPORT_SET_VERSION(&portLibraryVersion, HYPORT_CAPABILITY_MASK);
+
+    // Initializes the port library with the default functions for the specified version 
+    rc = hyport_create_library(hyportLibrary, &portLibraryVersion, sizeof(HyPortLibrary));
+    if (0 != rc) {
+        // handle error condition
+    }
+
+    // override the file_write operation, store the old one so we can restore it later 
+    old_write = hyportLibrary->file_write;
+    hyportLibrary->file_write = dbg_write;
+
+    // Now start the port library 
+    rc = hyport_startup_library(hyportLibrary);
+    if (0 != rc) {
+        // handle error condition
+    }
+}
+@endcode
+
+If the application wishes to dynamically allocate memory for the port library they need to first determine the size required.
+@code
+{
+    int rc;
+    int hyportLibrarySize;
+    HyPortLibrary* hyportLibrary;
+    HyPortLibraryVersion portLibraryVersion;
+
+    // Use portlibrary version which we compiled against, and have allocated space
+    // for on the stack.  This version may be different from the one in the linked DLL.
+    HYPORT_SET_VERSION(&portLibraryVersion, HYPORT_CAPABILITY_MASK);
+
+    // Allocate space for the port library 
+    hyportLibrarySize = (int) hyport_getsize(&portLibraryVersion);
+    if (0 == hyportLibrarySize) {
+        // handle error condition
+    }
+
+    hyportLibrary = (HyPortLibrary*)malloc(hyportLibrarySize);
+    if (NULL == hyportLibrary) {
+        // handle error condition
+    }
+
+    // Initialize and start the port library 
+    rc = hyport_init_library(hyportLibrary, &portLibraryVersion, hyportLibrarySize);
+    if (0 != rc) {
+        // handle error condition
+    }
+
+    ...
+}
+@endcode
+Functions are also provided to determine @ref PortVersionControl "compatibility" with a running port library, as well as determine 
+the version of a running port library.
+
+
+@section UsePortLib Using the port library
+
+Access to the port library can either be by directly reaching into the port library table, or by using macros to access 
+port library functionality.
+
+@code
+void *internalAllocateMemory(JNIEnv *jniEnv)
+{
+    PORT_ACCESS_FROM_ENV(jniEnv);
+    return hymem_allocate_memory(1024);
+}
+
+void *internalAllocateMemory(HyPortLibrary *portLibrary)
+{
+    return portLibrary->mem_allocate_memory(portLibrary, 1024);
+}
+@endcode
+ */
+
+

@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony LUNI Kernel
+Bundle-ClassPath: .
+Fragment-Host: org.apache.harmony.luni;bundle-version="1.0.0"
+Eclipse-JREBundle: true
+Bundle-SymbolicName: org.apache.harmony.luni.kernel
+Bundle-Version: 1.0.0
+Import-Package: java.io,
+ java.lang.annotation,
+ java.nio,
+ java.security
+Export-Package: java.lang,
+ java.lang.reflect,
+ java.lang.ref,
+ org.apache.harmony.kernel.vm
