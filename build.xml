@@ -891,7 +891,7 @@ Usage:
 
         <!-- default SVN URLs -->
         <property name="classlib.svn.url"
-                  value="${svn.root}/harmony/enhanced/classlib/branches/java6"/>
+                  value="${svn.root}/harmony/enhanced/branches/java6/classlib"/>
 
         <property name="vm.svn.url"
                   value="${svn.root}/harmony/enhanced/branches/java6/drlvm" />
