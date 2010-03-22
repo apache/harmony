@@ -891,7 +891,7 @@ Usage:
 
         <!-- default SVN URLs -->
         <property name="classlib.svn.url"
-                  value="${svn.root}/harmony/enhanced/classlib/trunk" />
+                  value="${svn.root}/harmony/enhanced/trunk/classlib" />
 
         <property name="vm.svn.url"
                   value="${svn.root}/harmony/enhanced/trunk/drlvm" />
