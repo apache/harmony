@@ -1,0 +1,48 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony JRE Tools
+Bundle-SymbolicName: org.apache.harmony.jretools
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Eclipse-JREBundle: true
+Import-Package: java.awt,
+ java.awt.event,
+ java.beans,
+ java.io,
+ java.lang,
+ java.lang.reflect,
+ java.math,
+ java.net,
+ java.nio,
+ java.nio.charset,
+ java.security,
+ java.security.cert,
+ java.util,
+ java.util.jar,
+ java.util.logging,
+ javax.accessibility,
+ javax.crypto,
+ javax.security.auth.x500,
+ javax.swing,
+ javax.swing.event,
+ javax.swing.text,
+ org.apache.harmony.kernel.vm,
+ org.apache.harmony.luni.util,
+ org.apache.harmony.pack200,
+ org.apache.harmony.security.asn1;version="1.0.0",
+ org.apache.harmony.security.pkcs10;version="1.0.0",
+ org.apache.harmony.security.provider.cert;version="1.0.0",
+ org.apache.harmony.security.utils;version="1.0.0",
+ org.apache.harmony.security.x501;version="1.0.0",
+ org.apache.harmony.security.x509;version="1.0.0",
+ org.apache.harmony.unpack200
+Export-Package: org.apache.harmony.jretools.keytool,
+ org.apache.harmony.jretools.unpack200,
+ org.apache.harmony.jretools.pack200,
+ org.apache.harmony.jretools.policytool

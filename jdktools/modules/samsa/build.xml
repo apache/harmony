@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="Samsa Build" default="build" basedir=".">
+    <description>Build for samsa program</description>
+
+    <!-- import common properties -->
+    <import file="../../make/properties.xml" />
+
+    <property name="hy.hdk" location="${basedir}/../../deploy" />
+
+    <property name="tests.output" location="../../build/test_report" />
+
+    <!-- filename for tests exclude list -->
+    <property name="samsa.exclude.file" location="${hy.hdk}/build/jdktools.samsa.exclude" />
+
+    <target name="build" depends="build-native"/>
+    <target name="build-java"/>
+
+    <target name="clean" depends="clean-native"/>
+    <target name="clean-java"/>
+
+    <target name="test" depends="test-module" />
+    <target name="build-tests" />
+    <target name="test-module" depends="prepare-exclude, run-tests" />
+
+    <target name="build-native" depends="-compile-native, -copy-native-exe, -copy-native-exe-windows, -copy-native-data" />
+
+    <!-- compile universal samsa binary -->
+    <target name="-compile-native" >
+
+        <echo message="Compiling SAMSA natives" />
+        <echo message="harmony.jdktools=${harmony.jdktools}" />
+            
+        <make dir="src/main/native/samsa/${hy.os.family}" />
+
+    </target>
+
+    <!-- copy samsa executable for different tools -->
+    <target name="-copy-native-exe" >
+
+        <property name="hy.samsa.exe"
+                  location="${hy.hdk}/lib/samsa${exe.suffix}" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/java${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/java${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/javac${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/javac${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/javah${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/javah${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/javadoc${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/javadoc${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/javap${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/javap${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/jarsigner${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/jarsigner${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/appletviewer${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/appletviewer${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/keytool${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/keytool${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/unpack200${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/unpack200${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/pack200${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/pack200${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/policytool${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/policytool${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/jar${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/jar${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/rmic${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/rmic${exe.suffix}" perm="ugo+x" />
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/rmid${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/rmid${exe.suffix}" perm="ugo+x" />
+        <copy file="${hy.samsa.exe}" tofile="${jdktools.deploy.dir}/bin/rmiregistry${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/rmiregistry${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jretools.deploy.dir}/bin/keytool${exe.suffix}" />
+        <chmod file="${jretools.deploy.dir}/bin/keytool${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${jretools.deploy.dir}/bin/unpack200${exe.suffix}" />
+        <chmod file="${jretools.deploy.dir}/bin/unpack200${exe.suffix}" perm="ugo+x" />
+
+    	<copy file="${hy.samsa.exe}" tofile="${jretools.deploy.dir}/bin/pack200${exe.suffix}" />
+    	<chmod file="${jretools.deploy.dir}/bin/pack200${exe.suffix}" perm="ugo+x" />
+
+    	<copy file="${hy.samsa.exe}" tofile="${jretools.deploy.dir}/bin/policytool${exe.suffix}" />
+        <chmod file="${jretools.deploy.dir}/bin/policytool${exe.suffix}" perm="ugo+x" />
+
+    </target>
+
+    <!-- copy windows javaw executable -->
+    <target name="-copy-native-exe-windows" if="is.windows" >
+        <property name="hy.samsaw.exe"
+                  location="${hy.hdk}/lib/samsaw${exe.suffix}" />
+
+        <copy file="${hy.samsaw.exe}"
+              tofile="${jdktools.deploy.dir}/bin/javaw${exe.suffix}" />
+        <chmod file="${jdktools.deploy.dir}/bin/javaw${exe.suffix}"
+               perm="ugo+x" />
+    </target>
+
+    <!-- copy samsa configuration data for different tools -->
+    <target name="-copy-native-data" >
+
+        <copy todir="${jdktools.deploy.dir}/bin/data" overwrite="yes">
+            <fileset dir="src/main/resources/data/">
+                <include name="*.dat" />
+            </fileset>
+        </copy>
+
+    </target>
+
+    <target name="prepare-exclude">
+        <echo message="SAMSA exclude list: ${samsa.exclude.file}" />
+        <prepare-exclude-list moduleName="samsa" dir="./make"
+                             result="${samsa.exclude.file}" />
+    </target>
+
+    <target name="run-tests" depends="prepare-exclude" >
+
+        <property name="test.jre.home" value="${jdktools.deploy.dir}/jre" />
+
+        <echo message="Running SAMSA tests" />
+        <echo message="test.jre.home=${test.jre.home}" />
+
+        <echo message="Run jdk/bin/java -version in ${tests.output}"/>
+        <exec failonerror="true"
+	      executable="${test.jre.home}/../bin/java${exe.suffix}"
+	      dir="${tests.output}"
+              outputproperty="java.out.text">
+	    <arg line="-version" />
+        </exec>
+        <fail message="java -version should contain a copyright statement">
+            <condition>
+                <not>
+                    <contains string="${java.out.text}"
+                              substring="Copyright 1991"/>
+                </not>
+            </condition>
+        </fail>
+        <fail message="java -version should contain svn revision information">
+            <condition>
+                <not>
+                    <contains string="${java.out.text}" substring="svn = r"/>
+                </not>
+            </condition>
+        </fail>
+
+        <echo message="Run jdk/bin/javac -version in ${tests.output}"/>
+        <exec failonerror="true"
+	        executable="${test.jre.home}/../bin/javac${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="-version" />
+        </exec>
+
+        <echo message="Run jdk/bin/javah in ${tests.output}"/>
+        <exec failonerror="false"
+	        executable="${test.jre.home}/../bin/javah${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="" />
+        </exec>
+
+        <echo message="Run jdk/bin/javadoc in ${tests.output}"/>
+        <exec failonerror="false"
+	        executable="${test.jre.home}/../bin/javadoc${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="" />
+        </exec>
+
+        <echo message="Run jdk/bin/jarsigner in ${tests.output}"/>
+        <exec failonerror="false"
+	        executable="${test.jre.home}/../bin/jarsigner${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="" />
+        </exec>
+
+        <echo message="Run jdk/jre/bin/keytool -help in ${tests.output}"/>
+        <exec failonerror="true"
+	        executable="${test.jre.home}/bin/keytool${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="-help" />
+        </exec>
+
+        <echo message="Run jdk/jre/bin/unpack200 in ${tests.output}"/>
+        <exec failonerror="true"
+	        executable="${test.jre.home}/bin/unpack200${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="" />
+        </exec>
+
+        <echo message="Run jdk/jre/bin/pack200 in ${tests.output}"/>
+        <exec failonerror="true"
+	        executable="${test.jre.home}/bin/pack200${exe.suffix}"
+	        dir="${tests.output}">
+	    <arg line="" />
+        </exec>
+
+
+    </target>
+
+    <!-- Clean natives -->
+    <target name="clean-native">
+        <echo message="Cleaning SAMSA natives" />
+        <make dir="src/main/native/samsa/${hy.os.family}"
+              target="clean" />
+    </target>
+
+</project>

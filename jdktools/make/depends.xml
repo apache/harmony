@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+     
+      http://www.apache.org/licenses/LICENSE-2.0
+     
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+  implied.  See the License for the specific language governing
+  permissions and limitations under the License.
+
+ -->
+
+<project name="jdktools-depends">
+    <description>
+    Confirm that dependencies are present and fetch missing dependencies
+    where possible.
+    </description>
+    
+    <dirname property="dd.basedir" file="${ant.file.jdktools-depends}"/>
+    <import file="${dd.basedir}/properties.xml"/>
+    
+    <target name="check">
+        <check-one-file src="${ecj.jar.url}" dest="${ecj.jar}" />
+        <check-one-file src="${junit.jar.url}" dest="${junit.jar}" />
+        <check-one-file src="${hamcrest-library.jar.url}" dest="${hamcrest-library.jar}" />
+
+        <poll-modules target="check-depends" dir="${jdktools.base.dir}/modules"/>
+
+        <!-- TODO define which harmony externals are needed
+        <fail>
+            <condition>
+                <not>
+                    <and>
+                    <available file="${hy.hdk}/include"/>
+                    <available file="${hy.hdk}/lib"/>
+                    </and>
+                </not>
+            </condition>
+...
+
+Missing dependency: pre-built class library (or HDK)
+at ${hy.hdk}. 
+You may point to the correct location via "hy.hdk" property:
+"ant -Dhy.hdk=a-hdk-root"
+        </fail-->
+    </target>
+        
+    <target name="fetch">
+        <fetch dep="junit.jar"/>
+        <fetch dep="hamcrest-library.jar"/>
+        <fetch dep="ecj.jar"/>
+        <poll-modules target="fetch-depends" dir="${jdktools.base.dir}/modules"/>
+    </target>
+
+</project>

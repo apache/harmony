@@ -1,0 +1,4 @@
+# HARMONY-4868
+org/apache/harmony/jpda/tests/jdwp/MultiSession/RefTypeIDTest.java
+# HARMONY-4868
+org/apache/harmony/jpda/tests/jdwp/MultiSession/ClassObjectIDTest.java

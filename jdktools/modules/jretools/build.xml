@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="Tools Build" default="build" basedir=".">
+    <description>Build for Tools component</description>
+
+    <!-- import common properties -->
+    <import file="${basedir}/../../make/properties.xml" />
+
+    <property name="tests.output" location="../../build/test_report" />
+    <property name="hy.hdk" location="../../deploy" />
+
+    <!-- filename for tests exclude list -->
+    <property name="tools.exclude.file"
+              location="${hy.hdk}/build/jretools.tools.exclude" />
+    
+    <target name="build" depends="build-java" />
+    <target name="build-java" depends="compile-java, build-jar" />
+    <target name="build-native" />
+
+    <target name="clean" depends="clean-java" />
+    <target name="clean-native" />
+
+    <target name="test" depends="test-module">
+        <fail message="Some tests failed">
+            <condition>
+                <or>
+                    <isset property="test.failures" />
+                    <isset property="test.errors" />
+                </or>
+            </condition>
+        </fail>
+    </target>
+
+    <!-- internal target for local and global test run sequence -->
+    <target name="test-module" depends="build-tests, prepare-exclude, run-tests" />
+
+    <target name="clean-java">
+        <echo message="Cleaning TOOLS classes" />
+
+        <delete file="${jretools.deploy.dir}/lib/tools.jar" />
+        <delete file="${jretools.deploy.dir}/lib/tools-src.jar" />
+        <delete dir="bin" includeemptydirs="true" failonerror="false" />
+    </target>
+
+    <target name="compile-java">
+        <echo message="Compiling TOOLS classes" />
+        <ensure-javac/>
+        <mkdir dir="bin/main" />
+
+        <hy.javac sourcepath=""
+               srcdir="src/main/java"
+               destdir="bin/main">
+
+            <bootclasspath>
+                <fileset dir="${hy.hdk}/jdk/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+                <fileset dir="${hy.hdk}/lib">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+
+            <classpath>
+                <pathelement path="${jdt.jdi.jar}"/>
+            </classpath>
+        </hy.javac>
+    </target>
+
+    <target name="build-jar" depends="svn-info">
+        <mkdir dir="${jretools.deploy.dir}/lib" />
+
+        <hy.jar.bin destfile="${jretools.deploy.dir}/lib/tools.jar"
+             manifest="META-INF/MANIFEST.MF">
+            <fileset dir="bin/main" />
+
+            <fileset dir="src/main/java">
+                <exclude name="**/*.java" />
+            </fileset>
+            
+            <zipfileset src="${jdt.jdi.jar}">
+                <exclude name="com/sun/jdi/Bootstrap.class"/>
+                <exclude name="META-INF/*"/>
+            </zipfileset>
+        </hy.jar.bin>
+
+        <hy.jar.src destfile="${jretools.deploy.dir}/lib/tools-src.jar">
+            <fileset dir="src/main/java" />
+        </hy.jar.src>
+    </target>
+
+    <target name="build-tests">
+        <echo message="Compiling TOOLS tests" />
+        <ensure-javac/>
+        <mkdir dir="bin/test" />
+
+        <hy.javac srcdir="src/test/java"
+                  destdir="bin/test"
+                  sourcepath=""
+                  debug="on">
+
+            <bootclasspath>
+                <fileset dir="${hy.hdk}/jdk/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </bootclasspath>
+            <classpath>
+                <pathelement path="${jretools.deploy.dir}/lib/tools.jar"/>
+                <pathelement path="${junit.jar}"/>
+            </classpath>
+            <classpath location="bin/test" />
+
+            <!-- temporarely exclude one test that breaks compilation -->
+            <exclude name="**/javah/Test02.java"/>
+        </hy.javac>
+    </target>
+
+    <target name="prepare-exclude">
+        <echo message="TOOLS exclude list: ${tools.exclude.file}" />
+        <prepare-exclude-list moduleName="tools" dir="./make"
+                             result="${tools.exclude.file}" />
+    </target>
+
+    <target name="run-tests" depends="build-tests, prepare-exclude">
+
+        <property name="test.jre.home" value="${jretools.deploy.dir}" />
+
+        <echo message="Running TOOLS tests" />
+        <echo message="test.jre.home=${test.jre.home}" />
+
+        <mkdir dir="${tests.output}" />
+
+        <junit fork="yes"
+                       forkmode="${hy.test.forkmode}"
+                       timeout="${hy.test.timeout}"
+                       printsummary="withOutAndErr"
+                       errorproperty="test.errors"
+                       failureproperty="test.failures"
+                       showoutput="on"
+                       dir="${tests.output}"
+                       jvm="${test.jre.home}/bin/java">
+
+            <jvmarg line="${hy.test.vmargs}" />
+
+            <classpath>
+                <pathelement path="bin/test"/>
+                <pathelement path="${jretools.deploy.dir}/lib/tools.jar"/>
+            </classpath>
+
+            <formatter type="xml" />
+
+            <test name="${test.case}" todir="${tests.output}"
+                              if="test.case" />
+
+            <batchtest todir="${tests.output}" haltonfailure="no"
+                                   unless="test.case">
+
+                <fileset dir="src/test/java">
+                    <!-- if ${test.case}     -->
+                    <include name="${converted.tc}" if="test.case" />
+
+                    <!-- unless ${test.case} -->
+                    <include name="**/*Test.java" unless="test.case" />
+                    <excludesfile name="${tools.exclude.file}" unless="test.case" />
+                </fileset>
+            </batchtest>
+        </junit>
+        <antcall target="touch-failures-file" />
+        <antcall target="touch-errors-file" />
+    </target>
+
+    <target name="touch-failures-file" if="test.failures">
+        <echo file="${tests.output}/test.failures"
+            append="true">tools${line.separator}</echo>
+    </target>
+
+    <target name="touch-errors-file" if="test.errors">
+        <echo file="${tests.output}/test.errors"
+            append="true">tools${line.separator}</echo>
+    </target>
+
+</project>

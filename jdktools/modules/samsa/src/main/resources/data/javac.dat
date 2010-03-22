@@ -1,0 +1,3 @@
+JDKToolJar = ecj-3.5.1.jar
+JDKToolJar = tools.jar
+
