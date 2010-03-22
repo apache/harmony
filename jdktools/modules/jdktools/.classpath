@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry path="src/main/java" kind="src"/>
+	<classpathentry path="src/test/java" kind="src"/>
+	<classpathentry path="org.eclipse.pde.core.requiredPlugins" kind="con"/>
+	<classpathentry path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1" kind="con"/>
+	<classpathentry path="bin" kind="output"/>
+</classpath>

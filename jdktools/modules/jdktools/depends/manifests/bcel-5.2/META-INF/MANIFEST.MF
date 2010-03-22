@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BCEL
+Bundle-SymbolicName: org.apache.bcel;singleton:=true
+Bundle-Version: 5.2
+Bundle-ClassPath: bcel-5.2.jar
+Eclipse-JREBundle: true
+Import-Package: java.lang
+Export-Package: org.apache.bcel, 
+  org.apache.bcel.classfile, 
+  org.apache.bcel.util,
+  org.apache.bcel.generic

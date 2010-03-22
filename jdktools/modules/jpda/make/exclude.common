@@ -1,0 +1,7 @@
+#3305
+org/apache/harmony/jpda/tests/jdwp/VirtualMachine/CapabilitiesNewTest.java
+#3309
+org/apache/harmony/jpda/tests/jdwp/ObjectReference/EnableCollectionTest.java
+org/apache/harmony/jpda/tests/jdwp/MultiSession/EnableCollectionTest.java
+#5154
+org/apache/harmony/jpda/tests/jdwp/Events/ClassUnloadTest.java

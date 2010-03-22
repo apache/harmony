@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Specification-Title: Java Platform API Specification
+Specification-Version: 1.5
+Implementation-Title: Apache Harmony
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Vendor-Id: org.apache.harmony
+Implementation-URL: http://harmony.apache.org
+Bundle-ManifestVersion: 2
+Bundle-Name: Harmony JPDA
+Bundle-SymbolicName: org.apache.harmony.jpda
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Eclipse-JREBundle: true
+Import-Package: java.lang,
+ java.util,
+Export-Package: org.eclipse.osgi.util
