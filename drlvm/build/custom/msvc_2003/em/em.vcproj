@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="em"
+	ProjectGUID="{6581FED0-5E16-479A-873B-26C072AF7679}"
+	RootNamespace="em"
+	Keyword="Win32Proj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="bin\$(ConfigurationName)"
+			IntermediateDirectory="tmp\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\..\vm\vmcore\include&quot;;&quot;$(ProjectDir)\..\..\..\..\vm\vmcore\src\util\win\include&quot;;&quot;$(ProjectDir)\..\..\..\..\vm\port\include&quot;;&quot;$(ProjectDir)\..\..\..\..\vm\include&quot;;&quot;$(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\include&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_IA32_;PLATFORM_NT;REFS_USE_UNCOMPRESSED;VM_STATS;_WIN32_WINNT=0x0501"
+				MinimalRebuild="TRUE"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="apr-1.lib"
+				OutputFile="$(OutDir)/em.dll"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\lib&quot;"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/em.pdb"
+				SubSystem="2"
+				ImportLibrary="$(OutDir)/em.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="       ... Copying files to bin/default folder ...."
+				CommandLine="copy $(OutDir)\em.dll $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\jdk\jre\bin\default
+copy $(OutDir)\em.pdb $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\jdk\jre\bin\default
+copy $(OutDir)\em.exp $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\lib
+copy $(OutDir)\em.lib $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\lib
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="bin\$(ConfigurationName)"
+			IntermediateDirectory="tmp\$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)\..\..\..\..\vm\vmcore\include&quot;;&quot;$(ProjectDir)\..\..\..\..\vm\vmcore\src\util\win\include&quot;;&quot;$(ProjectDir)\..\..\..\..\vm\port\include&quot;;&quot;$(ProjectDir)\..\..\..\..\vm\include&quot;;&quot;$(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_IA32_;PLATFORM_NT;REFS_USE_UNCOMPRESSED;VM_STATS;_WIN32_WINNT=0x0501"
+				RuntimeLibrary="2"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)/em.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\lib&quot;"
+				GenerateDebugInformation="FALSE"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/em.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="       ... Copying files to bin/default folder ...."
+				CommandLine="copy $(OutDir)\em.dll $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\jdk\jre\bin\default
+copy $(OutDir)\em.pdb $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\jdk\jre\bin\default
+copy $(OutDir)\em.exp $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\lib
+copy $(OutDir)\em.lib $(ProjectDir)\..\..\..\windows_x86_msvc_$(ConfigurationName)\deploy\lib
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\DrlEMImpl.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\DrlEMImpl.h">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\DrlProfileCollectionFramework.h">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\EBProfileCollector.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\EBProfileCollector.h">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\EdgeProfileCollector.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\EdgeProfileCollector.h">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\em_intf.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\method_lookup.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\method_lookup.h">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\MTable.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\MTable.h">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\NValueProfileCollector.cpp">
+		</File>
+		<File
+			RelativePath="..\..\..\..\vm\em\src\NValueProfileCollector.h">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

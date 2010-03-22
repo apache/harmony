@@ -1,0 +1,15 @@
+Check.java
+PerfCheck.java
+
+# slow
+gc/Mark.java
+
+# HARMONY-2977
+io/Integers.java
+
+# HARMONY-3917
+gc/PhantomReferenceTest.java
+gc/WeakReferenceTest.java
+
+# This stress test is very slow on interpreter
+stress/Intern.java

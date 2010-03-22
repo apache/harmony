@@ -1,0 +1,1 @@
+Test was taken from src/test/harmony-1800

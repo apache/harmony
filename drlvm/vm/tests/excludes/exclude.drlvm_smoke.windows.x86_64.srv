@@ -1,0 +1,17 @@
+Check.java
+PerfCheck.java
+
+# HARMONY-2972 HARMONY-3010 HARMONY-4265 (HARMONY-4557) & HARMONY-4292
+StackTest.java
+exception/FinalizeStackTest.java
+stress/Stack.java
+
+# HARMONY-4265
+exception/FinalizeStackTest.java
+
+# HARMONY-3010 HARMONY-4265 HARMONY-4292
+stress/Stack.java
+
+# HARMONY-3917
+gc/PhantomReferenceTest.java
+gc/WeakReferenceTest.java

@@ -1,0 +1,146 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="build-settings">
+    
+    <property file="${user.home}/.harmony-drlvm.properties" />
+    <dirname property="prop.imported.basedir" file="${ant.file.build-settings}"/>
+    
+    <property name="drlvm.base.dir" location="${prop.imported.basedir}/.." />
+    <property name="hy.test.vm.name" value="drl"/>
+
+    <property environment="env" />
+    
+    <!-- pick up cfg from command line or env -->
+    <condition property="hy.cfg" value="${BUILD_CFG}">
+        <isset property="BUILD_CFG" />
+    </condition>
+    <condition property="hy.cfg" value="${env.BUILD_CFG}">
+        <isset property="env.BUILD_CFG" />
+    </condition>
+
+    <!-- pick up cpp compiler from command line or env -->
+    <condition property="hy.cpp.compiler" value="${CXX}">
+        <isset property="CXX" />
+    </condition>
+    <condition property="hy.cpp.compiler" value="${env.CXX}">
+        <isset property="env.CXX" />
+    </condition>
+
+    <condition property="hy.cpp.compiler" value="msvc">
+        <os family="windows"/>
+    </condition>
+    <property name="hy.cpp.compiler" value="gcc"/>
+        
+    
+    <!-- set the path root for the external resources  -->
+    <property name="common.resources.loc" value="${drlvm.base.dir}/../common_resources" />
+    <property name="common.resources" location="${common.resources.loc}" />
+    <fail>
+        <condition>
+            <not><available file="${common.resources}/make/properties.xml"/></not>
+        </condition>
+        Primary dependency is missing: common_resources.
+        You need to check it out from SVN repository or specify it's location:
+        ant -Dcommon.resources.loc=path
+    </fail>
+    
+    <import file="${common.resources}/make/properties.xml"/>
+    <import file="${common.resources}/make/depends.xml"/>
+
+    <!-- define drlvm-specific resources -->
+    <loadproperties srcfile="${prop.imported.basedir}/depends.properties">
+      <filterchain>
+        <filterreader classname="org.apache.tools.ant.filters.ReplaceTokens">
+            <param type="token" name="${hy.arch}" value=""/>
+        </filterreader>
+      </filterchain>
+    </loadproperties>
+    
+    <!-- Harmony Development Kit (HDK) supports modular development mode
+         by providing all the header files and binaries required for building -->
+    <!-- By default, external classlib build partially substitutes the HDK -->
+    <property name="external.dep.CLASSLIB.loc" value="${drlvm.base.dir}/../classlib" />
+    <property name="external.dep.CLASSLIB" location="${external.dep.CLASSLIB.loc}" />
+    <condition property="import.hdk">
+        <isset property="hy.hdk"/>
+    </condition>
+    <property name="hy.hdk" value="${external.dep.CLASSLIB}/deploy"/>
+    <condition property="hy.hdk.shlibs" 
+        value="${hy.hdk}/jdk/jre/bin" 
+        else="${hy.hdk}/lib">
+        <isset property="shlib.is.linklib"/>
+    </condition>
+
+    <property name="vm.home" location="${drlvm.base.dir}/vm" />        
+    <property name="drlvm.build.dir" location="${drlvm.base.dir}/build/${hy.os}_${hy.arch}_${hy.cpp.compiler}_${hy.cfg}" />
+    <property name="drlvm.deploy.dir" location="${drlvm.build.dir}/deploy" />
+    <property name="drlvm.semi.dir" location="${drlvm.build.dir}/semis" />
+    <property name="drlvm.bin.dir" location="${drlvm.deploy.dir}/jdk/jre/bin/default"/>
+    <property name="drlvm.lib.dir" location="${drlvm.deploy.dir}/lib"/>
+    <property name="drlvm.include.dir" location="${drlvm.deploy.dir}/include"/>
+    <condition property="drlvm.shlib.dir" 
+        value="${drlvm.bin.dir}" 
+        else="${drlvm.lib.dir}">
+        <isset property="shlib.is.linklib"/>
+    </condition>
+    <property name="base.test.dir" location="${drlvm.build.dir}/tests"/>
+    
+    <target name="drlvm-echo" depends="svn-info">
+        <echo message="DRLVM build Configuration:" />
+        <echo message="     Hosting Java = ${java.version} (${java.vendor})" />
+        <echo message="               os = ${hy.os}" />
+        <echo message="             arch = ${hy.arch}" />
+        <echo message="  hy.cpp.compiler = ${hy.cpp.compiler}" />
+        <echo message="              cfg = ${hy.cfg}" />
+        <echo message="     svn revision = ${svn.revision}" />
+        <echo message="    hy.local.zlib = ${hy.local.zlib}" />
+        <echo message=" common resources = ${common.resources}" />
+        <echo message="         HDK root = ${hy.hdk}" />
+        <echo message="       target dir = ${drlvm.deploy.dir}" />
+    </target>
+
+    <target name="debug-echo">
+        <echoproperties>
+          <propertyset>
+            <propertyref prefix="build."/>
+            <propertyref prefix="hy."/>  
+          </propertyset>
+        </echoproperties>
+    </target>
+
+    <target name="-plugin-ant-contrib">
+        <check-one-file dest="${ant-contrib.jar}" src="${ant-contrib.url}"/>
+        <!-- plug in the ANTCONTRIB -->
+        <taskdef resource="net/sf/antcontrib/antlib.xml">
+            <classpath>
+                <pathelement location="${ant-contrib.jar}" />
+            </classpath>
+        </taskdef>
+    </target>
+    
+    <target name="-plugin-cpptasks" unless="is.cpptasks">
+        <check-one-file dest="${cpptasks.jar}" src="${cpptasks.url}"/>
+        <!-- plug in the CPPTASKS -->
+        <path id="cpptasks.path" path="${cpptasks.jar}"/>
+        <taskdef resource="cpptasks.tasks" 
+            classpathref="cpptasks.path" loaderref="cpptasks.path.loader"/>
+        <typedef resource="cpptasks.types" 
+            classpathref="cpptasks.path" loaderref="cpptasks.path.loader"/>
+        <property name="is.cpptasks" value="true"/>
+    </target>    
+    
+</project>

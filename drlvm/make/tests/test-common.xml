@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<project name="test-common">
+    
+    <dirname property="tc.imported.basedir" file="${ant.file.test-common}"/>
+    <import file="${tc.imported.basedir}/../build-java.xml"/>
+
+    <property name="test.hdk.home" location="${drlvm.deploy.dir}"/>
+    <property name="hdk.lib.dir" location="${test.hdk.home}/lib"/>
+    <property name="hdk.include.dir" location="${test.hdk.home}/include"/>
+    <property name="test.jdk.home" location="${test.hdk.home}/jdk"/>
+    <property name="test.jre.home" location="${test.jdk.home}/jre"/>
+    <property name="test.jvm.exe" location="${test.jre.home}/bin/java"/>
+    <property name="base.test.dir" location="${drlvm.build.dir}/tests"/>
+    <property file="${tc.imported.basedir}/../test.properties"/>
+    
+    <property name="test.home" location="${vm.home}/tests"/>
+    <property name="excludes.dir" location="${test.home}/excludes"/>
+    
+    <target name="check-depends">
+        <check-one-file dest="${ant-contrib.jar}" src="${ant-contrib.url}"/>
+        <check-one-file dest="${jasmin.jar}" src="${jasmin.url}"/>
+        <check-one-file dest="${junit.jar}" src="${junit.jar.url}"/>
+        <check-one-file dest="${hamcrest-library.jar}" src="${hamcrest-library.jar.url}"/>
+    </target>
+        
+    <target name="fetch-depends">
+        <fetch dep="junit.jar"/>
+        <fetch dep="hamcrest-library.jar"/>
+        <fetch dep="jasmin"/>
+        <fetch dep="ant-contrib"/>
+    </target>
+    
+    <target name="-init-test" depends="-plugin-ant-contrib">
+        <if>
+            <isset property="is.ia64"/>
+            <then>
+                <!-- only default and interpreter modes currently supported on IA64 -->
+                <propertyregex property="test.mode" input="${test.mode}" regexp="(jet|opt|srv)" replace="" override="on" />
+            </then>
+        </if>
+    </target>
+        
+    <macrodef name="ensure-resource">
+        <attribute name="name"/>
+        <sequential>
+	        <fail>
+	        <condition>
+                <not><and>
+                    <isset property="@{name}"/>
+	                <available file="${@{name}}"/>
+	            </and></not>
+	        </condition>
+	        
+            ==============================================
+            The @{name} is not found at ${@{name}}
+            Please specify the location as follows:
+            build.bat -D@{name}=path test
+            ==============================================
+	        </fail>
+        </sequential>        
+    </macrodef>
+    
+    <macrodef name="prepare-test-run">
+        <attribute name="test-dir"/>
+        <sequential>
+	        <delete quiet="true" dir="@{test-dir}/reports" />
+	        <mkdir dir="@{test-dir}/reports" />
+        </sequential>        
+    </macrodef>
+    
+    <macrodef name="take-xlist">
+        <attribute name="file" description="expected X-list location" />
+        <attribute name="name" description="property to set for the X-list location" />
+        <sequential>
+            <if>
+                <and>
+                	<available file="@{file}"/>
+                	<not><isset property="test.case"/></not>
+                </and>
+                <then>
+                    <property name="@{name}" location="@{file}"/>
+                    <loadfile property="@{file}.content" srcFile="@{file}"/>
+                    <property name="@{file}.content" value="&lt;empty>"/>
+                    <echo>
+    Using exclude file = ${@{name}} :
+            
+${@{file}.content}
+                    </echo>
+                </then>
+            </if>
+        </sequential>
+    </macrodef>
+    
+    <macrodef name="gen-test-report">
+        <attribute name="dir" />
+        <attribute name="include" default="*.xml"/>
+        <sequential>
+            <if>
+                <not><isset property="skip.report"/></not>
+                <then>
+                    <fileset dir="@{dir}" id="@{dir}.full">
+                        <include name="@{include}" />
+                        <exclude name="TESTS-TestSuites.xml"/>
+                    </fileset>
+                    <fileset dir="@{dir}" id="@{dir}.short">
+                        <include name="@{include}" />
+                        <containsregexp expression='(errors|failures)=.[1-9]' />
+                        <exclude name="TESTS-TestSuites.xml"/>
+                    </fileset>
+                    <condition property="@{dir}.id" value="@{dir}.short" else="@{dir}.full">
+                        <isset property="short.report"/>
+                    </condition>
+                    
+                    <junitreport todir="@{dir}">
+                        <fileset refid="${@{dir}.id}"/>
+                        <report format="frames" todir="@{dir}/html" />
+                    </junitreport>
+                </then>
+            </if>
+        </sequential>
+    </macrodef>
+    
+    <!-- Loads content of a file and escapes XML-specific symbols for attribute value -->
+    <macrodef name="escape-cdata">
+        <attribute name="file"/>
+        <attribute name="property"/>
+        <sequential>
+            <loadfile property="@{property}" srcFile="@{file}" >
+                <filterchain>
+                    <escapeunicode/>
+                    <tokenfilter>
+                        <replaceregex pattern="&amp;" replace="&amp;#38;" flags="gi"/>
+                        <replaceregex pattern="&lt;" replace="&amp;#60;" flags="gi"/>
+                        <replaceregex pattern=">" replace="&amp;#62;" flags="gi"/>
+                        <replaceregex pattern="&quot;" replace="&amp;#34;" flags="gi"/>
+                        <replaceregex pattern="'" replace="&amp;#39;" flags="gi"/>
+                    </tokenfilter>
+                </filterchain>
+            </loadfile>
+            <!-- loadfile does not define the property if file is empty -->
+            <property name="@{property}" value=""/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="to-junit-xml">
+        <attribute name="xml" description="name of xml file"/>
+        <attribute name="suite" description="classname of suite"/>
+        <attribute name="test" default="test" description="testcase name"/>
+        <attribute name="status" description="Boolean value"/>
+        <attribute name="out" default="" description="test output"/>
+        <attribute name="err" default="" description="test error"/>
+        <attribute name="time" default="0.01" description="test execution time"/>
+        <attribute name="msg" default="FAILED" description="error message"/>
+        <attribute name="detail" default="" description="error details or backtrace"/>
+        <sequential>
+            <echo file="@{xml}"><![CDATA[<?xml version="1.0" encoding="UTF-8" ?>
+            <testsuite errors="0" failures="@F@" name="@SUITE@" tests="1" time="@TIME@">
+                <testcase classname="@SUITE@" name="@NAME@" time="@TIME@">@MSG@</testcase>
+                <system-out><![CDATA[@out]!]></system-out>
+                <system-err><![CDATA[@err]!]></system-err>
+            </testsuite>]]> 
+            </echo>
+            <condition property="@{xml}.failed" value="0" else="1">
+                <istrue value="@{status}"/>
+            </condition>
+            <condition property="@{xml}.message" value="" else="&lt;failure message='@{msg}'>@{detail}&lt;/failure>">
+                <istrue value="@{status}"/>
+            </condition>
+            <condition property="@{xml}.out" value="]" else="@{out}]">
+                <length string="@{out}" trim="true" length="0"/>
+            </condition>
+            <condition property="@{xml}.err" value="]" else="@{err}]">
+                <length string="@{err}" trim="true" length="0"/>
+            </condition>
+
+            <replace file="@{xml}" token="@SUITE@" value="@{suite}" />
+            <replace file="@{xml}" token="@NAME@" value="@{test}" />
+            <replace file="@{xml}" token="@TIME@" value="@{time}" />            
+            <replace file="@{xml}" token="@F@" value="${@{xml}.failed}" />
+            <replace file="@{xml}" token="@MSG@" value="${@{xml}.message}" />
+            <replace file="@{xml}" token="@out]!" value="${@{xml}.out}" />
+            <replace file="@{xml}" token="@err]!" value="${@{xml}.err}" />
+        </sequential>
+    </macrodef>
+    
+</project>

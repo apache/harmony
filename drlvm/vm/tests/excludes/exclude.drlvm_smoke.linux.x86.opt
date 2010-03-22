@@ -1,0 +1,12 @@
+Check.java
+PerfCheck.java
+
+# breaks on ubuntu 6 w/ OOME
+stress/Threads.java
+
+# HARMONY-3010 HARMONY-4292
+stress/Stack.java
+
+# HARMONY-3917
+gc/PhantomReferenceTest.java
+gc/WeakReferenceTest.java

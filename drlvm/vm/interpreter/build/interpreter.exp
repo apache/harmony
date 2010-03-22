@@ -1,0 +1,19 @@
+INTERPRETER_0.1 {
+  global :
+    JIT_call_returns_a_reference;
+    JIT_can_enumerate;
+    JIT_compile_method;
+    JIT_compile_method_with_params;
+    JIT_deinit;
+    JIT_execute_method;
+    JIT_fix_handler_context;
+    JIT_gen_method_info;
+    JIT_get_address_of_this;
+    JIT_get_root_set_for_thread_dump;
+    JIT_get_root_set_from_stack_frame;
+    JIT_init;
+    JIT_init_with_data;
+    JIT_supports_compressed_references;
+    JIT_unwind_stack_frame;
+  local : *;
+};

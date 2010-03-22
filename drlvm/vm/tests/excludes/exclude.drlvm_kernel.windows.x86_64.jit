@@ -1,0 +1,5 @@
+## These tests are too slow
+java/lang/RuntimeAdditionalTest*.java
+
+# HARMONY-3953
+java/lang/ClassTestDesiredAssertionStatus.java

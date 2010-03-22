@@ -1,0 +1,22 @@
+Check.java
+PerfCheck.java
+
+# HARMONY-3018
+StackTest.java
+exception/FinalizeStackTest.java
+
+# HARMONY-3033
+gc/Mark.java
+
+gc/LOS.java
+gc/MultiThreads.java
+
+# fails intermittently: HARMONY-3038
+perf/MultiThreadsSimple.java
+
+
+# fails intermittently
+gc/Fragment.java
+
+# This stress test is very slow on interpreter
+stress/Intern.java

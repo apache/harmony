@@ -1,0 +1,11 @@
+ABOUT
+
+This folder contains helper files to build DRLVM with Microsoft Visual Studio 2005 for EM64T platform
+
+In this version some DRLVM MSVC subprojects (both release & debug configurations)
+use external headers and libraries from:
+drlvm/trunk/build/win_em64t_msvc_debug folder (apr.h ...). 
+
+So you have to build DRLVM using standard way (build update/build), before you can use MSVC build.
+
+

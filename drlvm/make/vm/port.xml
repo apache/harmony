@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="portlib" default="build" basedir="../..">
+    
+    <property name="component" value="portlib"/>
+    
+    <import file="common-vm.xml"/>
+    
+    <target name="build" depends="-common-vm">        
+        <init-native/>
+        
+        <path id="port.includes">
+            <dirset dir="${vm.home}">
+                <include name="include" />
+                <include name="port/include" />
+                <include name="port/src/thread/include" />
+            </dirset>
+            <pathelement location="${drlvm.include.dir}"/>
+            <pathelement location="${hy.hdk}/include" />
+        </path>
+        <patternset id="port.src.c">
+            <include name="disasm/linux/*.c" if="is.unix"/>
+            <include name="file_io/linux/*.c" if="is.unix"/>
+            <include name="misc/linux/*.c" if="is.unix"/>
+            <include name="vmem/linux/*.c" if="is.unix"/>
+
+            <include name="atomic/linux/*.c" if="is.unix" unless="is.ia64"/>
+            <include name="atomic/linux_ipf/*.c" if="is.unix.ia64"/>
+
+            <include name="atomic/win/*.c" if="is.windows"/>
+            <include name="disasm/win/*.c" if="is.windows"/>
+            <include name="file_io/win/*.c" if="is.windows"/>
+            <include name="misc/win/*.c" if="is.windows"/>
+            <include name="vmem/win/*.c" if="is.windows"/>
+            <include name="file_io/*.c"/>
+
+            <include name="thread/linux/port_thread_tls_find.c" if="is.unix"/>
+            <include name="thread/linux/thread_os.c" if="is.unix"/>
+            <include name="thread/linux/*ia32.c" if="is.unix.x86"/>
+            <include name="thread/linux/*em64t.c" if="is.unix.x86_64"/>
+            <include name="thread/linux/*ipf.c" if="is.unix.ia64"/>
+            <include name="thread/win/port_thread_tls_find.c" if="is.windows"/>
+            <include name="thread/win/thread_os.c" if="is.windows"/>
+            <include name="thread/win/*ia32.c" if="is.windows.x86"/>
+            <include name="thread/win/*em64t.c" if="is.windows.x86_64"/>
+        </patternset>
+
+        <patternset id="port.src.cpp">
+            <include name="logger/**.cpp" />
+            <include name="tl/*.cpp" />
+            <include name="time/*.cpp" />
+            <include name="malloc/*.cpp" />
+        </patternset>
+
+        <depend-includes paths="port.includes"/>
+        <depend-selector rebuild-flag="port.includes.uptodate" id="port.depends.cpp"/>
+        <depend-selector rebuild-flag="port.includes.uptodate" type="c" id="port.depends.c"/>
+
+        <compile-asm>
+            <fileset id="port.asm" dir="${vm.home}/port/src">
+                <include name="atomic/win/*.asm" if="is.windows.x86_64"/>
+                <include name="atomic/linux_ipf/port_atomic_asm.asm" if="is.unix.ia64"/>
+                <include name="barriers/linux_ipf/port_barriers.asm" if="is.unix.ia64"/>
+            </fileset>
+        </compile-asm>
+        
+        <compile-cc>
+            <includepath><path refid="port.includes"/></includepath>
+
+            <defineset define="APR_DECLARE_EXPORT" />
+            <defineset define="BUILDING_VM" />
+
+            <compiler id="c.compiler" extends="common.c.compiler">
+                <fileset dir="${vm.home}/port/src" >
+                    <patternset refid="port.src.c"/>
+                    <selector refid="port.depends.c"/>
+                </fileset>
+            </compiler>
+
+            <compiler id="cpp.compiler" extends="common.cpp.compiler">
+                <fileset dir="${vm.home}/port/src" >
+                    <patternset refid="port.src.cpp"/>
+                    <selector refid="port.depends.cpp"/>
+                </fileset>
+
+                <compilerarg value="/EHsc" if="is.windows"/>
+                <compilerarg value="-fexceptions" if="is.unix"/>
+            </compiler>
+        </compile-cc>
+        
+        <link-lib name="port" type="static">
+            <linker id="linker" extends="common.linker">
+                <libset libs="encoder" dir="${drlvm.lib.dir}" />
+            </linker>
+        </link-lib>
+    </target>
+    
+    <target name="clean" >
+        <clean-native/>
+    </target>
+
+</project>

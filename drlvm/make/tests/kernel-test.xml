@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<project name="KERNEL TESTS" default="kernel-test">
+
+    <import file="test-common.xml"/>
+    
+    <property name="kernel.test.javasrc" location="${test.home}/kernel" />
+    <property name="kernel.test.dir" location="${base.test.dir}/kernel.tests"/>
+    <property name="kernel.test.summary" location="${kernel.test.dir}/status.txt"/>
+    <property name="test.resource.path" location="${kernel.test.dir}/resources"/>
+    <property name="test.class.path" location="${kernel.test.dir}/classes"/>
+    
+    <target name="kernel-test" 
+        depends="-init-test,
+        compile-kernel-test, run-kernel-test, report-kernel-test, check-kernel-test"/>
+    
+    <target name="run-kernel-test">
+        <prepare-test-run test-dir="${kernel.test.dir}"/>
+        <delete file="${kernel.test.summary}" quiet="true"/>
+        <delete file="${base.test.dir}/kernel.test.failed" quiet="true"/>
+        
+        <echo>
+        ==================================
+        Tested JVM: ${test.jvm.exe}
+        ==================================
+        </echo>
+        
+        <for list="${test.mode}" param="mode" trim="true">
+            <sequential>
+                <antcall target="-run-kernel-test-batch"> 
+                    <param name="run.mode" value="@{mode}" />
+                </antcall>
+            </sequential>
+        </for>
+    </target>
+    
+    <target name="report-kernel-test">
+        <for list="${test.mode}" param="mode"
+            trim="true" keepgoing="true">
+            <sequential>
+                <gen-test-report dir="${kernel.test.dir}/reports/@{mode}.mode"/>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="check-kernel-test">
+        <loadfile property="kernel.test.summary.txt" 
+            srcFile="${kernel.test.summary}"/>
+        <echo message="  ***************************${line.separator}"/>
+        <echo message="  *** Kernel tests status ***${line.separator}"/>
+        <echo message="  ***************************${line.separator}"/>
+        <echo message="${line.separator}"/>
+        <echo message="${kernel.test.summary.txt}"/>
+        <echo message="${line.separator}"/>
+        <echo>Please find detailed results under ${kernel.test.dir}${file.separator}reports directory.</echo>
+        
+        <condition property="test.failed">
+            <contains string="${kernel.test.summary.txt}" substring="FAILED" />
+        </condition>
+        <antcall target="touch-failures-file"/>
+        <fail unless="run.all.tests" if="test.failed" message="There were test failures."/>
+    </target>
+    
+    <target name="touch-failures-file" if="test.failed">
+        <copy file="${kernel.test.summary}" tofile="${base.test.dir}/kernel.test.failed">
+            <filterchain>
+                <linecontains>
+                    <contains value="FAILED"/>
+                </linecontains>
+                <trim/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="compile-kernel-test">
+        <compile-java src="${kernel.test.javasrc}" 
+            dest="${test.class.path}"/>
+        <compile-java src="${kernel.test.javasrc}/../kernel_resources" 
+            dest="${test.resource.path}">
+            <classpath path="${test.class.path}"/>
+        </compile-java>
+        <delete quiet="true" dir="${test.class.path}/notfound" />
+    </target>
+    
+    <target name="-run-kernel-test-batch">
+        <propertycopy property="run.mode.name" from="${run.mode}.name" override="on"/>       
+        <propertycopy property="run.mode.switch" from="${run.mode}.switch" override="on"/>        
+        <property name="report.dir"
+            location="${kernel.test.dir}/reports/${run.mode}.mode"/>
+        <mkdir dir="${report.dir}" />
+
+        <echo>
+        ==================================
+        Run kernel tests using ${run.mode.name} 
+        ==================================
+        </echo>
+        
+        <take-xlist name="exclude.file" file="${excludes.dir}/exclude.drlvm_kernel.${hy.platform}.${run.mode}"/>
+
+        <junit fork="yes" failureproperty="kernel.failed"
+            filtertrace="no" printsummary="on" showoutput="off"
+            haltonfailure="${test.failfast}"
+            forkmode="${kernel.test.forkmode}" 
+            timeout="${test.timeout}"
+            dir="${kernel.test.dir}"
+            jvm="${test.jvm.exe}">
+
+            <jvmarg line="-ea -esa" />
+            <jvmarg line="${run.mode.switch} ${test.vmargs}" />
+            <jvmarg value="-Dtest.resource.path=${test.resource.path}"/>
+            <jvmarg value="-Xbootclasspath/a:${junit.jar}${path.separator}${test.class.path}" />
+            <formatter type="xml"/>
+            <batchtest todir="${report.dir}" unless="test.case">
+                <fileset dir="${kernel.test.javasrc}"> 
+                    <include name="org/apache/harmony/**/*Test.java" />
+                    <include name="java/lang/**/*Test*.java" />
+                    <excludesfile name="${exclude.file}" if="exclude.file" />
+                </fileset>
+            </batchtest>
+            <test name="${test.case}" todir="${report.dir}" if="test.case" />
+        </junit>
+        
+        <condition property="kernel.status" value="FAILED" else="PASSED">
+            <isset property="kernel.failed" />
+        </condition>
+
+        <concat append="on" destfile="${kernel.test.summary}" 
+            >      ${run.mode.name} ${kernel.status}${line.separator}</concat>
+    </target>
+</project>

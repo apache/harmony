@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="vmi" default="build" basedir="../..">
+    
+    <property name="component" value="vmi"/>
+    <import file="common-vm.xml"/>
+    
+    <target name="build" depends="-common-vm">        
+        <init-native/>
+        <make-native libname="vmi" type="shared">
+            <compiler id="cpp.compiler" extends="common.cpp.compiler">
+                <includepath>
+                    <pathelement location="${drlvm.include.dir}" />
+                    <path refid="vm.include"/>
+                    <dirset dir="${vm.home}">
+                        <include name="vmcore/include" />
+                        <include name="vmcore/src/util/win/include" if="is.windows"/>
+                        <include name="vmcore/src/util/linux/include" if="is.unix"/>
+                    </dirset>
+                    <pathelement location="${hy.hdk}/include" />
+                </includepath>
+
+                <fileset dir="${vm.home}/vmi/src" includes="*.cpp" />
+            </compiler>
+
+            <linker id="linker" extends="common.linker">
+                <linkerarg value="/export:VMI_GetVMIFromJavaVM" if="is.windows"/>
+                <linkerarg value="/export:VMI_GetVMIFromJNIEnv" if="is.windows"/>
+                <libset libs="harmonyvm" dir="${drlvm.lib.dir}" if="is.windows"/>
+
+                <linkerarg value="--version-script,${vm.home}/vmi/src/vmi.exp" if="is.unix"/>
+
+                <libset libs="hyzip, hypool" dir="${hy.hdk}/lib"/>
+                <libset libs="hyprt" dir="${hy.hdk.shlibs}"/>
+            </linker>
+        </make-native>
+    </target>
+    
+    <target name="clean" >
+        <clean-native />
+    </target>
+</project>

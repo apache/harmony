@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="port_ch" default="build" basedir="../..">
+
+    <property name="component" value="port_ch"/>
+
+    <import file="common-vm.xml"/>
+
+    <target name="build" depends="-common-vm">
+        <init-native/>
+
+        <path id="ch.includes">
+            <dirset dir="${vm.home}">
+                <include name="include" />
+                <include name="port/include" />
+                <include name="port/src/signals/include" />
+                <include name="port/src/thread/include" />
+                <include name="port/src/crash_handler/include" />
+                <include name="port/src/encoder/ia32_em64t" unless="is.ia64"/>
+                <include name="port/src/modules/unix/include" if="is.unix"/>
+            </dirset>
+            <pathelement location="${drlvm.include.dir}"/>
+            <pathelement location="${hy.hdk}/include" />
+        </path>
+
+        <patternset id="ch.src.c">
+            <include name="modules/*.c"/>
+            <include name="modules/unix/*.c" if="is.unix"/>
+            <include name="modules/unix/linux/*.c" if="is.unix" unless="is.freebsd"/>
+            <include name="modules/unix/freebsd/*.c" if="is.freebsd"/>
+            <include name="modules/win/*.c" if="is.windows"/>
+
+            <include name="thread/linux/thread_os.c" if="is.unix"/>
+            <include name="thread/linux/port_thread_tls_os.c" if="is.unix"/>
+            <include name="thread/linux/*ia32.c" if="is.unix.x86"/>
+            <include name="thread/linux/*em64t.c" if="is.unix.x86_64"/>
+            <include name="thread/linux/*ipf.c" if="is.unix.ia64"/>
+            <include name="thread/win/thread_os.c" if="is.windows"/>
+            <include name="thread/win/port_thread_tls_os.c" if="is.windows"/>
+            <include name="thread/win/*ia32.c" if="is.windows.x86"/>
+            <include name="thread/win/*em64t.c" if="is.windows.x86_64"/>
+
+            <include name="misc/linux/execname.c" if="is.unix"/>
+            <include name="misc/win/execname.c" if="is.windows"/>
+            <!-- port_atomic_casptr is inlined on all platforms except ia64 -->
+            <include name="atomic/linux_ipf/*.c" if="is.unix.ia64"/>
+        </patternset>
+
+        <patternset id="ch.src.cpp">
+            <include name="crash_handler/*.cpp"/>
+            <include name="crash_handler/linux/*.cpp" if="is.unix"/>
+            <include name="crash_handler/win/*.cpp" if="is.windows"/>
+            <include name="crash_handler/ia32/*.cpp" if="is.x86"/>
+            <include name="crash_handler/em64t/*.cpp" if="is.x86_64"/>
+            <include name="crash_handler/ipf/*.cpp" if="is.ia64"/>
+
+            <include name="memaccess/win/memaccess.cpp" if="is.windows"/>
+            <include name="memaccess/linux/memaccess.cpp" if="is.unix" unless="is.ia64"/>
+            <include name="memaccess/linux/*ipf.cpp" if="is.unix.ia64"/>
+
+            <include name="signals/*.cpp"/>
+            <include name="signals/linux/*common.cpp" if="is.unix" unless="is.ia64"/>
+            <include name="signals/linux/*ia32.cpp" if="is.unix.x86"/>
+            <include name="signals/linux/*em64t.cpp" if="is.unix.x86_64"/>
+            <include name="signals/linux/*ipf.cpp" if="is.unix.ia64"/>
+            <include name="signals/win/*common.cpp" if="is.windows"/>
+            <include name="signals/win/*ia32.cpp" if="is.windows.x86"/>
+            <include name="signals/win/*em64t.cpp" if="is.windows.x86_64"/>
+        </patternset>
+
+        <depend-includes paths="ch.includes"/>
+        <depend-selector rebuild-flag="ch.includes.uptodate" id="ch.depends.cpp"/>
+        <depend-selector rebuild-flag="ch.includes.uptodate" type="c" id="ch.depends.c"/>
+
+        <compile-asm>
+            <fileset id="ch.asm" dir="${vm.home}/port/src">
+                <include name="memaccess/linux/memaccess_ia32.s" if="is.unix.x86"/>
+                <include name="memaccess/linux/memaccess_em64t.s" if="is.unix.x86_64"/>
+
+                <include name="signals/win/signals_asm_ia32.asm" if="is.windows.x86"/>
+                <include name="signals/win/signals_asm_em64t.asm" if="is.windows.x86_64"/>
+                <include name="signals/linux/signals_asm_ia32.s" if="is.unix.x86"/>
+                <include name="signals/linux/signals_asm_em64t.s" if="is.unix.x86_64"/>
+            </fileset>
+        </compile-asm>
+
+        <compile-cc>
+            <includepath><path refid="ch.includes"/></includepath>
+
+            <defineset define="APR_DECLARE_EXPORT" />
+            <defineset define="BUILDING_VM" />
+            <defineset define="STRESS_MALLOC" />
+
+            <compiler id="c.compiler" extends="common.c.compiler">
+                <fileset dir="${vm.home}/port/src" >
+                    <patternset refid="ch.src.c"/>
+                    <selector refid="ch.depends.c"/>
+                </fileset>
+            </compiler>
+
+            <compiler id="cpp.compiler" extends="common.cpp.compiler">
+                <fileset dir="${vm.home}/port/src" >
+                    <patternset refid="ch.src.cpp"/>
+                    <selector refid="ch.depends.cpp"/>
+                </fileset>
+
+                <compilerarg value="/EHsc" if="is.windows"/>
+                <compilerarg value="-fexceptions" if="is.unix"/>
+            </compiler>
+        </compile-cc>
+
+        <link-lib name="ch" type="shared">
+            <linker id="linker" extends="common.linker">
+                <libset libs="encoder" dir="${drlvm.lib.dir}" />
+
+                <linkerarg value="--version-script=${vm.home}/port/build/ch.exp" if="is.unix"/>
+
+                <syslibset type="shared" libs="user32" if="is.windows"/>
+                <syslibset type="shared" libs="dl,stdc++,pthread,rt" if="is.linux"/>
+                <syslibset type="shared" libs="stdc++,pthread" if="is.freebsd"/>
+                <linkerarg value="--export-dynamic" if="is.freebsd"/>
+            </linker>
+        </link-lib>
+    </target>
+
+    <target name="clean" >
+        <clean-native/>
+    </target>
+
+</project>

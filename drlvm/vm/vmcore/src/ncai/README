@@ -1,0 +1,119 @@
+
+NCAI (Native Code Access Interface)
+--------------------------------------
+
+This directory contains the source code of Native Code Access Interface
+(NCAI) implementation in the VM core component, which is the important part of
+NCAI implementation. Additionally, NCAI involves other components, such as
+the thread manager (TM) and the interpreter.
+
+
+Implementation notes
+------------------------
+
+This section describes differences between the current NCAI implementation and
+the NCAI interface description (see NCAI.html document).
+
+Notes are divided into functional groups, as in NCAI interface description.
+
+General
+-------
+1. NCAI interface is not fully implemented now. Unimplemented features
+are listed below.
+2. Most features are implemented for IA-32 architecture only.
+
+Threads
+-------
+1. In the current NCAI implementation, threads are only TM threads.
+The GetAllThreads() function returns only threads attached to the thread
+manager, including Java threads, JVMTI agent threads, VM special threads
+or native threads attached to VM with the AttachCurrentThread() function.
+Native threads created using OS API and not attached to the VM are not
+reported.
+
+2. The thread list obtained with GetAllThreads() is not preserved until
+the next GetAllThreads() call, as specified in the interface description.
+That is, the GetThreadInfo() function can return NCAI_ERROR_THREAD_NOT_ALIVE
+if the corresponding thread was terminated after the last call to
+GetAllThreads() where thread handle was obtained.
+
+3. The NCAI suspend mechanism makes use of the suspend count: user code can
+suspend a thread many times but must resume it the same number of times.
+Therefore, a call to SuspendThread() never returns NCAI_ERROR_THREAD_SUSPENDED,
+as specified in the NCAI interface description.
+
+Frames
+------
+Stack walking algorithms for GetStackTrace() and GetFrameCount() functions
+are heuristic: these functions can return a partial stack trace if the stack
+walking algorithm is unable to unwind the stack any more, especially for code
+compiled with optimizations.
+
+Registers
+---------
+Functions GetRegisterValue() and SetRegisterValue() operate with register
+context saved while executing SuspendThread(). Thus, these functions work only
+for suspended threads and not for threads that are in a breakpoint or a step
+callback.
+
+Capabilities
+------------
+Capabilities are not implemented in the current version. All implemented
+features are enabled.
+
+Single Step
+------------
+Single stepping uses disassembling to predict the following instructions.
+Unlike JITted code that uses limited set of instructions, native code generated
+by common compilers may contain any instructions allowed in particular processor
+architecture. Thus the decoder used for disassembling should be extended to
+the whole set of processor instructions.
+Currently the decoder is extended with most frequently used instructions, but
+it does not cover the whole IA-32 instruction set. Therefore some errors may
+occur during single stepping through the native code if the decoder meets
+an unrecognized processor instruction.
+
+Event Callbacks
+---------------
+1. The signal callback can be called when VM is stopped, which imposes certain
+restrictions on event handler code: the event handler must not use JNI
+and JVMTI functions except in special cases (see GarbageCollectionStart and
+GarbageCollectionFinish events in JVMTI spec.)
+
+2. Although GetAllLoadedModules() returns all modules loaded into the VM process,
+ModuleLoad() and ModuleUnload() callbacks are called only for modules loaded by
+VM itself, which are JNI libraries loaded by Java code, including VM-internal
+JNI libraries.
+
+
+Unimplemented features
+--------------------------
+
+The list of unimplemented functions:
+
+GetModuleClassLoader
+FindJavaMethod
+GetBytcodeLocation
+GetThreadState
+GetVersion
+GetErrorName
+GetPotentialCapabilities
+GetCapabilities
+AddCapabilities
+RelinquishCapabilities
+SetWatchpoint
+ClearWatchpoint
+NotifyFramePop
+
+The list of unimplemented event callbacks:
+
+ThreadStart
+ThreadEnd
+Watchpoint
+Exception
+MethodEntry
+MethodExit
+FramePop
+ConsoleInput
+ConsoleOutput
+DebugMessage

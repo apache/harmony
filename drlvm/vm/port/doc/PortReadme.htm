@@ -1,0 +1,208 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<title>Porting Layer Notes</title>
+</head>
+
+<body>
+
+<h3>0. Preliminary Notes</h3>
+
+The porting layer is a work-in-progress and is not yet shaped nicely.
+Currently it consists of quite heterogeneous pieces (APR extensions, logger, 
+encoder, utility templates etc) which do not form unified interface.
+
+
+<h3>1. Design  Notes</h3>
+
+The porting layer design adheres to concepts of APR (<a href="http://apr.apache.org/docs/apr/">Apache
+Portable Runtime libraries</a>), specifically:
+<ul>
+<li>Explicit memory management based on pools
+<li>Consistent error reporting approach via returned status value
+<li>Incomplete types to enforce platform abstraction
+</ul>
+Detailed APIs mainly follow the APR standard, but there may not be strict correspondence
+in signatures. Pure C should be used for implementation.
+
+<!-- The below info is outdated
+<h4>Using APR binaries directly</h4>
+Harmony defines its own headers aligned with APR, but does not wrap APR functions
+in code (no delegating calls). Instead, signatures are mapped directly to APR functions
+where possible - via a set of defines, as follows:
+<pre>
+#define port_allocator_create(allocator) apr_allocator_create(allocator)
+#define port_allocator_destroy(allocator) apr_allocator_destroy(allocator)
+</pre>
+<p>In this case, no run-time performance penalty is incurred. </p>
+<p>The current approach has several significant advantages over using APR headers
+  directly: </p>
+<ul>
+<li>Flexibility to switch the portlib implementation to j9 or any other, including
+  our own, at any time. In other words, the  internal portlib
+  issues are hidden from API customers.
+<li>Extensions to APR; currently, over 20 functions are implemented that are not
+  part of APR. 
+<li>Consistent naming of the whole porting API.
+<li> Simplified bug fixing and tuning: several APR functions have been
+  encountered that have flaws or are not suitable for DRLVM; these functions are
+  easily replaced with Harmony's extensions.The same is applicable for VAV.
+<li>Easier potential support for dynamic linking or multi-VM support with Harmony
+  headers than with APR is: Harmony can organize VTables easier, unlike APR, which
+  sometimes uses defines instead of real functions.
+<li>Common headers to unify porting module build system with the DRLVM system: the
+  APR build organization is completely different in that it uses different sets of
+  headers for each platform, with specific defines. 
+<li>Clearly identified subset of APR functionality, which is actually used, which
+  may  be helpful for further VM porting.
+</ul>
+
+The key drawbacks of the current approach: 
+<ul>
+<li>Need for duplication of headers and documentation, though  redirection links
+  to APR docs can be used to work around this flaw. 
+<li>Potential compatibility issues with future APR development, for instance, on
+  extension boundaries.
+<li>Potential confusion in the open community, especially for those experienced in
+  APR applications.
+</ul>
+
+-->
+
+<h3>2. Directory structure</h3>
+
+Porting functionality is split to several groups: atomics, file I/O, mempools, etc.
+Each group has a base directory, which contains subdirectories with actual code.
+These subdirectories are named after the platforms and/or architectures they are
+compiled on. If there is a strong dependency on both OS and machine architecture,
+the subdirectory name should combine both. The current directory structure looks
+as follows:
+<pre>port
+|->build
+|->doc
+|->include
+|  ->tl
+ ->src
+  |->atomic
+  | |->linux
+  | |->linux_ipf
+  |  ->win
+  |->barriers
+  |  ->linux_ipf
+  |->crash_handler
+  | |->em64t
+  | |->ia32
+  | |->include
+  | |->ipf
+  | |->linux
+  | |  ->include
+  |  ->win
+  |->disasm
+  | |->linux
+  |  ->win
+  |->encoder
+  |  ->ia32_em64t
+  |->file_io
+  | |->linux
+  |  ->win
+  |->lil
+  |  ->em64t
+  |->logger
+  |->malloc
+  |->memaccess
+  | |->linux
+  |  ->win
+  |->misc
+  | |->linux
+  |  ->win
+  |->modules
+  | |->linux
+  |  ->win
+  |->signals
+  | |->include
+  | |->linux
+  |  ->win
+  |->thread
+  | |->linux
+  |  ->win
+  |->time
+  |->tl
+   ->vmem
+    |->linux
+     ->win	 
+</pre>
+<p>
+Public headers are kept in a separate base directory named <code>include/</code>.
+Implementation headers may be kept in the source directories.
+
+<h3>3. Memory management</h3>
+
+The port layer contains wrappers for standard memory allocation functions in the <code>port_malloc.h</code> file.
+They are presented as defines with names like <code>STD_MALLOC</code> for malloc, <code>STD_FREE</code> for
+free etc. By default, they are simply equal to relative functions, but if <code>_MEMMGR</code> is
+defined, they are replaced with another set of functions like <code>port_malloc</code>, <code>port_free</code> etc.
+These functions provide additional functionality at the expense of lower performance.
+<p>
+Newly provided features:
+
+<ul>
+<li>Report allocation and de-allocation log
+<li>Check and report double free calling
+<li>Report not freed memory at VM shutdown
+<li>Provide precise info about currently used memory via the <code>java.lang.management</code> interface
+<li>Provide separate memory allocation for the stress running conditions, like after
+  crash handler occurring
+</ul>
+
+<h4>Instructions on using these features</h4>
+<p>To switch on allocation and de-allocation logging, define the <code>_MEMMGR_LOG</code> macro.
+  This macro also enables double free calling notifications. </p>
+<p>For the final not freed
+        memory reporting, define the <code>_MEMMGR_REPORT</code> macro. </p>
+<p>
+Currently, the stress memory allocator is defined not yet implemented, and just
+  redirects to standard malloc. To switch on stress allocation, define the <code>STRESS_MALLOC</code> macro.
+    <p>
+The memory management module cannot use port logging because it leads to infinite
+  recursion. Its own primitive logging system uses the file in the current directory
+  with name <code>malloc.log</code> for
+  both logging and reporting. A different file name and location can be defining <code>MALLOC_LOG_FILE_NAME</code>.
+    <p>
+Used memory could be obtained by means of the <code>java.lang.management</code> interface.
+It is presented as non-heap memory pool with name <code>Native Memory Pool</code>.
+Different pool name could be set by redefining <code>NATIVE_POOL_NAME</code>.
+
+
+    <h3>4. Build system</h3>
+
+Currently we reuse VM build system. <br>
+TODO - document platform defines and macros.
+
+<h3>5. APR issues </h3>
+<ul>
+<li>	Non-buffered file I/O on Windows* OS has bad support for <code>apr_file_eof()</code>
+<li>	On Windows OS, <code>apr_dso_load()</code> fails on NULL path - 
+		which is meant for obtaining a handle for the calling module itself
+</ul>
+
+
+</body>
+
+</html>

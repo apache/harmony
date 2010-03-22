@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="verifier-ext" default="build" basedir="../..">
+    
+    <property name="component" value="verifier-ext"/>
+    <property name="drlvm.verifier-ext.includes"
+        value="${drlvm.deploy.dir}/include/verifier-ext"/> 
+    <import file="common-vm.xml"/>
+    
+    <target name="build" depends="-common-vm">
+        <mkdir dir="${drlvm.verifier-ext.includes}"/>
+        <copy todir="${drlvm.verifier-ext.includes}">
+            <fileset dir="${vm.home}/include">
+                <include name="open/common.h"/>
+                <include name="open/hycomp.h"/>
+                <include name="open/platform_types.h"/>
+                <include name="open/rt_types.h"/>
+                <include name="open/types.h"/>
+                <include name="open/vm_class_loading.h"/>
+                <include name="open/vm_class_manipulation.h"/>
+                <include name="open/vm_field_access.h"/>
+                <include name="open/vm_method_access.h"/>
+            </fileset>
+            <fileset dir="${vm.home}/vmcore/include">
+                <include name="verifier.h"/>
+                <include name="class_interface.h"/>
+            </fileset>
+            <fileset dir="${vm.home}/vmcore/src/verifier-3363/x_verifier">
+                <include name="x_verifier.h"/>
+                <include name="x_class_interface.h"/>
+            </fileset>
+        </copy>
+        <init-native/>
+        <make-native libname="verifier-ext" type="static">
+            <includepath>
+                <pathelement location="${drlvm.verifier-ext.includes}" />
+            </includepath>
+            <compiler extends="common.cpp.compiler">
+                <fileset dir="${vm.home}/vmcore/src">
+                    <include name="verifier-3363/*/*.cpp"/>
+                    <exclude name="verifier-3363/base/ver.cpp"/>
+                </fileset>
+                <defineset define="STATIC_BUILD"/>
+            </compiler>
+        </make-native>
+
+        <mkdir dir="${drlvm.deploy.dir}/jdk/lib" />
+        <move file="${drlvm.lib.dir}/${lib.prefix}verifier-ext${lib.suffix}" 
+              todir="${drlvm.deploy.dir}/lib" />
+
+    </target>
+    
+    <target name="clean" >
+        <delete dir="${drlvm.verifier-ext.includes}"/>
+        <clean-native/>
+    </target>
+    
+</project>

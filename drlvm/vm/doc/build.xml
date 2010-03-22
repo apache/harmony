@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<project name="DRLVM Documentation" default="all" basedir=".">
+    <description>
+        DRLVM documentation build
+    </description>
+
+    <!-- Import class library location -->
+    <property name="vm.dir" value="${basedir}/.." />
+    <property file="${vm.dir}/../build/drlvm.properties" />
+
+    <!-- Import documentation properties -->
+    <property file="doc.properties" />
+
+    <!-- System dependent settings -->
+    <condition property="exe.suffix" value=".exe" else="">
+        <os family="Windows" />
+    </condition>
+
+    <target name="all"
+        description="Rebuid DRLVM documentation from scratch." 
+        depends="clean,
+                 doxygen.intf,
+                 doxygen.em,
+                 doxygen.gc_cc,
+                 doxygen.gc_gen,
+                 doxygen.gcv4,
+                 doxygen.interpreter,
+                 doxygen.jitrino,
+                 doxygen.apr_extension,
+                 doxygen.thread,
+                 doxygen.vmcore,
+                 doxygen.vmi,
+                 doxygen.component_manager,
+                 doxygen.tests,
+                 doxygen.drlvm" />
+
+    <target name="clean" 
+        description="Clean all documentation directories." 
+        depends="clean.intf,
+                 clean.em,
+                 clean.gc_cc,
+                 clean.gc_gen,
+                 clean.gcv4,
+                 clean.interpreter,
+                 clean.jitrino,
+                 clean.apr_extension,
+                 clean.thread,
+                 clean.vmcore,
+                 clean.vmi,
+                 clean.component_manager,
+                 clean.tests,
+                 clean.drlvm" />
+
+    <!-- Process bundles -->
+    <target name="doxygen.drlvm" depends="init"
+        description="Build all drlvm source documentation.">
+        <generate-bundle bundle="drlvm" />
+    </target>
+
+    <target name="clean.drlvm">
+        <delete dir="${doc.dir}/drlvm${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.intf" depends="init"
+        description="Build inter-component interface documentation.">
+        <generate-bundle bundle="intf" />
+    </target>
+
+    <target name="clean.intf">
+        <delete dir="${doc.dir}/intf${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.em" depends="init"
+        description="Build execution manager documentation.">
+        <generate-bundle bundle="em" />
+    </target>
+
+    <target name="clean.em">
+        <delete dir="${doc.dir}/em${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.gc_cc" depends="init"
+        description="Build copying/compacting GC documentation.">
+        <generate-bundle bundle="gc_cc" />
+    </target>
+
+    <target name="clean.gc_cc">
+        <delete dir="${doc.dir}/gc_cc${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.gc_gen" depends="init"
+        description="Build generational GC documentation.">
+        <generate-bundle bundle="gc_gen" />
+    </target>
+
+    <target name="clean.gc_gen">
+        <delete dir="${doc.dir}/gc_gen${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.gcv4" depends="init"
+        description="Build obsolescent GC documentation.">
+        <generate-bundle bundle="gcv4" />
+    </target>
+
+    <target name="clean.gcv4">
+        <delete dir="${doc.dir}/gcv4${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.interpreter" depends="init"
+        description="Build interpreter documentation.">
+        <generate-bundle bundle="interpreter" />
+    </target>
+
+    <target name="clean.interpreter">
+        <delete dir="${doc.dir}/interpreter${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.jitrino" depends="init"
+        description="Build Jitrino documentation.">
+        <generate-bundle bundle="jitrino" />
+    </target>
+
+    <target name="clean.jitrino">
+        <delete dir="${doc.dir}/jitrino${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.apr_extension" depends="init"
+        description="Build porting layer documentation.">
+        <generate-bundle bundle="apr_extension" />
+    </target>
+
+    <target name="clean.apr_extension">
+        <delete dir="${doc.dir}/apr_extension${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.thread" depends="init"
+        description="Build thread manager documentation.">
+        <generate-bundle bundle="thread" />
+    </target>
+
+    <target name="clean.thread">
+        <delete dir="${doc.dir}/thread${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.vmcore" depends="init"
+        description="Build VM infrastructure documentation.">
+        <generate-bundle bundle="vmcore" />
+    </target>
+
+    <target name="clean.vmcore">
+        <delete dir="${doc.dir}/vmcore${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.vmi" depends="init"
+        description="Build class library support documentation.">
+        <generate-bundle bundle="vmi" />
+    </target>
+
+    <target name="clean.vmi">
+        <delete dir="${doc.dir}/vmi${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.component_manager" depends="init"
+        description="Build component manager documentation.">
+        <generate-bundle bundle="component_manager" />
+    </target>
+
+    <target name="clean.component_manager">
+        <delete dir="${doc.dir}/component_manager${doc.suffix}" />
+    </target>
+
+    <target name="doxygen.tests" depends="init"
+        description="Build DRLVM tests documentation.">
+        <generate-bundle bundle="tests" />
+    </target>
+
+    <target name="clean.tests">
+        <delete dir="${doc.dir}/tests${doc.suffix}" />
+    </target>
+
+    <!-- Initialize -->
+    <target name="init" depends="svn.prop" />
+
+    <!-- Set a revision -->
+    <target name="svn.prop">
+        <exec executable="svn"
+              dir="${classlib.doc.dir}"
+              failifexecutionfails="false"
+              resultproperty="svn.rc">
+            <arg value="info" />
+            <arg value="build.xml" />
+            <redirector outputproperty="svn.revision.tmp">
+                <outputfilterchain>
+                    <linecontains>
+                        <contains value="Revision: " />
+                    </linecontains>
+                    <tokenfilter>
+                        <replacestring from="Revision: " to=""/>
+                    </tokenfilter>
+                </outputfilterchain>
+            </redirector>
+        </exec>
+        <condition property="doc.version" value="1.${svn.revision.tmp}" >
+            <equals arg1="${svn.rc}" arg2="0" />
+        </condition>
+        <property name="doc.version" value="unknown" />
+    </target>
+
+    <!-- Create a specific documentation bundle -->
+    <macrodef name="generate-bundle">
+        <attribute name="bundle" />
+        <sequential>
+            <echo>Generating a documentation bundle for @{bundle}</echo>
+
+            <property name="@{bundle}.doc.dir"
+                value="${doc.dir}/@{bundle}${doc.suffix}" />
+            <mkdir dir="${@{bundle}.doc.dir}" />
+            <exec executable="doxygen${exe.suffix}"
+                dir="${vm.dir}" failonerror="true">
+                <arg value="${basedir}/vm.cfg" />
+                <env key="BUNDLE_DIR" value="${@{bundle}.doc.dir}" />
+                <env key="CLASSLIB_DOC_DIR" value="${classlib.doc.dir}" />
+                <env key="BUNDLE_NAME" value="${@{bundle}.name}" />
+                <env key="BUNDLE_FILES" value="${@{bundle}.files}" />
+                <env key="DOC_VERSION" value="${doc.version}" />
+            </exec>
+        </sequential>
+    </macrodef>
+
+</project>
+
+

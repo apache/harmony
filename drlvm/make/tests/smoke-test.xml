@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="SMOKE TESTS" default="smoke-test">
+
+    <import file="test-common.xml"/>
+    <import file="../build-native.xml"/>
+
+    <property name="smoke.test.src" location="${test.home}/smoke" />
+    <property name="smoke.test.dir" location="${base.test.dir}/smoke.tests"/>
+    <property name="smoke.test.summary" location="${base.test.dir}/smoke.test.failed"/>
+    <property name="smoke.test.class.path" location="${smoke.test.dir}/classes" />
+    <property name="smoke.test.native.path" location="${smoke.test.dir}/natives" />
+
+    <patternset id="smoke.test.pattern">
+        <include name="**/*.class"/>
+        <exclude name="**/*$*.class"/>
+    </patternset>
+
+    <fileset id="smoke.test.native.refid"
+            dir="${smoke.test.src}">
+        <include name="**/*.c"/>
+    </fileset>
+    <pathconvert property="smoke.test.native.list"
+                 refid="smoke.test.native.refid" pathsep="," />
+
+    <target name="smoke-test" depends="-init-test,
+        clean, compile-smoke-test, java_test_smoke, build_report">
+        <available property="test.failed" file="${smoke.test.summary}" />
+        <fail unless="run.all.tests" if="test.failed"/>
+    </target>
+
+    <target name="clean">
+        <delete quiet="true" file="${smoke.test.summary}"/>
+        <delete quiet="true" dir="${smoke.test.dir}/reports" />
+    </target>
+
+    <target name="compile-smoke-test" depends="compile-smoke-test-native">
+        <compile-java src="${smoke.test.src}" dest="${smoke.test.class.path}" />
+    </target>
+
+
+    <target name="compile-smoke-test-native" depends="-plugin-cpptasks">
+        <mkdir dir="${smoke.test.native.path}" />
+
+        <for list="${smoke.test.native.list}" param="full.file.path" delimiter=",">
+            <sequential>
+                <var name="outputdir" unset="true" />
+                <var name="tmp.outputdir" unset="true" />
+                <var name="outputfile" unset="true" />
+
+                <basename property="outputfile" file="@{full.file.path}" suffix=".c"/>
+                <dirname property="tmp.outputdir" file="@{full.file.path}" />
+                <basename property="outputdir" file="${tmp.outputdir}" />
+
+                <mkdir dir="${smoke.test.native.path}/${outputdir}" />
+
+                <echo message="Compiling ${smoke.test.native.path}/${outputdir}/${outputfile}" />
+                <cc name="${hy.cpp.compiler}"
+                    debug="true"
+                    runtime="dynamic"
+                    multithreaded="true"
+                    link="shared"
+                    outfile="${smoke.test.native.path}/${outputdir}/${outputfile}">
+                    <includepath path="${test.jdk.home}/include" />
+                    <!--linkerarg value="-lstdc++" if="is.linux"/-->
+                    <fileset file="@{full.file.path}" />                    
+                </cc>
+
+                <embed-manifest lib="${smoke.test.native.path}/${outputdir}/${outputfile}${shlib.suffix}" />
+            </sequential>
+        </for>
+    </target>
+
+    <target name="java_test_smoke">
+        <mkdir dir="${smoke.test.dir}/reports" />
+        <path id="java.class.path">
+            <pathelement location="${smoke.test.class.path}" />
+        </path>
+        <echo>
+        ==================================
+        Tested JVM: ${test.jvm.exe}
+        ==================================
+        </echo>
+        <for list="${test.mode}" param="mode" trim="true">
+            <sequential>
+                <antcall target="java_test_smoke_with_jit_or_interpreter"> 
+                    <param name="mode.id" value="@{mode}" />
+                </antcall>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="build_report">
+        <gen-test-report dir="${smoke.test.dir}/reports"/>
+        <echo message="The test report is in ${smoke.test.dir}/reports"/>
+    </target>
+
+    <target name="java_test_smoke_with_jit_or_interpreter">
+        <propertycopy property="mode.name" from="${mode.id}.name" override="on"/>       
+        <propertycopy property="mode.switch" from="${mode.id}.switch" override="on"/>
+
+        <property name="classes.location" location="${smoke.test.src}" />
+        <pathconvert property="java.path.property" refid="java.class.path" />
+        <condition property="int.or.jit.exclude" value="X_int,X_interpreter">
+            <contains string="${mode.id}" substring="int" />
+        </condition>
+        <property name="int.or.jit.exclude" value="X_jit,X_jitrino" />
+        <property name="EXCLUDE_KEYWORDS" value="XXX,X_${build.os},X_${build.arch},X_drl,${int.or.jit.exclude},slow,perf,stress" />
+        
+        <echo>
+        ==================================
+        Smoke tests on ${mode.name}
+        ==================================
+        </echo>
+        
+        <take-xlist name="exclude.file" file="${excludes.dir}/exclude.drlvm_smoke.${hy.platform}.${mode.id}"/>
+
+        <convert-test from="test.case" to="test.file"/>
+        
+        <fileset dir="${smoke.test.src}" id="smoke.run.set">
+            <include name="**/*.java" unless="test.case"/>
+            <include name="${test.file}" if="test.case"/>
+            <excludesfile name="${exclude.file}" if="exclude.file" />
+        </fileset>
+        <pathconvert property="smoke.run.list" setonempty="no" refid="smoke.run.set"/>
+        <fail unless="smoke.run.list" message="No test found: ${test.case}"/>
+
+        <for param="test">
+            <fileset refid="smoke.run.set"/>
+            <sequential>
+                <!-- unset res.code variable to use it for next run-->
+                <var name="res.code" unset="true"/>
+                <var name="outdir" unset="true" />
+                <var name="tmp.outdir" unset="true" />
+
+                <basename property="filename.@{test}" file="@{test}" />
+                <propertycopy name="fname" override="true" from="filename.@{test}" />
+                <propertyregex property="classes.location1" override="true" input="${classes.location}" regexp="\\" replace="/" global="true" defaultValue="${classes.location}" />
+                <propertyregex property="test1" override="true" input="@{test}" regexp="\\" replace="/" global="true" defaultValue="@{test}" />
+                <propertyregex property="class.name.sep" override="true" input="${test1}" regexp="${classes.location1}/(.*).java" replace="\1" />
+                <propertyregex property="class.name" override="true" input="${class.name.sep}" regexp="/" replace="\." global="true" defaultValue="${class.name.sep}" />
+                <loadfile property="@{test}.src.file" srcFile="@{test}" />
+                <propertycopy name="src.file" override="true" from="@{test}.src.file" />
+                <propertyregex property="@{test}.keywords" input="${src.file}" regexp="(?m)@keyword(.*)" select="\1" defaultValue="" />
+                <propertycopy name="file.keywords" override="true" from="@{test}.keywords" />
+                <dirname property="tmp.outdir" file="@{test}" />
+                <basename property="outdir" file="${tmp.outdir}" />
+
+                <for param="keyword" list="${EXCLUDE_KEYWORDS}" delimiter=",">
+                    <sequential>
+                        <condition property="@{test}.is.excluded" value="@{keyword}">
+                            <contains string="${file.keywords}" substring="@{keyword}" />
+                        </condition>
+                    </sequential>
+                </for>
+                <if>
+                    <or>
+                        <isset property="test.case"/>
+                        <not><isset property="@{test}.is.excluded" /></not>
+                    </or>
+                    <then>
+                        <echo message="Running test : ${class.name}" />
+                        <var name="test.report" value="${smoke.test.dir}/reports/${class.name}_${mode.id}"/>
+
+                        <java newenvironment="yes"
+                            dir="${smoke.test.dir}"
+                            classname="${class.name}"
+                            fork="true"
+                            jvm="${test.jvm.exe}"
+                            output="${test.report}.out"
+                            error="${test.report}.out.err"
+                            resultproperty="res.code"
+                            timeout="${test.timeout}" >
+                            <jvmarg line="${mode.switch} ${test.vmargs}" />
+                            <jvmarg value="-Djava.library.path=${smoke.test.native.path}/${outdir}" />
+                            <jvmarg value="-classpath" />
+                            <jvmarg value="${smoke.test.class.path}" />
+                            <env key="JAVA_HOME" value="${test.jre.home}" />
+                            <env key="LD_LIBRARY_PATH" value="${test.jre.home}/bin:${env.LD_LIBRARY_PATH}" />
+                        </java>
+
+                        <loadfile property="@{test}.out" srcFile="${test.report}.out">
+                            <filterchain>
+                                <tokenfilter>
+                                    <!-- Should escape CDATA end marker -->
+                                    <replaceregex pattern="]]>" replace="]]&amp;gt;" flags="gi"/>
+                                </tokenfilter>
+                            </filterchain>
+                        </loadfile>
+                        <loadfile property="@{test}.err" srcFile="${test.report}.out.err">
+                            <filterchain>
+                                <tokenfilter>
+                                    <!-- Should escape CDATA end marker -->
+                                    <replaceregex pattern="]]>" replace="]]&amp;gt;" flags="gi"/>
+                                </tokenfilter>
+                            </filterchain>
+                        </loadfile>
+
+                        <!-- loadfile does not define the property if file is empty -->
+                        <property name="@{test}.out" value=""/>
+                        <property name="@{test}.err" value=""/>
+
+                        <!-- whether DRLVM's output contains PASS and doesn't FAIL -->
+                        <condition property="@{test}.is.passed" value="true" else="false">
+                            <and>
+                                <contains string="${@{test}.out}" substring="PASS" casesensitive="false" />
+                                <not>
+                                    <contains string="${@{test}.out}" substring="FAIL" casesensitive="false" />
+                                </not>
+
+                                <!-- the return code must be checked -->
+                                <or>
+                                    <!-- it must be '0' in general -->
+                                    <equals arg1="${res.code}" arg2="0" />
+
+                                    <!-- some tests passes w/ non-'0' code -->
+                                    <and>
+                                        <equals arg1="${class.name}" arg2="init.ErrorInInitializer" />
+                                        <equals arg1="${res.code}" arg2="1" />
+                                    </and>
+                                    <and>
+                                        <equals arg1="${class.name}" arg2="shutdown.TestFatalError" />
+                                        <equals arg1="${res.code}" arg2="1" />
+                                    </and>
+                                    <and>
+                                        <equals arg1="${class.name}" arg2="shutdown.TestInterrupt" />
+                                        <equals arg1="${res.code}" arg2="130" />
+                                    </and>
+                                </or>
+                            </and>
+                        </condition>
+
+                        <escape-cdata file="${test.report}.out.err" property="@{test}.msg"/>
+                        <to-junit-xml xml="${smoke.test.dir}/reports/TEST-${class.name}_${mode.id}.xml"
+                            suite="${class.name}_${mode.id}" test="${mode.name}" 
+                            status="${@{test}.is.passed}"
+                            out="${@{test}.out}" err="${@{test}.err}" 
+                            msg="Exit code: ${res.code}"
+                            detail="Exit code: ${res.code} Err: ${@{test}.msg}"/>
+
+                        <if>
+                            <istrue value="${@{test}.is.passed}" />
+                            <then>
+                                <echo message=" PASSED : ${class.name}" />
+                            </then>
+                            <else>
+                                <echo message="*** FAILED **** : ${class.name} (${res.code} res code)" />
+                                <echo message="*** FAILED **** : ${class.name} on ${mode.name}${line.separator}" file="${smoke.test.summary}" append="true"/>
+                            </else>
+                        </if>
+                        
+                    </then>
+                    <else>
+                        <propertycopy override="true" property="exclude.reason" from="@{test}.is.excluded" />
+                        <echo message="test ${class.name} is skipped due to ${exclude.reason}" />
+                    </else>
+                </if>
+            </sequential>
+        </for>
+        <echo message="Please find test classes and results at ${smoke.test.dir}/reports" />
+    </target>
+    
+</project>

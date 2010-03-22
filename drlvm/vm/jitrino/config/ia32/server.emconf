@@ -1,0 +1,148 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# EM configuration for 'server' mode of Jitrino
+#
+# When changing configuration for SD2_OPT JIT, do not forget to reflect the same
+#   changes for SS_OPT JIT in server_static.emconf (used for debugging purposes)
+#
+# rules for server -> server_static conversion
+#     JET_CLINIT -> SS_OPT
+#     inline_helpers -> inline_helpers-
+#     edge_annotate -> statprof
+
+chains=chain1,chain2
+chain1.jits=JET_CLINIT
+chain2.jits=SD1_OPT,SD2_OPT
+
+chain1.filter=+.<clinit>
+chain1.filter=-
+
+JET_CLINIT.file=jitrino
+SD1_OPT.file=jitrino
+SD2_OPT.file=jitrino
+
+# Edge profiler and recompilation parameters
+EDGE_PROF.profilerType=EDGE_PROFILER
+EDGE_PROF.entryThreshold=40000
+EDGE_PROF.backedgeThreshold=150000
+EDGE_PROF.tbsTimeout=10
+EDGE_PROF.tbsInitialTimeout=0
+
+VALUE_PROF.profilerType=VALUE_PROFILER
+VALUE_PROF.vpalgo=TNV_FIRST_N
+VALUE_PROF.updateStrategy=LOCKED_INSERT
+VALUE_PROF.vpSteadySize=4
+SD1_OPT.genProfile=EDGE_PROF,VALUE_PROF
+SD2_OPT.useProfile=EDGE_PROF,VALUE_PROF
+
+#options for JIT
+
+-XX:jit.JET_CLINIT.path=
+
+#register allocator configuration
+-XDjit.RA2.filter=-
+-XDjit.RA2.path=bp_regalloc1,bp_regalloc2
+-XDjit.RA2.path.bp_regalloc1=bp_regalloc
+-XDjit.RA2.path.bp_regalloc2=bp_regalloc
+-XDjit.RA2.arg.bp_regalloc1.regs=ALL_GP
+-XDjit.RA2.arg.bp_regalloc2.regs=ALL_XMM
+-XDjit.RA3.filter=-
+-XDjit.RA3.path=webmaker,cg_regalloc
+-XDjit.RA3.arg.webmaker.calc=true
+
+-XX:jit.SD1_OPT.path=opt_init,lock_method,translator,optimizer,hir2lir,codegen,unlock_method
+
+-XX:jit.SD1_OPT.path.optimizer=ssa,simplify,dce,uce,vp_instrument,devirt_virtual,edge_instrument,dessa,statprof
+-XX:jit.SD1_OPT.path.devirt_virtual=devirt
+-XX:jit.SD1_OPT.path.codegen=bbp,btr,gcpoints,cafl,dce1,i8l,api_magic,light_jni-,early_prop,global_prop,peephole,itrace-,native,constraints,dce2,regalloc,spillgen,copy,i586,layout,rce+,stack,break-,iprof-,peephole,emitter!,si_insts,gcmap,info
+-XX:jit.SD1_OPT.path.dce1=cg_dce
+-XX:jit.SD1_OPT.path.dce2=cg_dce
+
+-XX:jit.SD1_OPT.arg.codegen.dce1.early=yes
+-XX:jit.SD1_OPT.arg.codegen.btr.insertCMOVs=no
+-XX:jit.SD1_OPT.arg.codegen.btr.removeConstCompare=yes
+
+#enable profiling of all virtual calls
+-XX:jit.SD1_OPT.arg.optimizer.vp_instrument.profile_abstract=true
+
+-XX:jit.SD2_OPT.path=opt_init,translator,optimizer,hir2lir,codegen
+
+-XX:jit.SD2_OPT.path.optimizer=ssa,simplify,dce,uce,devirt_virtual,edge_annotate,unguard,devirt_intf,hlo_api_magic,inline,purge,simplify,dce,uce,osr_path,lazyexc,throwopt,escape_path,inline_helpers,purge,simplify,uce,dce,uce,abce,lower,dce,uce,statprof,unroll,ssa,simplify,dce,uce,memopt,dce,uce,hvn,dce,uce,gcm,dessa,statprof
+-XX:jit.SD2_OPT.path.osr_path=gcm,osr,simplify,dce,uce
+-XX:jit.SD2_OPT.path.escape_path=hvn,simplify,dce,uce,escape
+-XX:jit.SD2_OPT.path.abce=memopt,dce,uce,simplify,dce,uce,classic_abcd,dce,uce,dessa,statprof,peel,ssa,hvn,simplify,dce,uce,memopt,dce,uce,dessa,fastArrayFill,ssa,statprof,dabce,dce,uce
+-XX:jit.SD2_OPT.path.codegen=lock_method,bbp,btr,gcpoints,cafl,dce1,i8l,api_magic,light_jni-,early_prop,global_prop,peephole,itrace-,native,cg_fastArrayFill,constraints,dce2,regalloc,spillgen,copy,i586,layout,rce+,stack,break-,iprof-,peephole,emitter!,si_insts,gcmap,info,unlock_method
+-XX:jit.SD2_OPT.path.dce1=cg_dce
+-XX:jit.SD2_OPT.path.dce2=cg_dce
+
+#devirt configuration
+-XX:jit.SD2_OPT.path.devirt_virtual=devirt
+-XX:jit.SD2_OPT.path.devirt_intf=devirt
+-XX:jit.SD2_OPT.arg.optimizer.devirt_intf.devirt_intf_calls=true
+-XX:jit.SD2_OPT.arg.optimizer.devirt_intf.devirt_abstract_calls=true
+-XX:jit.SD2_OPT.arg.optimizer.devirt_intf.devirt_virtual_calls=false
+
+#inliner configuration
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.filter=-
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.path=ssa,simplify,dce,uce,devirt_virtual,edge_annotate,unguard,devirt_intf,hlo_api_magic
+-XX:jit.SD2_OPT.arg.optimizer.inline.pipeline=SD2_OPT_inliner_pipeline
+-XX:jit.SD2_OPT.arg.optimizer.inline.connect_early=false
+
+#devirt configuration for inliner pipeline
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.path.devirt_virtual=devirt
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.path.devirt_intf=devirt
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.arg.devirt_intf.devirt_intf_calls=true
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.arg.devirt_intf.devirt_abstract_calls=true
+-XX:jit.SD2_OPT.SD2_OPT_inliner_pipeline.arg.devirt_intf.devirt_virtual_calls=false
+
+#helper inliner configuration
+-XX:jit.SD2_OPT.SD2_OPT_helper_inliner_pipeline.filter=-
+-XX:jit.SD2_OPT.SD2_OPT_helper_inliner_pipeline.path=ssa
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.pipeline=SD2_OPT_helper_inliner_pipeline
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_NEW_RESOLVED_USING_VTABLE_AND_SIZE=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_NEW_RESOLVED_USING_VTABLE_AND_SIZE_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_NEW_VECTOR_USING_VTABLE=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_NEW_VECTOR_USING_VTABLE_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_MONITOR_ENTER=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_MONITOR_ENTER_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_MONITOR_EXIT=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_MONITOR_EXIT_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_GET_INTERFACE_VTABLE_VER0=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_GET_INTERFACE_VTABLE_VER0_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_GET_IDENTITY_HASHCODE=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_GET_IDENTITY_HASHCODE_hotnessPercent=0
+-XX:jit.arg.getIdentityHashCode=true
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_CHECKCAST=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_CHECKCAST_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_INSTANCEOF=on
+-XX:jit.SD2_OPT.arg.optimizer.inline_helpers.VM_RT_INSTANCEOF_hotnessPercent=1
+
+-XX:jit.SD2_OPT.arg.codegen.dce1.early=yes
+-XX:jit.SD2_OPT.arg.codegen.btr.insertCMOVs=no
+-XX:jit.SD2_OPT.arg.codegen.btr.removeConstCompare=yes
+-XX:jit.SD2_OPT.arg.codegen.btr.eliminateSignCheck=yes
+-XX:jit.arg.codegen.emitter.align=4
+
+#system properties
+-Djava.compiler=server

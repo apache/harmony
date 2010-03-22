@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="em" default="build" basedir="../..">
+    
+    <property name="component" value="em"/>
+    <import file="common-vm.xml"/>
+    
+    <target name="build" depends="-common-vm">        
+        <init-native/>
+        <make-native libname="em" type="shared">
+        <compiler id="cpp.compiler" extends="common.cpp.compiler">
+            <includepath>
+                <dirset dir="${vm.home}">
+                    <include name="vmcore/src/util/win/include" if="is.windows"/>
+                    <include name="vmcore/src/util/linux/include" if="is.unix"/>
+                    <include name="vmcore/include" />
+                    <include name="src/em" />
+                </dirset>
+                <path refid="vm.include"/>
+                <pathelement location="${drlvm.include.dir}" />
+            </includepath>
+
+            <fileset dir="${vm.home}/em/src">
+                <include name="*.cpp" />
+            </fileset>
+
+       </compiler>
+
+        <linker id="linker" extends="common.linker">
+            <libset libs="harmonyvm,hythr" dir="${drlvm.shlib.dir}" />
+            <libset libs="port,apr-1" dir="${drlvm.lib.dir}" />
+            
+            <syslibset type="shared" libs="m,dl,stdc++,z,xml2,pthread" if="is.linux"/>
+            <syslibset type="shared" libs="m,stdc++,z,pthread" if="is.freebsd"/>
+            <libset libs="xml2" dir="/usr/local/lib" if="is.freebsd"/>
+            <linkerarg value="--export-dynamic" if="is.freebsd"/>
+            
+            <linkerarg value="--version-script=${vm.home}/em/build/em.exp" if="is.unix"/>
+        </linker>
+        </make-native>
+    </target>
+    
+    <target name="clean" >
+        <clean-native />
+    </target>
+
+</project>

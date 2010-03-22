@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="common-vm">
+    
+    <import file="../build-native.xml"/>
+    
+    <target name="-common-vm" description="common descriptors for all VM components" 
+        depends="setup-native-build,init-compression-mode">
+        
+        <path id="vm.include">
+            <pathelement location="${vm.home}/port/include" />
+            <pathelement location="${vm.home}/include" />
+        </path>
+
+        <compiler id="common.compiler">
+            <!--common for cpp and c-->
+            
+            <defineset define="${refs.comp.mode}" if="refs.comp.mode"/>
+
+            <defineset define="HY_NO_THR" if="no.thr.mode" />
+
+            <defineset define="NDEBUG" unless="is.cfg.debug"/>
+            <defineset define="_DEBUG" if="is.cfg.debug" />
+            <defineset define="VM_STATS" if="is.cfg.debug"/>
+
+            <defineset define="_IA32_" if="is.x86"/>
+
+            <defineset define="_IPF_" if="is.ia64"/>
+            <defineset define="HYIA64" if="is.ia64"/>
+
+            <defineset define="_EM64T_" if="is.x86_64"/>
+            <defineset define="HYX86_64" if="is.x86_64"/>
+            
+            <defineset define="POINTER64" if="is.64bit"/>
+
+            <defineset if="is.ppc32"> 
+                <define name="_PPC32_"/>
+                <define name="_PPC_"/>
+                <define name="HYPPC32"/>
+            </defineset>
+
+            <defineset if="is.windows">
+                <define name="PLATFORM_NT" />
+                <define name="WIN32" />
+                <define name="_WINDOWS" />
+                <define name="_WIN32_WINNT" value="0x0501" />
+            </defineset>
+            
+            <compilerarg value="/Zi" if="is.windows"/>
+            <compilerarg value="/W3" if="is.windows"/>
+            <compilerarg value="/WX" if="is.windows" unless="is.x86_64"/>
+
+            <!-- 'identifier' : macro redefinition -->
+            <compilerarg value="/wd4005" if="is.msvc"/>
+
+            <!-- 'function': was declared deprecated -->
+            <compilerarg value="/wd4996" if="is.msvc"/>
+
+            <!-- 'operator' : 'identifier1' differs in levels of indirection from 'identifier2' -->
+            <compilerarg value="/wd4047" if="is.msvc"/>
+
+            <!-- 'function' : different types for formal and actual parameter 'number' -->
+            <compilerarg value="/wd4024" if="is.msvc"/>
+
+            <!-- The file contains a character that cannot be represented in the current code page -->
+            <compilerarg value="/wd4819" if="is.msvc"/>
+
+            <defineset define="MACOSX" if="is.macosx"/>
+            <defineset define="FREEBSD" if="is.freebsd"/>
+            <defineset define="LINUX" if="is.linux"/>
+
+            <defineset if="is.unix">
+                <define name="PLATFORM_POSIX"/>
+                <define name="__SMP__" />
+                <define name="_REENTRANT" />
+                <define name="LINUX_TLS_OPT" />
+                <define name="_LARGEFILE64_SOURCE" if="is.x86"/>
+            </defineset>
+
+            <compilerarg value="-ftls-model=initial-exec" if="is.unix.x86_64"/> 
+            <compilerarg value="-fno-exceptions" if="is.unix"/>
+            <compilerarg value="-fPIC" if="is.unix" unless="is.x86"/>
+
+            <compilerarg value="-w1" if="is.icc"/>
+            <!--compilerarg value="-Werror" /-->
+
+            <compilerarg value="-O2" if="is.unix" unless="is.cfg.debug"/>
+
+            <compilerarg value="-O0" if="is.unix" unless="is.cfg.release"/>
+            <compilerarg value="-g" if="is.unix"/>
+            <compilerarg value="-ggdb3" if="is.unix" unless="is.cfg.release"/>
+
+            <compilerarg value="/O2" if="is.msvc" unless="is.cfg.debug"/>
+            <compilerarg value="/Od" if="is.windows" unless="is.cfg.release"/>
+            
+            <compilerarg value="/O3" if="is.icl" unless="is.cfg.debug"/>
+            <compilerarg value="/mp" if="is.icl"/>
+            <compilerarg value="-mp" if="is.icc"/>
+            <compilerarg value="/QxN" if="is.icl"/>
+            <compilerarg value="/Qip" if="is.icl"/>
+
+            <defineset define="HY_LOCAL_ZLIB" if="hy.skip.zlib"/>
+        </compiler>
+
+        <compiler id="common.cpp.compiler" name="${hy.cpp.compiler}" extends="common.compiler">
+            <compilerarg value="/EHsc" if="is.windows"/>
+            
+            <compilerarg value="/ZI" if="is.icl" unless="is.ia64"/>
+            <compilerarg value="/Qvc7.1" if="is.icl"/>
+            
+            <compilerarg value="-Wno-deprecated" if="is.unix"/>
+            <compilerarg value="-x" if="is.unix"/>
+            <compilerarg value="c++" if="is.unix"/>
+
+            <compilerarg value="-cxxlib-gcc" if="is.icc"/>
+        </compiler>
+
+        <compiler id="common.c.compiler" name="${hy.cpp.compiler}" extends="common.compiler">
+        </compiler>
+
+        <linker name="${hy.cpp.compiler}" id="common.linker">
+            <linkerarg value="/NODEFAULTLIB:libcmtd.lib" if="is.windows" unless="is.cfg.release"/>
+            <linkerarg value="/NODEFAULTLIB:msvcrt.lib" if="is.windows" unless="is.cfg.release"/>
+            <syslibset libs="msvcrtd" if="is.windows" unless="is.cfg.release"/>
+
+            <linkerarg value="/NODEFAULTLIB:libcmt.lib" if="is.windows" unless="is.cfg.debug"/>
+            <linkerarg value="/NODEFAULTLIB:msvcrtd.lib" if="is.windows" unless="is.cfg.debug"/>
+            <syslibset libs="msvcrt" if="is.windows" unless="is.cfg.debug"/>
+
+            <syslibset libs="advapi32,odbc32,userenv,ws2_32,mswsock,psapi" if="is.windows"/>
+
+            <syslibset type="shared" libs="m,dl,stdc++,rt" if="is.linux.x86"/>
+            <syslibset type="shared" libs="pthread" if="is.freebsd"/>
+            <!--linkerarg value="-lgcc_s" if="is.unix.x86" unless="is.icc"/-->
+        </linker>
+    </target>
+    
+    <target name="init-compression-mode" unless="refs.comp.mode">
+        <!-- Only uncompressed mode is allowed for x86 -->
+        <condition property="refs.comp.mode" value="REFS_USE_UNCOMPRESSED">
+            <isset property="is.x86" />
+        </condition>
+        <!-- refs.comp.mode from command line -->
+        <condition property="refs.comp.mode.tmp" value="${COMPRESSED_MODE}">
+            <isset property="COMPRESSED_MODE" />
+        </condition>
+        <!-- refs.comp.mode from environment or properties.file -->
+        <condition property="refs.comp.mode.tmp" value="${env.COMPRESSED_MODE}">
+            <isset property="env.COMPRESSED_MODE" />
+        </condition>
+
+        <condition property="refs.comp.mode" value="REFS_USE_COMPRESSED">
+            <and>
+                <isset property="refs.comp.mode.tmp" />
+                <equals arg1="${refs.comp.mode.tmp}" arg2="compressed" />
+            </and>
+        </condition>
+        <condition property="refs.comp.mode" value="REFS_USE_UNCOMPRESSED">
+            <and>
+                <isset property="refs.comp.mode.tmp" />
+                <equals arg1="${refs.comp.mode.tmp}" arg2="uncompressed" />
+            </and>
+        </condition>
+        <property name="refs.comp.mode" value="REFS_USE_RUNTIME_SWITCH"/>
+    </target>
+
+</project>

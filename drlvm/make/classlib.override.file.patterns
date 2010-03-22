@@ -1,0 +1,4 @@
+**/jre/bin/libhythr.so
+**/jre/bin/hythr.dll
+**/jdk/include/jni*.h
+**/jdk/include/jvmti*.h

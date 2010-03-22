@@ -1,0 +1,56 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# EM configuration file for CS_OPT-only mode of Jitrino. This is 'client static' mode
+
+chains=chain1
+chain1.jits=CS_OPT
+CS_OPT.file=jitrino
+
+
+# Options to be passed to JIT
+
+-XX:jit.CS_OPT.path=opt_init,lock_method,translator,optimizer,hir2lir,codegen,unlock_method
+
+-XX:jit.CS_OPT.path.optimizer=ssa,devirt,hlo_api_magic,inline,purge,simplify,dce,uce,osr_path-,lazyexc,throwopt,escape_path,dce,uce,memopt,simplify,dce,uce,lower,statprof,unroll,ssa,simplify,dce,uce,dessa,statprof
+-XX:jit.CS_OPT.path.osr_path=gcm,osr,simplify,dce,uce
+-XX:jit.CS_OPT.path.escape_path=hvn,simplify,dce,uce,escape
+-XX:jit.CS_OPT.path.codegen=bbp,btr,gcpoints,cafl,dce1,i8l,api_magic,light_jni-,early_prop,peephole,itrace-,native,constraints,dce2,regalloc,spillgen,copy,i586,layout,rce+,stack,break-,iprof-,peephole,emitter!,si_insts,gcmap,info
+-XX:jit.CS_OPT.path.dce1=cg_dce
+-XX:jit.CS_OPT.path.dce2=cg_dce
+-XX:jit.CS_OPT.path.regalloc=bp_regalloc1,bp_regalloc2
+-XX:jit.CS_OPT.path.bp_regalloc1=bp_regalloc
+-XX:jit.CS_OPT.path.bp_regalloc2=bp_regalloc
+
+#inliner configuration
+-XX:jit.CS_OPT.CS_OPT_inliner_pipeline.filter=-
+-XX:jit.CS_OPT.CS_OPT_inliner_pipeline.path=ssa,devirt,hlo_api_magic
+-XX:jit.CS_OPT.arg.optimizer.inline.pipeline=CS_OPT_inliner_pipeline
+
+
+-XX:jit.CS_OPT.arg.codegen.dce1.early=yes
+-XX:jit.CS_OPT.arg.codegen.regalloc.bp_regalloc1.regs=ALL_GP
+-XX:jit.CS_OPT.arg.codegen.regalloc.bp_regalloc2.regs=ALL_XMM
+
+-XX:jit.CS_OPT.arg.codegen.btr.insertCMOVs=no
+-XX:jit.CS_OPT.arg.codegen.btr.removeConstCompare=yes
+-XX:jit.arg.codegen.emitter.align=4
+
+#-XX:jit.CS_OPT.arg.log.irdump.file=log/%jit%/%log%/%seqnb%_%class%.%method%.log
+#-XX:jit.CS_OPT.arg.log=ct,ir,irdump,all
+
+
+#system properties
+-Djava.compiler=client static

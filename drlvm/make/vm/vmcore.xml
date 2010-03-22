@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="vmcore" default="build" basedir="../..">
+
+    <property name="component" value="vmcore"/>
+    <import file="common-vm.xml"/>
+
+    <target name="fetch-depends" depends="fetch-depends-win">
+        <fetch dep="icuhdr"/>
+        <fetch dep="icudll"/>
+    </target>
+
+    <target name="fetch-depends-win" if="is.windows">
+        <fetch dep="zlib"/>
+    </target>
+
+    <target name="check-depends" depends="check-depends-win">
+        <check-one-file dest="${icuhdr}" src="${icuhdr.url}"/>
+        <check-one-file dest="${icudll}" src="${icudll.url}"/>
+    </target>
+
+    <target name="check-depends-win" if="is.windows">
+        <check-one-file dest="${zlib}" src="${zlib.url}"/>
+    </target>
+    
+    <target name="-check-setup">
+        <available file="${drlvm.include.dir}/unicode" property="icu4c.hdr.available"/>
+        <available file="${drlvm.shlib.dir}/${linklib.prefix}icuuc${linklib.suffix}" 
+            property="icu4c.lib.available"/>
+        <condition property="setup.complete">
+            <and>
+                <isset property="icu4c.hdr.available"/>
+                <isset property="icu4c.lib.available"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="setup" depends="-check-setup,-setup-win" unless="setup.complete">
+        <check-one-file dest="${icuhdr}" src="${icuhdr.url}"/>
+        <check-one-file dest="${icudll}" src="${icudll.url}"/>
+        <mkdir dir="${drlvm.include.dir}/unicode"/>
+        <unzip src="${icuhdr}" dest="${drlvm.include.dir}/unicode"/>
+        <unzip src="${icudll}" dest="${drlvm.bin.dir}">
+            <patternset> 
+                <exclude name="*${linklib.suffix}" unless="shlib.is.linklib"/>
+                <exclude name="*ICUInterface*" />
+            </patternset>
+        </unzip>
+        <unzip src="${icudll}" dest="${drlvm.lib.dir}">
+            <patternset> 
+                <include name="*${linklib.suffix}" unless="shlib.is.linklib"/>
+                <exclude name="*" if="shlib.is.linklib"/>
+                <exclude name="*ICUInterface*" />
+            </patternset>
+        </unzip>
+        <check-one-link message="" src="${drlvm.shlib.dir}/${icuuc.linkname}"
+            dest="${drlvm.shlib.dir}/${linklib.prefix}icuuc${linklib.suffix}"/>
+    </target>
+
+    <target name="-check-setup-win" if="is.windows">
+        <condition property="zlib.available">
+            <and>
+                <available file="${drlvm.bin.dir}/zlib1.dll"/>
+                <available file="${drlvm.include.dir}/zlib.h"/>
+            </and>
+        </condition>
+        <condition property="win.setup.complete">
+            <isset property="zlib.available"/>
+        </condition>
+    </target>
+
+    <target name="-setup-win" depends="-check-setup-win"
+        if="is.windows" unless="win.setup.complete">
+        <check-one-file dest="${zlib}" src="${zlib.url}"/>
+        <unzip src="${zlib}" dest="${zlib.dir}">
+            <patternset includes="include/** lib/** zlib1.dll"/>
+        </unzip>
+        <copy file="${zlib.dir}/zlib1.dll" todir="${drlvm.bin.dir}"/>
+        <copy file="${zlib.dir}/lib/zdll.lib" todir="${drlvm.lib.dir}"/>
+        <copy todir="${drlvm.include.dir}">
+            <fileset dir="${zlib.dir}/include">
+                <include name="*.h" />
+            </fileset>
+        </copy>
+    </target>
+            
+    <target name="build" depends="setup,stamp-version,-common-vm">
+        <init-native component="vmcore"/>
+        
+        <compile-asm>
+            <fileset id="vmcore.asm" dir="${vm.home}/vmcore">
+                <include name="src/util/ipf/base/*.asm" if="is.unix.ia64"/>
+                <include name="src/util/win/em64t/*.asm" if="is.windows.x86_64"/>
+            </fileset>
+        </compile-asm>
+
+        <path id="vmcore.includes">
+            <pathelement location="${drlvm.include.dir}" />
+
+            <dirset dir="${vm.home}">
+                <include name="include" />
+                <include name="vmcore/include" />
+                <include name="port/include" />
+            
+                <include name="vmcore/src/util/win/include" if="is.windows"/>
+                <include name="vmcore/src/util/linux/include" if="is.unix"/>
+
+                <include name="vmcore/src/util/ipf/include" if="is.ia64"/>
+                <include name="vmcore/src/util/ipf/base_natives" if="is.ia64"/>
+                <include name="vmcore/src/lil/ipf/include" if="is.ia64"/>
+
+                <include name="vmcore/src/util/ia32/base_natives" if="is.x86"/>
+                <include name="port/src/encoder/ia32_em64t" if="is.x86"/>
+                <include name="vmcore/src/lil/ia32/include" if="is.x86"/>
+
+                <include name="vmcore/src/util/em64t/base_natives" if="is.x86_64"/>
+                <include name="port/src/encoder/ia32_em64t" if="is.x86_64"/>
+                <include name="vmcore/src/lil/em64t/include" if="is.x86_64"/>
+            </dirset>
+        </path>
+        <depend-includes paths="vmcore.includes"/>
+        <depend-selector rebuild-flag="vmcore.includes.uptodate" id="vmcore.depends"/>
+
+        <compile-cc>
+        <compiler id="cpp.compiler" extends="common.cpp.compiler">
+            <includepath><path refid="vmcore.includes"/></includepath>
+            <fileset dir="${vm.home}/vmcore/src">
+                <selector refid="vmcore.depends"/>
+                <include name="class_support/*.cpp" />
+                <include name="exception/*.cpp" />
+                <include name="init/*.cpp" />
+                <include name="gc/*.cpp" />
+                <include name="interpreter/*.cpp" />
+                <include name="jit/*.cpp" />
+                <include name="jni/*.cpp" />
+                <include name="jvmti/*.cpp" />
+                <include name="ncai/*.cpp" />
+                <include name="object/*.cpp" />
+                <include name="reflection/*.cpp" />
+                <include name="stack/*.cpp" />
+                <include name="thread/*.cpp" />
+                <include name="thread/helpers/thread_helpers.cpp" />
+                <include name="thread/helpers/thread_helpers_ia32.cpp" if="is.x86"/>
+                <include name="thread/helpers/thread_helpers_em64t.cpp" if="is.x86_64"/>
+                <include name="thread/helpers/thread_helpers_ipf.cpp" if="is.ia64"/>
+                <include name="util/*.cpp" />
+                <include name="lil/*.cpp" />
+                <include name="lil/stack_iterator/*.cpp" />
+            </fileset>
+
+            <fileset dir="${vm.home}/vmcore/src/kernel_classes/native">
+                <selector refid="vmcore.depends"/>
+                <include name="*.cpp" />
+                <exclude name="Runtime_win.cpp" if="is.unix"/>
+                <exclude name="System_win.cpp" if="is.unix"/>
+                <exclude name="Runtime_lnx.cpp" if="is.windows"/>
+                <exclude name="System_lnx.cpp" if="is.windows"/>
+            </fileset>
+
+            <fileset dir="${vm.home}">
+                <selector refid="vmcore.depends"/>
+                <include name="vmstart/src/compmgr/*.cpp" />
+            </fileset>
+
+            <fileset dir="${vm.home}/vmcore/src">
+                <selector refid="vmcore.depends"/>
+                <include name="thread/win/*.cpp" if="is.windows"/>
+                <include name="util/win/*.cpp" if="is.windows"/>
+                <include name="ncai/utils/*win.cpp" if="is.windows"/>
+
+                <include name="util/win/ia32/*.cpp" if="is.windows.x86"/>
+                <include name="util/win/em64t/*.cpp" if="is.windows.x86_64"/>
+                <include name="util/win/ia32_em64t/*.cpp" if="is.windows" unless="is.ia64"/>
+                <include name="util/win/ipf/*.cpp" if="is.windows.ia64"/>
+
+                <include name="util/ipf/**/*.cpp" if="is.ia64"/>
+                <include name="util/ia32/**/*.cpp" if="is.x86"/>
+                <include name="util/em64t/**/*.cpp" if="is.x86_64"/>
+
+                <include name="ncai/utils/*ipf.cpp" if="is.ia64"/>
+                <include name="ncai/utils/*ia32.cpp" if="is.x86"/>
+                <include name="ncai/utils/*em64t.cpp" if="is.x86_64"/>
+
+                <include name="thread/linux/*.cpp" if="is.unix"/>
+                <include name="util/linux/*.cpp" if="is.unix"/>
+                <include name="ncai/utils/*linux.cpp" if="is.unix"/>
+                <exclude name="util/linux/signals_ia32.cpp" unless="is.unix.x86"/>
+                <exclude name="util/linux/signals_em64t.cpp" unless="is.unix.x86_64"/>
+                <exclude name="util/linux/signals_ipf.cpp" unless="is.unix.ia64"/>
+                <include name="util/linux/ia32_em64t/*.cpp" if="is.unix" unless="is.ia64"/>
+
+                <include name="lil/ipf/*.cpp" if="is.ia64"/>
+                <include name="lil/ia32/*.cpp" if="is.x86"/>
+                <include name="lil/em64t/*.cpp" if="is.x86_64"/>
+            </fileset>
+
+            <compilerarg value="/Qwd94" if="is.icl"/>
+            <defineset define="BUILDING_VM,APR_DECLARE_STATIC" />
+        </compiler>
+        </compile-cc>
+        
+        <link-lib name="harmonyvm" type="shared">
+            <linker id="linker" extends="common.linker">
+                <libset libs="port,encoder,verifier,apr-1"
+                    dir="${drlvm.lib.dir}" />
+                <libset libs="hythr" dir="${drlvm.shlib.dir}" />
+                <libset libs="icuuc" dir="${drlvm.shlib.dir}"/>
+                <libset libs="zdll" dir="${drlvm.lib.dir}" if="is.windows"/>
+                <libset libs="ch" dir="${drlvm.shlib.dir}" />
+
+                <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm64.def" if="is.windows.x86_64"/>
+                <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm.def" if="is.windows.x86"/>
+                <linkerarg value="--version-script=${vm.home}/vmcore/build/vmcore.exp" if="is.unix"/>
+                
+                <syslibset type="shared" libs="m,dl,stdc++,z,xml2,pthread,gcc_s,rt" if="is.linux"/>
+                <syslibset type="shared" libs="m,stdc++,z,pthread" if="is.freebsd"/> 
+                <libset libs="xml2" dir="/usr/local/lib" if="is.freebsd"/>
+                <linkerarg value="--export-dynamic" if="is.freebsd"/>
+            </linker>
+        </link-lib>        
+        
+        <echo message="Copying files for internationalization..."/>
+        <copy todir="${drlvm.bin.dir}" flatten="true" >
+            <fileset dir="${vm.home}/vmcore/src/init">
+                <include name="harmony*.properties" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="stamp-version" depends="-check-version,-copy-version"
+        if="svn.revision" unless="skip.svn.stamp">
+        <condition property="harmony.java.runtime.version"
+                   value="1.6.0" else="1.5.0">
+            <equals arg1="${harmony.java.version}" arg2="6.0" />
+        </condition>
+        <condition property="harmony.java.specification.version"
+                   value="1.6" else="1.5">
+            <equals arg1="${harmony.java.version}" arg2="6.0" />
+        </condition>
+        <copy file="${vm.home}/vmcore/include/version_svn_tag_orig.h"
+              tofile="${vm.home}/vmcore/include/version_svn_tag.h" overwrite="true">
+            <filterset>
+                <filter token="svn.revision" value="${svn.revision}"/>
+                <filter token="harmony.java.runtime.version"
+                        value="${harmony.java.runtime.version}" />
+                <filter token="harmony.java.specification.version"
+                        value="${harmony.java.specification.version}" />
+            </filterset>
+        </copy>
+    </target>
+    
+    <target name="-check-version" if="is.svn">
+        <uptodate property="skip.svn.stamp" 
+            srcfile="${vm.home}/.svn/entries" 
+            targetfile="${vm.home}/vmcore/include/version_svn_tag.h"/>
+    </target>
+
+    <target name="-copy-version" unless="is.svn">
+        <copy file="${vm.home}/vmcore/include/version_svn_tag_orig.h"
+              tofile="${vm.home}/vmcore/include/version_svn_tag.h" overwrite="false">
+        </copy>
+    </target>
+
+    <target name="clean" >
+        <clean-native />
+    </target>
+
+</project>
