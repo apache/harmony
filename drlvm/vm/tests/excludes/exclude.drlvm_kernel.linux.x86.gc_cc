@@ -1,0 +1,9 @@
+## HARMONY-3521
+java/lang/RuntimeAdditionalTest*.java
+
+# Excluded because of HARMONY-4598
+java/lang/RuntimeTest.java
+java/lang/SystemExtensionTest.java
+
+# HARMONY-3953
+java/lang/ClassTestDesiredAssertionStatus.java

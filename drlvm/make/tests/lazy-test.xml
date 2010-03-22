@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<project name="Lazy resolution tests" default="lazy-test">
+
+    <import file="test-common.xml"/>
+    
+    <property name="lazy.test.javasrc" location="${test.home}/lazy" />
+    <property name="lazy.test.dir" location="${base.test.dir}/lazy.tests"/>
+    <property name="lazy.test.summary" location="${lazy.test.dir}/status.txt"/>
+    <property name="test.class.path" location="${lazy.test.dir}/classes"/>
+    
+    <target name="lazy-test" 
+        depends="-init-test,
+        compile-lazy-test, run-lazy-test, report-lazy-test, check-lazy-test"/>
+    
+    <target name="run-lazy-test">
+        <prepare-test-run test-dir="${lazy.test.dir}"/>
+        <delete file="${lazy.test.summary}" quiet="true"/>
+        <delete file="${base.test.dir}/lazy.test.failed" quiet="true"/>
+        
+        <echo>
+        ==================================
+        Tested JVM: ${test.jvm.exe}
+        ==================================
+        </echo>
+        
+        <for list="${test.mode}" param="mode" trim="true">
+            <sequential>
+                <antcall target="-run-lazy-test-batch"> 
+                    <param name="run.mode" value="@{mode}" />
+                </antcall>
+            </sequential>
+        </for>
+    </target>
+    
+    <target name="report-lazy-test">
+        <for list="${test.mode}" param="mode"
+            trim="true" keepgoing="true">
+            <sequential>
+                <gen-test-report dir="${lazy.test.dir}/reports/@{mode}.mode"/>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="check-lazy-test">
+        <loadfile property="lazy.test.summary.txt" 
+            srcFile="${lazy.test.summary}"/>
+        <echo message="  *****************************${line.separator}"/>
+        <echo message="  * Lazyresolution tests status *${line.separator}"/>
+        <echo message="  *****************************${line.separator}"/>
+        <echo message="${line.separator}"/>
+        <echo message="${lazy.test.summary.txt}"/>
+        <echo message="${line.separator}"/>
+        <echo>Please find detailed results under ${lazy.test.dir}${file.separator}reports directory.</echo>
+        
+        <condition property="test.failed">
+            <contains string="${lazy.test.summary.txt}" substring="FAILED" />
+        </condition>
+        <antcall target="touch-failures-file"/>
+        <fail unless="run.all.tests" if="test.failed" message="There were test failures."/>
+    </target>
+    
+    <target name="touch-failures-file" if="test.failed">
+        <copy file="${lazy.test.summary}" tofile="${base.test.dir}/lazy.test.failed">
+            <filterchain>
+                <linecontains>
+                    <contains value="FAILED"/>
+                </linecontains>
+                <trim/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="compile-lazy-test">
+
+        <compile-java src="${lazy.test.javasrc}/broken" 
+            dest="${test.class.path}/broken"/>
+        <compile-java src="${lazy.test.javasrc}" 
+            dest="${test.class.path}">
+            <exclude name="broken/**/*.java"/>
+        </compile-java>
+    </target>
+    
+    <target name="-run-lazy-test-batch">
+        <propertycopy property="run.mode.name" from="${run.mode}.name" override="on"/>       
+        <propertycopy property="run.mode.switch" from="${run.mode}.switch" override="on"/>        
+        <property name="report.dir"
+            location="${lazy.test.dir}/reports/${run.mode}.mode"/>
+        <mkdir dir="${report.dir}" />
+
+        <echo>
+        ==================================
+        Run lazy resolution tests using ${run.mode.name} 
+        ==================================
+        </echo>
+        
+        <take-xlist name="exclude.file" file="${excludes.dir}/exclude.drlvm_lazy.${hy.platform}.${run.mode}"/>
+
+        <junit fork="yes" failureproperty="lazy.failed"
+            filtertrace="no" printsummary="on" showoutput="off"
+            haltonfailure="${test.failfast}"
+            forkmode="${lazy.test.forkmode}" 
+            timeout="${test.timeout}"
+            dir="${lazy.test.dir}"
+            jvm="${test.jvm.exe}">
+
+            <classpath path="${test.class.path}"/>
+            <jvmarg line="${run.mode.switch} ${test.vmargs}" />
+            <formatter type="xml"/>
+            <batchtest todir="${report.dir}" unless="test.case">
+                <fileset dir="${lazy.test.javasrc}"> 
+                    <include name="org/apache/harmony/vm/test/lazyresolution/*Test.java" />
+                    <excludesfile name="${exclude.file}" if="exclude.file" />
+                </fileset>
+            </batchtest>
+            <test name="${test.case}" todir="${report.dir}" if="test.case" />
+        </junit>
+        
+        <condition property="lazy.status" value="FAILED" else="PASSED">
+            <isset property="lazy.failed" />
+        </condition>
+
+        <concat append="on" destfile="${lazy.test.summary}" 
+            >      ${run.mode.name} ${lazy.status}${line.separator}</concat>
+    </target>
+</project>

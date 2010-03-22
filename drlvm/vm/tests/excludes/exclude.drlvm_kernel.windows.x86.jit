@@ -1,0 +1,14 @@
+## These tests are too slow
+java/lang/RuntimeAdditionalTest*.java
+
+## These tests are unstable and hang often
+java/lang/RuntimeAdditionalTest11.java
+java/lang/RuntimeAdditionalTest34.java
+java/lang/RuntimeAdditionalTest39.java
+java/lang/RuntimeAdditionalTest40.java
+java/lang/RuntimeAdditionalTest41.java
+java/lang/RuntimeAdditionalTest42.java
+
+
+# HARMONY-3953
+java/lang/ClassTestDesiredAssertionStatus.java

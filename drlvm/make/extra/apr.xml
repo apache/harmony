@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="apr-dep" default="build">
+    
+    <property name="component" value="apr"/>
+    <import file="../build-native.xml"/>
+
+    <target name="fetch-depends">
+        <fetch dep="apr.src.tgz"/>
+    </target>
+
+    <target name="check-depends">
+        <check-one-file dest="${apr.src.tgz}" src="${apr.src.tgz.url}"/>
+    </target>
+
+    <target name="get-src" depends="-setup" unless="is.apr.configured">
+        <check-one-file dest="${apr.src.tgz}" src="${apr.src.tgz.url}"/>
+        <mkdir dir="${apr.src}/.." />
+        <untar src="${apr.src.tgz}" dest="${apr.src}/.." compression="gzip"/>
+        <move tofile="${apr.src}" file="${apr.src}/../${apr.src.rootdir}"/>
+    </target>
+
+    <target name="-setup">
+        <property name="apr.src" location="${drlvm.semi.dir}/apr/src" />
+        <condition property="is.apr.configured" value="true">
+            <available file="${apr.src}/include/apr.h" />
+        </condition>
+    </target>
+
+    <target name="apr-configure" depends="get-src" 
+        unless="is.apr.configured" if="is.unix">
+        <chmod perm="+x">
+            <fileset dir="${apr.src}/build">
+                <include name="**/*" />
+            </fileset>
+        </chmod>
+
+        <exec executable="sh" dir="${apr.src}" failonerror="true">
+            <arg value="./configure" />
+        </exec>
+        <replace file="${apr.src}/include/apr.h">
+            <replacefilter token="#define APR_HAS_OS_UUID           1" value="#define APR_HAS_OS_UUID           0" />
+            <replacefilter token="APR_HAS_POSIXSEM_SERIALIZE        0" value="APR_HAS_POSIXSEM_SERIALIZE        1" />
+            <replacefilter token="#define APR_HAS_PROC_PTHREAD_SERIALIZE    0" value="#define APR_HAS_PROC_PTHREAD_SERIALIZE    1" />
+        </replace>
+        <condition property="extra.flags" value="-fpic" else="">
+            <isset property="is.x86_64"/>
+        </condition>
+        <replace file="${apr.src}/build/apr_rules.mk" token="CFLAGS=" value="CFLAGS=${extra.flags} "/>
+    </target>
+
+    <target name="build" depends="-make-apr-unix,-build-win">
+        <mkdir dir="${drlvm.include.dir}" />
+        <copy todir="${drlvm.include.dir}">
+            <fileset dir="${apr.src}/include" includes="*.h" />
+        </copy>
+    </target>
+
+    <target name="-make-apr-unix" if="is.unix" depends="apr-configure">
+        <!-- simply invoke make to let it build as the APR people suggest  -->
+        <exec executable="make" dir="${apr.src}" failonerror="true"/>
+    	<copy file="${apr.src}/.libs/libapr-1.a" todir="${drlvm.lib.dir}" />
+    </target>
+    
+    <target name="-build-win" if="is.windows" depends="get-src, setup-native-build" >
+        <copy file="${apr.src}/include/apr.hw" tofile="${apr.src}/include/apr.h"/>
+        
+        <init-native />
+        <make-native libname="apr-1" type="static">
+            <includepath>
+                <dirset dir="${apr.src}">
+                    <include name="include" />
+                    <include name="include/arch" />
+                    <include name="include/arch/win32" />
+                </dirset>
+            </includepath>
+            <!-- preserve order of includes -->
+            <includepath>
+                <dirset dir="${apr.src}">
+                    <include name="include/arch/unix" />
+                </dirset>
+            </includepath>
+
+            <fileset dir="${apr.src}">
+                <include name="user/win32/*.c" />
+                <include name="time/win32/*.c" />
+                <include name="threadproc/win32/*.c" />
+                <include name="tables/*.c" />
+                <include name="strings/*.c" />
+                <include name="shmem/win32/*.c" />
+                <include name="random/unix/*.c" />
+                <include name="passwd/*.c" />
+                <include name="network_io/win32/*.c" />
+                <include name="network_io/unix/multicast.c" />
+                <include name="network_io/unix/sockaddr.c" />
+                <include name="network_io/unix/inet_pton.c" />
+                <include name="network_io/unix/inet_ntop.c" />
+                <include name="mmap/win32/*.c" />
+                <include name="mmap/unix/common.c" />
+                <include name="misc/unix/version.c" />
+                <include name="misc/unix/otherchild.c" />
+                <include name="misc/unix/getopt.c" />
+                <include name="misc/unix/errorcodes.c" />
+                <include name="misc/win32/*.c" />
+                <include name="memory/unix/apr_pools.c" />
+                <include name="locks/win32/*.c" />
+                <include name="dso/win32/*.c" />
+                <include name="file_io/win32/*.c" />
+                <include name="file_io/unix/fileacc.c" />
+                <include name="file_io/unix/copy.c" />
+                <include name="file_io/unix/filepath_util.c" />
+                <include name="file_io/unix/tempdir.c" />
+                <include name="file_io/unix/mktemp.c" />
+                <include name="file_io/unix/fullrw.c" />
+                <include name="atomic/win32/*.c" />
+                <include name="support/unix/waitio.c" />
+                <include name="poll/unix/select.c" />
+            </fileset>
+
+            <defineset define="APR_DECLARE_EXPORT,WIN32,_WINDOWS" />
+        </make-native>
+    </target>
+    
+    <target name="clean" >
+        <clean-native component="apr"/>
+    </target>
+
+</project>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="kernel" default="build" basedir="../..">
+    
+    <import file="../build-java.xml"/>
+    
+    <target name="fetch-depends">
+        <fetch dep="antlr"/>
+        <fetch dep="vmmagic"/>
+    </target>
+
+    <target name="check-depends">
+        <check-one-file dest="${antlr}" src="${antlr.url}"/>
+        <check-one-file dest="${vmmagic}" src="${vmmagic.url}"/>
+    </target>
+    
+    <target name="check-setup">
+        <basename file="${vmmagic}" property="vmmagic.basename"/>
+        <available file="${drlvm.deploy.dir}/jdk/jre/bin/default/${vmmagic.basename}" 
+            property="vmmagic.available"/>
+        <basename file="${antlr}" property="antlr.basename"/>
+        <available file="${drlvm.deploy.dir}/jdk/jre/bin/default/${antlr.basename}" 
+            property="antlr.available"/>
+        <condition property="setup.complete">
+            <and>
+                <isset property="antlr.available"/>
+                <isset property="vmmagic.available"/>
+            </and>
+        </condition>
+    </target>
+    
+    <target name="setup" depends="check-setup" unless="setup.complete">
+        <check-one-file dest="${antlr}" src="${antlr.url}"/>
+        <check-one-file dest="${vmmagic}" src="${vmmagic.url}"/>
+        <copy todir="${drlvm.deploy.dir}/jdk/jre/bin/default" file="${vmmagic}"/>
+        <copy todir="${drlvm.deploy.dir}/jdk/jre/bin/default" file="${antlr}"/>
+    </target>
+
+    <target name="build" depends="setup">
+        <make-java component="kernel" 
+            src="${vm.home}/vmcore/src/kernel_classes/javasrc"
+            manifest="${vm.home}/vmcore/src/kernel_classes/resource/MANIFEST.MF">
+            <classpath>
+                <fileset dir="${drlvm.deploy.dir}/jdk/jre/lib/boot" includes="*.jar" />
+                <fileset dir="${drlvm.deploy.dir}/jdk/jre/bin/default" includes="vmmagic*.jar" />
+<!--                <fileset dir="${drlvm.deploy.dir}/jdk/jre/bin/default" includes="gc_gen.jar" /> -->
+                <fileset dir="${drlvm.deploy.dir}/jdk/jre/bin/default" includes="antlr*.jar" />
+            </classpath>
+    
+            <!-- 
+            the kernel classes destination directory must be in bootclasspath -
+            otherwise the Reference Java "kernel" classes are referred during
+            compilation of drlvm kernel classes - this produces incompatibility
+            -->
+            <bootclasspath>
+                <pathelement location="${drlvm.semi.dir}/kernel/classes"/>
+            </bootclasspath>
+        </make-java>        
+    </target>
+    
+    <target name="clean" >
+        <delete dir="${drlvm.semi.dir}/kernel/classes"/>
+    </target>
+
+</project>

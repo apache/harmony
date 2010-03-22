@@ -1,0 +1,77 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#EM configuration file for 'client' mode of Jitrino
+
+chains=chain1,chain2
+chain1.jits=JET_CLINIT
+chain2.jits=JET_DPGO,CD_OPT
+
+
+# JET_CLINIT compiles only <clinit> methods, all other methods compiled with JET_DPGO 
+# which does entry/backedge instrumentation
+
+chain1.filter=+.<clinit>
+chain1.filter=-
+
+JET_CLINIT.file=jitrino
+JET_DPGO.file=jitrino
+CD_OPT.file=jitrino
+
+#Confuguration of profile collector and recompilation
+JET_DPGO.genProfile=EB_PROF
+EB_PROF.profilerType=EB_PROFILER
+CD_OPT.useProfile=EB_PROF
+
+
+EB_PROF.mode=ASYNC
+EB_PROF.entryThreshold=10000
+EB_PROF.backedgeThreshold=100000
+
+# these options are used only in ASYNC profiler mode only
+EB_PROF.tbsTimeout=7
+EB_PROF.tbsInitialTimeout=0
+
+
+
+# Options to be passed to JIT
+
+-XX:jit.JET_CLINIT.path=
+-XX:jit.JET_DPGO.path=
+
+-XX:jit.CD_OPT.path=opt_init,lock_method,translator,optimizer,hir2lir,codegen,unlock_method
+
+-XX:jit.CD_OPT.path.optimizer=ssa,devirt,hlo_api_magic,inline,purge,simplify,dce,uce,lazyexc,throwopt,memopt,simplify,dce,uce,lower,statprof,unroll,ssa,simplify,dce,uce,dessa,statprof
+-XX:jit.CD_OPT.path.codegen=bbp,btr,gcpoints,cafl,dce1,i8l,api_magic,light_jni-,early_prop,peephole,itrace-,native,constraints,dce2,regalloc,spillgen,copy,i586,layout,rce+,stack,break-,iprof-,peephole,emitter!,si_insts,gcmap,info
+-XX:jit.CD_OPT.path.dce1=cg_dce
+-XX:jit.CD_OPT.path.dce2=cg_dce
+-XX:jit.CD_OPT.path.regalloc=bp_regalloc1,bp_regalloc2
+-XX:jit.CD_OPT.path.bp_regalloc1=bp_regalloc
+-XX:jit.CD_OPT.path.bp_regalloc2=bp_regalloc
+
+#inliner configuration
+-XX:jit.CD_OPT.CD_OPT_inliner_pipeline.filter=-
+-XX:jit.CD_OPT.CD_OPT_inliner_pipeline.path=ssa,devirt,hlo_api_magic
+-XX:jit.CD_OPT.arg.optimizer.inline.pipeline=CD_OPT_inliner_pipeline
+
+-XX:jit.CD_OPT.arg.codegen.dce1.early=yes
+-XX:jit.CD_OPT.arg.codegen.regalloc.bp_regalloc1.regs=ALL_GP
+-XX:jit.CD_OPT.arg.codegen.regalloc.bp_regalloc2.regs=ALL_XMM
+-XX:jit.CD_OPT.arg.codegen.btr.insertCMOVs=no
+-XX:jit.CD_OPT.arg.codegen.btr.removeConstCompare=yes
+-XX:jit.arg.codegen.emitter.align=4
+
+#system properties
+-Djava.compiler=client

@@ -1,0 +1,5 @@
+EM_0.1 {
+  global :
+    EmInitialize;
+  local : *;
+};

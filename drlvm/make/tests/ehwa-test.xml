@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<project name="Eclipse HelloWorld test scenario" default="ehwa">
+
+    <import file="test-common.xml"/>
+    <property name="ehwa.test.dir" location="${base.test.dir}/ehwa"/>
+    <property name="ehwa.test.summary" location="${ehwa.test.dir}/status.txt"/>
+    <property name="ECLIPSE_ARCHIVE.home" location="${base.dep.dir}/eclipse"/>
+
+    <target name="ehwa" depends="-init-test,setup-ehwa, run-ehwa, check-ehwa-result"/>
+
+    <target name="setup-ehwa" depends="check-setup, install-eclipse, install-plugin">
+        <delete quiet="true" file="${ehwa.test.summary}" />
+        <delete quiet="true" file="${base.test.dir}/ehwa.test.failed" />
+        <property file="${eclipse.home}/.eclipseproduct" prefix="eclipseproduct"/>
+        <echo>Using Eclipse ${eclipseproduct.version} located at ${eclipse.home}</echo>
+    </target>
+
+    <target name="run-ehwa">
+        <for list="${test.mode}" param="mode"
+            trim="true" keepgoing="true">
+            <sequential>
+                <antcall target="-run-ehwa-batch">
+                    <param name="ehwa.mode" value="@{mode}" />
+                </antcall>
+            </sequential>
+        </for>
+    </target>
+    
+    <target name="-run-ehwa-batch">
+        <property name="ehwa.workspace" value="${ehwa.test.dir}/wksp"/>
+        <delete quiet="true" dir="${ehwa.workspace}" />
+        <mkdir dir="${ehwa.workspace}"/>
+        <propertycopy property="ehwa.mode.name" from="${ehwa.mode}.name" override="on"/>
+        <propertycopy property="ehwa.mode.switch" from="${ehwa.mode}.switch" override="on"/>
+        <echo>
+        ==================================
+        Run Eclipse HelloWorld using ${ehwa.mode.name}
+        ==================================
+        </echo>
+        <pathconvert property="equinox.launcher" setonempty="false">
+            <path>
+                <fileset dir="${eclipse.home}/plugins" includes="org.eclipse.equinox.launcher_1.0.0.*.jar"/>
+            </path>
+        </pathconvert>
+        <condition property="eclipse.launcher.jar" 
+            value="${equinox.launcher}" 
+            else="${eclipse.home}/startup.jar">
+            <isset property="equinox.launcher"/>
+        </condition>
+
+        <java fork="true" 
+              jvm="${test.jvm.exe}" 
+              jar="${eclipse.launcher.jar}" 
+              dir="${ehwa.test.dir}"
+              resultproperty="ehwa.result">
+            <jvmarg line="${ehwa.mode.switch} ${test.vmargs}" />
+            <arg line="-application org.eclipse.test.uitestapplication"/>
+            <arg line="-dev bin -consolelog"/>
+            <arg line="-data ${ehwa.workspace}"/>
+            <arg line="formatter=org.apache.tools.ant.taskdefs.optional.junit.PlainJUnitResultFormatter"/>
+            <arg line="-testPluginName HelloAuto"/>
+            <arg line="-className HelloAuto.CreateAndRunTest"/>
+        </java>
+        <condition property="ehwa.status" value="PASSED" else="FAILED">
+            <equals arg1="${ehwa.result}" arg2="0"/>
+        </condition>
+        <concat append="on" destfile="${ehwa.test.summary}" 
+            >      ${ehwa.mode.name} ${ehwa.status} (Return code is ${ehwa.result})${line.separator}</concat>
+    </target>
+
+    <target name="check-ehwa-result">
+        <loadfile property="ehwa.test.summary.txt" 
+            srcFile="${ehwa.test.summary}"/>
+        <echo message="  ***************************${line.separator}"/>
+        <echo message="  **** Eclipse HWA status ***${line.separator}"/>
+        <echo message="  ***************************${line.separator}"/>
+        <echo message="${line.separator}"/>
+        <echo message="${ehwa.test.summary.txt}"/>
+        <echo message="${line.separator}"/>
+        <condition property="test.failed">
+            <contains string="${ehwa.test.summary.txt}" substring="FAILED" />
+        </condition>
+        <antcall target="touch-failures-file"/>
+        <fail unless="run.all.tests" if="test.failed" message="Eclipse HelloWorld scenario FAILED"/>
+    </target>
+    
+    <target name="touch-failures-file" if="test.failed">
+        <copy file="${ehwa.test.summary}" tofile="${base.test.dir}/ehwa.test.failed">
+            <filterchain>
+                <linecontains>
+                    <contains value="FAILED"/>
+                </linecontains>
+                <trim/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="check-setup">
+        <propertycopy name="eclipse.url" from="eclipse.${hy.platform}.url"/>
+        <basename file="${eclipse.url}" property="eclipse.zip"/>
+
+        <condition property="eclipse.home" value="${env.ECLIPSE_HOME}">
+            <and>
+                <isset property="env.ECLIPSE_HOME"/>
+                <available file="${env.ECLIPSE_HOME}/.eclipseproduct"/>
+          </and>
+        </condition>
+        <condition property="eclipse.home" value="${ehwa.test.dir}/eclipse">
+            <available file="${ehwa.test.dir}/eclipse/.eclipseproduct"/>
+        </condition>
+        <condition property="eclipse.available">
+            <or>
+                <isset property="eclipse.home"/>
+                <available file="${ECLIPSE_ARCHIVE.home}/${eclipse.zip}"/>
+            </or>
+        </condition>
+        <condition property="ehwa.plugin.installed">
+            <and>
+                <isset property="eclipse.home"/>
+                <available file="${eclipse.home}/plugins/HelloAuto_0.0.1"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="download-eclipse" unless="eclipse.available">
+        <mkdir dir="${ECLIPSE_ARCHIVE.home}" />
+        <get dest="${ECLIPSE_ARCHIVE.home}/${eclipse.zip}" src="${eclipse.url}"
+            usetimestamp="true" verbose="true"/>
+    </target>
+
+    <target name="install-eclipse" depends="download-eclipse" unless="eclipse.home">
+        <delete quiet="true" dir="${ehwa.test.dir}" />
+        <mkdir dir="${ehwa.test.dir}"/>
+        
+        <if>
+            <isfileselected file="${eclipse.zip}">
+                <filename name="**/*.tar.gz"/>
+            </isfileselected>
+            <then>
+                <gunzip src="${ECLIPSE_ARCHIVE.home}/${eclipse.zip}" dest="${ehwa.test.dir}/eclipse.tar" />
+                <untar src="${ehwa.test.dir}/eclipse.tar" dest="${ehwa.test.dir}" />
+                <delete file="${ehwa.test.dir}/eclipse.tar"/>
+            </then>
+            <elseif>
+                <isfileselected file="${eclipse.zip}">
+                    <filename name="**/*.zip"/>
+                </isfileselected>
+                <then>
+                    <unzip dest="${ehwa.test.dir}" src="${ECLIPSE_ARCHIVE.home}/${eclipse.zip}"/>
+                </then>
+            </elseif>
+            <else>
+                <fail>Unhandled archive type: ${eclipse.zip}</fail>
+            </else>
+        </if>
+        <property name="eclipse.home" value="${ehwa.test.dir}/eclipse"/>
+    </target>
+
+    <target name="install-plugin" unless="ehwa.plugin.installed">
+        <unzip src="${test.home}/ehwa/ehwa.zip" dest="${eclipse.home}"/>
+    </target>
+
+</project>

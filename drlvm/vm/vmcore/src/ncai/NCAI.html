@@ -1,0 +1,2238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<HTML>
+<HEAD>
+    <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8" LANG="en-US">
+    <TITLE>This document describes specific support required from the VM</TITLE>
+    <style type="text/css">
+    <!--
+        body {  color: #000000; background: #ffffff; font-family: verdana, helvetica;
+                font-weight: normal; font-style: normal; font-size: 12pt;
+                margin-left: 0.4in; margin-right: 0.4in }
+        code { font-family: monospace; color: #000000; margin-top: 0.5in; margin-bottom: 0.04in }
+        .indent { margin-left: 0.5in }
+        .smallindent { margin-left: 0.1in }
+        .novmargin { margin-top: 0.01in; margin-bottom: 0.01in }
+        table { border-collapse: collapse }
+        tr { vertical-align: top }
+        td { left: 0; background: #ffffff; font-size: 11pt }
+        td.header { font-weight: bold; background: #cccccc }
+        td.bold { font-weight: bold }
+        td.italic { font-style: italic }
+        p { margin-bottom: 0.04in; direction: ltr; color: #000000; widows: 2; orphans: 2 }
+        h1 { margin-bottom: 0.04in }
+        h2 { margin-bottom: 0.04in; font-style: italic }
+        h3 { margin-bottom: 0.04in }
+        a:link { color: #0000ff }
+    -->
+    </style>
+</HEAD>
+
+<BODY>
+
+<h2><a name="1.1. Native Code Access Interface"></a>Native Code Access Interface</h2>
+
+<p><i>Revision 0.1</i></p>
+<br>
+
+<table border="0">
+<tr>
+<td colspan="2"><a href="#1.1. Native Code Access Interface">Native Code Access Interface</a></td>
+<tr>
+<td colspan="2"><a href="#1.4. Overview">Overview</a></td>
+<tr>
+<td colspan="2"><a href="#1.5. Data types">Data types</a></td>
+<tr>
+<td colspan="2"><a href="#1.6. Modules">Modules</a></td>
+<tr>
+<td colspan="2"><a href="#1.7. Methods">Methods</a></td>
+<tr>
+<td colspan="2"><a href="#1.8. Threads">Threads</a></td>
+<tr>
+<td colspan="2"><a href="#1.9. Frames">Frames</a></td>
+<tr>
+<td colspan="2"><a href="#1.10. Registers">Registers</a></td>
+<tr>
+<td colspan="2"><a href="#1.11. Memory">Memory</a></td>
+<tr>
+<td colspan="2"><a href="#1.12. Signals">Signals</a></td>
+<tr>
+<td colspan="2"><a href="#1.13. Miscellaneous">Miscellaneous</a></td>
+<tr>
+<td colspan="2"><a href="#1.14. Capabilities">Capabilities</a></td>
+<tr>
+<td colspan="2"><a href="#1.15. Event Management">Event Management</a></td>
+<tr>
+<td colspan="2"><a href="#1.16. Event Callbacks">Event Callbacks</a></td>
+<tr>
+<td colspan="2"><a href="#1.17. Error codes">Error codes</a></td>
+<tr><td>&nbsp;</td>
+<td><a href="#1.17.1. Universal errors">Universal errors</a></td>
+<tr><td>
+<td><a href="#1.17.2. Function specific errors">Function specific errors</a></td>
+<tr>
+<td colspan="2"><a href="#1.18. Appendix 1. Priorities">Appendix 1. Priorities</a></td>
+</table>
+
+
+<h2><a name="1.4. Overview"></a>Overview</h2>
+
+<p>This document describes VM debug interface which extends JVMTI to support the debugging of
+mixed managed and native code, namely Native Code Access Interface - NCAI.</p>
+
+<p>The following cannot be done without knowing VM internals:</p>
+<ul>
+    <li><p>mapping of native thread to java thread</p>
+    <li><p>mapping of native frame to java frame</p>
+    <li><p>mapping of native code to java code</p>
+    <li><p>mapping of native register or memory to java field</p>
+</ul>
+
+<p>The following can be done behind the VM:</p>
+<ul>
+    <li><p>tracking of modules loaded into the VM process</p>
+    <li><p>mapping of native virtual address/register/stack offset to address/offset within a
+    module, and finally to symbol (class, method, variable)</p>
+</ul>
+
+<p>
+Processing of breakpoints/watchpoints/signals can be done behind the VM, but if
+VM use the same methods to implement java breakpoints/watchpoints
+over jitted code we get a conflict of interests, so we need common
+approach.</p>
+
+<p>
+NCAI features can be accessed via an interface pointer just like it can be
+done with JNI and JVMTI interface pointers. It is used to call it
+environment pointer, or briefly environment. A NCAI environment can
+be obtained via  the following JVMTI extension function:</p>
+
+<p class="indent">
+<code>
+jvmtiError JNICALL GetExtensionEnv<br>
+&nbsp;&nbsp;&nbsp;
+(jvmtiEnv* jvmti_env, void** ncai_env_ptr, jint version);
+</code>
+</p>
+
+<p>where version is a NCAI version number like NCAI_VERSION_1_0.</p>
+
+<p>
+The function is provided by a standard JVMTI extension mechanism where it
+is identified as <code>org.apache.harmony.vm.GetExtensionEnv</code>. For
+example:</p>
+
+<p class="indent"><code>
+static const char* const GET_EXTENTION_ENV_FUNC =
+<br>
+&nbsp;&nbsp;&nbsp;
+&quot;org.apache.harmony.vm.GetExtensionEnv&quot;;
+<br>
+jint extCount = 0;
+<br>
+jvmtiExtensionFunctionInfo* extensions = 0;
+<br>
+jvmtiError err = jvmti-&gt;GetExtensionFunctions(&amp;extCount, &amp;extensions);
+<br>
+jvmtiExtensionFunction
+<br>
+func = 0;
+<br>
+for (jint i = 0; i &lt; extCount; i++) {
+<br>
+&nbsp;&nbsp;&nbsp;
+if (strcmp(extensions[i].id, GET_EXTENTION_ENV_FUNC) == 0) {
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+func = extensions[i].func;
+<br>
+&nbsp;&nbsp;&nbsp;
+}
+<br>
+&nbsp;&nbsp;&nbsp;
+jvmti-&gt;Deallocate(extensions[i].id);
+<br>
+&nbsp;&nbsp;&nbsp;
+jvmti-&gt;Deallocate(extensions[i].short_description);
+<br>
+&nbsp;&nbsp;&nbsp;
+for (jint j = 0; j &lt; extensions[i].param_count; j++) {
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+jvmti-&gt;Deallocate(extensions[i].params[j].name);
+<br>
+&nbsp;&nbsp;&nbsp;
+}
+<br>
+&nbsp;&nbsp;&nbsp;
+jvmti-&gt;Deallocate(extensions[i].params);
+<br>
+&nbsp;&nbsp;&nbsp;
+jvmti-&gt;Deallocate(extensions[i].errors);
+<br>
+}
+<br>
+ncaiEnv* ncai = 0;
+<br>
+if (func != NULL) {
+<br>
+&nbsp;&nbsp;&nbsp;
+err = func(jvmti, &amp;ncai, NCAI_VERSION_1_0);
+<br>
+}
+</code></p>
+
+<h2><a name="1.5. Data types"></a>Data types</h2>
+
+<p><code>
+struct _ncai;
+<br>
+typedef _ncai* ncaiEnv;
+</code></p>
+
+<p class="indent">Interface pointer to structure containing the NCAI function table
+just like JNI and JVMTI do.</p>
+
+<p><code>
+typedef enum {...} ncaiError;
+</code></p>
+
+<p class="indent">An error code which every NCAI function returns.</p>
+
+<p><code>
+struct _ncaiModule;
+<br>
+typedef _ncaiModule* ncaiModule;
+</code></p>
+
+<p class="indent">Opaque reference to VM
+internal data structure which represents a loadable module.</p>
+
+<p><code>
+struct ncaiModuleInfo;
+<br>
+struct ncaiSegmentInfo;
+</code></p>
+
+<p class="indent">Structures containing module information. See the GetModuleInfo function.</p>
+
+<p><code>
+typedef enum {} ncaiModuleKind;
+</code></p>
+
+<p class="indent">An identifier for a module type. See the GetModuleInfo function.</p>
+
+<p><code>
+typedef enum {} ncaiSegmentKind;
+</code></p>
+
+<p class="indent">An identifier for a segment type. See the GetModuleInfo function.</p>
+
+<p><code>
+struct _ncaiThread;
+<br>
+typedef _ncaiThread* ncaiThread;
+</code></p>
+
+<p class="indent">Opaque reference to VM internal data structure
+which represents a thread attached to the VM process.</p>
+
+<p><code>
+struct ncaiThreadInfo;
+</code></p>
+
+<p class="indent">Structure containing thread information. See the GetThreadInfo function.</p>
+
+<p><code>
+typedef enum {} ncaiThreadKind;
+</code></p>
+
+<p class="indent">An identifier for a thread type. See the GetThreadInfo function.</p>
+
+<p><code>
+struct ncaiFrameInfo;
+</code></p>
+
+<p class="indent">Structure containing frame information. See the GetStackTrace function.</p>
+
+<p><code>
+struct ncaiRegisterInfo;
+</code></p>
+
+<p class="indent">Structure containing register information. See the GetRegisterInfo function.</p>
+
+<p><code>
+struct ncaiSignalInfo;
+</code></p>
+
+<p class="indent">Structure containing signal information. See the GetSignalInfo function.</p>
+
+<p><code>
+struct ncaiCapabilities;
+</code></p>
+
+<p class="indent">Capabilities of a NCAI environment. TBD.</p>
+
+<p><code>
+struct ncaiEventCallbacks;
+</code></p>
+
+<p class="indent">Structure containing the list of event callback functions.</p>
+
+<p><code>
+typedef enum {} ncaiEventMode;<br>
+<br>
+typedef enum {} ncaiEventKind;
+</code></p>
+
+<p class="indent">Identifiers for event mode and type. See the SetEventNotificationMode function.</p>
+
+<p><code>
+typedef enum {} ncaiWatchpointMode;
+</code></p>
+
+<p class="indent">An identifier for the Watchpoint event mode. See the SetWatchpoint function.</p>
+
+<p><code>
+typedef enum {} ncaiStepMode;
+</code></p>
+
+<p class="indent">An identifier for the Step event mode. See the SetStepMode function.</p>
+
+
+
+<h2><a name="1.6. Modules"></a>Modules</h2>
+
+<p><code>ncaiError JNICALL GetAllLoadedModules
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint* count_ptr, ncaiModule** modules_ptr);
+</code></p>
+
+<p>
+Get a list of all modules which are loaded to the
+VM process. <i>All the returned module pointers remain valid at least
+till the next function call.</i></p>
+
+<p class="indent"></p>
+Parameters:
+<ul>
+    <li class="indent">count_ptr -
+    pointer to a jint which will be set on return with number of
+    modules.
+    <li class="indent">modules_ptr -
+    pointer to a ncaiModule* which will be set on return with
+    address of a newly allocated array of ncaiModule's. The array
+    should be freed by JVMTI function Deallocate.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors
+</ul>
+
+<p><code>
+ncaiError JNICALL GetModuleInfo
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiModule module, ncaiModuleInfo* info_ptr);
+</code></p>
+
+<p>
+Get the module information. Fills the following
+structure:</p>
+
+<p class="indent"><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_MODULE _JNI_LIBRARY,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_MODULE _VM_INTERNAL,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_MODULE _OTHER
+<br>
+} ncaiModuleKind;
+</code></p>
+
+<p class="indent"><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+ncaiModuleKind kind;
+<br>
+&nbsp;&nbsp;&nbsp;
+char* name;
+<br>
+&nbsp;&nbsp;&nbsp;
+char* filename;
+<br>
+&nbsp;&nbsp;&nbsp;
+ncaiSegmentInfo* segments;
+<br>
+&nbsp;&nbsp;&nbsp;
+size_t segment_count;
+<br>
+} ncaiModuleInfo;
+</code></p>
+
+<p>The
+kind field determines the module kind from the point of view of VM.
+The segments field will be set on return with a pointer to array of
+the following structures:</p>
+
+<p class="indent"><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_SEGMENT_UNKNOWN,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_SEGMENT_CODE,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_SEGMENT_DATA
+<br>
+} ncaiSegmentKind;
+</code></p>
+
+<p class="indent"><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+ncaiSegmentKind kind;
+<br>
+&nbsp;&nbsp;&nbsp;
+void* base_address;
+<br>
+&nbsp;&nbsp;&nbsp;
+size_t size;
+<br>
+} ncaiSegmentInfo;
+</code></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">module - the module to analyze.
+    <li class="indent">info_ptr -
+    pointer to a ncaiModuleInfo whose fields will be set on return
+    with information which includes module kind and newly allocated
+    arrays of name, filename and segments. The arrays of name, filename
+    and segments should be freed by JVMTI function Deallocate.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li><p class="indent">NCAI_ERROR_INVALID_MODULE - module is not a valid ncaiModule.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetModuleClassLoader
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiModule module, jobject* classloader_ptr);
+</code></p>
+
+<p>
+Get the JNI library module class loader. Returns
+NULL if the module was loaded by the bootstrap class loader. If the
+module is not of NCAI_MODULE _JNI_LIBRARY kind the function returns
+an error.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">module - the module to analyze.
+    <li class="indent">classloader_ptr - pointer to a jobject
+    which will be set on return with class loader object.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_MODULE - module is not a valid ncaiModule.
+</ul>
+</p>
+
+
+
+<h2><a name="1.7. Methods"></a>Methods</h2>
+
+<p><code>
+ncaiError JNICALL IsMethodCompiled
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jmethodID method, jboolean* is_compiled_ptr);
+</code></p>
+
+<p>
+Indicates if the java method is actually in
+compiled form.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">method - the method to analyze.
+    <li class="indent">is_compiled_ptr - pointer to a jboolean which will be set on return.
+</ul>
+
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_METHOD - method is not a valid java method id.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetMethodLocation
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jmethodID method, void** address_ptr, size_t* size_ptr);
+</code></p>
+
+<p>Get a native address where compiled method is loaded and the size of
+compiled code. <i>This is a convenience method corresponding to the
+CompiledMethodLoad event callback of JVMTI. So, the values returning
+in address_ptr and size_ptr should be the same as  code_addr and
+code_size parameters of  the callback.</i></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">method - the method to analyze.
+    <li class="indent">address_ptr - pointer to a void* which will be set on return
+    with starting address of compiled code.
+    <li class="indent">size_ptr - pointer to a zise_t which will be set on return
+    with size of compiled code.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_METHOD - method is not a valid java method id.
+    <li class="indent">NCAI_ERROR_NOT_COMPILED - method is not compiled yet.
+</ul>
+
+<p><code>
+ncaiError JNICALL FindJavaMethod
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* address, jmethodID* method_ptr);
+</code></p>
+
+<p>Finds a compiled java
+method which corresponds to the given native address.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">address - the native address to analyze.
+    <li class="indent">method_ptr - pointer to a jmethodID which will be set on return with java
+    method id or 0 if such method does not exist.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_ADDRESS - address is not located inside a compiled java method.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetBytecodeLocation
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* address, jmethodID method, jlocation* location_ptr);
+</code></p>
+
+<p>Get a bytecode location in compiled java method which corresponds to the
+given native address.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">address - the native address inside a compiled java method.
+    <li class="indent">method - the java method to analyze.
+    <li class="indent">location_ptr - pointer to a jlocation which will be set on return with index of
+    bytecode instruction corresponding to the native address.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_METHOD - method is not a valid java method id.
+    <li class="indent">NCAI_ERROR_INVALID_ADDRESS - address is not located inside the compiled java method.
+    <li class="indent">NCAI_ERROR_NOT_COMPILED - method is not compiled yet.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetNativeLocation
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jmethodID method, jlocation location, void** address_ptr);
+</code></p>
+
+<p>Get a native address which corresponds to the given bytecode location in
+compiled method. <i>This is a convenience method corresponding to the
+CompiledMethodLoad event callback of JVMTI. So, the value returning
+in address_ptr should be the same as start_address corresponding to
+the location in map parameter of  the callback.</i></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">method - the java method to analyze.
+    <li class="indent">location - the index of the bytecode instruction inside the method.
+    <li class="indent">address_ptr - pointer to a void* which will be set on return with native address
+    of compiled code corresponding to the location.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_METHOD - method is not a valid java method id.
+    <li class="indent">NCAI_ERROR_INVALID_LOCATION - location is not a valid location.
+    <li class="indent">NCAI_ERROR_NOT_COMPILED - method is not compiled yet.
+</ul>
+
+
+
+<h2><a name="1.8. Threads"></a>Threads</h2>
+
+<p><code>
+ncaiError JNICALL GetAllThreads
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint* count_ptr, ncaiThread** threads_ptr);
+</code></p>
+
+<p>Get a list of all known threads. <i>All the returned thread pointers
+remain valid at least till the next function call.</i></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">count_ptr - pointer to a jint which will be set on return with number of threads.
+    <li class="indent">threads_ptr - pointer to a ncaiThread * which will be set on return with address
+    of a newly allocated array of ncaiThread’s. The array should be freed by JVMTI function Deallocate.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetThreadInfo
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, ncaiThreadInfo* info_ptr);
+</code></p>
+
+<p>
+Get the thread information. Fills the following structure:</p>
+
+<p><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_THREAD_JAVA,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_THREAD_VM_INTERNAL,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_THREAD_OTHER
+<br>
+} ncaiThreadKind;
+</code></p>
+
+<p><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+ncaiThreadKind kind;
+<br>
+&nbsp;&nbsp;&nbsp;
+char* name;
+<br>
+} ncaiThreadInfo;
+</code></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to analyze.
+    <li class="indent">info_ptr - pointer to a ncaiThreadInfo whose fields will be set on return
+    with information which includes thread kind and newly allocated
+    array of name. The array of name should be freed by JVMTI function Deallocate.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetThreadHandle
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jthread thread, ncaiThread* thread_ptr);
+</code></p>
+
+<p>
+Get a thread handle for the given java thread
+object (0, if such object does not exist).</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to analyze.
+    <li class="indent">thread_ptr - pointer to a ncaiThread which will be set on return with appropriate value.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid jthread.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetThreadObject
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, jthread* thread_ptr);
+</code></p>
+
+<p>
+Get a java thread object for the given thread
+handle (0, if such object does not exist).</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the ncaiThread to analyze.
+    <li class="indent">thread_ptr - pointer to a jthread which will be set on return with appropriate value.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+</ul>
+
+<p><code>
+ncaiError JNICALL SuspendThread
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread);
+</code></p>
+
+<p>
+Suspend the given thread. <i>This is really a hard
+suspend which means one should take care about possible deadlock if
+some thread will try to enter a monitor acquired by the suspended
+thread.</i></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to suspend.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_SUSPENDED - thread is already suspended.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+</ul>
+
+<p><code>
+ncaiError JNICALL ResumeThread
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread);
+</code></p>
+
+<p>Resume the given thread.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to resume.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_SUSPENDED - thread is not suspended.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+</ul>
+
+<p><code>
+ncaiError JNICALL TerminateThread
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread);
+</code></p>
+
+<p>
+Terminate the given thread. Not all acquired locks
+and owned JVMTI monitors could be released, so care must be taken to
+prevent a possible deadlock.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to terminate.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetThreadState
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jthread thread, jint* state_ptr);
+</code></p>
+
+<p>Get a state for the given thread. <i>TBD</i>.</p>
+
+
+
+<h2><a name="1.9. Frames"></a>Frames</h2>
+
+<p><code>
+ncaiError JNICALL GetFrameCount
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, jint* count_ptr);
+</code></p>
+
+<p>
+Get the total number of frames in the given
+thread. The thread needs to be either suspended or the current thread
+in breakpoint or step callback.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to analyze.
+    <li class="indent">count_ptr - pointer to a jint which will be set on return with number of stack frames.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_SUSPENDED - thread is not suspended or current.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetStackTrace
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, jint depth, ncaiFrameInfo* frame_buffer, jint* count_ptr);
+</code></p>
+
+<p>
+Get the stack frame information for the given
+thread. The depth specifies capacity of the frame_buffer. The thread
+needs to be either suspended or the current thread in breakpoint or
+step callback.</p>
+
+
+<p><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+jint java_frame_depth;
+<br>
+&nbsp;&nbsp;&nbsp;
+void* pc_address;
+<br>
+&nbsp;&nbsp;&nbsp;
+void* return_address;
+<br>
+&nbsp;&nbsp;&nbsp;
+void* frame_address;
+<br>
+&nbsp;&nbsp;&nbsp;
+void* stack_address;
+<br>
+} ncaiFrameInfo;
+</code></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to analyze.
+    <li class="indent">depth - the maximum number of stack frames to retrieve.
+    <li class="indent">frame_buffer - preallocated buffer large enough to hold depth ncaiFrameInfo
+    objects which fields will be set on return with appropriate values.
+    <li class="indent">count_ptr - pointer to a jint which will be set on return with number of stack
+    frames passed to the buffer.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_SUSPENDED - thread is not suspended or current.
+</ul>
+
+
+
+<h2><a name="1.10. Registers"></a>Registers</h2>
+
+<p><code>
+ncaiError JNICALL GetRegisterCount
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint* count_ptr);
+</code></p>
+
+<p>Get a number of native registers.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">count_ptr - pointer to a jint which will be set on return with number of registers.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.</p>
+</ul>
+
+<p><code>
+ncaiError JNICALL GetRegisterlInfo
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint reg_number, ncaiRegisterInfo* info_ptr);
+</code></p>
+
+<p>Get the register information. Fills the following structure:</p>
+
+<p><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+char* name;
+<br>
+&nbsp;&nbsp;&nbsp;
+jint size;
+<br>
+} ncaiRegisterInfo;
+</code></p>
+
+<p>
+Field name is the register name and size is the
+register size in bits.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">reg_number - the number of register to analyze.
+    <li class="indent">info_ptr - pointer to a ncaiRegisterInfo whose fields
+    will be set on return with information.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - reg_number is not a valid register number.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetRegisterValue
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, jint reg_number, void* buf);
+</code></p>
+
+<p>
+Get the register value for the given thread. The
+thread needs to be either suspended or the current thread in
+breakpoint or step callback.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">reg_number - the number of register.
+    <li class="indent">buf - preallocated buffer large enough to hold register value
+    which will be set on return.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - reg_number is not a valid register number.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_SUSPENDED - thread is not suspended or current.
+</ul>
+
+<p><code>
+ncaiError JNICALL SetRegisterValue
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, jint reg_number, void* buf);
+</code></p>
+
+<p>
+Set the register value for the given thread. The
+thread needs to be either suspended or the current thread in
+breakpoint or step callback.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">reg_number - the number of register.
+    <li class="indent">buf - buffer which contains a register value.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - reg_number is not a valid register number.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_SUSPENDED - thread is not suspended or current.
+</ul>
+
+
+
+<h2><a name="1.11. Memory"></a>Memory</h2>
+
+<p>The following functions
+should hide/preserve any instrumentation of a native code done by the
+VM</p>
+
+<p><code>
+ncaiError JNICALL ReadMemory
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* addr, size_t size, void* buf);
+</code></p>
+
+<p>Read the memory block.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">addr - the address of memory block
+    <li class="indent">size - the size of memory block in bytes.
+    <li class="indent">buf - preallocated buffer large enough to hold a copy of memory block.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ACCESS_DENIED - access to the memory block is denied.
+</ul>
+
+<p><code>
+ncaiError JNICALL WriteMemory
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* addr, size_t size, void* buf);
+</code></p>
+
+<p>Write the memory block.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">addr - the address of memory block.
+    <li class="indent">size - the size of memory block in bytes.
+    <li class="indent">buf - buffer which contains values which will be copied to memory block.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ACCESS_DENIED - access to the memory block is denied.
+</ul>
+
+
+
+<h2><a name="1.12. Signals"></a>Signals</h2>
+
+<p><code>
+ncaiError JNICALL GetSignalCount
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint* count_ptr);
+</code></p>
+
+<p>Get a number of signals supported by the platform.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">count_ptr - pointer to a jint which will be set on return with number of signals.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetSignalInfo
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint signal, ncaiSignalInfo* info_ptr);
+</code></p>
+
+<p>Get the signal information. Fills the following structure:</p>
+
+<p><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+char* name;
+<br>
+} ncaiSignalInfo;
+</code></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">signal - the number of signal.
+    <li class="indent">info_ptr - pointer to a ncaiSignalInfo whose fields will be set on return with information.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - signal is not a valid signal number.
+</ul>
+
+
+
+<h2><a name="1.13. Miscellaneous"></a>Miscellaneous</h2>
+
+<p><code>
+ncaiError JNICALL GetJvmtiEnv
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jvmtiEnv** jvmti_env_ptr);
+</code></p>
+
+<p>Get JVMTI environment which NCAI environment extends.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">jvmti_env_ptr - pointer to a jvmtiEnv* which will be set on return with
+    appropriate JVMTI environment.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetVersion
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, jint* version_ptr);
+</code></p>
+
+<p>Get the NCAI version number. The version number
+consists of major, minor and micro parts just like the JVMTI version
+identifier.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">version_ptr - pointer to a jint which will be set on return with actual version of
+    NCAI implementation.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetErrorName
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiError err, const char** name_ptr);
+</code></p>
+
+<p>Get symbolic representation for the given error code.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">name_ptr - pointer to a char* which will be set on return with address of a
+    newly allocated array of characters. The array should be freed by
+    JVMTI function Deallocate.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - err is not a valid ncaiError.
+</ul>
+
+
+
+<h2><a name="1.14. Capabilities"></a>Capabilities</h2>
+
+<p><code>
+typedef struct {
+<br>
+&nbsp;&nbsp;&nbsp;
+// ...
+<br>
+} ncaiCapabilities;
+</code></p>
+
+<p><code>
+ncaiError JNICALL GetPotentialCapabilities
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiCapabilities* caps_ptr);
+</code></p>
+
+<p>Get capabilities which the NCAI environment can potentially possess.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">caps_ptr - pointer to ncaiCapabilities which will be set on return with
+    potential capabilities.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL GetCapabilities
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiCapabilities* caps_ptr);
+</code></p>
+
+<p>Get currently possessed capabilities.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">caps_ptr - pointer to ncaiCapabilities which will be set on return with
+    possessed capabilities.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL AddCapabilities
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiCapabilities* caps_ptr);
+</code></p>
+
+<p>Add the specified capabilities.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">caps_ptr - pointer to ncaiCapabilities to add.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL RelinquishCapabilities
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiCapabilities* caps_ptr);
+</code></p>
+
+<p>Relinquish the specified capabilities.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">caps_ptr - pointer to ncaiCapabilities to relinquish.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+
+
+<h2><a name="1.15. Event Management"></a>Event Management</h2>
+
+<p><code>
+ncaiError JNICALL GetEventCallbacks
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiEventCallbacks* callbacks, size_t size);
+</code></p>
+
+<p>Get the event callbacks.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">callbacks - pointer to ncaiEventCallbacks which will be set on return with
+    current event callbacks.
+    <li class="indent">size - the size of callbacks.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL SetEventCallbacks
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiEventCallbacks* callbacks, size_t size);
+</code></p>
+
+<p>Set the event callbacks.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">callbacks - pointer to ncaiEventCallbacks to set.
+    <li class="indent">size - the size of callbacks.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">no function specific errors.
+</ul>
+
+<p><code>
+ncaiError JNICALL SetEventNotificationMode
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiEventMode mode, ncaiEventKind event, ncaiThread thread);
+</code></p>
+
+<p>
+Set the event notification mode for the given
+thread. If thread is NULL, the mode is set for all the known threads.
+The ncaiEventMode and ncaiEventKind are the following:</p>
+
+<p class="indent"><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_ENABLE = 1,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_DISABLE = 0
+<br>
+} ncaiEventMode;
+</code></p>
+
+
+<p class="indent"><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_THREAD_START = 1,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_THREAD_END,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_BREAKPOINT,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_STEP,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_WATCHPOINT,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_METHOD_ENTRY,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_METHOD_EXIT,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_FRAME_POP,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_SIGNAL,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_EXCEPTION,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_MODULE_LOAD,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_MODULE_UNLOAD,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_CONSOLE_INPUT,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_CONSOLE_OUTPUT,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_EVENT_DEBUG_OUTPUT
+<br>
+} ncaiEventKind;
+</code></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">mode - the mode to set.
+    <li class="indent">event - the event to control.
+    <li class="indent">thread - the thread to control.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - mode or event is not valid.
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+</ul>
+
+<p><code>
+ncaiError JNICALL SetBreakpoint
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* code_addr);
+</code></p>
+
+<p>Set a breakpoint at the given address code_addr.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">code_addr - the native address of the breakpoint.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_DUPLICATE - the designated breakpoint is already set.
+</ul>
+
+<p><code>
+ncaiError JNICALL ClearBreakpoint
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* code_addr);
+</code></p>
+
+<p>Clear a breakpoint at the given address code_addr.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">code_addr - the native address of the breakpoint.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_NOT_FOUND - the designated breakpoint is not found.
+</ul>
+
+<p><code>
+ncaiError JNICALL SetWatchpoint
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* data_addr, size_t len, ncaiWatchpointMode mode);
+</code></p>
+
+<p>Set a watchpoint starting at the given address data_addr for len bytes.</p>
+
+<p class="indent"><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_WATCHPOINT_READ,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_WATCHPOINT_WRITE,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_WATCHPOINT_ACCESS
+<br>
+} ncaiWatchpointMode;
+</code></p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">data_addr - the starting address of memory block to watch.
+    <li class="indent">len - the length in bytes of the memory block.
+    <li class="indent">mode - the mode to watch.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_DUPLICATE - the designated watchpoint is already set.
+</ul>
+
+<p><code>
+ncaiError JNICALL ClearWatchpoint
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, void* data_addr);
+</code></p>
+
+<p>Clear a watchpoint starting at the given address data_addr.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">data_addr - the starting address of watching memory block.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_NOT_FOUND - the designated watchpoint is not found.
+</ul>
+
+<p><code>
+ncaiError JNICALL SetStepMode
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, ncaiStepMode mode);
+</code></p>
+
+<p>Set the step mode for the given thread. If thread is NULL, the mode is set for all the known threads.</p>
+
+<p class="indent"><code>
+typedef enum {
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_STEP_OFF,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_STEP_INTO,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_STEP_OVER,
+<br>
+&nbsp;&nbsp;&nbsp;
+NCAI_STEP_OUT
+<br>
+} ncaiStepMode;
+</code></p>
+
+<p>NCAI_STEP_OFF disables generating step events for the given thread, NCAI_STEP_INTO
+enables generating step event for each CPU instruction,
+NCAI_STEP_OVER enables generating step event for each CPU instruction
+skipping function calls, NCAI_STEP_OUT disables generating step
+event untill the function returns.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to control.
+    <li class="indent">mode - the mode to set.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_ILLEGAL_ARGUMENT - mode is not valid.
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+</ul>
+
+<p><code>
+ncaiError JNICALL NotifyFramePop
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* frame_address);
+</code></p>
+
+<p>Set a trigger to notify when the frame of the given address is popped from the given thread stack.</p>
+
+<p class="indent">Parameters:</p>
+<ul>
+    <li class="indent">thread - the thread to watch.
+    <li class="indent">frame_addr - the address of frame to watch.
+</ul>
+
+<p class="indent">Errors:</p>
+<ul>
+    <li class="indent">NCAI_ERROR_INVALID_THREAD - thread is not a valid ncaiThread.
+    <li class="indent">NCAI_ERROR_THREAD_NOT_ALIVE - the thread is not alive.
+    <li class="indent">NCAI_ERROR_NOT_FOUND - the designated frame is not found.
+</ul>
+
+
+
+<h2><a name="1.16. Event Callbacks"></a>Event Callbacks</h2>
+
+<p>The following callbacks are called from within an appropriate application thread
+and are not queued by the VM.</p>
+
+<p><code>
+void JNICALL ThreadStart
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread);
+</code></p>
+
+<p>This callback is invoked when the thread is about to enter its initial method.</p>
+
+<p><code>
+void JNICALL ThreadEnd
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread);
+</code></p>
+
+<p>This callback is invoked just after the thread exits its initial method.</p>
+
+<p><code>
+void JNICALL Step
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr);
+</code></p>
+
+<p>This callback is invoked when the native thread specified in SetStepMode
+request reaches a new native instruction address according to the
+specified step mode.</p>
+
+
+<p><code>
+void JNICALL Breakpoint
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr);
+</code></p>
+
+<p>
+This callback is invoked when the native thread
+specified in SetBreakpoint request reaches the specified native
+instruction address.</p>
+
+<p><code>
+void JNICALL Watchpoint
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* code_addr, void* data_addr);
+</code></p>
+
+<p>
+This callback is invoked when the native thread
+specified in SetWatchpoint request accesses the specified native data
+address according to the specified watchpoint mode.</p>
+
+<p><code>
+void JNICALL Signal
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr, jint signal, jboolean is_internal, jboolean* is_handled);
+</code></p>
+
+<p>
+This callback is invoked when OS notifies the VM
+process about a raised signal. is_internal indicates whether the VM
+raises the signal for internal use. is_handled is in/out flag which
+indicates whether the VM will handle the signal or not. The actual
+set of possible signals depends on platform.</p>
+
+<p><code>
+void JNICALL Exception
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr, void* exception);
+</code></p>
+
+<p>This callback is invoked when C++ exception is thrown. <i>TBD</i>.</p>
+
+<p><code>
+void JNICALL ModuleLoad
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, ncaiModule module);
+</code></p>
+
+<p>This callback is invoked when the VM process loads an executable module.</p>
+
+<p><code>
+void JNICALL ModuleUnload
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, ncaiModule module);
+</code></p>
+
+<p>This callback is invoked when the VM process is about to unload an executable module.</p>
+
+<p><code>
+void JNICALL MethodEntry
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr);
+</code></p>
+
+<p>This callback is invoked when the thread is about to enter a method.</p>
+
+<p><code>
+void JNICALL MethodExit
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr);
+</code></p>
+
+<p>This callback is invoked when the thread is about to exit a method.</p>
+
+<p><code>
+void JNICALL FramePop
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, ncaiThread thread, void* addr);
+</code></p>
+
+<p>This callback is invoked when the thread is about to exit a frame
+specified in NotifyFramePop request.</p>
+
+<p><code>
+void JNICALL ConsoleInput
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, char** message);
+</code></p>
+
+<p> This callback is invoked when the VM process tries to read data from standard input. <i>TBD</i>.</p>
+
+<p><code>
+void JNICALL ConsoleOutput
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, char* message);
+</code></p>
+
+<p>This callback is invoked when the VM process is about to write a message to standard output. <i>TBD</i>.</p>
+
+<p><code>
+void JNICALL DebugMessage
+<br>
+&nbsp;&nbsp;&nbsp;
+(ncaiEnv* env, char* message);
+</code></p>
+
+<p>This callback is invoked when the VM process sends a debug message. <i>TBD</i>.</p>
+
+
+
+<h2><a name="1.17. Error codes"></a>Error codes</h2>
+
+<p>The following is a list of possible error codes which can be returned by
+NCAI functions. <i>Universal errors</i> can be returned by any
+function and so they are not specified in the above function error
+lists. On the contrary <i>function specific errors</i> can be
+returned only by the functions which include them in the function
+errors specification.</p>
+
+
+<h3><a name="1.17.1. Universal errors"></a>Universal errors</h3>
+
+<p>
+NCAI_ERROR_NONE
+<br>
+<span class="indent">Indicates a successful completion of the function.</span>
+</p>
+
+<p>
+NCAI_ERROR_NULL_POINTER
+<br>
+<span class="indent">A pointer argument is equal to 0 which is not acceptable for the function.</span>
+</p>
+
+<p>NCAI_ERROR_OUT_OF_MEMORY
+<br>
+<span class="indent">Not enough allocatable memory available to process the function.</span>
+</p>
+
+<p>NCAI_ERROR_ACCESS_DENIED
+<br>
+<span class="indent">Access is denied.</span>
+</p>
+
+<p>NCAI_ERROR_UNATTACHED_THREAD
+<br>
+<span class="indent">The calling thread is not attached to the VM.</span>
+</p>
+
+<p>NCAI_ERROR_INVALID_ENVIRONMENT
+<br>
+<span class="indent">The NCAI environment is not valid.</span>
+</p>
+
+<p>NCAI_ERROR_INTERNAL
+<br>
+<span class="indent">An unexpected internal error.</span>
+</p>
+
+<p>NCAI_ERROR_ILLEGAL_ARGUMENT
+<br>
+<span class="indent">Illegal value of argument.</span>
+</p>
+
+
+<h3><a name="1.17.2. Function specific errors"></a>Function specific errors</h3>
+
+<p>NCAI_ERROR_NOT_AVAILABLE
+<br>
+<span class="indent">Function is not implemented.</span>
+</p>
+
+<p>NCAI_ERROR_INVALID_MODULE
+<br>
+<span class="indent">The module specified by argument is not a valid ncaiModule.</span>
+</p>
+
+<p>NCAI_ERROR_INVALID_METHOD
+<br>
+<span class="indent">The method specified by argument is not a valid jmethodID.</span>
+</p>
+
+<p>NCAI_ERROR_INVALID_LOCATION
+<br>
+<span class="indent">The location specified by argument is not a valid location.</span>
+</p>
+
+<p>NCAI_ERROR_INVALID_ADDRESS
+<br>
+<span class="indent">The address specified by argument is not valid.</span>
+</p>
+
+<p>NCAI_ERROR_INVALID_THREAD
+<br>
+<span class="indent">The thread specified by argument is not a valid ncaiThread.</span>
+</p>
+
+<p>NCAI_ERROR_THREAD_SUSPENDED
+<br>
+<span class="indent">The thread specified by argument is suspended.</span>
+</p>
+
+<p>NCAI_ERROR_THREAD_NOT_SUSPENDED
+<br>
+<span class="indent">The thread specified by argument is not suspended.</span>
+</p>
+
+<p>NCAI_ERROR_THREAD_NOT_ALIVE
+<br>
+<span class="indent">The thread specified by argument is not alive.</span>
+</p>
+
+<p>NCAI_ERROR_INTERPRETER_USED
+<br>
+<span class="indent">VM was started in interpreter mode.</span>
+</p>
+
+<p>NCAI_ERROR_NOT_COMPILED
+<br>
+<span class="indent">The method is not compiled yet.</span>
+</p>
+
+<p>NCAI_ERROR_DUPLICATE
+<br>
+<span class="indent">The designated breakpoint is already set.</span>
+</p>
+
+<p>NCAI_ERROR_NOT_FOUND
+<br>
+<span class="indent">The designated breakpoint is not found.</span>
+</p>
+
+
+
+<h2><a name="1.18. Appendix 1. Priorities"></a>Appendix 1. Priorities</h2>
+
+<p>The following table reflects our view on implementation priorities.</p>
+
+<table width=450 border="1" bordercolor="#000000" cellpadding="3" cellspacing="0">
+    <col width="40%">
+    <col width="16%">
+    <col width="24%">
+    <col width="20%">
+    <tr>
+        <td class="header">
+            Function Name
+        <td class="header">
+            Priority
+        <td class="header">
+            Comments
+        <td class="header">
+            Capability
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Modules
+    </tr>
+    <tr>
+        <td>GetAllLoadedModules
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetModuleInfo
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetModuleClassLoader
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            <B>Methods
+    </tr>
+    <tr>
+        <td>IsMethodCompiled
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetMethodLocation
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>FindJavaMethod
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetBytecodeLocation
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetNativeLocation
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Threads
+    </tr>
+    <tr>
+        <td>GetAllThreads
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetThreadInfo
+        <td>Medium
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetThreadHandle
+        <td>Medium
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetThreadObject
+        <td>Medium
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>SuspendThread
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ResumeThread
+        <td>High
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>TerminateThread
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetThreadState
+        <td>Medium
+        <td><i>TBD</i>
+        <td>Required
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Frames
+    </tr>
+    <tr>
+        <td>GetFrameCount
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetStackTrace
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Registers
+    </tr>
+    <tr>
+        <td>GetRegisterCount
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetRegisterInfo
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetRegisterValue
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>SetRegisterValue
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Memory
+    </tr>
+    <tr>
+        <td>ReadMemory
+        <td>High
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>WriteMemory
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Signals
+    </tr>
+    <tr>
+        <td>GetSignalCount
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>GetSignalInfo
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Miscellaneous
+    </tr>
+    <tr>
+        <td>GetJvmtiEnv
+        <td>Low
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetVersion
+        <td>Low
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetErrorName
+        <td>Low
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Capabilities
+    </tr>
+    <tr>
+        <td>GetPotentialCapabilities
+        <td>Medium
+        <td><i>TBD</i>
+        <td>Required
+    </tr>
+    <tr>
+        <td>AddCapabilities
+        <td>Medium
+        <td><i>TBD</i>
+        <td>Required
+    </tr>
+    <tr>
+        <td>RelinquishCapabilities
+        <td>Medium
+        <td><i>TBD</i>
+        <td>Required
+    </tr>
+    <tr>
+        <td>GetCapabilities
+        <td>Medium
+        <td><i>TBD</i>
+        <td>Required
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Event Management
+    </tr>
+    <tr>
+        <td>GetEventCallbacks
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>SetEventCallbacks
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>SetEventNotificationMode
+        <td>High
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>SetBreakpoint
+        <td>High
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ClearBreakpoint
+        <td>High
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>SetWatchpoint
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ClearWatchpoint
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>SetStepMode
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>NotifyFramePop
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td colspan="4" class="bold">
+            Event Callbacks
+    </tr>
+    <tr>
+        <td>ThreadStart
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ThreadEnd
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>Step
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>Breakpoint
+        <td>High
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>Watchpoint
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>Signal
+        <td>Medium
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>Exception
+        <td>Low
+        <td><i>TBD</i>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ModuleLoad
+        <td>Medium
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>ModuleUnload
+        <td>Medium
+        <td>
+        <td>Required
+    </tr>
+    <tr>
+        <td>MethodEntry
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>MethodExit
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>FramePop
+        <td>Low
+        <td>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ConsoleInput
+        <td>Low
+        <td><i>TBD</i>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>ConsoleOutput
+        <td>Low
+        <td><i>TBD</i>
+        <td>Optional
+    </tr>
+    <tr>
+        <td>DebugMessage
+        <td>Low
+        <td><i>TBD</i>
+        <td>Optional
+    </tr>
+</table>
+
+
+</BODY>
+</HTML>

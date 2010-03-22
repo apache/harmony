@@ -1,0 +1,288 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+P {
+	margin-left: 15pt;
+	margin-top: 5pt;
+	margin-right: 0.00in;
+	margin-bottom: 5pt;
+	font-size: 10.0pt;
+	font-family: "Arial MT", Arial;
+}
+
+.title {
+	font-weight: bold;
+	font-size: 18pt;
+	text-align: center;
+	color: #525D76; 
+	line-height: 1.25;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+}
+
+
+h1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16pt;
+	color: white;
+	background-color: #525D76;
+	font-weight: normal;
+	text-transform: uppercase;
+	padding-left: 4px;
+}
+
+h2 {
+	font-size: 10pt;
+	font-family: Arial, Helvetica, sans-serif;
+	color: white;
+	background-color: #828DA6;
+	margin-left: 15pt;
+	margin-top: 5pt;
+	margin-right: 0in;
+	margin-bottom: 5pt;
+	text-transform: uppercase;
+	padding-left: 4px;
+	font-weight: normal;
+	letter-spacing: 4px;
+	word-spacing: 7px;
+}
+
+h3 {
+	font-weight: bold;
+	margin-left: 15pt;
+	margin-top: 5pt;
+	margin-right: 0pt;
+	margin-bottom: 5pt;
+	font-size: 11pt;
+	font-family: Arial;
+	text-transform: uppercase;
+}
+
+pre {
+	margin: 0in;
+	margin: 5pt;
+	background: #F3F5F7;
+	border: thin solid;
+	border-color: #828DA6;
+	padding: 12pt;
+	font-size: 11.0pt;
+	font-family: Courier;
+}
+
+.code {
+	font-weight: normal;
+	font-size: 12pt;
+	text-align: left;
+	text-indent: 0.00in;
+	color: #000000;
+	line-height: 1.25;
+	margin-left: 0.025in;
+	margin-right: 0.00in;
+	margin-top: 10pt;
+	margin-bottom: 10pt;
+	font-family: "Andale Mono", "Courier New", Courier "misc fixed", "sony fixed", monospaced;
+}
+
+.special {
+	font-weight: bold;
+	font-size: 10pt;
+	text-align: center;
+	color: #525D76; 
+	line-height: 1.25;
+	margin-left: 0.70in;
+	margin-right: 1.00in;
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+}
+
+.backtotop {
+	font-weight: bold;
+	font-size: 10pt;
+	text-align: left;
+	line-height: 1.25;
+	margin-left: 0pt;
+	margin-right: 0pt;
+	margin-top: 3pt;
+	margin-bottom: 0pt;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+}
+.note {
+	color: red;
+	font-weight: bolder;
+	font-size: 10pt;
+	text-align: left;
+	line-height: normal;
+	margin-left: 0.70in;
+	margin-right: 1.00in;
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+	font-family: Verdana, Helvetica, Arial, Tahoma, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+	
+}
+.notetext {
+	font-size: 10pt;
+	font-weight: normal;
+	text-align: left;
+	line-height: normal;
+	margin-left: 0.70in;
+	margin-right: 1.00in;
+	margin-top: 0pt;
+	margin-bottom: 6pt;
+	font-family: Verdana, Helvetica, Arial, "Arial MT", Tahoma, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+	color: Black;
+}
+
+
+a:link {
+	color: #0044B3;
+	border: none #000000 1.0pt;
+	padding: 0in;
+	x-text-underline: normal;
+	text-underline: single;
+	x-text-underline: normal;
+	text-decoration: underline underline; 
+}
+
+a:visited {
+	color: #800080;
+	x-text-underline: normal;
+	text-underline: single;
+	x-text-underline: normal;
+	text-decoration: underline underline; 
+}
+
+.TOCHeading {
+	font-weight: bold;
+	font-size: 12pt;
+	text-align: left;
+	color: #000000;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+   padding-left: 15px;
+	margin-bottom: 5pt;
+	margin-top: 5pt;
+	margin-left: 5px;
+	margin-right: 0pt;
+}
+
+.TOC {
+   font-size: 11pt;
+	text-align: left;
+	text-indent: 0.25in;
+	color: #000000;
+	padding-left: 15px;
+	margin-left: 5px;
+	margin-right: 0.00px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+}
+
+table {
+		margin-left: 15pt;
+}
+
+.TableHeading {
+	font-weight: bold;
+	font-size: 11pt;
+	color: white; 
+	text-align: center;
+	background-color: #828DA6;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+	padding: 6px;	
+	border: none;
+}
+
+.TableCell {
+	font-weight: normal;
+	font-size: 10pt;
+	text-align: left;
+	text-indent: 0.00in;
+	padding: 2pt;
+	margin-top: 4pt;
+	margin-bottom: 4pt;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+	padding: 6px;
+	border: solid #828DA6 0.5pt;
+}
+
+.update {
+	color: #A9A9A9;
+	font-size: smaller;
+	font-style: italic;
+}
+
+li {
+	margin: 3pt 3pt;
+	font-size: 10.0pt;
+	font-family: Arial, "Arial MT";
+}
+
+DD {
+	font-weight:  normal;
+	margin-left: 65pt;
+	margin-top: 5pt;
+	margin-right: 20pt;
+	margin-bottom: 5pt;
+	font-size: 10pt;
+	font-family: "Arial MT", Arial;
+	border-right: none;
+	border-bottom: none;
+	border-left: none;
+	border-top: solid #828DA6 1px;
+	padding-bottom: 8px;
+}
+
+DT {
+	font-size: 10pt;
+	font-family: Helvetica, Arial, Tahoma, Verdana, "Nimbus Sans L", lucida-sans, lucidasans, sanserif;
+	font-weight: bolder;
+	margin-left: 20pt;
+	margin-top: 5pt;
+	margin-right: 0pt;
+	margin-bottom: 5pt;
+	border-top: none;
+	border-right: none;
+	border-bottom: none;
+	border-left: none;	
+}
+
+DL {
+	margin-left: 0pt;
+	margin-top: 0pt;
+	margin-right: 0pt;
+	margin-bottom: 0pt;
+}
+
+.class {
+	font-weight: bold; 
+	margin-left: 15pt;
+	margin-top: 5pt;
+	margin-right: 0pt;
+	margin-bottom: 5pt;
+	font-size: 11pt;
+	font-family: Arial;
+	border-bottom-width: 2px;
+	border-top: none;
+	border-right: none;
+	border-bottom: solid #525D76 2px;
+	border-left: none;
+}
+
+blockquote {
+	margin-top: 5px;
+	margin-bottom:5px;
+}

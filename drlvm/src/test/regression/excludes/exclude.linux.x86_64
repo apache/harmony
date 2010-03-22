@@ -1,0 +1,9 @@
+# Excluded because of HARMONY-4265
+H1859
+# Exclude this test because SOE handling is not ready for x86_64 in JIT/VM yet
+H4265
+# Test crashes on SOE
+H4292
+# The bug is not fixed yet as shown by CC and JIRA status
+H5206
+

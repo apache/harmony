@@ -1,0 +1,312 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+/**
+ * @author Andrey Yakushev
+ */
+
+/** \mainpage DRLVM Interfaces
+<p>
+    The following table maps the DRLVM component structure described in <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#VM_Architecture">
+        DRLVM Developers Guide</a> to the directory structure. Click on component 
+    name to see its description.
+</p>
+<table align="center">
+    <tr>
+        <td><strong> Component </strong>
+        </td>
+        <td><strong> Prefix </strong>
+        </td>
+        <td><strong> Interfaces </strong>
+        </td>
+        <td><strong> Header files </strong>
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="9">
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#VM_Core">VM core</a>
+        </td>
+        <td rowspan="9">
+            <code>vm</code>
+        </td>
+        <td>
+            VM Common
+        </td>
+        <td><CODE>
+                @link include/open/vm.h @endlink<BR>
+                @link include/open/bytecodes.h @endlink<BR>
+                @link include/open/common.h @endlink<BR>
+                @link include/open/vm_util.h @endlink<BR>
+                @link include/open/types.h @endlink
+            </CODE>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            VM_JIT
+        </td>
+        <td>
+            <code>
+                    @link include/jit_import.h @endlink<BR>
+                    @link include/jit_import_rt.h @endlink<BR>
+                    @link include/jit_runtime_support.h @endlink<BR>
+            </code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            VM_EM
+        </td>
+        <td>
+            <code>
+                <P>@link vmcore/include/ini.h @endlink</P>
+            </code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            VM_Interpreter
+        </td>
+        <td>
+            <code>@link include/interpreter_imports.h @endlink<BR>
+                @link vmcore/include/Class.h @endlink<BR>
+                @link vmcore/include/compile.h @endlink<BR>
+                @link vmcore/include/environment.h @endlink<BR>
+                @link vmcore/include/exceptions.h @endlink<BR>
+                @link vmcore/include/exceptions_int.h @endlink<BR>
+                @link vmcore/include/ini.h @endlink<BR>
+                @link vmcore/include/jit_export.h @endlink<BR>
+                @link vmcore/include/jit_runtime_support_common.h @endlink<BR>
+                @link vmcore/include/mon_enter_exit.h @endlink<BR>
+                @link vmcore/src/util/linux/include/platform_lowlevel.h @endlink<BR>
+                @link vmcore/src/util/win/include/platform_lowlevel.h @endlink<BR>
+                @link vmcore/include/stack_trace.h @endlink<BR>
+                @link vmcore/include/thread_generic.h @endlink<BR>
+                @link vmcore/include/thread_manager.h @endlink<BR>
+                @link vmcore/include/vm_arrays.h @endlink<BR>
+                @link vmcore/include/vm_core_types.h @endlink<BR>
+                @link vmcore/include/vm_strings.h @endlink<BR>
+                @link vmcore/include/vm_threads.h @endlink </code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            VM_GC
+        </td>
+        <td>
+            <code>@link include/open/vm_gc.h @endlink<BR>
+                @link include/slot.h @endlink (?)</code></CODE>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            VM_Thread
+        </td>
+        <td>
+            <code>@link include/open/thread_externals.h @endlink</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            JNI
+        </td>
+        <td>
+            <code>
+                <P>@link include/jni_types.h @endlink<BR>
+                @link include/jni.h</code> @endlink</P>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            JVMTI
+        </td>
+        <td>
+            <code>
+                <P>@link include/jvmti.h @endlink<BR>
+                    @link include/jvmti_support.h @endlink<BR>
+                @link include/jvmti_types.h @endlink</code></P>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Kernel classes
+        </td>
+        <td><CODE>@link include/open/vm_kernel_classes.h @endlink</CODE></td>
+    </tr>
+    <tr>
+        <td rowspan="3">
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#EM">Execution manager</a>
+        </td>
+        <td rowspan="3">
+            <code>em</code>
+        </td>
+        <td>
+            EM Common
+        </td>
+        <td>
+            <code>
+                <P>
+                @link include/open/em.h @endlink</code></P>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            EM_VM
+        </td>
+        <td>
+            <P><CODE>@link include/open/em_vm.h @endlink</CODE></P>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            EM_JIT
+        </td>
+        <td>
+            <code>
+                @link include/open/em_profile_access.h @endlink
+            </code>
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="3">
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#TM">Thread manager</a>
+        </td>
+        <td rowspan="3">
+            <code>thread</code>
+        </td>
+        <td>
+            TM_VM
+        </td>
+        <td>
+            <code>
+                <P>@link include/open/jthread.h @endlink<BR>
+                @link include/open/ti_thread.h @endlink</code></P>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            TM_GC
+        </td>
+        <td>
+            <code>
+                <P>@link include/open/hycomp.h @endlink<BR>
+                    @link include/open/hythread.h @endlink<BR>
+                @link include/open/hythread_ext.h @endlink</code></P>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Thread helpers
+        </td>
+        <td>
+            <code>@link include/open/thread_helpers.h @endlink</code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#GC">Garbage collector</a>
+        </td>
+        <td>
+            <code>gc</code>
+        </td>
+        <td>
+            GC Generic
+        </td>
+        <td>
+            <code>@link include/open/gc.h @endlink</code>
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="3">
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#EE">Execution engine</a>
+        </td>
+        <td rowspan="3">
+            <code>ee</code>
+        </td>
+        <td>
+            JIT_VM
+        </td>
+        <td>
+            <code>@link vmcore/include/jit_export.h @endlink<BR>
+                @link vmcore/include/jit_export_jpda.h @endlink<BR>
+                @link vmcore/include/jit_export_rt.h @endlink</code>
+        </td>
+    </tr>
+    <tr>
+        <td>JIT_EM
+        </td>
+        <td>
+            <code>
+                @link include/open/ee_em_intf.h @endlink
+            </code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Interpreter
+        </td>
+        <td>
+            <code>@link include/interpreter.h<BR>
+                @link include/interpreter_exports.h @endlink</code>
+        </td>
+    </tr>
+    <tr>
+        <td><a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#Class_Libraries">Class library support module</a>
+        </td>
+        <td>
+            <code>vmi</code>
+        </td>
+        <td>VMI
+        </td>
+        <td>
+            <code>
+                "classlib luni module"/hyvmls.h<BR>
+                "classlib luni module"/vmi.h
+            </code>
+        </td>
+    </tr>
+    <tr>
+        <td rowspan="3">
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#Porting_Layer">OS portability layer</a>
+        </td>
+        <td rowspan="3">
+            <code>port</code>
+        </td>
+        <td>
+            <a href="http://apr.apache.org/">APR</a> extensions
+        </td>
+        <td>
+            <code>
+                    @link port/include/port_atomic.h @endlink<BR>
+                    @link port/include/port_disasm.h @endlink<BR>
+                    @link port/include/port_filepath.h @endlink<BR>
+                    @link port/include/port_sysinfo.h @endlink<BR>
+                    @link port/include/port_timer.h @endlink<BR>                    
+                    @link port/include/port_dso.h @endlink</P>
+            </code>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="http://harmony.apache.org/subcomponents/drlvm/developers_guide.html#Component_Manager">Component manager</a>
+        </td>
+        <td>
+            <P><CODE>@link include/open/compmgr.h @endlink<BR>
+                    @link include/component_manager.h @endlink</CODE></P>
+        </td>
+    </tr>
+</table>
+*/

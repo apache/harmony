@@ -1,0 +1,14 @@
+How to compile and run test:
+
+1) To compile you need to have a Jasmin version 1.1.
+This can be downloaded from http://jasmin.sourceforge.net
+
+2) The Jasmin distribution contains a jasmin.jar file holding the Jasmin assembler. 
+To compile sources execute the following commands:
+
+$ java -jar <path to Jasmin 1.1>/jasmin.jar src/*.j
+$ javac -d . src/Test.java
+
+3) To run test execute the following command:
+
+$ java Test

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<project name="REGRESSION TESTS" default="reg-test">
+    
+    <import file="reg-test-run.xml"/>
+    <import file="../build-native.xml"/>
+    
+    <property name="reg.test.src" location="${drlvm.base.dir}/src/test/regression"/>
+    <property name="reg.test.dir" location="${base.test.dir}/reg.tests"/>
+    <property name="reg.test.class.path" location="${reg.test.dir}/classes"/>
+    <property name="reg.test.native.path" location="${reg.test.dir}/native"/>
+    <property name="reg.test.package" value="org.apache.harmony.drlvm.tests.regression"/>
+    <property name="reg.test.unpackage" value="org/apache/harmony/drlvm/tests/regression"/>
+
+    <target name="compile-reg-tests-prepare">
+        <mkdir dir="${reg.test.class.path}" />
+        <mkdir dir="${reg.test.native.path}" />
+
+        <dirset id="reg.test.src.dirs.set"
+                dir="${reg.test.src}"
+                includes="*"/>
+
+        <pathconvert pathsep=","
+                     property="reg.test.src.dirs.list"
+                     refid="reg.test.src.dirs.set" />
+
+        <fileset id="reg.test.src.native.set" dir="${reg.test.src}">
+            <include name="**/*.c"/>
+            <include name="**/*.cpp"/>
+        </fileset>
+    </target>
+
+    <target name="compile-reg-tests-j"
+            depends="compile-reg-tests-prepare">
+        <fileset id="reg.test.src.jasmin.set" 
+                 dir="${reg.test.src}"
+                 includes="**/*.j">
+            <depend targetdir="${reg.test.class.path}">
+                <mapper>
+                    <chainedmapper>
+                        <filtermapper>
+                            <replacestring from="\" to="/"/>
+                        </filtermapper>
+                        <regexpmapper from="^(?:.*/)?H(\d\d*)/([^/].*).j$$" 
+                                      to="h\1/\2.class"/>
+                        <globmapper from="*" to="${reg.test.unpackage}/*"/>
+                    </chainedmapper>
+                </mapper>
+            </depend>
+        </fileset>
+        
+        <pathconvert pathsep=" "
+                     property="reg.test.src.jasmin.list"
+                     refid="reg.test.src.jasmin.set"/>
+        <ensure-resource name="jasmin.jar"/>
+        <java jar="${jasmin.jar}" fork="true" outputproperty="jasmin-reg-out" errorproperty="jasmin-reg-err">
+            <arg line="-d ${reg.test.class.path}"/>
+            <arg line="${reg.test.src.jasmin.list}"/>
+        </java>
+        <echo level="error" message="${jasmin-reg-err}"/>
+        <echo level="verbose" message="${jasmin-reg-out}"/>
+    </target>
+
+    <target name="compile-reg-tests-java"
+            depends="compile-reg-tests-prepare, compile-reg-tests-j">
+        <basename file="${vmmagic}" property="vmmagic.basename"/>
+        <property name="vmmagic.dep" location="${test.jre.home}/bin/default/${vmmagic.basename}"/>
+        <ensure-resource name="vmmagic.dep"/>
+        <compile-java src="${reg.test.src}" dest="${reg.test.class.path}">
+            <depend targetdir="${reg.test.class.path}">
+                <mapper>
+                    <chainedmapper>
+                        <filtermapper>
+                            <replacestring from="\" to="/"/>
+                        </filtermapper>
+                        <regexpmapper 
+                            from="^(?:.*/)?H(\d\d*)/([^/].*).java$$"
+                            to="h\1/\2.class"/>
+                        <globmapper from="*" to="${reg.test.unpackage}/*"/>
+                    </chainedmapper>
+                </mapper>
+            </depend>
+            <classpath>
+                <pathelement path="${java.class.path}/"/>
+                <fileset file="${vmmagic.dep}" />
+            </classpath>
+        </compile-java>
+        
+        <pathconvert property="bad.reg.pkg.names" setonempty="no" pathsep="  ">
+            <path>
+                <dirset dir="${reg.test.class.path}/${reg.test.unpackage}">
+                    <exclude name="h*"/>
+                    <include name="H*"/>
+                </dirset>
+            </path>
+            <flattenmapper/>
+        </pathconvert>
+        <fail if="bad.reg.pkg.names"> 
+        Some of package names in these tests violate conventions:
+        ${bad.reg.pkg.names}
+        Please check README.txt located in ${reg.test.src}
+        </fail>
+    </target>
+
+    <target name="compile-reg-tests-native" depends="-plugin-cpptasks,compile-reg-tests-prepare">
+
+        <for param="nativefile">
+            <path>
+                <fileset dir="${reg.test.src}" includes="**/*.c,**/*.cpp">
+                    <depend targetdir="${reg.test.native.path}">
+                        <mapper>
+                        <chainedmapper>
+                            <filtermapper>
+                                <replacestring from="\" to="/"/>
+                            </filtermapper>
+                            <regexpmapper from="(H\d\d*)/([^/]+)\.c.?.?$$" 
+                                          to="\1/${shlib.prefix}\2${shlib.suffix}"/>
+                        </chainedmapper>
+                        </mapper>
+                    </depend>
+                </fileset>
+            </path>
+            <sequential>
+                <var name="outfile" unset="true"/>
+                <pathconvert property="outfile">
+                    <path path="@{nativefile}"/>
+                    <chainedmapper>
+                        <filtermapper>
+                            <replacestring from="\" to="/"/>
+                        </filtermapper>
+                        <regexpmapper from="/(H\d\d*)/([^/]+)\.c.?.?$$" to="\1/\2"/>
+                    </chainedmapper>
+                </pathconvert>
+                <var name="outdir" unset="true"/>
+                <dirname property="outdir" file="${reg.test.native.path}/${outfile}"/>
+                <!-- mkdir dir="${outdir}"/ -->
+                <var name="objdir" unset="true"/>
+                <property name="objdir" value="${outdir}/obj"/>
+                <mkdir dir="${objdir}"/>
+
+                <!--echo message="## Compiling reg native ${outname}" /-->
+                <cc name="${hy.cpp.compiler}"
+                    debug="true"
+                    runtime="dynamic"
+                    multithreaded="true"
+                    link="shared"
+                    outfile="${reg.test.native.path}/${outfile}"
+                    objdir="${objdir}">
+                    <includepath path="${test.jdk.home}/include" />
+                    <compilerarg value="/EHsc" if="is.windows"/>
+                    <!--linkerarg value="-lstdc++" if="is.linux"/-->
+                    <fileset file="@{nativefile}"/>
+                </cc>
+                <embed-manifest lib="${reg.test.native.path}/${outfile}${shlib.suffix}" />
+            </sequential>
+        </for>
+    </target>
+
+    <target name="reg-test" depends="-plugin-ant-contrib,compile-reg-tests-java, 
+        compile-reg-tests-native, do-regression-testing" />
+    
+</project>

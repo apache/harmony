@@ -1,0 +1,22 @@
+PORT_0.1 {
+  global :
+#
+    port_init_crash_handler;
+    port_shutdown_crash_handler;
+    port_crash_handler_*;
+    port_set_breakpoint;
+    port_clear_breakpoint;
+    port_is_breakpoint_set;
+    port_read_memory;
+    port_write_memory;
+    port_get_all_modules;
+    port_dump_modules;
+    port_clear_modules;
+    port_find_module;
+    port_init_unwind_context;
+    port_clean_unwind_context;
+    port_unwind_frame;
+    port_init_shared_data;
+#
+  local : *;
+};

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project name="gc_gen" default="build" basedir="../..">
+    
+    <import file="common-vm.xml"/>
+    <import file="../build-java.xml"/>
+    
+    <target name="build">
+        <antcall target="build-uncompressed">
+            <param name="component" value="gc_gen_uncomp"/>
+        </antcall>
+        <antcall target="build-compressed">
+            <param name="component" value="gc_gen"/>
+        </antcall>
+        <make-java component="gc_gen" src="${vm.home}/gc_gen/javasrc"
+            manifest="${vm.home}/gc_gen/resource/MANIFEST.MF">
+            <classpath>
+                <fileset dir="${drlvm.deploy.dir}/jdk/jre/lib/boot" includes="*.jar" />
+                <fileset dir="${drlvm.deploy.dir}/jdk/jre/bin/default" includes="vmmagic*.jar" />
+                <pathelement location="${drlvm.bin.dir}/kernel.jar"/>
+            </classpath>
+        </make-java>
+    </target>
+        
+    <target name="init" depends="-common-vm">
+        <condition property="build.compressed.gc">
+            <not><!-- refs.comp.mode is not REFS_USE_UNCOMPRESSED for compressed and runtime switching modes -->
+                <equals arg1="${refs.comp.mode}" arg2="REFS_USE_UNCOMPRESSED" />
+            </not>
+        </condition>
+        <condition property="build.uncompressed.gc">
+            <not><!-- refs.comp.mode is not REFS_USE_COMPRESSED for uncompressed and runtime switching modes -->
+                <equals arg1="${refs.comp.mode}" arg2="REFS_USE_COMPRESSED" />
+            </not>
+        </condition>
+        
+        <path id="gc.includes">
+            <pathelement location="${drlvm.include.dir}" />
+            <dirset dir="${vm.home}">
+                <include name="include" />
+                <include name="port/include" />
+                <include name="vmcore/include" />
+                <include name="vmcore/src/util/win/include" if="is.windows"/>
+                <include name="vmcore/src/util/linux/include" if="is.unix"/>
+            </dirset>
+            <dirset dir="${vm.home}/gc_gen/src">
+            	<include name="common" />
+                <include name="gen" />
+                <include name="mark_compact" />
+                <include name="mark_sweep" />
+                <include name="move_compact" />
+                <include name="semi_space" />
+                <include name="los" />
+                <include name="thread" />
+                <include name="trace_forward" />
+                <include name="utils" />
+                <include name="jni" />
+                <include name="verify" />
+                <include name="finalizer_weakref" />
+            </dirset>
+        </path>
+        
+        <compiler id="cpp.compiler" extends="common.cpp.compiler">
+            <includepath><path refid="gc.includes"/></includepath>
+            <fileset dir="${vm.home}/gc_gen/src">
+                <selector refid="gc.depends"/>
+                <include name="common/*.cpp" />
+                <include name="gen/*.cpp" />
+                <include name="mark_compact/*.cpp" />
+                <include name="mark_sweep/*.cpp" />
+                <include name="move_compact/*.cpp" />
+                <include name="semi_space/*.cpp" />
+                <include name="los/*.cpp" />
+                <include name="thread/*.cpp" />
+                <include name="trace_forward/*.cpp" />
+                <include name="utils/*.cpp" />
+                <include name="jni/*.cpp" />
+                <include name="verify/*.cpp" />
+                <include name="finalizer_weakref/*.cpp" />
+            </fileset>
+
+            <defineset define="BUILDING_GC" />
+        </compiler>
+
+        <linker id="linker" extends="common.linker">
+            <libset libs="harmonyvm" dir="${drlvm.lib.dir}" if="is.windows"/>
+            <libset libs="hythr" dir="${drlvm.shlib.dir}" />
+            <linkerarg value="-Bsymbolic" if="is.unix"/>
+            <linkerarg value="--version-script=${vm.home}/gc_gen/build/gc_gen.exp" if="is.unix"/>
+        </linker>
+
+    </target>
+    
+    <target name="build-uncompressed" depends="init" if="build.uncompressed.gc">
+        <init-native />
+        <depend-includes paths="gc.includes"/>
+        <depend-selector rebuild-flag="gc.includes.uptodate" id="gc.depends"/>
+        <compile-cc>
+            <compiler refid="cpp.compiler"/>
+        </compile-cc>
+        <link-lib name="gc_gen_uncomp" type="shared">
+            <linker refid="linker"/>
+        </link-lib>
+   </target>
+    
+    <target name="build-compressed" depends="init" if="build.compressed.gc">
+        <init-native/>
+        <depend-includes paths="gc.includes"/>
+        <depend-selector rebuild-flag="gc.includes.uptodate" id="gc.depends"/>
+        <compile-cc>
+            <compiler refid="cpp.compiler"/>
+            <defineset define="COMPRESS_REFERENCE" />
+        </compile-cc>
+        <link-lib name="gc_gen" type="shared">
+            <linker refid="linker"/>
+        </link-lib>        
+   </target>
+    
+    <target name="clean" >
+        <clean-native component="gc_gen"/>
+        <clean-native component="gc_gen_uncomp"/>
+    </target>
+
+</project>

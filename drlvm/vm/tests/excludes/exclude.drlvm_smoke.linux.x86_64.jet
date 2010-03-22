@@ -1,0 +1,9 @@
+Check.java
+PerfCheck.java
+
+# HARMONY-3010 HARMONY-4292
+stress/Stack.java
+
+# HARMONY-3917
+gc/PhantomReferenceTest.java
+gc/WeakReferenceTest.java

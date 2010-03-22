@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="build-native">
+
+    <dirname property="bn.imported.basedir" file="${ant.file.build-native}"/>
+    <import file="${bn.imported.basedir}/properties.xml"/>
+    
+    <macrodef name="clean-native">
+        <attribute name="component" default="${component}"/>
+        <sequential>
+            <delete quiet="true" dir="${drlvm.semi.dir}/@{component}" />
+        </sequential>
+    </macrodef>
+    
+    <target name="setup-native-build" depends="-plugin-cpptasks">
+
+        <condition property="no.thr.mode">
+            <equals arg1="${hy.no.thr}" arg2="true"/>
+        </condition>
+        
+        <condition property="is.gcc">
+            <equals arg1="${hy.cpp.compiler}" arg2="gcc"/>
+        </condition>
+
+        <condition property="is.icc">
+            <equals arg1="${hy.cpp.compiler}" arg2="icc"/>
+        </condition>
+
+        <condition property="is.icl">
+            <equals arg1="${hy.cpp.compiler}" arg2="icl"/>
+        </condition>
+
+        <condition property="is.msvc">
+            <equals arg1="${hy.cpp.compiler}" arg2="msvc"/>
+        </condition>
+
+        <condition property="is.cfg.debug">
+            <equals arg1="${hy.cfg}" arg2="debug"/>
+        </condition>
+        <condition property="is.cfg.release">
+            <not><equals arg1="${hy.cfg}" arg2="debug"/></not>
+        </condition>
+        
+        <!-- build debug: true/false -->
+        <condition property="cfg.is.debug" value="true" else="false">
+            <equals arg1="${hy.cfg}" arg2="debug" />
+        </condition>
+        
+        <condition property="hy.asm.compiler" value="ml64">
+            <and>
+                <isset property="is.windows"/>
+                <isset property="is.64bit"/>
+            </and>
+        </condition>
+        <condition property="asm.flags" value="/c /Cp /W3 /nologo /Zd /Zi -DWIN32">
+            <and>
+                <isset property="is.windows"/>
+                <isset property="is.64bit"/>
+            </and>
+        </condition>
+        <condition property="hy.asm.compiler" value="ml">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="asm.flags" value="/c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd -DWIN32">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="asm.obj.switch" value="/Fo">
+            <isset property="is.windows"/>
+        </condition>
+
+        <property name="hy.asm.compiler" value="${hy.cpp.compiler}"/>
+
+           <condition property="asm.flags" value="-Wa,--fatal-warnings -c -x assembler-with-cpp -g">
+            <or>
+                <equals arg1="icc" arg2="${hy.asm.compiler}" />
+                <equals arg1="gcc" arg2="${hy.asm.compiler}" />
+            </or>
+        </condition>
+        <condition property="asm.obj.switch" value="-o">
+            <or>
+                <equals arg1="${hy.cpp.compiler}" arg2="gcc"/>
+                <equals arg1="${hy.cpp.compiler}" arg2="icc"/>
+            </or>
+        </condition>
+
+        <presetdef name="compile-asm">
+            <apply executable="${hy.asm.compiler}" 
+                dir="${component.obj.dir}"
+                dest="${component.obj.dir}"
+                parallel="true" skipemptyfilesets="on" verbose="no" failonerror="true">
+                <arg line="${asm.flags}" />
+                <compositemapper>
+                    <chainedmapper>
+                        <flattenmapper/>
+                        <globmapper from="*.asm" to="*${object.suffix}"/>
+                    </chainedmapper>
+                    <chainedmapper>
+                        <flattenmapper/>
+                        <globmapper from="*.s" to="*${object.suffix}"/>
+                    </chainedmapper>
+                </compositemapper>
+            </apply>
+        </presetdef>
+
+        <macrodef name="init-native">
+            <attribute name="component" default="${component}"/>
+            <sequential>
+                <echo message="## Building '@{component}'" />
+                
+                <property name="component.build.dir" location="${drlvm.semi.dir}/@{component}" />
+                <property name="component.obj.dir" location="${component.build.dir}/obj" />
+                <property name="component.bin.dir" location="${component.build.dir}/bin" />
+                
+                <mkdir dir="${component.bin.dir}" />
+                <mkdir dir="${component.obj.dir}" />
+            </sequential>
+        </macrodef>
+        
+        <presetdef name="compile-cc">
+            <cc objdir="${component.obj.dir}" 
+                debug="${cfg.is.debug}" 
+                name="${hy.cpp.compiler}"
+                runtime="dynamic" multithreaded="true" subsystem="console">
+                <compilerarg value="/FR${component.obj.dir}\" if="is.windows"/>
+                <compilerarg value="/Fd${component.obj.dir}\" if="is.windows"/>
+                <compilerarg value="/Zi" if="is.windows"/>
+                <compilerarg value="-fpic" if="is.unix"/>
+            </cc>
+        </presetdef>
+
+        <macrodef name="make-native">
+            <attribute name="libname" default="${component}"/>
+            <attribute name="type" />
+            <element name="cc-elements" implicit="yes" optional="yes"/>
+            <sequential>
+                <condition property="component.need.pdb">
+                    <and>
+                        <isset property="is.windows"/>
+                        <equals arg1="@{type}" arg2="shared"/>
+                    </and>
+                </condition>
+    
+                <cc objdir="${component.obj.dir}"
+                    outfile="${component.bin.dir}/@{libname}" 
+                    outtype="@{type}"
+                    debug="${cfg.is.debug}" 
+                    name="${hy.cpp.compiler}"
+                    subsystem="console">
+                    <linkerarg value="/pdb:${component.bin.dir}/@{libname}.pdb" if="component.need.pdb" />
+                    <linkerarg value="/debug" if="component.need.pdb" />
+                    <cc-elements/>
+                </cc>
+                
+                <embed-manifest lib="${component.bin.dir}/@{libname}${shlib.suffix}"/>
+                <deploy-lib/>
+            </sequential>
+        </macrodef>
+        
+        <macrodef name="link-lib">
+            <attribute name="name" default="${component}"/>
+            <attribute name="type" />
+            <element name="link-elements" implicit="yes" optional="yes"/>
+            <sequential>    
+                <make-native libname="@{name}" type="@{type}">
+                    <fileset id="component.link.fileset" dir="${component.obj.dir}">
+                        <include name="*${object.suffix}" />
+                    </fileset>
+                    <link-elements/>
+                </make-native>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="deploy-lib">
+            <attribute name="from" default="component.bin.dir"/>
+            <sequential>
+                <mkdir dir="${drlvm.lib.dir}" />
+                <copy todir="${drlvm.lib.dir}">
+                    <fileset dir="${@{from}}">
+                        <include name="*${linklib.suffix}" unless="shlib.is.linklib"/>
+                        <include name="*.exp" if="is.windows"/>
+                        <include name="*.a" if="is.unix"/>
+                    </fileset>
+                </copy>
+                <mkdir dir="${drlvm.bin.dir}" />
+                <copy todir="${drlvm.bin.dir}">
+                    <fileset dir="${@{from}}">
+                        <include name="*${shlib.suffix}"/>
+                        <include name="*.pdb" if="is.windows"/>
+                    </fileset>
+                </copy>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="depend-includes">
+            <attribute name="paths"/>
+            <sequential>
+                <pathconvert property="@{paths}.files" refid="@{paths}" pathsep="/**/*.h ">
+                    <map from="${vm.home}${file.separator}" to=""/>
+                </pathconvert>
+                <uptodate property="@{paths}.uptodate" targetfile="${component.bin.dir}/history.xml">
+                    <srcfiles dir="${vm.home}" includes="${@{paths}.files}"></srcfiles>
+                </uptodate>
+                <condition property="@{paths}.outofdate">
+                    <not><isset property="@{paths}.uptodate"/></not>
+                </condition>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="depend-src">
+            <attribute name="paths"/>
+            <sequential>
+                <uptodate property="@{paths}.uptodate" targetfile="${component.bin.dir}/history.xml">
+                    <srcfiles refid="@{paths}"></srcfiles>
+                    <!--chainedmapper>
+                        <flattenmapper/>
+                        <globmapper from="*.c" to="${portlib.obj.dir}${file.separator}*${object.suffix}"/>
+                    </chainedmapper-->
+                </uptodate>
+                <condition property="@{paths}.outofdate">
+                    <not><isset property="@{paths}.uptodate"/></not>
+                </condition>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="depend-selector">
+            <attribute name="rebuild-flag" 
+                description="name of a property which allows incremental rebuild"/>
+            <attribute name="id"/>
+            <attribute name="type" default="cpp"/>
+            <sequential>
+                <selector id="@{id}">
+                    <or><selector if="@{rebuild-flag}">
+                            <depend targetdir="${component.obj.dir}">
+                                <mapper>
+                                <chainedmapper>
+                                    <flattenmapper/>
+                                    <globmapper from="*.@{type}" to="*${object.suffix}"/>
+                                </chainedmapper>
+                                </mapper>
+                            </depend>
+                        </selector>
+                        <selector unless="@{rebuild-flag}">
+                            <filename name="**/*"/>
+                        </selector>
+                    </or>
+                </selector>
+            </sequential>
+        </macrodef>
+
+    </target>
+    
+    <macrodef name="embed-manifest">
+        <attribute name="lib"/>
+        <sequential>
+            <apply executable="mt.exe" skipemptyfilesets="on">
+                <fileset file="@{lib}${manifest.suffix}"/>
+                <arg value="-nologo" />
+                <arg value="-manifest" />
+                <srcfile/>
+                <arg value="-outputresource:@{lib};#2" />
+            </apply>
+        </sequential>
+    </macrodef>
+
+</project>

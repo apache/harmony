@@ -1,0 +1,212 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="jitrino" default="build" basedir="../..">
+    
+    <property name="component" value="jitrino"/>
+    <import file="common-vm.xml"/>
+
+    <target name="clean" >
+        <clean-native />
+    </target>
+ 
+    <target name="build" depends="-init-win,-init-unix">
+        <init-native/>
+        
+        <path id="jit.includes">
+            <dirset dir="${vm.home}/jitrino/src">
+                <include name="dynopt" />
+                <include name="main" />
+                <include name="shared" />
+                <include name="optimizer" />
+                <include name="optimizer/ssa" />
+                <include name="optimizer/abcd" />
+                <include name="translator" />
+                <include name="translator/java" />
+                <include name="vm" />
+                <include name="codegenerator" />
+
+                <include name="codegenerator/ia32" unless="is.ia64"/>
+                <include name="jet" unless="is.ia64"/>
+
+                <include name="codegenerator/ipf" if="is.ia64"/>
+                <include name="codegenerator/ipf/include" if="is.ia64"/>
+            </dirset>
+            <dirset dir="${vm.home}">
+                <include name="port/src/encoder/ia32_em64t" unless="is.ia64"/>
+                <include name="vmcore/src/util/win/include" if="is.windows"/>
+                <include name="vmcore/src/util/linux/include" if="is.unix"/>
+            </dirset>
+            <pathelement location="${drlvm.include.dir}" />
+            <pathelement location="${vm.home}/include" />
+            <pathelement location="${vm.home}/vmcore/include" />
+            <pathelement location="${vm.home}/port/include" />
+        </path>
+        <depend-includes paths="jit.includes"/>
+        <depend-selector rebuild-flag="jit.includes.uptodate" id="jit.depends"/>
+
+        <compile-cc>
+            <compiler id="cpp.compiler" extends="plaf.cpp.compiler">
+                <includepath><path refid="jit.includes"/></includepath>
+                <fileset dir="${vm.home}/jitrino/src">
+                    <selector refid="jit.depends"/>
+                    <include name="dynopt/*.cpp" />
+                    <include name="main/*.cpp" />
+                    <include name="shared/*.cpp" />
+                    <include name="optimizer/*.cpp" />
+                    <include name="optimizer/ssa/*.cpp" />
+                    <include name="optimizer/abcd/*.cpp" />
+                    <include name="translator/*.cpp" />
+                    <include name="translator/java/*.cpp" />
+                    <include name="vm/*.cpp" />
+                    <include name="codegenerator/*.cpp"/>
+    
+                    <include name="codegenerator/ipf/*.cpp" if="is.ia64"/>
+                    <include name="codegenerator/ia32/*.cpp" unless="is.ia64"/>
+                    <include name="jet/*.cpp" unless="is.ia64"/>
+                </fileset>
+    
+                <defineset define="PROJECT_JITRINO" />
+                <defineset define="JIT_LOGS,JIT_STATS" if="is.cfg.debug" />
+            </compiler>
+        </compile-cc>
+        <link-lib name="jitrino" type="shared">
+            <linker id="jitrino.linker" extends="common.linker">
+                <libset libs="harmonyvm,encoder,hythr" dir="${drlvm.lib.dir}" if="is.windows"/>
+                <linkerarg value="/OPT:REF" if="is.windows"/>
+        
+                <syslibset type="shared" libs="m" if="is.unix"/>
+                <syslibset type="shared" libs="dl" if="is.linux"/>
+                <linkerarg value="--version-script=${vm.home}/jitrino/build/jitrino.exp" if="is.unix"/>
+            </linker>
+        </link-lib>
+
+        <echo message="Copying configuration files for jitrino..."/> 
+        <copy todir="${drlvm.bin.dir}" flatten="true">
+              <fileset dir="${vm.home}/jitrino/config">
+                  <include name="ia32/*" if="is.x86"/>
+                  <include name="em64t/*" if="is.x86_64"/>
+                  <include name="ipf/*" if="is.ia64"/>
+              </fileset>
+        </copy>
+    </target>
+
+            <!-- windows specific -->
+        <target name="-init-win" depends="-common-vm" if="is.windows">
+            <compiler id="plaf.cpp.compiler" extends="common.cpp.compiler">
+                <!-- _CRT_SECURE_NO_DEPRECATE added to suppress a huge amount of complaints from msvc em64t compiler -->
+                <defineset define="_MBCS,_REENTRANT,__SMP__,_HAS_ITERATOR_DEBUGGING=0,_SECURE_SCL=0" />
+
+                <compilerarg value="/TP" />
+                <compilerarg value="/Zc:forScope" />
+                <compilerarg value="/WL" />
+                <compilerarg value="/W4" />
+<!--                <compilerarg value="/WX" /> -->
+
+                <compilerarg value="/Gm" if="is.cfg.debug"/>
+                <compilerarg value="/RTC1" if="is.cfg.debug"/>
+
+                <compilerarg value="/Ot" if="is.cfg.release"/>
+
+                <compilerarg value="/Qvec_report0" if="is.icl" unless="is.cfg.debug"/>
+                <compilerarg value="/Qww1,82,111,172,181,279,280,373,424,593,654,858" if="is.icl"/>
+                <compilerarg value="/Qwd82,193,271,304,373,383,424,444,654,869,981,1125,1418,1419,1572,1683" if="is.icl"/>
+                    <!--
+                      # /Qwd[tag,...] Disable the soft diagnostics that corresponds to tag. 
+                      # /Qwr[tag,...] Override the severity of the soft diagnostics corresponding to tag and make it a remark. 
+                      # /Qww[tag,...] Override the severity of the soft diagnostics corresponding to tag and make it a warning. 
+                      # /Qwe[tag,...] Override the severity of the soft diagnostics corresponding to tag and make it an error.
+                      #
+                      # Following icl warning added to icl command line
+                      #
+                      # remark #1: last line of file ends without a newline      
+                      # remark #82: storage class is not first
+                      # remark #111: statement is unreachable
+                      # remark #181: argument is incompatible with corresponding format string conversion
+                      # remark #193: zero used for undefined preprocessing identifier
+                      # remark #271: trailing comma is nonstandard   
+                      # remark #279: controlling expression is constant    
+                      # remark #280: selector expression is constant
+                      # remark #304: access control not specified ("private" by default)     
+                      # remark #373: "xxx" is inaccessible
+                      # remark #383: value copied to temporary, reference to temporary used
+                      # remark #424: extra ";" ignored
+                      # remark #444: destructor for base class "..." is not virtual    
+                      # remark #593: variable "xxx" was set but never used
+                      # remark #654: overloaded virtual function "xxx" is only partially overridden in class "yyy"
+                      # remark #858: type qualifier on return type is meaningless
+                      # remark #869: parameter "o" was never referenced    
+                      # remark #981: operands are evaluated in unspecified order
+                      # remark #1418: external definition with no prior declaration    
+                      # remark #1419: external declaration in primary source file      
+                      #
+                      # warning #1125: function "xxx" is hidden by "yyy" - virtual function override intended?
+                      # warning #1572: floating-point equality and inequality comparisons are unreliable
+                    -->
+
+                <compilerarg value="/wd4201" if="is.msvc"/>
+                <compilerarg value="/wd4244" if="is.msvc"/>
+                <compilerarg value="/wd4512" if="is.msvc"/>
+                <compilerarg value="/wd4702" if="is.msvc"/>
+                <compilerarg value="/wd4100" if="is.msvc"/>
+                <compilerarg value="/wd4127" if="is.msvc"/>
+                <compilerarg value="/wd4718" if="is.msvc" unless="is.cfg.debug"/>
+                    <!--
+                      #4201 - W4, nonstandart extention - nameless struct or union
+                      #4702 - W4, unreachable code (fired in STL's <list>)
+                      #4512 - assigment operator can not be generated
+                      #4100 - unreferenced formal parameter
+                      #4127 - conditional expression is constant
+                      #4718 - release: recursive call has no side effects, deleting
+
+                      # specify where to put the per-compilation unit pdb
+                      # this is needed to make the parallel compilation to work with cl: 
+                      # the default name is the same for all input files (vc70.pdb) and 
+                      # thus causes problems during parralel build.
+                    -->
+            </compiler>
+        </target>
+        
+        <target name="-init-unix" depends="-common-vm" if="is.unix">
+            <compiler id="plaf.cpp.compiler" extends="common.cpp.compiler">
+                <compilerarg value="-fmessage-length=0" if="is.gcc"/>
+                <compilerarg value="-Wall" if="is.gcc"/>
+                <compilerarg value="-Werror" if="is.gcc"/>
+                <compilerarg value="-Wno-uninitialized" if="is.gcc"/>
+
+                <compilerarg value="-x" />
+                <compilerarg value="c++" />
+                <compilerarg value="-fPIC" />
+                <compilerarg value="-fno-exceptions" />
+
+                <compilerarg value="-wd68" if="is.icc"/>
+                <compilerarg value="-wd654" if="is.icc"/>
+                <compilerarg value="-wd854" if="is.icc"/>
+                <compilerarg value="-wd470" if="is.icc"/>
+                <compilerarg value="-wd1572" if="is.icc"/>
+                <compilerarg value="-wd1125" if="is.icc"/>
+                    <!--                        
+                      # 470 - 'qualified name is not allowed in member declaration'
+                      # warning #1125: function "xxx" is hidden by "yyy"
+                      - virtual function override intended 
+                      # warning #1572: floating-point equality and inequality comparisons are unreliable
+                    -->
+
+                <compilerarg value="-O" if="is.unix" unless="is.cfg.debug"/>
+            </compiler>
+        </target>
+
+</project>

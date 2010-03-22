@@ -1,0 +1,16 @@
+## These tests are too slow
+java/lang/RuntimeAdditionalTest*.java
+
+# HARMONY-3214
+java/lang/ClassGenericsTest.java
+java/lang/ClassGenericsTest4.java
+
+# These tests have a very long stack on interpreter. Bug is HARMONY-4733
+java/lang/ClassGenericsTest3.java
+java/lang/ClassGenericsTest5.java
+
+# HARMONY-3953
+java/lang/ClassTestDesiredAssertionStatus.java
+
+# HARMONY-3953
+java/lang/ClassTestDesiredAssertionStatus.java

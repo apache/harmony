@@ -1,0 +1,37 @@
+## These tests are too slow
+java/lang/RuntimeAdditionalTest*.java
+
+## Tese tests are unstable and hang often
+java/lang/RuntimeAdditionalTest11.java
+java/lang/RuntimeAdditionalTest34.java
+java/lang/RuntimeAdditionalTest39.java
+java/lang/RuntimeAdditionalTest40.java
+java/lang/RuntimeAdditionalTest41.java
+java/lang/RuntimeAdditionalTest42.java
+
+# HARMONY-3905
+java/lang/ClassAnnotationsTest.java
+
+# HARMONY-3953
+java/lang/ClassTestDesiredAssertionStatus.java
+
+
+#################################
+######## to be analyzed #########
+#################################
+
+# hangs
+java/lang/ThreadGroupTest.java
+java/lang/ThreadTest.java
+
+# crashes (intermittently?)
+java/lang/RuntimeTest.java
+java/lang/RuntimeTest2.java
+
+java/lang/ThreadRTest.java
+java/lang/SystemExtensionTest.java
+
+# Excluded because of HARMONY-4598
+java/lang/RuntimeTest.java
+java/lang/SystemExtensionTest.java
+

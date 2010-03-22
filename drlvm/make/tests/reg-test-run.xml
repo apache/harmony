@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+     
+         http://www.apache.org/licenses/LICENSE-2.0
+     
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+
+<project name="REGRESSION TESTS RUN">
+    
+    <property name="reg.test.summary" location="${base.test.dir}/reg.test.failed"/>
+    <import file="test-common.xml"/>
+    
+    <target name="do-regression-testing" depends="launch-tests,make-report,check-results"/>
+
+    <target name="launch-tests">
+        <prepare-test-run test-dir="${reg.test.dir}"/>
+        <delete file="${reg.test.summary}" quiet="true"/>
+        <echo>
+        =====================================
+        Tested JVM: ${test.jvm.exe}
+        =====================================
+        </echo>
+
+        <take-xlist name="exclude.list" file="${reg.test.src}/excludes/exclude.${hy.platform}"/>
+
+        <!-- Choose regression tests to execute.
+             Use 
+                    -Dtest.case=H1234
+             or 
+                    -Dtest.case="H1234,H4321"
+             to specify particular tests to execute -->
+        <property name="test.case" value="H*"/>
+
+        <dirset dir="${reg.test.src}" includes="${test.case}" id="reg.run.set">
+            <excludesfile name="${exclude.list}" if="exclude.list"/>
+        </dirset>
+
+        <pathconvert property="reg.dir.list" setonempty="no" refid="reg.run.set"/>
+        <fail unless="reg.dir.list" message="No test found: ${test.case}"/>
+
+        <for param="reg.test.2launch">
+            <!-- Go through directories containing regression tests -->
+            <dirset refid="reg.run.set"/>
+            <sequential>
+                <!-- Set up the property pointing to the natives path -->
+                <var name="reg.test.2launch.native.path" unset="true"/>
+                <pathconvert property="reg.test.2launch.native.path">
+                    <path path="@{reg.test.2launch}"/>
+                    <map from="${reg.test.src}" to="${reg.test.native.path}"/>
+                </pathconvert>
+                <if>
+                    <available file="@{reg.test.2launch}/run.test.xml"/>
+                    <then>
+                        <!-- Launch the tests with a custom launchers 
+                                                placed near the tests -->
+                        <ant antfile="@{reg.test.2launch}/run.test.xml" target="run-test"/>
+                    </then>
+                    <else>
+                        <!-- Run standard JUnit tests -->
+                        <condition property="@{reg.test.2launch}.extra.arg" else=""
+                            value="-Djava.library.path=${reg.test.2launch.native.path}">
+                            <available file="${reg.test.2launch.native.path}"/>
+                        </condition>
+                        <for param="reg.unit.test.src">
+                            <!-- Go through unit tests in the directory -->
+                            <fileset dir="@{reg.test.2launch}">
+                                <include name="*Test.java"/>
+                                <include name="*Test.j"/>
+                            </fileset>
+                            <sequential>
+                                <propertyregex override="yes"
+                                  property="unit.test.class" 
+                                  input="@{reg.unit.test.src}"
+                                  regexp=".*H(\d\d*)[/\\](..*)\.j.*" 
+                                  replace="${reg.test.package}.h\1.\2"/>
+                                <run-junit-test test="${unit.test.class}"
+                                    vmarg="${@{reg.test.2launch}.extra.arg}"/>
+                            </sequential>
+                        </for>
+                    </else>
+                </if>
+            </sequential>
+        </for>
+
+    </target>
+
+    <target name="make-report">
+        <gen-test-report dir="${reg.test.dir}/reports"/>
+        <echo message="========================================"/>
+        <echo message="Regression testing report was stored in:"/>
+        <echo message="========================================"/>
+        <echo message="${reg.test.dir}/reports/html"/>
+        <echo message="========================================"/>
+    </target>
+    
+    <target name="check-results">
+        <available property="test.failed" file="${reg.test.summary}" />
+        <fail unless="run.all.tests" if="test.failed" message="There were test failures"/>
+    </target>
+
+    <!-- Macrodefinition launching JUnit test -->
+    <macrodef name="run-junit-test">
+        <attribute name="test"/>
+        <attribute name="vmarg" default=""/>
+        <element name="junit-element" optional="true"/>
+        <sequential>
+            <junit jvm="${test.jvm.exe}"
+                   fork="yes"
+                   printsummary="withOutAndErr"
+                   dir="${reg.test.dir}"
+                   failureproperty="reg.test.errors"
+                   timeout="${reg.test.timeout}">
+                <jvmarg line="@{vmarg} ${test.vmargs}"/>
+                <test name="@{test}" todir="${reg.test.dir}/reports"/>
+                <classpath>
+                    <pathelement path="${reg.test.class.path}"/>
+                </classpath>
+                <junit-element/>
+                <formatter type="brief"/>
+                <formatter type="xml"/>
+            </junit>
+            
+            <if>
+                <istrue value="${reg.test.errors}"/>
+                <then>
+                    <echo message="*** FAILED **** : @{test}${line.separator}" file="${reg.test.summary}" append="true"/>
+                </then>
+            </if>
+            <fail message="@{test} failed">
+                <condition>
+                    <and>
+                        <istrue value="${reg.test.errors}"/>
+                        <istrue value="${test.failfast}"/>
+                    </and>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
+
+    <!-- Macrodefinition launching JVMTI JUnit test -->
+    <macrodef name="run-jvmti-test">
+        <attribute name="test"/>
+        <attribute name="vmarg" default=""/>
+        <attribute name="agent"/>
+        <element name="jvmti-junit-element" optional="true"/>
+        <sequential>
+            <run-junit-test test="@{test}" vmarg="@{vmarg}">
+                <junit-element>
+                    <jvmti-junit-element/>
+                    <jvmarg
+                        value="-agentpath:${reg.test.2launch.native.path}/${shlib.prefix}@{agent}${shlib.suffix}"
+                        />
+                </junit-element>
+            </run-junit-test>
+        </sequential>
+    </macrodef>
+
+    <!-- Macrodefinition launching Plain Java test -->
+    <macrodef name="run-pjava-test">
+        <attribute name="test"/>
+        <attribute name="classpath" default=""/>
+        <attribute name="expected-code" default="0"/>
+        <attribute name="vmarg" default=""/>
+        <attribute name="args" default=""/>
+        <element name="java-element" optional="true"/>
+        <sequential>
+            <echo message="Running @{test}"/>
+            <java jvm="${test.jvm.exe}"
+                  classname="@{test}"
+                  resultproperty="@{test}.res.code"
+                  output="${reg.test.dir}/reports/@{test}.txt"
+                  dir="${reg.test.dir}"
+                  fork="yes"
+                  timeout="${reg.test.timeout}">
+                <java-element/>
+                <jvmarg line="@{vmarg} ${test.vmargs}" />
+                <arg line="@{args}" />
+                <classpath>
+                    <pathelement path="${reg.test.class.path}"/>
+                    <pathelement path="@{classpath}"/>
+                </classpath>
+            </java>
+            
+            <!-- prepare JUnit-style report -->
+            <condition property="@{test}.is.passed" value="true" else="false">
+                <equals arg1="${@{test}.res.code}" arg2="@{expected-code}"/>
+            </condition>
+            <escape-cdata file="${reg.test.dir}/reports/@{test}.txt" property="@{test}.msg"/>
+            <to-junit-xml xml="${reg.test.dir}/reports/TEST-@{test}.xml"
+                suite="@{test}" 
+                status="${@{test}.is.passed}"
+                out="${@{test}.msg}"
+                msg="Exit code: ${@{test}.res.code}"
+                detail="Exit code: ${@{test}.res.code} Err: ${@{test}.msg}"/>
+
+            <!-- handle test result -->
+            <if>
+                <isfalse value="${@{test}.is.passed}"/>
+                <then>
+                    <echo message="*** FAILED **** : @{test} (${@{test}.res.code} exit code)"/>
+                    <echo message="*** FAILED **** : @{test} (${@{test}.res.code} exit code)${line.separator}" file="${reg.test.summary}" append="true"/>
+                    <fail message="@{test} failed">
+                        <condition>
+                            <istrue value="${test.failfast}"/>
+                        </condition>
+                    </fail>
+                </then>
+                <else>
+                    <echo message="PASSED : @{test}"/>
+                </else>
+            </if>
+        </sequential>
+    </macrodef>
+
+</project>
