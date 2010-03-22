@@ -894,7 +894,7 @@ Usage:
                   value="${svn.root}/harmony/enhanced/classlib/branches/java6"/>
 
         <property name="vm.svn.url"
-                  value="${svn.root}/harmony/enhanced/drlvm/trunk" />
+                  value="${svn.root}/harmony/enhanced/branches/java6/drlvm" />
 
         <property name="jdktools.svn.url"
                   value="${svn.root}/harmony/enhanced/branches/java6/jdktools"/>
