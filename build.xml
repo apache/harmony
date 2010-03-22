@@ -20,6 +20,18 @@
 
 <project name="build-harmony" default="build" basedir=".">
 
+    <fail>
+        <condition>
+            <isset property="java6" />
+        </condition>
+The -Djava6=true federated build has been deprecated.  Please checkout
+the java6 federated build from:
+
+  https://svn.apache.org/repos/asf/harmony/enhanced/branches/java6
+
+Thanks.
+    </fail>
+
     <!-- temporary warning -->
     <fail>
         <condition>
@@ -886,6 +898,7 @@ Usage:
 
         <property name="jdktools.svn.url"
                   value="${svn.root}/harmony/enhanced/jdktools/branches/java6"/>
+
 
         <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/branches/java6/common_resources" />
     </target>
