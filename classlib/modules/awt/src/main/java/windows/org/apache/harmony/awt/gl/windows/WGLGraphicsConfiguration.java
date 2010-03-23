@@ -33,6 +33,7 @@ import org.apache.harmony.awt.ContextStorage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.awt.image.VolatileImage;
+import org.apache.harmony.awt.internal.nls.Messages;
 
 public class WGLGraphicsConfiguration
         extends WinGraphicsConfiguration
@@ -260,7 +261,7 @@ public class WGLGraphicsConfiguration
 
             if (wgl.wglMakeCurrent(hdc, oglContext) == 0) {
                 w32.ReleaseDC(drawable, hdc);
-                throw new IllegalStateException("Cannot make opengl context current");
+                throw new IllegalStateException(Messages.getString("awt.29D"));
             }
 
             if(oshdc == 0) {

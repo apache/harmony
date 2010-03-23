@@ -95,7 +95,7 @@ public class LinuxCursorFactory extends CursorFactory implements X11Defs {
         int width = img.getWidth(null);
         int height = img.getHeight(null);
         BufferedImage bufImg = Utils.getBufferedImage(img);
-        if(bufImg == null) throw new NullPointerException("Cursor Image is null");
+        if(bufImg == null) throw new NullPointerException(Messages.getString("awt.29C"));
 
         //must convert image into TYPE_BYTE_BINARY format of depth 1
         BufferedImage bmpSrc = convertTo1Bit(bufImg);

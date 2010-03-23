@@ -22,12 +22,14 @@
 
 package java.awt.image;
 
+import org.apache.harmony.awt.internal.nls.Messages;
+
 public class ByteLookupTable extends LookupTable {
     private byte data[][];
     public ByteLookupTable(int offset, byte[] data) {
         super(offset, 1);
         if (data.length < 1)
-            throw new IllegalArgumentException("Length of data should not be less then one");
+            throw new IllegalArgumentException(Messages.getString("awt.29E"));
         this.data = new byte[1][data.length];
         // The data array stored as a reference
         this.data[0] = data;
