@@ -40,7 +40,7 @@ static void sd_fill_modules()
 
     int count;
     bool res = port_get_all_modules(&g_modules, &count);
-    assert(res && g_modules && count);
+    assert((res && count) || !g_modules);
 }
 
 
@@ -104,8 +104,12 @@ static void sd_print_vm_line(FILE* file, int count, Registers* regs, port_stack_
 
 static void sd_print_c_line(FILE* file, int count, Registers* regs, CFunInfo* cfi)
 {
-    if (!cfi->name)
+    if (!*cfi->name)
+    {
+        fprintf(file, "%3d: 0x%"W_PI_FMT"  <unknown>\n",
+                count, regs->get_ip());
         return;
+    }
 
     fprintf(file, "%3d: 0x%"W_PI_FMT"  %s (%s:%d)\n",
         count, regs->get_ip(), cfi->name,

@@ -56,8 +56,8 @@ static inline native_segment_t* sd_find_segment(native_module_t* module, void* i
 
 void sd_get_c_method_info(CFunInfo* info, native_module_t* module, void* ip)
 {
-    *info->name = 0;
-    *info->filename = 0;
+    *info->name = '\0';
+    *info->filename = '\0';
     info->line = -1;
 
     if (!module || !module->filename)
@@ -183,16 +183,24 @@ void sd_init_crash_handler()
 
 void sd_cleanup_crash_handler()
 {
-    STD_FREE(g_curdir);
-    STD_FREE(g_cmdline);
+    if (g_curdir)
+        STD_FREE(g_curdir);
+    if (g_cmdline)
+        STD_FREE(g_cmdline);
 }
 
 void sd_print_cmdline_cwd()
 {
     fprintf(stderr, "\nCommand line:\n");
-    for (const char* ptr = g_cmdline; *ptr; ptr += strlen(ptr) + 1)
-        fprintf(stderr, "%s ", ptr);
-    fprintf(stderr, "\n");
+
+    if (g_cmdline)
+    {
+        for (const char* ptr = g_cmdline; *ptr; ptr += strlen(ptr) + 1)
+            fprintf(stderr, "%s ", ptr);
+        fprintf(stderr, "\n");
+    }
+    else
+        fprintf(stderr, "is unavailable, probably /proc is not mounted\n");
 
     fprintf(stderr, "\nWorking directory:\n%s\n", g_curdir ? g_curdir : "'null'");
 }

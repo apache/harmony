@@ -450,7 +450,7 @@ static void cd_fill_modules()
 
     int count;
     bool res = port_get_all_modules(&g_modules, &count);
-    assert(res && g_modules && count);
+    assert((res && count) || !g_modules);
 }
 
 static void cd_print_module_info(Registers* regs)

@@ -47,6 +47,12 @@ void port_dump_modules(native_module_t* modules, FILE *out)
     native_module_t* module;
     size_t i;
 
+    if (!modules)
+    {
+        fprintf(out, "unavailable, probably /proc is not mounted\n");
+        return;
+    }
+
     for (module = modules; module; module = module->next)
     {
         if (!module->filename)
