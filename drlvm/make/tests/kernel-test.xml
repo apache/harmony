@@ -89,7 +89,9 @@
 
     <target name="compile-kernel-test">
         <compile-java src="${kernel.test.javasrc}" 
-            dest="${test.class.path}"/>
+                      dest="${test.class.path}">
+            <classpath location="${junit.jar}" />
+        </compile-java>
         <compile-java src="${kernel.test.javasrc}/../kernel_resources" 
             dest="${test.resource.path}">
             <classpath path="${test.class.path}"/>
