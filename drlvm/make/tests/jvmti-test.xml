@@ -40,7 +40,9 @@
     </pathconvert>
 
     <target name="compile-jvmti-tests-java">
-        <compile-java dest="${jvmti.test.class.path}" src="${jvmti.test.src}"/>
+        <compile-java dest="${jvmti.test.class.path}" src="${jvmti.test.src}">
+            <classpath location="${junit.jar}" />
+        </compile-java>
     </target>
 
     <target name="compile-jvmti-tests-native">
