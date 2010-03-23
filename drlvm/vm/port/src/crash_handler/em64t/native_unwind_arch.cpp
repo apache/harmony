@@ -47,7 +47,7 @@ static bool native_check_caller(UnwindContext* context, Registers* regs, void** 
 {
     void* target = NULL;
     char* ptr = (char*)*sp;
-    
+
     if (native_dec_instr(context, ptr - 2, &target) == 2 || // CALL r/m64 w/o SIB w/o disp
         native_dec_instr(context, ptr - 3, &target) == 3 || // CALL r/m64 w/ SIB w/o disp
         native_dec_instr(context, ptr - 4, &target) == 4 || // CALL r/m64 w/ SIB w/ disp8

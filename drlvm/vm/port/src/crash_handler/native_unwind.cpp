@@ -44,6 +44,9 @@ bool port_init_unwind_context(UnwindContext* context, native_module_t* modules, 
     if (!context)
         return false;
 
+    context->clean_modules = false;
+    context->modules = NULL;
+
     if (!modules)
     {
         int mod_count;
@@ -56,15 +59,13 @@ bool port_init_unwind_context(UnwindContext* context, native_module_t* modules, 
         context->modules = mod_list;
     }
     else
-    {
-        context->clean_modules = false;
         context->modules = modules;
-    }
 
     if (!native_get_stack_range(context, regs, &context->stack))
     {
         if (context->clean_modules)
             port_clear_modules(&context->modules);
+        context->clean_modules = false;
         return false;
     }
 
