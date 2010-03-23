@@ -39,6 +39,7 @@ import javax.imageio.stream.ImageOutputStream;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 import org.apache.harmony.luni.util.NotImplementedException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class PNGImageWriter extends ImageWriter {
     private static int[][] BAND_OFFSETS = {
@@ -100,13 +101,13 @@ public class PNGImageWriter extends ImageWriter {
     @Override
     public void write(IIOMetadata streamMetadata, IIOImage iioimage, ImageWriteParam param) throws IOException {
         if (output == null) {
-            throw new IllegalStateException("Output not been set");
+            throw new IllegalStateException(Messages.getString("imageio.81"));
         }
         if (iioimage == null) {
-            throw new IllegalArgumentException("Image equals null");
+            throw new IllegalArgumentException(Messages.getString("imageio.82"));
         }
         if (iioimage.hasRaster() && !canWriteRasters()) {
-            throw new UnsupportedOperationException("Can't write raster");
+            throw new UnsupportedOperationException(Messages.getString("imageio.83"));
         }// ImageOutputStreamImpl
 
         int imageWidth, imageHeight;

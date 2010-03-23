@@ -25,6 +25,7 @@ import javax.imageio.ImageReader;
 import org.apache.harmony.luni.util.NotImplementedException;
 
 import java.io.IOException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class ImageReaderSpi extends ImageReaderWriterSpi {
 
@@ -59,7 +60,7 @@ public abstract class ImageReaderSpi extends ImageReaderWriterSpi {
                 extraImageMetadataFormatNames, extraImageMetadataFormatClassNames);
 
         if (inputTypes == null || inputTypes.length == 0) {
-            throw new NullPointerException("input types array cannot be NULL or empty");
+            throw new NullPointerException(Messages.getString("imageio.5C"));
         }
         this.inputTypes = inputTypes;
         this.writerSpiNames = writerSpiNames;

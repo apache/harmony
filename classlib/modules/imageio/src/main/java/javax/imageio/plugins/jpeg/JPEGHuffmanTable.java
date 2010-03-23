@@ -17,6 +17,8 @@
 
 package javax.imageio.plugins.jpeg;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 public class JPEGHuffmanTable {
     public static final JPEGHuffmanTable StdDCLuminance = new JPEGHuffmanTable(
             new short[] {0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
@@ -85,25 +87,25 @@ public class JPEGHuffmanTable {
 
     public JPEGHuffmanTable(short[] lengths, short[] values) {
         if (lengths == null) {
-            throw new IllegalArgumentException("lengths array is null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.44"));
         }
         if (values == null) {
-            throw new IllegalArgumentException("values array is null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.45"));
         }
         if (lengths.length > 16) { // According to the spec
-            throw new IllegalArgumentException("lengths array is too long!");
+            throw new IllegalArgumentException(Messages.getString("imageio.46"));
         }
         if (values.length > 256) { // According to the spec
-            throw new IllegalArgumentException("values array is too long");
+            throw new IllegalArgumentException(Messages.getString("imageio.47"));
         }
         for (short length : lengths) {
             if (length < 0) {
-                throw new IllegalArgumentException("Values in lengths array must be non-negative.");
+                throw new IllegalArgumentException(Messages.getString("imageio.48"));
             }
         }
         for (short value : values) {
             if (value < 0) {
-                throw new IllegalArgumentException("Values in values array must be non-negative.");
+                throw new IllegalArgumentException(Messages.getString("imageio.49"));
             }
         }
 
@@ -134,13 +136,13 @@ public class JPEGHuffmanTable {
             numLeaves += length;
             possibleLeaves -= length;
             if (possibleLeaves < 0) {
-                throw new IllegalArgumentException("Invalid Huffman table provided, lengths are incorrect.");
+                throw new IllegalArgumentException(Messages.getString("imageio.4A"));
             }
             possibleLeaves <<= 1;
         }
 
         if (values.length != numLeaves) {
-            throw new IllegalArgumentException("Invalid Huffman table provided, sum of lengths != values.");
+            throw new IllegalArgumentException(Messages.getString("imageio.4B"));
         }
     }
 

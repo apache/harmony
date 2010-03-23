@@ -23,6 +23,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.harmony.luni.util.NotImplementedException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 /**
  * TODO: add all the methods from the spec
@@ -33,7 +34,7 @@ public class ServiceRegistry {
 
     public ServiceRegistry(Iterator<Class<?>> categoriesIterator) {
         if (null == categoriesIterator) {
-            throw new IllegalArgumentException("categories iterator should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.5D"));
         }
         while(categoriesIterator.hasNext()) {
             Class<?> c =  categoriesIterator.next();
@@ -141,7 +142,7 @@ public class ServiceRegistry {
         Iterator<?> getProviders(Class<?> category, boolean useOrdering) {
             ProvidersMap providers = categories.get(category);
             if (null == providers) {
-                throw new IllegalArgumentException("Unknown category: " + category);
+                throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
             return providers.getProviders(useOrdering);
         }
@@ -164,7 +165,7 @@ public class ServiceRegistry {
          */
         boolean addProvider(Object provider, Class<?> category) {
             if (provider == null) {
-                throw new IllegalArgumentException("provider should be != NULL");
+                throw new IllegalArgumentException(Messages.getString("imageio.5E"));
             }
 
             boolean rt;
@@ -185,7 +186,7 @@ public class ServiceRegistry {
             Object obj = categories.get(category);
 
             if (null == obj) {
-                throw new IllegalArgumentException("Unknown category: " + category);
+                throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
 
             return ((ProvidersMap) obj).addProvider(provider);

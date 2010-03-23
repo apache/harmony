@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Locale;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 public class RAFIISSpi extends ImageInputStreamSpi {
     private static final String vendor = "Apache";
 
@@ -42,8 +44,7 @@ public class RAFIISSpi extends ImageInputStreamSpi {
         if (RandomAccessFile.class.isInstance(input)) {
             return new FileImageInputStream((RandomAccessFile) input);
         }
-        throw new IllegalArgumentException(
-                "input is not an instance of java.io.RandomAccessFile");
+        throw new IllegalArgumentException(Messages.getString("imageio.95"));
     }
 
     @Override

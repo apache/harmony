@@ -24,6 +24,7 @@ import java.security.PrivilegedAction;
 
 import javax.imageio.metadata.IIOMetadataFormat;
 import javax.imageio.metadata.IIOMetadataFormatImpl;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class IIOMetadataUtils {
     private IIOMetadataUtils() {} 
@@ -34,7 +35,7 @@ public class IIOMetadataUtils {
             String [] extraMetadataFormatNames, String [] extraMetadataFormatClassNames
     ) {
         if (formatName == null) {
-            throw new IllegalArgumentException("formatName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.89"));
         }
         if (formatName.equals(IIOMetadataFormatImpl.standardMetadataFormatName)) {
             if (standardFormatSupported) {
@@ -56,7 +57,7 @@ public class IIOMetadataUtils {
         }
 
         if (className == null) {
-            throw new IllegalArgumentException("Unsupported format name");
+            throw new IllegalArgumentException(Messages.getString("imageio.8A"));
         }
 
         // Get the context class loader and try to use it first
@@ -76,7 +77,7 @@ public class IIOMetadataUtils {
                 // Use current class loader
                 cls = Class.forName(className);
             } catch (ClassNotFoundException e1) {
-                throw new IllegalStateException ("Can't obtain format");
+                throw new IllegalStateException (Messages.getString("imageio.8B"));
             }
         }
 
@@ -84,7 +85,7 @@ public class IIOMetadataUtils {
             Method getInstance = cls.getMethod("getInstance");
             return (IIOMetadataFormat) getInstance.invoke(null);
         } catch (Exception e) {
-            IllegalStateException e1 = new IllegalStateException("Can't obtain format");
+            IllegalStateException e1 = new IllegalStateException(Messages.getString("imageio.8B"));
             e1.initCause(e); // Add some details to the message
             throw e1;
         }

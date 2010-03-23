@@ -37,6 +37,7 @@ import javax.imageio.event.IIOWriteProgressListener;
 import javax.imageio.event.IIOWriteWarningListener;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageWriterSpi;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class ImageWriter implements ImageTranscoder {
 
@@ -93,7 +94,7 @@ public abstract class ImageWriter implements ImageTranscoder {
 
     protected void processWarningOccurred(int imageIndex, String warning) {
         if (null == warning) {
-            throw new NullPointerException("warning message should not be NULL");
+            throw new NullPointerException(Messages.getString("imageio.2A"));
         }
         if (null != warningListeners) {
             for (IIOWriteWarningListener listener : warningListeners) {
@@ -108,10 +109,10 @@ public abstract class ImageWriter implements ImageTranscoder {
         }
 
         if (bundle == null) {
-            throw new IllegalArgumentException("baseName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.2B"));
         }
         if (key == null) {
-            throw new IllegalArgumentException("keyword == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.2C"));
         }
 
         // Get the context class loader and try to locate the bundle with it first
@@ -136,7 +137,7 @@ public abstract class ImageWriter implements ImageTranscoder {
                 try {
                     rb = ResourceBundle.getBundle(bundle, locale);
                 } catch (MissingResourceException e1) {
-                    throw new IllegalArgumentException("Bundle not found!");
+                    throw new IllegalArgumentException(Messages.getString("imageio.2D"));
                 }
             }
 
@@ -144,9 +145,9 @@ public abstract class ImageWriter implements ImageTranscoder {
                 String warning = rb.getString(key);
                 listener.warningOccurred(this, imageIndex, warning);
             } catch (MissingResourceException e) {
-                throw new IllegalArgumentException("Resource is missing!");
+                throw new IllegalArgumentException(Messages.getString("imageio.2E"));
             } catch (ClassCastException e) {
-                throw new IllegalArgumentException("Resource is not a String!");
+                throw new IllegalArgumentException(Messages.getString("imageio.2F"));
             }
         }
     }
@@ -164,7 +165,7 @@ public abstract class ImageWriter implements ImageTranscoder {
                     }
                 }
                 if (!supported) {
-                    throw new IllegalArgumentException("output " + output + " is not supported");
+                    throw new IllegalArgumentException(Messages.getString("imageio.94", output));
                 }
             }
         }
@@ -242,16 +243,16 @@ public abstract class ImageWriter implements ImageTranscoder {
 
     private final boolean checkOutputReturnFalse() {
         if (getOutput() == null) {
-            throw new IllegalStateException("getOutput() == null!");
+            throw new IllegalStateException(Messages.getString("imageio.30"));
         }
         return false;
     }
 
     private final void unsupportedOperation() {
         if (getOutput() == null) {
-            throw new IllegalStateException("getOutput() == null!");
+            throw new IllegalStateException(Messages.getString("imageio.30"));
         }
-        throw new UnsupportedOperationException("Unsupported write variant!");
+        throw new UnsupportedOperationException(Messages.getString("imageio.31"));
     }
 
 
@@ -480,7 +481,7 @@ public abstract class ImageWriter implements ImageTranscoder {
         if (validLocale) {
             this.locale = locale;
         } else {
-            throw new IllegalArgumentException("Invalid locale!");
+            throw new IllegalArgumentException(Messages.getString("imageio.32"));
         }
     }
 

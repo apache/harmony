@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class InputStreamIISSpi  extends ImageInputStreamSpi {
     private static final String vendor = "Apache";
@@ -54,6 +55,6 @@ public class InputStreamIISSpi  extends ImageInputStreamSpi {
                 return new MemoryCacheImageInputStream((InputStream) input);
             }
         }
-        throw new IllegalArgumentException("Output is not an instance of InputStream");
+        throw new IllegalArgumentException(Messages.getString("imageio.88"));
     }
 }

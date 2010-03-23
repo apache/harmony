@@ -27,6 +27,7 @@ import java.awt.image.RenderedImage;
 import java.awt.color.ColorSpace;
 
 import org.apache.harmony.luni.util.NotImplementedException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class ImageTypeSpecifier {
     
@@ -35,13 +36,13 @@ public class ImageTypeSpecifier {
 
     public ImageTypeSpecifier(ColorModel colorModel, SampleModel sampleModel) {
         if (colorModel == null) {
-            throw new IllegalArgumentException("color model should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.24"));
         }
         if (sampleModel == null) {
-            throw new IllegalArgumentException("sample model should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.25"));
         }
         if (!colorModel.isCompatibleSampleModel(sampleModel)) {
-            throw new IllegalArgumentException("color and sample models are not compatible");
+            throw new IllegalArgumentException(Messages.getString("imageio.26"));
         }
 
         this.colorModel = colorModel;
@@ -50,7 +51,7 @@ public class ImageTypeSpecifier {
 
     public ImageTypeSpecifier(RenderedImage renderedImage) {
         if (renderedImage == null) {
-            throw new IllegalArgumentException("image should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.27"));
         }
         this.colorModel = renderedImage.getColorModel();
         this.sampleModel = renderedImage.getSampleModel();
@@ -119,7 +120,7 @@ public class ImageTypeSpecifier {
 
     public static ImageTypeSpecifier createFromRenderedImage(RenderedImage image) {
         if (null == image) {
-            throw new IllegalArgumentException("image should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.27"));
         }
         return new ImageTypeSpecifier(image);
     }
@@ -150,7 +151,7 @@ public class ImageTypeSpecifier {
 
     public SampleModel getSampleModel(int width, int height) {
         if ((long)width*height > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("width * height > Integer.MAX_VALUE");
+            throw new IllegalArgumentException(Messages.getString("imageio.28"));
         }
         return sampleModel.createCompatibleSampleModel(width, height);
     }

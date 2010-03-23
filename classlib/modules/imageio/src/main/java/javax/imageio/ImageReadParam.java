@@ -21,6 +21,7 @@ package javax.imageio;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 /**
  * @author Sergey I. Salishev
@@ -85,7 +86,7 @@ public class ImageReadParam extends IIOParam {
 
     public void setSourceRenderSize(Dimension size) throws UnsupportedOperationException {
         if (!canSetSourceRenderSize) {
-            throw new UnsupportedOperationException("can't set source renderer size");
+            throw new UnsupportedOperationException(Messages.getString("imageio.29"));
         }
         sourceRenderSize = size;        
     }

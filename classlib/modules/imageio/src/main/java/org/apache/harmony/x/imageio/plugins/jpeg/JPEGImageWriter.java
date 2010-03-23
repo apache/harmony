@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.awt.image.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 /**
  * @author Rustem V. Rafikov
@@ -70,7 +71,7 @@ public class JPEGImageWriter extends ImageWriter {
             throws IOException {
 
         if (ios == null) {
-            throw new IllegalArgumentException("ios == null");
+            throw new IllegalArgumentException(Messages.getString("imageio.7F"));
         }
 
         RenderedImage img = null;
@@ -276,7 +277,7 @@ public class JPEGImageWriter extends ImageWriter {
 
         if (cm instanceof IndexColorModel) {
             // TODO: implement
-            throw new UnsupportedOperationException("IndexColorModel is not supported yet");
+            throw new UnsupportedOperationException(Messages.getString("imageio.80"));
         }
 
         boolean hasAlpha = cm.hasAlpha();

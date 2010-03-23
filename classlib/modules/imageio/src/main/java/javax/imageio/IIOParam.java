@@ -20,6 +20,7 @@
 package javax.imageio;
 
 import java.awt.*;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class IIOParam {
     protected Rectangle sourceRegion;
@@ -38,24 +39,24 @@ public abstract class IIOParam {
     public void setSourceRegion(Rectangle sourceRegion) {
         if (sourceRegion != null) {
             if (sourceRegion.x < 0) {
-                throw new IllegalArgumentException("x < 0");
+                throw new IllegalArgumentException(Messages.getString("imageio.15"));
             }
             if (sourceRegion.y < 0) {
-                throw new IllegalArgumentException("y < 0");
+                throw new IllegalArgumentException(Messages.getString("imageio.16"));
             }
             if (sourceRegion.width <= 0) {
-                throw new IllegalArgumentException("width <= 0");
+                throw new IllegalArgumentException(Messages.getString("imageio.17"));
             }
             if (sourceRegion.height <= 0) {
-                throw new IllegalArgumentException("height <= 0");
+                throw new IllegalArgumentException(Messages.getString("imageio.18"));
             }
 
             if (sourceRegion.width <= subsamplingXOffset) {
-                throw new IllegalArgumentException("width <= subsamplingXOffset");
+                throw new IllegalArgumentException(Messages.getString("imageio.19"));
             }
 
             if (sourceRegion.height <= subsamplingYOffset) {
-                throw new IllegalArgumentException("height <= subsamplingXOffset");
+                throw new IllegalArgumentException(Messages.getString("imageio.1A"));
             }
             //-- clone it to avoid unexpected modifications
             this.sourceRegion = (Rectangle) sourceRegion.clone();
@@ -78,25 +79,25 @@ public abstract class IIOParam {
                                  int subsamplingYOffset) {
 
         if (sourceXSubsampling <= 0) {
-            throw new IllegalArgumentException("sourceXSubsampling <= 0");
+            throw new IllegalArgumentException(Messages.getString("imageio.1B"));
         }
         if (sourceYSubsampling <= 0) {
-            throw new IllegalArgumentException("sourceYSubsampling <= 0");
+            throw new IllegalArgumentException(Messages.getString("imageio.1C"));
         }
 
         if ((subsamplingXOffset < 0) || (subsamplingXOffset >= sourceXSubsampling)) {
-            throw new IllegalArgumentException("subsamplingXOffset is wrong");
+            throw new IllegalArgumentException(Messages.getString("imageio.1D"));
         }
 
         if ((subsamplingYOffset < 0) || (subsamplingYOffset >= sourceYSubsampling)) {
-            throw new IllegalArgumentException("subsamplingYOffset is wrong");
+            throw new IllegalArgumentException(Messages.getString("imageio.1E"));
         }
 
         //-- does region contain pixels
         if (sourceRegion != null) {
             if (sourceRegion.width <= subsamplingXOffset ||
                     sourceRegion.height <= subsamplingYOffset) {
-                throw new IllegalArgumentException("there are no pixels in region");
+                throw new IllegalArgumentException(Messages.getString("imageio.1F"));
             }
         }
 
@@ -128,12 +129,12 @@ public abstract class IIOParam {
         } else {
             for (int i = 0; i < sourceBands.length; i++) {
                 if (sourceBands[i] < 0) {
-                    throw new IllegalArgumentException("negative value");
+                    throw new IllegalArgumentException(Messages.getString("imageio.20"));
                 }
                 
                 for (int j = i + 1; j < sourceBands.length; j++) {
                     if (sourceBands[i] == sourceBands[j]) {
-                        throw new IllegalArgumentException("duplicate value");
+                        throw new IllegalArgumentException(Messages.getString("imageio.21"));
                     }
                 }
             }
@@ -156,7 +157,7 @@ public abstract class IIOParam {
 
     public void setDestinationOffset(Point destinationOffset) {
         if (destinationOffset == null) {
-            throw new IllegalArgumentException("destinationOffset == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.22"));
         }
         
         this.destinationOffset = (Point) destinationOffset.clone();
@@ -186,7 +187,7 @@ public abstract class IIOParam {
         final IIOParamController controller = getController();
         
         if (controller == null) {
-            throw new IllegalStateException("controller wasn't set");
+            throw new IllegalStateException(Messages.getString("imageio.23"));
         }
         
         return controller.activate(this);

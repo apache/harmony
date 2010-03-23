@@ -21,6 +21,7 @@ import org.apache.harmony.x.imageio.plugins.jpeg.JPEGConsts;
 
 import javax.imageio.ImageWriteParam;
 import java.util.Locale;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class JPEGImageWriteParam extends ImageWriteParam {
     private static final float[] COMP_QUALITY_VALUES = {0.05f, 0.75f, 0.95f};
@@ -58,13 +59,13 @@ public class JPEGImageWriteParam extends ImageWriteParam {
             JPEGHuffmanTable[] ACHuffmanTables
     ) {
         if (qTables == null || DCHuffmanTables == null || ACHuffmanTables == null) {
-            throw new IllegalArgumentException("Invalid JPEG table arrays");
+            throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
         if(DCHuffmanTables.length != ACHuffmanTables.length) {
-            throw new IllegalArgumentException("Invalid JPEG table arrays");
+            throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
         if (qTables.length > 4 || DCHuffmanTables.length > 4) {
-            throw new IllegalArgumentException("Invalid JPEG table arrays");
+            throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
 
         // Do the shallow copy, it should be enough
@@ -114,7 +115,7 @@ public class JPEGImageWriteParam extends ImageWriteParam {
     @Override
     public boolean isCompressionLossless() {
         if (getCompressionMode() != MODE_EXPLICIT) {
-            throw new IllegalStateException("Compression mode not MODE_EXPLICIT!");
+            throw new IllegalStateException(Messages.getString("imageio.36"));
         }
         return false;
     }
@@ -122,7 +123,7 @@ public class JPEGImageWriteParam extends ImageWriteParam {
     @Override
     public void unsetCompression() {
         if (getCompressionMode() != MODE_EXPLICIT) {
-            throw new IllegalStateException("Compression mode not MODE_EXPLICIT!");
+            throw new IllegalStateException(Messages.getString("imageio.36"));
         }
         compressionQuality = JPEGConsts.DEFAULT_JPEG_COMPRESSION_QUALITY;
     }

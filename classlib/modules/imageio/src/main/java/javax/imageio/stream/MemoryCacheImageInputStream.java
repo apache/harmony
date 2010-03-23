@@ -22,6 +22,7 @@ import org.apache.harmony.x.imageio.stream.RandomAccessMemoryCache;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class MemoryCacheImageInputStream  extends ImageInputStreamImpl {
     private InputStream is;
@@ -29,7 +30,7 @@ public class MemoryCacheImageInputStream  extends ImageInputStreamImpl {
 
     public MemoryCacheImageInputStream(InputStream stream) {
         if (stream == null) {
-            throw new IllegalArgumentException("stream == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.0A"));
         }
         is = stream;
     }

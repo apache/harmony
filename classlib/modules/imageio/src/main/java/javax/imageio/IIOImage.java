@@ -24,6 +24,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.Raster;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class IIOImage {
 
@@ -34,7 +35,7 @@ public class IIOImage {
 
     public IIOImage(RenderedImage image, List<? extends BufferedImage> thumbnails, IIOMetadata metadata) {
         if (image == null) {
-            throw new IllegalArgumentException("image should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.27"));
         }
         this.raster = null;
         this.image = image;
@@ -44,7 +45,7 @@ public class IIOImage {
 
     public IIOImage(Raster raster, List<? extends BufferedImage> thumbnails, IIOMetadata metadata) {
         if (raster == null) {
-            throw new IllegalArgumentException("raster should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.5F"));
         }
         this.image = null;
         this.raster = raster;
@@ -58,7 +59,7 @@ public class IIOImage {
 
     public void setRenderedImage(RenderedImage image) {
         if (image == null) {
-            throw new IllegalArgumentException("image should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.27"));
         }
         raster = null;
         this.image = image;
@@ -74,7 +75,7 @@ public class IIOImage {
 
     public void setRaster(Raster raster) {
         if (raster == null) {
-            throw new IllegalArgumentException("raster should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.5F"));
         }
         image = null;
         this.raster = raster;
@@ -88,7 +89,7 @@ public class IIOImage {
         if (thumbnails != null) {
             return thumbnails.get(index);
         }
-        throw new IndexOutOfBoundsException("no thumbnails were set");
+        throw new IndexOutOfBoundsException(Messages.getString("imageio.60"));
     }
 
     public List<? extends BufferedImage> getThumbnails() {
