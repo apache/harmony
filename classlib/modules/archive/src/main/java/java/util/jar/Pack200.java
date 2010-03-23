@@ -25,6 +25,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.SortedMap;
 
+import org.apache.harmony.archive.internal.nls.Messages;
+
 /**
  * Class factory for {@link Pack200.Packer} and {@link Pack200.Unpacker}.
  */
@@ -64,7 +66,7 @@ public abstract class Pack200 {
                             return ClassLoader.getSystemClassLoader()
                                     .loadClass(className).newInstance();
                         } catch (Exception e) {
-                            throw new Error("Can't load class " + className, e);
+                            throw new Error(Messages.getString("archive.3E",className), e); //$NON-NLS-1$
                         }
                     }
                 });
@@ -92,7 +94,7 @@ public abstract class Pack200 {
                             return ClassLoader.getSystemClassLoader()
                                     .loadClass(className).newInstance();
                         } catch (Exception e) {
-                            throw new Error("Can't load class " + className, e);
+                            throw new Error(Messages.getString("archive.3E",className), e); //$NON-NLS-1$
                         }
                     }
                 });
