@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.crypto.NullCipher;
 import java.security.GeneralSecurityException;
+import org.apache.harmony.crypto.internal.nls.Messages;
 
 /**
  * This class wraps an {@code InputStream} and a cipher so that {@code read()}
@@ -147,7 +148,7 @@ public class CipherInputStream extends FilterInputStream {
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (in == null) {
-            throw new NullPointerException("Underlying input stream is null");
+            throw new NullPointerException(Messages.getString("crypto.47"));
         }
 
         int read_b;
