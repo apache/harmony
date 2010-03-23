@@ -16,7 +16,9 @@
 */
 
 #include <stdio.h>
+#ifdef _WIN32
 #include <malloc.h>
+#endif
 #include <open/hythread_ext.h>
 #include <apr_atomic.h>
 #include <open/types.h>
