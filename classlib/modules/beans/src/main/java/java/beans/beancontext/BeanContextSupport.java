@@ -219,7 +219,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
     @SuppressWarnings("unchecked")
     public boolean add(Object child) {
         if (child == null) {
-            throw new IllegalArgumentException("null child");
+            throw new IllegalArgumentException(Messages.getString("beans.67"));
         }
 
         BeanContextChild proxy = null;
@@ -233,14 +233,14 @@ public class BeanContextSupport extends BeanContextChildSupport implements
             // check serializing state
             if (serializing) {
                 throw new IllegalStateException(
-                        "cannot update children during serialization");
+                        Messages.getString("beans.68"));
             }
 
             // validate
             boolean valid = validatePendingAdd(child);
             if (!valid) {
                 throw new IllegalStateException(
-                        "Validation failed to add the child");
+                        Messages.getString("beans.69"));
             }
 
             // find the proxy, if there's one
@@ -248,7 +248,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
                 proxy = ((BeanContextProxy) child).getBeanContextProxy();
                 if (proxy == null) {
                     throw new NullPointerException(
-                            "null BeanContextChild proxy");
+                            Messages.getString("beans.6A"));
                 }
             }
             BeanContextChild beanContextChild = getChildBeanContextChild(child);
@@ -276,7 +276,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
                         }
                     }
                     throw new IllegalStateException(
-                            "failed to update child's beanContext property");
+                            Messages.getString("beans.6B"));
                 }
                 // ensure no duplicate listener
                 beanContextChild.removePropertyChangeListener("beanContext",
@@ -592,14 +592,14 @@ public class BeanContextSupport extends BeanContextChildSupport implements
         if (child instanceof BeanContextChild) {
             if (child instanceof BeanContextProxy) {
                 throw new IllegalArgumentException(
-                        "Illegal to impl both BeanContextChild and BeanContextProxy");
+                        Messages.getString("beans.6C"));
             }
             return (BeanContextChild) child;
         }
         if (child instanceof BeanContextProxy) {
             if (child instanceof BeanContextChild) {
                 throw new IllegalArgumentException(
-                        "Illegal to impl both BeanContextChild and BeanContextProxy");
+                        Messages.getString("beans.6C"));
             }
             return ((BeanContextProxy) child).getBeanContextProxy();
         }
@@ -706,7 +706,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
             throw new NullPointerException();
         }
         if (!contains(child)) {
-            throw new IllegalArgumentException("Not a child of this context");
+            throw new IllegalArgumentException(Messages.getString("beans.6D"));
         }
 
         return ClassLoader.getSystemResource(resourceName);
@@ -721,7 +721,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
             throw new NullPointerException();
         }
         if (!contains(child)) {
-            throw new IllegalArgumentException("Not a child of this context");
+            throw new IllegalArgumentException(Messages.getString("beans.6D"));
         }
 
         return ClassLoader.getSystemResourceAsStream(resourceName);
@@ -890,7 +890,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
                         beanContextChild.setBeanContext(getBeanContextPeer());
                     } catch (PropertyVetoException e) {
                         throw new IOException(
-                                "failed to update child's beanContext property");
+                                Messages.getString("beans.6B"));
                     }
                     // ensure no duplicate listener
                     beanContextChild.removePropertyChangeListener(
@@ -936,7 +936,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
      */
     protected boolean remove(Object child, boolean setChildBC) {
         if (child == null) {
-            throw new IllegalArgumentException("null child");
+            throw new IllegalArgumentException(Messages.getString("beans.67"));
         }
 
         Object peer = null;
@@ -950,14 +950,14 @@ public class BeanContextSupport extends BeanContextChildSupport implements
             // check serializing state
             if (serializing) {
                 throw new IllegalStateException(
-                        "cannot update children during serialization");
+                        Messages.getString("beans.68"));
             }
 
             // validate
             boolean valid = validatePendingRemove(child);
             if (!valid) {
                 throw new IllegalStateException(
-                        "Validation failed to remove the child");
+                        Messages.getString("beans.6E"));
             }
 
             // set child's beanContext property
@@ -973,7 +973,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
                     beanContextChild.addPropertyChangeListener("beanContext",
                             nonSerPCL);
                     throw new IllegalStateException(
-                            "failed to update child's beanContext property");
+                            Messages.getString("beans.6B"));
                 }
             }
 
@@ -1215,7 +1215,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
 
             // what if count not equals to serializable?
             if (count != serializable) {
-                throw new IOException("children changed during serialization!");
+                throw new IOException(Messages.getString("beans.6F"));
             }
         } finally {
             serializing = origSer;

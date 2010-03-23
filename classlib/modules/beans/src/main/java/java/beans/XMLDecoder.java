@@ -84,7 +84,7 @@ public class XMLDecoder {
                     inJavaElem = true;
                 } else {
                     listener.exceptionThrown(new Exception(
-                            "unknown root element: " + qName));
+                            Messages.getString("beans.72", qName)));
                 }
                 return;
             }
@@ -477,7 +477,7 @@ public class XMLDecoder {
             } else if ("short".equals(tag)) {
                 return Short.valueOf(value);
             } else {
-                throw new Exception("Unknown tag of basic type: " + tag);
+                throw new Exception(Messages.getString("beans.71", tag));
             }
         }
 
@@ -639,12 +639,12 @@ public class XMLDecoder {
         }
 
         if (readObjIndex >= readObjs.size()) {
-            throw new ArrayIndexOutOfBoundsException("no more objects to read");
+            throw new ArrayIndexOutOfBoundsException(Messages.getString("beans.70"));
         }
         Elem elem = readObjs.get(readObjIndex);
         if (!elem.isClosed) {
             // bad element, error occurred while parsing
-            throw new ArrayIndexOutOfBoundsException("no more objects to read");
+            throw new ArrayIndexOutOfBoundsException(Messages.getString("beans.70"));
         }
         readObjIndex++;
         return elem.result;
