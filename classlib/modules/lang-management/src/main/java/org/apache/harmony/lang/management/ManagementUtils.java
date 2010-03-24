@@ -1508,7 +1508,7 @@ public class ManagementUtils {
 
     /**
      * Convenience method that returns a boolean indication of whether or not
-     * concrete instances of the the supplied interface type
+     * concrete instances of the supplied interface type
      * <code>mxbeanInterface</code> should also be implementors of the
      * interface <code>javax.management.NotificationEmitter</code>.
      * 

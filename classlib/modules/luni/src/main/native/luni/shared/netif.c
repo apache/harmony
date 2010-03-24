@@ -190,7 +190,8 @@ Java_java_net_NetworkInterface_getNetworkInterfacesImpl (JNIEnv * env,
             }
         }
 
-      /* now  create the NetworkInterface object for this interface and then add it it ot the arrary that will be returned */
+      /* now create the NetworkInterface object for this interface and
+         then add it to the array that will be returned */
       currentInterface =
         (*env)->NewObject (env, networkInterfaceClass, methodID, name,
                            displayName, addresses,

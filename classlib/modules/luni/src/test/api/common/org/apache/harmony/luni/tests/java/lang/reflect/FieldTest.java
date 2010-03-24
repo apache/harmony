@@ -315,7 +315,7 @@ public class FieldTest extends junit.framework.TestCase {
 
 		// The test will attempt to use pass an object to set for object, byte,
 		// short, ..., float and double fields
-		// and pass a byte to to setByte for byte, short, ..., float and double
+		// and pass a byte to setByte for byte, short, ..., float and double
 		// fields and so on.
 		// It will also test if IllegalArgumentException is thrown when the
 		// field does not exist in the given object and that

@@ -128,7 +128,7 @@ public interface NativeWindow {
 
     /**
      * Changes window Z-order to place this window under, If w is null
-     * places places this window on the top. Z-order is per parent.
+     * places this window on the top. Z-order is per parent.
      * Toplevels a children of desktop in terms of Z-order.
      * @param w - window to place under.
      */

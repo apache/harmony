@@ -47,7 +47,7 @@ public class CharArrayReader extends Reader {
 
     /**
      * Constructs a CharArrayReader on the char array {@code buf}. The size of
-     * the reader is set to the length of the buffer and the object to to read
+     * the reader is set to the length of the buffer and the object to read
      * from is set to {@code buf}.
      * 
      * @param buf

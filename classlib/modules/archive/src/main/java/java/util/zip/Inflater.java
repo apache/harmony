@@ -350,7 +350,7 @@ public class Inflater {
             int nbytes, long handle);
 
     /**
-     * Sets the current input to to be decrompressed. This method should only be
+     * Sets the current input to be decompressed. This method should only be
      * called if {@code needsInput()} returns {@code true}.
      *
      * @param buf

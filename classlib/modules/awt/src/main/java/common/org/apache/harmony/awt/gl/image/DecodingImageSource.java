@@ -156,7 +156,7 @@ public abstract class DecodingImageSource implements ImageProducer {
     }
 
     /**
-     * Checks if the consumer is in the list and returns it it is there
+     * Checks if the consumer is in the list and returns it if it is there
      * @param consumersList - list of consumers
      * @param ic - consumer
      * @return consumer if found, null otherwise

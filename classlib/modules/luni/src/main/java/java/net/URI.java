@@ -1011,8 +1011,8 @@ public final class URI implements Comparable<URI>, Serializable {
 
     /*
      * Takes two strings that may contain hex sequences like %F1 or %2b and
-     * compares them, ignoring case for the hex values hex values must always
-     * occur in pairs like above
+     * compares them, ignoring case for the hex values. Hex values must always
+     * occur in pairs as above
      */
     private boolean equalsHexCaseInsensitive(String first, String second) {
         if (first.indexOf('%') != second.indexOf('%')) {

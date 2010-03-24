@@ -84,7 +84,7 @@
     </Match>
 
     <!--
-        OK to compare Strings using using == or != in the String class itself
+        OK to compare Strings using == or != in the String class itself
     -->
     <Match>
         <Class name="java.lang.String" />

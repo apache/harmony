@@ -520,7 +520,7 @@ public abstract class NumberFormat extends Format {
      * stops if a decimal separator is encountered.
      * 
      * @return {@code true} if this number format only parses integers,
-     *         {@code false} if if parsese integers as well as fractions.
+     *         {@code false} if it parses integers as well as fractions.
      */
     public boolean isParseIntegerOnly() {
         return parseIntegerOnly;

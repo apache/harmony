@@ -1313,7 +1313,7 @@ public class ClassBands extends BandSet {
     }
 
     /**
-     * Answer an ArrayList of ArrayLists which hold the the code attributes
+     * Answer an ArrayList of ArrayLists which hold the code attributes
      * corresponding to all classes in order.
      *
      * If a class doesn't have any attributes, the corresponding element in this

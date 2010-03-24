@@ -139,7 +139,7 @@ public class CipherInputStream extends FilterInputStream {
      * @param len
      *            the maximum number of bytes to read.
      * @return the number of bytes filled into buffer {@code b}, or {@code -1}
-     *         of the of the stream is reached.
+     *         if the end of the stream is reached.
      * @throws IOException
      *             if an error occurs.
      * @throws NullPointerException

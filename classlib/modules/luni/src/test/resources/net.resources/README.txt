@@ -96,8 +96,7 @@ The key properties required by the java.net tests are as follows ...
 * WebName : The unqualified name of the host where the HTTP server is running.
 
 * TestResourcesDir : the name of the folder on the HTTP server beneath the
-                     document root where the where the web resources have been
-                     deployed. 
+                     document root where the web resources have been deployed. 
 
 * HomeAddressResponse : the expected response returned from a successful get 
                         from the HTTP server.

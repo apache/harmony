@@ -890,7 +890,7 @@ setByteSocketOption (JNIEnv * env, hysocket_t hysocketP, int option,
  * @param	env			pointer to the JNI library
  * @param	socketP		pointer to the hysocket to query
  *
- * @return	the index for the interface interface bound to the multicast socket
+ * @return	the index for the interface bound to the multicast socket
  * @exception	SocketException	if an error occurs during the call
  */
 

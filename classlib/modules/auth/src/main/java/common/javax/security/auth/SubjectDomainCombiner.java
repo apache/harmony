@@ -103,11 +103,13 @@ public class SubjectDomainCombiner implements DomainCombiner {
             Principal[] p = s.toArray(new Principal[s.size()]);
 
             for (cur = 0; cur < currentDomains.length; cur++) {
-                ProtectionDomain newPD;
-                newPD = new ProtectionDomain(currentDomains[cur].getCodeSource(),
-                        currentDomains[cur].getPermissions(), currentDomains[cur]
-                                .getClassLoader(), p);
-                pd[cur] = newPD;
+                if (currentDomains[cur] != null) {
+                    ProtectionDomain newPD;
+                    newPD = new ProtectionDomain(currentDomains[cur].getCodeSource(),
+                            currentDomains[cur].getPermissions(), currentDomains[cur]
+                                    .getClassLoader(), p);
+                    pd[cur] = newPD;
+                }
             }
         }
 

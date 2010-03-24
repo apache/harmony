@@ -115,6 +115,9 @@ public class SubjectDomainCombinerTest extends SecurityTest {
         // test case: check inherited domains
         pd = combiner.combine(null, new ProtectionDomain[] { domain });
         assertSame("Inherited domain", domain, pd[0]);
+
+        //Regression for HARMONY-1129
+        assertNotNull(new SubjectDomainCombiner(new Subject()).combine(new ProtectionDomain[] {null}, new ProtectionDomain[] {null}));
     }
 
     public final void testSecurityException() {
