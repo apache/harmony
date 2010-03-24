@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.awt.image.BufferedImage;
@@ -102,14 +103,28 @@ public final class ImageIO {
         return null;
     }
 
-    public static String[] getReaderFormatNames() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getReaderFormatNames() {
+        ArrayList<String> FormatNames = new ArrayList<String>();
+
+        Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
+        while (it.hasNext()) {
+            ImageReaderSpi spi = it.next();
+            FormatNames.addAll(Arrays.asList(spi.getFormatNames()));
+        }
+
+        return (String[])FormatNames.toArray(new String[FormatNames.size()]);
     }
 
-    public static String[] getReaderMIMETypes() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getReaderMIMETypes() {
+        ArrayList<String> MIMETypes = new ArrayList<String>();
+
+        Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
+        while (it.hasNext()) {
+            ImageReaderSpi spi = it.next();
+            MIMETypes.addAll(Arrays.asList(spi.getMIMETypes()));
+        }
+
+        return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
     }
 
     public static Iterator<ImageReader> getImageReaders(Object input) {
@@ -151,14 +166,28 @@ public final class ImageIO {
                 new MIMETypeFilter(MIMEType), true));
     }
 
-    public static String[] getWriterFormatNames() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getWriterFormatNames() {
+        ArrayList<String> FormatNames = new ArrayList<String>();
+
+        Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class, true);
+        while (it.hasNext()) {
+            ImageWriterSpi spi = it.next();
+            FormatNames.addAll(Arrays.asList(spi.getFormatNames()));
+        }
+
+        return (String[])FormatNames.toArray(new String[FormatNames.size()]);
     }
 
-    public static String[] getWriterMIMETypes() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getWriterMIMETypes() {
+        ArrayList<String> MIMETypes = new ArrayList<String>();
+
+        Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class, true);
+        while (it.hasNext()) {
+            ImageWriterSpi spi = it.next();
+            MIMETypes.addAll(Arrays.asList(spi.getMIMETypes()));
+        }
+
+        return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
     }
 
     public static Iterator<ImageWriter> getImageWritersByFormatName(String formatName) {
