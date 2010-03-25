@@ -90,11 +90,6 @@
         <ensure-javac/>
         <mkdir dir="bin/main" />
 
-<echo>
-ant.core.lib = ${ant.core.lib}
-launcher = ${ant.library.dir}/ant-launcher.jar
-nodeps = ${ant.library.dir}/ant-nodeps.jar
-</echo>
         <hy.javac sourcepath=""
                   srcdir="src/main/java"
                   destdir="bin/main">
