@@ -287,7 +287,7 @@ public class PlainDatagramSocketImpl extends DatagramSocketImpl {
     public void setOption(int optID, Object val) throws SocketException {
         /*
          * for datagram sockets on some platforms we have to set both the
-         * REUSEADDR AND REUSEPORT so for REUSEADDR set this option option which
+         * REUSEADDR AND REUSEPORT so for REUSEADDR set this option which
          * tells the VM to set the two values as appropriate for the platform
          */
         if (optID == SocketOptions.SO_REUSEADDR) {

@@ -247,7 +247,7 @@ public class InflaterInputStream extends FilterInputStream {
     }
 
     /**
-     * Returns 0 when when this stream has exhausted its input; and 1 otherwise.
+     * Returns 0 when this stream has exhausted its input; and 1 otherwise.
      * A result of 1 does not guarantee that further bytes can be returned,
      * with or without blocking.
      *

@@ -42,7 +42,7 @@ public final class FloatingPointParser {
 	 * Takes a String and an integer exponent. The String should hold a positive
 	 * integer value (or zero). The exponent will be used to calculate the
 	 * floating point number by taking the positive integer the String
-	 * represents and multiplying by 10 raised to the power of the of the
+	 * represents and multiplying by 10 raised to the power of the
 	 * exponent. Returns the closest double value to the real number
 	 * 
 	 * @param s
@@ -60,7 +60,7 @@ public final class FloatingPointParser {
 	 * Takes a String and an integer exponent. The String should hold a positive
 	 * integer value (or zero). The exponent will be used to calculate the
 	 * floating point number by taking the positive integer the String
-	 * represents and multiplying by 10 raised to the power of the of the
+	 * represents and multiplying by 10 raised to the power of the
 	 * exponent. Returns the closest float value to the real number
 	 * 
 	 * @param s
@@ -80,7 +80,7 @@ public final class FloatingPointParser {
 	 * space and trailing zeroes eliminated. The exponent of the
 	 * StringExponentPair will be used to calculate the floating point number by
 	 * taking the positive integer the String represents and multiplying by 10
-	 * raised to the power of the of the exponent.
+	 * raised to the power of the exponent.
 	 * 
 	 * @param s
 	 *            the String that will be parsed to a floating point

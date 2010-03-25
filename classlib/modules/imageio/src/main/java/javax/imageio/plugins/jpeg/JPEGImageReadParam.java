@@ -18,6 +18,7 @@
 package javax.imageio.plugins.jpeg;
 
 import javax.imageio.ImageReadParam;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class JPEGImageReadParam extends ImageReadParam {
     private JPEGQTable qTables[];
@@ -37,13 +38,13 @@ public class JPEGImageReadParam extends ImageReadParam {
             JPEGHuffmanTable[] ACHuffmanTables
     ) {
         if (qTables == null || DCHuffmanTables == null || ACHuffmanTables == null) {
-            throw new IllegalArgumentException("Invalid JPEG table arrays");
+            throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
         if(DCHuffmanTables.length != ACHuffmanTables.length) {
-            throw new IllegalArgumentException("Invalid JPEG table arrays");
+            throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
         if (qTables.length > 4 || DCHuffmanTables.length > 4) {
-            throw new IllegalArgumentException("Invalid JPEG table arrays");
+            throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
 
         // Do the shallow copy, it should be enough

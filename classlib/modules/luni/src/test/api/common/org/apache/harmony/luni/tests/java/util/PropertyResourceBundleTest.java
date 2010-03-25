@@ -167,7 +167,7 @@ public class PropertyResourceBundleTest extends junit.framework.TestCase {
     /**
      * @add tests {@link java.util.PropertyResourceBundle#Enumeration}
      */
-    public void test_access$0_Enumberation() throws IOException {
+    public void test_access$0_Enumeration() throws IOException {
         class MockResourceBundle extends PropertyResourceBundle {
             MockResourceBundle(java.io.InputStream stream) throws IOException {
                 super(stream);

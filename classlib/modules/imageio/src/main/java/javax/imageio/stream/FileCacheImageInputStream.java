@@ -19,6 +19,7 @@
 package javax.imageio.stream;
 
 import java.io.*;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class FileCacheImageInputStream extends ImageInputStreamImpl {
     private InputStream is;
@@ -28,7 +29,7 @@ public class FileCacheImageInputStream extends ImageInputStreamImpl {
 
     public FileCacheImageInputStream(InputStream stream, File cacheDir) throws IOException {
         if (stream == null) {
-            throw new IllegalArgumentException("stream == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.0A"));
         }
         is = stream;
 
@@ -36,7 +37,7 @@ public class FileCacheImageInputStream extends ImageInputStreamImpl {
             file = File.createTempFile(FileCacheImageOutputStream.IIO_TEMP_FILE_PREFIX, null, cacheDir);
             file.deleteOnExit();
         } else {
-            throw new IllegalArgumentException("Not a directory!");
+            throw new IllegalArgumentException(Messages.getString("imageio.0B"));
         }
 
         raf = new RandomAccessFile(file, "rw");

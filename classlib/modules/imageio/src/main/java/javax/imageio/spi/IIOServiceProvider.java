@@ -22,6 +22,7 @@ package javax.imageio.spi;
 import java.util.Locale;
 
 import org.apache.harmony.luni.util.NotImplementedException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class IIOServiceProvider implements RegisterableService {
 
@@ -30,10 +31,10 @@ public abstract class IIOServiceProvider implements RegisterableService {
 
     public IIOServiceProvider(String vendorName, String version) {
         if (vendorName == null) {
-            throw new NullPointerException("vendor name cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.5A"));
         }
         if (version == null) {
-            throw new NullPointerException("version name cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.5B"));
         }
         this.vendorName = vendorName;
         this.version = version;

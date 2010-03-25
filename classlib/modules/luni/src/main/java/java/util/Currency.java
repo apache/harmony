@@ -115,7 +115,7 @@ public final class Currency implements Serializable {
      * Returns the symbol for this currency in the given {@code Locale}.
      * <p>
      * If the locale doesn't have any countries (e.g.
-     * {@code Locale.JAPANESE, new Locale("en","")}), the the ISO
+     * {@code Locale.JAPANESE, new Locale("en","")}), then the ISO
      * 4217 currency code is returned.
      * <p>
      * First the locale's resource bundle is checked, if the locale has the same currency,

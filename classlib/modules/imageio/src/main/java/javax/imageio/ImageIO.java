@@ -27,11 +27,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.net.URL;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public final class ImageIO {
 
@@ -69,7 +71,7 @@ public final class ImageIO {
             throws IOException {
 
         if (input == null) {
-            throw new IllegalArgumentException("input source cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.4C"));
         }
 
         Iterator<ImageInputStreamSpi> it = registry.getServiceProviders(ImageInputStreamSpi.class, true);
@@ -86,7 +88,7 @@ public final class ImageIO {
     public static ImageOutputStream createImageOutputStream(Object output)
             throws IOException {
         if (output == null) {
-            throw new IllegalArgumentException("output destination cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.4D"));
         }
 
         Iterator<ImageOutputStreamSpi> it = registry.getServiceProviders(ImageOutputStreamSpi.class, true);
@@ -101,19 +103,33 @@ public final class ImageIO {
         return null;
     }
 
-    public static String[] getReaderFormatNames() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getReaderFormatNames() {
+        ArrayList<String> FormatNames = new ArrayList<String>();
+
+        Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
+        while (it.hasNext()) {
+            ImageReaderSpi spi = it.next();
+            FormatNames.addAll(Arrays.asList(spi.getFormatNames()));
+        }
+
+        return (String[])FormatNames.toArray(new String[FormatNames.size()]);
     }
 
-    public static String[] getReaderMIMETypes() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getReaderMIMETypes() {
+        ArrayList<String> MIMETypes = new ArrayList<String>();
+
+        Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
+        while (it.hasNext()) {
+            ImageReaderSpi spi = it.next();
+            MIMETypes.addAll(Arrays.asList(spi.getMIMETypes()));
+        }
+
+        return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
     }
 
     public static Iterator<ImageReader> getImageReaders(Object input) {
         if (input == null) {
-            throw new NullPointerException("input cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.4E"));
         }
 
         Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class,
@@ -124,7 +140,7 @@ public final class ImageIO {
 
     public static Iterator<ImageReader> getImageReadersByFormatName(String formatName) {
         if (formatName == null) {
-            throw new NullPointerException("format name cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.4F"));
         }
 
         Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class,
@@ -135,7 +151,7 @@ public final class ImageIO {
 
     public static Iterator<ImageReader> getImageReadersBySuffix(String fileSuffix) {
         if (fileSuffix == null) {
-            throw new NullPointerException("suffix cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.50"));
         }
         Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class,
                 new SuffixFilter(fileSuffix), true);
@@ -150,19 +166,33 @@ public final class ImageIO {
                 new MIMETypeFilter(MIMEType), true));
     }
 
-    public static String[] getWriterFormatNames() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getWriterFormatNames() {
+        ArrayList<String> FormatNames = new ArrayList<String>();
+
+        Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class, true);
+        while (it.hasNext()) {
+            ImageWriterSpi spi = it.next();
+            FormatNames.addAll(Arrays.asList(spi.getFormatNames()));
+        }
+
+        return (String[])FormatNames.toArray(new String[FormatNames.size()]);
     }
 
-    public static String[] getWriterMIMETypes() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static String[] getWriterMIMETypes() {
+        ArrayList<String> MIMETypes = new ArrayList<String>();
+
+        Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class, true);
+        while (it.hasNext()) {
+            ImageWriterSpi spi = it.next();
+            MIMETypes.addAll(Arrays.asList(spi.getMIMETypes()));
+        }
+
+        return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
     }
 
     public static Iterator<ImageWriter> getImageWritersByFormatName(String formatName) {
         if (formatName == null) {
-            throw new NullPointerException("format name cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.4F"));
         }
 
         Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class,
@@ -173,7 +203,7 @@ public final class ImageIO {
 
     public static Iterator<ImageWriter> getImageWritersBySuffix(String fileSuffix) {
         if (fileSuffix == null) {
-            throw new NullPointerException("suffix cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.50"));
         }
         Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class,
                 new SuffixFilter(fileSuffix), true);
@@ -200,11 +230,11 @@ public final class ImageIO {
     public static Iterator<ImageWriter> getImageWriters(ImageTypeSpecifier type,
                                            String formatName) {
         if (type == null) {
-            throw new NullPointerException("type cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.51"));
         }
 
         if (formatName == null) {
-            throw new NullPointerException("format name cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.4F"));
         }
 
         Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class,
@@ -221,7 +251,7 @@ public final class ImageIO {
 
     public static BufferedImage read(File input) throws IOException {
         if (input == null) {
-            throw new IllegalArgumentException("input == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.52"));
         }
 
         ImageInputStream stream = createImageInputStream(input);
@@ -230,7 +260,7 @@ public final class ImageIO {
 
     public static BufferedImage read(InputStream input) throws IOException {
         if (input == null) {
-            throw new IllegalArgumentException("input == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.52"));
         }
 
         ImageInputStream stream = createImageInputStream(input);
@@ -239,7 +269,7 @@ public final class ImageIO {
 
     public static BufferedImage read(URL input) throws IOException {
         if (input == null) {
-            throw new IllegalArgumentException("input == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.52"));
         }
 
         InputStream stream = input.openStream();
@@ -251,7 +281,7 @@ public final class ImageIO {
 
     public static BufferedImage read(ImageInputStream stream) throws IOException {
         if (stream == null) {
-            throw new IllegalArgumentException("stream == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.0A"));
         }
 
         Iterator<ImageReader> imageReaders = getImageReaders(stream);
@@ -279,13 +309,13 @@ public final class ImageIO {
             throws IOException {
 
         if (im == null) {
-            throw new IllegalArgumentException("image cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.53"));
         }
         if (formatName == null) {
-            throw new IllegalArgumentException("format name cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.4F"));
         }
         if (output == null) {
-            throw new IllegalArgumentException("output cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.54"));
         }
 
         Iterator<ImageWriter> it = getImageWriters(ImageTypeSpecifier.createFromRenderedImage(im), formatName);
@@ -306,7 +336,7 @@ public final class ImageIO {
             throws IOException {
 
         if (output == null) {
-            throw new IllegalArgumentException("output cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.54"));
         }
 
         if (output.exists()) {
@@ -325,7 +355,7 @@ public final class ImageIO {
             throws IOException {
 
         if (output == null) {
-            throw new IllegalArgumentException("output cannot be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.54"));
         }
 
         ImageOutputStream ios = createImageOutputStream(output);
@@ -394,7 +424,7 @@ public final class ImageIO {
 
         public MIMETypeFilter(final String mimeType) {
             if (mimeType == null) {
-                throw new NullPointerException("MIMEType cannot be NULL");
+                throw new NullPointerException(Messages.getString("imageio.55"));
             }
             
             this.mimeType = mimeType;
@@ -451,7 +481,7 @@ public final class ImageIO {
         }
 
         public void remove() {
-            throw new UnsupportedOperationException("Use deregisterServiceprovider instead of Iterator.remove()");
+            throw new UnsupportedOperationException(Messages.getString("imageio.56"));
         }
     }
 
@@ -479,7 +509,7 @@ public final class ImageIO {
         }
 
         public void remove() {
-            throw new UnsupportedOperationException("Use deregisterServiceprovider instead of Iterator.remove()");
+            throw new UnsupportedOperationException(Messages.getString("imageio.56"));
         }
     }
 }

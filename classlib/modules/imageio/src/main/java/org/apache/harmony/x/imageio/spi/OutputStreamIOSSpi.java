@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class OutputStreamIOSSpi extends ImageOutputStreamSpi {
     private static final String vendor = "Apache";
@@ -45,7 +46,7 @@ public class OutputStreamIOSSpi extends ImageOutputStreamSpi {
                 return new MemoryCacheImageOutputStream((OutputStream) output);
             }
         }
-        throw new IllegalArgumentException("Output is not an instance of OutputStream");
+        throw new IllegalArgumentException(Messages.getString("imageio.85"));
     }
 
     @Override

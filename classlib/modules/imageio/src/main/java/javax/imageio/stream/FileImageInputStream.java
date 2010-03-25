@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.File;
 import java.io.FileNotFoundException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class FileImageInputStream extends ImageInputStreamImpl {
     RandomAccessFile raf;
@@ -29,7 +30,7 @@ public class FileImageInputStream extends ImageInputStreamImpl {
     @SuppressWarnings({"DuplicateThrows"})
     public FileImageInputStream(File f) throws FileNotFoundException, IOException {
         if (f == null) {
-            throw new IllegalArgumentException("f == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.08"));
         }
 
         raf = new RandomAccessFile(f, "r");
@@ -37,7 +38,7 @@ public class FileImageInputStream extends ImageInputStreamImpl {
 
     public FileImageInputStream(RandomAccessFile raf) {
         if (raf == null) {
-            throw new IllegalArgumentException("raf == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.09"));
         }
 
         this.raf = raf;

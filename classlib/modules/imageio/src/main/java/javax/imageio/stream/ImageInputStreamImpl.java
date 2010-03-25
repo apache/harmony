@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 
 import org.apache.harmony.luni.util.Util;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class ImageInputStreamImpl implements ImageInputStream {
 
@@ -41,7 +42,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 
 	protected final void checkClosed() throws IOException {
 		if (closed) {
-			throw new IOException("stream is closed");
+			throw new IOException(Messages.getString("imageio.0D"));
 		}
 	}
 
@@ -63,7 +64,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 
 	public void readBytes(IIOByteBuffer buf, int len) throws IOException {
 		if (buf == null) {
-			throw new NullPointerException("buffer is NULL");
+			throw new NullPointerException(Messages.getString("imageio.0E"));
 		}
 
 		byte[] b = new byte[len];
@@ -77,7 +78,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	public boolean readBoolean() throws IOException {
 		int b = read();
 		if (b < 0) {
-			throw new EOFException("EOF reached");
+			throw new EOFException(Messages.getString("imageio.0F"));
 		}
 		return b != 0;
 	}
@@ -85,7 +86,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	public byte readByte() throws IOException {
 		int b = read();
 		if (b < 0) {
-			throw new EOFException("EOF reached");
+			throw new EOFException(Messages.getString("imageio.0F"));
 		}
 		return (byte) b;
 	}
@@ -93,7 +94,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	public int readUnsignedByte() throws IOException {
 		int b = read();
 		if (b < 0) {
-			throw new EOFException("EOF reached");
+			throw new EOFException(Messages.getString("imageio.0F"));
 		}
 		return b;
 	}
@@ -350,7 +351,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 		checkClosed();
 		if (pos < getFlushedPosition()) {
 			throw new IllegalArgumentException(
-					"trying to seek before flushed pos");
+					Messages.getString("imageio.10"));
 		}
 		bitOffset = 0;
 		streamPos = pos;
@@ -361,7 +362,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 			posStack.push(getStreamPosition());
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new RuntimeException("Stream marking error");
+			throw new RuntimeException(Messages.getString("imageio.11"));
 		}
 	}
 
@@ -371,7 +372,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 			long p = posStack.pop();
 			if (p < flushedPos) {
 				throw new IOException(
-						"marked position lies in the flushed portion of the stream");
+						Messages.getString("imageio.12"));
 			}
 			seek(p);
 		}
@@ -380,11 +381,11 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	public void flushBefore(long pos) throws IOException {
 		if (pos > getStreamPosition()) {
 			throw new IndexOutOfBoundsException(
-					"Trying to flush outside of current position");
+					Messages.getString("imageio.13"));
 		}
 		if (pos < flushedPos) {
 			throw new IndexOutOfBoundsException(
-					"Trying to flush within already flushed portion");
+					Messages.getString("imageio.14"));
 		}
 		flushedPos = pos;
 		// -- TODO implement

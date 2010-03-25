@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public final class RandomAccessMemoryCache {
     private static final int BLOCK_SHIFT = 9;
@@ -121,7 +122,7 @@ public final class RandomAccessMemoryCache {
     /*
     public void seek(long pos) throws IOException {
         if (pos < 0) {
-            throw new IOException("seek position is negative");
+            throw new IOException(Messages.getString("imageio.7C"));
         }
         this.pos = pos; 
     }
@@ -204,13 +205,13 @@ public final class RandomAccessMemoryCache {
 
     public void getData(OutputStream os, int count, long pos) throws IOException {
         if (pos + count > length) {
-            throw new IndexOutOfBoundsException("Argument out of cache");
+            throw new IndexOutOfBoundsException(Messages.getString("imageio.7D"));
         }
 
         int blockIdx = (int)(pos >> BLOCK_SHIFT);
         int offset = (int) (pos & BLOCK_MASK);
         if (blockIdx < firstUndisposed) {
-            throw new IndexOutOfBoundsException("The requested data are already disposed");
+            throw new IndexOutOfBoundsException(Messages.getString("imageio.7E"));
         }
 
         while (count > 0) {

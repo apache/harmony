@@ -25,6 +25,7 @@ import javax.imageio.stream.FileImageOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class FileIOSSpi extends ImageOutputStreamSpi {
     private static final String vendor = "Apache";
@@ -41,7 +42,7 @@ public class FileIOSSpi extends ImageOutputStreamSpi {
         if (output instanceof File) {
             return new FileImageOutputStream((File) output);
         }
-        throw new IllegalArgumentException("output is not instance of File");
+        throw new IllegalArgumentException(Messages.getString("imageio.86"));
     }
 
     @Override

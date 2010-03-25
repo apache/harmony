@@ -114,7 +114,7 @@ public class SecretKeySpecTest extends TestCase {
 
         try {
             new SecretKeySpec(key, -1, key.length, algorithm);
-            fail("An ArrayIndexOutOfBoundsxception should be thrown "
+            fail("An ArrayIndexOutOfBoundsException should be thrown "
                     + "in the case of negative offset.");
         } catch (IllegalArgumentException e) {
             fail("Not expected IllegalArgumentException was thrown.");
@@ -124,7 +124,7 @@ public class SecretKeySpecTest extends TestCase {
         // Regression test for HARMONY-6347
         try {
             new SecretKeySpec(key, -1, key.length+2, algorithm);
-            fail("An ArrayIndexOutOfBoundsxception should be thrown "
+            fail("An ArrayIndexOutOfBoundsException should be thrown "
                     + "in the case of negative offset.");
         } catch (IllegalArgumentException e) {
             fail("Not expected IllegalArgumentException was thrown.");

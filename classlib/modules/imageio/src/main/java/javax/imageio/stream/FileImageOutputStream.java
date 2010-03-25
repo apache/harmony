@@ -20,6 +20,7 @@
 package javax.imageio.stream;
 
 import java.io.*;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class FileImageOutputStream extends ImageOutputStreamImpl {
 
@@ -33,7 +34,7 @@ public class FileImageOutputStream extends ImageOutputStreamImpl {
 
     public FileImageOutputStream(RandomAccessFile raf) {
         if (raf == null) {
-            throw new IllegalArgumentException("file should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.0C"));
         }
         file = raf;
     }

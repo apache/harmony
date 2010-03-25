@@ -22,6 +22,7 @@ package javax.imageio.spi;
 import org.apache.harmony.x.imageio.metadata.IIOMetadataUtils;
 
 import javax.imageio.metadata.IIOMetadataFormat;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class ImageReaderWriterSpi extends IIOServiceProvider
         implements RegisterableService {
@@ -57,11 +58,11 @@ public abstract class ImageReaderWriterSpi extends IIOServiceProvider
         super(vendorName, version);
 
         if (names == null || names.length == 0) {
-            throw new NullPointerException("format names array cannot be NULL or empty");
+            throw new NullPointerException(Messages.getString("imageio.57"));
         }
 
         if (pluginClassName == null) {
-            throw new NullPointerException("Plugin class name cannot be NULL");
+            throw new NullPointerException(Messages.getString("imageio.58"));
         }
 
         // We clone all the arrays to be consistent with the fact that

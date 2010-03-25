@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import org.apache.harmony.x.imageio.metadata.IIOMetadataUtils;
 import org.w3c.dom.Node;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class IIOMetadata {
 
@@ -44,21 +45,21 @@ public abstract class IIOMetadata {
         if (extraMetadataFormatNames == null) {
             if (extraMetadataFormatClassNames != null) {
                 throw new IllegalArgumentException(
-                        "extraMetadataFormatNames == null && extraMetadataFormatClassNames != null!"
+                        Messages.getString("imageio.77")
                 );
             }
         } else {
             if (extraMetadataFormatClassNames == null) {
                 throw new IllegalArgumentException(
-                        "extraMetadataFormatNames != null && extraMetadataFormatClassNames == null!"
+                        Messages.getString("imageio.78")
                 );
             }
             if (extraMetadataFormatNames.length == 0) {
-                throw new IllegalArgumentException("extraMetadataFormatNames.length == 0!");
+                throw new IllegalArgumentException(Messages.getString("imageio.79"));
             }
             if (extraMetadataFormatClassNames.length != extraMetadataFormatNames.length) {
                 throw new IllegalArgumentException(
-                        "extraMetadataFormatClassNames.length != extraMetadataFormatNames.length!"
+                        Messages.getString("imageio.7A")
                 );
             }
             this.extraMetadataFormatNames = extraMetadataFormatNames.clone();
@@ -81,7 +82,7 @@ public abstract class IIOMetadata {
 
     public boolean activateController() {
         if (!hasController()) {
-            throw new IllegalStateException("hasController() == false!");
+            throw new IllegalStateException(Messages.getString("imageio.7B"));
         }
         return getController().activate(this);
     }

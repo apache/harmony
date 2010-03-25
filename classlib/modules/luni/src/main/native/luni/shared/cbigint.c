@@ -718,7 +718,7 @@ timesTenToTheEHighPrecision (U_64 * result, IDATA length, jint e)
      result[length++] = overflow;
      } while (--e);
    */
-  /* Replace the current implementaion which performs a
+  /* Replace the current implementation which performs a
    * "multiplication" by 10 e number of times with an actual
    * multiplication. 10e19 is the largest exponent to the power of ten
    * that will fit in a 64-bit integer, and 10e9 is the largest exponent to

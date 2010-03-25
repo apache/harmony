@@ -28,7 +28,7 @@ public enum ImageType {
                         new String[] { "image/gif" }),
         @SuppressWarnings("nls")
         PNG(new String[] { "png", "PNG" }, new String[] { "png" },
-                        new String[] { "image/png" });
+                        new String[] { "image/png", "image/x-png" });
 
     private final String names[];
     private final String suffixes[];

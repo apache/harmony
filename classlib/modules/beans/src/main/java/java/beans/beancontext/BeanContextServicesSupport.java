@@ -692,7 +692,7 @@ public class BeanContextServicesSupport extends BeanContextSupport implements
             }
             if (bcssChild == null) {
                 throw new IllegalArgumentException(
-                        "not a child of this context");
+                        Messages.getString("beans.65"));
             }
 
             // try local service
@@ -828,7 +828,7 @@ public class BeanContextServicesSupport extends BeanContextSupport implements
             }
             if (bcssChild == null) {
                 throw new IllegalArgumentException(
-                        "not a child of this context");
+                        Messages.getString("beans.65"));
             }
 
             releaseServiceWithoutCheck(child, bcssChild, requestor, service,
@@ -920,7 +920,7 @@ public class BeanContextServicesSupport extends BeanContextSupport implements
                 }
                 if (bcssProvider.getServiceProvider() != serviceProvider) {
                     throw new IllegalArgumentException(
-                            "not the service provider registered with this context");
+                            Messages.getString("beans.66"));
                 }
 
                 services.remove(serviceClass);

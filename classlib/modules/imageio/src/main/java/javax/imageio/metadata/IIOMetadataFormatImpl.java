@@ -21,6 +21,7 @@ import javax.imageio.ImageTypeSpecifier;
 import java.util.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     @SuppressWarnings({"ConstantDeclaredInAbstractClass"})
@@ -36,14 +37,14 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
 
     public IIOMetadataFormatImpl(String rootName, int childPolicy) {
         if (rootName == null) {
-            throw new IllegalArgumentException("rootName is null");
+            throw new IllegalArgumentException(Messages.getString("imageio.63"));
         }
         if (
                 childPolicy < CHILD_POLICY_EMPTY ||
                 childPolicy > CHILD_POLICY_MAX ||
                 childPolicy == CHILD_POLICY_REPEAT
         ) {
-            throw new IllegalArgumentException("childPolicy is not one of the predefined constants");
+            throw new IllegalArgumentException(Messages.getString("imageio.64"));
         }
 
         this.rootName = rootName;
@@ -55,13 +56,13 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
 
     public IIOMetadataFormatImpl(String rootName, int minChildren, int maxChildren) {
         if (rootName == null) {
-            throw new IllegalArgumentException("rootName is null");
+            throw new IllegalArgumentException(Messages.getString("imageio.63"));
         }
         if (minChildren < 0) {
-            throw new IllegalArgumentException("minChildren < 0!");
+            throw new IllegalArgumentException(Messages.getString("imageio.65"));
         }
         if (minChildren > maxChildren) {
-            throw new IllegalArgumentException("minChildren > maxChildren!");
+            throw new IllegalArgumentException(Messages.getString("imageio.66"));
         }
 
         this.rootName = rootName;
@@ -81,13 +82,13 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
             boolean required, int listMinLength, int listMaxLength
     ) {
         if (attrName == null) {
-            throw new IllegalArgumentException("attrName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.67"));
         }
         if (dataType < DATATYPE_STRING || dataType > DATATYPE_DOUBLE) {
-            throw new IllegalArgumentException("Invalid value for dataType!");
+            throw new IllegalArgumentException(Messages.getString("imageio.68"));
         }
         if (listMinLength < 0 || listMinLength > listMaxLength) {
-            throw new IllegalArgumentException("Invalid list bounds!");
+            throw new IllegalArgumentException(Messages.getString("imageio.69"));
         }
 
         Element element = findElement(elementName);
@@ -107,10 +108,10 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
             boolean required, String defaultValue
     ) {
         if (attrName == null) {
-            throw new IllegalArgumentException("attrName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.67"));
         }
         if (dataType < DATATYPE_STRING || dataType > DATATYPE_DOUBLE) {
-            throw new IllegalArgumentException("Invalid value for dataType!");
+            throw new IllegalArgumentException(Messages.getString("imageio.68"));
         }
 
         Element element = findElement(elementName);
@@ -129,23 +130,23 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
             boolean required, String defaultValue, List<String> enumeratedValues
     ) {
         if (attrName == null) {
-            throw new IllegalArgumentException("attrName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.67"));
         }
         if (dataType < DATATYPE_STRING || dataType > DATATYPE_DOUBLE) {
-            throw new IllegalArgumentException("Invalid value for dataType!");
+            throw new IllegalArgumentException(Messages.getString("imageio.68"));
         }
         if (enumeratedValues == null || enumeratedValues.isEmpty()) {
-            throw new IllegalArgumentException("enumeratedValues is empty or null");
+            throw new IllegalArgumentException(Messages.getString("imageio.6A"));
         }
 
         try {
             for (String enumeratedValue : enumeratedValues) {
                 if (enumeratedValue == null) {
-                    throw new IllegalArgumentException("enumeratedValues contains a null!");
+                    throw new IllegalArgumentException(Messages.getString("imageio.6B"));
                 }
             }
         } catch (ClassCastException e) {
-            throw new IllegalArgumentException("enumeratedValues contains a non-String value!");
+            throw new IllegalArgumentException(Messages.getString("imageio.6C"));
         }
 
         Element element = findElement(elementName);
@@ -167,10 +168,10 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
             boolean minInclusive, boolean maxInclusive
     ) {
         if (attrName == null) {
-            throw new IllegalArgumentException("attrName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.67"));
         }
         if (dataType < DATATYPE_STRING || dataType > DATATYPE_DOUBLE) {
-            throw new IllegalArgumentException("Invalid value for dataType!");
+            throw new IllegalArgumentException(Messages.getString("imageio.68"));
         }
 
         Element element = findElement(elementName);
@@ -215,7 +216,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
                 childPolicy > CHILD_POLICY_MAX ||
                 childPolicy == CHILD_POLICY_REPEAT
         ) {
-            throw new IllegalArgumentException("childPolicy is not one of the predefined constants");
+            throw new IllegalArgumentException(Messages.getString("imageio.64"));
         }
         
         Element parent = findElement(parentName);
@@ -231,10 +232,10 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
             int minChildren, int maxChildren
     ) {
         if (minChildren < 0) {
-            throw new IllegalArgumentException("minChildren < 0!");
+            throw new IllegalArgumentException(Messages.getString("imageio.65"));
         }
         if (minChildren > maxChildren) {
-            throw new IllegalArgumentException("minChildren > maxChildren!");
+            throw new IllegalArgumentException(Messages.getString("imageio.66"));
         }
 
         Element parent = findElement(parentName);
@@ -284,17 +285,17 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     ) {
         // note: reqired is an unused parameter
         if (enumeratedValues == null || enumeratedValues.isEmpty()) {
-            throw new IllegalArgumentException("enumeratedValues is empty or null");
+            throw new IllegalArgumentException(Messages.getString("imageio.6A"));
         }
 
         try {
             for (T enumeratedValue : enumeratedValues) {
                 if (enumeratedValue == null) {
-                    throw new IllegalArgumentException("enumeratedValues contains a null!");
+                    throw new IllegalArgumentException(Messages.getString("imageio.6B"));
                 }
             }
         } catch (ClassCastException e) {
-            throw new IllegalArgumentException("enumeratedValues contains a value not of class classType!");
+            throw new IllegalArgumentException(Messages.getString("imageio.6D"));
         }
 
         Element element = findElement(elementName);
@@ -348,7 +349,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public String[] getAttributeEnumerations(String elementName, String attrName) {
         Attlist attr = findAttribute(elementName, attrName);
         if (attr.valueType != VALUE_ENUMERATION) {
-            throw new IllegalArgumentException("Attribute is not an enumeration!");
+            throw new IllegalArgumentException(Messages.getString("imageio.6E"));
         }
 
         return attr.enumeratedValues.toArray(new String[attr.enumeratedValues.size()]);
@@ -357,7 +358,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public int getAttributeListMaxLength(String elementName, String attrName) {
         Attlist attr = findAttribute(elementName, attrName);
         if (attr.valueType != VALUE_LIST) {
-            throw new IllegalArgumentException("Attribute is not a list!");
+            throw new IllegalArgumentException(Messages.getString("imageio.6F"));
         }
         return attr.listMaxLength;
     }
@@ -365,7 +366,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public int getAttributeListMinLength(String elementName, String attrName) {
         Attlist attr = findAttribute(elementName, attrName);
         if (attr.valueType != VALUE_LIST) {
-            throw new IllegalArgumentException("Attribute is not a list!");
+            throw new IllegalArgumentException(Messages.getString("imageio.6F"));
         }
         return attr.listMinLength;
     }
@@ -373,7 +374,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public String getAttributeMaxValue(String elementName, String attrName) {
         Attlist attr = findAttribute(elementName, attrName);
         if ((attr.valueType & VALUE_RANGE) == 0) {
-            throw new IllegalArgumentException("Attribute is not a range!");
+            throw new IllegalArgumentException(Messages.getString("imageio.70"));
         }
         return attr.maxValue;        
     }
@@ -381,7 +382,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public String getAttributeMinValue(String elementName, String attrName) {
         Attlist attr = findAttribute(elementName, attrName);
         if ((attr.valueType & VALUE_RANGE) == 0) {
-            throw new IllegalArgumentException("Attribute is not a range!");
+            throw new IllegalArgumentException(Messages.getString("imageio.70"));
         }
         return attr.minValue;
     }
@@ -417,7 +418,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public int getElementMaxChildren(String elementName) {
         Element element = findElement(elementName);
         if (element.childPolicy != CHILD_POLICY_REPEAT) {
-            throw new IllegalArgumentException("Child policy is not CHILD_POLICY_REPEAT!");
+            throw new IllegalArgumentException(Messages.getString("imageio.71"));
         }
         return element.maxChildren;
     }
@@ -425,7 +426,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     public int getElementMinChildren(String elementName) {
         Element element = findElement(elementName);
         if (element.childPolicy != CHILD_POLICY_REPEAT) {
-            throw new IllegalArgumentException("Child policy is not CHILD_POLICY_REPEAT!");
+            throw new IllegalArgumentException(Messages.getString("imageio.71"));
         }
         return element.minChildren;
     }
@@ -434,7 +435,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         ObjectValue v = element.objectValue;
         if (v == null || v.valueType != VALUE_LIST) {
-            throw new IllegalArgumentException("Not a list!");
+            throw new IllegalArgumentException(Messages.getString("imageio.72"));
         }
         return v.arrayMaxLength;
     }
@@ -443,7 +444,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         ObjectValue v = element.objectValue;
         if (v == null || v.valueType != VALUE_LIST) {
-            throw new IllegalArgumentException("Not a list!");
+            throw new IllegalArgumentException(Messages.getString("imageio.72"));
         }
         return v.arrayMinLength;
     }
@@ -462,7 +463,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         ObjectValue v = element.objectValue;
         if (v == null || v.valueType != VALUE_ENUMERATION) {
-            throw new IllegalArgumentException("Not an enumeration!");
+            throw new IllegalArgumentException(Messages.getString("imageio.73"));
         }
         return v.enumeratedValues.toArray();
     }
@@ -471,7 +472,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         ObjectValue v = element.objectValue;
         if (v == null || (v.valueType & VALUE_RANGE) == 0) {
-            throw new IllegalArgumentException("Not a range!");
+            throw new IllegalArgumentException(Messages.getString("imageio.74"));
         }
         return v.maxValue;
     }
@@ -480,7 +481,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         ObjectValue v = element.objectValue;
         if (v == null || (v.valueType & VALUE_RANGE) == 0) {
-            throw new IllegalArgumentException("Not a range!");
+            throw new IllegalArgumentException(Messages.getString("imageio.74"));
         }
         return v.minValue;
     }
@@ -535,7 +536,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     
     protected void setResourceBaseName(String resourceBaseName) {
         if (resourceBaseName == null) {
-            throw new IllegalArgumentException("resourceBaseName == null!");
+            throw new IllegalArgumentException(Messages.getString("imageio.75"));
         }
         this.resourceBaseName = resourceBaseName;
     }
@@ -590,7 +591,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     private Element findElement(String name) {
         Element element;
         if ((element = elementHash.get(name)) == null) {
-            throw new IllegalArgumentException("element name is null or no such element: " + name);
+            throw new IllegalArgumentException(Messages.getString("imageio.8C", name));
         }
 
         return element;
@@ -600,7 +601,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         Attlist attribute;
         if ((attribute = element.attributes.get(attributeName)) == null) {
-            throw new IllegalArgumentException("attribute name is null or no such attribute: " + attributeName);
+            throw new IllegalArgumentException(Messages.getString("imageio.8D", attributeName));
         }
 
         return attribute;
@@ -610,7 +611,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         ObjectValue v = element.objectValue;
         if (v == null) {
-            throw new IllegalArgumentException("No object within element");
+            throw new IllegalArgumentException(Messages.getString("imageio.76"));
         }
         return v;
     }

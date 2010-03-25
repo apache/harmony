@@ -106,7 +106,7 @@
             <classpath>
                 <pathelement path="${jdt.jdi.jar}"/>
                 <pathelement path="${ecj.jar}" />
-                <pathelement path="${ant.core.lib}" />
+                <pathelement path="${ant.library.dir}/ant.jar" />
                 <pathelement path="${ant.library.dir}/ant-launcher.jar" />
                 <pathelement path="${ant.library.dir}/ant-nodeps.jar" />
             </classpath>

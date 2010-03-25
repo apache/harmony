@@ -61,7 +61,7 @@ import org.apache.harmony.security.fortress.Engine;
  * <ul>
  * {@code Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");}
  * </ul>
- * When a block cipher is requested in in stream cipher mode, the number of bits
+ * When a block cipher is requested in stream cipher mode, the number of bits
  * to be processed at a time can be optionally specified by appending it to the
  * mode name. e.g. <i>"AES/CFB8/NoPadding"</i>. If no number is specified, a
  * provider specific default value is used.

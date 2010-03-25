@@ -1152,7 +1152,7 @@ addDirsToPath (int count, char *newPathToAdd[], char **argv)
    *  now set the new path, and in case of !Windows, execv() to 
    *  restart.  Don't free newPath, as the docs say that the 
    *  string becomes part of the environment, which sounds nutty
-   *  but at worst, it's a leak of of one string under windows
+   *  but at worst, it's a leak of one string under windows
    */
      
 #if defined(WIN32)

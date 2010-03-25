@@ -283,7 +283,7 @@ public class ExemptionMechanism {
      * @throws InvalidKeyException
      *             if the key cannot be used to initialize this mechanism.
      * @throws InvalidAlgorithmParameterException
-     *             the the parameters cannot be used to initialize this
+     *             if the parameters cannot be used to initialize this
      *             mechanism.
      * @throws ExemptionMechanismException
      *             if error(s) occur during initialization.

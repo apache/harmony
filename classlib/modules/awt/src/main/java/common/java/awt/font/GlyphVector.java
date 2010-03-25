@@ -131,7 +131,7 @@ public abstract class GlyphVector implements Cloneable {
     public abstract int getGlyphCode(int glyphIndex);
 
     public int getGlyphCharIndex(int glyphIndex){
-        // default implemetation one-to-one
+        // default implementation one-to-one
         return glyphIndex;
     }
 

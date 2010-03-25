@@ -27,6 +27,7 @@ import org.apache.harmony.luni.util.NotImplementedException;
 
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
 
@@ -62,7 +63,7 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
                 extraImageMetadataFormatNames, extraImageMetadataFormatClassNames);
 
         if (outputTypes == null || outputTypes.length == 0) {
-            throw new NullPointerException("output types array cannot be NULL or empty");
+            throw new NullPointerException(Messages.getString("imageio.59"));
         }
 
         this.outputTypes = outputTypes;

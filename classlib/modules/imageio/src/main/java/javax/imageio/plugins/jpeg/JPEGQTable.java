@@ -19,6 +19,8 @@
  */
 package javax.imageio.plugins.jpeg;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 public class JPEGQTable {
 
     private final static int SIZE = 64;
@@ -63,10 +65,10 @@ public class JPEGQTable {
 
     public JPEGQTable(int[] table) {
         if (table == null) {
-            throw new IllegalArgumentException("table should not be NULL");
+            throw new IllegalArgumentException(Messages.getString("imageio.42"));
         }
         if (table.length != SIZE) {
-            throw new IllegalArgumentException("illegal table size: " + table.length);
+                throw new IllegalArgumentException(Messages.getString("imageio.93", table.length));
         }
         theTable = table.clone();
     }

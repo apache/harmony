@@ -421,7 +421,7 @@ public final class Math {
      *            the numerator of the operation.
      * @param y
      *            the denominator of the operation.
-     * @return the IEEE754 floating point reminder of of {@code x/y}.
+     * @return the IEEE754 floating point reminder of {@code x/y}.
      */
     public static native double IEEEremainder(double x, double y);
 

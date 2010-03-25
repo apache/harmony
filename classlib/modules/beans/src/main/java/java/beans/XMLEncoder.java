@@ -31,6 +31,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.harmony.awt.internal.nls.Messages;
+
 /**
  * <code>XMLEncoder</code> extends <code>Encoder</code> to write out the
  * encoded statements and expressions in xml format. The xml can be read by
@@ -234,7 +236,7 @@ public class XMLEncoder extends Encoder {
 			out.println("</short>");
 		} else {
 			getExceptionListener().exceptionThrown(
-					new Exception("Unknown basic object: " + obj));
+                                       new Exception(Messages.getString("beans.73", obj)));
 		}
 	}
 

@@ -506,7 +506,7 @@ public class ProxySelectorTest extends TestCase {
 		assertNotNull(proxyList2);
 		assertEquals(1, proxyList2.size());
 		Proxy proxy2 = (Proxy) proxyList2.get(0);
-		// Default implemention doesn't change the proxy list
+		// Default implementation doesn't change the proxy list
 		assertEquals(proxy1, proxy2);
 	}
 

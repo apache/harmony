@@ -511,8 +511,7 @@ public class LdapNameTest extends TestCase {
      * </p>
      * <p>
      * Here we are testing the constructor, this method should accept a
-     * String notice here that here that we are testing the the special
-     * character "<".
+     * String.  Notice here that we are testing the special character "<".
      * </p>
      * <p>
      * The expected result is an Exception.
@@ -556,8 +555,7 @@ public class LdapNameTest extends TestCase {
      * </p>
      * <p>
      * Here we are testing the constructor, this method should accept a
-     * String notice here that here that we are testing the the special
-     * character "\".
+     * String.  Notice here that we are testing the special character "\".
      * </p>
      * <p>
      * The expected result is an Exception.
@@ -591,8 +589,7 @@ public class LdapNameTest extends TestCase {
      * </p>
      * <p>
      * Here we are testing the constructor, this method should accept a
-     * String notice here that here that we are testing the the special
-     * character "+".
+     * String.  Notice here that we are testing the special character "+".
      * </p>
      * <p>
      * The expected result is an instance of the class.
@@ -661,7 +658,7 @@ public class LdapNameTest extends TestCase {
      * </p>
      * <p>
      * Here we are testing the constructor, this method should accept a
-     * String notice here that here that we are testing the special case
+     * String.  Notice here that we are testing the special case
      * in which the name is quoted and the meta characters in it are ignored.
      * </p>
      * <p>
@@ -786,7 +783,7 @@ public class LdapNameTest extends TestCase {
      * </p>
      * <p>
      * Here we are testing the constructor, this method should accept a
-     * String notice here that here that we are testing the special case
+     * String.  Notice here that we are testing the special case
      * in which the name contains \\*, \\%, \\_
      * </p>
      * <p>

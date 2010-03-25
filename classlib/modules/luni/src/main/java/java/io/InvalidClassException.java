@@ -18,7 +18,7 @@
 package java.io;
 
 /**
- * Signals a problem during the serialization or or deserialization of an
+ * Signals a problem during the serialization or deserialization of an
  * object. Possible reasons include:
  * <ul>
  * <li>The SUIDs of the class loaded by the VM and the serialized class info do

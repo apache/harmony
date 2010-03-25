@@ -542,7 +542,7 @@ public class ServerSocketTest extends SocketTestCase {
         // checks if it is a least a certain number as some platforms make
         // it higher than we request. Unfortunately non-server versions of
         // windows artificially limit the backlog to 5 and 5 is the
-        // historical default so it it not a great test.
+        // historical default so it is not a great test.
         theSocket = new ServerSocket();
         theAddress = new InetSocketAddress(InetAddress.getLocalHost(), 0);
         theSocket.bind(theAddress, 4);
