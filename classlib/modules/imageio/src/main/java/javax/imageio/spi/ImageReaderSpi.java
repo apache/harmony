@@ -83,8 +83,7 @@ public abstract class ImageReaderSpi extends ImageReaderWriterSpi {
         throw new NotImplementedException();
     }
 
-    public String[] getImageWriterSpiNames() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public String[] getImageWriterSpiNames() {
+        return writerSpiNames;
     }
 }

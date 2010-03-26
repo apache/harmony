@@ -217,14 +217,63 @@ public final class ImageIO {
                 new MIMETypeFilter(MIMEType), true));
     }
 
-    public static ImageWriter getImageWriter(ImageReader reader) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static ImageWriter getImageWriter(ImageReader reader) {
+        if (reader == null) {
+            // imageio.97=Reader cannot be null
+            throw new IllegalArgumentException(Messages.getString("imageio.97")); //$NON-NLS-1$
+        }
+
+        ImageReaderSpi readerSpi = reader.getOriginatingProvider();
+        if (readerSpi.getImageWriterSpiNames() == null) {
+            return null;
+        }
+
+        String writerSpiName = readerSpi.getImageWriterSpiNames()[0];
+
+        Iterator<ImageWriterSpi> writerSpis;
+        writerSpis = registry.getServiceProviders(ImageWriterSpi.class, true);
+
+        try {
+            while (writerSpis.hasNext()) {
+                ImageWriterSpi writerSpi = writerSpis.next();
+                if (writerSpi.getClass().getName().equals(writerSpiName)) {
+                    return writerSpi.createWriterInstance();
+                }
+            }
+        } catch (IOException e) {
+            // Ignored
+        }
+
+        return null;
     }
 
-    public static ImageReader getImageReader(ImageWriter writer) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static ImageReader getImageReader(ImageWriter writer) {
+        if (writer == null) {
+            // imageio.96=Writer cannot be null
+            throw new IllegalArgumentException(Messages.getString("imageio.96")); //$NON-NLS-1$
+        }
+        ImageWriterSpi writerSpi = writer.getOriginatingProvider();
+        if (writerSpi.getImageReaderSpiNames() == null) {
+            return null;
+        }
+
+        String readerSpiName = writerSpi.getImageReaderSpiNames()[0];
+
+        Iterator<ImageReaderSpi> readerSpis;
+        readerSpis = registry.getServiceProviders(ImageReaderSpi.class, true);
+
+        try {
+            while (readerSpis.hasNext()) {
+                ImageReaderSpi readerSpi = readerSpis.next();
+                if (readerSpi.getClass().getName().equals(readerSpiName)) {
+                    return readerSpi.createReaderInstance();
+                }
+            }
+        } catch (IOException e) {
+            // Ignored
+        }
+
+        return null;
     }
 
     public static Iterator<ImageWriter> getImageWriters(ImageTypeSpecifier type,
