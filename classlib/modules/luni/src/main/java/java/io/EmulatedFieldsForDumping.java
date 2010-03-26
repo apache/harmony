@@ -31,6 +31,9 @@ class EmulatedFieldsForDumping extends ObjectOutputStream.PutField {
     // The actual representation, with a more powerful API (set&get)
     private EmulatedFields emulatedFields;
 
+    // Record the ObjectOutputStream that created this PutField for checking in the write method
+    private final ObjectOutputStream oos;
+
     /**
      * Constructs a new instance of EmulatedFieldsForDumping.
      * 
@@ -38,10 +41,11 @@ class EmulatedFieldsForDumping extends ObjectOutputStream.PutField {
      *            a ObjectStreamClass, which describe the fields to be emulated
      *            (names, types, etc).
      */
-    EmulatedFieldsForDumping(ObjectStreamClass streamClass) {
+    EmulatedFieldsForDumping(ObjectOutputStream oos, ObjectStreamClass streamClass) {
         super();
         emulatedFields = new EmulatedFields(streamClass.fields(),
                 (ObjectStreamField[]) null);
+        this.oos = oos;
     }
 
     /**
@@ -193,6 +197,10 @@ class EmulatedFieldsForDumping extends ObjectOutputStream.PutField {
     @Override
     @Deprecated
     public void write(ObjectOutput output) throws IOException {
+        if (!output.equals(oos)) {
+            throw new IllegalArgumentException("Attempting to write to a stream that did not create this PutField");
+        }
+
         EmulatedFields.ObjectSlot[] slots = emulatedFields.slots();
         for (int i = 0; i < slots.length; i++) {
             EmulatedFields.ObjectSlot slot = slots[i];

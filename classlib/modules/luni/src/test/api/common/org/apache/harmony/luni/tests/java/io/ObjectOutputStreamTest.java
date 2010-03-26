@@ -1361,4 +1361,23 @@ public class ObjectOutputStreamTest extends TestCase implements Serializable {
         assertEquals("3rd replaceObject worked incorrectly",
                 ObjectStreamClass.class, obj3.getClass());
     }
+
+    public void test_putFieldWrite() throws Exception {
+        // Regression test for HARMONY-6483
+        ObjectOutputStream oos = new ObjectOutputStream(new ByteArrayOutputStream());
+        try {
+            oos.writeObject(new OutputObject());
+            fail("Should throw an IllegalArgumentException");
+        } catch (IllegalArgumentException iae) {
+            // Expected
+        }
+    }
+
+    private static class OutputObject implements Serializable {
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+            ObjectOutputStream oos2 = new ObjectOutputStream(new ByteArrayOutputStream());
+            ObjectOutputStream.PutField putField = oos.putFields();
+            putField.write(oos2);
+        }
+    }
 }
