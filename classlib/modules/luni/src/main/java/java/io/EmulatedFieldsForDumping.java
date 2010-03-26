@@ -17,6 +17,8 @@
 
 package java.io;
 
+import org.apache.harmony.luni.internal.nls.Messages;
+
 /**
  * An EmulatedFieldsForDumping is an object that represents a set of emulated
  * fields for an object being dumped. It is a concrete implementation for
@@ -198,7 +200,8 @@ class EmulatedFieldsForDumping extends ObjectOutputStream.PutField {
     @Deprecated
     public void write(ObjectOutput output) throws IOException {
         if (!output.equals(oos)) {
-            throw new IllegalArgumentException("Attempting to write to a stream that did not create this PutField");
+            // luni.E0=Attempting to write to a stream that did not create this PutField
+            throw new IllegalArgumentException(Messages.getString("luni.E0")); //$NON-NLS-1$
         }
 
         EmulatedFields.ObjectSlot[] slots = emulatedFields.slots();
