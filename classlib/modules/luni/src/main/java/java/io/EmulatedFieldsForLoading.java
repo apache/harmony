@@ -34,7 +34,7 @@ class EmulatedFieldsForLoading extends ObjectInputStream.GetField {
     private EmulatedFields emulatedFields;
 
     /**
-     * Constructs a new instance of EmulatedFieldsForDumping.
+     * Constructs a new instance of EmulatedFieldsForLoading.
      * 
      * @param streamClass
      *            an ObjectStreamClass, defining the class for which to emulate
