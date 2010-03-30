@@ -568,10 +568,10 @@ public class HashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
             entry = findNullKeyEntry();
             if (entry == null) {
                 modCount++;
+                entry = createHashedEntry(null, 0, 0);
                 if (++elementCount > threshold) {
                     rehash();
                 }
-                entry = createHashedEntry(null, 0, 0);
             }
         } else {
             int hash = computeHashCode(key);
@@ -579,11 +579,10 @@ public class HashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
             entry = findNonNullKeyEntry(key, index, hash);
             if (entry == null) {
                 modCount++;
+                entry = createHashedEntry(key, index, hash);
                 if (++elementCount > threshold) {
                     rehash();
-                    index = hash & (elementData.length - 1);
                 }
-                entry = createHashedEntry(key, index, hash);
             }
         }
 
@@ -639,6 +638,7 @@ public class HashMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
         Entry<K, V>[] newData = newElementArray(length);
         for (int i = 0; i < elementData.length; i++) {
             Entry<K, V> entry = elementData[i];
+            elementData[i] = null;
             while (entry != null) {
                 int index = entry.origKeyHash & (length - 1);
                 Entry<K, V> next = entry.next;

@@ -388,7 +388,7 @@ public class ObjectOutputStream extends OutputStream implements ObjectOutput,
      * @see #writeFieldValues(EmulatedFieldsForDumping)
      */
     private void computePutField() {
-        currentPutField = new EmulatedFieldsForDumping(currentClass);
+        currentPutField = new EmulatedFieldsForDumping(this, currentClass);
     }
 
     /**

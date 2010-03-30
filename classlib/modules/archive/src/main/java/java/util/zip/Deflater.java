@@ -75,9 +75,21 @@ public class Deflater {
      */
     public static final int NO_COMPRESSION = 0;
 
-    private static final int Z_NO_FLUSH = 0;
+    /**
+     * Use buffering for best compression.
+     */
+    static final int Z_NO_FLUSH = 0;
 
-    private static final int Z_FINISH = 4;
+    /**
+     * Flush buffers so recipients can immediately decode the data sent thus
+     * far. This mode may degrade compression.
+     */
+    static final int Z_SYNC_FLUSH = 2;
+
+    /**
+     * Flush buffers because there is no further data.
+     */
+    static final int Z_FINISH = 4;
 
     // Fill in the JNI id caches
     private static native void oneTimeInitialization();
@@ -174,24 +186,31 @@ public class Deflater {
      *            maximum number of bytes of compressed data to be written.
      * @return the number of bytes of compressed data written to {@code buf}.
      */
-    public synchronized int deflate(byte[] buf, int off, int nbytes) {
+    public int deflate(byte[] buf, int off, int nbytes) {
+        return deflate(buf, off, nbytes, flushParm);
+    }
+
+    /**
+     * @param flushParam one of {@link #Z_NO_FLUSH}, {@link #Z_FINISH} or
+     *            {@link #Z_SYNC_FLUSH}.
+     */
+    synchronized int deflate(byte[] buf, int off, int nbytes, int flushParam) {
         if (streamHandle == -1) {
             throw new IllegalStateException();
         }
         // avoid int overflow, check null buf
-        if (off <= buf.length && nbytes >= 0 && off >= 0
-                && buf.length - off >= nbytes) {
-            // put a stub buffer, no effect.
-            if (null == inputBuffer) {
-                setInput(STUB_INPUT_BUFFER);
-            }
-            return deflateImpl(buf, off, nbytes, streamHandle, flushParm);
+        if (off > buf.length || nbytes < 0 || off < 0 || buf.length - off < nbytes) {
+            throw new ArrayIndexOutOfBoundsException();
         }
-        throw new ArrayIndexOutOfBoundsException();
+        // put a stub buffer, no effect.
+        if (inputBuffer == null) {
+            setInput(STUB_INPUT_BUFFER);
+        }
+        return deflateImpl(buf, off, nbytes, streamHandle, flushParam);
     }
 
     private synchronized native int deflateImpl(byte[] buf, int off,
-            int nbytes, long handle, int flushParm1);
+            int nbytes, long handle, int flushParm);
 
     private synchronized native void endImpl(long handle);
 
