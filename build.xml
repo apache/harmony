@@ -891,16 +891,15 @@ Usage:
 
         <!-- default SVN URLs -->
         <property name="classlib.svn.url"
-                  value="${svn.root}/harmony/enhanced/branches/java6/classlib"/>
+                  value="${svn.root}/harmony/enhanced/java/branches/java6/classlib"/>
 
         <property name="vm.svn.url"
-                  value="${svn.root}/harmony/enhanced/branches/java6/drlvm" />
+                  value="${svn.root}/harmony/enhanced/java/branches/java6/drlvm" />
 
         <property name="jdktools.svn.url"
-                  value="${svn.root}/harmony/enhanced/branches/java6/jdktools"/>
+                  value="${svn.root}/harmony/enhanced/java/branches/java6/jdktools"/>
 
-
-        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/branches/java6/common_resources" />
+        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/java/branches/java6/common_resources" />
     </target>
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
