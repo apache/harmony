@@ -35,6 +35,7 @@ import java.io.ObjectInputValidation;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
+import java.io.ObjectStreamException;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
@@ -1140,6 +1141,27 @@ public class ObjectInputStreamTest extends TestCase implements
         oin.readObject();
     }
 
+    public void test_readObject_replacedClassField() throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(out);
+        FieldReplacementTestClass obj = new FieldReplacementTestClass(1234);
+        oos.writeObject(obj);
+        out.flush();
+        out.close();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray()); 
+        ObjectInputStream ois = new ObjectInputStream(in);
+
+        try {
+            FieldReplacementTestClass result =
+                (FieldReplacementTestClass)ois.readObject();
+            fail("should throw ClassCastException");
+        } catch (ClassCastException e) {
+            // expected
+        }
+        ois.close();
+    }
+
     /**
      * Sets up the fixture, for example, open a network connection. This method
      * is called before a test is executed.
@@ -1149,6 +1171,32 @@ public class ObjectInputStreamTest extends TestCase implements
         super.setUp();
         oos = new ObjectOutputStream(bao = new ByteArrayOutputStream());
     }
+
+    public static class FieldReplacementTestClass implements Serializable {
+        private FieldClass c;
+        public FieldReplacementTestClass(int i) {
+            super();
+            c = new FieldClass(i);
+        }
+    }
+    public static class FieldClass implements Serializable {
+        private int i;
+        public FieldClass(int i) {
+            super();
+            this.i = i;
+        }
+        protected Object writeReplace() throws ObjectStreamException {
+            return new ReplacementFieldClass(i);
+        }
+    }
+    public static class ReplacementFieldClass implements Serializable {
+        private int i;
+        public ReplacementFieldClass(int i) {
+            super();
+            this.i = i;
+        }
+    }
+
 }
 
 class TestArray implements Serializable

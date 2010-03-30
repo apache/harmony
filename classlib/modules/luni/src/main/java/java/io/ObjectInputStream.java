@@ -1291,26 +1291,48 @@ public class ObjectInputStream extends InputStream implements ObjectInput,
                 }
                 if (fieldDesc != null) {
                     if (toSet != null) {
-                        Class<?> fieldType = fieldDesc.getType();
+                        Class<?> fieldType = getFieldClass(obj, fieldName);
                         Class<?> valueType = toSet.getClass();
-                        if (!fieldType.isAssignableFrom(valueType)) {
-                            throw new ClassCastException(Messages.getString(
+                        if (fieldType != null) {
+                            if (!fieldType.isAssignableFrom(valueType)) {
+                                throw new ClassCastException(Messages.getString(
                                     "luni.C0", new String[] { //$NON-NLS-1$
                                     fieldType.toString(), valueType.toString(),
                                             classDesc.getName() + "." //$NON-NLS-1$
                                                     + fieldName }));
-                        }
-                        try {
-                            if (fieldID != ObjectStreamField.FIELD_IS_ABSENT) { 
-                                accessor.setObject(obj, fieldID, toSet);
                             }
-                        } catch (NoSuchFieldError e) {
-                            // Ignored
+                            try {
+                                if (fieldID != ObjectStreamField.FIELD_IS_ABSENT) { 
+                                    accessor.setObject(obj, fieldID, toSet);
+                                }
+                            } catch (NoSuchFieldError e) {
+                                // Ignored
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    private static Class<?> getFieldClass(final Object obj,
+                                          final String fieldName) {
+        return AccessController.doPrivileged(new PrivilegedAction<Class<?>>() {
+                public Class<?> run() {
+                    Class<?> objClass = obj.getClass();
+                    while (objClass != null) {
+                        try {
+                            Class<?> fc =
+                                objClass.getDeclaredField(fieldName).getType();
+                            return fc;
+                        } catch (NoSuchFieldException e) {
+                            // Ignored
+                        }
+                        objClass = objClass.getSuperclass();
+                    }
+                    return null;
+                }
+            });
     }
 
     /**
