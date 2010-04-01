@@ -22,7 +22,7 @@ Description: Apache Harmony Java Class Libraries
 Package: harmony-5.0-jre
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, zlib1g-dev, libxext6, libxmu6, harmony-5.0-vm, harmony-5.0-classlib
-Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime
+Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime, java2-runtime-headless, java5-runtime-headless
 Description: Apache Harmony JRE
  <insert long description, indented with spaces>
 
