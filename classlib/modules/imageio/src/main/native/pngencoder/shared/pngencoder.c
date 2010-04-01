@@ -264,7 +264,7 @@ png_encoder_info_ptr initPng() {
   encoderInfo->info_ptr = png_create_info_struct(encoderInfo->png_ptr);
 
   if (!encoderInfo->info_ptr) {
-    png_destroy_write_struct(&encoderInfo->png_ptr, png_infopp_NULL);
+    png_destroy_write_struct(&encoderInfo->png_ptr, NULL);
     return NULL;
   }
 
