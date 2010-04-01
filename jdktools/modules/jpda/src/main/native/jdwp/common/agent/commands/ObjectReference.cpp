@@ -83,8 +83,10 @@ ObjectReference::ReferenceTypeHandler::Execute(JNIEnv *jni)
 int
 ObjectReference::GetValuesHandler::Execute(JNIEnv *jni) 
 {
+    jdwpError jdwpErr;
     jobject jvmObject = m_cmdParser->command.ReadObjectID(jni);
     // Can be: InternalErrorException, OutOfMemoryException, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_ERROR_CODE(jdwpErr);
 
     jclass jvmClass = jni->GetObjectClass(jvmObject); 
     jint fieldsNumber = m_cmdParser->command.ReadInt();
