@@ -36,6 +36,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 
 import org.apache.harmony.luni.net.PlainDatagramSocketImpl;
+import org.junit.Test;
 
 import tests.support.Support_Configuration;
 import tests.support.Support_PortManager;
@@ -937,6 +938,29 @@ public class DatagramSocketTest extends SocketTestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
+    }
+    
+    /**
+     * If the InetAddress of DatagramPacket is null, DatagramSocket.send(DatagramPacket)
+     * should throw NullPointer Exception.
+     * @tests java.net.DatagramSocket#send(java.net.DatagramPacket)
+     */
+    @Test
+    public void test_sendLjava_net_DatagramPacket2() throws IOException {
+        int udp_port = 20000;
+        int send_port = 23000;
+        DatagramSocket udpSocket = new DatagramSocket(udp_port);
+        byte[] data = {65};
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, null, send_port);
+        try {
+            udpSocket.send(sendPacket);
+            fail("Should throw SocketException");
+        } catch (NullPointerException e) {
+          // Expected
+        } finally {
+            udpSocket.close();
+        }
+
     }
     
     /**
