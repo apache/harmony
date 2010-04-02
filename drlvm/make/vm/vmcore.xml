@@ -89,13 +89,14 @@
         if="is.windows" unless="win.setup.complete">
         <check-one-file dest="${zlib}" src="${zlib.url}"/>
         <unzip src="${zlib}" dest="${zlib.dir}">
-            <patternset includes="include/** lib/** zlib1.dll"/>
+            <mapper type="flatten" />
         </unzip>
         <copy file="${zlib.dir}/zlib1.dll" todir="${drlvm.bin.dir}"/>
-        <copy file="${zlib.dir}/lib/zdll.lib" todir="${drlvm.lib.dir}"/>
+        <copy file="${zlib.dir}/zdll.lib" todir="${drlvm.lib.dir}" />
         <copy todir="${drlvm.include.dir}">
-            <fileset dir="${zlib.dir}/include">
-                <include name="*.h" />
+            <fileset dir="${zlib.dir}">
+                <include name="zconf.h" />
+                <include name="zlib.h" />
             </fileset>
         </copy>
     </target>

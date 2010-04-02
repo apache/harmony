@@ -309,7 +309,7 @@ png_decoder_info_ptr initPng() {
   decoderInfo->info_ptr = png_create_info_struct(decoderInfo->png_ptr);
 
   if (!decoderInfo->info_ptr) {
-    png_destroy_read_struct(&decoderInfo->png_ptr, png_infopp_NULL, png_infopp_NULL);
+    png_destroy_read_struct(&decoderInfo->png_ptr, NULL, NULL);
     return NULL;
   }
 

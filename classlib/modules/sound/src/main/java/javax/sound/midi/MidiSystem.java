@@ -33,6 +33,7 @@ import javax.sound.midi.spi.MidiFileWriter;
 import javax.sound.midi.spi.SoundbankReader;
 
 import org.apache.harmony.sound.utils.ProviderService;
+import org.apache.harmony.sound.internal.nls.Messages;
 
 public class MidiSystem {
     // This class has no public constructor
@@ -93,7 +94,7 @@ public class MidiSystem {
         /*
          * if we can't find device with requested info, we throw out IllegalArgumentException
          */
-        throw new IllegalArgumentException("Requested device not installed: " + info.getName());
+        throw new IllegalArgumentException(Messages.getString("sound.1F", info.getName()));
     }
 
     public static MidiDevice.Info[] getMidiDeviceInfo() {
@@ -130,7 +131,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.19"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -152,7 +153,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.19"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -174,7 +175,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.19"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -195,7 +196,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileWriterProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1A"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -216,7 +217,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileWriterProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1A"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -297,7 +298,7 @@ public class MidiSystem {
         /*
          * if we don't find anyway, we throw out MidiUnavailableException
          */
-        throw new MidiUnavailableException("There are no Receivers installed on your system!");
+        throw new MidiUnavailableException(Messages.getString("sound.1B"));
     }
 
     public static Sequence getSequence(File file) throws InvalidMidiDataException, IOException {
@@ -312,7 +313,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.19"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -334,7 +335,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.19"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -355,7 +356,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.19"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -508,7 +509,7 @@ public class MidiSystem {
         /*
          * if we don't find anyway, we throw out MidiUnavailableException
          */
-        throw new MidiUnavailableException("There are no Synthesizers installed on your system!");
+        throw new MidiUnavailableException(Messages.getString("sound.1C"));
     }
 
     public static Soundbank getSoundbank(File file) throws InvalidMidiDataException,
@@ -524,7 +525,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no SoundbankReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1D"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -545,7 +546,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no SoundbankReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1D"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -566,7 +567,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no SoundbankReaderProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1D"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -648,7 +649,7 @@ public class MidiSystem {
         /*
          * if we don't find anyway, we throw out MidiUnavailableException
          */
-        throw new MidiUnavailableException("There are no Synthesizers installed on your system!");
+        throw new MidiUnavailableException(Messages.getString("sound.1C"));
     }
 
     public static Transmitter getTransmitter() throws MidiUnavailableException {
@@ -723,7 +724,7 @@ public class MidiSystem {
         /*
          * if we don't find anyway, we throw out MidiUnavailableException
          */
-        throw new MidiUnavailableException("There are no Transmitters installed on your system!");
+        throw new MidiUnavailableException(Messages.getString("sound.1E"));
     }
 
     public static boolean isFileTypeSupported(int fileType) {
@@ -739,7 +740,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileWriterProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1A"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -760,7 +761,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileWriterProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1A"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -781,7 +782,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileWriterProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1A"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so
@@ -802,7 +803,7 @@ public class MidiSystem {
              * appropriate providers...
              * Maybe here is should be MidiUnavailableException
              */
-            throw new Error("There is no MidiFileWriterProviders on your system!!!");
+            throw new Error(Messages.getString("sound.1A"));
         }
         /*
          * It's not determine what provider for this service I should to use, and so

@@ -17,11 +17,18 @@
 
 package org.apache.harmony.logging.tests.java.util.logging;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ResourceBundle;
+import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.logging.XMLFormatter;
 
 import junit.framework.TestCase;
@@ -170,7 +177,47 @@ public class XMLFormatterTest extends TestCase {
 		String output = formatter.format(lr);
 		// System.out.println(formatter.getHead(handler)+output+formatter.getTail(handler));
 		assertTrue(output.indexOf("<message") > 0);
-	}
+    }
+
+    public class TestFileHandlerClass {
+        Logger logger = Logger.getLogger(TestFileHandlerClass.class.getName());
+
+        public TestFileHandlerClass(String logFile) throws SecurityException,
+                IOException {
+            logger.addHandler(new FileHandler(logFile));
+            LogRecord logRecord = new LogRecord(Level.INFO, "message:<init>&");
+            logRecord.setLoggerName("<init>&");
+            logRecord.setThrown(new Exception("<init>&"));
+            logRecord.setParameters(new String[] { "<init>&" });
+            logger.log(logRecord);
+        }
+    }
+
+    public void test_TestFileHandlerClass_constructor() throws Exception {
+        File logFile = new File(System.getProperty("user.home"),
+                "TestFileHandlerClass.log");
+        logFile.deleteOnExit();
+
+        PrintStream out = System.out;
+        PrintStream err = System.err;
+        try {
+            System.setOut(null);
+            System.setErr(null);
+            new TestFileHandlerClass(logFile.getCanonicalPath());
+            BufferedReader br = new BufferedReader(new FileReader(logFile));
+            String line = null;
+
+            while ((line = br.readLine()) != null) {
+                if (line.contains("<init>&")) {
+                    fail("should convert <init> to &lt;init&gt;");
+                    break;
+                }
+            }
+        } finally {
+            System.setOut(out);
+            System.setErr(err);
+        }
+    }
 
 	public static class MockHandler extends Handler {
 		public void close() {
