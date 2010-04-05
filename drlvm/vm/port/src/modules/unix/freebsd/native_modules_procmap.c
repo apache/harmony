@@ -35,7 +35,7 @@ int port_modules_procmap_readline(FILE* map,
             char* pacc_r, char* pacc_x, char* filename)
 {
     char buf[PATH_MAX];
-    char type[64];
+    char acc_w;
 
     if (!map || feof(map))
         return -1;
@@ -43,14 +43,17 @@ int port_modules_procmap_readline(FILE* map,
     if (!fgets(buf, sizeof(buf), map))
         return -1;
 
-    int res = sscanf(buf, "%" PI_FMT "x %" PI_FMT "x %*d %*d %*" PI_FMT "x %c%*c%c %*d %*d %*x %*s %*s %s %s",
-                    pstart, pend, pacc_r, pacc_x, type, filename);
+    int res = sscanf(buf, "%" PI_FMT "x %" PI_FMT "x %*d %*d %*" PI_FMT "x %c%c%c %*d %*d %*x %*s %*s %*s %s",
+                    pstart, pend, pacc_r, &acc_w, pacc_x, filename);
 
-    if (res < 5 || strcmp(type, "vnode") != 0)
+    if (res < 5)
         return 0;
 
     if (res == 6 && filename[0] == '-' && filename[1] == '\0')
         filename[0] = 0;
+
+    if (*pacc_r == '-' && acc_w == '-' && *pacc_x == '-')
+        return 0; // Skip these useless regions that may separate parts of one module
 
      return res - 1;
 }

@@ -35,6 +35,7 @@
 #include "lil_code_generator_utils.h"
 #include "jit_runtime_support_common.h"
 
+#include "compile.h"
 #include "dump.h"
 
 #if defined(WIN32) || defined(_WIN64)
@@ -190,6 +191,8 @@ static invoke_managed_func_int_t gen_invoke_managed_func() {
     stub = ret(stub);
 
     assert(stub - (char *)func <= STUB_SIZE);
+
+    compile_add_dynamic_generated_code_chunk("invoke_managed_func", false, (void*)func, stub - (char*)func);
 
     DUMP_STUB(func, "invoke_managed_func", stub - (char *)func);
 

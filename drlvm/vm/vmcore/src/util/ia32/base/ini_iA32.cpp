@@ -139,6 +139,8 @@ static IntFuncPtr gen_invoke_int_managed_func() {
     
     assert(stub - (char *)func <= STUB_SIZE);
 
+    compile_add_dynamic_generated_code_chunk("invoke_int_managed_func", false, (void*)func, stub - (char*)func);
+
     DUMP_STUB(func, "invoke_int_managed_func", stub - (char *)func);
     return func;
 }
@@ -166,6 +168,8 @@ static FloatFuncPtr gen_invoke_float_managed_func() {
     
     assert(stub - (char *)func <= STUB_SIZE);
 
+    compile_add_dynamic_generated_code_chunk("invoke_float_managed_func", false, (void*)func, stub - (char*)func);
+
     DUMP_STUB(func, "invoke_float_managed_func", stub - (char *)func);
     return func;    
 }
@@ -192,6 +196,8 @@ static DoubleFuncPtr gen_invoke_double_managed_func() {
     stub = ret(stub);
     
     assert(stub - (char *)func <= STUB_SIZE);
+
+    compile_add_dynamic_generated_code_chunk("invoke_double_managed_func", false, (void*)func, stub - (char*)func);
 
     DUMP_STUB(func, "invoke_double_managed_func", stub - (char *)func);
     return func;
