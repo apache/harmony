@@ -920,27 +920,28 @@ public class XMLEncoder extends Encoder {
     @Override
     public void writeObject(Object o) {
         synchronized (this) {
-            boolean oldWritingObject = writingObject;
-            writingObject = true;
-            try {
-                super.writeObject(o);
-            } finally {
-                writingObject = oldWritingObject;
+            ArrayList<Object> prePending = (ArrayList<Object>) cache.get(o);
+            if (prePending == null) {
+                boolean oldWritingObject = writingObject;
+                writingObject = true;
+                try {
+                    super.writeObject(o);
+                } finally {
+                    writingObject = oldWritingObject;
+                }
+            } else {
+                flushPrePending.clear();
+                flushPrePending.addAll(prePending);
             }
 
-            // root object?
+            // root object
             if (!writingObject) {
-                boolean isCached;
-                ArrayList<Object> pending = (ArrayList<Object>) cache.get(o);
-                if (isCached = (pending != null)) {
-                    flushPrePending.clear();
-                    flushPrePending.addAll(pending);
-                } else {
-                    if (o != null) {
-                        pending = new ArrayList<Object>();
-                        pending.addAll(flushPrePending);
-                        cache.put(o, pending);
-                    }
+                boolean isNotCached = prePending == null;
+                // is not cached, add to cache
+                if (isNotCached && o != null) {
+                    prePending = new ArrayList<Object>();
+                    prePending.addAll(flushPrePending);
+                    cache.put(o, prePending);
                 }
 
                 // add to pending
@@ -948,7 +949,7 @@ public class XMLEncoder extends Encoder {
                 flushPendingStat.addAll(flushPrePending);
                 flushPrePending.clear();
 
-                if (!isCached && flushPending.contains(o)) {
+                if (isNotCached && flushPending.contains(o)) {
                     flushPendingStat.remove(o);
                 } else {
                     flushPending.add(o);

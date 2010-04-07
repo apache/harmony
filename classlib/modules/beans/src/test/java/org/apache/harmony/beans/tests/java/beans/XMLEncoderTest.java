@@ -871,4 +871,36 @@ public class XMLEncoderTest extends TestCase {
             return exp;
         }
     }
+
+    public void testWriteObject_ChangedObject() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        Sample sample = new Sample("oldName");
+        xmlEncoder.writeObject(sample);
+        sample.setName("newName");
+        xmlEncoder.writeObject(sample);
+        xmlEncoder.close();
+        assertXMLContent(null, bos.toByteArray(), "/xml/ChangedObject.xml");
+    }
+
+    public static class Sample {
+
+        String name;
+
+        public Sample() {
+            name = null;
+        }
+
+        public Sample(String n) {
+            name = n;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 }
