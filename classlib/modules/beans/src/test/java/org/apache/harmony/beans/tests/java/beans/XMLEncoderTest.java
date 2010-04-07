@@ -17,6 +17,8 @@
 
 package org.apache.harmony.beans.tests.java.beans;
 
+import java.awt.SystemColor;
+import java.awt.font.TextAttribute;
 import java.beans.DefaultPersistenceDelegate;
 import java.beans.Encoder;
 import java.beans.ExceptionListener;
@@ -46,8 +48,6 @@ import org.apache.harmony.beans.tests.support.TestEventHandler;
 import org.apache.harmony.beans.tests.support.mock.MockBean4Codec;
 import org.apache.harmony.beans.tests.support.mock.MockBean4Owner_Owner;
 import org.apache.harmony.beans.tests.support.mock.MockBean4Owner_Target;
-import org.apache.harmony.beans.tests.support.mock.MockBean4StaticField;
-import org.apache.harmony.beans.tests.support.mock.MockBean4StaticField_PD;
 import org.apache.harmony.beans.tests.support.mock.MockTreeMapClass;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -410,7 +410,18 @@ public class XMLEncoderTest extends TestCase {
 
     private void assertCodedXML(Object obj, String xmlFile,
             ByteArrayOutputStream temp, XMLEncoder enc) throws Exception {
+        if (enc == null || temp == null) {
+            temp = new ByteArrayOutputStream();
+            enc = new XMLEncoder(temp);
+        }
+        enc.writeObject(obj);
+        enc.close();
+        
+        assertXMLContent(obj, temp.toByteArray(), xmlFile);
+            
+    }
 
+    private void assertXMLContent(Object obj, byte[] bytes, String xmlFile) throws Exception {
         InputStream refIn;
         InputStreamReader xml;
 
@@ -420,14 +431,6 @@ public class XMLEncoderTest extends TestCase {
         TestEventHandler refHandler = new TestEventHandler();
         String saxParserClassName = System.getProperty("org.xml.sax.driver");
         String version = System.getProperty("java.version");
-
-        if (enc == null || temp == null) {
-            temp = new ByteArrayOutputStream();
-            enc = new XMLEncoder(temp);
-        }
-        enc.writeObject(obj);
-        enc.close();
-        byte bytes[] = temp.toByteArray();
         xml = new InputStreamReader(new ByteArrayInputStream(bytes), "UTF-8");
         refIn = XMLEncoderTest.class.getResourceAsStream(xmlFile);
         if (refIn == null) {
@@ -834,6 +837,38 @@ public class XMLEncoderTest extends TestCase {
 
             return false;
         }
+    }
 
+    public void testWriteObject_StaticFields() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        xmlEncoder.setPersistenceDelegate(MockObject.class,
+                new MockObjectPersistenceDelegate());
+        xmlEncoder.writeObject(MockObject.inst);
+        xmlEncoder.writeObject(MockObject.inst);
+        xmlEncoder.writeObject(SystemColor.activeCaption);
+        xmlEncoder.writeObject(SystemColor.activeCaption);
+        xmlEncoder.writeObject(TextAttribute.FAMILY);
+        xmlEncoder.writeObject(TextAttribute.FAMILY);
+        xmlEncoder.close();
+        assertXMLContent(null, bos.toByteArray(), "/xml/StaticField.xml");
+    }
+
+    public static class MockObject {
+        public static MockObject inst = new MockObject();
+    }
+
+    public static class MockObjectPersistenceDelegate extends
+            PersistenceDelegate {
+        protected Expression instantiate(Object oldInstance, Encoder enc) {
+            Expression exp = null;
+            try {
+                exp = new Expression(MockObject.class.getField("inst"), "get",
+                        new Object[] { null });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return exp;
+        }
     }
 }

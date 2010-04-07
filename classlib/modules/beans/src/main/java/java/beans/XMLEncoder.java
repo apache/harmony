@@ -18,20 +18,20 @@
 
 package java.beans;
 
-import java.awt.SystemColor;
-import java.awt.font.TextAttribute;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.harmony.awt.internal.nls.Messages;
+import org.apache.harmony.beans.internal.nls.Messages;
 
 /**
  * <code>XMLEncoder</code> extends <code>Encoder</code> to write out the
@@ -95,6 +95,8 @@ public class XMLEncoder extends Encoder {
 	private Object owner = null;
 
 	private ReferenceMap records = new ReferenceMap();
+
+    private ReferenceMap cache = new ReferenceMap();
 
 	private boolean writingObject = false;
 
@@ -171,6 +173,7 @@ public class XMLEncoder extends Encoder {
 			// clear statement records
 			records.clear();
 			flushPendingStat.clear();
+            cache.clear();
 
 			// remove all old->new mappings
 			super.clear();
@@ -242,27 +245,34 @@ public class XMLEncoder extends Encoder {
 
 	@SuppressWarnings("nls")
     private void flushExpression(Object obj, Record rec, int indent,
-			boolean asStatement) {
-		// not first time, use idref
-		if (rec.id != null) {
-			flushIndent(indent);
-			out.print("<object idref=\"");
-			out.print(rec.id);
-			out.println("\" />");
-			return;
-		}
+            boolean asStatement) {
+        // flush
+        Statement stat = asStatement ? new Statement(rec.exp.getTarget(),
+                rec.exp.getMethodName(), rec.exp.getArguments()) : rec.exp;
+        if (isStaticConstantsSupported
+                && "getField".equals(stat.getMethodName())) {
+            flushStatField(stat, indent);
+            return;
+        }
 
-		// generate id, if necessary
-		if (rec.refCount > 1) {
-			rec.id = nameForClass(obj.getClass()) + idSerialNo;
-			idSerialNo++;
-		}
+        // not first time, use idref
+        if (rec.id != null) {
+            flushIndent(indent);
+            out.print("<object idref=\"");
+            out.print(rec.id);
+            out.println("\" />");
+            return;
+        }
 
-		// flush
-		Statement stat = asStatement ? new Statement(rec.exp.getTarget(),
-				rec.exp.getMethodName(), rec.exp.getArguments()) : rec.exp;
-		flushStatement(stat, rec.id, rec.stats, indent);
-	}
+        // generate id, if necessary
+        if (rec.refCount > 1) {
+            rec.id = nameForClass(obj.getClass()) + idSerialNo;
+            idSerialNo++;
+        }
+
+        // flush
+        flushStatement(stat, rec.id, rec.stats, indent);
+    }
 
 	private void flushIndent(int indent) {
 		for (int i = 0; i < indent; i++) {
@@ -449,7 +459,7 @@ public class XMLEncoder extends Encoder {
 
 		if (isStaticConstantsSupported
 				&& "getField".equals(stat.getMethodName())) {
-			flushStatField(stat, id, indent);
+            flushStatField(stat, indent);
 			return;
 		}
 
@@ -457,48 +467,46 @@ public class XMLEncoder extends Encoder {
 		flushStatCommon(stat, id, subStats, indent);
 	}
 
-	@SuppressWarnings("nls")
-    private void flushStatField(Statement stat, String id, 
-			int indent) {
-		// open tag, begin
-		flushIndent(indent);
-		String tagName = "object";
-		out.print("<");
-		out.print(tagName);
+    @SuppressWarnings("nls")
+    private void flushStatField(Statement stat, int indent) {
+        // open tag, begin
+        flushIndent(indent);
+        out.print("<object");
 
-		// id attribute
-		if (id != null) {
-			out.print(" id=\"");
-			out.print(id);
-			out.print("\"");
-		}
+        // special class attribute
+        Object target = stat.getTarget();
+        if (target instanceof Class<?>) {
+            out.print(" class=\"");
+            out.print(((Class<?>) target).getName());
+            out.print("\"");
+        }
 
-		// special class attribute
-		if (stat.getTarget() instanceof Class) {
-			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
-			out.print("\"");
-		}
+        Field field = null;
+        if (target instanceof Class<?> && stat.getArguments().length == 1
+                && stat.getArguments()[0] instanceof String) {
+            try {
+                field = ((Class<?>) target).getField((String) stat
+                        .getArguments()[0]);
+            } catch (Exception e) {
+                // ignored
+            }
+        }
 
-		Object target = stat.getTarget();
-		if(target == SystemColor.class || target == TextAttribute.class) {
-			out.print(" field=\"");
-			out.print(stat.getArguments()[0]);
-			out.print("\"");
-			out.println("/>");
-
-		}
-		else {
-			out.print(" method=\"");
-			out.print(stat.getMethodName());
-			out.print("\"");
-			out.println(">");
-			Object fieldName = stat.getArguments()[0];
-			flushObject(fieldName, indent + INDENT_UNIT);
-			flushIndent(indent);
-			out.println("</object>");
-		}
-	}
+        if (field != null && Modifier.isStatic(field.getModifiers())) {
+            out.print(" field=\"");
+            out.print(stat.getArguments()[0]);
+            out.print("\"");
+            out.println("/>");
+        } else {
+            out.print(" method=\"");
+            out.print(stat.getMethodName());
+            out.print("\"");
+            out.println(">");
+            flushObject(stat.getArguments()[0], indent + INDENT_UNIT);
+            flushIndent(indent);
+            out.println("</object>");
+        }
+    }
 
 	@SuppressWarnings("nls")
     private void flushStatGetterSetter(Statement stat, String id,
@@ -909,36 +917,49 @@ public class XMLEncoder extends Encoder {
 	 * Records the object so that it can be written out later, then calls super
 	 * implementation.
 	 */
-	@Override
+    @Override
     public void writeObject(Object o) {
-		synchronized (this) {
-			boolean oldWritingObject = writingObject;
-			writingObject = true;
-			try {
-				super.writeObject(o);
-			} finally {
-				writingObject = oldWritingObject;
-			}
+        synchronized (this) {
+            boolean oldWritingObject = writingObject;
+            writingObject = true;
+            try {
+                super.writeObject(o);
+            } finally {
+                writingObject = oldWritingObject;
+            }
 
-			// root object?
-			if (!writingObject) {
-				// add to pending
-				flushPending.addAll(flushPrePending);
-				flushPendingStat.addAll(flushPrePending);
-				flushPrePending.clear();
-				if (flushPending.contains(o)) {
-					flushPrePending.remove(o);
-					flushPendingStat.remove(o);
-				} else {
-					flushPending.add(o);
-				}
-				if (needOwner) {
-					this.flushPending.remove(owner);
-					this.flushPending.add(0, owner);
-				}
-			}
-		}
-	}
+            // root object?
+            if (!writingObject) {
+                boolean isCached;
+                ArrayList<Object> pending = (ArrayList<Object>) cache.get(o);
+                if (isCached = (pending != null)) {
+                    flushPrePending.clear();
+                    flushPrePending.addAll(pending);
+                } else {
+                    if (o != null) {
+                        pending = new ArrayList<Object>();
+                        pending.addAll(flushPrePending);
+                        cache.put(o, pending);
+                    }
+                }
+
+                // add to pending
+                flushPending.addAll(flushPrePending);
+                flushPendingStat.addAll(flushPrePending);
+                flushPrePending.clear();
+
+                if (!isCached && flushPending.contains(o)) {
+                    flushPendingStat.remove(o);
+                } else {
+                    flushPending.add(o);
+                }
+                if (needOwner) {
+                    this.flushPending.remove(owner);
+                    this.flushPending.add(0, owner);
+                }
+            }
+        }
+    }
 
 	/**
 	 * Records the statement so that it can be written out later, then calls
