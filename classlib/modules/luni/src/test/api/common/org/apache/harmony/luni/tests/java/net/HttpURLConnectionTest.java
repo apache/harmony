@@ -317,6 +317,34 @@ public class HttpURLConnectionTest extends junit.framework.TestCase {
             // correct, too many bytes written
         }
     }
+    
+    /**
+     * When an OutputStream of HtttpURLConnection is closed with below
+     * situation: fixed-length mod is disable and the content-length of the
+     * HtttpURLConnection is larger than 0, it should not throw IOExeption which
+     * indicates there are more bytes need be written into the underlying
+     * Socket.
+     * 
+     * @throws IOException
+     */
+    public void test_closeWithFixedLengthDisableMod() throws IOException {
+        String posted = "just a test";
+        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url
+                .openConnection();
+        conn.setDoOutput(true);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Length", "" + (888));
+
+        OutputStream out = conn.getOutputStream();
+        out.write(posted.getBytes());
+
+        try {
+            out.close();
+            // expected
+        } catch (IOException e) {
+            fail("should not throw IOException");
+        }
+    }
 
     /**
      * @tests java.net.HttpURLConnection#setChunkedStreamingMode_I()

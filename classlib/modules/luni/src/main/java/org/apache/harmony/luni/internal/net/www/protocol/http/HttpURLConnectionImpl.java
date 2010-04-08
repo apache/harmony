@@ -359,6 +359,8 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
         boolean closed;
 
         int limit;
+        
+        boolean fixedMod = false;
 
         public HttpOutputStream() {
             cacheLength = defaultCacheSize;
@@ -366,9 +368,10 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
             limit = -1;
         }
 
-        public HttpOutputStream(int limit) {
+        public HttpOutputStream(int limit, boolean fixedMode) {
             writeToSocket = true;
             this.limit = limit;
+            this.fixedMod = fixedMode;
             if (limit > 0) {
                 cacheLength = limit;
             } else {
@@ -445,7 +448,10 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
                 return;
             }
             closed = true;
-            if (writeToSocket) {
+            //Only with such situation when the fixedContentLength field of HttpURLConnection
+            //is set by HttpURLConnection.setFixedLengthStreamingMode and larger than 0, the
+            //IOException will be throwed
+            if (writeToSocket && fixedMod) {
                 if (limit > 0) {
                     throw new IOException(Messages.getString("luni.25")); //$NON-NLS-1$
                 }
@@ -952,11 +958,14 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
             sendChunked = true;
             limit = -1;
         }
+        
+        boolean fixedMode = false;
         if (fixedContentLength >= 0) {
             limit = fixedContentLength;
+            fixedMode = true;
         }
         if ((httpVersion > 0 && sendChunked) || limit >= 0) {
-            os = new HttpOutputStream(limit);
+            os = new HttpOutputStream(limit, fixedMode);
             doRequest();
             return os;
         }
