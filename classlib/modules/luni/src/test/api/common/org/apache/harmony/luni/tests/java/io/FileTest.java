@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectStreamClass;
@@ -30,6 +31,12 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.CodeSource;
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.Permissions;
+import java.security.Policy;
+import java.security.ProtectionDomain;
 
 import junit.framework.TestCase;
 
@@ -2256,5 +2263,306 @@ public class FileTest extends TestCase {
     public void test_serialization_compatibility() throws Exception {
         File file = new File("FileTest.golden.ser");
         SerializationTest.verifyGolden(this, file);
+    }
+
+    /**
+     * @tests file methods with a security manager
+     * Regression for HARMONY-6495
+     */
+    public void test_with_security_manager() throws IOException {
+        // create a file
+        File file = new File("fileForSecurityTest");
+        
+        // save old security manager and policy to restore
+        SecurityManager oldManager = System.getSecurityManager();
+        Policy oldPolicy = Policy.getPolicy();
+        
+        // create a policy
+        MockPolicy customPolicy = new MockPolicy();
+        Policy.setPolicy(customPolicy);
+        
+        SecurityManager sm = new SecurityManager();
+        System.setSecurityManager(sm);
+
+        try {
+            
+            // try operations requiring execute permission
+            try {
+                file.canExecute();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            // grant all files execute permission
+            customPolicy.permissions.add(new FilePermission("<<ALL FILES>>", "execute"));
+            file.canExecute();
+            
+            // try operations requiring write permission
+            try {
+                file.canWrite();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.createNewFile();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.mkdir();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.mkdirs();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.renameTo(new File("something"));
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.renameTo(new File("something"));
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.setLastModified(0);
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.setReadOnly();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.setWritable(true);
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.setReadable(true);
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.setExecutable(true);
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                File.createTempFile("abc", "d");
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            // grant all files write permission
+            customPolicy.permissions = new Permissions();
+            customPolicy.permissions.add(new FilePermission("<<ALL FILES>>", "write"));
+            // check canWrite()
+            file.canWrite();
+
+            // try operations requiring read permission
+            try {
+                file.canRead();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.exists();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.isFile();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.isDirectory();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.isHidden();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.lastModified();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.length();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.list();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.listFiles();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.mkdirs();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getTotalSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getFreeSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getUsableSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            // try operations requiring delete permission
+            try {
+                file.delete();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.deleteOnExit();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            // grant all files delete permission
+            customPolicy.permissions = new Permissions();
+            customPolicy.permissions.add(new FilePermission("<<ALL FILES>>", "delete"));
+            // try delete()
+            file.delete();
+            
+            // grant all files read permission
+            customPolicy.permissions = new Permissions();
+            customPolicy.permissions.add(new FilePermission("<<ALL FILES>>", "read"));
+            // check canRead()
+            file.canRead();
+
+            // try operations requiring read and getFileSystemAttributes runtime permission
+            try {
+                file.getTotalSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getFreeSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getUsableSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            // grant getFileSystemAttributes
+            customPolicy.permissions.add(new RuntimePermission("getFileSystemAttributes"));
+            file.getTotalSpace();
+            file.getFreeSpace();
+            file.getUsableSpace();
+            
+        } finally {
+            // restore security settings
+            System.setSecurityManager(oldManager);
+            Policy.setPolicy(oldPolicy);
+        }
+    }
+    
+    class MockPolicy extends Policy {
+        public Permissions permissions;
+        
+        public MockPolicy() {
+            permissions = new Permissions();
+        }
+        
+        public PermissionCollection getPermissions(CodeSource codesource) {
+            return permissions;
+        }
+        
+        public PermissionCollection getPermissions(ProtectionDomain domain) {
+            return permissions;
+        }
+        
+        public boolean implies(ProtectionDomain domain, Permission permission) {
+            if (permission.equals(new RuntimePermission("setSecurityManager"))) {
+                return true;
+            }
+            return permissions.implies(permission);
+        }
     }
 }

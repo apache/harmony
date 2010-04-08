@@ -1703,7 +1703,10 @@ public class File implements Serializable, Comparable<File> {
      */
     public boolean canExecute() {
         checkExec();
-        return exists() && isExecutableImpl(properPath(true));
+        if (path.length() == 0) {
+            return false;
+        }
+        return existsImpl(properPath(true)) && isExecutableImpl(properPath(true));
     }
 
     private native boolean isExecutableImpl(byte[] filePath);
