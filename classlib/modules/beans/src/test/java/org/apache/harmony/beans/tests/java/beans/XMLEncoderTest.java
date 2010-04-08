@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -902,5 +903,31 @@ public class XMLEncoderTest extends TestCase {
         public void setName(String name) {
             this.name = name;
         }
+    }
+
+    public void testWriteObject_ClassID() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        ChildClass childClazz = new ChildClass();
+        childClazz.setClazz(ChildClass.class);
+        xmlEncoder.writeObject(childClazz);
+        xmlEncoder.close();
+        assertXMLContent(null, bos.toByteArray(), "/xml/ClassID.xml");
+    }
+
+    public static class ParentClass {
+
+        Class<?> clazz = Collection.class;
+
+        public Class<?> getClazz() {
+            return clazz;
+        }
+
+        public void setClazz(Class<?> clazz) {
+            this.clazz = clazz;
+        }
+    }
+
+    public static class ChildClass extends ParentClass {
     }
 }

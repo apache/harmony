@@ -15,7 +15,6 @@
  *  limitations under the License.
  */
 
-
 package java.beans;
 
 import java.io.OutputStream;
@@ -201,9 +200,9 @@ public class XMLEncoder extends Encoder {
 			out.print("<string>");
 			flushString((String) obj);
 			out.println("</string>");
-		} else if (obj instanceof Class) {
+		} else if (obj instanceof Class<?>) {
 			out.print("<class>");
-			out.print(((Class) obj).getName());
+			out.print(((Class<?>) obj).getName());
 			out.println("</class>");
 		} else if (obj instanceof Boolean) {
 			out.print("<boolean>");
@@ -361,7 +360,7 @@ public class XMLEncoder extends Encoder {
 
 		// class & length
 		out.print(" class=\"");
-		out.print(((Class) stat.getArguments()[0]).getName());
+		out.print(((Class<?>) stat.getArguments()[0]).getName());
 		out.print("\" length=\"");
 		out.print(stat.getArguments()[1]);
 		out.print("\"");
@@ -398,9 +397,9 @@ public class XMLEncoder extends Encoder {
 		}
 
 		// special class attribute
-		if (stat.getTarget() instanceof Class) {
+		if (stat.getTarget() instanceof Class<?>) {
 			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
+			out.print(((Class<?>) stat.getTarget()).getName());
 			out.print("\"");
 		}
 
@@ -525,9 +524,9 @@ public class XMLEncoder extends Encoder {
 		}
 
 		// special class attribute
-		if (stat.getTarget() instanceof Class) {
+		if (stat.getTarget() instanceof Class<?>) {
 			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
+			out.print(((Class<?>) stat.getTarget()).getName());
 			out.print("\"");
 		}
 
@@ -575,9 +574,9 @@ public class XMLEncoder extends Encoder {
 		}
 
 		// special class attribute
-		if (stat.getTarget() instanceof Class) {
+		if (stat.getTarget() instanceof Class<?>) {
 			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
+			out.print(((Class<?>) stat.getTarget()).getName());
 			out.print("\"");
 		}
 
@@ -661,7 +660,7 @@ public class XMLEncoder extends Encoder {
 	private boolean isBasicType(Object value) {
 		return value == null || value instanceof Boolean
 				|| value instanceof Byte || value instanceof Character
-				|| value instanceof Class || value instanceof Double
+				|| value instanceof Class<?> || value instanceof Double
 				|| value instanceof Float || value instanceof Integer
 				|| value instanceof Long || value instanceof Short
 				|| value instanceof String || value instanceof Proxy;
@@ -697,44 +696,44 @@ public class XMLEncoder extends Encoder {
         return name.substring(i + 1);
 	}
 
-	/*
-	 * The preprocess removes unused statements and counts references of every
-	 * object
-	 */
-	private void preprocess(Object obj, Record rec) {
-		if (isBasicType(obj) && writingObject) {
-			return;
-		}
+    /*
+     * The preprocess removes unused statements and counts references of every
+     * object
+     */
+    private void preprocess(Object obj, Record rec) {
+        if (writingObject && isBasicType(obj)) {
+            return;
+        }
 
-		// count reference
-		rec.refCount++;
+        if (obj instanceof Class<?>) {
+            return;
+        }
 
-		// do things only one time for each record
-		if (rec.refCount > 1) {
-			return;
-		}
+        // count reference
+        rec.refCount++;
 
-		// deal with 'field' property
-		try {
-			if (isStaticConstantsSupported
-					&& "getField".equals(((Record) records.get(rec.exp //$NON-NLS-1$
-							.getTarget())).exp.getMethodName())) {
-				records.remove(obj);
-			}
-		} catch (NullPointerException e) {
-			// do nothing, safely
-		}
+        // do things only one time for each record
+        if (rec.refCount > 1) {
+            return;
+        }
 
-		// do it recursively
-		if (null != rec.exp) {
-			Object args[] = rec.exp.getArguments();
-			for (int i = 0; i < args.length; i++) {
-				Record argRec = (Record) records.get(args[i]);
-				if (argRec != null) {
-					preprocess(args[i], argRec);
-				}
-			}
-		}
+        // do it recursively
+        if (null != rec.exp) {
+            // deal with 'field' property
+            Record targetRec = (Record) records.get(rec.exp.getTarget());
+            if (targetRec != null && targetRec.exp != null
+                    && "getField".equals(targetRec.exp.getMethodName())) {
+                records.remove(obj);
+            }
+
+            Object args[] = rec.exp.getArguments();
+            for (int i = 0; i < args.length; i++) {
+                Record argRec = (Record) records.get(args[i]);
+                if (argRec != null) {
+                    preprocess(args[i], argRec);
+                }
+            }
+        }
 
 		for (Iterator<?> iter = rec.stats.iterator(); iter.hasNext();) {
 			Statement subStat = (Statement) iter.next();
@@ -917,6 +916,7 @@ public class XMLEncoder extends Encoder {
 	 * Records the object so that it can be written out later, then calls super
 	 * implementation.
 	 */
+    @SuppressWarnings("unchecked")
     @Override
     public void writeObject(Object o) {
         synchronized (this) {
