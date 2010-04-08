@@ -930,4 +930,96 @@ public class XMLEncoderTest extends TestCase {
 
     public static class ChildClass extends ParentClass {
     }
+
+    public void testWriteObject_ObjectID() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        ExampleA exampleAI = new ExampleA("exampleAI");
+        xmlEncoder.writeObject(exampleAI);
+        xmlEncoder.writeObject(exampleAI);
+        ExampleA exampleAII = new ExampleA("exampleAI");
+        xmlEncoder.writeObject(exampleAII);
+        xmlEncoder.writeObject(exampleAII);
+
+        ExampleB exampleBI = new ExampleB("exampleBI");
+        xmlEncoder.writeObject(exampleBI);
+        xmlEncoder.writeObject(exampleBI);
+        ExampleB exampleBII = new ExampleB("exampleBII");
+        xmlEncoder.writeObject(exampleBII);
+        xmlEncoder.writeObject(exampleBII);
+
+        ExampleC exampleCI = new ExampleC("exampleCI");
+        xmlEncoder.writeObject(exampleCI);
+        xmlEncoder.writeObject(exampleCI);
+        ExampleC exampleCII = new ExampleC("exampleCII");
+        xmlEncoder.writeObject(exampleCII);
+        xmlEncoder.writeObject(exampleCII);
+
+        xmlEncoder.close();
+
+        assertXMLContent(null, bos.toByteArray(), "/xml/ObjectID.xml");
+    }
+
+    public static class ExampleA {
+
+        private String name;
+
+        public ExampleA() {
+
+        }
+
+        public ExampleA(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class ExampleB {
+
+        private String name;
+
+        public ExampleB() {
+
+        }
+
+        public ExampleB(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class ExampleC {
+
+        private String name;
+
+        public ExampleC() {
+
+        }
+
+        public ExampleC(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
 }

@@ -77,8 +77,6 @@ public class XMLEncoder extends Encoder {
 
 	private boolean hasXmlHeader = false;
 
-	private int idSerialNo = 0;
-
 	/*
 	 * if any expression or statement references owner, it is set true in method
 	 * recordStatement() or recordExpressions(), and, at the first time
@@ -95,7 +93,9 @@ public class XMLEncoder extends Encoder {
 
 	private ReferenceMap records = new ReferenceMap();
 
-    private ReferenceMap cache = new ReferenceMap();
+    private ReferenceMap objPrePendingCache = new ReferenceMap();
+
+    private ReferenceMap clazzCounterMap = new ReferenceMap();
 
 	private boolean writingObject = false;
 
@@ -132,6 +132,15 @@ public class XMLEncoder extends Encoder {
 		buf.setCharAt(0, Character.toLowerCase(buf.charAt(0)));
 		return buf;
 	}
+
+    private String idSerialNoOfObject(Object obj) {
+        Class<?> clazz = obj.getClass();
+        Integer serialNo = (Integer) clazzCounterMap.get(clazz);
+        serialNo = serialNo == null ? 0 : serialNo;
+        String id = nameForClass(obj.getClass()) + serialNo;
+        clazzCounterMap.put(clazz, ++serialNo);
+        return id;
+    }
 
 	/**
 	 * Writes out all objects since last flush to the output stream.
@@ -171,8 +180,9 @@ public class XMLEncoder extends Encoder {
 
 			// clear statement records
 			records.clear();
-			flushPendingStat.clear();
-            cache.clear();
+            flushPendingStat.clear();
+            objPrePendingCache.clear();
+            clazzCounterMap.clear();
 
 			// remove all old->new mappings
 			super.clear();
@@ -264,9 +274,8 @@ public class XMLEncoder extends Encoder {
         }
 
         // generate id, if necessary
-        if (rec.refCount > 1) {
-            rec.id = nameForClass(obj.getClass()) + idSerialNo;
-            idSerialNo++;
+        if (rec.refCount > 1 && rec.id == null) {
+            rec.id = idSerialNoOfObject(obj);
         }
 
         // flush
@@ -303,10 +312,9 @@ public class XMLEncoder extends Encoder {
 
 	@SuppressWarnings("nls")
     private void flushOwner(Object obj, Record rec, int indent) {
-		if (rec.refCount > 1) {
-			rec.id = nameForClass(obj.getClass()) + idSerialNo;
-			idSerialNo++;
-		}
+        if (rec.refCount > 1 && rec.id == null) {
+            rec.id = idSerialNoOfObject(obj);
+        }
 
 		flushIndent(indent);
 		String tagName = "void";
@@ -920,7 +928,8 @@ public class XMLEncoder extends Encoder {
     @Override
     public void writeObject(Object o) {
         synchronized (this) {
-            ArrayList<Object> prePending = (ArrayList<Object>) cache.get(o);
+            ArrayList<Object> prePending = (ArrayList<Object>) objPrePendingCache
+                    .get(o);
             if (prePending == null) {
                 boolean oldWritingObject = writingObject;
                 writingObject = true;
@@ -941,7 +950,7 @@ public class XMLEncoder extends Encoder {
                 if (isNotCached && o != null) {
                     prePending = new ArrayList<Object>();
                     prePending.addAll(flushPrePending);
-                    cache.put(o, prePending);
+                    objPrePendingCache.put(o, prePending);
                 }
 
                 // add to pending
