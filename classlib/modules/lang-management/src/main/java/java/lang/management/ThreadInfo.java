@@ -101,6 +101,10 @@ public class ThreadInfo {
             Object[] attributeVals = cd.getAll(attributeNames);
             long threadIdVal = ((Long) attributeVals[0]).longValue();
             String threadNameVal = (String) attributeVals[1];
+            if (threadNameVal == null) {
+                throw new IllegalArgumentException(
+                        "Invalid composite data: Attribute threadName has null value"); //$NON-NLS-1$
+            }
             String threadStateStringVal = (String) attributeVals[2];
 
             // Verify that threadStateStringVal contains a string that can be
@@ -126,8 +130,10 @@ public class ThreadInfo {
             String lockOwnerNameVal = attributeVals[11] != null ? (String) attributeVals[11]
                     : null;
             CompositeData[] stackTraceDataVal = (CompositeData[]) attributeVals[12];
+            if (stackTraceDataVal == null) {
+                throw new IllegalArgumentException("StackTraceElement[] is missing"); //$NON-NLS-1$
+            }
             StackTraceElement[] stackTraceVals = getStackTracesFromCompositeData(stackTraceDataVal);
-
             result = new ThreadInfo(threadIdVal, threadNameVal, threadStateVal,
                     suspendedVal, inNativeVal, blockedCountVal, blockedTimeVal,
                     waitedCountVal, waitedTimeVal, lockNameVal, lockOwnerIdVal,

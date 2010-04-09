@@ -88,6 +88,8 @@ public class ThreadInfoTest extends TestCase {
 
     private static final String GOOD_LOCK_NAME = "foo.Bar@1234567";
 
+    private static final String GOOD_THREADINFO_CLASSNAME = ThreadInfo.class.getName();
+
     private CompositeData tiCD;
 
     private ThreadInfo ti;
@@ -362,6 +364,393 @@ public class ThreadInfoTest extends TestCase {
             assertEquals(GOOD_STACK_LINENUMBER, element.getLineNumber());
             assertEquals(GOOD_STACK_METHODNAME, element.getMethodName());
         }
+    }
+
+    private static final Object stackTraceElementData = createGoodStackTraceCompositeData();
+
+    private static final CompositeType stackTraceElementType = createGoodStackTraceElementCompositeType();
+
+    private String[] initialNames = { "threadId", "threadName", "threadState",
+            "suspended", "inNative", "blockedCount", "blockedTime",
+            "waitedCount", "waitedTime", "lockName", "lockOwnerId",
+            "lockOwnerName", "stackTrace", "additionalName" };
+
+    private Object[] initialValues = { 1L, "threadName",
+            GOOD_THREAD_STATE.toString(), true, false, 1L, 500L, 1L, 1L,
+            "lock", 2L, "lockOwner", stackTraceElementData, "additionalValue" };
+
+    public void test_from_scenario1() throws Exception {
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        ThreadInfo threadInfo = ThreadInfo.from(data);
+        assertEquals(initialValues[0], threadInfo.getThreadId());
+        assertEquals(initialValues[1], threadInfo.getThreadName());
+        assertEquals(GOOD_THREAD_STATE, threadInfo.getThreadState());
+        assertEquals(initialValues[3], threadInfo.isSuspended());
+        assertEquals(initialValues[4], threadInfo.isInNative());
+        assertEquals(initialValues[5], threadInfo.getBlockedCount());
+        assertEquals(initialValues[6], threadInfo.getBlockedTime());
+        assertEquals(initialValues[7], threadInfo.getWaitedCount());
+        assertEquals(initialValues[8], threadInfo.getWaitedTime());
+        assertEquals(initialValues[9], threadInfo.getLockName());
+        assertEquals(initialValues[10], threadInfo.getLockOwnerId());
+        assertEquals(initialValues[11], threadInfo.getLockOwnerName());
+        StackTraceElement[] stackElements = threadInfo.getStackTrace();
+        assertEquals(GOOD_STACK_SIZE, stackElements.length);
+        for (StackTraceElement element : stackElements) {
+            assertEquals(GOOD_STACK_CLASSNAME, element.getClassName());
+            assertEquals(GOOD_STACK_NATIVEMETHOD, element.isNativeMethod());
+            assertEquals(GOOD_STACK_FILENAME, element.getFileName());
+            assertEquals(GOOD_STACK_LINENUMBER, element.getLineNumber());
+            assertEquals(GOOD_STACK_METHODNAME, element.getMethodName());
+        }
+    }
+
+    public void test_from_scenario2() throws Exception {
+        initialValues[0] = "1";
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.STRING, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario3() throws Exception {
+        int length = 10;
+        String[] names = new String[length];
+        for (int index = 0; index < length; index++) {
+            names[index] = initialNames[index];
+        }
+        Object[] values = new Object[length];
+        for (int index = 0; index < length; index++) {
+            values[index] = initialValues[index];
+        }
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(names, types);
+        CompositeData data = new CompositeDataSupport(compositeType, names,
+                values);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        values[0] = null;
+        compositeType = getCompositeType(names, types);
+        data = new CompositeDataSupport(compositeType, names, values);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario4() throws Exception {
+        initialValues[0] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario5() throws Exception {
+        initialValues[1] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario6() throws Exception {
+        initialValues[2] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario7() throws Exception {
+        initialValues[3] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario8() throws Exception {
+        initialValues[4] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario9() throws Exception {
+        initialValues[5] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario10() throws Exception {
+        initialValues[6] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario11() throws Exception {
+        initialValues[7] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario12() throws Exception {
+        initialValues[8] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario13() throws Exception {
+        initialValues[9] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        ThreadInfo threadInfo = ThreadInfo.from(data);
+        assertEquals(initialValues[0], threadInfo.getThreadId());
+        assertEquals(initialValues[1], threadInfo.getThreadName());
+        assertEquals(GOOD_THREAD_STATE, threadInfo.getThreadState());
+        assertEquals(initialValues[3], threadInfo.isSuspended());
+        assertEquals(initialValues[4], threadInfo.isInNative());
+        assertEquals(initialValues[5], threadInfo.getBlockedCount());
+        assertEquals(initialValues[6], threadInfo.getBlockedTime());
+        assertEquals(initialValues[7], threadInfo.getWaitedCount());
+        assertEquals(initialValues[8], threadInfo.getWaitedTime());
+        assertNull(threadInfo.getLockName());
+        assertEquals(initialValues[10], threadInfo.getLockOwnerId());
+        assertEquals(initialValues[11], threadInfo.getLockOwnerName());
+        StackTraceElement[] stackElements = threadInfo.getStackTrace();
+        assertEquals(GOOD_STACK_SIZE, stackElements.length);
+        for (StackTraceElement element : stackElements) {
+            assertEquals(GOOD_STACK_CLASSNAME, element.getClassName());
+            assertEquals(GOOD_STACK_NATIVEMETHOD, element.isNativeMethod());
+            assertEquals(GOOD_STACK_FILENAME, element.getFileName());
+            assertEquals(GOOD_STACK_LINENUMBER, element.getLineNumber());
+            assertEquals(GOOD_STACK_METHODNAME, element.getMethodName());
+        }
+    }
+
+    public void test_from_scenario14() throws Exception {
+        initialValues[10] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void test_from_scenario15() throws Exception {
+        initialValues[11] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        ThreadInfo.from(data);
+        ThreadInfo threadInfo = ThreadInfo.from(data);
+        assertEquals(initialValues[0], threadInfo.getThreadId());
+        assertEquals(initialValues[1], threadInfo.getThreadName());
+        assertEquals(GOOD_THREAD_STATE, threadInfo.getThreadState());
+        assertEquals(initialValues[3], threadInfo.isSuspended());
+        assertEquals(initialValues[4], threadInfo.isInNative());
+        assertEquals(initialValues[5], threadInfo.getBlockedCount());
+        assertEquals(initialValues[6], threadInfo.getBlockedTime());
+        assertEquals(initialValues[7], threadInfo.getWaitedCount());
+        assertEquals(initialValues[8], threadInfo.getWaitedTime());
+        assertEquals(initialValues[9], threadInfo.getLockName());
+        assertEquals(initialValues[10], threadInfo.getLockOwnerId());
+        assertNull(threadInfo.getLockOwnerName());
+        StackTraceElement[] stackElements = threadInfo.getStackTrace();
+        assertEquals(GOOD_STACK_SIZE, stackElements.length);
+        for (StackTraceElement element : stackElements) {
+            assertEquals(GOOD_STACK_CLASSNAME, element.getClassName());
+            assertEquals(GOOD_STACK_NATIVEMETHOD, element.isNativeMethod());
+            assertEquals(GOOD_STACK_FILENAME, element.getFileName());
+            assertEquals(GOOD_STACK_LINENUMBER, element.getLineNumber());
+            assertEquals(GOOD_STACK_METHODNAME, element.getMethodName());
+        }
+    }
+
+    public void test_from_scenario16() throws Exception {
+        initialValues[12] = null;
+        ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
+        OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
+                SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
+                SimpleType.LONG, SimpleType.LONG, SimpleType.LONG,
+                SimpleType.LONG, SimpleType.STRING, SimpleType.LONG,
+                SimpleType.STRING, stackTraceArray, SimpleType.STRING };
+        CompositeType compositeType = getCompositeType(initialNames, types);
+        CompositeData data = new CompositeDataSupport(compositeType,
+                initialNames, initialValues);
+        try {
+            ThreadInfo.from(data);
+            fail("should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+    }
+
+    protected CompositeType getCompositeType(String[] typeNames,
+            OpenType[] typeTypes) throws Exception {
+        return new CompositeType(GOOD_THREADINFO_CLASSNAME,
+                GOOD_THREADINFO_CLASSNAME, typeNames, typeNames, typeTypes);
     }
 
     String getGoodToStringVal() {
