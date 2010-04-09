@@ -19,6 +19,7 @@ package org.apache.harmony.beans.tests.java.beans;
 
 import java.beans.DefaultPersistenceDelegate;
 import java.beans.Expression;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -1199,6 +1200,178 @@ public class ExpressionTest extends TestCase {
 
         public Object aMethod() {
             return "haha";
+        }
+    }
+
+    public void test_Expression_Constructor_OneArgument_senario1()
+            throws Exception {
+        Object[] arguments = new Object[] { "test" };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("string", arguments);
+    }
+
+    public void test_Expression_Constructor_OneArgument_senario2()
+            throws Exception {
+        Object[] arguments = new Object[] { new Integer(1) };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("integer", arguments);
+    }
+
+    public void test_Expression_Constructor_OneArgument_senario3()
+            throws Exception {
+        Object[] arguments = new Object[] { new Object() };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object", arguments);
+    }
+
+    public void test_Expression_Constructor_OneArgument_senario4()
+            throws Exception {
+        Object[] arguments = new Object[] { null };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario1()
+            throws Exception {
+        Object[] arguments = new Object[] { null, null };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object_object", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario2()
+            throws Exception {
+        Object[] arguments = new Object[] { null, "test" };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object_string", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario3()
+            throws Exception {
+        Object[] arguments = new Object[] { new Object(), "test" };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object_string", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario4()
+            throws Exception {
+        Object[] arguments = new Object[] { "test1", "test2" };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("string_string", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario5()
+            throws Exception {
+        Object[] arguments = new Object[] { "test", new Integer(1) };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("string_integer", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario6()
+            throws Exception {
+        Object[] arguments = new Object[] { "test", (String) null };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object_object", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario7()
+            throws Exception {
+        Object[] arguments = new Object[] { new Integer(1), "test" };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object_string", arguments);
+    }
+
+    public void test_Expression_Constructor_twoArguments_senario8()
+            throws Exception {
+        Object[] arguments = new Object[] { new Integer(1), new Integer(2) };
+        Expression expression = new Expression(SampleObject.class, "new",
+                arguments);
+        assertTrue(expression.getValue() instanceof SampleObject);
+        SampleObject.assertCalled("object_object", arguments);
+    }
+
+    public static class SampleObject {
+
+        public static String calledMethod = null;
+
+        public static ArrayList<Object> receivedArguments = new ArrayList<Object>();
+
+        public SampleObject(String o) {
+            reset();
+            calledMethod = "string";
+            receivedArguments.add(o);
+        }
+
+        public SampleObject(Object o) {
+            reset();
+            calledMethod = "object";
+            receivedArguments.add(o);
+        }
+
+        public SampleObject(Integer o) {
+            reset();
+            calledMethod = "integer";
+            receivedArguments.add(o);
+        }
+
+        public SampleObject(Object arg1, Object arg2) {
+            reset();
+            calledMethod = "object_object";
+            receivedArguments.add(arg1);
+            receivedArguments.add(arg2);
+        }
+
+        public SampleObject(Object arg1, String arg2) {
+            reset();
+            calledMethod = "object_string";
+            receivedArguments.add(arg1);
+            receivedArguments.add(arg2);
+        }
+
+        public SampleObject(String arg1, String arg2) {
+            reset();
+            calledMethod = "string_string";
+            receivedArguments.add(arg1);
+            receivedArguments.add(arg2);
+        }
+
+        public SampleObject(String arg1, Integer arg2) {
+            reset();
+            calledMethod = "string_integer";
+            receivedArguments.add(arg1);
+            receivedArguments.add(arg2);
+        }
+
+        public static void assertCalled(String methodName, Object[] arguments) {
+            assertEquals(methodName, calledMethod);
+            assertTrue(Arrays.equals(arguments, receivedArguments.toArray()));
+            reset();
+        }
+
+        public static void reset() {
+            receivedArguments.clear();
+            calledMethod = null;
         }
     }
 }
