@@ -842,9 +842,22 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
             <property name="test.module.dir" value="${target.dir}/@{module}" />
             <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
             <property name="test.resources.dir" value="${test.module.dir}/resources" />
-            <property name="test.exclude.file" value="${work.dir}/@{module}/test.exclude" />
+            <property name="module.work.dir" location="${work.dir}/@{module}" />
+            <property name="test.exclude.file" value="${module.work.dir}/test.exclude" />
+
+            <property name="module.temp.dir"
+                      location="${work.dir}/@{module}/temp" />
+            <property name="junit.tempdir"
+                      location="${module.temp.dir}/ant" />
+            <property name="junit.java.io.tmpdir"
+                      location="${module.temp.dir}/tmpdir" />
+            <property name="junit.user.home"
+                      location="${module.temp.dir}/user" />
             
             <mkdir dir="${tests.output}" /> 
+            <mkdir dir="${junit.tempdir}" />
+            <mkdir dir="${junit.java.io.tmpdir}" />
+            <mkdir dir="${junit.user.home}" />
 
             <prepare-exclude-list moduleName="@{module}" dir="${test.excludes.dir}" result="${test.exclude.file}" />
             <junit fork="yes" 
@@ -855,8 +868,11 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                    failureproperty="test.failures" 
                    showoutput="on" 
                    dir="${work.dir}/@{module}" 
-                   tempdir="${work.dir}"
+                   tempdir="${junit.tempdir}"
                    jvm="${test.jre.home}/bin/java">
+
+                <jvmarg line="-Djava.io.tmpdir=${junit.java.io.tmpdir}" />
+                <jvmarg line="-Duser.home=${junit.user.home}" />
 
                 <classpath>
                     <fileset dir="${target.dir}">
@@ -892,6 +908,9 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
 
                 <formatter type="xml" />
             </junit>
+
+            <delete dir="${module.temp.dir}"
+                    includeemptydirs="true" failonerror="false" />
 
             <antcall target="touch-failures-file">
                 <param name="module" value="@{module}" />
