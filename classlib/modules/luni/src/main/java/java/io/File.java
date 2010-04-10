@@ -746,6 +746,7 @@ public class File implements Serializable, Comparable<File> {
 		if (security != null) {
 			security.checkPermission(new RuntimePermission(
 					"getFileSystemAttributes")); //$NON-NLS-1$
+			security.checkRead(path);
 		}
 		return getTotalSpaceImpl(properPath(true));
 	}
@@ -767,6 +768,7 @@ public class File implements Serializable, Comparable<File> {
 		if (security != null) {
 			security.checkPermission(new RuntimePermission(
 					"getFileSystemAttributes")); //$NON-NLS-1$
+			security.checkRead(path);
 		}
 		return getUsableSpaceImpl(properPath(true));
 	}
@@ -783,6 +785,7 @@ public class File implements Serializable, Comparable<File> {
 		if (security != null) {
 			security.checkPermission(new RuntimePermission(
 					"getFileSystemAttributes")); //$NON-NLS-1$
+			security.checkRead(path);
 		}
 		return getFreeSpaceImpl(properPath(true));
 	}

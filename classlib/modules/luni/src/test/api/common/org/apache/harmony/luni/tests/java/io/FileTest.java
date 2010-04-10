@@ -2536,6 +2536,31 @@ public class FileTest extends TestCase {
             file.getFreeSpace();
             file.getUsableSpace();
             
+            // now only grant getFileSystemAttributes
+            // Regression for HARMONY-6496
+            customPolicy.permissions = new Permissions();
+            customPolicy.permissions.add(new RuntimePermission("getFileSystemAttributes"));
+            try {
+                file.getTotalSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getFreeSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
+            try {
+                file.getUsableSpace();
+                fail("Expected security exception");
+            } catch (SecurityException e) {
+                // expected
+            }
+            
         } finally {
             // restore security settings
             System.setSecurityManager(oldManager);
