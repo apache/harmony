@@ -48,7 +48,7 @@
    <float>12.34</float> 
   </void> 
   <void property="friend"> 
-   <object class="${classname}" id="MockBean4Codec1">
+   <object class="${classname}">
     <void property="clazz"> 
     <class>${classname}</class>
     </void> 

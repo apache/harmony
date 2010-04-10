@@ -17,9 +17,7 @@
 
 package java.beans;
 
-import java.beans.ArrayPersistenceDelegate;
-import java.beans.Encoder;
-import java.beans.Expression;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
 
 import junit.framework.TestCase;
@@ -164,6 +162,41 @@ public class ArrayPersistenceDelegateTest extends TestCase {
         public MockBObject(int idValue){
             id = idValue;
         }
+    }
+
+    public static class ParentClass {
+
+        String multiArray[][][] = { { { "1", "2" } }, { { "3", "4", "5" } },
+                { { "1", "2" }, { "3", "4", "5" } } };
+
+        public ParentClass() {
+        }
+
+        public String[][][] getMultiArray() {
+            return multiArray;
+        }
+
+        public void setMultiArray(String[][][] array) {
+            multiArray = array;
+        }
+
+    }
+
+    public static class ChildClass extends ParentClass {
+
+        public ChildClass() {
+
+        }
+
+    }
+
+    public void testInitialize_MultiArray() throws Exception {
+        ChildClass child = new ChildClass();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        xmlEncoder.writeObject(child);
+        xmlEncoder.close();
+        assertFalse(bos.toString("UTF-8").contains("multiArray"));
     }
 
 }

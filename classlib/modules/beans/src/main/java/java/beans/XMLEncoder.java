@@ -15,23 +15,22 @@
  *  limitations under the License.
  */
 
-
 package java.beans;
 
-import java.awt.SystemColor;
-import java.awt.font.TextAttribute;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.harmony.awt.internal.nls.Messages;
+import org.apache.harmony.beans.internal.nls.Messages;
 
 /**
  * <code>XMLEncoder</code> extends <code>Encoder</code> to write out the
@@ -78,8 +77,6 @@ public class XMLEncoder extends Encoder {
 
 	private boolean hasXmlHeader = false;
 
-	private int idSerialNo = 0;
-
 	/*
 	 * if any expression or statement references owner, it is set true in method
 	 * recordStatement() or recordExpressions(), and, at the first time
@@ -95,6 +92,10 @@ public class XMLEncoder extends Encoder {
 	private Object owner = null;
 
 	private ReferenceMap records = new ReferenceMap();
+
+    private ReferenceMap objPrePendingCache = new ReferenceMap();
+
+    private ReferenceMap clazzCounterMap = new ReferenceMap();
 
 	private boolean writingObject = false;
 
@@ -131,6 +132,15 @@ public class XMLEncoder extends Encoder {
 		buf.setCharAt(0, Character.toLowerCase(buf.charAt(0)));
 		return buf;
 	}
+
+    private String idSerialNoOfObject(Object obj) {
+        Class<?> clazz = obj.getClass();
+        Integer serialNo = (Integer) clazzCounterMap.get(clazz);
+        serialNo = serialNo == null ? 0 : serialNo;
+        String id = nameForClass(obj.getClass()) + serialNo;
+        clazzCounterMap.put(clazz, ++serialNo);
+        return id;
+    }
 
 	/**
 	 * Writes out all objects since last flush to the output stream.
@@ -170,7 +180,9 @@ public class XMLEncoder extends Encoder {
 
 			// clear statement records
 			records.clear();
-			flushPendingStat.clear();
+            flushPendingStat.clear();
+            objPrePendingCache.clear();
+            clazzCounterMap.clear();
 
 			// remove all old->new mappings
 			super.clear();
@@ -198,9 +210,9 @@ public class XMLEncoder extends Encoder {
 			out.print("<string>");
 			flushString((String) obj);
 			out.println("</string>");
-		} else if (obj instanceof Class) {
+		} else if (obj instanceof Class<?>) {
 			out.print("<class>");
-			out.print(((Class) obj).getName());
+			out.print(((Class<?>) obj).getName());
 			out.println("</class>");
 		} else if (obj instanceof Boolean) {
 			out.print("<boolean>");
@@ -242,27 +254,33 @@ public class XMLEncoder extends Encoder {
 
 	@SuppressWarnings("nls")
     private void flushExpression(Object obj, Record rec, int indent,
-			boolean asStatement) {
-		// not first time, use idref
-		if (rec.id != null) {
-			flushIndent(indent);
-			out.print("<object idref=\"");
-			out.print(rec.id);
-			out.println("\" />");
-			return;
-		}
+            boolean asStatement) {
+        // flush
+        Statement stat = asStatement ? new Statement(rec.exp.getTarget(),
+                rec.exp.getMethodName(), rec.exp.getArguments()) : rec.exp;
+        if (isStaticConstantsSupported
+                && "getField".equals(stat.getMethodName())) {
+            flushStatField(stat, indent);
+            return;
+        }
 
-		// generate id, if necessary
-		if (rec.refCount > 1) {
-			rec.id = nameForClass(obj.getClass()) + idSerialNo;
-			idSerialNo++;
-		}
+        // not first time, use idref
+        if (rec.id != null) {
+            flushIndent(indent);
+            out.print("<object idref=\"");
+            out.print(rec.id);
+            out.println("\" />");
+            return;
+        }
 
-		// flush
-		Statement stat = asStatement ? new Statement(rec.exp.getTarget(),
-				rec.exp.getMethodName(), rec.exp.getArguments()) : rec.exp;
-		flushStatement(stat, rec.id, rec.stats, indent);
-	}
+        // generate id, if necessary
+        if (rec.refCount > 1 && rec.id == null) {
+            rec.id = idSerialNoOfObject(obj);
+        }
+
+        // flush
+        flushStatement(stat, rec.id, rec.stats, indent);
+    }
 
 	private void flushIndent(int indent) {
 		for (int i = 0; i < indent; i++) {
@@ -294,10 +312,9 @@ public class XMLEncoder extends Encoder {
 
 	@SuppressWarnings("nls")
     private void flushOwner(Object obj, Record rec, int indent) {
-		if (rec.refCount > 1) {
-			rec.id = nameForClass(obj.getClass()) + idSerialNo;
-			idSerialNo++;
-		}
+        if (rec.refCount > 1 && rec.id == null) {
+            rec.id = idSerialNoOfObject(obj);
+        }
 
 		flushIndent(indent);
 		String tagName = "void";
@@ -351,7 +368,7 @@ public class XMLEncoder extends Encoder {
 
 		// class & length
 		out.print(" class=\"");
-		out.print(((Class) stat.getArguments()[0]).getName());
+		out.print(((Class<?>) stat.getArguments()[0]).getName());
 		out.print("\" length=\"");
 		out.print(stat.getArguments()[1]);
 		out.print("\"");
@@ -388,9 +405,9 @@ public class XMLEncoder extends Encoder {
 		}
 
 		// special class attribute
-		if (stat.getTarget() instanceof Class) {
+		if (stat.getTarget() instanceof Class<?>) {
 			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
+			out.print(((Class<?>) stat.getTarget()).getName());
 			out.print("\"");
 		}
 
@@ -449,7 +466,7 @@ public class XMLEncoder extends Encoder {
 
 		if (isStaticConstantsSupported
 				&& "getField".equals(stat.getMethodName())) {
-			flushStatField(stat, id, indent);
+            flushStatField(stat, indent);
 			return;
 		}
 
@@ -457,48 +474,46 @@ public class XMLEncoder extends Encoder {
 		flushStatCommon(stat, id, subStats, indent);
 	}
 
-	@SuppressWarnings("nls")
-    private void flushStatField(Statement stat, String id, 
-			int indent) {
-		// open tag, begin
-		flushIndent(indent);
-		String tagName = "object";
-		out.print("<");
-		out.print(tagName);
+    @SuppressWarnings("nls")
+    private void flushStatField(Statement stat, int indent) {
+        // open tag, begin
+        flushIndent(indent);
+        out.print("<object");
 
-		// id attribute
-		if (id != null) {
-			out.print(" id=\"");
-			out.print(id);
-			out.print("\"");
-		}
+        // special class attribute
+        Object target = stat.getTarget();
+        if (target instanceof Class<?>) {
+            out.print(" class=\"");
+            out.print(((Class<?>) target).getName());
+            out.print("\"");
+        }
 
-		// special class attribute
-		if (stat.getTarget() instanceof Class) {
-			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
-			out.print("\"");
-		}
+        Field field = null;
+        if (target instanceof Class<?> && stat.getArguments().length == 1
+                && stat.getArguments()[0] instanceof String) {
+            try {
+                field = ((Class<?>) target).getField((String) stat
+                        .getArguments()[0]);
+            } catch (Exception e) {
+                // ignored
+            }
+        }
 
-		Object target = stat.getTarget();
-		if(target == SystemColor.class || target == TextAttribute.class) {
-			out.print(" field=\"");
-			out.print(stat.getArguments()[0]);
-			out.print("\"");
-			out.println("/>");
-
-		}
-		else {
-			out.print(" method=\"");
-			out.print(stat.getMethodName());
-			out.print("\"");
-			out.println(">");
-			Object fieldName = stat.getArguments()[0];
-			flushObject(fieldName, indent + INDENT_UNIT);
-			flushIndent(indent);
-			out.println("</object>");
-		}
-	}
+        if (field != null && Modifier.isStatic(field.getModifiers())) {
+            out.print(" field=\"");
+            out.print(stat.getArguments()[0]);
+            out.print("\"");
+            out.println("/>");
+        } else {
+            out.print(" method=\"");
+            out.print(stat.getMethodName());
+            out.print("\"");
+            out.println(">");
+            flushObject(stat.getArguments()[0], indent + INDENT_UNIT);
+            flushIndent(indent);
+            out.println("</object>");
+        }
+    }
 
 	@SuppressWarnings("nls")
     private void flushStatGetterSetter(Statement stat, String id,
@@ -517,9 +532,9 @@ public class XMLEncoder extends Encoder {
 		}
 
 		// special class attribute
-		if (stat.getTarget() instanceof Class) {
+		if (stat.getTarget() instanceof Class<?>) {
 			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
+			out.print(((Class<?>) stat.getTarget()).getName());
 			out.print("\"");
 		}
 
@@ -567,9 +582,9 @@ public class XMLEncoder extends Encoder {
 		}
 
 		// special class attribute
-		if (stat.getTarget() instanceof Class) {
+		if (stat.getTarget() instanceof Class<?>) {
 			out.print(" class=\"");
-			out.print(((Class) stat.getTarget()).getName());
+			out.print(((Class<?>) stat.getTarget()).getName());
 			out.print("\"");
 		}
 
@@ -653,7 +668,7 @@ public class XMLEncoder extends Encoder {
 	private boolean isBasicType(Object value) {
 		return value == null || value instanceof Boolean
 				|| value instanceof Byte || value instanceof Character
-				|| value instanceof Class || value instanceof Double
+				|| value instanceof Class<?> || value instanceof Double
 				|| value instanceof Float || value instanceof Integer
 				|| value instanceof Long || value instanceof Short
 				|| value instanceof String || value instanceof Proxy;
@@ -689,44 +704,44 @@ public class XMLEncoder extends Encoder {
         return name.substring(i + 1);
 	}
 
-	/*
-	 * The preprocess removes unused statements and counts references of every
-	 * object
-	 */
-	private void preprocess(Object obj, Record rec) {
-		if (isBasicType(obj) && writingObject) {
-			return;
-		}
+    /*
+     * The preprocess removes unused statements and counts references of every
+     * object
+     */
+    private void preprocess(Object obj, Record rec) {
+        if (writingObject && isBasicType(obj)) {
+            return;
+        }
 
-		// count reference
-		rec.refCount++;
+        if (obj instanceof Class<?>) {
+            return;
+        }
 
-		// do things only one time for each record
-		if (rec.refCount > 1) {
-			return;
-		}
+        // count reference
+        rec.refCount++;
 
-		// deal with 'field' property
-		try {
-			if (isStaticConstantsSupported
-					&& "getField".equals(((Record) records.get(rec.exp //$NON-NLS-1$
-							.getTarget())).exp.getMethodName())) {
-				records.remove(obj);
-			}
-		} catch (NullPointerException e) {
-			// do nothing, safely
-		}
+        // do things only one time for each record
+        if (rec.refCount > 1) {
+            return;
+        }
 
-		// do it recursively
-		if (null != rec.exp) {
-			Object args[] = rec.exp.getArguments();
-			for (int i = 0; i < args.length; i++) {
-				Record argRec = (Record) records.get(args[i]);
-				if (argRec != null) {
-					preprocess(args[i], argRec);
-				}
-			}
-		}
+        // do it recursively
+        if (null != rec.exp) {
+            // deal with 'field' property
+            Record targetRec = (Record) records.get(rec.exp.getTarget());
+            if (targetRec != null && targetRec.exp != null
+                    && "getField".equals(targetRec.exp.getMethodName())) {
+                records.remove(obj);
+            }
+
+            Object args[] = rec.exp.getArguments();
+            for (int i = 0; i < args.length; i++) {
+                Record argRec = (Record) records.get(args[i]);
+                if (argRec != null) {
+                    preprocess(args[i], argRec);
+                }
+            }
+        }
 
 		for (Iterator<?> iter = rec.stats.iterator(); iter.hasNext();) {
 			Statement subStat = (Statement) iter.next();
@@ -909,36 +924,52 @@ public class XMLEncoder extends Encoder {
 	 * Records the object so that it can be written out later, then calls super
 	 * implementation.
 	 */
-	@Override
+    @SuppressWarnings("unchecked")
+    @Override
     public void writeObject(Object o) {
-		synchronized (this) {
-			boolean oldWritingObject = writingObject;
-			writingObject = true;
-			try {
-				super.writeObject(o);
-			} finally {
-				writingObject = oldWritingObject;
-			}
+        synchronized (this) {
+            ArrayList<Object> prePending = (ArrayList<Object>) objPrePendingCache
+                    .get(o);
+            if (prePending == null) {
+                boolean oldWritingObject = writingObject;
+                writingObject = true;
+                try {
+                    super.writeObject(o);
+                } finally {
+                    writingObject = oldWritingObject;
+                }
+            } else {
+                flushPrePending.clear();
+                flushPrePending.addAll(prePending);
+            }
 
-			// root object?
-			if (!writingObject) {
-				// add to pending
-				flushPending.addAll(flushPrePending);
-				flushPendingStat.addAll(flushPrePending);
-				flushPrePending.clear();
-				if (flushPending.contains(o)) {
-					flushPrePending.remove(o);
-					flushPendingStat.remove(o);
-				} else {
-					flushPending.add(o);
-				}
-				if (needOwner) {
-					this.flushPending.remove(owner);
-					this.flushPending.add(0, owner);
-				}
-			}
-		}
-	}
+            // root object
+            if (!writingObject) {
+                boolean isNotCached = prePending == null;
+                // is not cached, add to cache
+                if (isNotCached && o != null) {
+                    prePending = new ArrayList<Object>();
+                    prePending.addAll(flushPrePending);
+                    objPrePendingCache.put(o, prePending);
+                }
+
+                // add to pending
+                flushPending.addAll(flushPrePending);
+                flushPendingStat.addAll(flushPrePending);
+                flushPrePending.clear();
+
+                if (isNotCached && flushPending.contains(o)) {
+                    flushPendingStat.remove(o);
+                } else {
+                    flushPending.add(o);
+                }
+                if (needOwner) {
+                    this.flushPending.remove(owner);
+                    this.flushPending.add(0, owner);
+                }
+            }
+        }
+    }
 
 	/**
 	 * Records the statement so that it can be written out later, then calls

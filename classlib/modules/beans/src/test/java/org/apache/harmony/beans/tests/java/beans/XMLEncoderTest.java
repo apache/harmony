@@ -17,6 +17,8 @@
 
 package org.apache.harmony.beans.tests.java.beans;
 
+import java.awt.SystemColor;
+import java.awt.font.TextAttribute;
 import java.beans.DefaultPersistenceDelegate;
 import java.beans.Encoder;
 import java.beans.ExceptionListener;
@@ -33,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -46,8 +49,6 @@ import org.apache.harmony.beans.tests.support.TestEventHandler;
 import org.apache.harmony.beans.tests.support.mock.MockBean4Codec;
 import org.apache.harmony.beans.tests.support.mock.MockBean4Owner_Owner;
 import org.apache.harmony.beans.tests.support.mock.MockBean4Owner_Target;
-import org.apache.harmony.beans.tests.support.mock.MockBean4StaticField;
-import org.apache.harmony.beans.tests.support.mock.MockBean4StaticField_PD;
 import org.apache.harmony.beans.tests.support.mock.MockTreeMapClass;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -410,7 +411,18 @@ public class XMLEncoderTest extends TestCase {
 
     private void assertCodedXML(Object obj, String xmlFile,
             ByteArrayOutputStream temp, XMLEncoder enc) throws Exception {
+        if (enc == null || temp == null) {
+            temp = new ByteArrayOutputStream();
+            enc = new XMLEncoder(temp);
+        }
+        enc.writeObject(obj);
+        enc.close();
+        
+        assertXMLContent(obj, temp.toByteArray(), xmlFile);
+            
+    }
 
+    private void assertXMLContent(Object obj, byte[] bytes, String xmlFile) throws Exception {
         InputStream refIn;
         InputStreamReader xml;
 
@@ -420,14 +432,6 @@ public class XMLEncoderTest extends TestCase {
         TestEventHandler refHandler = new TestEventHandler();
         String saxParserClassName = System.getProperty("org.xml.sax.driver");
         String version = System.getProperty("java.version");
-
-        if (enc == null || temp == null) {
-            temp = new ByteArrayOutputStream();
-            enc = new XMLEncoder(temp);
-        }
-        enc.writeObject(obj);
-        enc.close();
-        byte bytes[] = temp.toByteArray();
         xml = new InputStreamReader(new ByteArrayInputStream(bytes), "UTF-8");
         refIn = XMLEncoderTest.class.getResourceAsStream(xmlFile);
         if (refIn == null) {
@@ -834,6 +838,188 @@ public class XMLEncoderTest extends TestCase {
 
             return false;
         }
+    }
 
+    public void testWriteObject_StaticFields() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        xmlEncoder.setPersistenceDelegate(MockObject.class,
+                new MockObjectPersistenceDelegate());
+        xmlEncoder.writeObject(MockObject.inst);
+        xmlEncoder.writeObject(MockObject.inst);
+        xmlEncoder.writeObject(SystemColor.activeCaption);
+        xmlEncoder.writeObject(SystemColor.activeCaption);
+        xmlEncoder.writeObject(TextAttribute.FAMILY);
+        xmlEncoder.writeObject(TextAttribute.FAMILY);
+        xmlEncoder.close();
+        assertXMLContent(null, bos.toByteArray(), "/xml/StaticField.xml");
+    }
+
+    public static class MockObject {
+        public static MockObject inst = new MockObject();
+    }
+
+    public static class MockObjectPersistenceDelegate extends
+            PersistenceDelegate {
+        protected Expression instantiate(Object oldInstance, Encoder enc) {
+            Expression exp = null;
+            try {
+                exp = new Expression(MockObject.class.getField("inst"), "get",
+                        new Object[] { null });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return exp;
+        }
+    }
+
+    public void testWriteObject_ChangedObject() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        Sample sample = new Sample("oldName");
+        xmlEncoder.writeObject(sample);
+        sample.setName("newName");
+        xmlEncoder.writeObject(sample);
+        xmlEncoder.close();
+        assertXMLContent(null, bos.toByteArray(), "/xml/ChangedObject.xml");
+    }
+
+    public static class Sample {
+
+        String name;
+
+        public Sample() {
+            name = null;
+        }
+
+        public Sample(String n) {
+            name = n;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public void testWriteObject_ClassID() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        ChildClass childClazz = new ChildClass();
+        childClazz.setClazz(ChildClass.class);
+        xmlEncoder.writeObject(childClazz);
+        xmlEncoder.close();
+        assertXMLContent(null, bos.toByteArray(), "/xml/ClassID.xml");
+    }
+
+    public static class ParentClass {
+
+        Class<?> clazz = Collection.class;
+
+        public Class<?> getClazz() {
+            return clazz;
+        }
+
+        public void setClazz(Class<?> clazz) {
+            this.clazz = clazz;
+        }
+    }
+
+    public static class ChildClass extends ParentClass {
+    }
+
+    public void testWriteObject_ObjectID() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        XMLEncoder xmlEncoder = new XMLEncoder(bos);
+        ExampleA exampleAI = new ExampleA("exampleAI");
+        xmlEncoder.writeObject(exampleAI);
+        xmlEncoder.writeObject(exampleAI);
+        ExampleA exampleAII = new ExampleA("exampleAI");
+        xmlEncoder.writeObject(exampleAII);
+        xmlEncoder.writeObject(exampleAII);
+
+        ExampleB exampleBI = new ExampleB("exampleBI");
+        xmlEncoder.writeObject(exampleBI);
+        xmlEncoder.writeObject(exampleBI);
+        ExampleB exampleBII = new ExampleB("exampleBII");
+        xmlEncoder.writeObject(exampleBII);
+        xmlEncoder.writeObject(exampleBII);
+
+        ExampleC exampleCI = new ExampleC("exampleCI");
+        xmlEncoder.writeObject(exampleCI);
+        xmlEncoder.writeObject(exampleCI);
+        ExampleC exampleCII = new ExampleC("exampleCII");
+        xmlEncoder.writeObject(exampleCII);
+        xmlEncoder.writeObject(exampleCII);
+
+        xmlEncoder.close();
+
+        assertXMLContent(null, bos.toByteArray(), "/xml/ObjectID.xml");
+    }
+
+    public static class ExampleA {
+
+        private String name;
+
+        public ExampleA() {
+
+        }
+
+        public ExampleA(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class ExampleB {
+
+        private String name;
+
+        public ExampleB() {
+
+        }
+
+        public ExampleB(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class ExampleC {
+
+        private String name;
+
+        public ExampleC() {
+
+        }
+
+        public ExampleC(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 }

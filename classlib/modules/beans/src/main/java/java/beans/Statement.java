@@ -322,8 +322,30 @@ public class Statement {
                     }
                 }
                 if (found) {
-                    result = constructor;
-                    break;
+                    if (result == null) {
+                        // first time, set constructor
+                        result = constructor;
+                        continue;
+                    }
+                    // find out more suitable constructor
+                    Class<?>[] resultParameterTypes = result
+                            .getParameterTypes();
+                    boolean isAssignable = true;
+                    for (int j = 0; j < parameterTypes.length; ++j) {
+                        if (theArguments[j] != null
+                                && !(isAssignable &= resultParameterTypes[j]
+                                        .isAssignableFrom(parameterTypes[j]))) {
+                            break;
+                        }
+                        if (theArguments[j] == null
+                                && !(isAssignable &= parameterTypes[j]
+                                        .isAssignableFrom(resultParameterTypes[j]))) {
+                            break;
+                        }
+                    }
+                    if (isAssignable) {
+                        result = constructor;
+                    }
                 }
             }
         }

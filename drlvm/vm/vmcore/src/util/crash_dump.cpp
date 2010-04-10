@@ -198,12 +198,16 @@ static int unwind_compiled_frame(Registers *regs, port_stack_frame_info *sfi)
     Global_Env* env = VM_Global_State::loader_env;
     bool ip_past = !uwinfo->is_first;
     uwinfo->is_first = false; // For the next iterations
+    bool was_java = (uwinfo->cci != NULL);
 
     // Stubs - return stub name as additional info
     if (native_is_ip_stub(cur_ip))
     {
         sfi->method_class_name = "stub";
         sfi->method_name = native_get_stub_name_nocpy(cur_ip);
+
+        if (was_java)
+            return -1; // N2M frame, do not unwind
 
         if (uwinfo->lm2n == NULL) // Initialize
             uwinfo->lm2n = m2n_get_last_frame(vmthread);

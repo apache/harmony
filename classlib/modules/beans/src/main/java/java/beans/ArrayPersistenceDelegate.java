@@ -49,11 +49,8 @@ class ArrayPersistenceDelegate extends PersistenceDelegate {
         assert newInstance != null && newInstance.getClass().isArray() : newInstance;
 
         int length = Array.getLength(oldInstance);
-        Class<?> componentType = type.getComponentType();
-        Object nullValue = Array.get(Array.newInstance(componentType, 1), 0);
 
         for (int i = 0; i < length; ++i) {
-
             Object oldValue = Array.get(oldInstance, i);
             Object newValue = Array.get(newInstance, i);
             if (!deepEquals(oldValue, newValue)) {
@@ -72,11 +69,17 @@ class ArrayPersistenceDelegate extends PersistenceDelegate {
             return false;
         }
         // oldInstnace != newInstance
-        if (oldInstance.equals(newInstance)) {
+        if (oldInstance.getClass().isAssignableFrom(newInstance.getClass())
+                && oldInstance.equals(newInstance)) {
             return true;
-        } else if (oldInstance.getClass().isArray() && newInstance.getClass().isArray()) {
-            int length = Array.getLength(oldInstance);
-            for (int i = 0; i < length; ++i) {
+        } else if (oldInstance.getClass().isArray()
+                && newInstance.getClass().isArray()) {
+            int length1 = Array.getLength(oldInstance);
+            int length2 = Array.getLength(newInstance);
+            if (length1 != length2) {
+                return false;
+            }
+            for (int i = 0; i < length1; i++) {
                 Object oldValue = Array.get(oldInstance, i);
                 Object newValue = Array.get(newInstance, i);
                 if (!deepEquals(oldValue, newValue)) {

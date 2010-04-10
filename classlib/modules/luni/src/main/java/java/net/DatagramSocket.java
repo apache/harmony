@@ -442,11 +442,8 @@ public class DatagramSocket {
         } else {
             // not connected so the target address is not allowed to be null
             if (packAddr == null) {
-                if (pack.getPort() == -1) {
                     // KA019 Destination address is null
                     throw new NullPointerException(Messages.getString("luni.59")); //$NON-NLS-1$
-                }
-                return;
             }
             SecurityManager security = System.getSecurityManager();
             if (security != null) {

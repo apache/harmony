@@ -182,11 +182,19 @@ static void sd_print_stack(Registers* regs, port_unwind_compiled_frame unwind)
         CFunInfo cfi = {0};
         native_module_t* module = port_find_module(uwcontext.modules, locregs.get_ip());
         sd_get_c_method_info(&cfi, module, locregs.get_ip());
-        sd_print_c_line(stderr, framenum++, &locregs, &cfi);
 
-        if (unwind && uwresult < 0 && uwinfo.method_name)
-        { // VM has not unwound but has provided additional frame info
-            sd_print_vm_line(stderr, -1, NULL, &uwinfo); // Print as additional info
+        if (!*cfi.name && unwind && uwresult < 0 && uwinfo.method_name)
+        { // No native but some VM info, so print VM info as main info
+            sd_print_vm_line(stderr, framenum++, &locregs, &uwinfo);
+        }
+        else
+        {
+            sd_print_c_line(stderr, framenum++, &locregs, &cfi);
+
+            if (unwind && uwresult < 0 && uwinfo.method_name)
+            { // VM has not unwound but has provided additional frame info
+                sd_print_vm_line(stderr, -1, NULL, &uwinfo); // Print as additional info
+            }
         }
 
         if (!hasnative) // Native unwinding is not initialized
