@@ -20,6 +20,7 @@ package org.apache.harmony.luni.tests.java.io;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -93,6 +94,32 @@ public class FileOutputStreamTest extends TestCase {
         fis.read(buf, 0, buf.length);
         assertTrue("Failed to create appending stream", new String(buf, 0,
                 buf.length).equals("HI" + fileString));
+    }
+
+    /**
+     * @tests java.io.FileOutputStream#FileOutputStream(java.lang.String)
+     */
+    public void test_ConstructorLjava_lang_String_I() throws IOException {
+        try {
+            fos = new FileOutputStream("");
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+        }
+        try {
+            fos = new FileOutputStream(new File(""));
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+        }
     }
 
     /**
