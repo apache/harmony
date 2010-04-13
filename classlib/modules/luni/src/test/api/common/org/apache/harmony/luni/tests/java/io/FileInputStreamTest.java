@@ -19,10 +19,11 @@ package org.apache.harmony.luni.tests.java.io;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilePermission;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.Permission;
 
 import junit.framework.TestCase;
@@ -63,6 +64,32 @@ public class FileInputStreamTest extends TestCase {
     public void test_ConstructorLjava_lang_String() throws IOException {
         is = new FileInputStream(fileName);
         is.close();
+    }
+
+    /**
+     * @tests java.io.FileInputStream#FileInputStream(java.lang.String)
+     */
+    public void test_ConstructorLjava_lang_String_I() throws IOException {
+        try {
+            is = new FileInputStream("");
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+        try {
+            is = new FileInputStream(new File(""));
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
     }
 
     /**

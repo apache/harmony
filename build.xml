@@ -20,58 +20,6 @@
 
 <project name="build-harmony" default="build" basedir=".">
 
-    <fail>
-        <condition>
-            <isset property="java6" />
-        </condition>
-The -Djava6=true federated build has been deprecated.  Please checkout
-the java6 federated build from:
-
-  https://svn.apache.org/repos/asf/harmony/enhanced/branches/java6
-
-Thanks.
-    </fail>
-
-    <!-- temporary warning -->
-    <fail>
-        <condition>
-            <or>
-                <available file="working_classlib/build.xml" />
-                <available file="working_vm/build.xml" />
-                <available file="working_jdktools/build.xml" />
-            </or>
-        </condition>
-The following directories have been renamed:
-
-  working_classlib => classlib
-  working_jdktools => jdktools
-  working_vm       => drlvm
-
-If these trees have uncommitted changes and/or you don't wish to lose
-downloaded dependency files, etc., then you might want to do:
-
-  rm -rf classlib/.svn
-  mv working_classlib/.svn working_classlib/* classlib/
-  rmdir working_classlib
-
-  rm -rf jdktools/.svn
-  mv working_jdktools/.svn working_jdktools/* jdktools/
-  rmdir working_jdktools
-
-  rm -rf drlvm/.svn
-  mv working_vm/.svn working_vm/* drlvm/
-  rmdir working_vm
-
-  svn up
-
-If you don't care about the contents then just delete them and run:
-
-  svn up
-  ant populate-src
-
-to fix your workspace.
-    </fail>
-
     <!-- name of the target directory to use for building and final assembly -->
     <property name="target.dir" value="target" />
 
@@ -134,7 +82,6 @@ Usage:
     <target name="all"
         description="setup and build complete implementation"
         depends="setup,
-                 populate-src,
                  clean,
                  build,
                  bundle-hdk,
@@ -184,19 +131,6 @@ Usage:
             <fileset dir="target/src" excludesfile="rat.excludes" />
         </rat:report>
     </target>
-
-    <!-- ============================================================== -->
-    <!--     populates the source directories, classlib,
-             drlvm, and jdktools                                        -->
-    <!-- ============================================================== -->
-    <target name="populate-src" 
-        description="checkout the class library and VM source trees"
-        depends="init,
-                 properties,
-                 switch-svn-vm,
-                 switch-svn-classlib,
-                 switch-svn-jdktools,
-                 switch-svn-commonresources" />
 
     <!-- ============================================================== -->
     <!--     creates the HDK bundle appropriate for the platform        -->
@@ -675,50 +609,6 @@ Usage:
     </target>
 
     <!-- ============================================================== -->
-    <!-- switches the vm.dir directory to vm module (DRLVM for now) -->
-    <!-- ============================================================== -->
-    <target name="switch-svn-vm" depends="init" if="is.svn">
-        <exec executable="svn" dir="${vm.dir.loc}" failonerror="true">
-            <arg line="-r${svn.revision}"/>
-            <arg line="switch" />
-            <arg line="${vm.svn.url}" />
-        </exec>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- switches the classlib directory to classlib            -->
-    <!-- ============================================================== -->
-    <target name="switch-svn-classlib" depends="init" if="is.svn">
-        <exec executable="svn" dir="classlib" failonerror="true">
-            <arg line="-r${svn.revision}"/>
-            <arg line="switch" />
-            <arg line="${classlib.svn.url}" />
-        </exec>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- switches the jdktools directory to jdktools            -->
-    <!-- ============================================================== -->
-    <target name="switch-svn-jdktools" depends="init" if="is.svn">
-        <exec executable="svn" dir="jdktools" failonerror="true">
-            <arg line="-r${svn.revision}"/>
-            <arg line="switch" />
-            <arg line="${jdktools.svn.url}" />
-        </exec>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- switches the common_resources directory to common_resources    -->
-    <!-- ============================================================== -->
-    <target name="switch-svn-commonresources" depends="init" if="is.svn">
-        <exec executable="svn" dir="common_resources" failonerror="true">
-            <arg line="-r${svn.revision}"/>
-            <arg line="switch" />
-            <arg line="${commonresources.svn.url}" />
-        </exec>
-    </target>
-
-    <!-- ============================================================== -->
     <!-- sets up a platform                                             -->
     <!-- ============================================================== -->
     <target name="init" depends="svn-prop">
@@ -889,17 +779,6 @@ Usage:
         <property name="harmony.version" value="${svn.revision}" />
         <property name="harmony.long.version" value="${svn.info}" />
 
-        <!-- default SVN URLs -->
-        <property name="classlib.svn.url"
-                  value="${svn.root}/harmony/enhanced/java/branches/java6/classlib"/>
-
-        <property name="vm.svn.url"
-                  value="${svn.root}/harmony/enhanced/java/branches/java6/drlvm" />
-
-        <property name="jdktools.svn.url"
-                  value="${svn.root}/harmony/enhanced/java/branches/java6/jdktools"/>
-
-        <property name="commonresources.svn.url" value="${svn.root}/harmony/enhanced/java/branches/java6/common_resources" />
     </target>
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
@@ -937,7 +816,7 @@ Usage:
         <chksum dir="${target.dir}" file="${deploy.src.zip}" type="sha" />
     </target>
 
-    <target name="copy-src" depends="init,populate-src">
+    <target name="copy-src" depends="init">
         <exec executable="svn">
             <arg value="export" />
             <arg value="." />

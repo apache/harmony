@@ -20,10 +20,10 @@ package org.apache.harmony.luni.tests.java.io;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
 import java.nio.channels.FileChannel;
 import java.nio.channels.NonWritableChannelException;
 
@@ -100,6 +100,51 @@ public class RandomAccessFileTest extends junit.framework.TestCase {
         raf = new java.io.RandomAccessFile(fileName, "rws");
         raf.write("Test".getBytes(), 0, 4);
         raf.close();
+    }
+
+    /**
+     * @tests java.io.RandomAccessFile#RandomAccessFile(java.lang.String,
+     *        java.lang.String)
+     */
+    public void test_ConstructorLjava_lang_StringLjava_lang_String_I()
+            throws IOException {
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile("", "r");
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (raf != null) {
+                raf.close();
+                raf = null;
+            }
+        }
+        try {
+            raf = new RandomAccessFile(new File(""), "r");
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (raf != null) {
+                raf.close();
+                raf = null;
+            }
+        }
+        File tmpDir = new File("tmpDir");
+        assertTrue(tmpDir.mkdir());
+        tmpDir.deleteOnExit();
+        try {
+            raf = new RandomAccessFile(tmpDir.getPath(), "r");
+            fail("should throw FileNotFoundException.");
+        } catch (FileNotFoundException e) {
+            // Expected
+        } finally {
+            if (raf != null) {
+                raf.close();
+                raf = null;
+            }
+        }
     }
 
     /**
