@@ -355,7 +355,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (value < array[mid] ? 1 : 2);
     }
@@ -396,7 +402,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (value < array[mid] ? 1 : 2);
     }
@@ -438,7 +450,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (lessThan(value, array[mid]) ? 1 : 2);
     }
@@ -480,7 +498,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (lessThan(value, array[mid]) ? 1 : 2);
     }
@@ -521,7 +545,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (value < array[mid] ? 1 : 2);
     }
@@ -562,7 +592,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (value < array[mid] ? 1 : 2);
     }
@@ -599,7 +635,7 @@ public class Arrays {
             return -1;
         }
 
-        int low = startIndex, mid = 0, high = endIndex - 1, result = 0;
+        int low = startIndex, mid = -1, high = endIndex - 1, result = 0;
         while (low <= high) {
             mid = (low + high) >>> 1;
             if ((result = ((Comparable<Object>)array[mid]).compareTo(object)) < 0){
@@ -609,6 +645,15 @@ public class Arrays {
             } else {
                 high = mid - 1;
             }
+        }
+        if (mid < 0) {
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (((Comparable<Object>) object).compareTo(array[index]) < 0) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (result >= 0 ? 1 : 2);
     }
@@ -648,7 +693,7 @@ public class Arrays {
             return binarySearch(array, startIndex, endIndex, object);
         }
 
-        int low = startIndex, mid = 0, high = endIndex - 1, result = 0;
+        int low = startIndex, mid = -1, high = endIndex - 1, result = 0;
         while (low <= high) {
             mid = (low + high) >>> 1;
             if ((result = comparator.compare(array[mid], object)) < 0) {
@@ -658,6 +703,15 @@ public class Arrays {
             } else {
                 high = mid - 1;
             }
+        }
+        if (mid < 0) {
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (comparator.compare(object, array[index]) < 0) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (result >= 0 ? 1 : 2);
     }
@@ -698,7 +752,13 @@ public class Arrays {
             }
         }
         if (mid < 0) {
-            return -1;
+            int insertPoint = endIndex;
+            for (int index = startIndex; index < endIndex; index++) {
+                if (value < array[index]) {
+                    insertPoint = index;
+                }
+            }
+            return -insertPoint - 1;
         }
         return -mid - (value < array[mid] ? 1 : 2);
     }

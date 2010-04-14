@@ -330,6 +330,90 @@ public class ArraysTest extends junit.framework.TestCase {
 					Arrays.binarySearch(shortArray, (short) (counter - 50)) == counter);
 	}
 
+    public void test_Arrays_binaraySearch_byte() {
+        assertEquals(-1, Arrays.binarySearch(new byte[] { '0' }, 0, 0,
+                (byte) '1'));
+        assertEquals(-2, Arrays.binarySearch(new byte[] { '0' }, 1, 1,
+                (byte) '1'));
+        assertEquals(-2, Arrays.binarySearch(new byte[] { '0', '1' }, 1, 1,
+                (byte) '2'));
+        assertEquals(-3, Arrays.binarySearch(new byte[] { '0', '1' }, 2, 2,
+                (byte) '2'));
+    }
+
+    public void test_Arrays_binaraySearch_char() {
+        assertEquals(-1, Arrays.binarySearch(new char[] { '0' }, 0, 0, '1'));
+        assertEquals(-2, Arrays.binarySearch(new char[] { '0' }, 1, 1, '1'));
+        assertEquals(-2, Arrays
+                .binarySearch(new char[] { '0', '1' }, 1, 1, '2'));
+        assertEquals(-3, Arrays
+                .binarySearch(new char[] { '0', '1' }, 2, 2, '2'));
+    }
+
+    public void test_Arrays_binaraySearch_float() {
+        assertEquals(-1, Arrays.binarySearch(new float[] { -1.0f }, 0, 0, 0.0f));
+        assertEquals(-2, Arrays.binarySearch(new float[] { -1.0f }, 1, 1, 0.0f));
+        assertEquals(-2, Arrays.binarySearch(new float[] { -1.0f, 0f }, 1, 1,
+                1f));
+        assertEquals(-3, Arrays.binarySearch(new float[] { -1.0f, 0f }, 2, 2,
+                1f));
+    }
+
+    public void test_Arrays_binaraySearch_double() {
+        assertEquals(-1, Arrays.binarySearch(new double[] { -1.0 }, 0, 0, 0.0));
+        assertEquals(-2, Arrays.binarySearch(new double[] { -1.0 }, 1, 1, 0.0));
+        assertEquals(-2, Arrays.binarySearch(new double[] { -1.0, 0 }, 1, 1, 1));
+        assertEquals(-3, Arrays.binarySearch(new double[] { -1.0, 0 }, 2, 2, 1));
+    }
+
+    public void test_Arrays_binaraySearch_int() {
+        assertEquals(-1, Arrays.binarySearch(new int[] { -1 }, 0, 0, 0));
+        assertEquals(-2, Arrays.binarySearch(new int[] { -1 }, 1, 1, 0));
+        assertEquals(-2, Arrays.binarySearch(new int[] { -1, 0 }, 1, 1, 1));
+        assertEquals(-3, Arrays.binarySearch(new int[] { -1, 0 }, 2, 2, 1));
+    }
+
+    public void test_Arrays_binaraySearch_long() {
+        assertEquals(-1, Arrays.binarySearch(new long[] { -1l }, 0, 0, 0l));
+        assertEquals(-2, Arrays.binarySearch(new long[] { -1l }, 1, 1, 0l));
+        assertEquals(-2, Arrays.binarySearch(new long[] { -1l, 0l }, 1, 1, 1l));
+        assertEquals(-3, Arrays.binarySearch(new long[] { -1l, 0l }, 2, 2, 1l));
+    }
+
+    public void test_Arrays_binaraySearch_short() {
+        assertEquals(-1, Arrays.binarySearch(new short[] { (short) -1 }, 0, 0,
+                (short) 0));
+        assertEquals(-2, Arrays.binarySearch(new short[] { (short) -1 }, 1, 1,
+                (short) 0));
+        assertEquals(-2, Arrays.binarySearch(new short[] { (short) -1,
+                (short) 0 }, 1, 1, (short) 1));
+        assertEquals(-3, Arrays.binarySearch(new short[] { (short) -1,
+                (short) 0 }, 2, 2, (short) 1));
+    }
+
+    public void test_Arrays_binaraySearch_Object() {
+        assertEquals(-1, Arrays.binarySearch(new Object[] { new Integer(-1) },
+                0, 0, new Integer(0)));
+        assertEquals(-2, Arrays.binarySearch(new Object[] { new Integer(-1) },
+                1, 1, new Integer(0)));
+        assertEquals(-2, Arrays.binarySearch(new Object[] { new Integer(-1),
+                new Integer(0) }, 1, 1, new Integer(1)));
+        assertEquals(-3, Arrays.binarySearch(new Object[] { new Integer(-1),
+                new Integer(0) }, 2, 2, new Integer(1)));
+    }
+
+    public void test_Arrays_binaraySearch_T() {
+        ReversedIntegerComparator reversedComparator = new ReversedIntegerComparator();
+        assertEquals(-1, Arrays.binarySearch(new Integer[] { new Integer(-1) },
+                0, 0, new Integer(0), reversedComparator));
+        assertEquals(-2, Arrays.binarySearch(new Integer[] { new Integer(-1) },
+                1, 1, new Integer(0), reversedComparator));
+        assertEquals(-2, Arrays.binarySearch(new Integer[] { new Integer(-1),
+                new Integer(0) }, 1, 1, new Integer(1), reversedComparator));
+        assertEquals(-3, Arrays.binarySearch(new Integer[] { new Integer(-1),
+                new Integer(0) }, 2, 2, new Integer(1), reversedComparator));
+    }
+
 	/**
 	 * @tests java.util.Arrays#fill(byte[], byte)
 	 */
