@@ -1450,6 +1450,31 @@ public class NamingManagerTest extends TestCase {
 		}
 	}
 
+    public void testGetURLContext_RMI_scenario1() throws Exception {
+        Context context = NamingManager.getURLContext("rmi", null);
+        assertNotNull(context);
+    }
+
+    public void testGetURLContext_RMI_scenario2() throws Exception {
+        Hashtable env = new Hashtable();
+        Context context = NamingManager.getURLContext("rmi", env);
+        assertNotNull(context);
+    }
+
+    public void testGetURLContext_RMI_scenario3() throws Exception {
+        Hashtable env = new Hashtable();
+        env.put(Context.URL_PKG_PREFIXES, "org.apache.harmony.jndi.provider");
+        Context context = NamingManager.getURLContext("rmi", env);
+        assertNotNull(context);
+    }
+
+    public void testGetURLContext_RMI_scenario4() throws Exception {
+        Hashtable env = new Hashtable();
+        env.put(Context.URL_PKG_PREFIXES, "com.sun.jndi.url");
+        Context context = NamingManager.getURLContext("rmi", env);
+        assertNotNull(context);
+    }
+
 	public void testGetURLContext_null_null() {
 		log.setMethod("testGetURLContext_null_null()");
 		String schema = null;

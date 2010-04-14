@@ -449,10 +449,11 @@ public final class EnvironmentReader {
                 }
             }
         }
-        // if key is Context.URL_PKG_PREFIXES, append "com.sun.jndi.url" at the
-        // end
+        // if key is Context.URL_PKG_PREFIXES, append "com.sun.jndi.url" and
+        // "org.apache.harmony.jndi.provider" at the end
         if (Context.URL_PKG_PREFIXES.equals(key)) {
             fnames.add("com.sun.jndi.url"); //$NON-NLS-1$
+            fnames.add("org.apache.harmony.jndi.provider"); //$NON-NLS-1$
         }
         // return factory names
         return fnames.toArray(new String[fnames.size()]);
