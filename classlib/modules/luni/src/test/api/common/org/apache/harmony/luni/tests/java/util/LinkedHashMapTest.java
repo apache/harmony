@@ -17,12 +17,15 @@
 
 package org.apache.harmony.luni.tests.java.util;
 
+import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -641,6 +644,22 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
 		}
 		assertTrue("Entries left in map", !it1.hasNext());
 	}
+
+	public void test_getInterfaces() {
+        Class<?>[] interfaces = HashMap.class.getInterfaces();
+        assertEquals(3, interfaces.length);
+
+        List<Class<?>> interfaceList = Arrays.asList(interfaces);
+        assertTrue(interfaceList.contains(Map.class));
+        assertTrue(interfaceList.contains(Cloneable.class));
+        assertTrue(interfaceList.contains(Serializable.class));
+
+        interfaces = LinkedHashMap.class.getInterfaces();
+        assertEquals(1, interfaces.length);
+
+        interfaceList = Arrays.asList(interfaces);
+        assertTrue(interfaceList.contains(Map.class));
+    }
 
 	/**
 	 * Sets up the fixture, for example, open a network connection. This method
