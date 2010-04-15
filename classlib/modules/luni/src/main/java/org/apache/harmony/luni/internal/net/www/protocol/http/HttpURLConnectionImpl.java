@@ -451,8 +451,8 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
             //Only with such situation when the fixedContentLength field of HttpURLConnection
             //is set by HttpURLConnection.setFixedLengthStreamingMode and larger than 0, the
             //IOException will be throwed
-            if (writeToSocket && fixedMod) {
-                if (limit > 0) {
+            if (writeToSocket) {
+                if (limit > 0 && fixedMod) {
                     throw new IOException(Messages.getString("luni.25")); //$NON-NLS-1$
                 }
                 sendCache(closed);
