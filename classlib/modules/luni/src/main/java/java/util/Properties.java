@@ -274,9 +274,9 @@ public class Properties extends Hashtable<Object, Object> {
         bis.reset();
 
         if(!isEbcdic){
-            load(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
+            loadImpl(new InputStreamReader(bis, "ISO8859-1")); //$NON-NLS-1$
         }else{
-            load(new InputStreamReader(bis)); //$NON-NLS-1$
+            loadImpl(new InputStreamReader(bis)); //$NON-NLS-1$
         }
     }
 
@@ -295,12 +295,12 @@ public class Properties extends Hashtable<Object, Object> {
         //in this case, it should be no harm to read it in default charset
         return false;
     }
-    
+
     /**
      * Loads properties from the specified InputStream. The properties are of
      * the form <code>key=value</code>, one property per line. It may be not
-     * encode as 'ISO-8859-1'.The {@code Properties} file is interpreted according to the
-     * following rules:
+     * encode as 'ISO-8859-1'.The {@code Properties} file is interpreted
+     * according to the following rules:
      * <ul>
      * <li>Empty lines are ignored.</li>
      * <li>Lines starting with either a "#" or a "!" are comment lines and are
@@ -325,6 +325,10 @@ public class Properties extends Hashtable<Object, Object> {
      * @since 1.6
      */
     public synchronized void load(Reader reader) throws IOException {
+        loadImpl(reader);
+    }
+
+    private void loadImpl(Reader reader) throws IOException {
         int mode = NONE, unicode = 0, count = 0;
         char nextChar, buf[] = new char[40];
         int offset = 0, keyLength = -1, intVal;

@@ -25,7 +25,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.StringReader;
+import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1024,6 +1024,30 @@ public class PropertiesTest extends junit.framework.TestCase {
         assertEquals("child.a.key", nameIterator.next());
         assertEquals("current.a.key", nameIterator.next());
         assertFalse(nameIterator.hasNext());
+    }
+
+    public static class MockProperties extends Properties {
+
+        private static final long serialVersionUID = 1L;
+
+        public MockProperties() throws IOException {
+            mockLoad();
+        }
+
+        private void mockLoad() throws IOException {
+            super.load(new ByteArrayInputStream("key=value".getBytes()));
+        }
+
+        public void load(Reader reader) {
+            fail("should invoke Properties.load(Reader)");
+        }
+    }
+
+    public void test_loadLjava_io_InputStream_onLjava_io_Reader()
+            throws IOException {
+        MockProperties mockProperties = new MockProperties();
+        assertEquals(1, mockProperties.size());
+        assertEquals("value", mockProperties.get("key"));
     }
 
     /**
