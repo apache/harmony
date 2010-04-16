@@ -31,10 +31,15 @@
 
     <target name="test" depends="test-module" />
 
-    <target name="test-module" depends="test-jre-vm-info">
+    <target name="test-module"
+            depends="-test-module,-test-module-impl">
+    <target name="-test-module" depends="test-jre-vm-info">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="lang-management"
                        jar="lang-management_tests.jar" />
+    </target>
+
+    <target name="-test-module-impl" if="hy.test.impl">
         <run-hdk-tests module="lang-management"
                        jar="lang-management_impl_tests.jar" />
     </target>

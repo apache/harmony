@@ -31,7 +31,9 @@
 
     <target name="test" depends="test-module" />
 
-    <target name="test-module" depends="test-jre-vm-info">
+    <target name="test-module"
+            depends="-test-module,-test-module-impl">
+    <target name="-test-module" depends="test-jre-vm-info">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="security" jar="security_tests_api.jar">
             <junit-elements>
@@ -45,6 +47,9 @@
                 <jvmarg value="-Xbootclasspath/a:security_tests_api_in.jar${path.separator}../junit.jar${path.separator}../support.jar${path.separator}security_tests_support.jar"/>
             </junit-elements>
         </run-hdk-tests>
+    </target>
+
+    <target name="-test-module-impl" if="hy.test.impl">
         <run-hdk-tests module="security" jar="security_tests_impl.jar">
             <junit-elements>
                 <classpath>

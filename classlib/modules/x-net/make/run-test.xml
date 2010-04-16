@@ -31,7 +31,9 @@
 
     <target name="test" depends="test-module" />
 
-    <target name="test-module" depends="test-jre-vm-info">
+    <target name="test-module"
+            depends="-test-module,-test-module-impl">
+    <target name="-test-module" depends="test-jre-vm-info">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="x-net" jar="x-net_api_tests.jar">
             <junit-elements>
@@ -41,6 +43,9 @@
                 </classpath>
             </junit-elements>
         </run-hdk-tests>
+    </target>
+
+    <target name="-test-module-impl" if="hy.test.impl">
         <run-hdk-tests module="x-net" jar="x-net_impl_tests.jar">
             <junit-elements>
                 <classpath>
