@@ -103,7 +103,7 @@ public class ThreadInfo {
             String threadNameVal = (String) attributeVals[1];
             if (threadNameVal == null) {
                 throw new IllegalArgumentException(
-                        "Invalid composite data: Attribute threadName has null value"); //$NON-NLS-1$
+                        "Invalid composite data: Attribute threadName has null value");
             }
             String threadStateStringVal = (String) attributeVals[2];
 
@@ -131,7 +131,7 @@ public class ThreadInfo {
                     : null;
             CompositeData[] stackTraceDataVal = (CompositeData[]) attributeVals[12];
             if (stackTraceDataVal == null) {
-                throw new IllegalArgumentException("StackTraceElement[] is missing"); //$NON-NLS-1$
+                throw new IllegalArgumentException("StackTraceElement[] is missing");
             }
             StackTraceElement[] stackTraceVals = getStackTracesFromCompositeData(stackTraceDataVal);
             result = new ThreadInfo(threadIdVal, threadNameVal, threadStateVal,

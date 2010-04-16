@@ -48,7 +48,7 @@ package java.util;
  *
  * @since 1.4
  */
-public class LinkedHashMap<K, V> extends HashMap<K, V> {
+public class LinkedHashMap<K, V> extends HashMap<K, V> implements Map<K, V> {
 
     private static final long serialVersionUID = 3801124242820219131L;
 
@@ -246,7 +246,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V> {
         }
     }
 
-    static final class LinkedHashMapEntry<K, V> extends Entry<K, V> {
+    static final class LinkedHashMapEntry<K, V> extends HashMap.Entry<K, V> {
         LinkedHashMapEntry<K, V> chainForward, chainBackward;
 
         LinkedHashMapEntry(K theKey, V theValue) {
@@ -305,7 +305,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V> {
      */
     @Override
     @SuppressWarnings("unchecked")
-    Entry<K, V>[] newElementArray(int s) {
+    HashMap.Entry<K, V>[] newElementArray(int s) {
         return new LinkedHashMapEntry[s];
     }
 
@@ -351,7 +351,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V> {
      * @param key @param index @return Entry
      */
     @Override
-    Entry<K, V> createEntry(K key, int index, V value) {
+    HashMap.Entry<K, V> createEntry(K key, int index, V value) {
         LinkedHashMapEntry<K, V> m = new LinkedHashMapEntry<K, V>(key, value);
         m.next = elementData[index];
         elementData[index] = m;
@@ -359,7 +359,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V> {
         return m;
     }
 
-    Entry<K, V> createHashedEntry(K key, int index, int hash) {
+    HashMap.Entry<K, V> createHashedEntry(K key, int index, int hash) {
         LinkedHashMapEntry<K, V> m = new LinkedHashMapEntry<K, V>(key, hash);
         m.next = elementData[index];
         elementData[index] = m;

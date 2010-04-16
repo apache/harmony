@@ -67,6 +67,7 @@
     <property name="hy.test.forkmode" value="once" />
     <property name="hy.test.timeout" value="900000" />
     <property name="hy.test.vmargs" value="" />
+    <property name="hy.test.impl" value="true" />
 
     <!-- Conditions for operating systems -->
     <condition property="is.windows">

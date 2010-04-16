@@ -636,7 +636,7 @@ public class NamingManager {
     public static Context getURLContext(String schema, Hashtable<?, ?> envmt)
             throws NamingException {
 
-        if (null == schema || 0 == schema.length() || null == envmt) {
+        if (null == schema || 0 == schema.length()) {
             return null;
         }
 
