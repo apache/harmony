@@ -74,12 +74,14 @@ typedef unsigned Boolean;
 #ifndef __WORDSIZE // exclude remark #193: zero used for undefined preprocessing identifier
 #define __WORDSIZE 0
 #endif
+#if !defined(__INT64_C)
 # if __WORDSIZE == 64 || defined(WIN32)
 #  define __INT64_C(c)  c ## L
 #  define __UINT64_C(c) c ## UL
 # else
 #  define __INT64_C(c)  c ## LL
 #  define __UINT64_C(c) c ## ULL
+# endif
 # endif
 
 #ifdef PLATFORM_POSIX
