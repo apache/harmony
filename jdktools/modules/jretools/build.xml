@@ -75,10 +75,6 @@
                     <include name="**/*.jar" />
                 </fileset>
             </bootclasspath>
-
-            <classpath>
-                <pathelement path="${jdt.jdi.jar}"/>
-            </classpath>
         </hy.javac>
     </target>
 
@@ -92,11 +88,6 @@
             <fileset dir="src/main/java">
                 <exclude name="**/*.java" />
             </fileset>
-            
-            <zipfileset src="${jdt.jdi.jar}">
-                <exclude name="com/sun/jdi/Bootstrap.class"/>
-                <exclude name="META-INF/*"/>
-            </zipfileset>
         </hy.jar.bin>
 
         <hy.jar.src destfile="${jretools.deploy.dir}/lib/tools-src.jar">
