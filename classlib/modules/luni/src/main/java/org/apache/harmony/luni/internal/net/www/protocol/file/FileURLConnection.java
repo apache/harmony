@@ -28,9 +28,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
 
 import org.apache.harmony.luni.internal.net.www.MimeTable;
 import org.apache.harmony.luni.util.Util;
@@ -51,11 +48,7 @@ public class FileURLConnection extends URLConnection {
 
     private boolean isDir;
 
-    private long lastModified = 0;
-
     private FilePermission permission;
-
-    private LinkedHashMap<String, String> header;
 
     /**
      * Creates an instance of <code>FileURLConnection</code> for establishing
@@ -70,7 +63,6 @@ public class FileURLConnection extends URLConnection {
             fileName = ""; //$NON-NLS-1$
         }
         fileName = Util.decode(fileName, false);
-        header = new LinkedHashMap<String, String>();
     }
 
     /**
@@ -84,90 +76,15 @@ public class FileURLConnection extends URLConnection {
     @Override
     public void connect() throws IOException {
         File f = new File(fileName);
-        if (isDir = f.isDirectory()) {
+        if (f.isDirectory()) {
+            isDir = true;
             is = getDirectoryListing(f);
+            // use -1 for the contentLength
         } else {
             is = new BufferedInputStream(new FileInputStream(f));
             length = is.available();
-            lastModified = f.lastModified();
         }
         connected = true;
-        // updaetHeader must be after "connected = true", for updateHeader
-        // invokes getContentType which back invokes connect causing
-        // StackOverflow
-        updateHeader();
-    }
-
-    /**
-     * Function updates the header fields of a file.
-     */
-    private void updateHeader() {
-        String contentType = getContentType();
-        if (contentType != null) {
-            header.put("content-type", contentType); //$NON-NLS-1$
-        }
-        if (length >= 0) {
-            header.put("content-length", Integer.toString(length)); //$NON-NLS-1$
-        }
-        if (lastModified != 0) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "EEE, dd MMM yyyy HH:mm:ss 'GMT'"); //$NON-NLS-1$
-            header.put("last-modified", dateFormat.format(new Date( //$NON-NLS-1$
-                    lastModified)));
-        }
-    }
-
-    @Override
-    public String getHeaderField(String key) {
-        try {
-            if (!connected) {
-                connect();
-            }
-        } catch (IOException e) {
-            // Ignored
-        }
-        return header.get(key);
-    }
-
-    @Override
-    public String getHeaderField(int index) {
-        try {
-            if (!connected) {
-                connect();
-            }
-        } catch (IOException e) {
-            // Ignored
-        }
-        if (index > -1 && index < header.size()) {
-            return header.values().toArray(new String[0])[index];
-        }
-        return null;
-    }
-
-    @Override
-    public String getHeaderFieldKey(int index) {
-        try {
-            if (!connected) {
-                connect();
-            }
-        } catch (IOException e) {
-            // Ignored
-        }
-        if (index > -1 && index < header.size()) {
-            return header.keySet().toArray(new String[0])[index];
-        }
-        return null;
-    }
-
-    public long getLastModified() {
-        try {
-            if (!connected) {
-                connect();
-            }
-        } catch (IOException e) {
-            // default is -1
-        }
-        return lastModified;
     }
 
     /**
