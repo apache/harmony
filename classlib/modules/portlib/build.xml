@@ -51,9 +51,8 @@
 
     <target name="-test-module"
             depends="-make-report-dir,-compile-native-tests,-run-native-tests" />
-
-    <target name="copy-native-includes"
-            depends="-copy-thread-include,-copy-thread-stub-include, -copy-ascii-ebcdic-include" >
+    <target name="check-depends"
+        depends="-copy-thread-include,-copy-thread-stub-include,-copy-ascii-ebcdic-include" >
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
             <fileset dir="src/main/native/include/shared">
                 <include name="hyport.h" />

@@ -286,6 +286,18 @@
     <!-- default property for poll-modules macro - i.e. all modules -->
     <property name="build.module" value="*" />
     <property name="exclude.module" value="nothing" />
+    <property name="build.java" value="true" />
+    <property name="build.natives" value="true" />
+    <property name="build.tests" value="true" />
+    <condition property="skip.java.build" value="true">
+        <equals arg1="${build.java}" arg2="false" />
+    </condition>
+    <condition property="skip.natives.build" value="true">
+        <equals arg1="${build.natives}" arg2="false" />
+    </condition>
+    <condition property="skip.tests.build" value="true">
+        <equals arg1="${build.tests}" arg2="false" />
+    </condition>
 
     <!-- flags -->
     <property name="hy.no.thr" value="false" />
@@ -542,7 +554,6 @@ properties in preference to these:
                 <!-- TODO: modules probably need to work these properties
                      out for themselves in order to reduce coupling -->
                 <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
-                <property name="depends.oss" value="${depends.oss}"/>
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}">
                     <containsregexp expression="&lt;target[^&gt;]*name=&quot;@{target}&quot;"/>
                 </fileset>

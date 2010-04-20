@@ -34,7 +34,7 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="compile-java, build-jar" />
+    <target name="build" depends="build-jar,test-jar" />
 
     <target name="clean" depends="clean-java,clean-test" />
 
@@ -97,7 +97,7 @@
             outputFile="${findBugs.report}/swing.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
+    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/swing.jar"
              manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />

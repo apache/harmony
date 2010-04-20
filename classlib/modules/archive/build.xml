@@ -28,14 +28,14 @@
 
     <property name="zlib.zip" location="${depends.oss}/zlib_1.2.3.zip" />
 
-    <target name="build" depends="compile-java, build-jar" />
+    <target name="build" depends="build-jar,test-jar" />
     
     <target name="clean" depends="clean-java,clean-native,clean-test" />
 
-    <target name="copy-native-includes"
-            depends="overlay-oss, copy-zipsup-include, copy-zlib-include" />
+    <target name="check-depends"
+            depends="-overlay-oss,-copy-zipsup-include,-copy-zlib-include" />
 
-    <target name="copy-zlib-include" unless="hy.skip.zlib">
+    <target name="-copy-zlib-include" unless="hy.skip.zlib">
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
             <fileset dir="src/main/native/zlib_dist">
                 <include name="zlib.h" />
@@ -44,7 +44,7 @@
         </copy>
     </target>
 	
-    <target name="copy-zipsup-include" if="hy.skip.zip.api">
+    <target name="-copy-zipsup-include" if="hy.skip.zip.api">
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
             <fileset dir="src/main/native/include/shared">
                 <include name="zipsup.h" />
@@ -52,7 +52,7 @@
         </copy>
     </target>
     
-    <target name="overlay-oss"
+    <target name="-overlay-oss"
             depends="-extract-props,-unzip-oss,-ascii2ebcdic-conversion"
             unless="hy.skip.zlib" />
 
@@ -181,7 +181,7 @@
             outputFile="${findBugs.report}/archive.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
+    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/archive.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />

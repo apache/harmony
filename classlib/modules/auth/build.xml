@@ -27,7 +27,7 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="compile-java, build-jar" />
+    <target name="build" depends="build-jar,-build-native,test-jar" />
 
     <target name="clean" depends="clean-java,clean-native,clean-test" />
 
@@ -46,8 +46,7 @@
     <target name="-test-module" depends="build, run-tests" />
     
     <!-- Build native code -->
-    <target name="build-native" depends="build-native-all" />
-    <target name="build-native-all" >
+    <target name="-build-native">
         <make dir="src/main/native/auth/${hy.os.family}" />
     </target>
     
@@ -99,7 +98,7 @@
             outputFile="${findBugs.report}/auth.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
+    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/auth.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />

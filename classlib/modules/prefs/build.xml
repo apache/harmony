@@ -28,7 +28,7 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="compile-java, build-jar" />
+    <target name="build" depends="build-jar,-build-native,test-jar" />
 
     <target name="clean" depends="clean-java,clean-native,clean-test" />
 
@@ -48,8 +48,7 @@
 
     <!-- Build natives. Currently there are only windows natives for
      prefs, so we check if we are on a windows platform -->
-    <target name="build-native" depends="build-native-all" />
-    <target name="build-native-all" if="is.windows">
+    <target name="-build-native" if="is.windows">
         <make dir="src/main/native/prefs/${hy.os.family}" />
     </target>
 
@@ -99,7 +98,7 @@
             outputFile="${findBugs.report}/prefs.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
+    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/prefs.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />

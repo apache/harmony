@@ -29,16 +29,18 @@
 
     <property name="fdlibm.dist" location="src/main/native/fdlibm_dist"/>
 
-    <target name="build" depends="compile-java, build-jar" />
+    <target name="build" depends="build-jar,test-jar" />
 
     <target name="clean" depends="clean-java,clean-native,clean-test" />
 
-    <target name="check-depends">
+    <target name="check-depends"
+            depends="-check-depends,-unzip-oss,-copy-includes,
+                     -ascii2ebcdic-conversion" />
+    <target name="-check-depends">
         <check-one-file src="${fdlibm.url}" dest="${fdlibm.tar}" />
     </target>
 
-
-    <target name="copy-native-includes">
+    <target name="-copy-includes">
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
             <fileset dir="src/main/native/include">
                 <include name="vmi.h" />
@@ -116,8 +118,6 @@
     </target>
 
     <!-- Overlay OSS packages into their required locations -->
-    <target name="overlay-oss" depends="-unzip-oss,-ascii2ebcdic-conversion" />
-
     <target name="-unzip-oss">
         <untar src="${fdlibm.tar}" compression="gzip" dest="${fdlibm.dist}">
             <patternset>
@@ -253,7 +253,7 @@
             outputFile="${findBugs.report}/luni.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
+    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/luni.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />

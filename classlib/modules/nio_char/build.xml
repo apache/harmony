@@ -26,13 +26,12 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="compile-java, build-jar" />
+    <target name="build" depends="build-jar,-build-native,test-jar" />
 
     <target name="clean" depends="clean-java,clean-native,clean-test" />
 
     <!-- Build natives.-->
-    <target name="build-native" depends="build-native-all" />
-    <target name="build-native-all" >
+    <target name="-build-native">
         <make dir="src/main/native/niochar/${hy.os.family}" />
     </target>
 
@@ -97,7 +96,7 @@
             outputFile="${findBugs.report}/nio_char.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
+    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/nio_char.jar"
              manifest="META-INF/MANIFEST.MF">
             <service type="java.nio.charset.spi.CharsetProvider"
