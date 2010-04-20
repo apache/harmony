@@ -43,7 +43,7 @@
     <target name="-test-module" depends="build, run-tests" />
 
     <target name="clean" depends="clean-java,clean-native,clean-test" />
-    <target name="clean-java">
+    <target name="clean-java" depends="class-patternset">
         <delete file="${hy.jdk}/jre/lib/boot/misc.jar" />
         <delete file="${hy.jdk}/jre/lib/boot/misc-src.jar" />
         <delete failonerror="false">
