@@ -66,7 +66,7 @@ public interface IFileSystem {
     public long readv(long fileDescriptor, long[] addresses, int[] offsets,
             int[] lengths, int size) throws IOException;
 
-    public long writev(long fileDescriptor, long[] addresses, int[] offsets,
+    public long writev(long fileDescriptor, Object[] buffers, int[] offsets,
             int[] lengths, int size) throws IOException;
 
     // Required to support direct byte buffers

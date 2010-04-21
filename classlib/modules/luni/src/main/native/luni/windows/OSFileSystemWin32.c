@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include "IFileSystem.h"
 #include "OSFileSystem.h"
+#include "harmonyglob.h"
 
 /**
  * Lock the file identified by the given handle.
@@ -173,19 +174,62 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
  * Method:    writevImpl
  * Signature: (J[J[I[I)J
  */
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_writevImpl
-  (JNIEnv *env, jobject thiz, jlong fd, jlongArray jbuffers, jintArray joffsets, jintArray jlengths, jint size){
+JNIEXPORT jlong JNICALL
+Java_org_apache_harmony_luni_platform_OSFileSystem_writev
+  (JNIEnv *env, jobject thiz, jlong fd, jobjectArray buffers, jintArray offset, jintArray counts, jint length){
   PORT_ACCESS_FROM_ENV (env);
-  jboolean bufsCopied = JNI_FALSE;
-  jboolean offsetsCopied = JNI_FALSE;
-  jboolean lengthsCopied = JNI_FALSE;
-  jlong *bufs = (*env)->GetLongArrayElements(env, jbuffers, &bufsCopied);
-  jint *offsets = (*env)->GetIntArrayElements(env, joffsets, &offsetsCopied);
-  jint *lengths = (*env)->GetIntArrayElements(env, jlengths, &lengthsCopied);
-  long totalWritten = 0;  
-  int i = 0;
-  while(i<size){
-    long bytesWritten = hyfile_write ((IDATA) fd, (void *) (*(bufs+i)+*(offsets+i)), (IDATA) *(lengths+i));
+  jint *noffset = NULL;
+  jint *lengths = NULL;
+  jboolean isDirectBuffer = JNI_FALSE;
+  long totalWritten = 0;
+  int i;
+  jclass byteBufferClass;
+
+  byteBufferClass = HARMONY_CACHE_GET (env, CLS_java_nio_DirectByteBuffer);
+
+  noffset = (*env)->GetIntArrayElements(env, offset, NULL);
+  if (noffset == NULL) {
+    throwNewOutOfMemoryError(env, "");
+    goto free_resources;
+  }
+
+  lengths = (*env)->GetIntArrayElements(env, counts, NULL);
+  if (lengths == NULL) {
+    throwNewOutOfMemoryError(env, "");
+    goto free_resources;
+  }
+
+  for (i = 0; i < length; ++i) {
+    long bytesWritten;
+    jobject toRelease = NULL;
+    U_8* buf;
+    jobject buffer = (*env)->GetObjectArrayElement(env, buffers, i);
+    isDirectBuffer = (*env)->IsInstanceOf(env, buffer, byteBufferClass);
+    if (isDirectBuffer) {
+      buf =
+        (U_8 *)(jbyte *)(IDATA) (*env)->GetDirectBufferAddress(env, buffer);
+      if (buf == NULL) {
+        throwNewOutOfMemoryError(env, "Failed to get direct buffer address");
+        goto free_resources;
+      }
+      toRelease = NULL;
+    } else {
+      buf =
+        (U_8 *)(jbyte *)(IDATA) (*env)->GetByteArrayElements(env, buffer, NULL);
+      if (buf == NULL) {
+        throwNewOutOfMemoryError(env, "");
+        goto free_resources;
+      }
+      toRelease = buffer;
+    }
+          
+    bytesWritten =
+      hyfile_write ((IDATA) fd,
+                    (void *) (buf + noffset[i]), (IDATA) lengths[i]);
+    if (toRelease != NULL) {
+      (*env)->ReleaseByteArrayElements(env, toRelease, buf, JNI_ABORT);
+    }
+
     if(bytesWritten == -1 && hyerror_last_error_number() == HYPORT_ERROR_FILE_LOCKED){
         throwNewExceptionByName(env, "java/io/IOException", netLookupErrorString(env, HYPORT_ERROR_FILE_LOCKED));
 	break;
@@ -195,17 +239,19 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_write
         break;
     }
     totalWritten += bytesWritten;
-    i++;
+   
   }
-  if(bufsCopied){
-    (*env)->ReleaseLongArrayElements(env, jbuffers, bufs, JNI_ABORT);
+
+ free_resources:
+
+  if (noffset != NULL) {
+    (*env)->ReleaseIntArrayElements(env, offset, noffset, JNI_ABORT);
   }
-  if(offsetsCopied){
-    (*env)->ReleaseIntArrayElements(env, joffsets, offsets, JNI_ABORT);
+
+  if (lengths != NULL) {
+    (*env)->ReleaseIntArrayElements(env, counts, lengths, JNI_ABORT);
   }
-  if(lengthsCopied){
-    (*env)->ReleaseIntArrayElements(env, jlengths, lengths, JNI_ABORT);
-  }
+
   return totalWritten;
 }
 

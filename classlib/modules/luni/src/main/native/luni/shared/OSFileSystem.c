@@ -23,8 +23,34 @@
 #include "iohelp.h"
 #include "exceptions.h"
 #include "nethelp.h"
+#include "harmonyglob.h"
 #include "OSFileSystem.h"
 #include "IFileSystem.h"
+
+/*
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    oneTimeInitializationImpl
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL
+Java_org_apache_harmony_luni_platform_OSFileSystem_oneTimeInitializationImpl
+  (JNIEnv * env, jclass clazz)
+{
+  jclass lookupClass;
+  jobject globalRef;
+
+  if (HARMONY_CACHE_GET (env, CLS_java_nio_DirectByteBuffer)) {
+    /* Cache is already initialized */
+    return;
+  }
+  lookupClass = (*env)->FindClass (env, "java/nio/DirectByteBuffer");
+  if (!lookupClass)
+    return;
+  globalRef = (*env)->NewGlobalRef (env, lookupClass);
+  if (!globalRef)
+    return;
+  HARMONY_CACHE_SET (env, CLS_java_nio_DirectByteBuffer, globalRef);
+}
 
 /*
  * Class:     org_apache_harmony_luni_platform_OSFileSystem

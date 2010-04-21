@@ -28,6 +28,10 @@ import java.io.UnsupportedEncodingException;
  */
 class OSFileSystem implements IFileSystem {
 
+    static {
+        oneTimeInitializationImpl();
+    }
+
     private static final OSFileSystem singleton = new OSFileSystem();
 
     public static OSFileSystem getOSFileSystem() {
@@ -37,6 +41,8 @@ class OSFileSystem implements IFileSystem {
     private OSFileSystem() {
         super();
     }
+
+    private native static void oneTimeInitializationImpl();
 
     private final void validateLockArgs(int type, long start, long length) {
         if ((type != IFileSystem.SHARED_LOCK_TYPE)
@@ -194,18 +200,8 @@ class OSFileSystem implements IFileSystem {
     private native long readvImpl(long fileDescriptor, long[] addresses,
             int[] offsets, int[] lengths, int size);
 
-    public long writev(long fileDescriptor, long[] addresses, int[] offsets,
-            int[] lengths, int size) throws IOException {
-        long bytesWritten = writevImpl(fileDescriptor, addresses, offsets,
-                lengths, size);
-        if (bytesWritten < 0) {
-            throw new IOException();
-        }
-        return bytesWritten;
-    }
-
-    private native long writevImpl(long fileDescriptor, long[] addresses,
-            int[] offsets, int[] lengths, int size);
+    public native long writev(long fileDescriptor, Object[] buffers,
+            int[] offsets, int[] lengths, int size) throws IOException;
 
     private native int closeImpl(long fileDescriptor);
 

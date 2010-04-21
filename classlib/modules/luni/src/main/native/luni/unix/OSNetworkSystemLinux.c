@@ -803,6 +803,7 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_writev
   result = writev(SOCKET_CAST (socketP), vect, length);
 
   if (0 > result) {
+    /* TOFIX? man write(2) on linux implies we should check EWOULDBLOCK too */
     if (errno != EAGAIN) {
       throwJavaNetSocketException(env, result);
     }

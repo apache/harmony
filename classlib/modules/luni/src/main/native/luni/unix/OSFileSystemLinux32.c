@@ -32,7 +32,9 @@
 #include "vmi.h"
 #include "iohelp.h"
 #include "nethelp.h"
+#include "harmonyglob.h"
 #include "hysock.h"
+#include "exceptions.h"
 
 #include "IFileSystem.h"
 #include "OSFileSystem.h"
@@ -190,44 +192,101 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
 
 /*
  * Class:     org_apache_harmony_luni_platform_OSFileSystem
- * Method:    writevImpl
+ * Method:    writev
  * Signature: (J[J[I[I)J
  */
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_writevImpl
-  (JNIEnv *env, jobject thiz, jlong fd, jlongArray jbuffers, jintArray joffsets, jintArray jlengths, jint size){
+JNIEXPORT jlong JNICALL
+Java_org_apache_harmony_luni_platform_OSFileSystem_writev
+  (JNIEnv *env, jobject thiz, jlong fd, jobjectArray buffers, jintArray offset, jintArray counts, jint length){
   PORT_ACCESS_FROM_ENV (env);
-  jboolean bufsCopied = JNI_FALSE;
-  jboolean offsetsCopied = JNI_FALSE;
-  jboolean lengthsCopied = JNI_FALSE;
-  jlong *bufs;
-  jint *offsets;
-  jint *lengths;
-  int i = 0;
-  long totalWritten = 0;
-  struct iovec *vectors = (struct iovec *)hymem_allocate_memory(size * sizeof(struct iovec));
-  if(vectors == NULL){
-    return -1;
+  jobject buffer;
+  jobject* toBeReleasedBuffers;
+  jint *noffset;
+  jboolean isDirectBuffer = JNI_FALSE;
+  jint result = 0;
+  jclass byteBufferClass;
+  struct iovec* vect;
+  int i;
+
+  vect = (struct iovec*) hymem_allocate_memory(sizeof(struct iovec) * length);
+  if (vect == NULL) {
+    throwNewOutOfMemoryError(env, "");
+    return 0;
   }
-  bufs = (*env)->GetLongArrayElements(env, jbuffers, &bufsCopied);
-  offsets = (*env)->GetIntArrayElements(env, joffsets, &offsetsCopied);
-  lengths = (*env)->GetIntArrayElements(env, jlengths, &lengthsCopied);
-  while(i < size){
-    vectors[i].iov_base = (void *)((IDATA)(bufs[i]+offsets[i]));
-    vectors[i].iov_len = lengths[i];
-    i++;
+
+  toBeReleasedBuffers =
+    (jobject*) hymem_allocate_memory(sizeof(jobject) * length);
+  if (toBeReleasedBuffers == NULL) {
+    throwNewOutOfMemoryError(env, "");
+    goto free_resources;
   }
-  totalWritten = writev(fd - FD_BIAS, vectors, size);
-  if(bufsCopied){
-    (*env)->ReleaseLongArrayElements(env, jbuffers, bufs, JNI_ABORT);
+  memset(toBeReleasedBuffers, 0, sizeof(jobject)*length);
+
+  byteBufferClass = HARMONY_CACHE_GET (env, CLS_java_nio_DirectByteBuffer);
+  noffset = (*env)->GetIntArrayElements(env, offset, NULL);
+  if (noffset == NULL) {
+    throwNewOutOfMemoryError(env, "");
+    goto free_resources;
   }
-  if(offsetsCopied){
-    (*env)->ReleaseIntArrayElements(env, joffsets, offsets, JNI_ABORT);
+
+  for (i = 0; i < length; ++i) {
+    jint *cts;
+    U_8* base;
+    buffer = (*env)->GetObjectArrayElement(env, buffers, i);
+    isDirectBuffer = (*env)->IsInstanceOf(env, buffer, byteBufferClass);
+    if (isDirectBuffer) {
+      base =
+        (U_8 *)(jbyte *)(IDATA) (*env)->GetDirectBufferAddress(env, buffer);
+      if (base == NULL) {
+        throwNewOutOfMemoryError(env, "");
+        goto free_resources;
+      }
+      toBeReleasedBuffers[i] = NULL;
+    } else {
+      base =
+        (U_8 *)(jbyte *)(IDATA) (*env)->GetByteArrayElements(env, buffer, NULL);
+      if (base == NULL) {
+        throwNewOutOfMemoryError(env, "");
+        goto free_resources;
+      }
+      toBeReleasedBuffers[i] = buffer;
+    }
+    vect[i].iov_base = base + noffset[i];
+
+    cts = (*env)->GetPrimitiveArrayCritical(env, counts, NULL);
+    vect[i].iov_len = cts[i];
+    (*env)->ReleasePrimitiveArrayCritical(env, counts, cts, JNI_ABORT);
   }
-  if(lengthsCopied){
-    (*env)->ReleaseIntArrayElements(env, jlengths, lengths, JNI_ABORT);
+
+  result = writev(fd - FD_BIAS, vect, length);
+
+  if (0 > result) {
+    if (errno != EAGAIN) {
+      throwJavaIoIOException(env, "");
+    }
+    result = 0;
   }
-  hymem_free_memory(vectors);
-  return totalWritten;
+
+ free_resources:
+  
+  if (toBeReleasedBuffers != NULL) {
+    for (i = 0; i < length; ++i) {
+      if (toBeReleasedBuffers[i] != NULL) {
+        (*env)->ReleaseByteArrayElements(env, toBeReleasedBuffers[i],
+                                         vect[i].iov_base - noffset[i],
+                                         JNI_ABORT);
+      }
+    }
+  }
+
+  if (noffset != NULL) {
+    (*env)->ReleaseIntArrayElements(env, offset, noffset, JNI_ABORT);
+  }
+
+  hymem_free_memory(toBeReleasedBuffers);
+  hymem_free_memory(vect);
+
+  return (jint) result;
 }
 
 /*

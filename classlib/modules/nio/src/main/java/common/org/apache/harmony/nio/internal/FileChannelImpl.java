@@ -577,25 +577,25 @@ public abstract class FileChannelImpl extends FileChannel {
         if (0 == count) {
             return 0;
         }
-        long[] handles = new long[length];
+        Object[] src = new Object[length];
         int[] offsets = new int[length];
         int[] lengths = new int[length];
-        ByteBuffer[] bufferRefs = new ByteBuffer[length];
         for (int i = 0; i < length; i++) {
             ByteBuffer buffer = buffers[i + offset];
             if (!buffer.isDirect()) {
                 ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer
                         .remaining());
+                int oldPosition = buffer.position();
                 directBuffer.put(buffer);
+                buffer.position(oldPosition);
                 directBuffer.flip();
-                buffer = directBuffer;
+                src[i] = directBuffer;
                 offsets[i] = 0;
             } else {
+                src[i] = buffer;
                 offsets[i] = buffer.position();
             }
-            handles[i] = ((DirectBuffer) buffer).getEffectiveAddress().toLong();
             lengths[i] = buffer.remaining();
-            bufferRefs[i] = buffer;
         }
 
         long bytesWritten = 0;
@@ -603,7 +603,7 @@ public abstract class FileChannelImpl extends FileChannel {
         synchronized (repositioningLock) {
             try {
                 begin();
-                bytesWritten = fileSystem.writev(handle, handles, offsets,
+                bytesWritten = fileSystem.writev(handle, src, offsets,
                         lengths, length);
                 completed = true;
             } finally {
