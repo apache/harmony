@@ -509,7 +509,7 @@ jvmtiGetThreadInfo(jvmtiEnv* env,
     jfieldID id = jvmti_test_jenv->GetFieldID(cl, "name", "Ljava/lang/String;");
     assert(id != NULL); // field must exist in kernel class
     jstring name = jvmti_test_jenv->GetObjectField(thread, id);
-    info_ptr->name = (char*)jvmti_test_jenv->GetStringUTFChars(name, false);
+    info_ptr->name = (char*)jvmti_test_jenv->GetStringUTFChars(name, NULL);
 
     id = jvmti_test_jenv->GetFieldID(cl, "priority", "I");
     assert(id != NULL); // field must exist in kernel class

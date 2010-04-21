@@ -437,13 +437,18 @@ public class HttpURLConnectionTest extends TestCase {
             urlConnect.getInputStream();
             assertTrue(urlConnect.usingProxy());
             
-            System.setProperty("http.proxyPort", "81");
+            // find a free port
+            ServerSocket serverSocket = new ServerSocket(0);
+            int port = serverSocket.getLocalPort();
+            serverSocket.close();
+            
+            System.setProperty("http.proxyPort", port + "");
             url = new URL(jettyURL);
             urlConnect = (HttpURLConnection) url.openConnection();
             urlConnect.getInputStream();
             assertFalse(urlConnect.usingProxy());
             
-            url = new URL("http://localhost");
+            url = new URL("http://localhost:" + port);
             urlConnect = (HttpURLConnection) url.openConnection();
             try {
                 urlConnect.getInputStream();

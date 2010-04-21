@@ -35,7 +35,7 @@ struct Con_Collection_Statistics;
 volatile Boolean gc_sweep_global_normal_chunk = FALSE;
 
 //just debugging
-inline void gc_ms_get_current_heap_usage(GC_MS *gc)
+void gc_ms_get_current_heap_usage(GC_MS *gc)
 {
   Con_Collection_Statistics *con_collection_stat = gc_ms_get_con_collection_stat(gc);
   unsigned int new_obj_size = gc_get_mutator_new_obj_size((GC *)gc);

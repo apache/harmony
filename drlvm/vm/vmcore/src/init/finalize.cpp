@@ -143,7 +143,7 @@ public:
 
 
 Object_Queue::Object_Queue() {
-    Object_Queue::Object_Queue("unknown");
+    Object_Queue("unknown");
 }
 
 Object_Queue::Object_Queue(const char* log_domain)

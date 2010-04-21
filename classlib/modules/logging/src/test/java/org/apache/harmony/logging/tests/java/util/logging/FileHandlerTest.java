@@ -60,9 +60,13 @@ public class FileHandlerTest extends TestCase {
 
     final static SecurityManager securityManager = new MockLogSecurityManager();
 
-    final static String HOMEPATH = System.getProperty("user.home");
+    final static String USR_HOME_KEY = "user.home";
 
-    final static String TEMPPATH = System.getProperty("java.io.tmpdir");
+    final static String TMP_DIR_KEY = "java.io.tmpdir";
+
+    final static String HOMEPATH = System.getProperty(USR_HOME_KEY);
+
+    final static String TEMPPATH = System.getProperty(TMP_DIR_KEY);
 
     final static String SEP = File.separator;
 
@@ -123,6 +127,55 @@ public class FileHandlerTest extends TestCase {
         reset(TEMPPATH + SEP + "log", "");
         System.setErr(err);
         super.tearDown();
+    }
+
+    public void testConstructor_NoUsrHome() throws IOException {
+        System.clearProperty(USR_HOME_KEY);
+
+        try {
+            new FileHandler("%h/log_NoUsrHome.log");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        } finally {
+            if (HOMEPATH != null) {
+                System.setProperty(USR_HOME_KEY, HOMEPATH);
+            }
+        }
+    }
+
+    public void testConstructor_NoTmpDir() throws IOException {
+        System.clearProperty(TMP_DIR_KEY);
+
+        try {
+            new FileHandler("%t/log_NoTmpDir.log");
+        } finally {
+            if (TEMPPATH != null) {
+                System.setProperty(TMP_DIR_KEY, TEMPPATH);
+            }
+        }
+        assertFalse(new File(TEMPPATH, "log_NoTmpDir.log").exists());
+        assertTrue(new File(HOMEPATH, "log_NoTmpDir.log").exists());
+        new File(HOMEPATH, "log_NoTmpDir.log").delete();
+    }
+
+    public void testConstructor_NoTmpDir_NoUsrHome() throws IOException {
+        System.clearProperty(TMP_DIR_KEY);
+        System.clearProperty(USR_HOME_KEY);
+
+        try {
+            new FileHandler("%t/log_NoTmpDir_NoUsrHome.log");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        } finally {
+            if (TEMPPATH != null) {
+                System.setProperty(TMP_DIR_KEY, TEMPPATH);
+            }
+            if (HOMEPATH != null) {
+                System.setProperty(USR_HOME_KEY, HOMEPATH);
+            }
+        }
     }
 
     public void testLock() throws Exception {

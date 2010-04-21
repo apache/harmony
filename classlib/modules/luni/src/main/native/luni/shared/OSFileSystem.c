@@ -23,8 +23,34 @@
 #include "iohelp.h"
 #include "exceptions.h"
 #include "nethelp.h"
+#include "harmonyglob.h"
 #include "OSFileSystem.h"
 #include "IFileSystem.h"
+
+/*
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    oneTimeInitializationImpl
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL
+Java_org_apache_harmony_luni_platform_OSFileSystem_oneTimeInitializationImpl
+  (JNIEnv * env, jclass clazz)
+{
+  jclass lookupClass;
+  jobject globalRef;
+
+  if (HARMONY_CACHE_GET (env, CLS_java_nio_DirectByteBuffer)) {
+    /* Cache is already initialized */
+    return;
+  }
+  lookupClass = (*env)->FindClass (env, "java/nio/DirectByteBuffer");
+  if (!lookupClass)
+    return;
+  globalRef = (*env)->NewGlobalRef (env, lookupClass);
+  if (!globalRef)
+    return;
+  HARMONY_CACHE_SET (env, CLS_java_nio_DirectByteBuffer, globalRef);
+}
 
 /*
  * Class:     org_apache_harmony_luni_platform_OSFileSystem
@@ -256,6 +282,33 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_ttyAv
     PORT_ACCESS_FROM_ENV (env);
 
     return (jlong)hytty_available();
+}
+
+/*
+ * Answers the number of remaining chars in the stdin.
+ *
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    AvailableImpl
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_availableImpl
+(JNIEnv *env, jobject thiz, jlong fd)
+{
+    jlong currentPosition =
+      Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
+          thiz, fd, 0,
+          org_apache_harmony_luni_platform_IFileSystem_SEEK_CUR);
+
+    jlong endPosition =
+      Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
+          thiz, fd, 0,
+          org_apache_harmony_luni_platform_IFileSystem_SEEK_END);
+    
+    Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
+          thiz, fd, currentPosition,
+          org_apache_harmony_luni_platform_IFileSystem_SEEK_SET);
+    
+    return (jlong) (endPosition - currentPosition);
 }
 
 /*

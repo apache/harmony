@@ -1383,7 +1383,7 @@ void PMF::init (bool first_)
 {
     assert(!initialized);
     first = first_;
-    help_requested = false;
+    help_requested = NULL;
     processVMProperties();
     initialized = true;
 

@@ -504,6 +504,7 @@ JNIEXPORT jlong JNICALL
     if (fid == 0) {
         (*env)->ExceptionDescribe(env);
         (*env)->ExceptionClear(env);
+        free(buffer);
         return (jlong)(IDATA)NULL;
     }
     scr = (*env)->GetIntField(env, linuxFont, fid);

@@ -445,7 +445,7 @@ inline void exn_jni_print_stack_trace(FILE * f, jthrowable exc)
     tmn_suspend_disable();
     const char* exceptionNameChars = exc->object->vt()->clss->get_name()->bytes;
     tmn_suspend_enable();
-    const char *messageChars = GetStringUTFChars(jenv, message, false);
+    const char *messageChars = GetStringUTFChars(jenv, message, NULL);
     fprintf(f, "\n%s : %s\n", exceptionNameChars, messageChars);
 
     // gets stack trace to print it
@@ -497,10 +497,10 @@ inline void exn_jni_print_stack_trace(FILE * f, jthrowable exc)
         if (ExceptionCheck(jenv))
             return;
         const char *classNameChars =
-            GetStringUTFChars(jenv, className, false);
+            GetStringUTFChars(jenv, className, NULL);
         fprintf(f, "%s.", classNameChars);
         const char *methodNameChars =
-            GetStringUTFChars(jenv, methodName, false);
+            GetStringUTFChars(jenv, methodName, NULL);
         fprintf(f, "%s", methodNameChars);
 
         // gets information about java file name
@@ -514,7 +514,7 @@ inline void exn_jni_print_stack_trace(FILE * f, jthrowable exc)
         if (fileName) {
             // gets line number and prints it after file name
             const char *fileNameChars =
-                GetStringUTFChars(jenv, fileName, false);
+                GetStringUTFChars(jenv, fileName, NULL);
             jint sourceLineNumber =
                 CallIntMethod(jenv, stackTraceElement, getLineNumberId);
             if (ExceptionCheck(jenv))
