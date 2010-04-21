@@ -287,8 +287,21 @@
     <property name="jpeg.home" value="/usr" />
     
     <!-- default property for poll-modules macro - i.e. all modules -->
+    <condition property="exclude.module" value="accessibility,applet,awt,imageio,orb,print,rmi,sound,swing,x_mgt">
+            <equals arg1="${hy.select}" arg2="true" />
+    </condition>
+    <condition property="exclude.module" value="nothing">
+        <or>
+            <not>
+                <isset property="hy.select" />
+            </not>
+            <not>
+               <equals arg1="${hy.select}" arg2="true" />
+            </not>
+        </or>
+    </condition>
+
     <property name="build.module" value="*" />
-    <property name="exclude.module" value="nothing" />
 
     <!-- flags -->
     <property name="hy.no.thr" value="false" />
