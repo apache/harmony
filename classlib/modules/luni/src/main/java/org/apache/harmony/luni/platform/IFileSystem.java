@@ -103,6 +103,8 @@ public interface IFileSystem {
             long offset, long count) throws IOException;
 
     public long ttyAvailable() throws IOException;
+
+    public long available(long fileDescriptor) throws IOException;
     
     public long ttyRead(byte[] bytes, int offset, int length) throws IOException;
 }

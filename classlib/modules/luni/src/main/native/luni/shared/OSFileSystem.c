@@ -285,6 +285,33 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_ttyAv
 }
 
 /*
+ * Answers the number of remaining chars in the stdin.
+ *
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    AvailableImpl
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_availableImpl
+(JNIEnv *env, jobject thiz, jlong fd)
+{
+    jlong currentPosition =
+      Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
+          thiz, fd, 0,
+          org_apache_harmony_luni_platform_IFileSystem_SEEK_CUR);
+
+    jlong endPosition =
+      Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
+          thiz, fd, 0,
+          org_apache_harmony_luni_platform_IFileSystem_SEEK_END);
+    
+    Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
+          thiz, fd, currentPosition,
+          org_apache_harmony_luni_platform_IFileSystem_SEEK_SET);
+    
+    return (jlong) (endPosition - currentPosition);
+}
+
+/*
  * Reads the number of bytes from stdin.
  *
  * Class:     org_apache_harmony_luni_platform_OSFileSystem
