@@ -67,6 +67,13 @@ public class ShowGui extends JFrame {
 	public void actionPerfomed(ActionEvent evt) {
 		String targetClass = classNameField.getText();
 
+                if (targetClass.length() == 0) {
+                    // No string was entered
+                    statusBarLabel.setText("");
+                    serialVersionField.setText("");
+                    return;
+                }
+
 		// Load the class.
 		try {
 			Clazz clazz = new Clazz(classProvider, targetClass);
@@ -84,7 +91,7 @@ public class ShowGui extends JFrame {
 			}
 		} catch (ClassNotFoundException e) { // Class Not Found
 			serialVersionField.setText("");
-			statusBarLabel.setText("Class " + targetClass + " not fond.");
+			statusBarLabel.setText("Class " + targetClass + " not found.");
 		}
 	}
 }
