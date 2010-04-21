@@ -17,8 +17,8 @@
 package org.apache.harmony.tests.tools.serialver;
 
 public class NoSerialize {
-	private int x;
-	private int y;
-	
-	public String lol;
+    private int x;
+    private int y;
+
+    public String lol;
 }
