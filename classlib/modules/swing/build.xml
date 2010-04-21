@@ -116,7 +116,7 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
         <hy.jar.bin destfile="${tests.hdk.dir}/swing_tests.jar">
-            <fileset dir="bin/test" />
+            <fileset dir="bin/test/injected" />
         </hy.jar.bin>
 
         <mkdir dir="${tests.excludes.hdk.dir}"/>
@@ -135,7 +135,8 @@
     </target>
 
     <target name="compile-tests">
-        <compile-tests description="swing tests">
+        <compile-tests description="swing tests"
+                       destdir="bin/test/injected">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/api/java.injected" />
