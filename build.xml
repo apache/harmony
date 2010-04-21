@@ -847,7 +847,7 @@ harmony.java.version=${harmony.java.version}
             depends="test-classlib,test-jdktools,process-test-output" />
 
     <target name="clean-tests">
-        <delete dir="build/test_report" />
+        <delete dir="target/test_report" />
     </target>
 
     <target name="test-classlib" depends="clean-tests">
@@ -857,7 +857,7 @@ harmony.java.version=${harmony.java.version}
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
-            <property name="tests.output" location="build/test_report" />
+            <property name="tests.output" location="target/test_report" />
             <property name="test.jre.home" location="target/hdk/jdk/jre" />
         </ant>
     </target>
