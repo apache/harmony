@@ -19,12 +19,17 @@ package org.apache.harmony.tools.serialver;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+
 import java.lang.reflect.Modifier;
+
 import java.security.MessageDigest;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+
+import javax.swing.JFrame;
 
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.Method;
@@ -86,7 +91,8 @@ public class Main {
 			}
 			i++;
 		}
-		System.exit(run(options, names));
+		int runValue = run(options, names);
+		if (runValue != -1) System.exit(runValue);
 	}
 
 	/**
@@ -106,22 +112,48 @@ public class Main {
 	 * 
 	 * @param classNames
 	 *            - a vector of the fully qualified class names.
-	 * @return <code>0</code> if there is no error; <code>1</code> otherwise.
+	 * @return <code>0</code> if there is no error; <code>1</code> if there is
+	 *         error; <code>-1</code> if the runtime has started a GUI.
 	 */
 	public static int run(Map options, Vector<String> classNames) {
-		int returnValue = 0;
-
 		String classpath = getString(options, "-classpath");
-		boolean show = getBoolean(options, "-show"); // TODO make show GUI
+		boolean show = getBoolean(options, "-show");
 		Iterator namesIter = classNames.iterator();
 
+		// Appending the user specified classpath to clasprovider
+		ClassProvider classProvider = new ClassProvider(null, classpath, false);
+		
 		// The user can't type -show and put classnames - SUN Spec
 		if ((namesIter.hasNext() == true) && (show == true)) {
 			System.out.println("Cannot specify class arguments with the -show option");
 			return 1;
 		}
 
-		ClassProvider classProvider = new ClassProvider(null, classpath, false);
+		// If the user typed -show let's pass the ClassProvider which contains the
+		// user classpath to the ShowGui, else let's do the default cli run
+		if (show == true) {
+			ShowGui gui = new ShowGui(classProvider);
+			gui.setSize(600, 120);
+			gui.setVisible(true);
+			gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			return -1;
+		} else {
+			return cliRun(classProvider, namesIter);			
+		}
+	}
+
+	/**
+	 * Cli run of the serialver tool
+	 * 
+	 * @param classProvider
+	 *            - a helper that provides the class information from a classpath.
+	 * @param namesIter
+	 *            - the list of names to check the serialversionUID.
+	 * @return 0 if everything worked fine<br/>
+	 *         1 if it has encountered errors while running
+	 */
+	public static int cliRun(ClassProvider classProvider, Iterator namesIter) {
+		int runValue = 0;
 		while (namesIter.hasNext()) {
 			String className = (String) namesIter.next();
 			try {
@@ -130,18 +162,19 @@ public class Main {
 
 				// Let's check if the class has any 'annoiance'
 				if (!isSerializable(clazz)) {
-					System.out.println("Class " + clazz.getName() + " is not Serializable.");
+					System.out.println("Class " + clazz.getName()
+							+ " is not Serializable.");
 					continue;
 				}
-				
+
 				long hash = calculeSUID(clazz);
 				printResult(clazz, hash);
 			} catch (Exception e) {
 				System.out.println("Class " + className + " not found.");
-				returnValue = 1;
+				runValue = 1;
 			}
 		}
-		return returnValue;
+		return runValue;
 	}
 
 	/**
@@ -155,11 +188,12 @@ public class Main {
 	 */
 	public static long calculeSUID(Clazz clazz) throws ClassNotFoundException {
 		try {
-			// Let's check if class has already a suid, if yes, we don't need to calculate
+			// Let's check if class has already a suid, if yes, we don't need to
+			// calculate
 			if (clazz.hasSerialVersionUID()) {
 				return clazz.getExistantSerialVersionUID();
 			}
-			
+
 			// Let's compute the serialversionUID
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			DataOutputStream daos = new DataOutputStream(baos);
@@ -194,7 +228,7 @@ public class Main {
 				daos.writeInt(field.getModifiers() & fieldMask);
 				daos.writeUTF(field.getSignature());
 			}
-			
+
 			// Only valid Constructors, i.e., all non-private
 			// The first constructor must be the default ()V [if-exists]
 			// The method already takes cares of this
@@ -208,7 +242,7 @@ public class Main {
 				daos.writeInt(constructor.getModifiers() & methodMask);
 				daos.writeUTF(constructor.getSignature());
 			}
-			
+
 			// Only valid Methods, i.e., all non-private
 			for (Method methods : clazz.getSortedValidMethods()) {
 				daos.writeUTF(methods.getName());
@@ -228,7 +262,7 @@ public class Main {
 			for (int i = 7; i >= 0; i--) {
 				hash = (hash << 8) | (sha[i] & 0xFF);
 			}
-			
+
 			return hash;
 		} catch (Exception e) {
 			throw new ClassNotFoundException();
@@ -243,7 +277,8 @@ public class Main {
 	 * @throws ClassNotFoundException
 	 *             if the wrappedclass isn't found.
 	 */
-	public static boolean isSerializable(Clazz wrappedclazz) throws ClassNotFoundException {
+	public static boolean isSerializable(Clazz wrappedclazz)
+			throws ClassNotFoundException {
 		return wrappedclazz.isSerializable();
 	}
 
@@ -263,7 +298,8 @@ public class Main {
 	 *            the value to be printed
 	 */
 	public static void printResult(Clazz clazz, long suid) {
-		System.out.println(clazz.getName() + "\t" + "static final long serialVersionUID = " + suid + "L");
+		System.out.println(clazz.getName() + "\t"
+				+ "static final long serialVersionUID = " + suid + "L;");
 	}
 
 	/**
@@ -279,7 +315,8 @@ public class Main {
 		try {
 			return (String) options.get(name);
 		} catch (ClassCastException e) {
-			throw new RuntimeException("'" + name + "': expected java.lang.String", e);
+			throw new RuntimeException("'" + name
+					+ "': expected java.lang.String", e);
 		}
 	}
 
@@ -300,7 +337,8 @@ public class Main {
 				return ((Boolean) value).booleanValue();
 			}
 		} catch (ClassCastException e) {
-			throw new RuntimeException("'" + name + "': expected java.lang.Boolean", e);
+			throw new RuntimeException("'" + name
+					+ "': expected java.lang.Boolean", e);
 		}
 		return false;
 	}

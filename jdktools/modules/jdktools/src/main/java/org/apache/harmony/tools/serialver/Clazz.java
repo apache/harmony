@@ -70,7 +70,7 @@ public class Clazz {
 	 * Constructs a <code>Clazz</code> object.
 	 * 
 	 * @param classProvider
-	 *            - a helper that provides the class information.
+	 *            - a helper that provides the class information from a classpath.
 	 * @param className
 	 *            - a fully qualified name of a class.
 	 * @throws ClassNotFoundException
