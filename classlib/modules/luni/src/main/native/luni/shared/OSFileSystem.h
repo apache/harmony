@@ -100,10 +100,10 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
 
 /*
  * Class:     org_apache_harmony_luni_platform_OSFileSystem
- * Method:    writevImpl
- * Signature: (J[J[I[II)J
+ * Method:    writev
+ * Signature: (J[Ljava/lang/Object;[I[II)J
  */
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_writevImpl
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_writev
   (JNIEnv *, jobject, jlong, jlongArray, jintArray, jintArray, jint);
 
 /*

@@ -564,38 +564,43 @@ public abstract class FileChannelImpl extends FileChannel {
         return bytesWritten;
     }
 
-    public long write(ByteBuffer[] buffers, int offset, int length)
+    public long write(ByteBuffer[] sources, int offset, int length)
             throws IOException {
-        if (offset < 0 || length < 0 || (offset + length) > buffers.length) {
+        if (offset < 0 || length < 0 || (offset + length) > sources.length) {
             throw new IndexOutOfBoundsException();
         }
         openCheck();
-        int count = 0;
+        long count = 0;
         for (int i = offset; i < offset + length; i++) {
-            count += buffers[i].remaining();
+            count += sources[i].remaining();
         }
         if (0 == count) {
             return 0;
         }
-        long[] handles = new long[length];
+        Object[] src = new Object[length];
         int[] offsets = new int[length];
         int[] lengths = new int[length];
-        ByteBuffer[] bufferRefs = new ByteBuffer[length];
         for (int i = 0; i < length; i++) {
-            ByteBuffer buffer = buffers[i + offset];
+            ByteBuffer buffer = sources[i + offset];
             if (!buffer.isDirect()) {
-                ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer
-                        .remaining());
-                directBuffer.put(buffer);
-                directBuffer.flip();
-                buffer = directBuffer;
-                offsets[i] = 0;
+                if (buffer.hasArray()) {
+                    src[i] = buffer.array();
+                    offsets[i] = buffer.position();
+                } else {
+                    ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer
+                            .remaining());
+                    int oldPosition = buffer.position();
+                    directBuffer.put(buffer);
+                    buffer.position(oldPosition);
+                    directBuffer.flip();
+                    src[i] = directBuffer;
+                    offsets[i] = 0;
+                }
             } else {
+                src[i] = buffer;
                 offsets[i] = buffer.position();
             }
-            handles[i] = ((DirectBuffer) buffer).getEffectiveAddress().toLong();
             lengths[i] = buffer.remaining();
-            bufferRefs[i] = buffer;
         }
 
         long bytesWritten = 0;
@@ -603,7 +608,7 @@ public abstract class FileChannelImpl extends FileChannel {
         synchronized (repositioningLock) {
             try {
                 begin();
-                bytesWritten = fileSystem.writev(handle, handles, offsets,
+                bytesWritten = fileSystem.writev(handle, src, offsets,
                         lengths, length);
                 completed = true;
             } finally {
@@ -613,13 +618,13 @@ public abstract class FileChannelImpl extends FileChannel {
 
         long bytesRemaining = bytesWritten;
         for (int i = offset; i < length + offset; i++) {
-            if (bytesRemaining > buffers[i].remaining()) {
-                int pos = buffers[i].limit();
-                buffers[i].position(pos);
-                bytesRemaining -= buffers[i].remaining();
+            if (bytesRemaining > sources[i].remaining()) {
+                int pos = sources[i].limit();
+                sources[i].position(pos);
+                bytesRemaining -= sources[i].remaining();
             } else {
-                int pos = buffers[i].position() + (int) bytesRemaining;
-                buffers[i].position(pos);
+                int pos = sources[i].position() + (int) bytesRemaining;
+                sources[i].position(pos);
                 break;
             }
         }

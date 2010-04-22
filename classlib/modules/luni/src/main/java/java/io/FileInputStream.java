@@ -148,14 +148,7 @@ public class FileInputStream extends InputStream implements Closeable {
             if (fd == FileDescriptor.in) {
                 return (int) fileSystem.ttyAvailable();
             }
-
-            long currentPosition = fileSystem.seek(fd.descriptor, 0L,
-                    IFileSystem.SEEK_CUR);
-            long endOfFilePosition = fileSystem.seek(fd.descriptor, 0L,
-                    IFileSystem.SEEK_END);
-            fileSystem.seek(fd.descriptor, currentPosition,
-                    IFileSystem.SEEK_SET);
-            return (int) (endOfFilePosition - currentPosition);
+            return (int) fileSystem.available(fd.descriptor);
         }
     }
 

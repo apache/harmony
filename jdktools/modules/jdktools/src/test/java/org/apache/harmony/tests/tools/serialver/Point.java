@@ -19,16 +19,16 @@ package org.apache.harmony.tests.tools.serialver;
 import java.io.Serializable;
 
 public class Point implements Serializable {
-	
-	//private static final long serialVersionUID = -2044326457932868113L;
-	private int x;
-	private int y;
-	private Point p;
-	
-	public Point(int x, int y) {
-	}
 
-	public void setP(Point p) {
-		this.p = p;
-	}
+    //private static final long serialVersionUID = -2044326457932868113L;
+    private int x;
+    private int y;
+    private Point p;
+
+    public Point(int x, int y) {
+    }
+
+    public void setP(Point p) {
+        this.p = p;
+    }
 }

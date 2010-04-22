@@ -491,63 +491,67 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
         }
 
         checkOpenConnected();
+        long count = 0;
+        for (int i = offset; i < offset + length; i++) {
+            count += sources[i].remaining();
+        }
+        if (0 == count) {
+            return 0;
+        }
 
         Object[] src = new Object[length];
         int[] offsets = new int[length];
-        int[] counts = new int[length];
-        for (int i = 0; i < length; ++i) {
+        int[] lengths = new int[length];
+        for (int i = 0; i < length; i++) {
             ByteBuffer buffer = sources[i + offset];
             if (!buffer.isDirect()) {
                 if (buffer.hasArray()) {
                     src[i] = buffer.array();
-                    counts[i] = buffer.remaining();
                     offsets[i] = buffer.position();
                 } else {
-                    ByteBuffer db = ByteBuffer.allocateDirect(buffer.remaining());
+                    ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer.remaining());
                     int oldPosition = buffer.position();
-                    db.put(buffer);
+                    directBuffer.put(buffer);
                     buffer.position(oldPosition);
-                    db.flip();
-                    src[i] = db;
-                    counts[i] = buffer.remaining();
+                    directBuffer.flip();
+                    src[i] = directBuffer;
                     offsets[i] = 0;
                 }
             } else {
                 src[i] = buffer;
-                counts[i] = buffer.remaining();
                 offsets[i] = buffer.position();
             }
+            lengths[i] = buffer.remaining();
         }
 
-        if (length == 0) {
-            return 0;
+        long bytesWritten = writevImpl(src, offsets, lengths);
+        long bytesRemaining = bytesWritten;
+        for (int i = offset; i < length + offset; i++) {
+            if (bytesRemaining > sources[i].remaining()) {
+                int pos = sources[i].limit();
+                sources[i].position(pos);
+                bytesRemaining -= sources[i].remaining();
+            } else {
+                int pos = sources[i].position() + (int) bytesRemaining;
+                sources[i].position(pos);
+                break;
+            }
         }
-
-        int result = writevImpl(src, offsets, counts);
-        int val = offset;
-        int written = result;
-        while (result > 0) {
-            ByteBuffer source = sources[val];
-            int gap = Math.min(result, source.remaining());
-            source.position(source.position() + gap);
-            val++;
-            result -= gap;
-        }
-        return written;
+        return bytesWritten;
     }
 
     /*
      * Write the source. return the count of bytes written.
      */
-    private int writevImpl(Object[] sources, int[] offsets, int[] counts) throws IOException {
-        int writeCount = 0;
+    private long writevImpl(Object[] sources, int[] offsets, int[] lengths) throws IOException {
+        long writeCount = 0;
         try {
             if (isBlocking()) {
                 begin();
             }
 
             synchronized (writeLock) {
-                writeCount = networkSystem.writev(fd, sources, offsets, counts, sources.length);
+                writeCount = networkSystem.writev(fd, sources, offsets, lengths, sources.length);
             }
         } catch (SocketException e) {
             if (e.getCause() instanceof ErrorCodeException) {
