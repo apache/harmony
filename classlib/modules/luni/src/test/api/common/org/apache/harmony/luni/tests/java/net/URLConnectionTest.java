@@ -1100,6 +1100,10 @@ public class URLConnectionTest extends junit.framework.TestCase {
             assertEquals(expected[i], URLConnection
                     .guessContentTypeFromStream(is));
         }
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
+        assertNull(URLConnection.guessContentTypeFromStream(bais));
+        bais.close();
     }
 
     /**
