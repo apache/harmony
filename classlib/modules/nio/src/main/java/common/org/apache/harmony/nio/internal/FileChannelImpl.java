@@ -583,14 +583,20 @@ public abstract class FileChannelImpl extends FileChannel {
         for (int i = 0; i < length; i++) {
             ByteBuffer buffer = buffers[i + offset];
             if (!buffer.isDirect()) {
-                ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer
-                        .remaining());
-                int oldPosition = buffer.position();
-                directBuffer.put(buffer);
-                buffer.position(oldPosition);
-                directBuffer.flip();
-                src[i] = directBuffer;
-                offsets[i] = 0;
+                if (buffer.hasArray()) {
+                    src[i] = buffer.array();
+                    lengths[i] = buffer.remaining();
+                    offsets[i] = buffer.position();
+                } else {
+                    ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer
+                            .remaining());
+                    int oldPosition = buffer.position();
+                    directBuffer.put(buffer);
+                    buffer.position(oldPosition);
+                    directBuffer.flip();
+                    src[i] = directBuffer;
+                    offsets[i] = 0;
+                }
             } else {
                 src[i] = buffer;
                 offsets[i] = buffer.position();
