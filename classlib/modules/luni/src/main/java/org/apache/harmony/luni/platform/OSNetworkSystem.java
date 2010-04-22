@@ -548,6 +548,6 @@ final class OSNetworkSystem implements INetworkSystem {
      * @throws IOException
      *             if there is an underlying socket problem
      */
-    public native int writev(FileDescriptor fd, Object[] buffers,
-            int[] offsets, int[] counts, int length) throws IOException;
+    public native long writev(FileDescriptor fd, Object[] buffers,
+            int[] offsets, int[] lengths, int length) throws IOException;
 }
