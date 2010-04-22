@@ -80,7 +80,6 @@ JNIEXPORT jint JNICALL Java_org_apache_harmony_luni_platform_OSMemory_loadImpl
         VirtualUnlock((void *)addr, (SIZE_T)size);
         return 0;
     }else{
-        printf("lock error: %d\n", GetLastError());
         return -1;
     }
   }
