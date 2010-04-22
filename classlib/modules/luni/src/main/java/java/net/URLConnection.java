@@ -681,6 +681,12 @@ public abstract class URLConnection {
         int length = is.read(bytes);
         is.reset();
 
+        // If there is no data from the input stream, can not determine
+        // content-type
+        if (length == -1) {
+            return null;
+        }
+
         // Check for Unicode BOM encoding indicators
         String encoding = "ASCII";
         int start = 0;

@@ -193,7 +193,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
 /*
  * Class:     org_apache_harmony_luni_platform_OSFileSystem
  * Method:    writev
- * Signature: (J[J[I[I)J
+ * Signature: (J[Ljava/lang/Object;[I[II)J
  */
 JNIEXPORT jlong JNICALL
 Java_org_apache_harmony_luni_platform_OSFileSystem_writev
@@ -201,9 +201,9 @@ Java_org_apache_harmony_luni_platform_OSFileSystem_writev
   PORT_ACCESS_FROM_ENV (env);
   jobject buffer;
   jobject* toBeReleasedBuffers;
-  jint *noffset;
+  jint *noffset = NULL;
   jboolean isDirectBuffer = JNI_FALSE;
-  jint result = 0;
+  ssize_t result = 0;
   jclass byteBufferClass;
   struct iovec* vect;
   int i;
@@ -211,7 +211,7 @@ Java_org_apache_harmony_luni_platform_OSFileSystem_writev
   vect = (struct iovec*) hymem_allocate_memory(sizeof(struct iovec) * length);
   if (vect == NULL) {
     throwNewOutOfMemoryError(env, "");
-    return 0;
+    return (jlong)0;
   }
 
   toBeReleasedBuffers =
@@ -286,7 +286,7 @@ Java_org_apache_harmony_luni_platform_OSFileSystem_writev
   hymem_free_memory(toBeReleasedBuffers);
   hymem_free_memory(vect);
 
-  return (jint) result;
+  return (jlong) result;
 }
 
 /*

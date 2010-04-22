@@ -469,9 +469,9 @@ JNIEXPORT jint JNICALL Java_org_apache_harmony_luni_platform_OSNetworkSystem_wri
 /*
  * Class:     org_apache_harmony_luni_platform_OSNetworkSystem
  * Method:    writev
- * Signature: (Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[II)I
+ * Signature: (Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[II)J
  */
-JNIEXPORT jint JNICALL Java_org_apache_harmony_luni_platform_OSNetworkSystem_writev
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSNetworkSystem_writev
   (JNIEnv *, jobject, jobject, jobjectArray, jintArray, jintArray, jint);
 
 #ifdef __cplusplus
