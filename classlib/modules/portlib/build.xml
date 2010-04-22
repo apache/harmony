@@ -37,7 +37,7 @@
 
     <target name="build" />
 
-    <target name="clean" depends="clean-native,clean-test" />
+    <target name="clean" depends="-clean-native,-clean-test" />
 
     <target name="test" depends="-test-module">
         <fail message="Some tests failed">
@@ -122,9 +122,10 @@
     </target>
 
     <!-- Build the portlib native components -->
-    <target name="build-native"
-        depends="-build-native,-build-native-thread,-build-native-thrstub,-build-native-port" />
-    <target name="-build-native" depends="-build-ascii-ebcdic">
+    <target name="-build-native"
+        depends="-build-native-common,-build-native-thread,
+                 -build-native-thrstub,-build-native-port" />
+    <target name="-build-native-common" depends="-build-ascii-ebcdic">
        <!-- Build common lib -->
         <make dir="src/main/native/common/${hy.os.family}" />
 
@@ -172,7 +173,7 @@
     </target>
 
     <!-- Clean natives -->
-    <target name="clean-native" depends="clean-native-includes, -clean-native-ascii-ebcdic">
+    <target name="-clean-native" depends="-clean-native-includes, -clean-native-ascii-ebcdic">
         <make dir="src/main/native/thread/${hy.os.family}" target="clean" />
         <make dir="src/main/native/thrstub/${hy.os.family}" target="clean" />
         <make dir="src/main/native/port/${hy.os.family}" target="clean" />
@@ -185,7 +186,7 @@
         <make dir="src/main/native/a2e/${hy.os.family}" target="clean" />
     </target>
 
-    <target name="clean-native-includes" depends="-clean-ascii-ebcdic-includes">
+    <target name="-clean-native-includes" depends="-clean-ascii-ebcdic-includes">
         <delete failonerror="false">
             <fileset dir="${hy.hdk}/include">
                 <include name="hyport.h" />
@@ -287,10 +288,10 @@
             <fileset dir="." includes="TEST-*.xml" />
         </delete>
 
-        <antcall target="touch-errors-file" />
+        <antcall target="-touch-errors-file" />
     </target>
 
-    <target name="clean-test" >
+    <target name="-clean-test" >
         <make dir="src/test/native/init/${hy.os.family}" 
               target="clean" />
         <make dir="src/test/native/hycpu/${hy.os.family}" 
@@ -321,7 +322,7 @@
               target="clean" />
     </target>
 
-    <target name="touch-errors-file" if="test.errors">
+    <target name="-touch-errors-file" if="test.errors">
         <echo file="${tests.output}/test.errors"
             append="true">portlib${line.separator}</echo>
     </target>

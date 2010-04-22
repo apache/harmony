@@ -28,10 +28,10 @@
     <property file="../../make/depends.properties" />
 
     <target name="build"
-            depends="check-depends,copy-resources,
-                     build-jar,-build-native,test-jar" />
+            depends="check-depends,-copy-resources,
+                     -build-jar,-build-native,-test-jar" />
 
-    <target name="clean" depends="clean-java,clean-native,clean-test" />
+    <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
 
     <target name="check-depends" depends="-check-depends,-extract" />
 
@@ -147,9 +147,9 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, run-tests" />
+    <target name="-test-module" depends="build, -run-tests" />
 
-    <target name="clean-java" depends="class-patternset">
+    <target name="-clean-java" depends="-class-patternset">
         <delete file="${hy.jdk}/jre/lib/boot/awt.jar" />
         <delete file="${hy.jdk}/jre/lib/boot/awt-src.jar" />    
         <delete dir="${hy.jdk}/jre/lib/cmm" quiet="true" />
@@ -160,12 +160,12 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="clean-test">
+    <target name="-clean-test">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin"/>
     </target>
 
-    <target name="compile-java">
+    <target name="-compile-java">
         <echo message="Compiling ${hy.module} classes" />
 
         <mkdir dir="../../build/classes" />
@@ -188,7 +188,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         </hy.javac>
     </target>
 
-    <target name="copy-resources" depends="-copy-win-resources">
+    <target name="-copy-resources" depends="-copy-win-resources">
 
         <mkdir dir="${hy.jdk}/jre/lib/cmm" />
         <copy todir="${hy.jdk}/jre/lib/cmm">
@@ -213,14 +213,14 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
               tofile="${hy.jdk}/jre/lib/font.properties"/>
     </target>
 
-    <target name="findbugs" depends="build-jar">
+    <target name="findbugs" depends="-build-jar">
         <run-findBugs
             jarFile="${hy.jdk}/jre/lib/boot/awt.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
             outputFile="${findBugs.report}/awt.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
+    <target name="-build-jar" depends="svn-info,-compile-java,-class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/awt.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
@@ -269,7 +269,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <make dir="src/main/native/winfont/${hy.os.family}" />
     </target>
 
-    <target name="clean-native"
+    <target name="-clean-native"
             depends="-clean-native-unix,-clean-native-windows">
         <make dir="src/main/native/lcmm/${hy.os.family}"
               target="clean"/>
@@ -297,7 +297,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
               target="clean"/>
     </target>
 
-    <target name="test-jar" depends="svn-info,compile-tests">
+    <target name="-test-jar" depends="svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
@@ -331,7 +331,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         </copy>
     </target>
 
-    <target name="compile-tests">
+    <target name="-compile-tests">
         <compile-tests description="awt boot tests"
                        destdir="bin/test/boot">
             <javac-elements>
@@ -351,11 +351,11 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         </compile-tests>
     </target>
 
-    <target name="run-tests" depends="test-jar">
+    <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="class-patternset">
+    <target name="-class-patternset">
         <make-patternset module="${hy.module}" />
     </target>
 

@@ -314,10 +314,10 @@ ${built.files.list}
             description="Compiles the native code only" >
 
         <!-- these must be run in a specific order due to dependencies -->
-    	<ant dir="modules/portlib" target="build-native" />
-        <ant dir="modules/luni" target="build-native-core" />
-    	<ant dir="modules/archive" target="build-native" />
-    	<ant dir="modules/luni" target="build-native-secondary" />
+    	<ant dir="modules/portlib" target="-build-native" />
+        <ant dir="modules/luni" target="-build-native-core" />
+    	<ant dir="modules/archive" target="-build-native" />
+    	<ant dir="modules/luni" target="-build-native-secondary" />
 
     </target>
 
@@ -388,11 +388,11 @@ ${built.files.list}
         </ant>
     </target>
 
-    <target name="-build-test" unless="skip.tests.build"
+    <target name="-build-test" unless="skip.test.build"
             depends="-test-init-hdk,support-jar"
             description="Compile and archive all tests" />
 
-    <target name="-clean-test" unless="skip.tests.build"
+    <target name="-clean-test" unless="skip.test.build"
             depends="-init-hdk-for-clean"
             description="Removes the generated tests" >
         <delete dir="${tests.support.output}" />

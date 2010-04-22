@@ -29,7 +29,7 @@
 
     <target name="build" depends="check-depends, -copy-jars" />
 
-    <target name="clean" depends="clean-java" />
+    <target name="clean" depends="-clean-java" />
 
     <target name="check-depends">
         <check-one-file src="${yoko.url}" dest="${yoko.jar}" />
@@ -78,7 +78,7 @@
 
     <target name="test" />
 
-    <target name="clean-java">
+    <target name="-clean-java">
         <delete dir="${hy.jdk}/jre/lib/boot/yoko-${yoko.version}" />
         <delete dir="${hy.jdk}/jre/lib/boot/bcel-${bcel.version}" />
     </target>

@@ -28,9 +28,9 @@
 
     <property name="zlib.zip" location="${depends.oss}/zlib_1.2.3.zip" />
 
-    <target name="build" depends="build-jar,test-jar" />
+    <target name="build" depends="-build-jar,-test-jar" />
     
-    <target name="clean" depends="clean-java,clean-native,clean-test" />
+    <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
 
     <target name="check-depends"
             depends="-overlay-oss,-copy-zipsup-include,-copy-zlib-include" />
@@ -87,7 +87,7 @@
     </target>
     
     <!-- Build native code -->
-    <target name="build-native"
+    <target name="-build-native"
             depends="-build-native-zip,-build-native-zlib,-build-native-archive" />
 
     <target name="-build-native-zip" if="hy.skip.zip.api">
@@ -102,8 +102,8 @@
         <make dir="src/main/native/archive/${hy.os.family}" />
     </target>
     
-    <target name="clean-native"
-            depends="-clean-native-zip,-clean-native-zlib,clean-native-includes,clean-overlay-oss">
+    <target name="-clean-native"
+            depends="-clean-native-zip,-clean-native-zlib,-clean-native-includes,-clean-overlay-oss">
         <make dir="src/main/native/archive/${hy.os.family}" target="clean" />
     </target>
 
@@ -115,7 +115,7 @@
         <make dir="src/main/native/zlib/${hy.os.family}" target="clean" />
     </target>
 
-    <target name="clean-native-includes">
+    <target name="-clean-native-includes">
         <delete failonerror="false">
             <fileset dir="${hy.hdk}/include">
                 <include name="zipsup.h" />
@@ -123,7 +123,7 @@
         </delete>
     </target>
 
-    <target name="clean-overlay-oss" unless="hy.skip.zlib" >
+    <target name="-clean-overlay-oss" unless="hy.skip.zlib" >
         <delete dir="src/main/native/zlib_dist" quiet="true" />
     </target>
     
@@ -139,9 +139,9 @@
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, run-tests" />
+    <target name="-test-module" depends="build, -run-tests" />
 
-    <target name="clean-java" depends="class-patternset">
+    <target name="-clean-java" depends="-class-patternset">
         <delete file="${hy.jdk}/jre/lib/boot/archive.jar" />
         <delete file="${hy.jdk}/jre/lib/boot/archive-src.jar" />
         <delete failonerror="false">
@@ -150,12 +150,12 @@
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="clean-test">
+    <target name="-clean-test">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin"/>
     </target>
 
-    <target name="compile-java">
+    <target name="-compile-java">
         <echo message="Compiling ${hy.module} classes" />
 
         <mkdir dir="../../build/classes" />
@@ -174,14 +174,14 @@
         </hy.javac>
     </target>
 
-    <target name="findbugs" depends="build-jar">
+    <target name="findbugs" depends="-build-jar">
         <run-findBugs
             jarFile="${hy.jdk}/jre/lib/boot/archive.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
             outputFile="${findBugs.report}/archive.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
+    <target name="-build-jar" depends="svn-info,-compile-java,-class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/archive.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
@@ -193,7 +193,7 @@
         </hy.jar.src>
     </target>
 
-    <target name="test-jar" depends="svn-info,compile-tests">
+    <target name="-test-jar" depends="svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
         
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
@@ -217,7 +217,7 @@
         </copy>
     </target>
 
-    <target name="compile-tests">
+    <target name="-compile-tests">
         <compile-tests description="archive internal tests"
                        destdir="bin/test-internal">
             <javac-elements>
@@ -235,11 +235,11 @@
         </compile-tests>
     </target>
 
-    <target name="run-tests" depends="test-jar">
+    <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="class-patternset">
+    <target name="-class-patternset">
         <make-patternset module="${hy.module}" />
     </target>
 

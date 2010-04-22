@@ -26,9 +26,9 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="build-jar,-build-native,test-jar" />
+    <target name="build" depends="-build-jar,-build-native,-test-jar" />
 
-    <target name="clean" depends="clean-java,clean-native,clean-test" />
+    <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
 
     <target name="test" depends="-test-module">
         <fail message="Some tests failed">
@@ -42,14 +42,14 @@
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, run-tests" />
+    <target name="-test-module" depends="build, -run-tests" />
 
     <!-- Build natives.-->
     <target name="-build-native">
         <make dir="src/main/native/nio/${hy.os.family}" />
     </target>
 
-    <target name="clean-java" depends="class-patternset">
+    <target name="-clean-java" depends="-class-patternset">
         <delete file="${hy.jdk}/jre/lib/boot/nio.jar" />
         <delete file="${hy.jdk}/jre/lib/boot/nio-src.jar" />
         <delete includeemptydirs="true" failonerror="false">
@@ -58,16 +58,16 @@
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="clean-native">
+    <target name="-clean-native">
         <make dir="src/main/native/nio/${hy.os.family}" target="clean" />
     </target>
 
-    <target name="clean-test">
+    <target name="-clean-test">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin" />
     </target>
 
-    <target name="compile-java">
+    <target name="-compile-java">
         <echo message="Compiling ${hy.module} classes" />
 
         <mkdir dir="../../build/classes" />
@@ -90,14 +90,14 @@
         </hy.javac>
     </target>
 
-    <target name="findbugs" depends="build-jar">
+    <target name="findbugs" depends="-build-jar">
         <run-findBugs
             jarFile="${hy.jdk}/jre/lib/boot/nio.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
             outputFile="${findBugs.report}/nio.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,compile-java,class-patternset">
+    <target name="-build-jar" depends="svn-info,-compile-java,-class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/nio.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
@@ -109,7 +109,7 @@
         </hy.jar.src>
     </target>
 
-    <target name="test-jar" depends="svn-info,compile-tests">
+    <target name="-test-jar" depends="svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
 
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
@@ -133,7 +133,7 @@
         </copy>
     </target>
 
-    <target name="compile-tests">
+    <target name="-compile-tests">
         <compile-tests description="nio tests">
             <javac-elements>
                 <src>
@@ -144,11 +144,11 @@
         </compile-tests>
     </target>
 
-    <target name="run-tests" depends="test-jar">
+    <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="class-patternset">
+    <target name="-class-patternset">
         <make-patternset module="${hy.module}" />
     </target>
 

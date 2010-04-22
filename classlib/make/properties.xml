@@ -287,16 +287,16 @@
     <property name="build.module" value="*" />
     <property name="exclude.module" value="nothing" />
     <property name="build.java" value="true" />
-    <property name="build.natives" value="true" />
-    <property name="build.tests" value="true" />
+    <property name="build.native" value="true" />
+    <property name="build.test" value="true" />
     <condition property="skip.java.build" value="true">
         <equals arg1="${build.java}" arg2="false" />
     </condition>
-    <condition property="skip.natives.build" value="true">
-        <equals arg1="${build.natives}" arg2="false" />
+    <condition property="skip.native.build" value="true">
+        <equals arg1="${build.native}" arg2="false" />
     </condition>
-    <condition property="skip.tests.build" value="true">
-        <equals arg1="${build.tests}" arg2="false" />
+    <condition property="skip.test.build" value="true">
+        <equals arg1="${build.test}" arg2="false" />
     </condition>
 
     <!-- flags -->
