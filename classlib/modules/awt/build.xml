@@ -147,9 +147,10 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, -run-tests" />
+    <target name="-test-module" depends="build,-run-tests" />
 
-    <target name="-clean-java" depends="-class-patternset">
+    <target name="-clean-java" unless="skip.java.build"
+            depends="-class-patternset">
         <delete file="${hy.jdk}/jre/lib/boot/awt.jar" />
         <delete file="${hy.jdk}/jre/lib/boot/awt-src.jar" />    
         <delete dir="${hy.jdk}/jre/lib/cmm" quiet="true" />
@@ -160,12 +161,12 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="-clean-test">
+    <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin"/>
     </target>
 
-    <target name="-compile-java">
+    <target name="-compile-java" unless="skip.java.build">
         <echo message="Compiling ${hy.module} classes" />
 
         <mkdir dir="../../build/classes" />
@@ -220,7 +221,8 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
             outputFile="${findBugs.report}/awt.xml"/>
     </target>
 
-    <target name="-build-jar" depends="svn-info,-compile-java,-class-patternset">
+    <target name="-build-jar" unless="skip.java.build"
+            depends="svn-info,-compile-java,-class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/awt.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
@@ -233,10 +235,10 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         </hy.jar.src>
     </target>
 
-    <target name="-build-native"
+    <target name="-build-native" unless="skip.native.build"
             depends="-build-native-common,
                      -build-native-unix,-build-native-windows" />
-    <target name="-build-native-common">
+    <target name="-build-native-common" unless="skip.native.build">
         <make dir="src/main/native/lcmm/${hy.os.family}">
             <make-elements>
                 <env key="HY_LCMS_VER" value="${lcms.ver}" />
@@ -259,17 +261,18 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <make dir="src/main/native/fontlib/${hy.os.family}" />
     </target>
 
-    <target name="-build-native-unix" if="is.unix">
+    <target name="-build-native-unix" if="is.unix" unless="skip.native.build">
         <make dir="src/main/native/x11wrapper/${hy.os.family}" />
         <make dir="src/main/native/linuxfont/${hy.os.family}" />
     </target>
 
-    <target name="-build-native-windows" if="is.windows">
+    <target name="-build-native-windows" unless="skip.native.build"
+            if="is.windows">
         <make dir="src/main/native/win32wrapper/${hy.os.family}" />
         <make dir="src/main/native/winfont/${hy.os.family}" />
     </target>
 
-    <target name="-clean-native"
+    <target name="-clean-native" unless="skip.native.build"
             depends="-clean-native-unix,-clean-native-windows">
         <make dir="src/main/native/lcmm/${hy.os.family}"
               target="clean"/>
@@ -283,21 +286,23 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
               target="clean"/>
     </target>
 
-    <target name="-clean-native-unix" if="is.unix">
+    <target name="-clean-native-unix" if="is.unix" unless="skip.native.build">
         <make dir="src/main/native/x11wrapper/${hy.os.family}"
               target="clean"/>
         <make dir="src/main/native/linuxfont/${hy.os.family}"
               target="clean"/>
     </target>
 
-    <target name="-clean-native-windows" if="is.windows">
+    <target name="-clean-native-windows" unless="skip.native.build"
+            if="is.windows">
         <make dir="src/main/native/win32wrapper/${hy.os.family}"
               target="clean"/>
         <make dir="src/main/native/winfont/${hy.os.family}"
               target="clean"/>
     </target>
 
-    <target name="-test-jar" depends="svn-info,-compile-tests">
+    <target name="-test-jar" unless="skip.test.build"
+            depends="svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
@@ -331,7 +336,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         </copy>
     </target>
 
-    <target name="-compile-tests">
+    <target name="-compile-tests" unless="skip.test.build">
         <compile-tests description="awt boot tests"
                        destdir="bin/test/boot">
             <javac-elements>
@@ -355,7 +360,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="-class-patternset">
+    <target name="-class-patternset" unless="skip.java.build">
         <make-patternset module="${hy.module}" />
     </target>
 

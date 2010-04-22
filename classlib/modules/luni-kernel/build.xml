@@ -37,7 +37,8 @@ the top-level build.
         </fail>
     </target>
 
-    <target name="build" depends="svn-info,-class-patternset">
+    <target name="build" unless="skip.java.build"
+            depends="svn-info,-class-patternset">
         <hy.jar.bin destfile="${stub.jar}" manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
         </hy.jar.bin>
@@ -45,7 +46,8 @@ the top-level build.
 
     <target name="clean" depends="-clean-java" />
 
-    <target name="-clean-java" depends="-class-patternset">
+    <target name="-clean-java" unless="skip.java.build"
+            depends="-class-patternset">
         <delete file="${stub.jar}" />
         <delete failonerror="false">
             <fileset refid="classes" />
@@ -53,7 +55,7 @@ the top-level build.
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="-class-patternset">
+    <target name="-class-patternset" unless="skip.java.build">
         <make-patternset module="${hy.module}" />
     </target>
 

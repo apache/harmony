@@ -321,7 +321,7 @@ ${built.files.list}
 
     </target>
 
-    <target name="-layout-natives"
+    <target name="-layout-natives" unless="skip.native.build"
             depends="check-depends,-layout.windows,-layout.vme.v3.hack"
         description="Construct the correct directory structure for native binaries">
 
@@ -339,13 +339,15 @@ ${built.files.list}
 
     </target>
 
-    <target name="-layout.windows" if="is.windows">
+    <target name="-layout.windows" unless="skip.native.build"
+            if="is.windows">
         <!-- workaround until msdll is moved. -->
         <copy file="${msvcr.dll}" todir="${hy.jdk}/jre/bin" overwrite="yes" />
         <copy file="${msvcp.dll}" todir="${hy.jdk}/jre/bin" overwrite="yes" />
     </target>
 
-    <target name="-layout.vme.v3.hack" if="needs.vme.v3.hack">
+    <target name="-layout.vme.v3.hack" unless="skip.native.build"
+            if="needs.vme.v3.hack">
         <echo>Deploying empty ICU dynamic library stub</echo>
         <copy todir="${hy.jdk}/jre/bin" verbose="true">
             <fileset dir="${depends.files}">
@@ -389,7 +391,7 @@ ${built.files.list}
     </target>
 
     <target name="-build-test" unless="skip.test.build"
-            depends="-test-init-hdk,support-jar"
+            depends="-test-init-hdk,-support-jar"
             description="Compile and archive all tests" />
 
     <target name="-clean-test" unless="skip.test.build"
@@ -531,7 +533,8 @@ Generating snapshot zip
             />
 
     <!-- test support -->
-    <target name="support-jar" depends="compile-support">
+    <target name="-support-jar" unless="skip.test.build"
+            depends="-compile-support">
         <mkdir dir="${hy.hdk}/build/test" />
         <hy.jar.bin destfile="${hy.hdk}/build/test/support.jar"
                     manifest="support/META-INF/MANIFEST.MF">
@@ -544,7 +547,8 @@ Generating snapshot zip
         </copy>
     </target>
 
-    <target name="compile-support" depends="copy-test-resources,-check-depends"
+    <target name="-compile-support" unless="skip.test.build"
+            depends="-copy-test-resources,-check-depends"
             description="Compile the unit test source">
         <ensure-javac/>
         <mkdir dir="${tests.support.output}" />
@@ -566,7 +570,7 @@ Generating snapshot zip
         </hy.javac>
     </target>
     
-    <target name="copy-test-resources"
+    <target name="-copy-test-resources" unless="skip.test.build"
             description="Copy non-Java files from test support tree to the support output tree">
         <mkdir dir="${tests.support.output}" />
         <copy todir="${tests.support.output}" includeemptydirs="false">
@@ -579,7 +583,8 @@ Generating snapshot zip
               todir="${hy.hdk}/build/test" outputencoding="UTF-8" />
     </target>
 
-    <target name="-test-init-hdk" depends="-init-hdk">
+    <target name="-test-init-hdk" unless="skip.test.build"
+            depends="-init-hdk">
         <copy file="make/test.properties"
               tofile="${hy.hdk}/build/test/test.properties"/>
         <copy file="make/run-test.xml"

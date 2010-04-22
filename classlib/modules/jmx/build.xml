@@ -76,7 +76,7 @@
 	<touch file="${mx4j.jar}" />
     </target>
 
-    <target name="-copy-jars">
+    <target name="-copy-jars" unless="skip.java.build">
         <copy todir="${hy.jdk}/jre/lib/boot">
             <fileset dir="${depends.jars}">
                 <patternset includes="mx4j_${mx4j.version}/*.jar" />
@@ -89,7 +89,7 @@
 
     <target name="test" />
 
-    <target name="-clean-java">
+    <target name="-clean-java" unless="skip.java.build">
         <delete dir="${hy.jdk}/jre/lib/boot/mx4j_${mx4j.version}" />
     </target>
 
