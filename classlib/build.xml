@@ -467,15 +467,17 @@ Generating snapshot tar
             <tarfileset dir="${basedir}" prefix="Harmony">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
-                <include name="deploy/build/**" />
-                <include name="deploy/include/**" />
-                <include name="deploy/jdk/**" />
-                <exclude name="deploy/jdk/jre/bin/default/**" /> 
-                <exclude name="deploy/jdk/jre/bin/java" /> 
-                <include name="deploy/lib/**" />
             </tarfileset>
-            <tarfileset dir="${basedir}" prefix="Harmony" mode="755">
-                <include name="deploy/jdk/jre/bin/java" />
+            <tarfileset dir="${hy.hdk}" prefix="Harmony">
+                <include name="build/**" />
+                <include name="include/**" />
+                <include name="jdk/**" />
+                <exclude name="jdk/jre/bin/default/**" /> 
+                <exclude name="jdk/jre/bin/java" /> 
+                <include name="lib/**" />
+            </tarfileset>
+            <tarfileset dir="${hy.hdk}" prefix="Harmony" mode="755">
+                <include name="jdk/jre/bin/java" />
             </tarfileset>
             <tarfileset dir="${basedir}/make/resources"
                 includes="README-snapshot.txt"
@@ -498,12 +500,14 @@ Generating snapshot zip
             <zipfileset dir="${basedir}" prefix="Harmony">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
-                <include name="deploy/build/**" />
-                <include name="deploy/include/**" />
-                <include name="deploy/jdk/**" />
-                <exclude name="deploy/jdk/jre/bin/default/**" /> 
-                <exclude name="deploy/jdk/jre/bin/java" /> 
-                <include name="deploy/lib/**" />
+            </zipfileset>
+            <zipfileset dir="${hy.hdk}" prefix="Harmony">
+                <include name="build/**" />
+                <include name="include/**" />
+                <include name="jdk/**" />
+                <exclude name="jdk/jre/bin/default/**" /> 
+                <exclude name="jdk/jre/bin/java" /> 
+                <include name="lib/**" />
             </zipfileset>
             <zipfileset dir="${basedir}/make/resources"
                 includes="README-snapshot.txt"

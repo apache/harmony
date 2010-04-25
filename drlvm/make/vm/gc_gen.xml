@@ -51,7 +51,6 @@
         </condition>
         
         <path id="gc.includes">
-            <pathelement location="${drlvm.include.dir}" />
             <dirset dir="${vm.home}">
                 <include name="include" />
                 <include name="port/include" />
@@ -74,6 +73,7 @@
                 <include name="verify" />
                 <include name="finalizer_weakref" />
             </dirset>
+            <pathelement location="${drlvm.include.dir}" />
         </path>
         
         <compiler id="cpp.compiler" extends="common.cpp.compiler">
