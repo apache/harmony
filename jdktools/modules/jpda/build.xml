@@ -27,27 +27,6 @@
     <import file="${hy.hdk}/build/ant/depends.xml" />
     <property file="../../make/depends.properties" />
     <property file="${common.resources}/make/depends.properties" />
-    
-    <!-- filename for tests exclude list -->
-    <property name="jpda.exclude.file"
-              location="${hy.hdk}/build/jpda.exclude" />
-
-    <fileset id="classes" dir="bin/main">
-        <or>
-            <present targetdir="src/main/java" />
-            <present targetdir="src/main/java">
-                <mapper type="regexp"
-                        from="^(.*?)(\$$[^/\\\.]*)?\.class$$"
-                        to="\1.java"/>
-            </present>
-        </or>
-    </fileset>
-
-    <target name="fetch-depends">
-        <fetch dep="jdt.jdi.jar"/>
-        <fetch dep="jdt.jdimodel.jar"/>
-        <fetch dep="icu"/>
-    </target>
 
     <target name="check-depends">
         <check-one-file src="${jdt.jdi.jar.url}"
@@ -57,11 +36,18 @@
         <check-one-file src="${icu.url}" dest="${icu.jar}" />
     </target>
 
-    <target name="build" depends="check-depends, build-java, build-native" />
+    <target name="fetch-depends">
+        <fetch dep="jdt.jdi.jar"/>
+        <fetch dep="jdt.jdimodel.jar"/>
+        <fetch dep="icu"/>
+    </target>
 
-    <target name="clean" depends="clean-java, clean-native" />
+    <target name="build"
+            depends="check-depends,
+                     -build-jar,-copy-jars,-build-native,
+                     -test-jar" />
 
-    <target name="test" depends="test-module">
+    <target name="test" depends="-test-module">
         <fail message="Some tests failed">
             <condition>
                 <or>
@@ -72,11 +58,60 @@
         </fail>
     </target>
 
-    <!-- Build Java code -->
-    <target name="build-java" depends="compile-java, build-jar, copy-jars" />
+    <!-- internal target for local and global test run sequence -->
+    <target name="-test-module" depends="build,-run-tests" />
 
-    <target name="compile-java">
-        <echo message="Compiling JPDA classes" />
+    <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
+
+    <target name="-clean-java" unless="skip.java.build">
+        <echo message="Cleaning ${hy.module} classes" />
+
+        <delete file="${hy.jdk}/lib/jdtstub.jar" />
+        <delete file="${hy.jdk}/lib/jdtstub-src.jar" />
+
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="bin/main" />
+            <fileset dir="bin/test" />
+        </delete>
+    </target>
+
+    <target name="-clean-native" unless="skip.native.build"
+            depends="-clean-native-common,-clean-native-windows" />
+
+    <target name="-clean-native-common" unless="skip.native.build">
+        <echo message="Cleaning ${hy.module} natives" />
+        <make dir="src/main/native/jdwp/${hy.os.family}/agent"
+              target="clean">
+            <make-elements>
+                <arg line="TOOLSDLLPATH=${hy.jdk}/jre/bin/" />
+            </make-elements>
+        </make>
+
+        <make dir="src/main/native/jdwp/${hy.os.family}/transport/dt_socket"
+              target="clean">
+            <make-elements>
+                <arg line="TOOLSDLLPATH=${hy.jdk}/jre/bin/" />
+            </make-elements>
+        </make>
+    </target>
+
+    <target name="-clean-native-windows" if="is.windows"
+            unless="skip.native.build">
+        <make dir="src/main/native/jdwp/${hy.os.family}/transport/dt_shmem"
+              target="clean">
+            <make-elements>
+                <arg line="TOOLSDLLPATH=${hy.jdk}/jre/bin/" />
+            </make-elements>
+        </make>
+    </target>
+
+    <target name="-clean-test" unless="skip.test.build">
+        <delete dir="${tests.hdk.dir}" failonerror="false" />
+        <delete failonerror="false" dir="bin/test"/>
+    </target>
+
+    <target name="-compile-java" unless="skip.java.build">
+        <echo message="Compiling ${hy.module} classes" />
         <ensure-javac/>
         <mkdir dir="bin/main" />
 
@@ -100,12 +135,13 @@
     </target>
 
     <!-- create jdtstub.jar to resolve JDI implementation dependency -->
-    <target name="build-jar" depends="svn-info">
+    <target name="-build-jar" unless="skip.java.build"
+            depends="svn-info,-compile-java">
         <mkdir dir="${hy.jdk}/lib" />
 
         <hy.jar.bin destfile="${hy.jdk}/lib/jdtstub.jar"
                     manifest="META-INF/MANIFEST.MF">
-            <fileset refid="classes" />
+            <fileset dir="bin/main" />
         </hy.jar.bin>
 
         <hy.jar.src destfile="${hy.jdk}/lib/jdtstub-src.jar">
@@ -113,8 +149,9 @@
         </hy.jar.src>
     </target>
 
-    <!-- copy all required jars with JDI implementation and dependent classes -->
-    <target name="copy-jars">
+    <!-- copy all required jars with JDI implementation and dependent
+         classes -->
+    <target name="-copy-jars" unless="skip.java.build">
         <mkdir dir="${hy.jdk}/lib" />
         <copy todir="${hy.jdk}/lib" flatten="true">
             <fileset file="${icu.jar}"/>
@@ -123,12 +160,12 @@
     </target>
 
     <!-- Build native code -->
-    <target name="build-native"
+    <target name="-build-native" unless="skip.native.build"
             depends="-build-native-common,-build-native-windows" />
 
-    <target name="-build-native-common">
+    <target name="-build-native-common" unless="skip.native.build">
         
-        <echo message="Compiling JPDA natives" />
+        <echo message="Compiling ${hy.module} natives" />
 
         <!-- Build agent shared lib -->
         <make dir="src/main/native/jdwp/${hy.os.family}/agent">
@@ -145,7 +182,8 @@
         </make>
     </target>
 
-    <target name="-build-native-windows" if="is.windows">
+    <target name="-build-native-windows" if="is.windows"
+            unless="skip.native.build">
         <!-- Build shared memory transport shared lib on Windows -->
         <make dir="src/main/native/jdwp/${hy.os.family}/transport/dt_shmem">
             <make-elements>
@@ -155,165 +193,43 @@
 
     </target>
 
-    <!-- internal target for local and global test run sequence -->
-    <target name="test-module" depends="build-tests, prepare-exclude, run-tests" />
+    <target name="-test-jar" unless="skip.test.build"
+            depends="svn-info,-compile-tests">
+        <mkdir dir="${tests.hdk.dir}" />
 
-    <!-- Clean Java -->
-    <target name="clean-java">
-        <echo message="Cleaning JPDA classes" />
+        <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
-        <delete file="${hy.jdk}/lib/jdtstub.jar" />
-        <delete file="${hy.jdk}/lib/jdtstub-src.jar" />
-
-        <delete includeemptydirs="true" failonerror="false">
-            <!--fileset refid="classes" /-->
-            <fileset dir="bin/main" />
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
-        </delete>
+        </hy.jar.bin>
+ 
+        <mkdir dir="${tests.excludes.hdk.dir}"/>
+        <copy todir="${tests.excludes.hdk.dir}">
+            <fileset dir="make" includes="exclude*"/>
+            <filterchain>
+                <tokenfilter>
+                    <replaceregex pattern="\.java" replace="\.class" flags="g"/>
+                </tokenfilter>
+            </filterchain>
+        </copy>
     </target>
 
-    <!-- Clean natives -->
-    <target name="clean-native"
-            depends="-clean-native-common,-clean-native-windows" />
-
-    <target name="-clean-native-common">
-        <echo message="Cleaning JPDA natives" />
-        <make dir="src/main/native/jdwp/${hy.os.family}/agent"
-              target="clean">
-            <make-elements>
-                <arg line="TOOLSDLLPATH=${hy.jdk}/jre/bin/" />
-            </make-elements>
-        </make>
-
-        <make dir="src/main/native/jdwp/${hy.os.family}/transport/dt_socket"
-              target="clean">
-            <make-elements>
-                <arg line="TOOLSDLLPATH=${hy.jdk}/jre/bin/" />
-            </make-elements>
-        </make>
+    <target name="-compile-tests" unless="skip.test.build">
+        <compile-tests description="${hy.module} tests">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/test/java" />
+                </src>
+                <classpath>
+                    <pathelement path="${hy.jdk}/lib/tools.jar"/>
+                </classpath>
+                <!-- TOFIX: hy.javac debug="on" ? -->
+            </javac-elements>
+        </compile-tests>
     </target>
 
-    <target name="-clean-native-windows" if="is.windows">
-        <make dir="src/main/native/jdwp/${hy.os.family}/transport/dt_shmem"
-              target="clean">
-            <make-elements>
-                <arg line="TOOLSDLLPATH=${hy.jdk}/jre/bin/" />
-            </make-elements>
-        </make>
-    </target>
-
-    <!-- Compile JDWP tests always with debug info included -->
-    <target name="build-tests" >
-        <echo message="Compiling JPDA tests" />
-        <ensure-javac/>
-        <mkdir dir="bin/test" />
-        <hy.javac
-            srcdir="src/test/java"
-            destdir="bin/test"
-            sourcepath=""
-            debug="on">
-
-            <!-- HDK class library -->
-            <classpath>
-                <fileset dir="${hy.hdk}/jdk/jre/lib/boot">
-                    <include name="**/*.jar" />
-                    <exclude name="**/*-src.jar" />
-                </fileset>
-            </classpath>
-            
-            <classpath>
-                <pathelement path="${junit.jar}"/>
-            </classpath>
-        </hy.javac>
-    </target>
-
-    <target name="prepare-exclude">
-        <echo message="JPDA exclude list: ${jpda.exclude.file}" />
-        <prepare-exclude-list moduleName="jpda" dir="./make"
-                             result="${jpda.exclude.file}" />
-    </target>
-
-    <target name="run-tests" depends="build-tests, prepare-exclude">
-
-        <property name="test.jre.home" value="${hy.jdk}/jre" />
-        <property name="test.jre.jvm" value="${test.jre.home}/bin/java" />
-        <property name="test.debugger.jvm" value="${test.jre.jvm}" />
-        <property name="test.debuggee.jvm" value="${test.jre.jvm}" />
-	
-        <echo message="Running JPDA tests" />
-        <echo message="  Debugger JVM=${test.debugger.jvm}" />
-        <echo message="  Debuggee JVM=${test.debuggee.jvm}" />
-
-        <mkdir dir="${tests.output}" />
-
-        <junit fork="yes"
-                       forkmode="${hy.test.forkmode}"
-                       timeout="${hy.test.timeout}"
-                       printsummary="withOutAndErr"
-                       errorproperty="test.errors"
-                       failureproperty="test.failures"
-                       showoutput="off"
-                       dir="${tests.output}"
-                       jvm="${test.debugger.jvm}">
-
-            <!-- JVM arguments for debugger process -->
-            <jvmarg line="${hy.test.vmargs}" />
-            
-            <!-- JVM path and arguments for debuggee process -->
-            <jvmarg value="-Djpda.settings.debuggeeJavaPath=${test.debuggee.jvm}" />
-            <jvmarg value="-Djpda.settings.debuggeeVMExtraOptions=${hy.test.vmargs}" />
-
-            <classpath>
-                <pathelement path="bin/test" />
-            </classpath>
-
-            <formatter type="xml" />
-
-            <test name="${test.case}" todir="${tests.output}" if="test.case" />
-
-            <!-- short running tests-->
-            <batchtest todir="${tests.output}" haltonfailure="off" unless="test.case">
-
-                <fileset dir="src/test/java">
-                    <!-- if ${test.case}     -->
-                    <include name="${converted.tc}" if="test.case" />
-
-                    <!-- unless ${test.case} -->
-                    <include name="**/*Test.java" unless="test.case" />
-                    <exclude name="**/org/apache/harmony/jpda/tests/jdwp/MultiSession/*Test.java" unless="test.case" />
-                    <exclude name="**/org/apache/harmony/jpda/tests/jdwp/ThreadReference/StopTest.java" unless="test.case" />
-                    <exclude name="**/org/apache/harmony/jpda/tests/jdwp/VirtualMachine/HoldEventsTest.java" unless="test.case" />
-                    <excludesfile name="${jpda.exclude.file}" unless="test.case" />
-                </fileset>
-            </batchtest>
-
-            <!-- long running tests-->
-            <batchtest todir="${tests.output}" haltonfailure="off" unless="test.case">
-                <fileset dir="src/test/java">
-                    <!-- if ${test.case}     -->
-                    <include name="${converted.tc}" if="test.case" />
-
-                    <!-- unless ${test.case} -->
-                    <include name="**/org/apache/harmony/jpda/tests/jdwp/MultiSession/*Test.java" unless="test.case" />
-                    <include name="**/org/apache/harmony/jpda/tests/jdwp/ThreadReference/StopTest.java" unless="test.case" />
-                    <include name="**/org/apache/harmony/jpda/tests/jdwp/VirtualMachine/HoldEventsTest.java" unless="test.case" />
-                    <excludesfile name="${jpda.exclude.file}" unless="test.case" />
-                </fileset>
-            </batchtest>
-        </junit>
-
-        <antcall target="touch-failures-file" />
-        <antcall target="touch-errors-file" />
-    </target>
-
-    <target name="touch-failures-file" if="test.failures">
-        <echo file="${tests.output}/test.failures"
-            append="true">jpda${line.separator}</echo>
-    </target>
-
-    <target name="touch-errors-file" if="test.errors">
-        <echo file="${tests.output}/test.errors"
-            append="true">jpda${line.separator}</echo>
+    <target name="-run-tests" depends="-test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
 </project>
