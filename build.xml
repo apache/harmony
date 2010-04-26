@@ -853,8 +853,8 @@ harmony.java.version=${harmony.java.version}
     </target>
 
     <target name="process-test-output">
-        <ant antfile="classlib/make/build-test.xml"
-             target="process-test-output" inheritAll="false" >
+        <ant antfile="target/hdk/build/test/build.xml"
+             target="check-test-result" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
