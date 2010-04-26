@@ -374,12 +374,7 @@ public abstract class FileChannelImpl extends FileChannel {
     public long size() throws IOException {
         openCheck();
         synchronized (repositioningLock) {
-            long currentPosition = fileSystem.seek(handle, 0L,
-                    IFileSystem.SEEK_CUR);
-            long endOfFilePosition = fileSystem.seek(handle, 0L,
-                    IFileSystem.SEEK_END);
-            fileSystem.seek(handle, currentPosition, IFileSystem.SEEK_SET);
-            return endOfFilePosition;
+            return fileSystem.size(handle);
         }
     }
 
