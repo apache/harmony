@@ -298,10 +298,7 @@ public abstract class FileChannelImpl extends FileChannel {
             throw new IndexOutOfBoundsException();
         }
         openCheck();
-        for (int i = offset; i < offset + length; i++) {
-            count += buffers[i].remaining();
-        }
-        if (0 == count) {
+        if (calculateTotalRemaining(buffers, offset, length) == 0) {
             return 0;
         }
         if (size() == 0) {
@@ -570,11 +567,7 @@ public abstract class FileChannelImpl extends FileChannel {
             throw new IndexOutOfBoundsException();
         }
         openCheck();
-        long count = 0;
-        for (int i = offset; i < offset + length; i++) {
-            count += sources[i].remaining();
-        }
-        if (0 == count) {
+        if (calculateTotalRemaining(sources, offset, length) == 0) {
             return 0;
         }
         Object[] src = new Object[length];
@@ -633,5 +626,14 @@ public abstract class FileChannelImpl extends FileChannel {
 
     public long getHandle() {
         return handle;
+    }
+
+    private int calculateTotalRemaining(ByteBuffer[] buffers, int offset,
+            int length) {
+        int count = 0;
+        for (int i = offset; i < offset + length; i++) {
+            count += buffers[i].remaining();
+        }
+        return count;
     }
 }
