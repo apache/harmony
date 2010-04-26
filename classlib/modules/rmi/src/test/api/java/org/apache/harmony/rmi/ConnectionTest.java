@@ -84,6 +84,11 @@ public class ConnectionTest extends RMITestBase {
      *          If some error occurs.
      */
     public void testDirectSocket_SingleVM() throws Exception {
+        if (checkSocket("127.0.0.1", REGISTRY_PORT, TIMEOUT_TICK*3)) {
+            System.err.println("Registry DEFAULT port ("
+                               + REGISTRY_PORT + ") in use, skipping tests.");
+            return;
+        }
         System.err.println("testDirectSocket_SingleVM starting");
         testSingleVM(CONFIG_DIRECT_SOCKET, true);
     }
@@ -96,6 +101,11 @@ public class ConnectionTest extends RMITestBase {
      *          If some error occurs.
      */
     public void testDirectHTTP_SingleVM() throws Exception {
+        if (checkSocket("127.0.0.1", REGISTRY_PORT, TIMEOUT_TICK*3)) {
+            System.err.println("Registry DEFAULT port ("
+                               + REGISTRY_PORT + ") in use, skipping tests.");
+            return;
+        }
         System.err.println("testDirectHTTP_SingleVM starting");
         testSingleVM(CONFIG_DIRECT_HTTP, true);
     }
