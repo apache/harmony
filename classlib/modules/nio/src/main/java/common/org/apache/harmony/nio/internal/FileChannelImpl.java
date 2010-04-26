@@ -301,9 +301,6 @@ public abstract class FileChannelImpl extends FileChannel {
         if (calculateTotalRemaining(buffers, offset, length) == 0) {
             return 0;
         }
-        if (size() == 0) {
-            return -1;
-        }
         ByteBuffer[] directBuffers = new ByteBuffer[length];
         long[] handles = new long[length];
         int[] offsets = new int[length];

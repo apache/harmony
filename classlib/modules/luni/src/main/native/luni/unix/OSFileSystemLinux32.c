@@ -188,7 +188,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
     (*env)->ReleaseIntArrayElements(env, jlengths, lengths, JNI_ABORT);
   }
   hymem_free_memory(vectors);
-  return totalRead;
+  return totalRead == 0 ? -1 : totalRead;
 }
 
 /*
