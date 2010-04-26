@@ -49,12 +49,12 @@
     <target name="-clean-java" unless="skip.java.build">
         <delete file="${hy.jre}/lib/tools.jar" />
         <delete file="${hy.jre}/lib/tools-src.jar" />
-        <delete dir="bin" includeemptydirs="true" failonerror="false" />
+        <delete dir="bin/main" includeemptydirs="true" failonerror="false" />
     </target>
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="bin/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
@@ -83,7 +83,7 @@
         <run-findBugs
             jarFile="${hy.jre}/lib/tools.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/jretools.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
     <target name="-build-jar" unless="skip.java.build"
@@ -109,7 +109,7 @@
 
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
-        <hy.jar.bin destfile="${tests.hdk.dir}/jretools_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
         </hy.jar.bin>
 
@@ -125,7 +125,7 @@
     </target>
 
     <target name="-compile-tests" unless="skip.test.build">
-        <compile-tests description="math tests">
+        <compile-tests description="${hy.module} tests">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/java" />
@@ -133,9 +133,6 @@
                 <classpath>
                     <pathelement path="${hy.jre}/lib/tools.jar"/>
                 </classpath>
-
-                <!-- temporarily exclude one test that breaks compilation -->
-                <exclude name="**/javah/Test02.java"/>
             </javac-elements>
         </compile-tests>
     </target>
