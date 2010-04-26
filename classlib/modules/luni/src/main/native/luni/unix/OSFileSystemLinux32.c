@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
 #if defined(FREEBSD) || defined(AIX) || defined(ZOS) || defined(MACOSX)
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -350,19 +351,9 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_trans
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_sizeImpl
 (JNIEnv *env, jobject thiz, jlong fd)
 {
-    jlong currentPosition =
-      Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
-          thiz, fd, 0,
-          org_apache_harmony_luni_platform_IFileSystem_SEEK_CUR);
-
-    jlong endPosition =
-      Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
-          thiz, fd, 0,
-          org_apache_harmony_luni_platform_IFileSystem_SEEK_END);
-    
-    Java_org_apache_harmony_luni_platform_OSFileSystem_seekImpl(env,
-          thiz, fd, currentPosition,
-          org_apache_harmony_luni_platform_IFileSystem_SEEK_SET);
-    
-    return (jlong) endPosition;
+  struct stat statbuf;
+  if (fstat(fd - FD_BIAS, &statbuf) < 0) {
+    return -1;
+  }
+  return (jlong)statbuf.st_size;
 }
