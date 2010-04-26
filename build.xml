@@ -820,48 +820,20 @@ harmony.java.version=${harmony.java.version}
         <chmod file="${target.dir}/src/debian/rules" perm="ugo+x" />
     </target>
 
-    <target name="test"
-            depends="test-classlib,test-jdktools,process-test-output" />
+    <target name="test" depends="clean-tests">
+        <ant antfile="target/hdk/build/test/build.xml"
+             target="test" inheritAll="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+            <property name="keep.working" value="true" />
+            <property name="tests.output" location="target/test_report" />
+            <property name="test.jre.home" location="target/hdk/jdk/jre" />
+        </ant>
+    </target>
 
     <target name="clean-tests">
         <delete dir="target/test_report" />
-    </target>
-
-    <target name="test-classlib" depends="clean-tests">
-        <ant antfile="classlib/make/build-test.xml"
-             target="test-modules" inheritAll="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-            <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
-        </ant>
-    </target>
-
-    <target name="test-jdktools" depends="clean-tests">
-        <ant antfile="jdktools/build.xml"
-             target="-test-modules" inheritAll="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-            <property name="common.resources" location="common_resources" />
-            <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
-        </ant>
-    </target>
-
-    <target name="process-test-output">
-        <ant antfile="target/hdk/build/test/build.xml"
-             target="check-test-result" inheritAll="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-            <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
-        </ant>
     </target>
 
     <!-- ============================================================== -->
