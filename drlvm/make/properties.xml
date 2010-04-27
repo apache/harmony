@@ -98,6 +98,13 @@
         <isset property="shlib.is.linklib"/>
     </condition>
     <property name="base.test.dir" location="${drlvm.build.dir}/tests"/>
+
+    <condition property="skip.deploy.canonical" value="true">
+        <equals arg1="${deploy.canonical.flag}" arg2="false" />
+    </condition>
+    <condition property="skip.import.hdk" value="true">
+        <equals arg1="${import.hdk}" arg2="false" />
+    </condition>
     
     <target name="drlvm-echo" depends="svn-info">
         <echo message="DRLVM build Configuration:" />

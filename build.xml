@@ -341,36 +341,8 @@ Usage:
     <!-- ============================================================== -->
     <target name="assemble-artifacts"
         depends="init,
-                 assemble-stuff,
                  assemble-hdk-doc,
                  chmod-stuff"/>
-
-    <target name="assemble-stuff">
-        <!-- create the top-level hdk directory -->
-        <mkdir dir="${target.dir}/hdk"/>
-
-        <!-- delete files that the VM wants to override -->
-        <delete>
-            <fileset dir="${target.dir}">
-                <includesfile
-                     name="${vm.dir.loc}/make/classlib.override.file.patterns"
-                     />
-            </fileset>
-        </delete>
-
-        <!-- now copy the drlvm/build/deploy/jre/bin/default -->
-        <!-- plus specific file that the VM overrides -->
-        <copy todir="${target.dir}/hdk">
-            <fileset dir="${vm.dir.loc}/deploy">
-                <exclude name="**/jre/bin/*" />
-
-                <!-- TODO: where should these .pdb files go? -->
-                <exclude name="**/*.pdb" unless="copy.progdb" />
-            </fileset>
-            <fileset dir="${vm.dir.loc}/deploy"
-                includesfile="${vm.dir.loc}/make/classlib.override.file.patterns" />
-        </copy>
-    </target>
 
     <target name="chmod-stuff" if="is.unix">
         <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
@@ -387,7 +359,7 @@ Usage:
     <target name="assemble-hdk-doc">
 
         <copy todir="${target.dir}/hdk" overwrite="true">
-            <fileset dir="./">
+            <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
@@ -401,7 +373,7 @@ Usage:
     <target name="assemble-jre-doc">
 
         <copy todir="${target.dir}/hdk/jdk/jre" overwrite="true">
-            <fileset dir="./">
+            <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
@@ -410,7 +382,7 @@ Usage:
 
     <target name="assemble-jdk-doc">
         <copy todir="${target.dir}/hdk/jdk/" overwrite="true">
-            <fileset dir="./">
+            <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
@@ -492,7 +464,9 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
-            <property name="deploy.canonical.flag" value="true"/>
+            <property name="deploy.canonical.flag" value="false"/>
+            <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
+            <property name="import.hdk" value="false"/>
         </ant>
     </target>
 
@@ -519,7 +493,9 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
-            <property name="deploy.canonical.flag" value="true"/>
+            <property name="deploy.canonical.flag" value="false"/>
+            <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
+            <property name="import.hdk" value="false"/>
         </ant>
     </target>
 
