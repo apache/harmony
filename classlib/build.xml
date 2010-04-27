@@ -439,7 +439,7 @@ Generating HTML using Doxygen...
     <!-- ================================= 
           target: -properties
          ================================= -->
-    <target name="-properties" depends="svn-prop">
+    <target name="-properties" depends="-svn-prop">
         <property name="deploy.file.prefix"
                   value="harmony-classlib-r${svn.revision}" />
         <property name="deploy.tar"
@@ -597,7 +597,7 @@ Generating snapshot zip
 
     <!-- hdk initialisation -->
 
-    <target name="-init-hdk">
+    <target name="-init-hdk" depends="-svn-info">
         <init-hdk />
     </target>
 

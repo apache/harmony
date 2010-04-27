@@ -257,7 +257,7 @@
     </target>
 
     <target name="-build-jar" unless="skip.java.build"
-            depends="svn-info,-compile-java,-class-patternset">
+            depends="-svn-info,-compile-java,-class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/luni.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />

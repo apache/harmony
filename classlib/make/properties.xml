@@ -361,7 +361,7 @@
 
     <property name="findBugs.report" location="../../build/findbugs_report" />
 
-    <target name="echo" depends="svn-prop, svn-info, test-jre-vm-info"
+    <target name="echo" depends="-svn-prop, -svn-info, test-jre-vm-info"
             description="Display the properties defined by this ant file" >
         <echo>
 Harmony release configuration property:
@@ -420,13 +420,13 @@ Harmony platform properties:
   hy.jdk = ${hy.jdk}
   hy.jre = ${hy.jre}
 
-The following property is only set if the "svn-prop" target has been
+The following property is only set if the "-svn-prop" target has been
 called:
 
   svn.revision = ${svn.revision}
 
 
-The following property is only set if the "svn-info" target has been
+The following property is only set if the "-svn-info" target has been
 called:
 
   svn.info = ${svn.info}
@@ -440,7 +440,7 @@ properties in preference to these:
         </echo>
     </target>
 
-    <target name="svn-prop">
+    <target name="-svn-prop" unless="svn.revision">
         <exec executable="svn">
             <arg value="--non-interactive" />
             <arg value="info" />
@@ -457,7 +457,7 @@ properties in preference to these:
         </exec>
     </target>
 
-    <target name="svn-info">
+    <target name="-svn-info" unless="svn.info">
         <exec executable="svn"
               failifexecutionfails="false"
               resultproperty="svn.rc">
@@ -555,6 +555,8 @@ properties in preference to these:
                      out for themselves in order to reduce coupling -->
                 <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
                 <property name="hy.hdk" value="${hy.hdk}"/>
+                <property name="svn.revision" value="${svn.revision}"/>
+                <property name="svn.info" value="${svn.info}"/>
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}">
                     <containsregexp expression="&lt;target[^&gt;]*name=&quot;@{target}&quot;"/>
                 </fileset>
