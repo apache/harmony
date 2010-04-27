@@ -136,7 +136,7 @@
 
     <!-- create jdtstub.jar to resolve JDI implementation dependency -->
     <target name="-build-jar" unless="skip.java.build"
-            depends="svn-info,-compile-java">
+            depends="-svn-info,-compile-java">
         <mkdir dir="${hy.jdk}/lib" />
 
         <hy.jar.bin destfile="${hy.jdk}/lib/jdtstub.jar"
@@ -194,7 +194,7 @@
     </target>
 
     <target name="-test-jar" unless="skip.test.build"
-            depends="svn-info,-compile-tests">
+            depends="-svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
 
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />

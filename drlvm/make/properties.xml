@@ -106,7 +106,7 @@
         <equals arg1="${import.hdk}" arg2="false" />
     </condition>
     
-    <target name="drlvm-echo" depends="svn-info">
+    <target name="drlvm-echo" depends="-svn-info">
         <echo message="DRLVM build Configuration:" />
         <echo message="     Hosting Java = ${java.version} (${java.vendor})" />
         <echo message="               os = ${hy.os}" />

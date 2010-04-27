@@ -576,7 +576,7 @@ Usage:
     <!-- ============================================================== -->
     <!-- sets up a platform                                             -->
     <!-- ============================================================== -->
-    <target name="init" depends="svn-prop">
+    <target name="init" depends="-svn-prop">
         <!-- Determine our operating system -->
         <condition property="is.windows">
             <os family="windows" />
@@ -708,7 +708,7 @@ Usage:
     <!-- ============================================================== -->
     <!-- svn-prop: gets svn revision number of the build.xml file       -->
     <!-- ============================================================== -->
-    <target name="svn-prop">
+    <target name="-svn-prop">
         
         <tempfile suffix=".xml" property="svn.tmp"/>
         <exec executable="svn" output="${svn.tmp}" resultproperty="svn.rc">
