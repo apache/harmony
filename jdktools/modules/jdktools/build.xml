@@ -48,6 +48,8 @@
     <target name="fetch-depends">
         <fetch dep="jdt.jdi.jar"/>
         <fetch dep="jdt.jdimodel.jar"/>
+        <fetch dep="icu.jar"/>
+        <fetch dep="ecj.jar"/>
         <mkdir dir="${bcel.dir}" />
         <download-one-file dest="${bcel.jar}" 
                            src="${bcel.url}" md5="${bcel.md5}"/>
