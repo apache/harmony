@@ -27,7 +27,8 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="check-depends,-build-jar,-test-jar" />
+    <target name="build" depends="check-depends,-build-no-check"/>
+    <target name="-build-no-check" depends="-build-jar,-test-jar" />
 
     <target name="check-depends">
         <check-one-file src="${asm.url}" dest="${asm.jar}" />

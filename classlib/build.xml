@@ -178,7 +178,7 @@ module:
     </target>
 
     <target name="-build-modules">
-        <poll-modules target="build" />
+        <poll-modules target="-build-no-check" />
     </target>
 
     <target name="-clean-modules">

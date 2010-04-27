@@ -35,7 +35,7 @@
         </and>
     </condition>
 
-    <target name="build" />
+    <target name="build" depends="-build-native"/>
 
     <target name="clean" depends="-clean-native,-clean-test" />
 

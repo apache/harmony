@@ -27,7 +27,8 @@
     <import file="${hy.hdk}/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
-    <target name="build" depends="check-depends,-copy-jars" />
+    <target name="build" depends="check-depends,-build-no-check"/>
+    <target name="-build-no-check" depends="-copy-jars" />
 
     <target name="clean" depends="-clean-java" />
 

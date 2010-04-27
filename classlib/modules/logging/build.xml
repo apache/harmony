@@ -26,7 +26,9 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="-build-jar,-test-jar,-copy-properties" />
+    <target name="build" depends="-build-no-check"/>
+    <target name="-build-no-check"
+            depends="-build-jar,-test-jar,-copy-properties" />
 
     <target name="test" depends="-test-module">
         <fail message="Some tests failed">

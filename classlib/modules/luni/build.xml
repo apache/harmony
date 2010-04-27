@@ -29,7 +29,8 @@
 
     <property name="fdlibm.dist" location="src/main/native/fdlibm_dist"/>
 
-    <target name="build" depends="-build-jar,-test-jar" />
+    <target name="build" depends="-build-no-check"/>
+    <target name="-build-no-check" depends="-build-jar,-test-jar" />
 
     <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
 

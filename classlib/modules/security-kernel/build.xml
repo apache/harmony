@@ -37,7 +37,8 @@ the top-level build.
         </fail>
     </target>
 
-    <target name="build" unless="skip.java.build"
+    <target name="build" depends="-build-no-check"/>
+    <target name="-build-no-check" unless="skip.java.build"
             depends="-svn-info,-class-patternset">
         <hy.jar.bin destfile="${stub.jar}" manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
