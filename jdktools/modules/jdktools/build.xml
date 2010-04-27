@@ -33,7 +33,7 @@
                         dest="${jdt.jdi.jar}" />
         <check-one-file src="${jdt.jdimodel.jar.url}"
                         dest="${jdt.jdimodel.jar}" />
-        <check-one-file src="${icu.url}" dest="${icu.jar}" />
+        <check-one-file src="${icu.url}" dest="${icu.zip}" />
         <check-one-file src="${ecj.jar.url}" dest="${ecj.jar}" />
         <check-one-file src="${bcel.jar}" dest="${bcel.jar}" />
         <copy todir="${hy.hdk}/jdk/jre/lib/boot">
@@ -48,7 +48,7 @@
         <fetch dep="jdt.jdi.jar"/>
         <fetch dep="jdt.jdimodel.jar"/>
         <mkdir dir="${icu.dir}" />
-        <download-one-file dest="${icu.jar}" 
+        <download-one-file dest="${icu.zip}" 
                            src="${icu.url}" md5="${icu.md5}"/>
         <fetch dep="ecj.jar"/>
         <mkdir dir="${bcel.dir}" />
