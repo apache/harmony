@@ -168,6 +168,13 @@ Usage:
                  fetch-commonresources,
                  fetch-jdktools-libs"/>
 
+    <target name="check-depends"
+        description="Checks dependencies."
+        depends="check-classlib-libs,
+                 check-vm-libs,
+                 check-commonresources,
+                 check-jdktools-libs"/>
+
     <target name="bundle-hdk-tgz" depends="init" if="is.unix">
 
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
@@ -429,7 +436,17 @@ Usage:
     </target>
 
     <target name="fetch-classlib-libs">
-        <ant antfile="classlib/build.xml" target="fetch-depends" inheritall="false" >
+        <ant antfile="classlib/build.xml" target="fetch-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+        </ant>
+    </target>
+
+    <target name="check-classlib-libs">
+        <ant antfile="classlib/build.xml" target="check-depends"
+             inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -487,6 +504,15 @@ Usage:
         </ant>
     </target>
 
+    <target name="check-vm-libs">
+        <ant antfile="${vm.dir.loc}/build.xml"
+             target="check-depends" inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+        </ant>
+    </target>
+
     <target name="clean-vm">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="clean" inheritall="false" >
@@ -513,7 +539,17 @@ Usage:
     </target>
 
     <target name="fetch-commonresources">
-        <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" >
+        <ant antfile="common_resources/build.xml" target="fetch-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+        </ant>
+    </target>
+
+    <target name="check-commonresources">
+        <ant antfile="common_resources/build.xml" target="check-depends"
+             inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -540,7 +576,16 @@ Usage:
     </target>
 
     <target name="fetch-jdktools-libs">
-        <ant antfile="jdktools/build.xml" target="fetch-depends" inheritall="false" >
+        <ant antfile="jdktools/build.xml" target="fetch-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="common.resources" location="common_resources" />
+        </ant>
+    </target>
+
+    <target name="check-jdktools-libs">
+        <ant antfile="jdktools/build.xml" target="check-depends"
+             inheritall="false" >
             <propertyset refid="required.props" />
             <property name="common.resources" location="common_resources" />
         </ant>
