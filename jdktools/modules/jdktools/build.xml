@@ -28,7 +28,6 @@
     <property file="../../make/depends.properties" />
     <property file="${common.resources}/make/depends.properties" />
 
-  
     <target name="check-depends">
         <check-one-file src="${jdt.jdi.jar.url}"
                         dest="${jdt.jdi.jar}" />
@@ -48,7 +47,9 @@
     <target name="fetch-depends">
         <fetch dep="jdt.jdi.jar"/>
         <fetch dep="jdt.jdimodel.jar"/>
-        <fetch dep="icu.jar"/>
+        <mkdir dir="${icu.dir}" />
+        <download-one-file dest="${icu.jar}" 
+                           src="${icu.url}" md5="${icu.md5}"/>
         <fetch dep="ecj.jar"/>
         <mkdir dir="${bcel.dir}" />
         <download-one-file dest="${bcel.jar}" 
