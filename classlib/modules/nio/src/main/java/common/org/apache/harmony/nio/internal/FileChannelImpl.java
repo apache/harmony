@@ -370,9 +370,7 @@ public abstract class FileChannelImpl extends FileChannel {
      */
     public long size() throws IOException {
         openCheck();
-        synchronized (repositioningLock) {
-            return fileSystem.size(handle);
-        }
+        return fileSystem.size(handle);
     }
 
     public long transferFrom(ReadableByteChannel src, long position, long count)
