@@ -151,8 +151,8 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
 
     <target name="-clean-java" unless="skip.java.build"
             depends="-class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/awt.jar" />
-        <delete file="${hy.jdk}/jre/lib/boot/awt-src.jar" />    
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />    
         <delete dir="${hy.jdk}/jre/lib/cmm" quiet="true" />
         <delete dir="${hy.jdk}/jre/lib/fonts" quiet="true" />
         <delete failonerror="false">
@@ -167,26 +167,14 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
-        <echo message="Compiling ${hy.module} classes" />
-
-        <mkdir dir="../../build/classes" />
-
-        <hy.javac sourcepath=""
-                  destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <src>
-                <pathelement location="src/main/java/common"/>
-                <pathelement location="src/main/java/${hy.os.family}" />
-            </src>
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+        <compile-classes description="${hy.module} classes">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/main/java/common"/>
+                    <pathelement location="src/main/java/${hy.os.family}" />
+                </src>
+            </javac-elements>
+        </compile-classes>
     </target>
 
     <target name="-copy-resources" depends="-copy-win-resources">
@@ -216,20 +204,20 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
 
     <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/awt.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/awt.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
     <target name="-build-jar" unless="skip.java.build"
             depends="-svn-info,-compile-java,-class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/awt.jar"
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
             <fileset refid="common.resources" />
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/awt-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java/common" />
             <fileset dir="src/main/java/${hy.os.family}" />
         </hy.jar.src>
@@ -306,15 +294,15 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <mkdir dir="${tests.hdk.dir}" />
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
-        <hy.jar.bin destfile="${tests.hdk.dir}/awt_boot_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_boot_tests.jar">
             <fileset dir="bin/test/boot">
                 <exclude name="**/*Headless*Test.class" />
             </fileset>
         </hy.jar.bin>
-        <hy.jar.bin destfile="${tests.hdk.dir}/awt_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test/classes" />
         </hy.jar.bin>
-        <hy.jar.bin destfile="${tests.hdk.dir}/awt_headless_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_headless_tests.jar">
             <fileset dir="bin/test/boot">
                 <include name="**/*Headless*Test.class" />
             </fileset>
@@ -337,7 +325,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
 
     <target name="-compile-tests" unless="skip.test.build">
-        <compile-tests description="awt boot tests"
+        <compile-tests description="${hy.module} boot tests"
                        destdir="bin/test/boot">
             <javac-elements>
                 <src>
@@ -345,7 +333,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
                 </src>
             </javac-elements>
         </compile-tests>
-        <compile-tests description="awt tests"
+        <compile-tests description="${hy.module} tests"
                        destdir="bin/test/classes">
             <javac-elements>
                 <src>

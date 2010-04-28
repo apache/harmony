@@ -108,8 +108,8 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
 
     <target name="-clean-java" unless="skip.java.build"
             depends="-class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/imageio.jar" />
-	<delete file="${hy.jdk}/jre/lib/boot/imageio-src.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+	<delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />
         <delete failonerror="false">
             <fileset refid="classes" />
         </delete>
@@ -127,22 +127,11 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
-        <echo message="Compiling ImageIO classes" />
-
-        <mkdir dir="../../build/classes" />
-
-        <hy.javac sourcepath=""
-               srcdir="src/main/java"
-               destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+        <compile-classes description="${hy.module} classes">
+            <javac-elements>
+                <src path="src/main/java" />
+            </javac-elements>
+        </compile-classes>
     </target>
     
     <target name="-build-native" unless="skip.native.build">
@@ -161,20 +150,20 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
 
     <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/imageio.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/imageio.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
     <target name="-build-jar" unless="skip.java.build"
             depends="-svn-info,-compile-java,-class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/imageio.jar"
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
             <fileset refid="resources" />
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/imageio-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java" />
         </hy.jar.src>
     </target>
@@ -185,7 +174,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
-        <hy.jar.bin destfile="${tests.hdk.dir}/imageio_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
         </hy.jar.bin>
 
@@ -205,7 +194,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
 
     <target name="-compile-tests" unless="skip.test.build">
-        <compile-tests description="imageio tests">
+        <compile-tests description="${hy.module} tests">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/java" />

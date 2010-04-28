@@ -47,8 +47,8 @@
     
     <target name="-clean-java" unless="skip.java.build"
             depends="-class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/beans.jar" />
-        <delete file="${hy.jdk}/jre/lib/boot/beans-src.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />
         <delete failonerror="false">
             <fileset refid="classes" />
         </delete>
@@ -61,40 +61,29 @@
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
-        <echo message="Compiling ${hy.module} classes" />
-
-        <mkdir dir="../../build/classes" />
-
-        <hy.javac sourcepath=""
-               srcdir="src/main/java"
-               destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+        <compile-classes description="${hy.module} classes">
+            <javac-elements>
+                <src path="src/main/java" />
+            </javac-elements>
+        </compile-classes>
     </target>
 
     <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/beans.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/beans.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
     <target name="-build-jar" unless="skip.java.build"
             depends="-svn-info,-compile-java,-class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/beans.jar"
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
             <fileset refid="resources" />
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/beans-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java" />
         </hy.jar.src>
     </target>
@@ -105,15 +94,15 @@
         
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
-        <hy.jar.bin destfile="${tests.hdk.dir}/beans_test_support.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_test_support.jar">
             <fileset dir="bin/test_support" />
         </hy.jar.bin>
 
-        <hy.jar.bin destfile="${tests.hdk.dir}/beans_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
         </hy.jar.bin>
 
-        <hy.jar.bin destfile="${tests.hdk.dir}/beans_impl_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_impl_tests.jar">
             <fileset dir="bin/test-internal" />
         </hy.jar.bin>
 
@@ -138,7 +127,7 @@
     </target>
 
     <target name="-compile-tests" unless="skip.test.build">
-        <compile-tests description="beans test support"
+        <compile-tests description="${hy.module} test support"
                        destdir="bin/test_support">
             <javac-elements>
                 <src>
@@ -146,7 +135,7 @@
                 </src>
             </javac-elements>
         </compile-tests>
-        <compile-tests description="beans internal tests"
+        <compile-tests description="${hy.module} internal tests"
                        destdir="bin/test-internal">
             <javac-elements>
                 <src>
@@ -155,7 +144,7 @@
                 <classpath location="bin/test_support" />
             </javac-elements>
         </compile-tests>
-        <compile-tests description="beans api tests">
+        <compile-tests description="${hy.module} api tests">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/java" />

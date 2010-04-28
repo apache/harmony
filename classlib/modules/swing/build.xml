@@ -55,8 +55,8 @@
 
     <target name="-clean-java" unless="skip.java.build"
             depends="-class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/swing.jar" />
-        <delete file="${hy.jdk}/jre/lib/boot/swing-src.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />
         <delete failonerror="false">
             <fileset refid="classes" />
             <fileset refid="hidden.classes"/>
@@ -70,45 +70,33 @@
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
-        <echo message="Compiling ${hy.module} classes" />
-
-        <mkdir dir="../../build/classes" />
-
-        <hy.javac sourcepath=""
-                  destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <src>
-                <pathelement location="src/main/java/common"/>
-                <pathelement location="src/main/java/${hy.os.family}" />
-            </src>
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+        <compile-classes description="${hy.module} classes">
+            <javac-elements>
+                <src>
+                    <pathelement location="src/main/java/common"/>
+                    <pathelement location="src/main/java/${hy.os.family}" />
+                </src>
+            </javac-elements>
+        </compile-classes>
     </target>
 
     <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/swing.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/swing.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
     <target name="-build-jar" unless="skip.java.build"
             depends="-svn-info,-compile-java,-class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/swing.jar"
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
              manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
             <fileset refid="hidden.classes" />
             <fileset refid="common.resources" />
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/swing-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java/common" />
         </hy.jar.src>
     </target>
@@ -119,7 +107,7 @@
         
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
-        <hy.jar.bin destfile="${tests.hdk.dir}/swing_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test/injected" />
         </hy.jar.bin>
 
@@ -139,7 +127,7 @@
     </target>
 
     <target name="-compile-tests" unless="skip.test.build">
-        <compile-tests description="swing tests"
+        <compile-tests description="${hy.module} tests"
                        destdir="bin/test/injected">
             <javac-elements>
                 <src>
