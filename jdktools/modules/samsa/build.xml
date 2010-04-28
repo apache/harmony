@@ -26,24 +26,27 @@
     <import file="${hy.hdk}/build/ant/properties.xml" />
 
     <!-- filename for tests exclude list -->
-    <property name="samsa.exclude.file" location="${hy.hdk}/build/jdktools.samsa.exclude" />
+    <property name="samsa.exclude.file"
+              location="${hy.hdk}/build/jdktools.samsa.exclude" />
 
-    <target name="build" depends="build-native"/>
-    <target name="clean" depends="clean-native"/>
+    <target name="build" depends="build-native" unless="skip.native.build"/>
+    <target name="clean" depends="clean-native" unless="skip.native.build"/>
     <target name="test" depends="test-module" />
     <target name="test-module" depends="prepare-exclude, run-tests" />
 
-    <target name="build-native" depends="-compile-native, -copy-native-exe, -copy-native-exe-windows, -copy-native-data" />
+    <target name="build-native" unless="skip.native.build"
+            depends="-compile-native,-copy-native-exe,
+                     -copy-native-exe-windows,-copy-native-data" />
 
     <!-- compile universal samsa binary -->
-    <target name="-compile-native" >
+    <target name="-compile-native" unless="skip.native.build">
 
         <echo message="Compiling SAMSA natives" />
         <make dir="src/main/native/samsa/${hy.os.family}" />
     </target>
 
     <!-- copy samsa executable for different tools -->
-    <target name="-copy-native-exe" >
+    <target name="-copy-native-exe" unless="skip.native.build">
 
         <property name="hy.samsa.exe"
                   location="${hy.hdk}/lib/samsa${exe.suffix}" />
@@ -109,7 +112,8 @@
     </target>
 
     <!-- copy windows javaw executable -->
-    <target name="-copy-native-exe-windows" if="is.windows" >
+    <target name="-copy-native-exe-windows" unless="skip.native.build"
+            if="is.windows">
         <property name="hy.samsaw.exe"
                   location="${hy.hdk}/lib/samsaw${exe.suffix}" />
 
@@ -120,7 +124,7 @@
     </target>
 
     <!-- copy samsa configuration data for different tools -->
-    <target name="-copy-native-data" >
+    <target name="-copy-native-data" unless="skip.native.build">
 
         <copy todir="${hy.jdk}/bin/data" overwrite="yes">
             <fileset dir="src/main/resources/data/">
@@ -214,12 +218,10 @@
 	        dir="${tests.output}">
 	    <arg line="" />
         </exec>
-
-
     </target>
 
     <!-- Clean natives -->
-    <target name="clean-native">
+    <target name="clean-native" unless="skip.native.build">
         <echo message="Cleaning SAMSA natives" />
         <make dir="src/main/native/samsa/${hy.os.family}"
               target="clean" />

@@ -28,7 +28,7 @@
     <property file="../../make/depends.properties" />
     <property file="${common.resources}/make/depends.properties" />
 
-    <target name="check-depends">
+    <target name="check-depends" unless="skip.java.build">
         <check-one-file src="${jdt.jdi.jar.url}"
                         dest="${jdt.jdi.jar}" />
         <check-one-file src="${jdt.jdimodel.jar.url}"
@@ -44,7 +44,7 @@
         </copy>
     </target>
     
-    <target name="fetch-depends">
+    <target name="fetch-depends" unless="skip.java.build">
         <fetch dep="jdt.jdi.jar"/>
         <fetch dep="jdt.jdimodel.jar"/>
         <fetch dep="icu"/>
@@ -54,7 +54,7 @@
                            src="${bcel.url}" md5="${bcel.md5}"/>
     </target>
 
-    <target name="build"
+    <target name="build" unless="skip.java.build"
             depends="check-depends,-build-jar,-copy-jars,-test-jar" />
 
     <target name="test" depends="-test-module">
@@ -191,6 +191,6 @@
 
     <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
-     </target>
+    </target>
 
 </project>
