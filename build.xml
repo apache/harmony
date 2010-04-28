@@ -409,7 +409,8 @@ Usage:
         <propertyref name="is.federated.build" />
     </propertyset>
     
-    <target name="build-classlib" depends="auto-fetch-classlib-libs">
+    <target name="build-classlib" depends="-build-classlib,assemble-hdk-doc"/>
+    <target name="-build-classlib" depends="auto-fetch-classlib-libs">
         <ant antfile="classlib/build.xml" target="build" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
