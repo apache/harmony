@@ -399,7 +399,7 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
         }
 
         checkOpenConnected();
-        int totalCount = calculateByteBufferArray(targets, offset, length);
+        int totalCount = calculateTotalRemaining(targets, offset, length);
         if (0 == totalCount) {
             return 0;
         }
@@ -491,11 +491,7 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
         }
 
         checkOpenConnected();
-        long count = 0;
-        for (int i = offset; i < offset + length; i++) {
-            count += sources[i].remaining();
-        }
-        if (0 == count) {
+        if (calculateTotalRemaining(sources, offset, length) == 0) {
             return 0;
         }
 
@@ -569,13 +565,13 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
         return writeCount;
     }
 
-    private int calculateByteBufferArray(ByteBuffer[] sources, int offset,
+    private int calculateTotalRemaining(ByteBuffer[] buffers, int offset,
             int length) {
-        int sum = 0;
-        for (int val = offset; val < offset + length; val++) {
-            sum = sum + sources[val].remaining();
+        int count = 0;
+        for (int i = offset; i < offset + length; i++) {
+            count += buffers[i].remaining();
         }
-        return sum;
+        return count;
     }
 
     /*

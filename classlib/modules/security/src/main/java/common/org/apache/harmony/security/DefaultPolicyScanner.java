@@ -271,7 +271,16 @@ public class DefaultPolicyScanner {
             st.nextToken();
         }
         if (st.ttype == '"') {
-            pe.name = st.sval;
+            StringBuilder sb = new StringBuilder();
+            String[] elements = st.sval.split("[,]"); //$NON-NLS-1$
+            int endIndex = elements.length - 1;
+            for (int index = 0; index < endIndex; index++) {
+                sb.append(elements[index].trim() + ',');
+            }
+            if (endIndex > -1) {
+                sb.append(elements[endIndex].trim());
+            }
+            pe.name = sb.toString();
         } else if (st.ttype == '*') {
             pe.name = PrincipalEntry.WILDCARD;
         } else {

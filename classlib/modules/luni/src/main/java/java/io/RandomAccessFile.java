@@ -262,15 +262,7 @@ public class RandomAccessFile implements DataInput, DataOutput, Closeable {
      */
     public long length() throws IOException {
         openCheck();
-        synchronized (repositionLock) {
-            long currentPosition = fileSystem.seek(fd.descriptor, 0L,
-                    IFileSystem.SEEK_CUR);
-            long endOfFilePosition = fileSystem.seek(fd.descriptor, 0L,
-                    IFileSystem.SEEK_END);
-            fileSystem.seek(fd.descriptor, currentPosition,
-                    IFileSystem.SEEK_SET);
-            return endOfFilePosition;
-        }
+        return fileSystem.size(fd.descriptor);
     }
 
     /**

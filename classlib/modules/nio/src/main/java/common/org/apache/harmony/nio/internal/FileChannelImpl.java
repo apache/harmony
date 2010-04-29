@@ -298,14 +298,8 @@ public abstract class FileChannelImpl extends FileChannel {
             throw new IndexOutOfBoundsException();
         }
         openCheck();
-        for (int i = offset; i < offset + length; i++) {
-            count += buffers[i].remaining();
-        }
-        if (0 == count) {
+        if (calculateTotalRemaining(buffers, offset, length) == 0) {
             return 0;
-        }
-        if (size() == 0) {
-            return -1;
         }
         ByteBuffer[] directBuffers = new ByteBuffer[length];
         long[] handles = new long[length];
@@ -376,14 +370,7 @@ public abstract class FileChannelImpl extends FileChannel {
      */
     public long size() throws IOException {
         openCheck();
-        synchronized (repositioningLock) {
-            long currentPosition = fileSystem.seek(handle, 0L,
-                    IFileSystem.SEEK_CUR);
-            long endOfFilePosition = fileSystem.seek(handle, 0L,
-                    IFileSystem.SEEK_END);
-            fileSystem.seek(handle, currentPosition, IFileSystem.SEEK_SET);
-            return endOfFilePosition;
-        }
+        return fileSystem.size(handle);
     }
 
     public long transferFrom(ReadableByteChannel src, long position, long count)
@@ -570,11 +557,7 @@ public abstract class FileChannelImpl extends FileChannel {
             throw new IndexOutOfBoundsException();
         }
         openCheck();
-        long count = 0;
-        for (int i = offset; i < offset + length; i++) {
-            count += sources[i].remaining();
-        }
-        if (0 == count) {
+        if (calculateTotalRemaining(sources, offset, length) == 0) {
             return 0;
         }
         Object[] src = new Object[length];
@@ -633,5 +616,14 @@ public abstract class FileChannelImpl extends FileChannel {
 
     public long getHandle() {
         return handle;
+    }
+
+    private int calculateTotalRemaining(ByteBuffer[] buffers, int offset,
+            int length) {
+        int count = 0;
+        for (int i = offset; i < offset + length; i++) {
+            count += buffers[i].remaining();
+        }
+        return count;
     }
 }

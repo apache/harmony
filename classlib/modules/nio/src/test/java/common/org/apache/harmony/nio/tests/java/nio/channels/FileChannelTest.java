@@ -516,6 +516,21 @@ public class FileChannelTest extends TestCase {
         writeDataToFile(fileOfReadOnlyFileChannel);
         assertEquals(fileOfReadOnlyFileChannel.length(), readOnlyFileChannel
                 .size());
+
+
+        // REGRESSION test for read(ByteBuffer[], int, int) on special files
+        try {
+            FileChannel specialFile =
+                new FileInputStream("/dev/zero").getChannel();
+            assertEquals(0, specialFile.size());
+            ByteBuffer buf = ByteBuffer.allocate(8);
+            assertEquals(8, specialFile.read(buf));
+            ByteBuffer[] bufs = { ByteBuffer.allocate(8) };
+            assertEquals(8, specialFile.read(bufs, 0, 1));
+            specialFile.close();
+        } catch (FileNotFoundException e) {
+            // skip test if special file doesn't exist
+        }
     }
 
     /**

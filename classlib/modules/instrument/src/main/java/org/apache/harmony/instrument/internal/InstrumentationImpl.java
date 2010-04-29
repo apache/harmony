@@ -22,6 +22,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
 import java.lang.reflect.Method;
+import java.io.UnsupportedEncodingException;
 import java.security.ProtectionDomain;
 
 import org.apache.harmony.instrument.internal.nls.Messages;
@@ -185,7 +186,7 @@ public class InstrumentationImpl implements Instrumentation {
         byte[] source = classfileBuffer;
         byte[] result = null;
         byte[] trans = null;
-        String className = new String(classNameBytes);
+        String className = utf8BytesToString(classNameBytes);
         for (ClassFileTransformer t : transformers) {
             try {
                 trans = t.transform(loader, className, classBeingRedefined,
@@ -207,10 +208,10 @@ public class InstrumentationImpl implements Instrumentation {
     private void executePremain(byte[] className, byte[] options) {
         try {
             ClassLoader loader = ClassLoader.getSystemClassLoader();
-            Class c = loader.loadClass(new String(className));
+            Class c = loader.loadClass(utf8BytesToString(className));
             Method method = c.getMethod("premain", PREMAIN_SIGNATURE); //$NON-NLS-1$
             method.invoke(null, new Object[] {
-                    null == options ? null : new String(options), this });
+                    null == options ? null : utf8BytesToString(options), this });
         } catch (Exception e) {
             e.printStackTrace();
             System.err
@@ -218,4 +219,18 @@ public class InstrumentationImpl implements Instrumentation {
             System.exit(1);
         }
     }
+
+    private static String utf8BytesToString(byte[] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+
+        try {
+            return new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // should never happen
+            throw new RuntimeException(e);
+        }
+    }
+
 }

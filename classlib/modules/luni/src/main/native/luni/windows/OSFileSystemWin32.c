@@ -296,3 +296,21 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_trans
     return count;	
 }
 
+/*
+ * Answers the size of the file pointed to by the file descriptor.
+ *
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    sizeImpl
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_sizeImpl
+(JNIEnv *env, jobject thiz, jlong fd)
+{
+  BY_HANDLE_FILE_INFORMATION info;
+  HANDLE hfile = (HANDLE)fd;    	
+  if (GetFileInformationByHandle(hfile, (LPBY_HANDLE_FILE_INFORMATION) &info)) {
+    return (jlong) ((info.nFileSizeHigh<<0x20) + info.nFileSizeLow);
+  } else {
+    return (jlong)-1;
+  }
+}
