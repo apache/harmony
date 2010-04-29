@@ -381,6 +381,12 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <attribute name="Implementation-URL"
                            value="http://harmony.apache.org"/>
                 <attribute name="Implementation-Version" value="${svn.info}"/> 
+                <attribute name="Specification-Vendor"
+                           value="Sun Microsystems, Inc." />
+                <attribute name="Specification-Title"
+                           value="Java Platform API Specification" />
+                <attribute name="Specification-Version"
+                           value="${hy.specification.version}" />
                 <attribute name="X-Compile-Source-JDK"
                            value="${hy.javac.source}"/> 
                 <attribute name="X-Compile-Target-JDK"

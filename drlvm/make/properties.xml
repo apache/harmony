@@ -31,6 +31,7 @@
     <condition property="hy.cfg" value="${env.BUILD_CFG}">
         <isset property="env.BUILD_CFG" />
     </condition>
+    <property name="hy.specification.version" value="1.5" />
 
     <!-- pick up cpp compiler from command line or env -->
     <condition property="hy.cpp.compiler" value="${CXX}">

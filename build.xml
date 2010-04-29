@@ -148,7 +148,6 @@ Usage:
     <!-- ============================================================== -->
     <target name="bundle-hdk" 
         depends="assemble-artifacts,
-                 assemble-hdk-doc,
                  bundle-hdk-tgz,
                  bundle-hdk-zip" />
 
@@ -409,7 +408,8 @@ Usage:
         <propertyref name="is.federated.build" />
     </propertyset>
     
-    <target name="build-classlib" depends="-build-classlib,assemble-hdk-doc"/>
+    <target name="build-classlib"
+            depends="init,-build-classlib,assemble-hdk-doc"/>
     <target name="-build-classlib" depends="auto-fetch-classlib-libs">
         <ant antfile="classlib/build.xml" target="build" inheritAll="false" >
             <propertyset refid="required.props" />
@@ -476,7 +476,7 @@ Usage:
     <!-- ============================================================== -->
     <!-- ensures that dependencies are up to date and then builds a vm  -->
     <!-- ============================================================== -->
-    <target name="build-vm" depends="auto-fetch-vm-libs">
+    <target name="build-vm" depends="init,auto-fetch-vm-libs">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="build" inheritAll="false" >
             <propertyset refid="required.props" />
@@ -529,7 +529,8 @@ Usage:
     <!-- ============================================================== -->
     <!-- fetches the common resources                                   -->
     <!-- ============================================================== -->
-    <target name="build-commonresources" depends="auto-fetch-commonresources"/>
+    <target name="build-commonresources"
+            depends="init,auto-fetch-commonresources"/>
 
     <target name="auto-fetch-commonresources" if="auto.fetch">
         <ant target="fetch-commonresources">
@@ -560,7 +561,8 @@ Usage:
     <!-- ============================================================== -->
     <!-- ensures dependencies are up to date, then builds jdktools      -->
     <!-- ============================================================== -->
-    <target name="build-jdktools" depends="auto-fetch-jdktools-libs">
+    <target name="build-jdktools"
+            depends="init,auto-fetch-jdktools-libs">
         <ant antfile="jdktools/build.xml" target="build" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="common.resources" location="common_resources" />
