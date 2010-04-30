@@ -187,15 +187,17 @@
                     dir="${drlvm.lib.dir}" />
                 <libset libs="hythr" dir="${drlvm.shlib.dir}" />
                 <libset libs="icuuc" dir="${drlvm.shlib.dir}"/>
-                <libset libs="hyzlib" dir="${hy.hdk.shlibs}" if="is.windows"/>
                 <libset libs="ch" dir="${drlvm.shlib.dir}" />
+                <libset libs="hyzlib" dir="${hy.hdk.shlibs}"
+                        unless="hy.skip.zlib"/>
+                <syslibset type="shared" libs="z" if="hy.skip.zlib"/>
 
                 <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm64.def" if="is.windows.x86_64"/>
                 <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm.def" if="is.windows.x86"/>
                 <linkerarg value="--version-script=${vm.home}/vmcore/build/vmcore.exp" if="is.unix"/>
                 
-                <syslibset type="shared" libs="m,dl,stdc++,z,xml2,pthread,gcc_s,rt" if="is.linux"/>
-                <syslibset type="shared" libs="m,stdc++,z,pthread" if="is.freebsd"/> 
+                <syslibset type="shared" libs="m,dl,stdc++,xml2,pthread,gcc_s,rt" if="is.linux"/>
+                <syslibset type="shared" libs="m,stdc++,pthread" if="is.freebsd"/> 
                 <libset libs="xml2" dir="/usr/local/lib" if="is.freebsd"/>
                 <linkerarg value="--export-dynamic" if="is.freebsd"/>
             </linker>
