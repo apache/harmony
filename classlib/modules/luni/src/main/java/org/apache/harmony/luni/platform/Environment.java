@@ -72,7 +72,7 @@ public class Environment {
             return new String(env, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should always be supported so this should not be reached
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
         }        
     }
 
