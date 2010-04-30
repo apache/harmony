@@ -23,18 +23,29 @@
     <property name="hy.hdk" location="${basedir}/../../deploy" />
     <property name="depends.dir" location="${basedir}/../../depends" />
     <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
 
     <property file="../../make/depends.properties" />
+    <property file="make/depends.properties" />
 
-    <property name="zlib.zip" location="${depends.oss}/zlib_1.2.3.zip" />
-
-    <target name="build" depends="-build-no-check"/>
+    <target name="build" depends="check-depends,-build-no-check"/>
     <target name="-build-no-check" depends="-build-jar,-test-jar" />
     
     <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
 
     <target name="check-depends"
-            depends="-overlay-oss,-copy-zipsup-include,-copy-zlib-include" />
+            depends="-check-depends,-overlay-oss,
+                     -copy-zipsup-include,-copy-zlib-include" />
+
+    <target name="-check-depends" unless="hy.skip.zlib">
+        <check-one-file src="${zlib.url}" dest="${zlib.tar}" />
+    </target>
+
+    <target name="fetch-depends" unless="hy.skip.zlib">
+        <mkdir dir="${zlib.dir}" />
+        <download-one-file src="${zlib.url}" dest="${zlib.tar}"
+                           md5="${zlib.md5}" />
+    </target>
 
     <target name="-copy-zlib-include" unless="hy.skip.zlib">
         <!-- TOFIX: should add property for: unless="skip.native.build" -->
@@ -59,15 +70,24 @@
             depends="-extract-props,-unzip-oss,-ascii2ebcdic-conversion"
             unless="hy.skip.zlib" />
 
-    <target name="-extract-props">
-        <uptodate property="zlib.uptodate"
-                  srcfile="${zlib.zip}"
+    <target name="-extract-props" unless="hy.skip.zlib">
+        <uptodate property="zlib.extracted"
+                  srcfile="${zlib.tar}"
                   targetfile="src/main/native/zlib_dist/README" />
+        <condition property="zlib.uptodate" value="true">
+            <or>
+                <isset property="hy.skip.zlib" />
+                <isset property="zlib.extracted" />
+            </or>
+        </condition>
     </target>
 
     <target name="-unzip-oss" unless="zlib.uptodate">
         <mkdir dir="src/main/native/zlib_dist" />
-        <unzip src="${zlib.zip}" dest="src/main/native/zlib_dist" />
+        <untar src="${zlib.tar}" dest="src/main/native/zlib_dist"
+               compression="gzip">
+            <mapper type="flatten"/>
+        </untar>
         <chmod dir="src/main/native/zlib_dist" perm="ugo+r" />
         <touch file="src/main/native/zlib_dist/README" />
     </target>
@@ -85,7 +105,8 @@
                 <exclude name="**/*.o" />
             </fileset>               
         </copy>
-        <fixcrlf srcdir="src/main/native/zlib_dist" includes="**/*"  excludes="**/*.o" eol="unix" />
+        <fixcrlf srcdir="src/main/native/zlib_dist"
+                 includes="**/*" excludes="**/*.o" eol="unix" />
         <delete dir="src/main/native/zlib_dist_ascii" />
     </target>
     
