@@ -28,7 +28,7 @@
     <property file="../../make/depends.properties" />
     <property file="${common.resources}/make/depends.properties" />
 
-    <target name="check-depends">
+    <target name="check-depends" unless="skip.java.build">
         <check-one-file src="${jdt.jdi.jar.url}"
                         dest="${jdt.jdi.jar}" />
         <check-one-file src="${jdt.jdimodel.jar.url}"
@@ -36,7 +36,7 @@
         <check-one-file src="${icu.url}" dest="${icu.jar}" />
     </target>
 
-    <target name="fetch-depends">
+    <target name="fetch-depends" unless="skip.java.build">
         <fetch dep="jdt.jdi.jar"/>
         <fetch dep="jdt.jdimodel.jar"/>
         <fetch dep="icu"/>
