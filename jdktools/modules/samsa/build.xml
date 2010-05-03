@@ -19,20 +19,16 @@
 <project name="Samsa Build" default="build" basedir=".">
     <description>Build for samsa program</description>
 
-
-    <property name="hy.module" value="jdktools" />
+    <property name="hy.module" value="samsa" />
     <property name="hy.hdk" location="../../deploy" />
     <import file="../../make/properties.xml" />
     <import file="${hy.hdk}/build/ant/properties.xml" />
 
-    <!-- filename for tests exclude list -->
-    <property name="samsa.exclude.file"
-              location="${hy.hdk}/build/jdktools.samsa.exclude" />
-
-    <target name="build" depends="build-native" unless="skip.native.build"/>
+    <target name="build" depends="build-native,-test-jar"
+            unless="skip.native.build"/>
     <target name="clean" depends="clean-native" unless="skip.native.build"/>
-    <target name="test" depends="test-module" />
-    <target name="test-module" depends="prepare-exclude, run-tests" />
+    <target name="test" depends="-test-module" />
+    <target name="-test-module" depends="run-tests" />
 
     <target name="build-native" unless="skip.native.build"
             depends="-compile-native,-copy-native-exe,
@@ -40,8 +36,7 @@
 
     <!-- compile universal samsa binary -->
     <target name="-compile-native" unless="skip.native.build">
-
-        <echo message="Compiling SAMSA natives" />
+        <echo message="Compiling ${hy.module} natives" />
         <make dir="src/main/native/samsa/${hy.os.family}" />
     </target>
 
@@ -125,104 +120,25 @@
 
     <!-- copy samsa configuration data for different tools -->
     <target name="-copy-native-data" unless="skip.native.build">
-
         <copy todir="${hy.jdk}/bin/data" overwrite="yes">
             <fileset dir="src/main/resources/data/">
                 <include name="*.dat" />
             </fileset>
         </copy>
-
     </target>
 
-    <target name="prepare-exclude">
-        <echo message="SAMSA exclude list: ${samsa.exclude.file}" />
-        <prepare-exclude-list moduleName="samsa" dir="./make"
-                             result="${samsa.exclude.file}" />
+    <target name="-test-jar" unless="skip.test.build">
+        <mkdir dir="${tests.hdk.dir}" />
+        <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
     </target>
 
-    <target name="run-tests" depends="prepare-exclude" >
-
-        <property name="test.jre.home" value="${hy.jdk}/jre" />
-
-        <echo message="Running SAMSA tests" />
-        <echo message="test.jre.home=${test.jre.home}" />
-
-        <echo message="Run jdk/bin/java -version in ${tests.output}"/>
-        <exec failonerror="true"
-	      executable="${test.jre.home}/../bin/java${exe.suffix}"
-	      dir="${tests.output}"
-              outputproperty="java.out.text">
-	    <arg line="-version" />
-        </exec>
-        <fail message="java -version should contain a copyright statement">
-            <condition>
-                <not>
-                    <contains string="${java.out.text}"
-                              substring="Copyright 1991"/>
-                </not>
-            </condition>
-        </fail>
-        <fail message="java -version should contain svn revision information">
-            <condition>
-                <not>
-                    <contains string="${java.out.text}" substring="svn = r"/>
-                </not>
-            </condition>
-        </fail>
-
-        <echo message="Run jdk/bin/javac -version in ${tests.output}"/>
-        <exec failonerror="true"
-	        executable="${test.jre.home}/../bin/javac${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="-version" />
-        </exec>
-
-        <echo message="Run jdk/bin/javah in ${tests.output}"/>
-        <exec failonerror="false"
-	        executable="${test.jre.home}/../bin/javah${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="" />
-        </exec>
-
-        <echo message="Run jdk/bin/javadoc in ${tests.output}"/>
-        <exec failonerror="false"
-	        executable="${test.jre.home}/../bin/javadoc${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="" />
-        </exec>
-
-        <echo message="Run jdk/bin/jarsigner in ${tests.output}"/>
-        <exec failonerror="false"
-	        executable="${test.jre.home}/../bin/jarsigner${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="" />
-        </exec>
-
-        <echo message="Run jdk/jre/bin/keytool -help in ${tests.output}"/>
-        <exec failonerror="true"
-	        executable="${test.jre.home}/bin/keytool${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="-help" />
-        </exec>
-
-        <echo message="Run jdk/jre/bin/unpack200 in ${tests.output}"/>
-        <exec failonerror="true"
-	        executable="${test.jre.home}/bin/unpack200${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="" />
-        </exec>
-
-        <echo message="Run jdk/jre/bin/pack200 in ${tests.output}"/>
-        <exec failonerror="true"
-	        executable="${test.jre.home}/bin/pack200${exe.suffix}"
-	        dir="${tests.output}">
-	    <arg line="" />
-        </exec>
+    <target name="run-tests" depends="-test-jar">
+        <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
     <!-- Clean natives -->
     <target name="clean-native" unless="skip.native.build">
-        <echo message="Cleaning SAMSA natives" />
+        <echo message="Cleaning ${hy.module} natives" />
         <make dir="src/main/native/samsa/${hy.os.family}"
               target="clean" />
     </target>
