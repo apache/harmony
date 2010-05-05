@@ -29,7 +29,7 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
   $(SHAREDSUB)zlib_copyright.obj $(ZLIB_DIST)adler32.obj $(ZLIB_DIST)compress.obj \
-  $(ZLIB_DIST)crc32.obj $(ZLIB_DIST)deflate.obj $(ZLIB_DIST)gzio.obj $(ZLIB_DIST)infback.obj \
+  $(ZLIB_DIST)crc32.obj $(ZLIB_DIST)deflate.obj $(ZLIB_DIST)infback.obj \
   $(ZLIB_DIST)inffast.obj $(ZLIB_DIST)inflate.obj $(ZLIB_DIST)inftrees.obj $(ZLIB_DIST)trees.obj \
   $(ZLIB_DIST)uncompr.obj $(ZLIB_DIST)zutil.obj
 
