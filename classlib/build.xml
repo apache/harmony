@@ -177,7 +177,7 @@ module:
         </hy.javac>
     </target>
 
-    <target name="-build-modules">
+    <target name="-build-modules" depends="-svn-info">
         <poll-modules target="-build-no-check" />
     </target>
 
@@ -310,7 +310,7 @@ ${built.files.list}
     </target>
 
     <target name="-build-native" unless="skip.native.build"
-            depends="-init-hdk,-layout-natives"
+            depends="-init-hdk,-svn-info,-layout-natives"
             description="Compiles the native code only" >
 
         <!-- these must be run in a specific order due to dependencies -->
@@ -597,7 +597,7 @@ Generating snapshot zip
 
     <!-- hdk initialisation -->
 
-    <target name="-init-hdk" depends="-svn-info">
+    <target name="-init-hdk">
         <init-hdk />
     </target>
 

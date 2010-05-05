@@ -463,12 +463,10 @@ Usage:
         </ant>
     </target>
 
-    <target name="init-classlib-hdk">
+    <target name="-init-classlib-hdk-for-clean">
         <ant antfile="classlib/build.xml"
-                target="-init-hdk" inheritAll="false" >
+             target="-init-hdk-for-clean" inheritAll="false" >
             <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
         </ant>
     </target>
@@ -613,7 +611,7 @@ Usage:
 
 
     <target name="clean"
-        depends="init-classlib-hdk,
+        depends="-init-classlib-hdk-for-clean,
                  clean-jdktools,
                  clean-classlib,
                  clean-vm,
