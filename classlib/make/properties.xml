@@ -290,6 +290,18 @@
         <istrue value="${hy.select}" />
     </condition>
     <property name="exclude.module" value="nothing" />
+    <property name="build.java" value="true" />
+    <property name="build.native" value="true" />
+    <property name="build.test" value="true" />
+    <condition property="skip.java.build" value="true">
+        <equals arg1="${build.java}" arg2="false" />
+    </condition>
+    <condition property="skip.native.build" value="true">
+        <equals arg1="${build.native}" arg2="false" />
+    </condition>
+    <condition property="skip.test.build" value="true">
+        <equals arg1="${build.test}" arg2="false" />
+    </condition>
 
     <!-- flags -->
     <property name="hy.no.thr" value="false" />
@@ -353,7 +365,7 @@
 
     <property name="findBugs.report" location="../../build/findbugs_report" />
 
-    <target name="echo" depends="svn-prop, svn-info, test-jre-vm-info"
+    <target name="echo" depends="-svn-prop, -svn-info, test-jre-vm-info"
             description="Display the properties defined by this ant file" >
         <echo>
 Harmony release configuration property:
@@ -412,13 +424,13 @@ Harmony platform properties:
   hy.jdk = ${hy.jdk}
   hy.jre = ${hy.jre}
 
-The following property is only set if the "svn-prop" target has been
+The following property is only set if the "-svn-prop" target has been
 called:
 
   svn.revision = ${svn.revision}
 
 
-The following property is only set if the "svn-info" target has been
+The following property is only set if the "-svn-info" target has been
 called:
 
   svn.info = ${svn.info}
@@ -432,7 +444,7 @@ properties in preference to these:
         </echo>
     </target>
 
-    <target name="svn-prop">
+    <target name="-svn-prop" unless="svn.revision">
         <exec executable="svn">
             <arg value="--non-interactive" />
             <arg value="info" />
@@ -449,7 +461,7 @@ properties in preference to these:
         </exec>
     </target>
 
-    <target name="svn-info">
+    <target name="-svn-info" unless="svn.info">
         <exec executable="svn"
               failifexecutionfails="false"
               resultproperty="svn.rc">
@@ -546,7 +558,9 @@ properties in preference to these:
                 <!-- TODO: modules probably need to work these properties
                      out for themselves in order to reduce coupling -->
                 <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
-                <property name="depends.oss" value="${depends.oss}"/>
+                <property name="hy.hdk" value="${hy.hdk}"/>
+                <property name="svn.revision" value="${svn.revision}"/>
+                <property name="svn.info" value="${svn.info}"/>
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}">
                     <containsregexp expression="&lt;target[^&gt;]*name=&quot;@{target}&quot;"/>
                 </fileset>
@@ -680,6 +694,12 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <attribute name="Implementation-URL"
                            value="http://harmony.apache.org"/>
                 <attribute name="Implementation-Version" value="${svn.info}"/> 
+                <attribute name="Specification-Vendor"
+                           value="Sun Microsystems, Inc." />
+                <attribute name="Specification-Title"
+                           value="Java Platform API Specification" />
+                <attribute name="Specification-Version"
+                           value="${hy.specification.version}" />
                 <attribute name="X-Compile-Source-JDK"
                            value="${hy.javac.source}"/> 
                 <attribute name="X-Compile-Target-JDK"
@@ -700,11 +720,38 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <attribute name="Implementation-URL"
                            value="http://harmony.apache.org"/>
                 <attribute name="Implementation-Version" value="${svn.info}"/> 
+                <attribute name="Specification-Vendor"
+                           value="Sun Microsystems, Inc." />
+                <attribute name="Specification-Title"
+                           value="Java Platform API Specification" />
+                <attribute name="Specification-Version"
+                           value="${hy.specification.version}" />
             </manifest>
             <metainf refid="hy.required.metainf-files"/>
         </jar>
     </presetdef>
    
+    <macrodef name="compile-classes">
+        <attribute name="description" default="" />
+        <attribute name="destdir" default="../../build/classes" />
+        <element name="javac-elements" />
+        <sequential>
+            <echo message="Compiling @{description}" />
+            
+            <mkdir dir="@{destdir}" />
+
+            <hy.javac sourcepath="" destdir="@{destdir}">
+                <javac-elements />
+                <compilerarg line="${build.compilerarg}" />
+                <bootclasspath>
+                    <fileset dir="${hy.jre}/lib/boot">
+                        <include name="**/*.jar" />
+                    </fileset>
+                </bootclasspath>
+            </hy.javac>
+        </sequential>
+    </macrodef>
+
     <macrodef name="compile-tests">
         <attribute name="description" default="" />
         <attribute name="destdir" default="bin/test" />

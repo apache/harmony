@@ -76,8 +76,6 @@
         </compile-asm>
 
         <path id="vmcore.includes">
-            <pathelement location="${drlvm.include.dir}" />
-
             <dirset dir="${vm.home}">
                 <include name="include" />
                 <include name="vmcore/include" />
@@ -98,6 +96,7 @@
                 <include name="port/src/encoder/ia32_em64t" if="is.x86_64"/>
                 <include name="vmcore/src/lil/em64t/include" if="is.x86_64"/>
             </dirset>
+            <pathelement location="${drlvm.include.dir}" />
             <pathelement location="${hy.hdk}/include" />
         </path>
         <depend-includes paths="vmcore.includes"/>

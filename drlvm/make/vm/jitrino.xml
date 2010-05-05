@@ -50,10 +50,10 @@
                 <include name="vmcore/src/util/win/include" if="is.windows"/>
                 <include name="vmcore/src/util/linux/include" if="is.unix"/>
             </dirset>
-            <pathelement location="${drlvm.include.dir}" />
             <pathelement location="${vm.home}/include" />
             <pathelement location="${vm.home}/vmcore/include" />
             <pathelement location="${vm.home}/port/include" />
+            <pathelement location="${drlvm.include.dir}" />
         </path>
         <depend-includes paths="jit.includes"/>
         <depend-selector rebuild-flag="jit.includes.uptodate" id="jit.depends"/>

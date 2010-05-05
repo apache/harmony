@@ -41,15 +41,14 @@ Thanks.
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
+    <property name="hy.hdk" location="target/hdk" />
+
     <!-- property to identify when components are being built by the 
          federated build -->
     <property name="is.federated.build" value="true" />
 
     <property name="vm.dir" value="drlvm" />
     <property name="vm.dir.loc" location="${vm.dir}" />
-    <condition property="is.svn.vm" value="true">
-        <available file="${vm.dir.loc}/.svn" type="dir" />
-    </condition>
 
     <property name="hy.local.zlib" value="false" />
 
@@ -149,7 +148,6 @@ Usage:
     <!-- ============================================================== -->
     <target name="bundle-hdk" 
         depends="assemble-artifacts,
-                 assemble-hdk-doc,
                  bundle-hdk-tgz,
                  bundle-hdk-zip" />
 
@@ -168,6 +166,13 @@ Usage:
                  fetch-vm-libs,
                  fetch-commonresources,
                  fetch-jdktools-libs"/>
+
+    <target name="check-depends"
+        description="Checks dependencies."
+        depends="check-classlib-libs,
+                 check-vm-libs,
+                 check-commonresources,
+                 check-jdktools-libs"/>
 
     <target name="bundle-hdk-tgz" depends="init" if="is.unix">
 
@@ -342,42 +347,8 @@ Usage:
     <!-- ============================================================== -->
     <target name="assemble-artifacts"
         depends="init,
-                 assemble-stuff,
+                 assemble-hdk-doc,
                  chmod-stuff"/>
-
-    <target name="assemble-stuff">
-        <!-- create the top-level hdk directory -->
-        <mkdir dir="${target.dir}/hdk"/>
-
-        <!-- copy the classlib/deploy tree as the hdk
-             filtering out specific files overriden by the VM -->
-        <copy todir="${target.dir}/hdk">
-            <fileset dir="classlib/deploy">
-                <excludesfile
-                     name="${vm.dir.loc}/make/classlib.override.file.patterns"
-                     />
-                <include name="**/*" />
-            </fileset>
-        </copy>
-
-        <!-- now copy the drlvm/build/deploy/jre/bin/default -->
-        <!-- plus specific file that the VM overrides -->
-        <copy todir="${target.dir}/hdk">
-            <fileset dir="${vm.dir.loc}/deploy">
-                <exclude name="**/jre/bin/*" />
-
-                <!-- TODO: where should these .pdb files go? -->
-                <exclude name="**/*.pdb" unless="copy.progdb" />
-            </fileset>
-            <fileset dir="${vm.dir.loc}/deploy"
-                includesfile="${vm.dir.loc}/make/classlib.override.file.patterns" />
-        </copy>
-
-        <!-- now copy the jdktools/deploy/jdk -->
-        <copy todir="${target.dir}/hdk/jdk/">
-            <fileset dir="jdktools/deploy/jdk" />
-        </copy>
-    </target>
 
     <target name="chmod-stuff" if="is.unix">
         <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
@@ -394,7 +365,7 @@ Usage:
     <target name="assemble-hdk-doc">
 
         <copy todir="${target.dir}/hdk" overwrite="true">
-            <fileset dir="./">
+            <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
@@ -408,7 +379,7 @@ Usage:
     <target name="assemble-jre-doc">
 
         <copy todir="${target.dir}/hdk/jdk/jre" overwrite="true">
-            <fileset dir="./">
+            <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
@@ -417,7 +388,7 @@ Usage:
 
     <target name="assemble-jdk-doc">
         <copy todir="${target.dir}/hdk/jdk/" overwrite="true">
-            <fileset dir="./">
+            <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
@@ -430,28 +401,31 @@ Usage:
 
     <propertyset id="required.props">
         <propertyref name="hy.cfg" />
+        <propertyref name="hy.hdk" />
         <propertyref name="hy.local.zlib" />
         <propertyref name="use.libstdc++5" />
         <propertyref name="harmony.java.version" />
         <propertyref name="is.federated.build" />
     </propertyset>
     
-    <target name="build-classlib" depends="auto-fetch-classlib-libs">
+    <target name="build-classlib"
+            depends="init,-build-classlib,assemble-hdk-doc"/>
+    <target name="-build-classlib" depends="auto-fetch-classlib-libs">
         <ant antfile="classlib/build.xml" target="build" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
         </ant>
-        <!-- hack to make sure the vm doesn't use the classlib
+        <!-- hack to make sure the federated build doesn't use the classlib
              LICENSE/NOTICE files as they don't cover ICU4C
           -->
-        <copy todir="classlib/deploy" overwrite="true">
-            <fileset dir=".">
+        <delete>
+            <fileset dir="${hy.hdk}">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
             </fileset>
-        </copy>                                                             
+        </delete>
     </target>
 
     <target name="auto-fetch-classlib-libs" if="auto.fetch">
@@ -463,7 +437,17 @@ Usage:
     </target>
 
     <target name="fetch-classlib-libs">
-        <ant antfile="classlib/build.xml" target="fetch-depends" inheritall="false" >
+        <ant antfile="classlib/build.xml" target="fetch-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+        </ant>
+    </target>
+
+    <target name="check-classlib-libs">
+        <ant antfile="classlib/build.xml" target="check-depends"
+             inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -479,12 +463,10 @@ Usage:
         </ant>
     </target>
 
-    <target name="init-classlib-hdk">
+    <target name="-init-classlib-hdk-for-clean">
         <ant antfile="classlib/build.xml"
-                target="-init-hdk" inheritAll="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
+             target="-init-hdk-for-clean" inheritAll="false" >
+            <propertyset refid="required.props" />
             <property name="keep.working" value="true" />
         </ant>
     </target>
@@ -492,13 +474,15 @@ Usage:
     <!-- ============================================================== -->
     <!-- ensures that dependencies are up to date and then builds a vm  -->
     <!-- ============================================================== -->
-    <target name="build-vm" depends="auto-fetch-vm-libs">
+    <target name="build-vm" depends="init,auto-fetch-vm-libs">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="build" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
-            <property name="deploy.canonical.flag" value="true"/>
+            <property name="deploy.canonical.flag" value="false"/>
+            <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
+            <property name="import.hdk" value="false"/>
         </ant>
     </target>
 
@@ -519,20 +503,32 @@ Usage:
         </ant>
     </target>
 
+    <target name="check-vm-libs">
+        <ant antfile="${vm.dir.loc}/build.xml"
+             target="check-depends" inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+        </ant>
+    </target>
+
     <target name="clean-vm">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="clean" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
-            <property name="deploy.canonical.flag" value="true"/>
+            <property name="deploy.canonical.flag" value="false"/>
+            <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
+            <property name="import.hdk" value="false"/>
         </ant>
     </target>
 
     <!-- ============================================================== -->
     <!-- fetches the common resources                                   -->
     <!-- ============================================================== -->
-    <target name="build-commonresources" depends="auto-fetch-commonresources"/>
+    <target name="build-commonresources"
+            depends="init,auto-fetch-commonresources"/>
 
     <target name="auto-fetch-commonresources" if="auto.fetch">
         <ant target="fetch-commonresources">
@@ -543,8 +539,18 @@ Usage:
     </target>
 
     <target name="fetch-commonresources">
-        <ant antfile="common_resources/build.xml" target="fetch-depends" inheritall="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
+        <ant antfile="common_resources/build.xml" target="fetch-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+        </ant>
+    </target>
+
+    <target name="check-commonresources">
+        <ant antfile="common_resources/build.xml" target="check-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
         </ant>
@@ -553,9 +559,11 @@ Usage:
     <!-- ============================================================== -->
     <!-- ensures dependencies are up to date, then builds jdktools      -->
     <!-- ============================================================== -->
-    <target name="build-jdktools" depends="auto-fetch-jdktools-libs">
+    <target name="build-jdktools"
+            depends="init,auto-fetch-jdktools-libs">
         <ant antfile="jdktools/build.xml" target="build" inheritall="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
+            <propertyset refid="required.props" />
+            <property name="common.resources" location="common_resources" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
         </ant>
@@ -563,19 +571,31 @@ Usage:
 
     <target name="auto-fetch-jdktools-libs" if="auto.fetch">
         <ant target="fetch-jdktools-libs" inheritall="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
+            <propertyset refid="required.props" />
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
     <target name="fetch-jdktools-libs">
-        <ant antfile="jdktools/build.xml" target="fetch-depends" inheritall="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
+        <ant antfile="jdktools/build.xml" target="fetch-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="common.resources" location="common_resources" />
+        </ant>
+    </target>
+
+    <target name="check-jdktools-libs">
+        <ant antfile="jdktools/build.xml" target="check-depends"
+             inheritall="false" >
+            <propertyset refid="required.props" />
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
     <target name="clean-jdktools">
         <ant antfile="jdktools/build.xml" target="clean" inheritall="false" >
-            <property name="hy.cfg" value="${hy.cfg}"/>
+            <propertyset refid="required.props" />
+            <property name="common.resources" location="common_resources" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
         </ant>
@@ -590,29 +610,8 @@ Usage:
     </target>
 
 
-    <!-- ============================================================== -->
-    <!-- hard reset - removes checked out classlib and vm tree          -->
-    <!-- ============================================================== -->
-    <target name="reset"
-        description="removes vm and classlib dirs and resets - BE SURE YOU WANT TO DO THIS"
-        depends="clean,reset-vm">
-
-        <!-- delete the working directories -->
-        <delete dir="classlib"/>
-
-        <!-- do an svn update to reset them -->
-        <exec executable="svn" dir="." failonerror="true">
-            <arg line="update" />
-        </exec>
-
-    </target>
-
-    <target name="reset-vm" if="is.svn.vm">
-        <delete dir="${vm.dir.loc}" />
-    </target>
-
     <target name="clean"
-        depends="init-classlib-hdk,
+        depends="-init-classlib-hdk-for-clean,
                  clean-jdktools,
                  clean-classlib,
                  clean-vm,
@@ -623,7 +622,7 @@ Usage:
     <!-- ============================================================== -->
     <!-- sets up a platform                                             -->
     <!-- ============================================================== -->
-    <target name="init" depends="svn-prop">
+    <target name="init" depends="-svn-prop">
         <!-- Determine our operating system -->
         <condition property="is.windows">
             <os family="windows" />
@@ -755,7 +754,7 @@ Usage:
     <!-- ============================================================== -->
     <!-- svn-prop: gets svn revision number of the build.xml file       -->
     <!-- ============================================================== -->
-    <target name="svn-prop">
+    <target name="-svn-prop">
         
         <tempfile suffix=".xml" property="svn.tmp"/>
         <exec executable="svn" output="${svn.tmp}" resultproperty="svn.rc">
@@ -843,47 +842,20 @@ harmony.java.version=${harmony.java.version}
         <chmod file="${target.dir}/src/debian/rules" perm="ugo+x" />
     </target>
 
-    <target name="test"
-            depends="test-classlib,test-jdktools,process-test-output" />
+    <target name="test" depends="clean-tests">
+        <ant antfile="target/hdk/build/test/build.xml"
+             target="test" inheritAll="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+            <property name="keep.working" value="true" />
+            <property name="tests.output" location="target/test_report" />
+            <property name="test.jre.home" location="target/hdk/jdk/jre" />
+        </ant>
+    </target>
 
     <target name="clean-tests">
         <delete dir="target/test_report" />
-    </target>
-
-    <target name="test-classlib" depends="clean-tests">
-        <ant antfile="classlib/make/build-test.xml"
-             target="test-modules" inheritAll="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-            <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
-        </ant>
-    </target>
-
-    <target name="test-jdktools" depends="clean-tests">
-        <ant antfile="jdktools/make/build-test.xml"
-             target="test-modules" inheritAll="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-            <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
-        </ant>
-    </target>
-
-    <target name="process-test-output">
-        <ant antfile="classlib/make/build-test.xml"
-             target="process-test-output" inheritAll="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-            <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
-        </ant>
     </target>
 
     <!-- ============================================================== -->

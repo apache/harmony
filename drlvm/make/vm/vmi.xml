@@ -26,13 +26,13 @@
         <make-native libname="vmi" type="shared">
             <compiler id="cpp.compiler" extends="common.cpp.compiler">
                 <includepath>
-                    <pathelement location="${drlvm.include.dir}" />
                     <path refid="vm.include"/>
                     <dirset dir="${vm.home}">
                         <include name="vmcore/include" />
                         <include name="vmcore/src/util/win/include" if="is.windows"/>
                         <include name="vmcore/src/util/linux/include" if="is.unix"/>
                     </dirset>
+                    <pathelement location="${drlvm.include.dir}" />
                     <pathelement location="${hy.hdk}/include" />
                 </includepath>
 

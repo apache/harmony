@@ -28,11 +28,16 @@
     <property file="../../make/depends.properties" />
     <property file="make/depends.properties" />
 
-    <target name="build" depends="check-depends,compile-java, build-jar" />
+    <target name="build" depends="check-depends,-build-no-check"/>
+    <target name="-build-no-check" depends="-build-jar,-test-jar" />
     
-    <target name="clean" depends="clean-java,clean-native,clean-test" />
+    <target name="clean" depends="-clean-java,-clean-native,-clean-test" />
 
-    <target name="check-depends" unless="hy.skip.zlib">
+    <target name="check-depends"
+            depends="-check-depends,-overlay-oss,
+                     -copy-zipsup-include,-copy-zlib-include" />
+
+    <target name="-check-depends" unless="hy.skip.zlib">
         <check-one-file src="${zlib.url}" dest="${zlib.tar}" />
     </target>
 
@@ -42,10 +47,8 @@
                            md5="${zlib.md5}" />
     </target>
 
-    <target name="copy-native-includes"
-            depends="overlay-oss, copy-zipsup-include, copy-zlib-include" />
-
-    <target name="copy-zlib-include" unless="hy.skip.zlib">
+    <target name="-copy-zlib-include" unless="hy.skip.zlib">
+        <!-- TOFIX: should add property for: unless="skip.native.build" -->
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
             <fileset dir="src/main/native/zlib_dist">
                 <include name="zlib.h" />
@@ -54,7 +57,8 @@
         </copy>
     </target>
 	
-    <target name="copy-zipsup-include" if="hy.skip.zip.api">
+    <target name="-copy-zipsup-include" unless="skip.native.build"
+            if="hy.skip.zip.api">
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
             <fileset dir="src/main/native/include/shared">
                 <include name="zipsup.h" />
@@ -62,7 +66,7 @@
         </copy>
     </target>
     
-    <target name="overlay-oss"
+    <target name="-overlay-oss"
             depends="-extract-props,-unzip-oss,-ascii2ebcdic-conversion"
             unless="hy.skip.zlib" />
 
@@ -107,35 +111,39 @@
     </target>
     
     <!-- Build native code -->
-    <target name="build-native"
+    <target name="-build-native" unless="skip.native.build"
             depends="-build-native-zip,-build-native-zlib,-build-native-archive" />
 
-    <target name="-build-native-zip" if="hy.skip.zip.api">
+    <target name="-build-native-zip" unless="skip.native.build"
+            if="hy.skip.zip.api">
         <make dir="src/main/native/zip/${hy.os.family}" />
     </target>
         
     <target name="-build-native-zlib" unless="hy.skip.zlib">
+        <!-- TOFIX: should add property for: unless="skip.native.build" -->
         <make dir="src/main/native/zlib/${hy.os.family}" />
     </target>
         
-    <target name="-build-native-archive">
+    <target name="-build-native-archive" unless="skip.native.build">
         <make dir="src/main/native/archive/${hy.os.family}" />
     </target>
     
-    <target name="clean-native"
-            depends="-clean-native-zip,-clean-native-zlib,clean-native-includes,clean-overlay-oss">
+    <target name="-clean-native" unless="skip.native.build"
+            depends="-clean-native-zip,-clean-native-zlib,-clean-native-includes,-clean-overlay-oss">
         <make dir="src/main/native/archive/${hy.os.family}" target="clean" />
     </target>
 
-    <target name="-clean-native-zip" if="hy.skip.zip.api">
+    <target name="-clean-native-zip" unless="skip.native.build"
+            if="hy.skip.zip.api">
         <make dir="src/main/native/zip/${hy.os.family}" target="clean" />
     </target>
 
     <target name="-clean-native-zlib" unless="hy.skip.zlib">
+        <!-- TOFIX: should add property for: unless="skip.native.build" -->
         <make dir="src/main/native/zlib/${hy.os.family}" target="clean" />
     </target>
 
-    <target name="clean-native-includes">
+    <target name="-clean-native-includes" unless="skip.native.build">
         <delete failonerror="false">
             <fileset dir="${hy.hdk}/include">
                 <include name="zipsup.h" />
@@ -143,7 +151,7 @@
         </delete>
     </target>
 
-    <target name="clean-overlay-oss" unless="hy.skip.zlib" >
+    <target name="-clean-overlay-oss" unless="hy.skip.zlib" >
         <delete dir="src/main/native/zlib_dist" quiet="true" />
     </target>
     
@@ -159,70 +167,62 @@
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, run-tests" />
+    <target name="-test-module" depends="build,-run-tests" />
 
-    <target name="clean-java" depends="class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/archive.jar" />
-        <delete file="${hy.jdk}/jre/lib/boot/archive-src.jar" />
+    <target name="-clean-java" unless="skip.java.build"
+            depends="-class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />
         <delete failonerror="false">
             <fileset refid="classes" />
         </delete>
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="clean-test">
+    <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin"/>
     </target>
 
-    <target name="compile-java">
-        <echo message="Compiling ${hy.module} classes" />
-
-        <mkdir dir="../../build/classes" />
-
-        <hy.javac sourcepath=""
-               srcdir="src/main/java"
-               destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+    <target name="-compile-java" unless="skip.java.build">
+        <compile-classes description="${hy.module} classes">
+            <javac-elements>
+                <src path="src/main/java" />
+            </javac-elements>
+        </compile-classes>
     </target>
 
-    <target name="findbugs" depends="build-jar">
+    <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/archive.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/archive.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/archive.jar"
+    <target name="-build-jar" unless="skip.java.build"
+            depends="-svn-info,-compile-java,-class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
             <fileset refid="resources" />
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/archive-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java" />
         </hy.jar.src>
     </target>
 
-    <target name="test-jar" depends="svn-info,compile-tests">
+    <target name="-test-jar" unless="skip.test.build"
+            depends="-svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
         
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
-        <hy.jar.bin destfile="${tests.hdk.dir}/archive_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
         </hy.jar.bin>
 
-        <hy.jar.bin destfile="${tests.hdk.dir}/archive_internal_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_internal_tests.jar">
             <fileset dir="bin/test-internal" />
         </hy.jar.bin>
 
@@ -237,8 +237,8 @@
         </copy>
     </target>
 
-    <target name="compile-tests">
-        <compile-tests description="archive internal tests"
+    <target name="-compile-tests" unless="skip.test.build">
+        <compile-tests description="${hy.module} internal tests"
                        destdir="bin/test-internal">
             <javac-elements>
                 <src>
@@ -246,7 +246,7 @@
                 </src>
             </javac-elements>
         </compile-tests>
-        <compile-tests description="archive api tests">
+        <compile-tests description="${hy.module} api tests">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/java" />
@@ -255,11 +255,11 @@
         </compile-tests>
     </target>
 
-    <target name="run-tests" depends="test-jar">
+    <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="class-patternset">
+    <target name="-class-patternset" unless="skip.java.build">
         <make-patternset module="${hy.module}" />
     </target>
 

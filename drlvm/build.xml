@@ -180,10 +180,10 @@ Usage:
         <mkdir dir="${drlvm.deploy.dir}/include" />        
         <copy todir="${drlvm.deploy.dir}">
             <fileset dir="${hy.hdk}">
-                <include name="**" if="import.hdk"/>
-                <include name="jdk/jre/**" unless="import.hdk"/>
-                <exclude name="jdk/jre/bin/default/**" unless="import.hdk"/>
-                <exclude name="jdk/jre/bin/*hythr*" unless="import.hdk"/>
+                <include name="**" unless="skip.import.hdk"/>
+                <include name="jdk/jre/**" if="skip.import.hdk"/>
+                <exclude name="jdk/jre/bin/default/**" if="skip.import.hdk"/>
+                <exclude name="jdk/jre/bin/*hythr*" if="skip.import.hdk"/>
             </fileset>
         </copy>
     </target>
@@ -239,7 +239,7 @@ Usage:
       so irrespective of the platform, compiler or release/debug
       there's a predicable place to find the output 
       ================================================================== -->
-    <target name="deploy-canonical" if="deploy.canonical.flag">
+    <target name="deploy-canonical" unless="skip.deploy.canonical">
         <property name="canonical.deploy.dir" location="${drlvm.base.dir}/deploy" />
         <delete dir="${canonical.deploy.dir}" failonerror="false" />
         <mkdir dir="${canonical.deploy.dir}" />

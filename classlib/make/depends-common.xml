@@ -185,4 +185,72 @@ But @{src} doesn't exist.
         <symlink resource="${src}" link="${basedir}/${dest}" />
     </target>
 
+    <macrodef name="fetch">
+        <attribute name="dep" />
+        <sequential>
+            <dirname file="${@{dep}}" property="@{dep}.dir"/>
+            <mkdir dir="${@{dep}.dir}"/>
+            <download-one-file dest="${@{dep}}" 
+                src="${@{dep}.url}" md5="${@{dep}.md5}"/>
+            <unzip-one-file dep="@{dep}"/>
+        </sequential>
+    </macrodef>
+
+    <target name="-really-unzip" unless="unzipped" if="unzip.path">
+        <tempfile destdir="${dest}" property="tmp"/>
+        <unzip src="${src}" dest="${tmp}" >
+            <patternset includes="${unzip.path}"/>
+        </unzip>
+        <touch>
+            <fileset dir="${tmp}">
+                <patternset includes="${unzip.path}"/>
+            </fileset>
+        </touch>
+        <move todir="${dest}" flatten="yes" failonerror="no">
+            <fileset dir="${tmp}">
+                <patternset includes="${unzip.path}"/>
+            </fileset>
+        </move>
+        <delete dir="${tmp}" />
+    </target>
+
+    <macrodef name="unzip-one-file">
+        <attribute name="dep" />
+        <sequential>
+            <dirname file="${@{dep}}" property="@{dep}.dir"/>
+            <!-- quite tricky way to detect if unzip operation is pending,
+                still not very robust ...
+                Life could be simpler if unzip supported nested mappers
+            -->
+            <basename file="${@{dep}}" property="@{dep}.basename"/>
+            <basename file="${@{dep}.unzip.path}" property="@{dep}.unzip.basename"/>
+            <pathconvert property="@{dep}.matching.list" setonempty="no">
+                <path><fileset dir="${@{dep}.dir}" includes="${@{dep}.unzip.basename}"/></path>
+            </pathconvert>
+            <pathconvert property="@{dep}.uptodate.list" setonempty="no">
+                <path>
+                    <fileset dir="${@{dep}.dir}" includes="${@{dep}.unzip.basename}">
+                        <depend targetdir="${@{dep}.dir}">
+                            <mapper type="merge" to="${@{dep}.basename}"/>
+                        </depend>
+                    </fileset>
+                </path>
+            </pathconvert>
+            <condition property="@{dep}.unzipped">
+                <equals arg1="${@{dep}.uptodate.list}" arg2="${@{dep}.matching.list}"/>
+                <!--uptodate srcfile="${@{dep}}"
+                        targetfile="${@{dep}.dir}/${@{dep}.unzip.basename}"/-->
+            </condition>
+
+            <antcall target="-really-unzip">
+                <param name="src" value="${@{dep}}" />
+                <param name="dest" value="${@{dep}.dir}" />
+                <propertyset>
+                  <propertyref prefix="@{dep}.unzip"/>
+                  <globmapper from="@{dep}.*" to="*"/>
+                </propertyset>
+            </antcall>
+        </sequential>
+    </macrodef>
+
 </project>
