@@ -96,6 +96,13 @@ public class RegistryTest extends RMITestBase {
 
             // Create registry.
             int port = REGISTRY_PORT;
+
+            if (checkSocket("127.0.0.1", port, TIMEOUT_TICK*3)) {
+                System.err.println("Registry DEFAULT port ("
+                                   + port + ") in use, skipping tests.");
+                return;
+            }
+
             Registry reg = LocateRegistry.createRegistry(port);
             System.out.println("Registry on DEFAULT port ("
                                + port + ") created.");

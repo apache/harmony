@@ -230,13 +230,11 @@ Java_org_apache_harmony_luni_platform_OSFileSystem_writev
       (*env)->ReleaseByteArrayElements(env, toRelease, buf, JNI_ABORT);
     }
 
-    if(bytesWritten == -1 && hyerror_last_error_number() == HYPORT_ERROR_FILE_LOCKED){
-        throwNewExceptionByName(env, "java/io/IOException", netLookupErrorString(env, HYPORT_ERROR_FILE_LOCKED));
-	break;
-    }
-    if(bytesWritten == -1){
+    if(bytesWritten < 0){
+        throwNewExceptionByName(env, "java/io/IOException",
+            netLookupErrorString(env, hyerror_last_error_number()));
         totalWritten = -1;
-        break;
+	break;
     }
     totalWritten += bytesWritten;
    
@@ -296,3 +294,21 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_trans
     return count;	
 }
 
+/*
+ * Answers the size of the file pointed to by the file descriptor.
+ *
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    sizeImpl
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_sizeImpl
+(JNIEnv *env, jobject thiz, jlong fd)
+{
+  BY_HANDLE_FILE_INFORMATION info;
+  HANDLE hfile = (HANDLE)fd;    	
+  if (GetFileInformationByHandle(hfile, (LPBY_HANDLE_FILE_INFORMATION) &info)) {
+    return (jlong) ((info.nFileSizeHigh<<0x20) + info.nFileSizeLow);
+  } else {
+    return (jlong)-1;
+  }
+}

@@ -285,11 +285,11 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_ttyAv
 }
 
 /*
- * Answers the number of remaining chars in the stdin.
+ * Answers the number of remaining chars on the file descriptor.
  *
  * Class:     org_apache_harmony_luni_platform_OSFileSystem
- * Method:    AvailableImpl
- * Signature: ()J
+ * Method:    availableImpl
+ * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_availableImpl
 (JNIEnv *env, jobject thiz, jlong fd)

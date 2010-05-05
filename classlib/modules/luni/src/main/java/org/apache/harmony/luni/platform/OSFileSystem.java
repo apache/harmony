@@ -277,6 +277,16 @@ class OSFileSystem implements IFileSystem {
 
     private native long availableImpl(long fileDescriptor);
 
+    public long size(long fileDescriptor) throws IOException {
+        long nChar = sizeImpl(fileDescriptor);
+        if (nChar < 0) {
+            throw new IOException();
+        }
+        return nChar;
+    }
+
+    private native long sizeImpl(long fileDescriptor);
+
     public long ttyRead(byte[] bytes, int offset, int length) throws IOException {
         long nChar = ttyReadImpl(bytes, offset, length);
         if (nChar < 0) {

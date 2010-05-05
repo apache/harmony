@@ -21,24 +21,16 @@
     <property name="component" value="vmcore"/>
     <import file="common-vm.xml"/>
 
-    <target name="fetch-depends" depends="fetch-depends-win">
+    <target name="fetch-depends">
         <fetch dep="icuhdr"/>
         <fetch dep="icudll"/>
     </target>
 
-    <target name="fetch-depends-win" if="is.windows">
-        <fetch dep="zlib"/>
-    </target>
-
-    <target name="check-depends" depends="check-depends-win">
+    <target name="check-depends">
         <check-one-file dest="${icuhdr}" src="${icuhdr.url}"/>
         <check-one-file dest="${icudll}" src="${icudll.url}"/>
     </target>
 
-    <target name="check-depends-win" if="is.windows">
-        <check-one-file dest="${zlib}" src="${zlib.url}"/>
-    </target>
-    
     <target name="-check-setup">
         <available file="${drlvm.include.dir}/unicode" property="icu4c.hdr.available"/>
         <available file="${drlvm.shlib.dir}/${linklib.prefix}icuuc${linklib.suffix}" 
@@ -51,7 +43,7 @@
         </condition>
     </target>
 
-    <target name="setup" depends="-check-setup,-setup-win" unless="setup.complete">
+    <target name="setup" depends="-check-setup" unless="setup.complete">
         <check-one-file dest="${icuhdr}" src="${icuhdr.url}"/>
         <check-one-file dest="${icudll}" src="${icudll.url}"/>
         <mkdir dir="${drlvm.include.dir}/unicode"/>
@@ -73,34 +65,6 @@
             dest="${drlvm.shlib.dir}/${linklib.prefix}icuuc${linklib.suffix}"/>
     </target>
 
-    <target name="-check-setup-win" if="is.windows">
-        <condition property="zlib.available">
-            <and>
-                <available file="${drlvm.bin.dir}/zlib1.dll"/>
-                <available file="${drlvm.include.dir}/zlib.h"/>
-            </and>
-        </condition>
-        <condition property="win.setup.complete">
-            <isset property="zlib.available"/>
-        </condition>
-    </target>
-
-    <target name="-setup-win" depends="-check-setup-win"
-        if="is.windows" unless="win.setup.complete">
-        <check-one-file dest="${zlib}" src="${zlib.url}"/>
-        <unzip src="${zlib}" dest="${zlib.dir}">
-            <mapper type="flatten" />
-        </unzip>
-        <copy file="${zlib.dir}/zlib1.dll" todir="${drlvm.bin.dir}"/>
-        <copy file="${zlib.dir}/zdll.lib" todir="${drlvm.lib.dir}" />
-        <copy todir="${drlvm.include.dir}">
-            <fileset dir="${zlib.dir}">
-                <include name="zconf.h" />
-                <include name="zlib.h" />
-            </fileset>
-        </copy>
-    </target>
-            
     <target name="build" depends="setup,stamp-version,-common-vm">
         <init-native component="vmcore"/>
         
@@ -134,6 +98,7 @@
                 <include name="port/src/encoder/ia32_em64t" if="is.x86_64"/>
                 <include name="vmcore/src/lil/em64t/include" if="is.x86_64"/>
             </dirset>
+            <pathelement location="${hy.hdk}/include" />
         </path>
         <depend-includes paths="vmcore.includes"/>
         <depend-selector rebuild-flag="vmcore.includes.uptodate" id="vmcore.depends"/>
@@ -222,15 +187,17 @@
                     dir="${drlvm.lib.dir}" />
                 <libset libs="hythr" dir="${drlvm.shlib.dir}" />
                 <libset libs="icuuc" dir="${drlvm.shlib.dir}"/>
-                <libset libs="zdll" dir="${drlvm.lib.dir}" if="is.windows"/>
                 <libset libs="ch" dir="${drlvm.shlib.dir}" />
+                <libset libs="hyzlib" dir="${hy.hdk.shlibs}"
+                        unless="hy.skip.zlib"/>
+                <syslibset type="shared" libs="z" if="hy.skip.zlib"/>
 
                 <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm64.def" if="is.windows.x86_64"/>
                 <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm.def" if="is.windows.x86"/>
                 <linkerarg value="--version-script=${vm.home}/vmcore/build/vmcore.exp" if="is.unix"/>
                 
-                <syslibset type="shared" libs="m,dl,stdc++,z,xml2,pthread,gcc_s,rt" if="is.linux"/>
-                <syslibset type="shared" libs="m,stdc++,z,pthread" if="is.freebsd"/> 
+                <syslibset type="shared" libs="m,dl,stdc++,xml2,pthread,gcc_s,rt" if="is.linux"/>
+                <syslibset type="shared" libs="m,stdc++,pthread" if="is.freebsd"/> 
                 <libset libs="xml2" dir="/usr/local/lib" if="is.freebsd"/>
                 <linkerarg value="--export-dynamic" if="is.freebsd"/>
             </linker>

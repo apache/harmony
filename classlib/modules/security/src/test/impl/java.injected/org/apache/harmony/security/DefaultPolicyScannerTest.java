@@ -264,6 +264,10 @@ public class DefaultPolicyScannerTest extends TestCase {
         pe = scanner.readPrincipalEntry(getST("clazz *"));
         assertEquals(DefaultPolicyScanner.PrincipalEntry.WILDCARD, pe.name);
         assertEquals("clazz", pe.klass);
+
+        pe = scanner.readPrincipalEntry(getST("\"a, b, c, d\""));
+        assertEquals("a,b,c,d", pe.name);
+        assertNull(pe.klass);
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package org.apache.harmony.luni.platform;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,11 +64,16 @@ public class Environment {
      * @return the value of the environment variable specified
      */
     public static String getenv(String name) {
-        byte[] env = getEnvByName(name.getBytes());
-        if (null == env) {
-            return null;
-        }
-        return new String(env);
+        try {
+             byte[] env = getEnvByName(name.getBytes("UTF-8"));
+             if (null == env) {
+                return null;
+            }
+            return new String(env, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should always be supported so this should not be reached
+            throw new AssertionError(e);
+        }        
     }
 
     public static class EnvironmentMap extends HashMap<String, String> {

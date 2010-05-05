@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
 #if defined(FREEBSD) || defined(AIX) || defined(ZOS) || defined(MACOSX)
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -187,7 +188,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
     (*env)->ReleaseIntArrayElements(env, jlengths, lengths, JNI_ABORT);
   }
   hymem_free_memory(vectors);
-  return totalRead;
+  return totalRead == 0 ? -1 : totalRead;
 }
 
 /*
@@ -337,4 +338,22 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_trans
   return sendfile(socket,(int)fd-FD_BIAS,(off_t *)&off,(size_t)count);
 #endif
 #endif
+}
+
+
+/*
+ * Answers the size of the file pointed to by the file descriptor.
+ *
+ * Class:     org_apache_harmony_luni_platform_OSFileSystem
+ * Method:    sizeImpl
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_sizeImpl
+(JNIEnv *env, jobject thiz, jlong fd)
+{
+  struct stat statbuf;
+  if (fstat(fd - FD_BIAS, &statbuf) < 0) {
+    return -1;
+  }
+  return (jlong)statbuf.st_size;
 }
