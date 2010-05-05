@@ -21,6 +21,12 @@
         Layout IBM VME in the required format 
     </description>
 
+    <fail message="Property 'hy.hdk' is not defined">
+        <condition>
+            <not><isset property="hy.hdk" /></not>
+        </condition>
+    </fail>
+
     <!-- set the path root for the external resources  -->
     <property name="common.resources" value="../common_resources" />
     <fail>
@@ -38,8 +44,8 @@
     <property name="ibm.vme.dir" value="${hy.os}-${hy.arch}.vme" />
 
     <target name="build">
-        <mkdir dir="deploy/jdk" />
-        <copy todir="deploy/jdk">
+        <mkdir dir="${hy.hdk}/jdk" />
+        <copy todir="${hy.hdk}/jdk">
             <fileset dir="${ibm.vme.dir}" />
         </copy>
     </target>
@@ -47,7 +53,11 @@
     <target name="fetch-depends" />
 
     <target name="clean">
-        <delete dir="deploy" failonerror="false" />
+        <delete failonerror="false">
+            <fileset dir="${hy.hdk}/jdk">
+                <present targetdir="${ibm.vme.dir}"/>
+            </fileset>
+        </delete>
     </target>
 
 </project>
