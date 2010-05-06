@@ -80,16 +80,16 @@ module:
     <property name="tests.report.dir" value="${tests.output}/html"/>
     <property file="make/depends.properties" />
 
+    <!-- import properties for snapshot targets -->
+    <import file="make/properties.xml" />
+    <import file="make/depends.xml" />
+
     <condition property="needs.vme.v3.hack" value="true">
         <or>
             <equals arg1="${hy.platform}" arg2="windows.x86" />
             <equals arg1="${hy.platform}" arg2="linux.x86" />
         </or>
     </condition>
-
-    <!-- import properties for snapshot targets -->
-    <import file="make/properties.xml" />
-    <import file="make/depends.xml" />
 
     <!-- ================================
 	 target : rebuild
