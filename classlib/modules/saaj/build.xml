@@ -27,10 +27,10 @@
     <import file="${hy.hdk}/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
-    <target name="build" depends="check-depends, -copy-jars" />
+    <target name="build" depends="check-depends" />
 
     <target name="check-depends"
-            depends="-check-depends,-extract-props,-extract" />
+            depends="-check-depends,-extract-props,-extract,-copy-jars" />
 
     <target name="-check-depends">
         <check-one-file src="${axis.url}" dest="${axis.zip}" />
@@ -52,14 +52,12 @@
     </target>
         
     <target name="fetch-depends">
-
         <mkdir dir="${axis.dir}" />
         <download-one-file src="${axis.url}" dest="${axis.zip}"
                            md5="${axis.md5}" />
-
     </target>
 
-    <target name="-copy-jars">
+    <target name="-copy-jars" unless="skip.java.build">
         <copy todir="${hy.jdk}/jre/lib/boot">
             <fileset dir="${depends.jars}">
                 <patternset includes="${axis.dirname}/*.jar" />
@@ -72,7 +70,7 @@
 
     <target name="test" />
 
-    <target name="clean">
+    <target name="clean" unless="skip.java.build">
         <delete dir="${hy.jdk}/jre/lib/boot/${axis.dirname}" />
     </target>
 

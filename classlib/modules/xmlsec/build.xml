@@ -27,21 +27,20 @@
     <import file="${hy.hdk}/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
-    <target name="build" depends="check-depends, -copy-jars" />
+    <target name="build" depends="check-depends" />
 
-    <target name="check-depends">
+    <target name="check-depends" depends="-check,-copy-jars" />
+    <target name="-check">
         <check-one-file src="${xmlsec.url}" dest="${xmlsec.zip}" />
     </target>
         
     <target name="fetch-depends">
-
         <mkdir dir="${xmlsec.dir}" />
         <download-one-file src="${xmlsec.url}" dest="${xmlsec.zip}"
                            md5="${xmlsec.md5}" />
-
     </target>
 
-    <target name="-copy-jars">
+    <target name="-copy-jars" unless="skip.java.build">
         <mkdir dir="${hy.jdk}/jre/lib/boot/xmlsec-${xmlsec.version}" />
         <unzip src="${xmlsec.zip}"
                dest="${hy.jdk}/jre/lib/boot/${xmlsec.basename}" >
@@ -59,7 +58,7 @@
 
     <target name="test" />
 
-    <target name="clean">
+    <target name="clean" unless="skip.java.build">
         <delete dir="${hy.jdk}/jre/lib/boot/${xmlsec.basename}" />
     </target>
 

@@ -27,7 +27,8 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="check-depends, compile-java, build-jar" />
+    <target name="build" depends="check-depends,-build-no-check"/>
+    <target name="-build-no-check" depends="-build-jar,-test-jar" />
 
     <target name="check-depends">
         <check-one-file src="${asm.url}" dest="${asm.jar}" />
@@ -58,25 +59,26 @@
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, run-tests" />
+    <target name="-test-module" depends="build,-run-tests" />
 
-    <target name="clean" depends="clean-java,clean-test" />
+    <target name="clean" depends="-clean-java,-clean-test" />
     
-    <target name="clean-java" depends="class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/pack200.jar" />
-        <delete file="${hy.jdk}/jre/lib/boot/pack200-src.jar" />
+    <target name="-clean-java" unless="skip.java.build"
+            depends="-class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />
         <delete failonerror="false">
             <fileset refid="classes" />
         </delete>
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="clean-test">
+    <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin"/>
     </target>
 
-    <target name="compile-java">
+    <target name="-compile-java" unless="skip.java.build">
         <echo message="Compiling ${hy.module} classes" />
 
         <mkdir dir="../../build/classes" />
@@ -97,29 +99,23 @@
             </bootclasspath>
         </hy.javac>
     	<!-- Java5 classes, with generics -->
-        <hy.javac sourcepath=""
-                  srcdir="src/main/java5"
-                  destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+        <compile-classes description="${hy.module} java5 classes">
+            <javac-elements>
+                <src path="src/main/java5" />
+            </javac-elements>
+        </compile-classes>
     </target>
 
-    <target name="findbugs" depends="build-jar">
+    <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/pack200.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/pack200.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/pack200.jar"
+    <target name="-build-jar" unless="skip.java.build"
+            depends="-svn-info,-compile-java,-class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
              manifest="META-INF/MANIFEST.MF">
             <manifest>
                 <attribute name="X-Compile-Source-JDK"
@@ -131,18 +127,19 @@
             <fileset refid="resources" />
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/pack200-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java" />
             <fileset dir="src/main/java/../java5" />
         </hy.jar.src>
     </target>
 
-    <target name="test-jar" depends="svn-info,compile-tests">
+    <target name="-test-jar" unless="skip.test.build"
+            depends="-svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
 
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
-        <hy.jar.bin destfile="${tests.hdk.dir}/pack200_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
         </hy.jar.bin>
 
@@ -161,7 +158,7 @@
         </copy>
     </target>
 
-    <target name="compile-tests"> 
+    <target name="-compile-tests" unless="skip.test.build">
         <mkdir dir="bin/test" />
 
         <mkdir dir="${hy.hdk}/build/test" />
@@ -189,11 +186,11 @@
         </hy.javac>
     </target>
 
-    <target name="run-tests" depends="test-jar">
+    <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="class-patternset">
+    <target name="-class-patternset" unless="skip.java.build">
         <make-patternset module="${hy.module}" />
     </target>
 

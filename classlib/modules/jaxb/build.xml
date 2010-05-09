@@ -27,21 +27,20 @@
     <import file="${hy.hdk}/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
-    <target name="build" depends="check-depends, -copy-jars" />
+    <target name="build" depends="check-depends" />
 
-    <target name="check-depends">
+    <target name="check-depends" depends="-check,-copy-jars" />
+    <target name="-check">
         <check-one-file src="${jaxb.url}" dest="${jaxb.jar}" />
     </target>
         
     <target name="fetch-depends">
-
         <mkdir dir="${jaxb.dir}" />
         <download-one-file src="${jaxb.url}" dest="${jaxb.jar}"
                            md5="${jaxb.md5}" />
-
     </target>
 
-    <target name="-copy-jars">
+    <target name="-copy-jars" unless="skip.java.build">
         <copy todir="${hy.jdk}/jre/lib/boot/${jaxb.basename}"
               file="${jaxb.jar}" />
         <copy todir="${hy.jdk}/jre/lib/boot/${jaxb.basename}/META-INF">
@@ -51,7 +50,7 @@
 
     <target name="test" />
 
-    <target name="clean">
+    <target name="clean" unless="skip.java.build">
         <delete dir="${hy.jdk}/jre/lib/boot/${jaxb.basename}" />
     </target>
 

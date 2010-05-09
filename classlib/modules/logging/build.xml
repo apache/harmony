@@ -26,7 +26,9 @@
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="compile-java, build-jar, copy-properties" />
+    <target name="build" depends="-build-no-check"/>
+    <target name="-build-no-check"
+            depends="-build-jar,-test-jar,-copy-properties" />
 
     <target name="test" depends="-test-module">
         <fail message="Some tests failed">
@@ -40,52 +42,43 @@
     </target>
 
     <!-- internal target for local and global test run sequence -->
-    <target name="-test-module" depends="build, run-tests" />
+    <target name="-test-module" depends="build,-run-tests" />
 
-    <target name="clean" depends="clean-java,clean-test" />
+    <target name="clean" depends="-clean-java,-clean-test" />
     
-    <target name="clean-java" depends="class-patternset">
-        <delete file="${hy.jdk}/jre/lib/boot/logging.jar" />
-        <delete file="${hy.jdk}/jre/lib/boot/logging-src.jar" />
+    <target name="-clean-java" unless="skip.java.build"
+            depends="-class-patternset">
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}.jar" />
+        <delete file="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar" />
         <delete failonerror="false">
             <fileset refid="classes" />
         </delete>
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="clean-test">
+    <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
         <delete failonerror="false" dir="bin"/>
     </target>
 
-    <target name="compile-java">
-        <echo message="Compiling ${hy.module} classes" />
-
-        <mkdir dir="../../build/classes" />
-
-        <hy.javac sourcepath=""
-               srcdir="src/main/java"
-               destdir="../../build/classes">
-
-            <compilerarg line="${build.compilerarg}" />
-
-            <bootclasspath>
-                <fileset dir="${hy.jdk}/jre/lib/boot">
-                    <include name="**/*.jar" />
-                </fileset>
-            </bootclasspath>
-        </hy.javac>
+    <target name="-compile-java" unless="skip.java.build">
+        <compile-classes description="${hy.module} classes">
+            <javac-elements>
+                <src path="src/main/java" />
+            </javac-elements>
+        </compile-classes>
     </target>
 
-    <target name="findbugs" depends="build-jar">
+    <target name="findbugs" depends="-build-jar">
         <run-findBugs
-            jarFile="${hy.jdk}/jre/lib/boot/logging.jar"
+            jarFile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
             excludeFilter="make/findbugs-exclude-filter.xml"
-            outputFile="${findBugs.report}/logging.xml"/>
+            outputFile="${findBugs.report}/${hy.module}.xml"/>
     </target>
 
-    <target name="build-jar" depends="svn-info,class-patternset">
-        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/logging.jar"
+    <target name="-build-jar" unless="skip.java.build"
+            depends="-svn-info,-compile-java,-class-patternset">
+        <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
                     manifest="META-INF/MANIFEST.MF">
             <fileset refid="classes" />
             <fileset dir="src/main/java">
@@ -94,12 +87,12 @@
             </fileset>
         </hy.jar.bin>
 
-        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/logging-src.jar">
+        <hy.jar.src destfile="${hy.jdk}/jre/lib/boot/${hy.module}-src.jar">
             <fileset dir="src/main/java" />
         </hy.jar.src>
     </target>
 
-    <target name="copy-properties">
+    <target name="-copy-properties">
         <copy todir="${hy.jdk}/jre/lib" flatten="yes">
             <fileset dir="src/main/java">
                 <include name="**/logging.properties" />
@@ -107,15 +100,16 @@
         </copy>
     </target>
 
-    <target name="test-jar" depends="svn-info,compile-tests">
+    <target name="-test-jar" unless="skip.test.build"
+            depends="-svn-info,-compile-tests">
         <mkdir dir="${tests.hdk.dir}" />
 
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
-        <hy.jar.bin destfile="${tests.hdk.dir}/logging_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
         </hy.jar.bin>
-        <hy.jar.bin destfile="${tests.hdk.dir}/logging_boot_tests.jar">
+        <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_boot_tests.jar">
             <fileset dir="bin/test-internal" />
         </hy.jar.bin>
 
@@ -137,8 +131,8 @@
         </copy>
     </target>
 
-    <target name="compile-tests">
-        <compile-tests description="logging internal tests"
+    <target name="-compile-tests" unless="skip.test.build">
+        <compile-tests description="${hy.module} internal tests"
                        destdir="bin/test-internal">
             <javac-elements>
                 <src>
@@ -146,7 +140,7 @@
                 </src>
             </javac-elements>
         </compile-tests>
-        <compile-tests description="logging api tests">
+        <compile-tests description="${hy.module} api tests">
             <javac-elements>
                 <bootclasspath>
                     <pathelement path="bin/test-internal"/>
@@ -158,11 +152,11 @@
         </compile-tests>
     </target>
 
-    <target name="run-tests" depends="test-jar">
+    <target name="-run-tests" depends="-test-jar">
         <ant dir="${tests.hdk.dir}" target="test-module" />
     </target>
 
-    <target name="class-patternset">
+    <target name="-class-patternset" unless="skip.java.build">
         <make-patternset module="${hy.module}" />
     </target>
 

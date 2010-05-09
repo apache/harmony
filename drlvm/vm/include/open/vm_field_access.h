@@ -226,6 +226,8 @@ DECLARE_OPEN(void, field_get_track_access_flag, (Field_Handle field, char** addr
  */
 DECLARE_OPEN(void, field_get_track_modification_flag, (Field_Handle field, char** address, char* mask));
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _VM_FIELD_ACCESS_H

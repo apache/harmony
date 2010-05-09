@@ -32,9 +32,9 @@
         <make-native libname="hythr" type="shared">
         <compiler id="c.compiler" extends="common.c.compiler">
             <includepath>
-              <pathelement location="${drlvm.include.dir}" />
               <path refid="vm.include"/>
               <pathelement location="${vm.home}/thread/src" />
+              <pathelement location="${drlvm.include.dir}" />
               <pathelement location="${hy.hdk}/include" />
             </includepath>
 

@@ -150,7 +150,7 @@
         </not>
      </condition>
 
-    <target name="echo" depends="svn-info, test-jre-vm-info"
+    <target name="echo" depends="-svn-info, test-jre-vm-info"
             description="Display the properties defined by this ant file" >
         <echo>
 Harmony release configuration property:
@@ -207,7 +207,7 @@ Harmony platform properties:
   hy.hdk = ${hy.hdk}
 
 
-The following properties are only set if the "svn-info" target has been
+The following properties are only set if the "-svn-info" target has been
 called:
 
   svn.revision = ${svn.revision}
@@ -381,6 +381,12 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <attribute name="Implementation-URL"
                            value="http://harmony.apache.org"/>
                 <attribute name="Implementation-Version" value="${svn.info}"/> 
+                <attribute name="Specification-Vendor"
+                           value="Sun Microsystems, Inc." />
+                <attribute name="Specification-Title"
+                           value="Java Platform API Specification" />
+                <attribute name="Specification-Version"
+                           value="${hy.specification.version}" />
                 <attribute name="X-Compile-Source-JDK"
                            value="${hy.javac.source}"/> 
                 <attribute name="X-Compile-Target-JDK"
