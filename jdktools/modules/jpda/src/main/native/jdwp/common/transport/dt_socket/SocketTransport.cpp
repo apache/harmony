@@ -224,12 +224,6 @@ CheckHandshaking(jdwpTransportEnv* env, SOCKET sckt, jlong handshakeTimeout)
     jlong deadline = (handshakeTimeout == 0) ? 0 : (jlong)GetTickCount() + handshakeTimeout;
 
     jdwpTransportError err;
-    err = SendData(env, sckt, handshakeString, (int)strlen(handshakeString), deadline);
-    if (err != JDWPTRANSPORT_ERROR_NONE) {
-        SetLastTranErrorMessagePrefix(env, "'JDWP-Handshake' sending error: ");
-        return err;
-    }
-
     err = ReceiveData(env, sckt, receivedString, (int)strlen(handshakeString), deadline);
     if (err != JDWPTRANSPORT_ERROR_NONE) {
         SetLastTranErrorMessagePrefix(env, "'JDWP-Handshake' receiving error: ");
@@ -239,6 +233,12 @@ CheckHandshaking(jdwpTransportEnv* env, SOCKET sckt, jlong handshakeTimeout)
     if (memcmp(receivedString, handshakeString, 14) != 0) {
         SetLastTranError(env, "handshake error, 'JDWP-Handshake' is not received", 0);
         return JDWPTRANSPORT_ERROR_IO_ERROR;
+    }
+
+    err = SendData(env, sckt, handshakeString, (int)strlen(handshakeString), deadline);
+    if (err != JDWPTRANSPORT_ERROR_NONE) {
+        SetLastTranErrorMessagePrefix(env, "'JDWP-Handshake' sending error: ");
+        return err;
     }
 
     return JDWPTRANSPORT_ERROR_NONE;
