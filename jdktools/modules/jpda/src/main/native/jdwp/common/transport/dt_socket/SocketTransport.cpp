@@ -388,12 +388,6 @@ CheckHandshaking(jdwpTransportEnv* env, hysocket_t sckt, jlong handshakeTimeout)
     jlong timeout = handshakeTimeout == 0 ? 30000 : handshakeTimeout;
 
     jdwpTransportError err;
-    err = SendData(env, sckt, handshakeString, (int)strlen(handshakeString), handshakeTimeout);
-    if (err != JDWPTRANSPORT_ERROR_NONE) {
-        SetLastTranErrorMessagePrefix(env, "'JDWP-Handshake' sending error: ");
-        return err;
-    }
- 
     err = ReceiveData(env, sckt, receivedString, (int)strlen(handshakeString),
                       timeout);
  
@@ -404,6 +398,11 @@ CheckHandshaking(jdwpTransportEnv* env, hysocket_t sckt, jlong handshakeTimeout)
     if (memcmp(receivedString, handshakeString, 14) != 0) {
         SetLastTranError(env, "handshake error, 'JDWP-Handshake' is not received", 0);
         return JDWPTRANSPORT_ERROR_IO_ERROR;
+    }
+    err = SendData(env, sckt, handshakeString, (int)strlen(handshakeString), handshakeTimeout);
+    if (err != JDWPTRANSPORT_ERROR_NONE) {
+        SetLastTranErrorMessagePrefix(env, "'JDWP-Handshake' sending error: ");
+        return err;
     }
     return JDWPTRANSPORT_ERROR_NONE;
 }// CheckHandshaking

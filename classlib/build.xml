@@ -385,7 +385,9 @@ ${built.files.list}
     <target name="test"
             depends="-test-init-hdk,clean-test-output"
             description="Runs all tests">
-        <ant dir="${hy.hdk}/build/test" inheritall="false" target="test">
+        <mkdir dir="${tests.output}" />
+        <ant antfile="${hy.hdk}/build/test/build.xml"
+             inheritall="false" target="test">
             <property name="tests.output" value="${tests.output}"/>
         </ant>
     </target>

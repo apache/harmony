@@ -1342,9 +1342,7 @@ public class InetAddress extends Object implements Serializable {
     }
 
     static boolean preferIPv6Addresses() {
-        String result = AccessController.doPrivileged(new PriviAction<String>(
-                "java.net.preferIPv6Addresses")); //$NON-NLS-1$
-        return "true".equals(result); //$NON-NLS-1$
+        return NetUtil.preferIPv6Addresses();
     }
 
     private static final ObjectStreamField[] serialPersistentFields = {

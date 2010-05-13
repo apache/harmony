@@ -450,7 +450,60 @@ public class IntrospectorTest extends TestCase {
         } catch (IntrospectionException e) {
         }
     }
-    
+
+    /*
+     * BeanClass provide bean info about itself
+     */
+    public static class MockBeanInfo4BeanClassSelf implements BeanInfo {
+
+        public void setValue(String v) throws Exception {
+        }
+
+        public int getValue() {
+            return 0;
+        }
+
+        public BeanDescriptor getBeanDescriptor() {
+            return null;
+        }
+
+        public EventSetDescriptor[] getEventSetDescriptors() {
+            return new EventSetDescriptor[0];
+        }
+
+        public int getDefaultEventIndex() {
+            return -1;
+        }
+
+        public int getDefaultPropertyIndex() {
+            return -1;
+        }
+
+        public PropertyDescriptor[] getPropertyDescriptors() {
+            return new PropertyDescriptor[0];
+        }
+
+        public MethodDescriptor[] getMethodDescriptors() {
+            return new MethodDescriptor[0];
+        }
+
+        public BeanInfo[] getAdditionalBeanInfo() {
+            return null;
+        }
+
+        public Image getIcon(int iconKind) {
+            return null;
+        }
+    }
+
+    public void test_BeanInfo_Self() throws Exception {
+        BeanInfo info = Introspector
+                .getBeanInfo(MockBeanInfo4BeanClassSelf.class);
+        assertEquals(0, info.getMethodDescriptors().length);
+        assertEquals(0, info.getPropertyDescriptors().length);
+        assertEquals(0, info.getEventSetDescriptors().length);
+    }
+
     /*
      * Introspect static methods
      */
