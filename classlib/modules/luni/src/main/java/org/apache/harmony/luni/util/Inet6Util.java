@@ -160,13 +160,26 @@ public class Inet6Util {
                 return addressToString(bytesToInt(ipv4ByteArray, 0));
             }
             StringBuilder buffer = new StringBuilder();
+            boolean isFirst = true;
             for (int i = 0; i < ipByteArray.length; i++) {
+                if ((i & 1) == 0) {
+                    isFirst = true;
+                }
                 int j = (ipByteArray[i] & 0xf0) >>> 4;
-                buffer.append(hexCharacters.charAt(j));
+                if (j != 0 || !isFirst) {
+                    buffer.append(hexCharacters.charAt(j));
+                    isFirst = false;
+                }
                 j = ipByteArray[i] & 0x0f;
-                buffer.append(hexCharacters.charAt(j));
-                if (i % 2 != 0 && (i + 1) < ipByteArray.length) {
-                    buffer.append(":");
+                if (j != 0 || !isFirst) {
+                    buffer.append(hexCharacters.charAt(j));
+                    isFirst = false;
+                }
+                if ((i & 1) != 0 && (i + 1) < ipByteArray.length) {
+                    if (isFirst) {
+                        buffer.append('0');
+                    }
+                    buffer.append(':');
                 }
             }
             return buffer.toString();
