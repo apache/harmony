@@ -229,19 +229,22 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     <target name="-build-native-common" unless="skip.native.build">
         <make dir="src/main/native/lcmm/${hy.os.family}">
             <make-elements>
-                <env key="HY_LCMS_VER" value="${lcms.ver}" />
+                <env key="HY_LCMS_DIR" value="${lcms.dir}" />
             </make-elements>
         </make>
 
+        <pathconvert targetos="windows" property="jpeg.dir.win">
+            <path location="${jpeg.dir}" />
+        </pathconvert>
         <make dir="src/main/native/jpegdecoder/${hy.os.family}">
             <make-elements>
-                <env key="HY_JPEG_VER" value="${jpeg.ver}" />
+                <env key="HY_JPEG_DIR" value="${jpeg.dir.win}" />
             </make-elements>
         </make>
 
         <make dir="src/main/native/gl/${hy.os.family}">
             <make-elements>
-                <env key="HY_PNG_VER" value="${png.ver}" />
+                <env key="HY_PNG_DIR" value="${png.dir}" />
             </make-elements>
         </make>
         
