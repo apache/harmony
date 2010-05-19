@@ -15,7 +15,7 @@
 
 !include <$(HY_HDK)\build\make\defines.mak>
 
-LCMS_DIR=$(HY_HDK)\..\depends\libs\$(HY_PLATFORM)\lcms-$(HY_LCMS_VER)\# avoid continuation
+LCMS_DIR=$(HY_LCMS_DIR)\# avoid continuation
 
 LIBBASE=lcmm
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
