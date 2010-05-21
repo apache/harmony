@@ -171,12 +171,20 @@ Usage:
                         prefix="${archive.dir.prefix}hdk-${harmony.version}"
                         mode="755">
                 <include name="jdk/jre/bin/java"/>
+                <include name="jdk/jre/bin/keytool"/>
+                <include name="jdk/jre/bin/pack200"/>
+                <include name="jdk/jre/bin/policytool"/>
+                <include name="jdk/jre/bin/unpack200"/>
                 <include name="jdk/bin/*"/>
             </tarfileset>
             <tarfileset dir="${target.dir}/hdk"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
+                <exclude name="jdk/jre/bin/keytool"/>
+                <exclude name="jdk/jre/bin/pack200"/>
+                <exclude name="jdk/jre/bin/policytool"/>
+                <exclude name="jdk/jre/bin/unpack200"/>
                 <exclude name="jdk/bin/*"/>
                 <exclude name="jdk/jre/README"/>
             </tarfileset>
@@ -200,6 +208,10 @@ Usage:
                         filemode="755">
                 <include name="jdk/jre/bin/java.exe"/>
                 <include name="jdk/jre/bin/javaw.exe"/>
+                <include name="jdk/jre/bin/keytool.exe"/>
+                <include name="jdk/jre/bin/pack200.exe"/>
+                <include name="jdk/jre/bin/policytool.exe"/>
+                <include name="jdk/jre/bin/unpack200.exe"/>
                 <include name="jdk/bin/*"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk"
@@ -207,6 +219,10 @@ Usage:
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java.exe"/>
                 <exclude name="jdk/jre/bin/javaw.exe"/>
+                <exclude name="jdk/jre/bin/keytool.exe"/>
+                <exclude name="jdk/jre/bin/pack200.exe"/>
+                <exclude name="jdk/jre/bin/policytool.exe"/>
+                <exclude name="jdk/jre/bin/unpack200.exe"/>
                 <exclude name="jdk/bin/*"/>
                 <exclude name="jdk/jre/README"/>
             </zipfileset>
@@ -235,12 +251,20 @@ Usage:
                         prefix="${archive.dir.prefix}jdk-${harmony.version}"
                         mode="755">
                 <include name="jre/bin/java"/>
+                <include name="jre/bin/keytool"/>
+                <include name="jre/bin/pack200"/>
+                <include name="jre/bin/policytool"/>
+                <include name="jre/bin/unpack200"/>
                 <include name="bin/*"/>
             </tarfileset>
             <tarfileset dir="${target.dir}/hdk/jdk"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java"/>
+                <exclude name="jre/bin/keytool"/>
+                <exclude name="jre/bin/pack200"/>
+                <exclude name="jre/bin/policytool"/>
+                <exclude name="jre/bin/unpack200"/>
                 <exclude name="bin/*"/>
                 <exclude name="jre/README"/>
             </tarfileset>
@@ -262,6 +286,10 @@ Usage:
                         filemode="755">
                 <include name="jre/bin/java.exe"/>
                 <include name="jre/bin/javaw.exe"/>
+                <include name="jre/bin/keytool.exe"/>
+                <include name="jre/bin/pack200.exe"/>
+                <include name="jre/bin/policytool.exe"/>
+                <include name="jre/bin/unpack200.exe"/>
                 <include name="bin/*"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk/jdk"
@@ -269,6 +297,10 @@ Usage:
                 <include name="**"/>
                 <exclude name="jre/bin/java.exe"/>
                 <exclude name="jre/bin/javaw.exe"/>
+                <exclude name="jre/bin/keytool.exe"/>
+                <exclude name="jre/bin/pack200.exe"/>
+                <exclude name="jre/bin/policytool.exe"/>
+                <exclude name="jre/bin/unpack200.exe"/>
                 <exclude name="bin/*"/>
                 <exclude name="jre/README"/>
             </zipfileset>
@@ -297,11 +329,19 @@ Usage:
                         prefix="${archive.dir.prefix}jre-${harmony.version}"
                         mode="755">
                 <include name="bin/java"/>
+                <include name="bin/keytool"/>
+                <include name="bin/pack200"/>
+                <include name="bin/policytool"/>
+                <include name="bin/unpack200"/>
             </tarfileset>
             <tarfileset dir="${target.dir}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java"/>
+                <exclude name="bin/keytool"/>
+                <exclude name="bin/pack200"/>
+                <exclude name="bin/policytool"/>
+                <exclude name="bin/unpack200"/>
             </tarfileset>
         </tar>
 
@@ -317,12 +357,20 @@ Usage:
                         filemode="755">
                 <include name="bin/java.exe"/>
                 <include name="bin/javaw.exe"/>
+                <include name="bin/keytool.exe"/>
+                <include name="bin/pack200.exe"/>
+                <include name="bin/policytool.exe"/>
+                <include name="bin/unpack200.exe"/>
             </zipfileset>
             <zipfileset dir="${target.dir}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java.exe"/>
                 <exclude name="bin/javaw.exe"/>
+                <exclude name="bin/keytool.exe"/>
+                <exclude name="bin/pack200.exe"/>
+                <exclude name="bin/policytool.exe"/>
+                <exclude name="bin/unpack200.exe"/>
             </zipfileset>
         </zip>
         <chksum dir="${target.dir}" file="${deploy.jre.zip}" />
