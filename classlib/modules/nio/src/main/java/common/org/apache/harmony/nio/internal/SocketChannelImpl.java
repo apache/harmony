@@ -1008,6 +1008,10 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
 
         @Override
         public InetAddress getInetAddress() {
+            if (!isConnected()) {
+                return null;
+            }
+
             if (channel.connectAddress == null && super.getInetAddress() != null) {
                 channel.connectAddress = new InetSocketAddress(super.getInetAddress(), super.getPort());
             }
@@ -1019,6 +1023,9 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
 
         @Override
         public SocketAddress getRemoteSocketAddress() {
+            if (!isConnected()) {
+                return null;
+            }
             if (channel.connectAddress == null && super.getInetAddress() != null) {
                 channel.connectAddress = new InetSocketAddress(super.getInetAddress(), super.getPort());
             }
@@ -1027,6 +1034,9 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
 
         @Override
         public int getPort() {
+            if (!isConnected()) {
+                return 0;
+            }
             if (channel.connectAddress == null && super.getInetAddress() != null) {
                 channel.connectAddress = new InetSocketAddress(super.getInetAddress(), super.getPort());
             }
