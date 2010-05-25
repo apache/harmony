@@ -80,16 +80,16 @@ module:
     <property name="tests.report.dir" value="${tests.output}/html"/>
     <property file="make/depends.properties" />
 
+    <!-- import properties for snapshot targets -->
+    <import file="make/properties.xml" />
+    <import file="make/depends.xml" />
+
     <condition property="needs.vme.v3.hack" value="true">
         <or>
             <equals arg1="${hy.platform}" arg2="windows.x86" />
             <equals arg1="${hy.platform}" arg2="linux.x86" />
         </or>
     </condition>
-
-    <!-- import properties for snapshot targets -->
-    <import file="make/properties.xml" />
-    <import file="make/depends.xml" />
 
     <!-- ================================
 	 target : rebuild
@@ -385,7 +385,9 @@ ${built.files.list}
     <target name="test"
             depends="-test-init-hdk,clean-test-output"
             description="Runs all tests">
-        <ant dir="${hy.hdk}/build/test" inheritall="false" target="test">
+        <mkdir dir="${tests.output}" />
+        <ant antfile="${hy.hdk}/build/test/build.xml"
+             inheritall="false" target="test">
             <property name="tests.output" value="${tests.output}"/>
         </ant>
     </target>

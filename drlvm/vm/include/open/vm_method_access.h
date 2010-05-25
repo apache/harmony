@@ -570,6 +570,8 @@ DECLARE_OPEN(U_8*, method_get_info_block_jit, (Method_Handle method, JIT_Handle 
  */
 DECLARE_OPEN(unsigned, method_get_info_block_size_jit, (Method_Handle method, JIT_Handle jit));
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif // _VM_METHOD_ACCESS_H

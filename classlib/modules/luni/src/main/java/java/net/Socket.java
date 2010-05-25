@@ -1112,9 +1112,7 @@ public class Socket {
     }
 
     static boolean preferIPv4Stack() {
-        String result = AccessController.doPrivileged(new PriviAction<String>(
-                "java.net.preferIPv4Stack")); //$NON-NLS-1$
-        return "true".equals(result); //$NON-NLS-1$
+        return NetUtil.preferIPv4Stack();
     }
 
     /**

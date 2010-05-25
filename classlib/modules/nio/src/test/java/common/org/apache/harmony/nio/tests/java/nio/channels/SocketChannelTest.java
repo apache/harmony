@@ -369,6 +369,63 @@ public class SocketChannelTest extends TestCase {
         }
     }
 
+    public void testSocket_getInetAddress() throws Exception {
+        Socket socket = channel1.socket();
+        assertNull(socket.getInetAddress());
+
+        channel1.connect(localAddr1);
+
+        assertNotNull(socket.getInetAddress());
+        assertEquals(localAddr1.getAddress(), socket.getInetAddress());
+    }
+
+    public void testSocket_getRemoteSocketAddress() throws Exception {
+        Socket socket = channel1.socket();
+        assertNull(socket.getRemoteSocketAddress());
+
+        channel1.connect(localAddr1);
+
+        assertNotNull(socket.getRemoteSocketAddress());
+        assertEquals(localAddr1, socket.getRemoteSocketAddress());
+    }
+
+    public void testSocket_getPort() throws Exception {
+        Socket socket = channel1.socket();
+        assertEquals(0, socket.getPort());
+
+        channel1.connect(localAddr1);
+
+        assertEquals(localAddr1.getPort(), socket.getPort());
+    }
+
+    public void testSocket_getLocalAddress() throws Exception {
+        Socket socket = channel1.socket();
+        assertNotNull(socket.getLocalAddress());
+
+        channel1.connect(localAddr1);
+
+        assertNotNull(socket.getLocalAddress());
+    }
+
+    public void testSocket_getLocalSocketAddress() throws Exception {
+        Socket socket = channel1.socket();
+        assertNull(socket.getLocalSocketAddress());
+
+        channel1.connect(localAddr1);
+
+        assertNotNull(socket.getLocalSocketAddress());
+    }
+
+    public void testSocket_getLocalPort() throws Exception {
+        Socket socket = channel1.socket();
+        assertEquals(-1, socket.getLocalPort());
+
+        channel1.connect(localAddr1);
+
+        assertTrue(-1 != socket.getLocalPort());
+        assertTrue(0 != socket.getLocalPort());
+    }
+
     private void assertSocketBeforeConnect(Socket s) throws IOException {
         assertFalse(s.isBound());
         assertFalse(s.isClosed());

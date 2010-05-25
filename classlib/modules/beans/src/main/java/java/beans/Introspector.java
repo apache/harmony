@@ -286,35 +286,41 @@ public class Introspector extends java.lang.Object {
     }
 
     private static BeanInfo getExplicitBeanInfo(Class<?> beanClass) {
-        BeanInfo theBeanInfo = null;
         String beanInfoClassName = beanClass.getName() + "BeanInfo"; //$NON-NLS-1$
-        try{
-            theBeanInfo = loadBeanInfo(beanInfoClassName, beanClass);
-            return theBeanInfo;
-        }catch(Exception e){
-            //fall through
+        try {
+            return loadBeanInfo(beanInfoClassName, beanClass);
+        } catch (Exception e) {
+            // fall through
         }
+
         int index = beanInfoClassName.lastIndexOf('.');
-        String beanInfoName = index>=0? beanInfoClassName.substring(index+1):beanInfoClassName;
+        String beanInfoName = index >= 0 ? beanInfoClassName
+                .substring(index + 1) : beanInfoClassName;
+        BeanInfo theBeanInfo = null;
+        BeanDescriptor beanDescriptor = null;
         for (int i = 0; i < searchPath.length; i++) {
             beanInfoClassName = searchPath[i] + "." + beanInfoName; //$NON-NLS-1$
-            try{
+            try {
                 theBeanInfo = loadBeanInfo(beanInfoClassName, beanClass);
-                
-                // find the beanInfo of the given beanClass, check whether the
-                // beanInfo is consistent with the given beanClass
-                Class<?> beanClassOfBeanInfo = theBeanInfo.getBeanDescriptor()
-                        .getBeanClass();
-                if (beanClassOfBeanInfo.equals(beanClass)) {
-                    break;
-                } 
-            }catch(Exception e){
-                //ignore, try next one
+            } catch (Exception e) {
+                // ignore, try next one
+                continue;
+            }
+            beanDescriptor = theBeanInfo.getBeanDescriptor();
+            if (beanDescriptor != null
+                    && beanClass == beanDescriptor.getBeanClass()) {
+                return theBeanInfo;
             }
         }
-        return theBeanInfo;
+        if (BeanInfo.class.isAssignableFrom(beanClass)) {
+            try {
+                return loadBeanInfo(beanClass.getName(), beanClass);
+            } catch (Exception e) {
+                // fall through
+            }
+        }
+        return null;
     }
-
 
     /*
      * Method which attempts to instantiate a BeanInfo object of the supplied

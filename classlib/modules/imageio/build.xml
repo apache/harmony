@@ -135,15 +135,18 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
     </target>
     
     <target name="-build-native" unless="skip.native.build">
+        <pathconvert targetos="windows" property="jpeg.dir.win">
+            <path location="${jpeg.dir}" />
+        </pathconvert>
         <make dir="src/main/native/jpegencoder/${hy.os.family}">
             <make-elements>
-                <env key="HY_JPEG_VER" value="${jpeg.ver}" />
+                <env key="HY_JPEG_DIR" value="${jpeg.dir.win}" />
             </make-elements>
         </make>
 
         <make dir="src/main/native/pngencoder/${hy.os.family}">
             <make-elements>
-                <env key="HY_PNG_VER" value="${png.ver}" />
+                <env key="HY_PNG_DIR" value="${png.dir}" />
             </make-elements>
         </make>
     </target>

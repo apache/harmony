@@ -22,6 +22,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.Locale;
 
 import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
@@ -821,6 +822,16 @@ public class Inet6AddressTest extends junit.framework.TestCase {
 		// should not throw any exception
 		Inet6Address.getByAddress("123", addr2, nif);
 	}
+
+    public void test_getHostAddress_() throws Exception {
+        byte[] ipAddress = new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+        InetAddress ia = InetAddress.getByAddress(ipAddress);
+        assertEquals("0:0:0:0:0:0:0:1", ia.getHostAddress().toLowerCase(Locale.US));
+
+        ipAddress = new byte[] {-2, -128, 0, 0, 0, 0, 0, 0, 2, 17, 37, -1, -2, -8, 124, -79};
+        ia = InetAddress.getByAddress(ipAddress);
+        assertEquals("fe80:0:0:0:211:25ff:fef8:7cb1", ia.getHostAddress().toLowerCase(Locale.US));
+    }
 
 	/**
 	 * @throws UnknownHostException

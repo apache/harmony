@@ -1006,6 +1006,57 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
             return new SocketChannelInputStream(channel);
         }
 
+        @Override
+        public InetAddress getInetAddress() {
+            if (!isConnected()) {
+                return null;
+            }
+
+            if (channel.connectAddress == null && super.getInetAddress() != null) {
+                channel.connectAddress = new InetSocketAddress(super.getInetAddress(), super.getPort());
+            }
+            if (channel.connectAddress == null) {
+                return null;
+            }
+            return channel.connectAddress.getAddress();
+        }
+
+        @Override
+        public SocketAddress getRemoteSocketAddress() {
+            if (!isConnected()) {
+                return null;
+            }
+            if (channel.connectAddress == null && super.getInetAddress() != null) {
+                channel.connectAddress = new InetSocketAddress(super.getInetAddress(), super.getPort());
+            }
+            return channel.connectAddress;
+        }
+
+        @Override
+        public int getPort() {
+            if (!isConnected()) {
+                return 0;
+            }
+            if (channel.connectAddress == null && super.getInetAddress() != null) {
+                channel.connectAddress = new InetSocketAddress(super.getInetAddress(), super.getPort());
+            }
+            if (channel.connectAddress == null) {
+                return 0;
+            }
+            return channel.connectAddress.getPort();
+        }
+
+        @Override
+        public int getLocalPort() {
+            if (!isBound()) {
+                return -1;
+            }
+            if (channel.localPort == 0 && super.getLocalPort() != -1) {
+                channel.localPort = super.getLocalPort();
+            }
+            return channel.localPort;
+        }
+
         /*
          * Checks whether the channel is open.
          */

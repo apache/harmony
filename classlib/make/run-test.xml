@@ -139,7 +139,7 @@
         </junitreport>
     </target>
 
-    <target name="-short-report" unless="do.full.report">
+    <target name="-short-report" if="do.short.report">
         <mkdir dir="${report.dir}" />
         <junitreport todir="${report.dir}">
             <fileset dir="${tests.output}" includes="TEST*-*.xml">
