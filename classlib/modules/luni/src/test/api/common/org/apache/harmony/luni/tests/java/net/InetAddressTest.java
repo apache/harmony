@@ -135,9 +135,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getByName(String)
      */
     public void test_getByNameUnknownHostException() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Related to HARMONY-5784
 
@@ -156,9 +153,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#equals(java.lang.Object)
      */
     public void test_equalsLjava_lang_Object() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method boolean java.net.InetAddress.equals(java.lang.Object)
         InetAddress ia1 = InetAddress
@@ -173,9 +167,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getAddress()
      */
     public void test_getAddress() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method byte [] java.net.InetAddress.getAddress()
         try {
@@ -200,9 +191,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      */
     @SuppressWarnings("nls")
     public void test_getAllByNameLjava_lang_String() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method java.net.InetAddress []
         // java.net.InetAddress.getAllByName(java.lang.String)
@@ -257,9 +245,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getByName(java.lang.String)
      */
     public void test_getByNameLjava_lang_String() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method java.net.InetAddress
         // java.net.InetAddress.getByName(java.lang.String)
@@ -291,9 +276,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getHostAddress()
      */
     public void test_getHostAddress() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method java.lang.String
         // java.net.InetAddress.getHostAddress()
@@ -309,9 +291,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getHostName()
      */
     public void test_getHostName() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method java.lang.String java.net.InetAddress.getHostName()
         InetAddress ia = InetAddress
@@ -342,6 +321,13 @@ public class InetAddressTest extends junit.framework.TestCase {
         //    assertEquals(Support_Configuration.InetTestIP, ans);
         } finally {
             System.setSecurityManager(oldman);
+        }
+
+        if (Support_Excludes.isExcluded()) {
+            // These thread-safety tests fail intermittently on several
+            // unix platforms
+            // There seems to be no relevant jira for this issue
+            return;
         }
 
         // Make sure there is no caching
@@ -405,9 +391,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getLocalHost()
      */
     public void test_getLocalHost() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method java.net.InetAddress
         // java.net.InetAddress.getLocalHost()
@@ -425,9 +408,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getLocalHost()
      */
     public void test_getLocalHost_extended() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         class Inet_SecurityManager extends SecurityManager {
             @Override
@@ -458,9 +438,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#hashCode()
      */
     public void test_hashCode() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method int java.net.InetAddress.hashCode()
         try {
@@ -478,9 +455,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isMulticastAddress()
      */
     public void test_isMulticastAddress() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia2 = InetAddress.getByName("239.255.255.255");
         assertTrue(ia2.isMulticastAddress());
@@ -492,9 +466,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isAnyLocalAddress()
      */
     public void test_isAnyLocalAddress() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia2 = InetAddress.getByName("239.255.255.255");
         assertFalse(ia2.isAnyLocalAddress());
@@ -506,9 +477,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isLinkLocalAddress()
      */
     public void test_isLinkLocalAddress() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia2 = InetAddress.getByName("239.255.255.255");
         assertFalse(ia2.isLinkLocalAddress());
@@ -520,9 +488,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isLoopbackAddress()
      */
     public void test_isLoopbackAddress() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia2 = InetAddress.getByName("239.255.255.255");
         assertFalse(ia2.isLoopbackAddress());
@@ -536,9 +501,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isLoopbackAddress()
      */
     public void test_isSiteLocalAddress() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia2 = InetAddress.getByName("239.255.255.255");
         assertFalse(ia2.isSiteLocalAddress());
@@ -556,9 +518,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isMCGlobal()/isMCLinkLocal/isMCNodeLocal/isMCOrgLocal/isMCSiteLocal
      */
     public void test_isMCVerify() throws UnknownHostException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia2 = InetAddress.getByName("239.255.255.255");
         assertFalse(ia2.isMCGlobal());
@@ -590,9 +549,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#toString()
      */
     public void test_toString() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Test for method java.lang.String java.net.InetAddress.toString()
         InetAddress ia2 = InetAddress
@@ -609,9 +565,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getByAddress(java.lang.String, byte[])
      */
     public void test_getByAddressLjava_lang_String$B() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Check an IPv4 address with an IPv6 hostname
         byte ipAddress[] = { 127, 0, 0, 1 };
@@ -640,9 +593,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getCanonicalHostName()
      */
     public void test_getCanonicalHostName() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress theAddress = null;
         theAddress = InetAddress.getLocalHost();
@@ -669,9 +619,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isReachableI
      */
     public void test_isReachableI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         InetAddress ia = Inet4Address.getByName("127.0.0.1");
         assertTrue(ia.isReachable(10000));
@@ -688,10 +635,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#isReachableLjava_net_NetworkInterfaceII
      */
     public void test_isReachableLjava_net_NetworkInterfaceII() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // tests local address
         InetAddress ia = Inet4Address.getByName("127.0.0.1");
         assertTrue(ia.isReachable(null, 0, 10000));
@@ -748,9 +691,6 @@ public class InetAddressTest extends junit.framework.TestCase {
     
     // Regression Test for Harmony-2290
     public void test_isReachableLjava_net_NetworkInterfaceII_loopbackInterface() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         final int TTL = 20;
         final int TIME_OUT = 3000;
@@ -789,11 +729,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests serialization/deserialization compatibility.
      */
     public void testSerializationSelf() throws Exception {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SerializationTest.verifySelf(InetAddress.getByName("localhost"),
                 COMPARATOR);
     }
@@ -802,11 +737,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests serialization/deserialization compatibility with RI.
      */
     public void testSerializationCompatibility() throws Exception {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SerializationTest.verifyGolden(this,
                 InetAddress.getByName("localhost"), COMPARATOR);
     }
@@ -815,9 +745,6 @@ public class InetAddressTest extends junit.framework.TestCase {
      * @tests java.net.InetAddress#getByAddress(byte[])
      */
     public void test_getByAddress() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Regression for HARMONY-61
         try {
