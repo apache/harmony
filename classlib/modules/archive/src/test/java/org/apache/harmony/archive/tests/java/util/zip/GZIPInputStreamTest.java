@@ -29,7 +29,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import tests.support.resource.Support_Resources;
-import tests.support.Support_Excludes;
 
 public class GZIPInputStreamTest extends junit.framework.TestCase {
 	File resources;
@@ -56,10 +55,6 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
 	 * @tests java.util.zip.GZIPInputStream#GZIPInputStream(java.io.InputStream)
 	 */
 	public void test_ConstructorLjava_io_InputStream() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// test method java.util.zip.GZIPInputStream.constructor
 		try {
 			Support_Resources.copyFile(resources, "GZIPInputStream",
@@ -84,10 +79,6 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
 	 *        int)
 	 */
 	public void test_ConstructorLjava_io_InputStreamI() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// test method java.util.zip.GZIPInputStream.constructorI
 		try {
 			Support_Resources.copyFile(resources, "GZIPInputStream",
@@ -111,10 +102,6 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
 	 * @tests java.util.zip.GZIPInputStream#read(byte[], int, int)
 	 */
 	public void test_read$BII() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// test method java.util.zip.GZIPInputStream.readBII
         byte orgBuf[] = { '3', '5', '2', 'r', 'g', 'e', 'f', 'd', 'e', 'w' };
         byte outBuf[] = new byte[100];
@@ -234,10 +221,6 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
 	 * @tests java.util.zip.GZIPInputStream#close()
 	 */
 	public void test_close() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// test method java.util.zip.GZIPInputStream.close
 		byte outBuf[] = new byte[100];
 		try {
@@ -277,10 +260,6 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
      * @tests java.util.zip.GZIPInputStream#read()
      */
     public void test_read() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         GZIPInputStream gis = null;
         int result = 0;
         byte[] buffer = new byte[] {1,2,3,4,5,6,7,8,9,10};

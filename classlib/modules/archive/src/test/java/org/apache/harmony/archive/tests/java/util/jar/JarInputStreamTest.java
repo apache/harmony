@@ -30,7 +30,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import tests.support.resource.Support_Resources;
-import tests.support.Support_Excludes;
 
 public class JarInputStreamTest extends junit.framework.TestCase {
 	// a 'normal' jar file
@@ -57,10 +56,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 	 * @tests java.util.jar.JarInputStream#JarInputStream(java.io.InputStream)
 	 */
 	public void test_ConstructorLjava_io_InputStream() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.util.jar.JarInputStream(java.io.InputStream)
 		InputStream is = new URL(jarName).openConnection().getInputStream();
 		boolean hasCorrectEntry = false;
@@ -77,10 +72,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 	}
 
     public void test_closeAfterException() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         File resources = Support_Resources.createTempFolder();
         Support_Resources.copyFile(resources, null, "Broken_entry.jar");
         InputStream is = Support_Resources.getStream("Broken_entry.jar");
@@ -102,10 +93,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
     }
 
     public void test_getNextJarEntry_Ex() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Set<String> desired = new HashSet<String>(Arrays
                 .asList("foo/", "foo/bar/", "foo/bar/A.class", "Blah.txt"));
         Set<String> actual = new HashSet<String>();
@@ -143,10 +130,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 	 * @tests java.util.jar.JarInputStream#getManifest()
 	 */
 	public void test_getManifest() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.util.jar.Manifest
 		// java.util.jar.JarInputStream.getManifest()
 		Manifest m;
@@ -165,10 +148,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 	 * @tests java.util.jar.JarInputStream#getNextJarEntry()
 	 */
 	public void test_getNextJarEntry() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
         final Set<String> desired = new HashSet<String>(Arrays.asList(new String[] { "foo/",
                 "foo/bar/", "foo/bar/A.class", "Blah.txt" }));
         Set<String> actual = new HashSet<String>();
@@ -184,10 +163,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Integrate_Jar_getNextEntry()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String intJarName = Support_Resources.getURL("Integrate.jar");
         InputStream is = new URL(intJarName).openConnection()
                 .getInputStream();
@@ -204,10 +179,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Modified_Class_getNextEntry()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources.getURL("Modified_Class.jar");
         InputStream is = new URL(modJarName).openConnection()
                 .getInputStream();
@@ -235,10 +206,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Modified_Manifest_MainAttributes_getNextEntry()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources.getURL("Modified_Manifest_MainAttributes.jar");
         InputStream is = new URL(modJarName).openConnection()
                 .getInputStream();
@@ -259,10 +226,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Modified_Manifest_EntryAttributes_getNextEntry()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources
                 .getURL("Modified_Manifest_EntryAttributes.jar");
         InputStream is = new URL(modJarName).openConnection()
@@ -290,10 +253,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Modified_SF_EntryAttributes_getNextEntry()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources
                 .getURL("Modified_SF_EntryAttributes.jar");
         InputStream is = new URL(modJarName).openConnection()
@@ -320,10 +279,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
     }
 
     public void test_JarInputStream_Modified_Class_read() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources.getURL("Modified_Class.jar");
         InputStream is = new URL(modJarName).openConnection()
                 .getInputStream();
@@ -353,10 +308,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
     }
 
     public void test_Integrate_Jar_read() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String intJarName = Support_Resources.getURL("Integrate.jar");
         InputStream is = new URL(intJarName).openConnection()
                 .getInputStream();
@@ -379,10 +330,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Modified_Manifest_MainAttributes_read()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources
                 .getURL("Modified_Manifest_MainAttributes.jar");
         InputStream is = new URL(modJarName).openConnection()
@@ -414,10 +361,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
 
     public void test_JarInputStream_Modified_SF_EntryAttributes_read()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String modJarName = Support_Resources
                 .getURL("Modified_SF_EntryAttributes.jar");
         InputStream is = new URL(modJarName).openConnection()
@@ -448,10 +391,6 @@ public class JarInputStreamTest extends junit.framework.TestCase {
     }    
 
     public void test_getNextEntry() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         File resources = Support_Resources.createTempFolder();
         Support_Resources.copyFile(resources, null, "Broken_entry.jar");
         InputStream is = Support_Resources.getStream("Broken_entry.jar");
