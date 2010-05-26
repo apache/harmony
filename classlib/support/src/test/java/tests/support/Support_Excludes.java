@@ -106,7 +106,7 @@ public class Support_Excludes {
                 new BufferedReader(new FileReader("excludes/"+excludeFile));
             String line;
             while ((line = reader.readLine()) != null
-                   && !line.startsWith('#')) {
+                   && !line.startsWith("#")) {
                 if (line.endsWith(".java")) {
                     line = line.substring(0,line.length()-5);
                 } else if (line.endsWith(".class")) {
