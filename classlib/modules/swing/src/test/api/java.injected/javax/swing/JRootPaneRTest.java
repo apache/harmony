@@ -20,6 +20,7 @@
 package javax.swing;
 
 import java.beans.PropertyVetoException;
+import tests.support.Support_Excludes;
 
 public class JRootPaneRTest extends SwingTestCase {
     private JFrame frame;
@@ -38,6 +39,10 @@ public class JRootPaneRTest extends SwingTestCase {
     }
 
     public void testDefaultButton() throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JInternalFrame iframe = new JInternalFrame("", true, true, true, true);
         JDesktopPane desktop = new JDesktopPane();
         desktop.add(iframe);

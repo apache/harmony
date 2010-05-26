@@ -25,6 +25,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class MemoryMXBeanTest extends TestCase {
 
@@ -44,6 +45,10 @@ public class MemoryMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryMXBean.getHeapMemoryUsage()'
      */
     public void testGetHeapMemoryUsage() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MemoryUsage mu = mb.getHeapMemoryUsage();
         assertNotNull(mu);
         assertTrue(mu.getCommitted() >= mu.getUsed());
@@ -55,6 +60,10 @@ public class MemoryMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryMXBean.getNonHeapMemoryUsage()'
      */
     public void testGetNonHeapMemoryUsage() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MemoryUsage mu = mb.getNonHeapMemoryUsage();
         assertNotNull(mu);
         assertTrue(mu.getCommitted() >= mu.getUsed());
@@ -70,6 +79,10 @@ public class MemoryMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryMXBean.getObjectPendingFinalizationCount()'
      */
     public void testGetObjectPendingFinalizationCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(mb.getObjectPendingFinalizationCount() > -1);
     }
 
@@ -77,6 +90,10 @@ public class MemoryMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryMXBean.setVerbose(boolean)'
      */
     public void testSetVerbose() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boolean initialVal = mb.isVerbose();
         mb.setVerbose(!initialVal);
         assertTrue(mb.isVerbose() != initialVal);

@@ -39,6 +39,7 @@ import javax.swing.UIManager;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 import javax.swing.plaf.ComponentUI;
+import tests.support.Support_Excludes;
 
 public class BasicInternalFrameUITest extends SwingTestCase {
 
@@ -87,6 +88,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void createInternalFrameListener()
      */
     public void testCreateInternalFrameListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // cannot test createInternalFrameListener() directly, because
         // it only sets BasicInternalFrameUI.internalFrameListener field
         // which is private
@@ -104,6 +109,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *   void uninstallComponents()
      */
     public void testInstallUninstallComponents() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.frame = frame;
         ui.installComponents();
         assertTrue("titlePane installed", belongs(ui.titlePane, frame.getComponents()));
@@ -118,6 +127,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class is under test for void installDefaults()
      */
     public void testInstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setBackground(null);
         frame.setBorder(null);
         frame.setFrameIcon(null);
@@ -136,6 +149,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class is under test for void uninstallDefaults()
      */
     public void testUninstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         // test general uninstallDefaults()
         ui.uninstallDefaults();
@@ -156,6 +173,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class is under test for void installKeyboardActions()
      */
     public void testInstallKeyboardActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIManager.getDefaults().put("InternalFrame.windowBindings",
                 new Object[] { "shift ESCAPE", "showSystemMenu" });
         frame.setUI(ui);
@@ -174,6 +195,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class is under test for void uninstallKeyboardActions()
      */
     public void testUninstallKeyboardActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIManager.getDefaults().put("InternalFrame.windowBindings",
                 new Object[] { "shift ESCAPE", "showSystemMenu" });
         frame.setUI(ui);
@@ -194,6 +219,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void installListeners()
      */
     public void testInstallListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFrame f = new JFrame();
         f.setSize(50, 100);
         f.getContentPane().add(frame);
@@ -226,6 +255,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void uninstallListeners()
      */
     public void testUninstallListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFrame f = new JFrame();
         f.setSize(50, 100);
         f.getContentPane().add(frame);
@@ -255,6 +288,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void setupMenuCloseKey()
      */
     public void testSetupMenuCloseKey() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // the function does nothing, just check that it doesn't crash
         ui.setupMenuCloseKey();
     }
@@ -263,6 +300,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void setupMenuOpenKey()
      */
     public void testSetupMenuOpenKey() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         assertNull("inputMap not installed", SwingUtilities.getUIInputMap(frame,
                 JComponent.WHEN_IN_FOCUSED_WINDOW));
@@ -294,6 +335,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void BasicInternalFrameUI(JInternalFrame)
      */
     public void testBasicInternalFrameUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui = new BasicInternalFrameUI(frame);
         assertTrue("frame is not set", ui.frame != frame);
         assertTrue("ui is not installed", frame.getUI() != ui);
@@ -303,6 +348,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for MouseInputAdapter createBorderListener(JInternalFrame)
      */
     public void testCreateBorderListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MouseInputAdapter listener1 = ui.createBorderListener(frame);
         assertTrue("not null", listener1 != null);
         assertTrue("instanceof BorderListener",
@@ -315,6 +364,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for JComponent createWestPane(JInternalFrame)
      */
     public void testCreateWestPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         assertNull("null", ui.createWestPane(frame));
         assertNull("null", ui.createWestPane(null));
@@ -324,6 +377,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for JComponent createSouthPane(JInternalFrame)
      */
     public void testCreateSouthPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         assertNull("null", ui.createSouthPane(frame));
         assertNull("null", ui.createSouthPane(null));
@@ -333,6 +390,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for JComponent createNorthPane(JInternalFrame)
      */
     public void testCreateNorthPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent comp = ui.createNorthPane(frame);
         assertTrue("title pane", comp instanceof BasicInternalFrameTitlePane);
         assertFalse("doesn't belong", belongs(comp, frame.getComponents()));
@@ -365,6 +426,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for JComponent createEastPane(JInternalFrame)
      */
     public void testCreateEastPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         assertNull("null", ui.createEastPane(frame));
         assertNull("null", ui.createEastPane(null));
@@ -374,6 +439,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void replacePane(JComponent, JComponent)
      */
     public void testReplacePane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JComponent comp = new JButton("OK");
         // ordinary replace
@@ -401,6 +470,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for Dimension getPreferredSize(JComponent)
      */
     public void testGetPreferredSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setPreferredSize(new Dimension(200, 200));
         Dimension standardSize = new Dimension(100, 100);
         // ui is not installed into the frame
@@ -419,6 +492,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for Dimension getMinimumSize(JComponent)
      */
     public void testGetMinimumSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setMinimumSize(new Dimension(200, 200));
         Dimension standardSize = new Dimension(0, 0);
         // ui is not installed into the frame
@@ -437,6 +514,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for Dimension getMaximumSize(JComponent)
      */
     public void testGetMaximumSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(frame);
         // ui is installed into the frame
         Dimension size = ui.getMaximumSize(frame);
@@ -451,6 +532,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for MouseInputListener createGlassPaneDispatcher()
      */
     public void testCreateGlassPaneDispatcher() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MouseInputListener listener1 = ui.createGlassPaneDispatcher();
         assertTrue("not null", listener1 != null);
         assertNotSame(listener1, ui.glassPaneDispatcher);
@@ -460,6 +545,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void minimizeFrame(JInternalFrame)
      */
     public void testMinimizeFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Dimension size = new Dimension(10, 20);
         frame.setUI(ui);
         frame.setSize(size);
@@ -482,6 +571,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void maximizeFrame(JInternalFrame)
      */
     public void testMaximizeFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JDesktopPane desktop = new JDesktopPane();
         desktop.setSize(new Dimension(100, 200));
@@ -494,6 +587,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void iconifyFrame(JInternalFrame)
      */
     public void testIconifyFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JDesktopPane desktop = new JDesktopPane();
         desktop.setSize(new Dimension(100, 200));
@@ -506,6 +603,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void deiconifyFrame(JInternalFrame)
      */
     public void testDeiconifyFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JDesktopPane desktop = new JDesktopPane();
         desktop.setSize(new Dimension(100, 200));
@@ -526,6 +627,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void activateFrame(JInternalFrame)
      */
     public void testActivateFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JDesktopPane desktop = new JDesktopPane();
         desktop.setSize(new Dimension(100, 200));
@@ -539,6 +644,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void deactivateFrame(JInternalFrame)
      */
     public void testDeactivateFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JDesktopPane desktop = new JDesktopPane();
         desktop.setSize(new Dimension(100, 200));
@@ -553,6 +662,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void closeFrame(JInternalFrame)
      */
     public void testCloseFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JDesktopPane desktop = new JDesktopPane();
         desktop.setSize(new Dimension(100, 200));
@@ -568,6 +681,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *     JComponent getWestPane()
      */
     public void testSetGetWestPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JButton comp = new JButton("ok");
         // null by default
@@ -588,6 +705,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *     JComponent getSouthPane()
      */
     public void testSetGetSouthPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JButton comp = new JButton("ok");
         // null by default
@@ -608,6 +729,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *     JComponent getNorthPane()
      */
     public void testSetGetNorthPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JComponent comp = new JButton("ok");
         // not null by default
@@ -628,6 +753,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *     JComponent getEastPane()
      */
     public void testSetGetEastPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         JButton comp = new JButton("ok");
         // null by default
@@ -646,6 +775,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for ComponentUI createUI(JComponent)
      */
     public void testCreateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentUI ui1 = BasicInternalFrameUI.createUI(frame);
         ComponentUI ui2 = BasicInternalFrameUI.createUI(frame);
         assertTrue("not null", ui1 != null);
@@ -656,6 +789,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void installUI(JComponent)
      */
     public void testInstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setBorder(null);
         ui.installUI(frame);
         // we'll check only some key points
@@ -670,6 +807,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void uninstallUI(JComponent)
      */
     public void testUninstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(frame);
         ui.uninstallUI(frame);
         // we'll check only some key points
@@ -683,6 +824,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void installMouseHandlers(JComponent)
      */
     public void testInstallMouseHandlers() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.borderListener = ui.createBorderListener(frame);
         // install to frame
         ui.installMouseHandlers(frame);
@@ -708,6 +853,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for void deinstallMouseHandlers(JComponent)
      */
     public void testDeinstallMouseHandlers() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.borderListener = ui.createBorderListener(frame);
         ui.installMouseHandlers(frame);
         ui.titlePane = new BasicInternalFrameTitlePane(frame);
@@ -730,6 +879,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for DesktopManager getDesktopManager()
      */
     public void testGetDesktopManager() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         // no desktop pane, the default desktop manager is created
         DesktopManager manager1 = ui.getDesktopManager();
@@ -751,6 +904,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for DesktopManager createDesktopManager()
      */
     public void testCreateDesktopManager() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DesktopManager manager1 = ui.createDesktopManager();
         assertTrue("not null", manager1 != null);
         DesktopManager manager2 = ui.createDesktopManager();
@@ -761,6 +918,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for PropertyChangeListener createPropertyChangeListener()
      */
     public void testCreatePropertyChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PropertyChangeListener listener1 = ui.createPropertyChangeListener();
         assertTrue("not null", listener1 != null);
         PropertyChangeListener listener2 = ui.createPropertyChangeListener();
@@ -772,6 +933,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for ComponentListener createComponentListener()
      */
     public void testCreateComponentListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentListener listener1 = ui.createComponentListener();
         assertTrue("not null", listener1 != null);
         assertNotSame(listener1, ui.componentListener);
@@ -781,6 +946,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      * Class under test for LayoutManager createLayoutManager()
      */
     public void testCreateLayoutManager() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LayoutManager layout = ui.createLayoutManager();
         assertTrue("not null", layout != null);
         if (isHarmony()) {
@@ -796,6 +965,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *     boolean isKeyBindingRegistered()
      */
     public void testSetIsKeyBindingRegistered() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         assertFalse("false by default", ui.isKeyBindingRegistered());
         ui.setKeyBindingRegistered(true);
@@ -810,6 +983,10 @@ public class BasicInternalFrameUITest extends SwingTestCase {
      *     boolean isKeyBindingActive()
      */
     public void testSetIsKeyBindingActive() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame.setUI(ui);
         assertFalse("false by default", ui.isKeyBindingActive());
         ui.setKeyBindingActive(true);
@@ -819,22 +996,42 @@ public class BasicInternalFrameUITest extends SwingTestCase {
     }
 
     public void testBorderListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // the documentation is empty
     }
 
     public void testBasicInternalFrameListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // the documentation is empty
     }
 
     public void testComponentHandler() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // the documentation is empty
     }
 
     public void testGlassPaneDispatcher() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // the documentation is empty
     }
 
     public void testInternalFramePropertyChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // the documentation is empty
     }
 }

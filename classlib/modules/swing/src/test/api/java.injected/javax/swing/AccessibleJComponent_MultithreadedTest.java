@@ -26,6 +26,7 @@ import java.awt.event.FocusListener;
 import java.lang.reflect.InvocationTargetException;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleState;
+import tests.support.Support_Excludes;
 
 public class AccessibleJComponent_MultithreadedTest extends BasicSwingTestCase {
     protected JComponent panel;
@@ -92,6 +93,10 @@ public class AccessibleJComponent_MultithreadedTest extends BasicSwingTestCase {
     @SuppressWarnings("deprecation")
     public void testRemovePropertyChangeListenerPropertyChangeListener()
             throws InterruptedException, InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SynchronizedPropertyListener listener1 = new SynchronizedPropertyListener();
         SynchronizedPropertyListener listener2 = new SynchronizedPropertyListener();
         aContext.addPropertyChangeListener(listener1);
@@ -135,6 +140,10 @@ public class AccessibleJComponent_MultithreadedTest extends BasicSwingTestCase {
     @SuppressWarnings("deprecation")
     public void testAddPropertyChangeListenerPropertyChangeListener()
             throws InterruptedException, InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteFocusListener focusListener = new ConcreteFocusListener();
         SynchronizedPropertyListener listener = new SynchronizedPropertyListener();
         aContext.addPropertyChangeListener(listener);
@@ -194,6 +203,10 @@ public class AccessibleJComponent_MultithreadedTest extends BasicSwingTestCase {
     @SuppressWarnings("deprecation")
     public void testGetAccessibleStateSet() throws InterruptedException,
             InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue("Enabled", aContext.getAccessibleStateSet()
                 .contains(AccessibleState.ENABLED));
         assertFalse("Focused", aContext.getAccessibleStateSet().contains(

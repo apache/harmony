@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingTestCase;
 import javax.swing.text.Position.Bias;
+import tests.support.Support_Excludes;
 
 /**
  * Tests PlainViewI18N class, in particular how views are laid out.
@@ -43,6 +44,10 @@ public class PlainViewI18N_LayoutTest extends SwingTestCase {
      * Tests values returned by <code>flipEastAndWestAtEnds()</code>.
      */
     public void testFlipEastAndWest() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boolean[] forward = new boolean[] { false, false, false, false, false, false, false,
                 false, false, false, false, false };
         boolean[] backward = new boolean[] { false, false, false, false, false, false, false,
@@ -62,6 +67,10 @@ public class PlainViewI18N_LayoutTest extends SwingTestCase {
      * resposible for.
      */
     public void testViewLayout() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int[] levels = new int[] { 0, 1, 2, 1, 0 };
         Element bidiRoot = ((AbstractDocument) doc).getBidiRootElement();
         assertEquals(5, bidiRoot.getElementCount());

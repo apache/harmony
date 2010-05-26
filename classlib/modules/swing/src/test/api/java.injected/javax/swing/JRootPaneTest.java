@@ -35,6 +35,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicRootPaneUI;
+import tests.support.Support_Excludes;
 
 public class JRootPaneTest extends SwingTestCase {
     /*
@@ -112,11 +113,19 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for String getUIClassID()
      */
     public void testGetUIClassID() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("RootPaneUI", rootPane.getUIClassID());
     }
 
     @SuppressWarnings("deprecation")
     public void testSetGetMenuBar() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(rootPane.getMenuBar());
         JMenuBar menuBar = new JMenuBar();
         rootPane.setMenuBar(menuBar);
@@ -126,6 +135,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testJRootPaneConstructor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(rootPane.getContentPane() != null);
         assertTrue(rootPane.getLayeredPane() != null);
         assertTrue(rootPane.getGlassPane() != null);
@@ -133,6 +146,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetContentPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel contentPane = new JPanel();
         contentPane.setOpaque(true);
         rootPane.setContentPane(contentPane);
@@ -140,6 +157,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetLayeredPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLayeredPane pane = new JLayeredPane();
         rootPane.setLayeredPane(pane);
         assertTrue(pane == rootPane.getLayeredPane());
@@ -155,6 +176,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetGlassPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel pane = new JPanel();
         pane.setVisible(false);
         rootPane.setGlassPane(pane);
@@ -171,6 +196,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetJMenuBar() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(rootPane.getJMenuBar());
         JMenuBar menuBar = new JMenuBar();
         rootPane.setJMenuBar(menuBar);
@@ -180,12 +209,20 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BasicRootPaneUI ui = new BasicRootPaneUI();
         rootPane.setUI(ui);
         assertTrue(rootPane.getUI() == ui);
     }
 
     public void testUpdateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rootPane.updateUI();
         ComponentUI ui1 = rootPane.getUI();
         ComponentUI ui2 = UIManager.getUI(rootPane);
@@ -194,6 +231,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetWindowDecorationStyle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // rootPane must be inside window in this test
         JFrame frame = new JFrame();
         rootPane = frame.getRootPane();
@@ -220,6 +261,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testAddImpl() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel pane = new JPanel();
         // setGlassPane() calls addImpl(), which enshures that glass pane
         // has index 0
@@ -233,10 +278,18 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testIsValidateRoot() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(rootPane.isValidateRoot());
     }
 
     public void testIsOptimizedDrawingEnabled() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rootPane.getGlassPane().setVisible(false);
         assertTrue(rootPane.isOptimizedDrawingEnabled());
         rootPane.getGlassPane().setVisible(true);
@@ -244,11 +297,19 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testParamString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestRootPane pane = new TestRootPane();
         assertTrue(pane.paramString() != null);
     }
 
     public void testCreateRootLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestRootPane pane = new TestRootPane();
         LayoutManager layout = pane.createRootLayout();
         assertTrue(layout != null);
@@ -256,6 +317,10 @@ public class JRootPaneTest extends SwingTestCase {
     }
 
     public void testSetGetDefaultButton() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(rootPane.getDefaultButton());
         JButton button = new JButton();
         rootPane.setDefaultButton(button);
@@ -279,6 +344,10 @@ public class JRootPaneTest extends SwingTestCase {
      */
     //
     public void testRootLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Dimension base = new Dimension(640, 480);
         rootPane.setSize(base);
         rootPane.getLayout().layoutContainer(rootPane);
@@ -324,6 +393,10 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for void addNotify()
      */
     public void testAddNotify() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Note: how to test?
     }
 
@@ -331,6 +404,10 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for void removeNotify()
      */
     public void testRemoveNotify() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Note: how to test?
     }
 
@@ -338,6 +415,10 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for Container createContentPane()
      */
     public void testCreateContentPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestRootPane root = new TestRootPane();
         JComponent content = (JComponent) root.createContentPane();
         assertTrue(content != null);
@@ -349,6 +430,10 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for Container createGlassPane()
      */
     public void testCreateGlassPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestRootPane root = new TestRootPane();
         JComponent glass = (JComponent) root.createGlassPane();
         assertTrue(glass != null);
@@ -362,6 +447,10 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for Container createLayeredPane()
      */
     public void testCreateLayeredPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestRootPane root = new TestRootPane();
         JLayeredPane layered = root.createLayeredPane();
         assertTrue(layered != null);
@@ -371,6 +460,10 @@ public class JRootPaneTest extends SwingTestCase {
      * Class under test for AccessibleContext getAccessibleContext()
      */
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AccessibleContext c = rootPane.getAccessibleContext();
         assertTrue("instanceof AccessibleJRootPane", c instanceof JRootPane.AccessibleJRootPane);
         assertTrue("AccessibleRole is ok", c.getAccessibleRole() == AccessibleRole.ROOT_PANE);

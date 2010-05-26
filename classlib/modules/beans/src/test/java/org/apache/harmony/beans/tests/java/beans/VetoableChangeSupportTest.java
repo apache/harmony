@@ -43,6 +43,7 @@ import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
 
 import tests.util.SerializationTester;
+import tests.support.Support_Excludes;
 
 /**
  * Unit test for VetoableChangeSupport
@@ -53,6 +54,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * Constructor a VetoableChangeSupport instance with normal input
      */
     public void testVetoableChangeSupport() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         new VetoableChangeSupport(source);
 
@@ -63,6 +68,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * VetoableChangeListener)
      */
     public void testAddVetoableChangeListenerStringVetoableChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -96,6 +105,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add a null listener
      */
     public void testAddVetoableChangeListenerStringVetoableChangeListener_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -117,6 +130,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add a listener which has already been added.
      */
     public void testAddVetoableChangeListenerStringVetoableChangeListener_duplicate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -173,6 +190,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add listener with null property name.
      */
     public void testAddVetoableChangeListenerStringVetoableChangeListener_property_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -186,6 +207,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add listeners to an invalid property
      */
     public void testAddVetoableChangeListenerStringVetoableChangeListener_property_invalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -210,6 +235,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add different listener with a particular property name.
      */
     public void testAddVetoableChangeListenerStringVetoableChangeListener_property_duplicate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -249,6 +278,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * addVetoableChangeListener(VetoableChangeListener)
      */
     public void testAddVetoableChangeListenerVetoableChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -277,6 +310,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add a null listener
      */
     public void testAddVetoableChangeListenerVetoableChangeListener_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
         support.addVetoableChangeListener(null);
@@ -300,6 +337,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add duplicated listeners
      */
     public void testAddVetoableChangeListenerVetoableChangeListener_duplicate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -330,6 +371,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add two different listeners
      */
     public void testAddVetoableChangeListenerVetoableChangeListener_TwoDifferent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -362,6 +407,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * add a VetoableChangeListenerProxy
      */
     public void testAddVetoableChangeListenerVetoableChangeListener_Proxy() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -420,6 +469,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangePropertyChangeEvent()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -435,6 +488,10 @@ public class VetoableChangeSupportTest extends TestCase {
 
     public void testFireVetoableChangePropertyChangeEvent_Veto()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -514,6 +571,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangePropertyChangeEvent_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -533,6 +594,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangePropertyChangeEvent_property()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -550,6 +615,10 @@ public class VetoableChangeSupportTest extends TestCase {
 
     public void testFireVetoableChangePropertyChangeEvent_property_invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -570,6 +639,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangePropertyChangeEvent_DuplicateListener()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -594,6 +667,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangePropertyChangeEvent_listener_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -608,6 +685,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -624,6 +705,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_listener_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -636,6 +721,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_property()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -652,6 +741,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_listener_null_property()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -665,6 +758,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_twoListeners()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -686,6 +783,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_property_twoListeners()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -707,6 +808,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_Property_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -722,6 +827,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_listener_Property_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -737,6 +846,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_listener_Null_Property_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -752,6 +865,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_Property_invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -770,6 +887,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_listener_Property_invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -794,6 +915,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringbooleanboolean_SameValue()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -812,6 +937,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -828,6 +957,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_property_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -844,6 +977,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_property_Invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -860,6 +997,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_SameValue()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -878,6 +1019,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_listener()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -893,6 +1038,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_listener_property_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -909,6 +1058,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_listener_property_Invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -925,6 +1078,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringintint_listener_SameValue()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -938,6 +1095,10 @@ public class VetoableChangeSupportTest extends TestCase {
 
     public void testFireVetoableChangeStringintint_listener_Invalid_property()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -956,6 +1117,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -971,6 +1136,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_property_Null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -986,6 +1155,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_property_invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1001,6 +1174,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_SameValue()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1016,6 +1193,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_SameValue_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1033,6 +1214,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_listener()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1048,6 +1233,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_listener_property_Null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1063,6 +1252,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_listener_property_invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1078,6 +1271,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_listener_SameValue()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1093,6 +1290,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_listener_SameValue_null()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1108,6 +1309,10 @@ public class VetoableChangeSupportTest extends TestCase {
      */
     public void testFireVetoableChangeStringObjectObject_listener_invalid()
             throws PropertyVetoException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1119,6 +1324,10 @@ public class VetoableChangeSupportTest extends TestCase {
     }
 
     public void testFireVetoableChangeException_revert_event() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final VetoableChangeSupport support = new VetoableChangeSupport(
                 new Object());
         final StringBuffer sb = new StringBuffer();
@@ -1164,6 +1373,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register listener for property
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_property() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1184,6 +1397,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register listener for property, two same listeners
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_property_more() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1207,6 +1424,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register listener for property, two different listeners
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_property_diff() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1234,6 +1455,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register listener for property, two different listeners
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_listener_diff() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1256,6 +1481,10 @@ public class VetoableChangeSupportTest extends TestCase {
     }
 
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_listener_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1278,6 +1507,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register listener for property.
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_all() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1298,6 +1531,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * remove listener from null property
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_propertyName_Null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1314,6 +1551,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * propertyname is invalid
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_propertyName_Invalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1334,6 +1575,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * no listener attached to the property
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_propertyName_NoListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1353,6 +1598,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * listener null
      */
     public void testRemoveVetoableChangeListenerStringVetoableChangeListener_listener_null_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1373,6 +1622,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register listener for all
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_all() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1393,6 +1646,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * two same listeners
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_all_more() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1417,6 +1674,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * two different listeners
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_all_more_diff() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1444,6 +1705,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * listener null
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_all_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1467,6 +1732,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register for one property
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_property() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1490,6 +1759,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * listener null
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1513,6 +1786,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * register null listener, remove null listener.
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_null_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1535,6 +1812,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * Regression test for HARMONY-321
      */
     public void testFireVetoableChange_regression() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         VetoableChangeSupport vcs = new VetoableChangeSupport(this);
         MockVetoListener2 vlistener = new MockVetoListener2();
 
@@ -1553,6 +1834,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * no this listener
      */
     public void testRemoveVetoableChangeListenerVetoableChangeListener_invalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1571,6 +1856,10 @@ public class VetoableChangeSupportTest extends TestCase {
     }
 
     public void testSerialization() throws IOException, ClassNotFoundException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockSource source = new MockSource();
         VetoableChangeSupport support = new VetoableChangeSupport(source);
 
@@ -1610,6 +1899,10 @@ public class VetoableChangeSupportTest extends TestCase {
     }
 
      public void testSerialization_Compatibility() throws Exception {
+         if (Support_Excludes.isExcluded()) {
+             return;
+         }
+
          MockSource source = new MockSource();
          VetoableChangeSupport support = new VetoableChangeSupport(source);
  
@@ -1820,6 +2113,10 @@ public class VetoableChangeSupportTest extends TestCase {
      *        java.lang.Object)
      */
     public void testVetoableChangeSupport_null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-228
         try {
             new VetoableChangeSupport(null);
@@ -1833,12 +2130,20 @@ public class VetoableChangeSupportTest extends TestCase {
      *        java.beans.VetoableChangeListener)
      */
     public void test_addPropertyChangeListenerNullNull() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-441
         new VetoableChangeSupport("bean1")
                 .addVetoableChangeListener(null, null);
     }
 
     public void test_readObject() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-421
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -1858,6 +2163,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * The test checks the method add() with no property specified
      */
     public void testAddVetoableChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         VetoableChangeSupport vcs = new VetoableChangeSupport("bean1");
         VetoableChangeListener vcl = new VetoableChangeListener() {
 
@@ -1876,6 +2185,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * The test checks the method add() for property specified
      */
     public void testAddVetoableChangeListenerByPropertyName() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         VetoableChangeSupport vcs = new VetoableChangeSupport("bean1");
         VetoableChangeListener vcl = new VetoableChangeListener() {
 
@@ -1895,6 +2208,10 @@ public class VetoableChangeSupportTest extends TestCase {
      * The test checks the method add() for VetoableChangeListenerProxy
      */
     public void testAddVetoableChangeListenerProxy() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         VetoableChangeSupport vcs = new VetoableChangeSupport("bean1");
         VetoableChangeListener vcl = new VetoableChangeListener() {
 
@@ -1916,6 +2233,10 @@ public class VetoableChangeSupportTest extends TestCase {
     
     
     public void testSerializationForm(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ObjectStreamClass objectStreamClass = ObjectStreamClass.lookup(VetoableChangeSupport.class);
         assertNotNull(objectStreamClass.getField("source"));
         assertNotNull(objectStreamClass.getField("children"));

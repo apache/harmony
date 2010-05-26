@@ -27,6 +27,7 @@ import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleState;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 /**
  * AccessibleAWTCanvas

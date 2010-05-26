@@ -21,6 +21,7 @@ package java.awt.geom;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import tests.support.Support_Excludes;
 
 public class Line2DTest extends PathIteratorTestCase {
 
@@ -133,16 +134,28 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testSetLine1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         l.setLine(new Point(5, 6), new Point(7, 8));
         assertEquals(new Line2D.Double(5, 6, 7, 8), l);
     }
 
     public void testSetLine2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         l.setLine(new Line2D.Double(5, 6, 7, 8));
         assertEquals(new Line2D.Double(5, 6, 7, 8), l);
     }
 
     public void testGetBounds(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (int[][] element : bounds) {
             assertEquals(
                     new Rectangle(
@@ -159,10 +172,18 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testClone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(l, (Line2D)l.clone());
     }
 
     public void testRelativeCCW1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -175,6 +196,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testRelativeCCW2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -187,6 +212,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testRelativeCCW3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -199,6 +228,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testLinesIntersect(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (int[] element : lines) {
             int x1 = element[0];
             int y1 = element[1];
@@ -213,6 +246,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testIntersectsLine1(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (int[] element : lines) {
             int x1 = element[0];
             int y1 = element[1];
@@ -227,6 +264,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testIntersectsLine2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (int[] element : lines) {
             int x1 = element[0];
             int y1 = element[1];
@@ -241,6 +282,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtSegDistSq1(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -254,6 +299,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtSegDistSq2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -267,6 +316,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtSegDistSq3(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -280,6 +333,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtSegDist1(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -293,6 +350,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtSegDist2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -306,6 +367,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtSegDist3(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -319,6 +384,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtLineDistSq1(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -332,6 +401,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtLineDistSq2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -345,6 +418,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtLineDistSq3(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -358,6 +435,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtLineDist1(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -371,6 +452,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtLineDist2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -384,6 +469,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testPtLineDist3(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : points) {
             int x = (int)element[0];
             int y = (int)element[1];
@@ -397,6 +486,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testContainsPoint(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Always returns false
         assertFalse(l.contains(0, 0));
         assertFalse(l.contains(1, 2));
@@ -404,6 +497,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testContainsPoint2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Always returns false
         assertFalse(l.contains(new Point(0, 0)));
         assertFalse(l.contains(new Point(1, 2)));
@@ -411,16 +508,28 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testContainsRect(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Always returns false
         assertFalse(l.contains(1, 2, 3, 4));
     }
 
     public void testContainsRect2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Always returns false
         assertFalse(l.contains(new Rectangle(1, 2, 3, 4)));
     }
 
     public void testIntersects1(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for(int i = 0; i < Rectangle2DTest.lines.length; i++) {
             int x1 = Rectangle2DTest.lines[i][0];
             int y1 = Rectangle2DTest.lines[i][1];
@@ -434,6 +543,10 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testIntersects2(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for(int i = 0; i < Rectangle2DTest.lines.length; i++) {
             int x1 = Rectangle2DTest.lines[i][0];
             int y1 = Rectangle2DTest.lines[i][1];
@@ -459,36 +572,60 @@ public class Line2DTest extends PathIteratorTestCase {
     }
 
     public void testGetPathIteratorDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkPathIteratorDouble(
                 l.getPathIterator(null),
                 new double[]{1, 2, 3, 4});
     }
 
     public void testGetPathIteratorFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkPathIteratorFloat(
                 l.getPathIterator(null),
                 new float[]{1, 2, 3, 4});
     }
 
     public void testGetPathIteratorDoubleFlat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkPathIteratorDouble(
                 l.getPathIterator(null, 2),
                 new double[]{1, 2, 3, 4});
     }
 
     public void testGetPathIteratorFloatFlat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkPathIteratorFloat(
                 l.getPathIterator(null, 4),
                 new float[]{1, 2, 3, 4});
     }
 
     public void testGetPathIteratorDoubleAffine() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkPathIteratorDouble(
                 l.getPathIterator(AffineTransform.getTranslateInstance(2, 1)),
                 new double[]{3, 3, 5, 5});
     }
 
     public void testGetPathIteratorFloatAffine() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkPathIteratorFloat(
                 l.getPathIterator(AffineTransform.getTranslateInstance(2, 1)),
                 new float[]{3, 3, 5, 5});

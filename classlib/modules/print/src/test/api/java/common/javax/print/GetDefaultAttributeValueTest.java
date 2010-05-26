@@ -24,10 +24,15 @@ import javax.print.attribute.standard.JobName;
 import javax.print.attribute.standard.Media;
 import javax.print.attribute.standard.RequestingUserName;
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class GetDefaultAttributeValueTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testGetDefaultAttributeValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PrintService[] services;
         Object probe;
         services = PrintServiceLookup.lookupPrintServices(null, null);

@@ -57,6 +57,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.OptionPaneUI;
 import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonAreaLayout;
+import tests.support.Support_Excludes;
 
 public class BasicOptionPaneUITest extends SwingTestCase {
     protected BasicOptionPaneUI paneUI;
@@ -100,6 +101,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     };
 
     public void testGetPreferredSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane() {
             private static final long serialVersionUID = 1L;
 
@@ -138,6 +143,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testInstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         pane.removeAll();
         pane.setLayout(null);
@@ -150,6 +159,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testUninstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         pane.setUI(paneUI);
         paneUI.uninstallUI(pane);
@@ -158,6 +171,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testCreateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue("created UI is not null", null != BasicOptionPaneUI
                 .createUI(new JOptionPane()));
         assertTrue("created UI is of the proper class",
@@ -167,10 +184,18 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testSelectInitialValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement selectInitialValue().
     }
 
     public void testContainsCustomComponents() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         OptionPaneUI ui = null;
         JOptionPane optionPane = null;
         optionPane = new JOptionPane();
@@ -200,6 +225,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testInstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         UIManager.put("OptionPane.background", new ColorUIResource(Color.red));
         UIManager.put("OptionPane.foreground", new ColorUIResource(Color.yellow));
@@ -221,6 +250,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testUninstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         pane.setUI(paneUI);
         assertNotNull(pane.getBackground());
@@ -237,6 +270,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testInstallComponents() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         pane.removeAll();
         paneUI.optionPane = pane;
@@ -256,6 +293,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testUninstallComponents() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         assertEquals(2, pane.getComponentCount());
         paneUI.optionPane = pane;
@@ -268,6 +309,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testCreateLayoutManager() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LayoutManager layout1 = paneUI.createLayoutManager();
         LayoutManager layout2 = paneUI.createLayoutManager();
         assertTrue("LayoutManager is not null", layout1 != null);
@@ -277,11 +322,19 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testInstallListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         paneUI.optionPane = new JOptionPane();
         assertEquals(1, paneUI.optionPane.getPropertyChangeListeners().length);
     }
 
     public void testUninstallListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         paneUI.optionPane = new JOptionPane();
         paneUI.optionPane.setUI(paneUI);
         assertEquals(1, paneUI.optionPane.getPropertyChangeListeners().length);
@@ -293,15 +346,27 @@ public class BasicOptionPaneUITest extends SwingTestCase {
 
     // Regression for HARMONY-2901
     public void testUninstallListenersNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(paneUI.optionPane);
         paneUI.uninstallListeners(); // no exception is expected
     }
 
     public void testCreatePropertyChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(paneUI.createPropertyChangeListener());
     }
 
     public void testInstallUninstallKeyboardActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         paneUI.optionPane = new JOptionPane();
         Object[] keys = null;
         paneUI.uninstallKeyboardActions();
@@ -334,10 +399,18 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetMinimumOptionPaneSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Dimension(262, 90), paneUI.getMinimumOptionPaneSize());
     }
 
     public void testCreateMessageArea() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane pane = new JOptionPane();
         String message = "message message message message";
         pane.setUI(paneUI);
@@ -394,6 +467,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testAddMessageComponents() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container messageContainer = new JPanel();
         paneUI.optionPane = new JOptionPane();
         Component child = null, parent = null;
@@ -490,6 +567,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetMessage() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object message = new JButton();
         paneUI.optionPane = new JOptionPane();
         paneUI.optionPane.setMessage(message);
@@ -497,6 +578,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testAddIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel panel = new JPanel();
         paneUI.optionPane = new JOptionPane();
         paneUI.optionPane.setMessageType(JOptionPane.INFORMATION_MESSAGE);
@@ -526,6 +611,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Icon icon = null;
         assertNull(paneUI.getIcon());
         JOptionPane optionPane = new JOptionPane();
@@ -544,6 +633,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetIconForType() throws InterruptedException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         paneUI.optionPane = new JOptionPane();
         paneUI.optionPane.setUI(paneUI);
         Icon icon11 = new IconUIResource(new ImageIcon(new BufferedImage(10, 20,
@@ -580,6 +673,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetIconForType_Null() throws InterruptedException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try { // Regression test for HARMONY-2903
             new BasicOptionPaneUI().getIconForType(0);
             fail("NullPointerException should have been thrown");
@@ -589,6 +686,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetMaxCharactersPerLineCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         paneUI.optionPane = new JOptionPane();
         paneUI.optionPane.setUI(paneUI);
         assertEquals(Integer.MAX_VALUE, paneUI.getMaxCharactersPerLineCount());
@@ -596,6 +697,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
 
     // Regression for HARMONY-2902
     public void testGetMaxCharactersPerLineCount_OptionPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker marker = new Marker();
         paneUI.optionPane = new JOptionPane() {
             private static final long serialVersionUID = 1L;
@@ -614,6 +719,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
 
     // Regression for HARMONY-2902
     public void testGetMaxCharactersPerLineCount_Null() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(paneUI.optionPane);
         testExceptionalCase(new NullPointerCase() {
             @Override
@@ -624,6 +733,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testBurstStringInto() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message ";
         JPanel panel = new JPanel();
         paneUI.burstStringInto(panel, message, 2);
@@ -653,6 +766,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testCreateSeparator() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(paneUI.createSeparator());
     }
 
@@ -666,6 +783,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testCreateButtonArea() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container buttonArea = null;
         paneUI.optionPane = new JOptionPane();
         JButton button;
@@ -757,6 +878,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testAddButtonComponents() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object option1 = new JRadioButton("Tarara");
         Object option2 = new Integer(100);
         Object option3 = "Eminem must tsum menimE";
@@ -779,6 +904,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testCreateButtonActionListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ActionListener listener1 = paneUI.createButtonActionListener(0);
         ActionListener listener2 = paneUI.createButtonActionListener(1);
         assertTrue("listener is not null", listener1 != null);
@@ -790,6 +919,10 @@ public class BasicOptionPaneUITest extends SwingTestCase {
     }
 
     public void testGetButtons() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object[] buttons = null;
         paneUI.optionPane = new JOptionPane();
         paneUI.installDefaults();
@@ -826,15 +959,27 @@ public class BasicOptionPaneUITest extends SwingTestCase {
 
     // Regression for HARMONY-2901
     public void testGetButtonsNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(paneUI.optionPane);
         assertNull(paneUI.getButtons());
     }
 
     public void testGetSizeButtonsToSameWidth() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(paneUI.getSizeButtonsToSameWidth());
     }
 
     public void testGetInitialValueIndex() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JOptionPane optionPane = new JOptionPane("Message", JOptionPane.ERROR_MESSAGE,
                 JOptionPane.CLOSED_OPTION, null, new Object[] { "1", "2", "3" }, "1");
         paneUI = (BasicOptionPaneUI) optionPane.getUI();
@@ -863,11 +1008,19 @@ public class BasicOptionPaneUITest extends SwingTestCase {
 
     // Regression for HARMONY-2901
     public void testGetInitialValueIndexNull() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(paneUI.optionPane);
         assertEquals(-1, paneUI.getInitialValueIndex());
     }
 
     public void testResetInputValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement resetInputValue().
     }
 }

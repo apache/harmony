@@ -38,6 +38,7 @@ import javax.swing.text.TabExpander;
 import javax.swing.text.View;
 import javax.swing.text.GlyphView.GlyphPainter;
 import javax.swing.text.Position.Bias;
+import tests.support.Support_Excludes;
 
 public class InlineViewTest extends BasicSwingTestCase {
     public static class FixedPainter extends GlyphPainter {
@@ -132,11 +133,19 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testInlineView() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(inline, view.getElement());
         assertNotSame(inline.getAttributes(), view.getAttributes());
     }
 
     public void testInlineViewUponParagraph() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Element paragraph = doc.getParagraphElement(20);
         view = new InlineView(paragraph);
         assertSame(paragraph, view.getElement());
@@ -144,6 +153,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testInlineViewUponStyledDocument() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final StyledDocument styledDoc = new DefaultStyledDocument();
         styledDoc.insertString(0, "a simple paragraph", null);
         inline = styledDoc.getCharacterElement(1);
@@ -159,6 +172,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testGetAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(2, attrs.getAttributeCount());
         assertEquals("italic",
                      attrs.getAttribute(CSS.Attribute.FONT_STYLE).toString());
@@ -169,6 +186,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testGetAttributesUpdate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(2, attrs.getAttributeCount());
         assertEquals("italic",
                      attrs.getAttribute(CSS.Attribute.FONT_STYLE).toString());
@@ -183,6 +204,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testGetAttributesStyleSheet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker ssMarker = new Marker();
         view = new InlineView(inline) {
             protected StyleSheet getStyleSheet() {
@@ -197,10 +222,18 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testGetAttributesSame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(attrs, view.getAttributes());
     }
 
     public void testGetBreakWeight() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         view.setGlyphPainter(new FixedPainter());
         assertNull(attrs.getAttribute(CSS.Attribute.WHITE_SPACE));
 
@@ -222,6 +255,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testGetBreakWeightNowrap() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         view.setGlyphPainter(new FixedPainter());
 
         assertNull(attrs.getAttribute(CSS.Attribute.WHITE_SPACE));
@@ -247,6 +284,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testBreakView() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         view.setGlyphPainter(new FixedPainter());
         assertNull(attrs.getAttribute(CSS.Attribute.WHITE_SPACE));
 
@@ -270,6 +311,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testBreakViewNowrap() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         view.setGlyphPainter(new FixedPainter());
         doc.getStyleSheet().addRule("em { white-space: nowrap }");
         view.setPropertiesFromAttributes();
@@ -301,6 +346,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testChangedUpdate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker prefChanged = new Marker();
         final Marker setProps = new Marker();
         view = new InlineView(inline) {
@@ -327,6 +376,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testChangedUpdateAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker viewAttrMarker = new Marker(true);
         final StyleSheet ss = new StyleSheet() {
             public AttributeSet getViewAttributes(final View v) {
@@ -348,6 +401,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testInsertUpdate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker prefChanged = new Marker();
         final Marker setProps = new Marker();
         view = new InlineView(inline) {
@@ -374,6 +431,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testRemoveUpdate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker prefChanged = new Marker();
         final Marker setProps = new Marker();
         view = new InlineView(inline) {
@@ -400,6 +461,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testSetPropertiesFromAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(view.getFont().isItalic());
         assertFalse(view.isUnderline());
         doc.getStyleSheet().addRule("em { text-decoration: underline }");
@@ -409,6 +474,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testSetPropertiesFromAttributesBoxPainter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker boxMarker = new Marker();
         final Marker listMarker = new Marker();
         final StyleSheet ss = new StyleSheet() {
@@ -434,6 +503,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testSetPropertiesFromAttributesAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker verticalAlign = new Marker();
         final Marker textDecoration = new Marker();
         final Marker whiteSpace = new Marker();
@@ -469,6 +542,10 @@ public class InlineViewTest extends BasicSwingTestCase {
     }
 
     public void testGetStyleSheet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(doc.getStyleSheet(), view.getStyleSheet());
     }
 

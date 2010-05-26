@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 import java.util.Vector;
 
 import javax.swing.SwingTestCase;
+import tests.support.Support_Excludes;
 
 public class ContentModelTest extends SwingTestCase {
     ContentModel contentModel;
@@ -77,6 +78,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testContentModelElement() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         contentModel = new ContentModel(elements[0]);
         Utils.checkContentModel(contentModel, elements[0], 0, null);
 
@@ -85,11 +90,19 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testContentModel() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         contentModel = new ContentModel();
         Utils.checkContentModel(contentModel, null, 0, null);
     }
 
     public void testContentModelIntContentModel() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         contentModel1 = new ContentModel(elements[0]);
 
         contentModel = new ContentModel('*', contentModel1);
@@ -103,6 +116,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testContentModelIntObjectContentModel() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         contentModel1 = new ContentModel(elements[0]);
         contentModel = new ContentModel(',', elements[1], contentModel1);
         Utils.checkContentModel(contentModel, elements[1], ',',
@@ -132,6 +149,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testIllegalArgumentException_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (SwingTestCase.isHarmony()) {
             contentModel1 = new ContentModel(elements[0]);
             try {
@@ -204,6 +225,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testIllegalArgumentException_Type() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (SwingTestCase.isHarmony()) {
             contentModel1 = new ContentModel(elements[0]);
             try {
@@ -262,6 +287,10 @@ public class ContentModelTest extends SwingTestCase {
 
 
     public void testFirst() throws Exception{
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initContentModels();
         assertEquals(elements[1], contentModel1.first());
         assertEquals(elements[2], contentModel2.first());
@@ -275,6 +304,10 @@ public class ContentModelTest extends SwingTestCase {
     }
     
     public void testFirst2() throws Exception{
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //regression for HARMONY-1350
         DTD dtd = DTD.getDTD("tmp");
         ContentModel model1 = new ContentModel (dtd.getElement(2));
@@ -285,6 +318,10 @@ public class ContentModelTest extends SwingTestCase {
 
 
     public void testToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!SwingTestCase.isHarmony()) {
             return;
         }
@@ -325,6 +362,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testFirstObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!SwingTestCase.isHarmony()) {
             return;
         }
@@ -468,6 +509,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testGetElements() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         resetElemVec();
         Vector v = new Vector();
         initContentModels();
@@ -518,6 +563,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testEmpty() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //ClassCastException on RI
         if (!SwingTestCase.isHarmony()) {
             return;
@@ -540,6 +589,10 @@ public class ContentModelTest extends SwingTestCase {
     }
 
     public void testSerialization() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         contentModel1 = new ContentModel(elements[0]);
         contentModel = new ContentModel('|', elements[1], contentModel1);
         contentModel2 = (ContentModel)Utils.doSerialization(contentModel);

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import tests.support.Support_Excludes;
 
 public class DefaultComboBoxModelTest extends SwingTestCase {
     private DefaultComboBoxModel model;
@@ -48,6 +49,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testDefaultComboBoxModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, model.getSize());
         assertNull(model.getSelectedItem());
         assertEquals(0, listener.getEvents().size());
@@ -70,6 +75,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testAddElement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, model.getSize());
         assertNull(model.getSelectedItem());
         model.addElement("1");
@@ -86,6 +95,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testGetElementAt() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(model.getElementAt(0));
         model.addElement("a");
         model.addElement("b");
@@ -95,6 +108,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testGetIndexOf() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, model.getIndexOf("a"));
         model.addElement("a");
         model.addElement("b");
@@ -105,6 +122,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testGetSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, model.getSize());
         model.addElement("a");
         assertEquals(1, model.getSize());
@@ -113,6 +134,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testInsertElementAt() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new ExceptionalCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -130,6 +155,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testRemoveAllElements() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         model.addElement("a");
         model.addElement("b");
         model.addElement("c");
@@ -141,6 +170,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testRemoveElement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         model.removeElement("a");
         assertEquals(0, model.getSize());
         assertEquals(0, listener.getEvents().size());
@@ -155,6 +188,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testRemoveElementAt() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new ExceptionalCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -181,6 +218,10 @@ public class DefaultComboBoxModelTest extends SwingTestCase {
     }
 
     public void testGetSetSelectedItem() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(model.getSelectedItem());
         model.setSelectedItem("3");
         assertEquals("3", model.getSelectedItem());

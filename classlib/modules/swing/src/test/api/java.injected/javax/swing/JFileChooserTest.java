@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
+import tests.support.Support_Excludes;
 
 public class JFileChooserTest extends SwingTestCase {
     private JFileChooser chooser;
@@ -54,6 +55,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testJFileChooser() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(chooser.getCurrentDirectory());
         assertEquals(FileSystemView.getFileSystemView().getDefaultDirectory(), chooser
                 .getCurrentDirectory());
@@ -102,6 +107,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testJFileChooser_FSV() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         File testDir = new File("testDir");
         testDir.deleteOnExit();
         testDir.mkdir();
@@ -140,6 +149,10 @@ public class JFileChooserTest extends SwingTestCase {
 
     //TODO
     public void testSetup() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         chooser = new JFileChooser();
         assertEquals(FileSystemView.getFileSystemView(), chooser.getFileSystemView());
         chooser.setup(FileSystemView.getFileSystemView());
@@ -179,6 +192,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetDragEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(chooser.getDragEnabled());
         chooser.setDragEnabled(true);
         assertTrue(chooser.getDragEnabled());
@@ -186,6 +203,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetSelectedFile() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(chooser.getSelectedFile());
         File selectedFile = new File("testFile");
         chooser.setSelectedFile(selectedFile);
@@ -200,6 +221,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetSelectedFiles() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, chooser.getSelectedFiles().length);
         chooser.setSelectedFile(new File("c"));
         assertEquals(0, chooser.getSelectedFiles().length);
@@ -227,6 +252,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetCurrentDirectory() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(FileSystemView.getFileSystemView().getDefaultDirectory(), chooser
                 .getCurrentDirectory());
         File dir = new File("testDir");
@@ -253,12 +282,20 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testChangeToParentDirectory() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         chooser.changeToParentDirectory();
         assertEquals(FileSystemView.getFileSystemView().getDefaultDirectory().getParentFile(),
                 chooser.getCurrentDirectory());
     }
 
     public void testGetSetControlButtonsAreShown() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(chooser.getControlButtonsAreShown());
         chooser.setControlButtonsAreShown(false);
         assertFalse(chooser.getControlButtonsAreShown());
@@ -266,6 +303,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testgetSetDialogType() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(JFileChooser.OPEN_DIALOG, chooser.getDialogType());
         chooser.setDialogType(JFileChooser.SAVE_DIALOG);
         assertEquals(JFileChooser.SAVE_DIALOG, chooser.getDialogType());
@@ -281,6 +322,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetDialogTitle() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(chooser.getDialogTitle());
         assertEquals("Open", chooser.getUI().getDialogTitle(chooser));
         chooser.setDialogTitle("title");
@@ -290,6 +335,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetApproveButtonToolTipText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(chooser.getApproveButtonToolTipText());
         chooser.setApproveButtonToolTipText("text");
         assertEquals("text", chooser.getApproveButtonToolTipText());
@@ -300,6 +349,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetApproveButtonText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(chooser.getApproveButtonText());
         assertEquals("Open", chooser.getUI().getApproveButtonText(chooser));
         chooser.setApproveButtonText("text");
@@ -313,6 +366,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetApproveButtonMnemonic() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, chooser.getApproveButtonMnemonic());
         chooser.setApproveButtonMnemonic('c');
         assertEquals(KeyEvent.VK_C, chooser.getApproveButtonMnemonic());
@@ -322,6 +379,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetAddRemoveResetChoosableFileFilters() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(1, chooser.getChoosableFileFilters().length);
         FileFilter fileFilter = new FileFilter() {
             @Override
@@ -354,6 +415,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetAcceptAllFileFilter() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         FileFilter acceptAllFilter = chooser.getAcceptAllFileFilter();
         assertNotNull(acceptAllFilter);
         assertEquals(acceptAllFilter, chooser.getUI().getAcceptAllFileFilter(chooser));
@@ -364,6 +429,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testIsSetAcceptAllFilterUsed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(chooser.isAcceptAllFileFilterUsed());
         chooser.setAcceptAllFileFilterUsed(false);
         assertFalse(chooser.isAcceptAllFileFilterUsed());
@@ -375,6 +444,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetAccessory() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(chooser.getAccessory());
         JComponent accessory = new JButton();
         chooser.setAccessory(accessory);
@@ -383,6 +456,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetFileSelectionMode_isSelectionEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(JFileChooser.FILES_ONLY, chooser.getFileSelectionMode());
         assertTrue(chooser.isFileSelectionEnabled());
         assertFalse(chooser.isDirectorySelectionEnabled());
@@ -404,6 +481,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testIsSetMultiSelectionEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(chooser.isMultiSelectionEnabled());
         chooser.setMultiSelectionEnabled(true);
         assertTrue(chooser.isMultiSelectionEnabled());
@@ -411,6 +492,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testIsSetFileHidingEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(chooser.isFileHidingEnabled());
         chooser.setFileHidingEnabled(false);
         assertFalse(chooser.isFileHidingEnabled());
@@ -418,6 +503,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetFileFilter() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(chooser.getAcceptAllFileFilter(), chooser.getFileFilter());
         FileFilter fileFilter = new FileFilter() {
             @Override
@@ -436,6 +525,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetFileView() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(chooser.getFileView());
         assertNotNull(chooser.getUI().getFileView(chooser));
         FileView view = new FileView() {
@@ -447,6 +540,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetName_Description_TypeDescription_Icon_Traversable() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         File f = new File(".");
         assertEquals(chooser.getUI().getFileView(chooser).getName(f), chooser.getName(f));
         assertEquals(chooser.getUI().getFileView(chooser).getDescription(f), chooser
@@ -494,6 +591,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testAccept() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         File f = new File(".");
         assertTrue(chooser.accept(f));
         chooser.setFileFilter(new FileFilter() {
@@ -513,6 +614,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetSetFileSystemView() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(FileSystemView.getFileSystemView(), chooser.getFileSystemView());
         FileSystemView fileSystemView = new FileSystemView() {
             @Override
@@ -526,6 +631,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testApproveSelection() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestActionListener listener = new TestActionListener();
         chooser.addActionListener(listener);
         chooser.approveSelection();
@@ -535,6 +644,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testCancelSelection() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestActionListener listener = new TestActionListener();
         chooser.addActionListener(listener);
         chooser.cancelSelection();
@@ -544,6 +657,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetAddRemoveFireActionListeners() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, chooser.getActionListeners().length);
         TestActionListener listener = new TestActionListener();
         chooser.addActionListener(listener);
@@ -556,6 +673,10 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetUpdateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         FileChooserUI ui = chooser.getUI();
         assertNotNull(ui);
         FileChooserUI customUI = new BasicFileChooserUI(chooser);
@@ -567,14 +688,26 @@ public class JFileChooserTest extends SwingTestCase {
     }
 
     public void testGetUIClassID() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("FileChooserUI", chooser.getUIClassID());
     }
 
     public void testgetAccessibleContext() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(chooser.getAccessibleContext() instanceof JFileChooser.AccessibleJFileChooser);
     }
 
     public void testGetName() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFileChooser fc = new JFileChooser();
         assertNull(fc.getName());
     }

@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import tests.support.Support_ListTest;
+import tests.support.Support_Excludes;
 
 public class ArrayListTest extends junit.framework.TestCase {
 
@@ -43,6 +44,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#ArrayList()
      */
     public void test_Constructor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.util.ArrayList()
         new Support_ListTest("", alist).runTest();
 
@@ -56,6 +61,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#ArrayList(int)
      */
     public void test_ConstructorI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.util.ArrayList(int)
         ArrayList al = new ArrayList(5);
         assertEquals("Incorrect arrayList created", 0, al.size());
@@ -75,6 +84,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#ArrayList(java.util.Collection)
      */
     public void test_ConstructorLjava_util_Collection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.util.ArrayList(java.util.Collection)
         ArrayList al = new ArrayList(Arrays.asList(objArray));
         assertTrue("arrayList created from collection has incorrect size", al
@@ -87,6 +100,10 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
     public void testConstructorWithConcurrentCollection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Collection<String> collection = shrinksOnSize("A", "B", "C", "D");
         ArrayList<String> list = new ArrayList<String>(collection);
         assertFalse(list.contains(null));
@@ -96,6 +113,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#add(int, java.lang.Object)
      */
     public void test_addILjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void java.util.ArrayList.add(int, java.lang.Object)
         Object o;
         alist.add(50, o = new Object());
@@ -157,6 +178,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#add(int, java.lang.Object)
      */
     public void test_addILjava_lang_Object_2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object o = new Object();
         int size = alist.size();
         alist.add(size, o);
@@ -177,6 +202,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#add(java.lang.Object)
      */
     public void test_addLjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method boolean java.util.ArrayList.add(java.lang.Object)
         Object o = new Object();
         alist.add(o);
@@ -189,6 +218,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#addAll(int, java.util.Collection)
      */
     public void test_addAllILjava_util_Collection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method boolean java.util.ArrayList.addAll(int,
         // java.util.Collection)
         alist.addAll(50, alist);
@@ -227,6 +260,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      */
     @SuppressWarnings("unchecked")
     public void test_addAllILjava_util_Collection_2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-467
         ArrayList obj = new ArrayList();
         try {
@@ -295,6 +332,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#addAll(int, java.util.Collection)
      */
     public void test_addAllILjava_util_Collection_3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList obj = new ArrayList();
         obj.addAll(0, obj);
         obj.addAll(obj.size(), obj);
@@ -339,6 +380,10 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
     public void test_addAllCollectionOfQextendsE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-539
         // https://issues.apache.org/jira/browse/HARMONY-539
         ArrayList<String> alist = new ArrayList<String>();
@@ -358,6 +403,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#addAll(java.util.Collection)
      */
     public void test_addAllLjava_util_Collection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method boolean
         // java.util.ArrayList.addAll(java.util.Collection)
         List l = new ArrayList();
@@ -415,6 +464,10 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
         public void test_ArrayList_addAll_scenario1() {
+            if (Support_Excludes.isExcluded()) {
+                return;
+            }
+
         ArrayList arrayListA = new ArrayList();
         arrayListA.add(1);
         ArrayList arrayListB = new ArrayList();
@@ -428,6 +481,10 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
     public void test_ArrayList_addAll_scenario2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList arrayList = new ArrayList();
         arrayList.add(1);
         arrayList.addAll(1, arrayList);
@@ -440,6 +497,10 @@ public class ArrayListTest extends junit.framework.TestCase {
         
     // Regression test for HARMONY-5839
     public void testaddAllHarmony5839() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Collection coll = Arrays.asList(new String[] { "1", "2" });
         List list = new ArrayList();
         list.add("a");
@@ -462,6 +523,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#clear()
      */
     public void test_clear() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void java.util.ArrayList.clear()
         alist.clear();
         assertEquals("List did not clear", 0, alist.size());
@@ -482,6 +547,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#clone()
      */
     public void test_clone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object java.util.ArrayList.clone()
         ArrayList x = (ArrayList) (((ArrayList) (alist)).clone());
         assertTrue("Cloned list was inequal to original", x.equals(alist));
@@ -504,6 +573,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#contains(java.lang.Object)
      */
     public void test_containsLjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method boolean
         // java.util.ArrayList.contains(java.lang.Object)
         assertTrue("Returned false for valid element", alist
@@ -523,6 +596,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#ensureCapacity(int)
      */
     public void test_ensureCapacityI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void java.util.ArrayList.ensureCapacity(int)
         // TODO : There is no good way to test this as it only really impacts on
         // the private implementation.
@@ -552,6 +629,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#get(int)
      */
     public void test_getI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object java.util.ArrayList.get(int)
         assertTrue("Returned incorrect element", alist.get(22) == objArray[22]);
         try {
@@ -567,6 +648,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#indexOf(java.lang.Object)
      */
     public void test_indexOfLjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method int java.util.ArrayList.indexOf(java.lang.Object)
         assertEquals("Returned incorrect index", 87, alist
                 .indexOf(objArray[87]));
@@ -582,6 +667,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#isEmpty()
      */
     public void test_isEmpty() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method boolean java.util.ArrayList.isEmpty()
         assertTrue("isEmpty returned false for new list", new ArrayList()
                 .isEmpty());
@@ -593,6 +682,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#lastIndexOf(java.lang.Object)
      */
     public void test_lastIndexOfLjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method int java.util.ArrayList.lastIndexOf(java.lang.Object)
         alist.add(new Integer(99));
         assertEquals("Returned incorrect index", 100, alist
@@ -609,6 +702,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests {@link java.util.ArrayList#removeRange(int, int)}
      */
     public void test_removeRange() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockArrayList mylist = new MockArrayList();
         mylist.removeRange(0, 0);
 
@@ -666,6 +763,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#remove(int)
      */
     public void test_removeI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object java.util.ArrayList.remove(int)
         alist.remove(10);
         assertEquals("Failed to remove element", -1, alist
@@ -719,6 +820,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#set(int, java.lang.Object)
      */
     public void test_setILjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object java.util.ArrayList.set(int,
         // java.lang.Object)
         Object obj;
@@ -770,6 +875,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#size()
      */
     public void test_size() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method int java.util.ArrayList.size()
         assertEquals("Returned incorrect size for exiting list", 100, alist
                 .size());
@@ -781,6 +890,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.AbstractCollection#toString()
      */
     public void test_toString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList l = new ArrayList(1);
         l.add(l);
         String result = l.toString();
@@ -791,6 +904,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#toArray()
      */
     public void test_toArray() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object [] java.util.ArrayList.toArray()
         alist.set(25, null);
         alist.set(75, null);
@@ -813,6 +930,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#toArray(java.lang.Object[])
      */
     public void test_toArray$Ljava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object []
         // java.util.ArrayList.toArray(java.lang.Object [])
         alist.set(25, null);
@@ -838,6 +959,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @tests java.util.ArrayList#trimToSize()
      */
     public void test_trimToSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void java.util.ArrayList.trimToSize()
         for (int i = 99; i > 24; i--)
             alist.remove(i);
@@ -863,6 +988,10 @@ public class ArrayListTest extends junit.framework.TestCase {
      * @test java.util.ArrayList#addAll(int, Collection)
      */
     public void test_addAll() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList list = new ArrayList();
         list.add("one");
         list.add("two");
@@ -901,12 +1030,20 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
     public void testAddAllWithConcurrentCollection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList<String> list = new ArrayList<String>();
         list.addAll(shrinksOnSize("A", "B", "C", "D"));
         assertFalse(list.contains(null));
     }
 
     public void testAddAllAtPositionWithConcurrentCollection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList<String> list = new ArrayList<String>(
                 Arrays.asList("A", "B", "C", "D"));
 
@@ -915,6 +1052,10 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
     public void test_override_size() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayList testlist = new MockArrayList();
         // though size is overriden, it should passed without exception
         testlist.add("test_0");
@@ -955,6 +1096,10 @@ public class ArrayListTest extends junit.framework.TestCase {
     }
 
     public void test_subclassing() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ArrayListExtend a = new ArrayListExtend();
         /*
          * Regression test for subclasses that override size() (which used to

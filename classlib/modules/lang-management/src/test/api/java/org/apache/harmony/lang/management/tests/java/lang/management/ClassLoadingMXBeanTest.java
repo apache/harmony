@@ -24,6 +24,7 @@ import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class ClassLoadingMXBeanTest extends TestCase {
 
@@ -40,6 +41,10 @@ public class ClassLoadingMXBeanTest extends TestCase {
      * 'java.lang.management.ClassLoadingMXBean.getLoadedClassCount()'
      */
     public void testGetLoadedClassCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(mb.getLoadedClassCount() > -1);
     }
 
@@ -48,6 +53,10 @@ public class ClassLoadingMXBeanTest extends TestCase {
      * 'java.lang.management.ClassLoadingMXBean.getTotalLoadedClassCount()'
      */
     public void testGetTotalLoadedClassCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(mb.getTotalLoadedClassCount() > -1);
     }
 
@@ -56,6 +65,10 @@ public class ClassLoadingMXBeanTest extends TestCase {
      * 'java.lang.management.ClassLoadingMXBean.getUnloadedClassCount()'
      */
     public void testGetUnloadedClassCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(mb.getUnloadedClassCount() > -1);
     }
 
@@ -64,6 +77,10 @@ public class ClassLoadingMXBeanTest extends TestCase {
      * 'java.lang.management.ClassLoadingMXBean.setVerbose(boolean)'
      */
     public void testSetVerbose() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boolean initialVal = mb.isVerbose();
         mb.setVerbose(!initialVal);
         assertTrue(mb.isVerbose() != initialVal);

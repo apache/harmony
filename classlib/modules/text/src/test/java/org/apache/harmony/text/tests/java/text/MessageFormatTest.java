@@ -38,6 +38,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class MessageFormatTest extends TestCase {
 
@@ -69,6 +70,10 @@ public class MessageFormatTest extends TestCase {
      *        java.util.Locale)
      */
     public void test_ConstructorLjava_lang_StringLjava_util_Locale() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.text.MessageFormat(java.lang.String,
         // java.util.Locale)
         Locale mk = new Locale("mk", "MK");
@@ -89,6 +94,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#MessageFormat(java.lang.String)
      */
     public void test_ConstructorLjava_lang_String() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.text.MessageFormat(java.lang.String)
         MessageFormat format = new MessageFormat(
                 "abc {4,time} def {3,date} ghi {2,number} jkl {1,choice,0#low|1#high} mnop {0}");
@@ -165,6 +174,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#applyPattern(java.lang.String)
      */
     public void test_applyPatternLjava_lang_String() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void
         // java.text.MessageFormat.applyPattern(java.lang.String)
         MessageFormat format = new MessageFormat("test");
@@ -308,6 +321,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#clone()
      */
     public void test_clone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.Object java.text.MessageFormat.clone()
         MessageFormat format = new MessageFormat("'{'choice'}'{0}");
         MessageFormat clone = (MessageFormat) format.clone();
@@ -326,6 +343,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#equals(java.lang.Object)
      */
     public void test_equalsLjava_lang_Object() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method boolean
         // java.text.MessageFormat.equals(java.lang.Object)
         MessageFormat format1 = new MessageFormat("{0}");
@@ -343,6 +364,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#hashCode()
      */
     public void test_hashCode() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method
         // int java.text.MessageFormat.hashCode()
         assertEquals("Should be equal", 3648, new MessageFormat("rr", null).hashCode());
@@ -362,6 +387,10 @@ public class MessageFormatTest extends TestCase {
      *        java.lang.StringBuffer, java.text.FieldPosition)
      */
     public void test_format$Ljava_lang_ObjectLjava_lang_StringBufferLjava_text_FieldPosition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.StringBuffer
         // java.text.MessageFormat.format(java.lang.Object [],
         // java.lang.StringBuffer, java.text.FieldPosition)
@@ -386,6 +415,10 @@ public class MessageFormatTest extends TestCase {
      *        java.lang.StringBuffer, java.text.FieldPosition)
      */
     public void test_formatLjava_lang_ObjectLjava_lang_StringBufferLjava_text_FieldPosition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.StringBuffer
         // java.text.MessageFormat.format(java.lang.Object,
         // java.lang.StringBuffer, java.text.FieldPosition)
@@ -398,6 +431,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#getFormats()
      */
     public void test_getFormats() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.text.Format []
         // java.text.MessageFormat.getFormats()
 
@@ -440,6 +477,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#getFormatsByArgumentIndex()
      */
     public void test_getFormatsByArgumentIndex() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.text.Format [] test_getFormatsByArgumentIndex()
 
         // test with repeating formats and max argument index < max offset
@@ -480,6 +521,10 @@ public class MessageFormatTest extends TestCase {
      *        java.text.Format)
      */
     public void test_setFormatByArgumentIndexILjava_text_Format() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // test for method setFormatByArgumentIndex(int, Format)
         MessageFormat f1 = (MessageFormat) format1.clone();
         f1.setFormatByArgumentIndex(0, DateFormat.getTimeInstance());
@@ -560,6 +605,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#setFormatsByArgumentIndex(java.text.Format[])
      */
     public void test_setFormatsByArgumentIndex$Ljava_text_Format() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // test for method setFormatByArgumentIndex(Format[])
         MessageFormat f1 = (MessageFormat) format1.clone();
 
@@ -648,6 +697,10 @@ public class MessageFormatTest extends TestCase {
      *        java.text.ParsePosition)
      */
     public void test_parseLjava_lang_StringLjava_text_ParsePosition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MessageFormat format = new MessageFormat("date is {0,date,MMM d, yyyy}");
         ParsePosition pos = new ParsePosition(2);
         Object[] result = (Object[]) format
@@ -679,6 +732,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#setLocale(java.util.Locale)
      */
     public void test_setLocaleLjava_util_Locale() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void
         // java.text.MessageFormat.setLocale(java.util.Locale)
         MessageFormat format = new MessageFormat("date {0,date}");
@@ -693,6 +750,10 @@ public class MessageFormatTest extends TestCase {
      * @tests java.text.MessageFormat#toPattern()
      */
     public void test_toPattern() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method java.lang.String java.text.MessageFormat.toPattern()
         String pattern = "[{0}]";
         MessageFormat mf = new MessageFormat(pattern);
@@ -735,6 +796,10 @@ public class MessageFormatTest extends TestCase {
 	 * @tests java.text.MessageFormat(java.util.Locale)
 	 */
 	public void test_ConstructorLjava_util_Locale() {
+	    if (Support_Excludes.isExcluded()) {
+	        return;
+	    }
+
 		// Regression for HARMONY-65
 		try {
 			new MessageFormat("{0,number,integer", Locale.US);
@@ -748,6 +813,10 @@ public class MessageFormatTest extends TestCase {
 	 * @tests java.text.MessageFormat#parse(java.lang.String)
 	 */
 	public void test_parse() throws ParseException {
+	    if (Support_Excludes.isExcluded()) {
+	        return;
+	    }
+
 		// Regression for HARMONY-63
 		MessageFormat mf = new MessageFormat("{0,number,#,####}", Locale.US);
 		Object[] res = mf.parse("1,00,00");
@@ -756,6 +825,10 @@ public class MessageFormatTest extends TestCase {
 	}
 
 	public void test_format_Object() { 
+	    if (Support_Excludes.isExcluded()) {
+	        return;
+	    }
+
 		// Regression for HARMONY-1875
         Locale.setDefault(Locale.CANADA); 
         TimeZone.setDefault(TimeZone.getTimeZone("UTC")); 
@@ -769,6 +842,10 @@ public class MessageFormatTest extends TestCase {
     } 
 
     public void testHARMONY5323() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     	Object []messageArgs = new Object[11];
     	for (int i = 0; i < messageArgs.length; i++)
     		messageArgs[i] = "dumb"+i;

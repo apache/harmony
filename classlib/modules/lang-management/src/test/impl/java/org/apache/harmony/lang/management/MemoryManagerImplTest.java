@@ -39,6 +39,7 @@ import javax.management.MBeanOperationInfo;
 import org.apache.harmony.lang.management.DynamicMXBeanImpl;
 import org.apache.harmony.lang.management.GarbageCollectorMXBeanImpl;
 import org.apache.harmony.lang.management.MemoryManagerMXBeanImpl;
+import tests.support.Support_Excludes;
 
 
 public class MemoryManagerImplTest extends MultiInstanceDynamicMXBeanImplTestBase {

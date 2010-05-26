@@ -21,6 +21,7 @@ package javax.swing;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
+import tests.support.Support_Excludes;
 
 public class JFileChooserRTest extends BasicSwingTestCase {
     private JFileChooser chooser;
@@ -40,6 +41,10 @@ public class JFileChooserRTest extends BasicSwingTestCase {
     }
 
     public void testAddChoosableFileFilter() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         FileFilter ff = new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -63,6 +68,10 @@ public class JFileChooserRTest extends BasicSwingTestCase {
     }
 
     public void testGetSetSelectedFile() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         propertyChangeController = new PropertyChangeController();
         chooser.addPropertyChangeListener(propertyChangeController);
         assertNull(chooser.getSelectedFile());

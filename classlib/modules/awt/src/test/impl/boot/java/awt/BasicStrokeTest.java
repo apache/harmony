@@ -31,6 +31,7 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.net.URL;
+import tests.support.Support_Excludes;
 
 public class BasicStrokeTest extends TestCase {
 
@@ -53,6 +54,10 @@ public class BasicStrokeTest extends TestCase {
     }
 
     public void testCreate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BasicStroke bs = new BasicStroke();
         assertNotNull(bs);
         assertEquals(bs, new BasicStroke(1.0f));
@@ -142,6 +147,10 @@ public class BasicStrokeTest extends TestCase {
     }
 
     public void testCreateStrokedShape() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         File path = new File(shapePath);
         String test[] = path.list();
 

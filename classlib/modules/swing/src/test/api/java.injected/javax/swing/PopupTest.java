@@ -21,6 +21,7 @@ package javax.swing;
 
 import java.awt.Component;
 import java.awt.Point;
+import tests.support.Support_Excludes;
 
 public class PopupTest extends BasicSwingTestCase {
     private Popup popup;
@@ -35,6 +36,10 @@ public class PopupTest extends BasicSwingTestCase {
     }
 
     public void testPopup() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Component content = new JButton("content");
         assertNull(content.getParent());
         popup = new Popup(null, content, 10, 10);
@@ -71,6 +76,10 @@ public class PopupTest extends BasicSwingTestCase {
     }
 
     public void testShowHide() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Component content = new JButton("content");
         assertNull(SwingUtilities.getWindowAncestor(content));
         popup = new Popup(null, content, 100, 200);

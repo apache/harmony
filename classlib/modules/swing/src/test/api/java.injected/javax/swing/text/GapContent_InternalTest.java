@@ -21,6 +21,7 @@ package javax.swing.text;
 
 import java.util.List;
 import javax.swing.BasicSwingTestCase;
+import tests.support.Support_Excludes;
 
 /**
  * Tests some internal functionality of GapContent but not its methods.
@@ -36,6 +37,10 @@ public class GapContent_InternalTest extends BasicSwingTestCase {
     }
 
     public void testBufferExpansion() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -50,6 +55,10 @@ public class GapContent_InternalTest extends BasicSwingTestCase {
     }
 
     public void testInsertPosition() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -75,6 +84,10 @@ public class GapContent_InternalTest extends BasicSwingTestCase {
      * @throws BadLocationException
      */
     public void testPositionSort() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -96,6 +109,10 @@ public class GapContent_InternalTest extends BasicSwingTestCase {
     }
 
     public void testPositionGC() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }

@@ -23,6 +23,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JEditorPane;
 import javax.swing.SwingTestCase;
 import javax.swing.text.BadLocationException;
+import tests.support.Support_Excludes;
 
 public class HTMLEditorKit_InsertHTMLTextActionTest extends SwingTestCase {
     private final String name = "name";
@@ -59,6 +60,10 @@ public class HTMLEditorKit_InsertHTMLTextActionTest extends SwingTestCase {
     }
 
     public void testInsertHTMLTextActionStringStringTagTagTagTag() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         action = new HTMLEditorKit.InsertHTMLTextAction(name, html,
                                                         parentTag, addTag,
                                                         alternateParentTag,
@@ -72,6 +77,10 @@ public class HTMLEditorKit_InsertHTMLTextActionTest extends SwingTestCase {
     }
 
     public void testInsertHTMLTextActionStringStringTagTag() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         action = new HTMLEditorKit.InsertHTMLTextAction(name, html,
                                                         parentTag, addTag);
         assertSame(name, action.getValue(AbstractAction.NAME));
@@ -83,11 +92,19 @@ public class HTMLEditorKit_InsertHTMLTextActionTest extends SwingTestCase {
     }
 
     public void testActionPerformed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         action.actionPerformed(null);
         // TODO: implement
     }
 
     public void testInsertHTML() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         action.insertHTML(pane, document, 0, html, 0, 0, addTag);
         assertEquals("html text", document.getText(0, document.getLength()));
 
@@ -103,6 +120,10 @@ public class HTMLEditorKit_InsertHTMLTextActionTest extends SwingTestCase {
     }
 
     public void testInsertAtBoundary() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: implement
     }
 }

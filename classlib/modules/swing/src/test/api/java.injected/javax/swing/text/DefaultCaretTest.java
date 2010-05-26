@@ -39,6 +39,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.TextUI;
 import javax.swing.text.Position.Bias;
+import tests.support.Support_Excludes;
 
 public class DefaultCaretTest extends SwingTestCase {
     JTextArea jta = null;
@@ -207,10 +208,18 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testDefaultCaret() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(dc);
     }
 
     public void testGetComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(jta, dc.getComponent());
     }
 
@@ -220,6 +229,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Mark is 0.
      */
     public void testInstall() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int tCompListenersCountCurrent = jta.getListeners(MouseListener.class).length
                 + jta.getListeners(MouseMotionListener.class).length
                 + jta.getListeners(FocusListener.class).length
@@ -239,6 +252,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Document listener was removed.
      */
     public void testDeinstall() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int i = jta.getListeners(MouseListener.class).length;
         int j = jta.getListeners(MouseMotionListener.class).length;
         int k = jta.getListeners(FocusListener.class).length;
@@ -258,6 +275,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Tests methods IsVisible and SetVisible
      */
     public void testIsVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setVisible(true);
         assertTrue("dc.isVisible()= false after" + " dc.setVisible(true)", dc.isVisible());
         dc.setVisible(false);
@@ -268,6 +289,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Tests methods isSelectionVisible and setSelectionVisible
      */
     public void testIsSelectionVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(dc);
         dc.setSelectionVisible(true);
         assertTrue("dc.isSelectionVisible()= false after" + " dc.setSelectionVisible(true)", dc
@@ -278,6 +303,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testEquals() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(dc.equals(new DefaultCaret()));
         assertTrue(dc.equals(dc));
         assertTrue(dc.equals(jta.getCaret()));
@@ -287,6 +316,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Tests addChangeListener,removeChangeListener, getChangeListener
      */
     public void testChangeListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             SimpleChangeListener t1 = new SimpleChangeListener();
             SimpleChangeListener t2 = new SimpleChangeListener();
@@ -329,6 +362,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testGetBlinkRate() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, dc.getBlinkRate());
         dc.setBlinkRate(100);
         assertEquals(100, dc.getBlinkRate());
@@ -342,6 +379,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testSetDot() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setDot(8);
         dc.moveDot(10);
         dc.setDot(5);
@@ -350,6 +391,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testMoveDot() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setDot(4);
         dc.moveDot(9);
         assertEquals("tArea", jta.getSelectedText());
@@ -358,6 +403,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testGetDot() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jta.setSelectionStart(11);
         jta.setSelectionEnd(14);
         assertEquals(14, dc.getDot());
@@ -374,6 +423,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Tryes to set caret position by Mouse Events (dot = mark)
      */
     public void testPositionCaret() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Position.Bias bias[] = new Position.Bias[1];
         int tmp;
         jta.setText(sLTR + sRTL + sLTR + sRTL + sLTR + sRTL + sLTR + sRTL);
@@ -400,6 +453,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * Tryes to move caret position by Mouse Events (dot = mark)
      */
     public void testMoveCaret() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.positionCaret(new MouseEvent(jta, MouseEvent.MOUSE_CLICKED, 0, 0, jta.getX() + r1.x,
                 jta.getY() + r1.y, 0, false));
         dc.moveCaret(new MouseEvent(jta, MouseEvent.MOUSE_CLICKED, 0, 0, jta.getX() + r2.x, jta
@@ -420,12 +477,20 @@ public class DefaultCaretTest extends SwingTestCase {
      * Tests setMagicCaretPosition and getMagicCaretPosition
      */
     public void testSetMagicCaretPosition() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setMagicCaretPosition(p);
         assertTrue(dc.getMagicCaretPosition().equals(p));
     }
 
     // TODO: may be add other listeners (not ChangeListener)
     public void testGetListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         EventListener[] EvLList = null;
         SimpleChangeListener ChL1 = new SimpleChangeListener();
         SimpleChangeListener ChL2 = new SimpleChangeListener();
@@ -449,6 +514,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * was invoked ejta.scrollRectToVisible then ejta.flag would become 1.
      */
     public void testAdjustVisibility() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             r = jta.modelToView(8);
             if (r == null) {
@@ -467,11 +536,19 @@ public class DefaultCaretTest extends SwingTestCase {
 
     // Regression for HARMONY-2780
     public void testAdjustVisibilityNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         new DefaultCaret().adjustVisibility(null);
         // No exception is expected
     }
 
     public void testFireStateChanged() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleChangeListenerForFire CHL1 = new SimpleChangeListenerForFire("L1");
         SimpleChangeListenerForFire CHL2 = new SimpleChangeListenerForFire("L2");
         SimpleChangeListenerForFire CHL3 = new SimpleChangeListenerForFire("L3");
@@ -490,6 +567,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testGetSelectionPainter() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Highlighter.Highlight[] h = jta.getHighlighter().getHighlights();
         pnt = dc.getSelectionPainter();
         assertNotNull("DefaultCaret.getSelectionPainter()=null", pnt);
@@ -522,6 +603,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testFocusGained() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jta.setEditable(true);
         dc.focusGained(new FocusEvent(jta, FocusEvent.FOCUS_GAINED));
         assertTrue(dc.isVisible());
@@ -536,11 +621,19 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testFocusLost() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.focusLost(new FocusEvent(jta, FocusEvent.FOCUS_LOST));
         assertFalse(dc.isVisible());
     }
 
     public void testMouseDragged() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.mousePressed(new MouseEvent(jta, MouseEvent.MOUSE_PRESSED, 0,
                 InputEvent.BUTTON1_MASK, jta.getX() + r1.x, jta.getY() + r1.y, 0, false,
                 MouseEvent.BUTTON1));
@@ -571,6 +664,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testMouseClicked() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.mouseClicked(new MouseEvent(jta, MouseEvent.MOUSE_CLICKED, 0,
                 InputEvent.BUTTON1_DOWN_MASK, jta.getX() + r1.x, jta.getY() + r1.y, 2, false,
                 MouseEvent.BUTTON1));
@@ -583,6 +680,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testMousePressed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.mousePressed(new MouseEvent(jta, MouseEvent.MOUSE_PRESSED, 0,
                 InputEvent.SHIFT_DOWN_MASK, jta.getX() + r3.x, jta.getY() + r3.y, 0, false,
                 MouseEvent.BUTTON1));
@@ -590,6 +691,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testDocInsChange_DotEqMark() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             dc.setDot(5);
             jta.getDocument().insertString(3, "insert", null);
@@ -614,6 +719,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testDocInsChange_DotNotEqMark() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             dc.setDot(11);
             dc.moveDot(6);
@@ -643,6 +752,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testDocRemoveChange_DotEqMark() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setDot(5);
         try {
             jta.getDocument().remove(3, 1);
@@ -687,6 +800,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testDocRemoveChange_DotNotEqMark() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setDot(11);
         dc.moveDot(6);
         try {
@@ -720,6 +837,10 @@ public class DefaultCaretTest extends SwingTestCase {
      *
      */
     public void testDocNeverUpdate() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
         dc.setDot(6);
         try {
@@ -750,6 +871,10 @@ public class DefaultCaretTest extends SwingTestCase {
      *
      */
     public void testConstants() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(DefaultCaret.ALWAYS_UPDATE, 2);
         assertEquals(DefaultCaret.NEVER_UPDATE, 1);
         assertEquals(DefaultCaret.UPDATE_WHEN_ON_EDT, 0);
@@ -760,6 +885,10 @@ public class DefaultCaretTest extends SwingTestCase {
      *
      */
     public void testSetGetUpdatePolicy() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setUpdatePolicy(0);
         assertEquals(0, dc.getUpdatePolicy());
         dc.setUpdatePolicy(1);
@@ -780,6 +909,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testCaretColor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Runnable
         jta.setSelectionColor(c1);
         jta.setCaretColor(c2);
@@ -793,6 +926,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testInvokeFireStateChanged() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         CHL = new SimpleChangeListener();
         dc.addChangeListener(CHL);
         dc.setDot(5);
@@ -824,6 +961,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void testToString() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setDot(4);
         dc.moveDot(9);
         assertEquals("Dot=(9, Forward) Mark=(4, Forward)", dc.toString());
@@ -875,6 +1016,10 @@ public class DefaultCaretTest extends SwingTestCase {
      * assertTrue(dc.getAsynchronousMovement()); }
      */
     public void testNavigationFilter() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(jta.getNavigationFilter());
         filter = new SimpleNavigationFilter();
         jta.setNavigationFilter(filter);
@@ -886,6 +1031,10 @@ public class DefaultCaretTest extends SwingTestCase {
 
     //TODO
     public void testIsActive() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setVisible(true);
         assertTrue(dc.isActive());
         dc.setVisible(false);
@@ -893,6 +1042,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void test3820() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultCaret dc = new DefaultCaret();
         assertEquals(0, dc.getChangeListeners().length);
         dc.addChangeListener(null);
@@ -900,6 +1053,10 @@ public class DefaultCaretTest extends SwingTestCase {
     }
 
     public void test4208() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         dc.setSelectionVisible(false);
         jta.selectAll();
         assertEquals(0, jta.getHighlighter().getHighlights().length);

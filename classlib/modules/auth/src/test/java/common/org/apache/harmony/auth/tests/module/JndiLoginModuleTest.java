@@ -33,6 +33,7 @@ import javax.security.auth.login.LoginException;
 import junit.framework.TestCase;
 
 import org.apache.harmony.auth.module.JndiLoginModule;
+import tests.support.Support_Excludes;
 
 public class JndiLoginModuleTest extends TestCase {
 
@@ -62,6 +63,10 @@ public class JndiLoginModuleTest extends TestCase {
      * {@link org.apache.harmony.auth.module.JndiLoginModule#abort()}.
      */
     public void test_abort() throws LoginException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JndiLoginModule jlm = new JndiLoginModule();
         try {
             assertFalse("Should return false if login failed or no login", jlm
@@ -95,6 +100,10 @@ public class JndiLoginModuleTest extends TestCase {
      * {@link org.apache.harmony.auth.module.JndiLoginModule#commit()}.
      */
     public void test_commit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JndiLoginModule module = new JndiLoginModule();
         Subject subject = new Subject();
         module.initialize(subject, new MockCallbackHandler(), null, options);
@@ -122,6 +131,10 @@ public class JndiLoginModuleTest extends TestCase {
      * {@link org.apache.harmony.auth.module.JndiLoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)}.
      */
     public void test_initialize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JndiLoginModule module = new JndiLoginModule();
         try {
             module.initialize(null, null, null, null);
@@ -136,6 +149,10 @@ public class JndiLoginModuleTest extends TestCase {
      * {@link org.apache.harmony.auth.module.JndiLoginModule#login()}.
      */
     public void test_login() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JndiLoginModule module = new JndiLoginModule();
         HashMap<String, String> emptyOptions = new HashMap<String, String>();
         module.initialize(null, new MockCallbackHandler(), null, emptyOptions);
@@ -167,6 +184,10 @@ public class JndiLoginModuleTest extends TestCase {
      * {@link org.apache.harmony.auth.module.JndiLoginModule#logout()}.
      */
     public void test_logout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JndiLoginModule module = new JndiLoginModule();
         Subject subject = new Subject();
         module.initialize(subject, new MockCallbackHandler(), null, options);
@@ -188,6 +209,10 @@ public class JndiLoginModuleTest extends TestCase {
     }
 
     public void test_optionsAndSharedStatus() throws LoginException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         options.put("debug", "true");
         options.put("useFirstPass", "true");
         HashMap<String, Object> status = new HashMap<String, Object>();

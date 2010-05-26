@@ -40,6 +40,7 @@ import javax.swing.text.StyleContext.SmallAttributeSet;
 import javax.swing.text.html.CSS.Attribute;
 import javax.swing.text.html.StyleSheet.BoxPainter;
 import javax.swing.text.html.StyleSheet.ListPainter;
+import tests.support.Support_Excludes;
 
 public class StyleSheetTest extends BasicSwingTestCase {
     private abstract class NumberFormatCase extends ExceptionalCase {
@@ -80,6 +81,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * <code>CSS.Attribute.FONT_SIZE</code>.
      */
     public void testAddAttribute() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         attr = ss.addAttribute(empty, StyleConstants.FontSize, new Integer(10));
         Enumeration names = attr.getAttributeNames();
         Object name = names.nextElement();
@@ -98,6 +103,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * hash codes for <em>almost equal</em> objects are different.
      */
     public void testAddAttributeEquals() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         attr = ss.addAttribute(empty, StyleConstants.FontSize, new Integer(10));
         simple.addAttribute(StyleConstants.FontSize, new Integer(10));
 
@@ -117,6 +126,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * <code>CSS</code> equivalent to <code>StyleConstants</code> attribute.
      */
     public void testAddAttributeNoCSS() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         attr = ss.addAttribute(empty, StyleConstants.BidiLevel, new Integer(0));
         assertEquals(1, attr.getAttributeCount());
 
@@ -133,6 +146,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute stored as CSS-attribute with StyleConstants key.
      */
     public void testAddAttributeCSSAsSC() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_SIZE, "21pt");
         assertEquals(1, simple.getAttributeCount());
         Object fs = simple.getAttribute(Attribute.FONT_SIZE);
@@ -155,6 +172,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute stored as CSS-attribute with CSS key.
      */
     public void testAddAttributeCSSAsCSS() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_SIZE, "21pt");
         assertEquals(1, simple.getAttributeCount());
         Object fs = simple.getAttribute(Attribute.FONT_SIZE);
@@ -170,6 +191,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute stored as CSS-attribute with CSS key.
      */
     public void testAddAttributeCSSAsString() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         simple.addAttribute(Attribute.FONT_SIZE, "21pt");
         assertEquals(1, simple.getAttributeCount());
         Object fs = simple.getAttribute(Attribute.FONT_SIZE);
@@ -200,6 +225,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute stored as CSS-attribute with CSS key.
      */
     public void testAddAttributeCSSAsInteger() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         simple.addAttribute(Attribute.FONT_SIZE, new Integer(21));
         assertEquals(1, simple.getAttributeCount());
         Object fs = simple.getAttribute(Attribute.FONT_SIZE);
@@ -230,6 +259,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute with CSS-key but with invalid value for that key.
      */
     public void testAddAttributeInvalidValue01() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             testExceptionalCase(new NullPointerCase() {
                 public void exceptionalAction() throws Exception {
@@ -252,6 +285,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an invalid value for SC-attribute.
      */
     public void testAddAttributeInvalidValue02() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             testExceptionalCase(new NullPointerCase() {
                 public void exceptionalAction() throws Exception {
@@ -277,6 +314,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * corresponding <code>CSS.Attribute</code> ones.
      */
     public void testAddAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         simple.addAttribute(StyleConstants.FontSize, new Integer(10));
         simple.addAttribute(StyleConstants.Alignment,
                             new Integer(StyleConstants.ALIGN_CENTER));
@@ -303,6 +344,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute stored as CSS-attribute with StyleConstants key.
      */
     public void testAddAttributesCSSAsSC() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_SIZE, "21pt");
         assertEquals(1, simple.getAttributeCount());
         Object fs = simple.getAttribute(Attribute.FONT_SIZE);
@@ -327,6 +372,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Adding an attribute stored as CSS-attribute with CSS key.
      */
     public void testAddAttributesCSSAsCSS() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_SIZE, "21pt");
         assertEquals(1, simple.getAttributeCount());
         Object fs = simple.getAttribute(Attribute.FONT_SIZE);
@@ -339,6 +388,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_FAMILY, "serif");
         ss.addCSSAttribute(simple, Attribute.FONT_WEIGHT, "bold");
         assertEquals(2, simple.getAttributeCount());
@@ -352,6 +405,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetFontCSSSizeAttribute() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_SIZE, "21pt");
         assertEquals(1, simple.getAttributeCount());
 
@@ -361,6 +418,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetFontSCSizeAttribute() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         simple.addAttribute(StyleConstants.FontSize, new Integer(8));
 
         Font f = ss.getFont(simple);
@@ -369,6 +430,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetFontCSSAndSCSizeAttributesMixed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.FONT_SIZE, "21pt");
         simple.addAttribute(StyleConstants.FontSize, new Integer(8));
         assertEquals(2, simple.getAttributeCount());
@@ -379,6 +444,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetForeground() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.COLOR, "rgb(50%, 25%, 75%)");
         assertEquals(1, simple.getAttributeCount());
 
@@ -388,11 +457,19 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetForegroundSC() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         simple.addAttribute(StyleConstants.Foreground, new Color(63, 127, 191));
         assertSame(Color.BLACK, ss.getForeground(empty));
     }
 
     public void testGetBackground() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addCSSAttribute(simple, Attribute.BACKGROUND_COLOR,
                            "rgb(77%, 55%, 33%)");
         assertEquals(1, simple.getAttributeCount());
@@ -403,11 +480,19 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetBackgroundSC() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         simple.addAttribute(StyleConstants.Background, new Color(140, 196, 84));
         assertNull(ss.getBackground(empty));
     }
 
     public void testRemoveAttribute() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         attr = ss.addAttribute(empty, StyleConstants.FontSize, new Integer(10));
         assertEquals(1, attr.getAttributeCount());
         assertNotNull(attr.getAttribute(Attribute.FONT_SIZE));
@@ -420,6 +505,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetAttributeSet_Copy() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple = new SimpleAttributeSet(attr);
@@ -433,6 +522,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetAttributeSet_CopyReversed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple = new SimpleAttributeSet(attr);
@@ -446,6 +539,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetAttributeSet_StyleConstants() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple.addAttribute(StyleConstants.Bold, Boolean.TRUE);
@@ -470,6 +567,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetAttributeSet_Reversed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple.addAttribute(StyleConstants.Bold, Boolean.TRUE);
@@ -486,6 +587,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetAttributeSet_Mixed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple.addAttribute(StyleConstants.Bold, Boolean.TRUE);
@@ -509,6 +614,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetAttributeSet_MixedSameValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         assertEquals(0, simple.getAttributeCount());
@@ -541,6 +650,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetEnumeration_StyleConstants() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple.addAttribute(StyleConstants.Bold, Boolean.FALSE);
@@ -563,6 +676,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testRemoveAttributesAttributeSetEnumeration_CSS() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         initAttributes();
 
         simple.addAttribute(Attribute.FONT_STYLE, Boolean.FALSE);
@@ -581,6 +698,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * (<code>CSS.Attribute.BACKGROUND_COLOR</code> is used.)
      */
     public void testAddCSSAttribute01() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, simple.getAttributeCount());
         ss.addCSSAttribute(simple, Attribute.BACKGROUND_COLOR, "red");
 
@@ -605,6 +726,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * background-related properties.
      */
     public void testAddCSSAttribute02() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, simple.getAttributeCount());
         ss.addCSSAttribute(simple, Attribute.BACKGROUND, "red repeat-y");
 
@@ -642,6 +767,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * despite attribute sets contain equal values.
      */
     public void testAddCSSAttribute03() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, simple.getAttributeCount());
         ss.addCSSAttribute(simple, Attribute.BACKGROUND_COLOR, "red");
         assertEquals(1, simple.getAttributeCount());
@@ -667,6 +796,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testAddCSSAttributeFromHTML_Color() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ss.addCSSAttributeFromHTML(simple, Attribute.COLOR,
                                               "#112233"));
         assertEquals("#112233",
@@ -686,6 +819,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testAddCSSAttributeFromHTML_Align() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ss.addCSSAttributeFromHTML(simple, Attribute.TEXT_ALIGN,
                                               "left"));
         assertEquals("left",
@@ -708,6 +845,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testAddCSSAttributeFromHTML_Background() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ss.addCSSAttributeFromHTML(simple,
                                               Attribute.BACKGROUND_IMAGE,
                                               "bg.jpg"));
@@ -717,6 +858,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testAddCSSAttributeFromHTML_AddCSS() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker marker = new Marker();
         ss = new StyleSheet() {
             public void addCSSAttribute(final MutableAttributeSet attr,
@@ -732,6 +877,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testCreateSmallAttributeSet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Object value = new Integer(12);
         simple.addAttribute(StyleConstants.FontSize, value);
         attr = ss.createSmallAttributeSet(simple);
@@ -744,6 +893,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testCreateLargeAttributeSet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Object value = new Integer(12);
         simple.addAttribute(StyleConstants.FontSize, value);
         attr = ss.createLargeAttributeSet(simple);
@@ -756,12 +909,20 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetBoxPainter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BoxPainter bp = ss.getBoxPainter(empty);
         assertNotNull(bp);
         assertNotSame(bp, ss.getBoxPainter(empty));
     }
 
     public void testGetBoxPainterAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker borderStyle = new Marker();
         final Marker marginTop = new Marker();
         final Marker marginRight = new Marker();
@@ -823,6 +984,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetBoxPainterAttributesBorderStyle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker borderStyle = new Marker();
         final Marker borderTopWidth = new Marker();
         final Marker borderRightWidth = new Marker();
@@ -878,12 +1043,20 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetListPainter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ListPainter lp = ss.getListPainter(empty);
         assertNotNull(lp);
         assertNotSame(lp, ss.getListPainter(empty));
     }
 
     public void testGetListPainterAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker listStyleImage = new Marker();
         final Marker listStyleType = new Marker();
 
@@ -911,6 +1084,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testImportStyleSheet() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final File cssFile = File.createTempFile(getName(), ".css");
         cssFile.deleteOnExit();
         final FileWriter writer = new FileWriter(cssFile);
@@ -937,6 +1114,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testImportStyleSheetAddStyles() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final File cssFile = File.createTempFile(getName(), ".css");
         cssFile.deleteOnExit();
         final FileWriter writer = new FileWriter(cssFile);
@@ -962,6 +1143,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testImportStyleSheetWithImports() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final File cssFile = File.createTempFile(getName(), ".css");
         cssFile.deleteOnExit();
         FileWriter writer = new FileWriter(cssFile);
@@ -997,10 +1182,18 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testImportStyleSheetNull() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.importStyleSheet(null);
     }
 
     public void testLoadRules() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final File cssFile = File.createTempFile(getName(), ".css");
         cssFile.deleteOnExit();
         final FileWriter writer = new FileWriter(cssFile);
@@ -1033,6 +1226,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testLoadRulesWithImports() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final File cssFile = File.createTempFile(getName(), ".css");
         cssFile.deleteOnExit();
         FileWriter writer = new FileWriter(cssFile);
@@ -1068,16 +1265,28 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBase() throws MalformedURLException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         URL base = new URL("http://www.somesite.com/styles/");
         ss.setBase(base);
         assertSame(base, ss.getBase());
     }
 
     public void testGetBase() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ss.getBase());
     }
 
     public void testGetIndexOfSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int[][] size = {
             // {scSizeSet, cssSize, scSizeRead}
              {6,  1},        {7,  1},
@@ -1106,6 +1315,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.setBaseFontSize(3);
         assertEquals(sizes[3], (int)ss.getPointSize("+1"));
         assertEquals(sizes[2], (int)ss.getPointSize("+0"));
@@ -1118,6 +1331,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(7, sizes.length);
         for (int i = 0; i < sizes.length; i++) {
             ss.setBaseFontSize(String.valueOf(i + 1));
@@ -1130,6 +1347,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeStringRelativeUp() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(sizes[3], (int)ss.getPointSize("+0"));
         ss.setBaseFontSize("+1");
         assertEquals(sizes[5], (int)ss.getPointSize("+1"));
@@ -1143,6 +1364,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeStringRelativeDown() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(sizes[3], (int)ss.getPointSize("+0"));
         ss.setBaseFontSize("-1");
         assertEquals(sizes[3], (int)ss.getPointSize("+1"));
@@ -1156,6 +1381,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeStringInvalidLetter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new NumberFormatCase() {
             public void exceptionalAction() throws Exception {
                 ss.setBaseFontSize("a");
@@ -1164,6 +1393,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeStringInvalidMinus() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             testExceptionalCase(new NumberFormatCase() {
                 public void exceptionalAction() throws Exception {
@@ -1183,6 +1416,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testSetBaseFontSizeStringInvalidPlus() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new NumberFormatCase() {
             public void exceptionalAction() throws Exception {
                 ss.setBaseFontSize("++1");
@@ -1191,6 +1428,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(7, sizes.length);
         for (int i = 0; i < sizes.length; i++) {
             assertEquals("@ " + i, sizes[i], (int)ss.getPointSize(i + 1));
@@ -1200,6 +1441,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(7, sizes.length);
         for (int i = 0; i < sizes.length; i++) {
             assertEquals("@ " + i, sizes[i],
@@ -1210,6 +1455,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringRelative() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(sizes[4], (int)ss.getPointSize("+1"));
         assertEquals(sizes[5], (int)ss.getPointSize("+2"));
         assertEquals(sizes[6], (int)ss.getPointSize("+3"));
@@ -1221,6 +1470,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringRelativeBase() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.setBaseFontSize(5);
         assertEquals(sizes[5], (int)ss.getPointSize("+1"));
         assertEquals(sizes[6], (int)ss.getPointSize("+2"));
@@ -1231,6 +1484,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringRelativeBaseLeftEnd() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.setBaseFontSize(1);
         assertEquals(sizes[1], (int)ss.getPointSize("+1"));
         assertEquals(sizes[0], (int)ss.getPointSize("-1"));
@@ -1239,6 +1496,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringRelativeBaseRightEnd() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.setBaseFontSize(7);
         assertEquals(sizes[6], (int)ss.getPointSize("+1"));
         assertEquals(sizes[6], (int)ss.getPointSize("+2"));
@@ -1247,6 +1508,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringInvalidLetter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new NumberFormatCase() {
             public void exceptionalAction() throws Exception {
                 ss.getPointSize("a");
@@ -1255,6 +1520,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringInvalidMinus() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             testExceptionalCase(new NumberFormatCase() {
                 public void exceptionalAction() throws Exception {
@@ -1272,6 +1541,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testGetPointSizeStringInvalidPlus() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new NumberFormatCase() {
             public void exceptionalAction() throws Exception {
                 ss.getPointSize("++1");
@@ -1283,6 +1556,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Tests convertion of standard colors.
      */
     public void testStringToColor01() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final String[] names = {
             "aqua",
             "black",
@@ -1361,6 +1638,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Tests convertion of hex strings.
      */
     public void testStringToColor02() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Color(0x1E, 0x2F, 0xFF), ss.stringToColor("#1E2FFF"));
         assertEquals(new Color(0xFF, 0x11, 0x22), ss.stringToColor("#FF1122"));
         assertEquals(new Color(0x12, 0x33, 0x21), ss.stringToColor("#123321"));
@@ -1387,6 +1668,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Tests convertion of mixed-case standard names.
      */
     public void testStringToColor03() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(Color.RED, ss.stringToColor("rEd"));
         assertEquals(Color.BLACK, ss.stringToColor("bLaCk"));
         assertEquals(Color.WHITE, ss.stringToColor("White"));
@@ -1396,6 +1681,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Tests convertion of extended list of named colors.
      */
     public void testStringToColor04() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ss.stringToColor("azure"));
         assertNull(ss.stringToColor("blanchedalmond"));
         assertNull(ss.stringToColor("mistyrose"));
@@ -1407,6 +1696,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
      * Tests with empty string.
      */
     public void testStringToColor05() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertNull(ss.stringToColor(""));
         } else {
@@ -1425,6 +1718,10 @@ public class StyleSheetTest extends BasicSwingTestCase {
     }
 
     public void testTranslateHTMLToCSS() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             // Calling ss.translateHTMLToCSS with all the classes I know which
             // implement AttributeSet throws ClassCastException

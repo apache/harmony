@@ -31,6 +31,7 @@ import junit.framework.TestCase;
 import org.apache.harmony.auth.module.Krb5LoginModule;
 import org.apache.harmony.auth.tests.internal.kerberos.v5.KerberosErrorMessageTest;
 import org.apache.harmony.auth.tests.support.TestUtils;
+import tests.support.Support_Excludes;
 
 public class Krb5LoginModuleTest extends TestCase {
 
@@ -97,6 +98,10 @@ public class Krb5LoginModuleTest extends TestCase {
      */
     public void test_Config() throws Exception {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // create login module for testing
         Krb5LoginModule module = new Krb5LoginModule();
         module.initialize(null, new MockCallbackHandler(), null, options);
@@ -126,6 +131,10 @@ public class Krb5LoginModuleTest extends TestCase {
      * @tests request ticket for absent user
      */
     public void test_login() throws Exception {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         if (server != null) {
             server.respond = KerberosErrorMessageTest.err_resp;

@@ -45,6 +45,7 @@ import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.View;
+import tests.support.Support_Excludes;
 
 public class JTextFieldTest extends SwingTestCase {
     String sLTR = "abcd";
@@ -204,6 +205,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testAccessibleJTextField() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AccessibleContext accessible = jtf.getAccessibleContext();
         assertTrue(accessible instanceof JTextField.AccessibleJTextField);
         assertEquals(jtf.getAccessibleContext(), accessible);
@@ -215,6 +220,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testAddRemoveGetActionListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleActionListener listener1 = new SimpleActionListener("first");
         SimpleActionListener listener2 = new SimpleActionListener("second");
         SimpleActionListener listener3 = new SimpleActionListener("third");
@@ -272,6 +281,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testConfigurePropertiesFromAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = new DefaultEditorKit.CutAction();
         jtf.configurePropertiesFromAction(action);
         assertTrue(jtf.isEnabled());
@@ -284,6 +297,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testCreateActionPropertyChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = new DefaultEditorKit.CutAction();
         PropertyChangeListener listener = jtf.createActionPropertyChangeListener(action);
         assertNotNull(listener);
@@ -300,6 +317,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testCreateDefaultModel() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Document doc = jtf.createDefaultModel();
         Document doc1 = jtf.createDefaultModel();
         assertTrue(doc instanceof PlainDocument);
@@ -308,6 +329,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testFireActionPerformed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleActionListener listener1 = new SimpleActionListener("first");
         SimpleActionListener listener2 = new SimpleActionListener("second");
         SimpleActionListener listener3 = new SimpleActionListener("third");
@@ -329,6 +354,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testGetActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action editorKitActions[] = jtf.getUI().getEditorKit(jtf).getActions();
         Action jtfActions[] = jtf.getActions();
         assertEquals(editorKitActions.length + 1, jtfActions.length);
@@ -348,6 +377,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testGetHorizontalVisibility() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BoundedRangeModel brm = jtf.getHorizontalVisibility();
         assertTrue(brm instanceof DefaultBoundedRangeModel);
         assertEquals(0, brm.getMinimum());
@@ -367,6 +400,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testGetPreferredSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(jtf.getPreferredSize(), jtf.getPreferredScrollableViewportSize());
         jtf.setColumns(10);
         assertEquals(getPrefferedSize(jtf), jtf.getPreferredSize());
@@ -375,18 +412,30 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testGetUIClassID() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("TextFieldUI", jtf.getUIClassID());
         assertEquals("TextFieldUI", jtfBidi.getUIClassID());
         assertEquals("TextFieldUI", jtfScroll.getUIClassID());
     }
 
     public void testIsValidateRoot() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(jtf.isValidateRoot());
         assertTrue(jtfBidi.isValidateRoot());
         assertFalse(jtfScroll.isValidateRoot());
     }
 
     public void testJTextField() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JTextField tf = new JTextField();
         assertEquals("", tf.getText());
         assertTrue(tf.getDocument() instanceof PlainDocument);
@@ -394,6 +443,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testJTextFieldDocumentStringInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String str1 = "AAA";
         String str2 = "testJTextFieldDocumentStringInt()";
         Document doc = new PlainDocument();
@@ -427,6 +480,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testJTextFieldInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JTextField tf = new JTextField(5);
         assertEquals("", tf.getText());
         assertTrue(tf.getDocument() instanceof PlainDocument);
@@ -442,6 +499,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testJTextFieldString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String str1 = "testJTextFieldString()";
         JTextField tf = new JTextField(str1);
         assertEquals(str1, tf.getText());
@@ -450,6 +511,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testJTextFieldStringInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String str1 = "testJTextFieldString()";
         JTextField tf = new JTextField(str1, 5);
         assertEquals(str1, tf.getText());
@@ -466,12 +531,20 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testNotifyAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("notify-field-accept", JTextField.notifyAction);
     }
 
     //implementation dependent
     /*
      public void testParamString() {
+         if (Support_Excludes.isExcluded()) {
+             return;
+         }
+
      jtf.setActionCommand("ACTION_COMMAND");
      String str = "," +
      jtf.getX() + "," +
@@ -500,6 +573,10 @@ public class JTextFieldTest extends SwingTestCase {
      assertEquals(changeString(str), changeString(jtf.paramString()));
      } */
     public void testPostActionEvent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleActionListener listener1 = new SimpleActionListener("first");
         SimpleActionListener listener2 = new SimpleActionListener("second");
         SimpleActionListener listener3 = new SimpleActionListener("third");
@@ -533,9 +610,17 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testScrollRectToVisible() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testSetActionCommand() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleActionListener listener = new SimpleActionListener("");
         jtf.addActionListener(listener);
         jtf.fireActionPerformed();
@@ -560,6 +645,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSetDocument() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Document old = jtf.getDocument();
         Document doc = new PlainDocument();
         jtf.setDocument(doc);
@@ -568,6 +657,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSetFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Font oldFont = jtf.getFont();
         FontMetrics fm = jtf.getFontMetrics(oldFont);
         assertEquals(fm.charWidth('m'), jtf.getColumnWidth());
@@ -585,6 +678,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(jtf.getAction());
         Action action = new DefaultEditorKit.CutAction();
         jtf.setAction(action);
@@ -616,6 +713,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetColumns() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, jtf.getColumns());
         jtf.wasCallInvalidate = false;
         jtf.setColumns(5);
@@ -632,6 +733,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetHorizontalAlignment() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(SwingConstants.LEADING, jtf.getHorizontalAlignment());
         jtf.setHorizontalAlignment(SwingConstants.LEFT);
         assertEquals(SwingConstants.LEFT, jtf.getHorizontalAlignment());
@@ -687,6 +792,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetScrollOffset() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(getInitialScrollOffest(jtf), jtf.getScrollOffset());
         //assertEquals(getInitialScrollOffest(jtfScroll),jtfScroll.getScrollOffset());
         assertEquals(getInitialScrollOffest(jtfBidi), jtfBidi.getScrollOffset());
@@ -722,6 +831,10 @@ public class JTextFieldTest extends SwingTestCase {
 
     // Regression for HARMONY-2627
     public void testGetScrollOffset() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jtf = new ExtJTextField("abc");
         final int viewWidth = (int)jtf.getUI().getRootView(jtf)
                                    .getPreferredSpan(View.X_AXIS);
@@ -732,6 +845,10 @@ public class JTextFieldTest extends SwingTestCase {
     }
 
     public void testSerialization() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         /*
          JTextField jt = new JTextField(bidiContent);
          jt.setColumns(8);

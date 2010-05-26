@@ -26,9 +26,14 @@ import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class LookupPrintServicesTest extends TestCase {
     public void testLookupPrintServices() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         System.out.println("======== START LookupPrintServicesTest ========");
 
         PrintService[] services;

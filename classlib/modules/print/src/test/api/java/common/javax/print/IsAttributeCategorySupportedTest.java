@@ -23,10 +23,15 @@ package javax.print;
 import javax.print.attribute.standard.JobStateReason;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class IsAttributeCategorySupportedTest extends TestCase {
 
     public void testIsAttributeCategorySupported() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         System.out
                 .println("============= START testIsAttributeCategorySupported ================");
 

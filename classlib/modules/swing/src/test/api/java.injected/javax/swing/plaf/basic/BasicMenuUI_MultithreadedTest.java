@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWaitTestCase;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import tests.support.Support_Excludes;
 
 public class BasicMenuUI_MultithreadedTest extends BasicSwingTestCase {
     protected BasicMenuUI menuUI;
@@ -70,6 +71,10 @@ public class BasicMenuUI_MultithreadedTest extends BasicSwingTestCase {
      */
     @SuppressWarnings("deprecation")
     public void testSetupPostTimer() throws InterruptedException, InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final MenuSelectionManager manager = MenuSelectionManager.defaultManager();
         JFrame frame = new JFrame();
         JMenuBar menuBar = new JMenuBar();

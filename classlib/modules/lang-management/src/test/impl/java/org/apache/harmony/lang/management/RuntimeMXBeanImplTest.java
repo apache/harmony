@@ -40,6 +40,7 @@ import javax.management.MBeanOperationInfo;
 import javax.management.openmbean.TabularData;
 
 import org.apache.harmony.lang.management.RuntimeMXBeanImpl;
+import tests.support.Support_Excludes;
 
 
 public class RuntimeMXBeanImplTest extends SingleInstanceDynamicMXBeanImplTestBase {

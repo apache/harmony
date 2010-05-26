@@ -42,6 +42,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.StyleConstants;
 
 import org.apache.harmony.x.swing.Utilities;
+import tests.support.Support_Excludes;
 
 public class FormView_FormInputElementTest extends SwingTestCase {
 
@@ -71,6 +72,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateButtonComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("button");
         JButton button;
 
@@ -103,6 +108,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateCheckBoxComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("checkbox");
         JCheckBox checkBox;
 
@@ -137,6 +146,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateImageComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("image");
         JButton image;
 
@@ -205,6 +218,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreatePasswordComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPasswordField passwordField;
         createHTMLSample("password");
 
@@ -237,6 +254,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateRadioComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("radio");
         JRadioButton radioButton;
 
@@ -266,6 +287,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testRadioGroups() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         StringBuffer htmlSrc = new StringBuffer();
         htmlSrc.append("<HTML> <HEAD></HEAD><BODY>");
         htmlSrc.append("   Hello word!");
@@ -293,6 +318,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateResetComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("reset");
         JButton resetButton;
 
@@ -324,6 +353,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateSubmitComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("submit");
         JButton submitButton;
 
@@ -355,6 +388,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateTextComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JTextField textField;
         createHTMLSample("text");
 
@@ -384,6 +421,10 @@ public class FormView_FormInputElementTest extends SwingTestCase {
     }
 
     public void testCreateFileComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createHTMLSample("file");
 
         //Default VALUE

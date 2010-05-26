@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingTestCase;
 import javax.swing.text.Position.Bias;
+import tests.support.Support_Excludes;
 
 public class WrappedPlainViewRTest extends SwingTestCase {
     private Document doc;
@@ -71,6 +72,10 @@ public class WrappedPlainViewRTest extends SwingTestCase {
      * Tests the value returned where the point lies below the last line.
      */
     public void testViewToModel() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Bias[] bias = new Bias[1];
         width = getTextWidth(root.getElementCount() - 1) * 3 / 4;
         view.setSize(width, height);
@@ -83,6 +88,10 @@ public class WrappedPlainViewRTest extends SwingTestCase {
      * breakes in it.
      */
     public void testViewToModelNoBreaks() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Bias[] bias = new Bias[1];
         textArea.setSize(500, height);
         shape = new Rectangle(500, height);
@@ -99,6 +108,10 @@ public class WrappedPlainViewRTest extends SwingTestCase {
      * This tests that no NPE is thrown when a line is removed.
      */
     public void testInsertUpdate() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         textArea.setText("line1\n\n\n\n");
         assertEquals(5, view.getViewCount());
         assertSame(doc, textArea.getDocument());
@@ -109,6 +122,10 @@ public class WrappedPlainViewRTest extends SwingTestCase {
      * This tests that no NPE is thrown when a line is removed.
      */
     public void testRemoveUpdate() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         textArea.setText("line1\n\n\n\n");
         assertEquals(5, view.getViewCount());
         assertSame(doc, textArea.getDocument());

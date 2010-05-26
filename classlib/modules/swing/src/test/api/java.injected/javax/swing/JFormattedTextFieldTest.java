@@ -36,6 +36,7 @@ import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.InternationalFormatter;
 import javax.swing.text.NumberFormatter;
 import javax.swing.text.TextAction;
+import tests.support.Support_Excludes;
 
 public class JFormattedTextFieldTest extends SwingTestCase {
     JFrame jf;
@@ -178,6 +179,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testJFormattedTextFieldObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object value = Color.RED;
         JFormattedTextField tf1 = new JFormattedTextField(value);
         assertEquals(value, tf1.getValue());
@@ -192,6 +197,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testJFormattedTextFieldObject_NullToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Object value = new Object() {
             @Override
             public String toString() {
@@ -203,6 +212,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testJFormattedTextFieldAbstractFormatter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InternationalFormatter formatter = new InternationalFormatter();
         JFormattedTextField tf1 = new JFormattedTextField(formatter);
         assertNull(tf1.getValue());
@@ -217,6 +230,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testJFormattedTextFieldFormat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Format format = new SimpleDateFormat();
         InternationalFormatter formatter;
         DefaultFormatterFactory factory;
@@ -246,6 +263,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testJFormattedTextFieldAbstractFormatterFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFormattedTextField.AbstractFormatterFactory factory = new DefaultFormatterFactory();
         JFormattedTextField tf1 = new JFormattedTextField(factory);
         assertNull(tf1.getValue());
@@ -255,6 +276,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testJFormattedTextFieldAbstractFormatterFactoryObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object value = Color.RED;
         JFormattedTextField.AbstractFormatterFactory factory = new DefaultFormatterFactory();
         JFormattedTextField tf1 = new JFormattedTextField(factory, value);
@@ -265,6 +290,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String propertyName = "value";
         listener.setInterestingPropertyName(propertyName);
         assertNull(tf.getValue());
@@ -280,6 +309,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetFormatter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String propertyName = "textFormatter";
         listener.setInterestingPropertyName(propertyName);
         assertNull(tf.getFormatter());
@@ -297,6 +330,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetFocusLostBehavior() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(JFormattedTextField.COMMIT_OR_REVERT, tf.getFocusLostBehavior());
         tf.setFocusLostBehavior(JFormattedTextField.COMMIT);
         assertEquals(JFormattedTextField.COMMIT, tf.getFocusLostBehavior());
@@ -327,6 +364,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testSetGetFormatterFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String propertyName = "formatterFactory";
         listener.setInterestingPropertyName(propertyName);
         assertNull(tf.getFormatterFactory());
@@ -337,6 +378,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testProcessFocusEventFocusEvent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Long value = new Long(56);
         tf.setValue(new Integer(345));
         tf.setFocusLostBehavior(JFormattedTextField.COMMIT);
@@ -387,9 +432,17 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testSetDocumentDocument() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action[] actions = tf.getActions();
         Action[] defaultActions = new DefaultEditorKit().getActions();
         assertEquals(defaultActions.length + 2, actions.length);
@@ -421,6 +474,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testCommitEdit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         tf.setFormatter(new NumberFormatter());
         assertNull(tf.getValue());
         tf.setText("678");
@@ -433,6 +490,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testIsEditValid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String propertyName = "editValid";
         listener.setInterestingPropertyName(propertyName);
         tf.setValue(new Integer(90000000));
@@ -448,6 +509,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testConstants() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, JFormattedTextField.COMMIT);
         assertEquals(1, JFormattedTextField.COMMIT_OR_REVERT);
         assertEquals(2, JFormattedTextField.REVERT);
@@ -455,6 +520,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testGetUIClassID() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("FormattedTextFieldUI", tf.getUIClassID());
     }
 
@@ -479,6 +548,10 @@ public class JFormattedTextFieldTest extends SwingTestCase {
     }
 
     public void testCreateFormattersFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultFormatterFactory factory;
         tf.setValue(new Integer(34));
         factory = getFactoryIfDefault(tf.getFormatterFactory());

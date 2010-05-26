@@ -47,6 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import tests.support.Support_Excludes;
 
 public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCase {
     protected DefaultEditorKit kit = null;
@@ -191,6 +192,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testUnselectActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.unselectAction);
         JTextArea c = getInitedComponent(10, 15, text);
@@ -200,6 +205,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testToggleComponentOrientationPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.toggleComponentOrientationAction);
         JTextArea c = getInitedComponent(10, 15, text);
@@ -211,6 +220,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testDumpModelActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream oldErr = System.err;
         System.setErr(new PrintStream(out));
@@ -230,6 +243,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testPageActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "01\n23\n45\n677777777777777777777777777777777777777777777777777\n89\n0-\nqwe\nrty\nasd\n\n\n\n\nzxc\nvbn";
         Action action = getAction("selection-page-right");
         JTextArea c = getInitedComponent(3, 7, text);
@@ -260,6 +277,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testVerticalPageActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "111111111111111\n2\n3\n44444444\n55555555555\n6\n7\n8\n9\n0\n1\n2\n3\n4\n5555555555555555555";
         Action action = getAction(DefaultEditorKit.pageDownAction);
         JTextArea c = getInitedComponent(4, 6, text);
@@ -321,6 +342,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testWritableActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.writableAction);
         JTextArea c = getInitedComponent(13, 15, text);
@@ -331,6 +356,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testReadOnlyActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.readOnlyAction);
         JTextArea c = getInitedComponent(13, 15, text);
@@ -340,6 +369,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testEndParagraphActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "\t012345  6789\nasfd\n\n\tasd  asd";
         Action action = getAction(DefaultEditorKit.endParagraphAction);
         JTextArea c = getInitedComponent(6, text);
@@ -365,6 +398,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testBeginParagraphActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "\t012345  6789\nasfd\n\n\tasd  asd";
         Action action = getAction(DefaultEditorKit.beginParagraphAction);
         JTextArea c = getInitedComponent(6, text);
@@ -390,6 +427,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testBeginWordActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.beginWordAction);
         JTextArea c = getInitedComponent(13, 15, text);
@@ -424,6 +465,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testEndWordActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.endWordAction);
         JTextArea c = getInitedComponent(13, 15, text);
@@ -454,6 +499,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testPreviousWordActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.previousWordAction);
         JTextArea c = getInitedComponent(13, 15, text);
@@ -488,6 +537,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextWordActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.nextWordAction);
         JTextArea c = getInitedComponent(13, 15, text);
@@ -518,6 +571,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testBeginLineActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.beginLineAction);
         String text = "0123456789\n12341234\n12341234";
         JTextArea c = getInitedComponent(14, text);
@@ -540,6 +597,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testEndLineActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.endLineAction);
         String text = "0123456789\n12341234\n12341234";
         JTextArea c = getInitedComponent(14, text);
@@ -562,6 +623,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testEndActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.endAction);
         String text = "0123456789\n12341234\n12341234";
         JTextArea c = getInitedComponent(8, 14, text);
@@ -584,6 +649,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testBeginActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.beginAction);
         String text = "0123456789\n12341234\n12341234";
         JTextArea c = getInitedComponent(8, 14, text);
@@ -606,6 +675,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testSelectWordActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.selectWordAction);
         JTextArea c = getInitedComponent(15, text);
@@ -623,6 +696,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testSelectLineActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "0123  456789\nasdf";
         Action action = getAction(DefaultEditorKit.selectLineAction);
         JTextArea c = getInitedComponent(5, text);
@@ -637,6 +714,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testSelectParagraphActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "\t012345  6789\nasfd\n\n\tasd  asd";
         Action action = getAction(DefaultEditorKit.selectParagraphAction);
         JTextArea c = getInitedComponent(6, text);
@@ -657,6 +738,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testSelectAllActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "0123456789\nasdasd";
         Action action = getAction(DefaultEditorKit.selectAllAction);
         JTextArea c = getInitedComponent(2, 7, text);
@@ -668,6 +753,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testDeleteNextCharActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.deleteNextCharAction);
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(c, action);
@@ -684,6 +773,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testDeletePrevCharActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.deletePrevCharAction);
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(c, action);
@@ -700,6 +793,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testInsertContentActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.insertContentAction);
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(c, action, "aaa");
@@ -713,6 +810,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testCopyActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: Uncomment when Clipboard is fully supported
         //        DefaultEditorKit.CopyAction action = new DefaultEditorKit.CopyAction();
         //        putStringToClipboard("");
@@ -728,6 +829,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testCutActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: Uncomment when Clipboard is fully supported
         //        DefaultEditorKit.CutAction action = new DefaultEditorKit.CutAction();
         //        putStringToClipboard("");
@@ -744,6 +849,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testPasteActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: Uncomment when Clipboard is fully supported
         //        DefaultEditorKit.PasteAction action = new DefaultEditorKit.PasteAction();
         //        putStringToClipboard("98765");
@@ -753,6 +862,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testInsertTabActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultEditorKit.InsertTabAction action = new DefaultEditorKit.InsertTabAction();
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(c, action);
@@ -760,6 +873,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testInsertBreakActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultEditorKit.InsertBreakAction action = new DefaultEditorKit.InsertBreakAction();
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(c, action);
@@ -767,6 +884,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testDefaultKeyTypedActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultEditorKit.DefaultKeyTypedAction action = new DefaultEditorKit.DefaultKeyTypedAction();
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(c, action, "asd");
@@ -774,12 +895,20 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testBeepActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultEditorKit.BeepAction action = new DefaultEditorKit.BeepAction();
         JComponent c = new JPanel();
         performAction(c, action);
     }
 
     public void testNextVisualPositionActionPerformedCaretForward() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.forwardAction);
         JTextArea c = getInitedComponent(8, text);
@@ -797,6 +926,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedCaretBackward() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.backwardAction);
         JTextArea c = getInitedComponent(8, text);
@@ -814,6 +947,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedSelectionForward() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.selectionForwardAction);
         JTextArea c = getInitedComponent(8, text);
@@ -831,6 +968,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedSelectionBackward() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.selectionBackwardAction);
         JTextArea c = getInitedComponent(8, text);
@@ -848,6 +989,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedCaretUp() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.upAction);
         JTextArea c = getInitedComponent(15, text);
@@ -864,6 +1009,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedCaretDown() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.downAction);
         JTextArea c = getInitedComponent(8, text);
@@ -886,6 +1035,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedSelectionUp() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.selectionUpAction);
         JTextArea c = getInitedComponent(15, text);
@@ -902,6 +1055,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testNextVisualPositionActionPerformedSelectionDown() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "012345  6789\nasfd\nasd  asd";
         Action action = getAction(DefaultEditorKit.selectionDownAction);
         JTextArea c = getInitedComponent(8, text);
@@ -920,6 +1077,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testDefaultKeyTypedActionFiltering() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         HashSet<Character> nonTypingChars = new HashSet<Character>();
         for (char i = 0; i < 32; i++) {
             nonTypingChars.add(new Character(i));
@@ -945,6 +1106,10 @@ public class DefaultEditorKit_Actions_MultithreadedTest extends BasicSwingTestCa
     }
 
     public void testConstants() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("caret-backward", DefaultEditorKit.backwardAction);
         assertEquals("beep", DefaultEditorKit.beepAction);
         assertEquals("caret-begin", DefaultEditorKit.beginAction);

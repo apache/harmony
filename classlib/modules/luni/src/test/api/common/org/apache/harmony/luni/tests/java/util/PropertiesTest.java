@@ -29,6 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import tests.support.resource.Support_Resources;
+import tests.support.Support_Excludes;
 
 public class PropertiesTest extends junit.framework.TestCase {
 
@@ -40,6 +41,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#Properties()
      */
     public void test_Constructor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties p = new Properties();
         // do something to avoid getting a variable unused warning
         p.clear();
@@ -47,6 +52,10 @@ public class PropertiesTest extends junit.framework.TestCase {
     }
 
     public void test_loadLjava_io_InputStream_NPE() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties p = new Properties();
         try {
             p.load((InputStream) null);
@@ -60,6 +69,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#Properties(java.util.Properties)
      */
     public void test_ConstructorLjava_util_Properties() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties systemProperties = System.getProperties();
         Properties properties = new Properties(systemProperties);
         Enumeration<?> propertyNames = systemProperties.propertyNames();
@@ -76,6 +89,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#getProperty(java.lang.String)
      */
     public void test_getPropertyLjava_lang_String() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("Did not retrieve property", "this is a test property",
                 tProps.getProperty("test.prop"));
     }
@@ -85,6 +102,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      *        java.lang.String)
      */
     public void test_getPropertyLjava_lang_StringLjava_lang_String() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("Did not retrieve property", "this is a test property",
                 tProps.getProperty("test.prop", "Blarg"));
         assertEquals("Did not return default value", "Gabba", tProps
@@ -95,6 +116,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#getProperty(java.lang.String)
      */
     public void test_getPropertyLjava_lang_String2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // regression test for HARMONY-3518
         MyProperties props = new MyProperties();
         assertNull(props.getProperty("key"));
@@ -105,6 +130,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      *        java.lang.String)
      */
     public void test_getPropertyLjava_lang_StringLjava_lang_String2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // regression test for HARMONY-3518
         MyProperties props = new MyProperties();
         assertEquals("defaultValue", props.getProperty("key", "defaultValue"));
@@ -121,6 +150,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#list(java.io.PrintStream)
      */
     public void test_listLjava_io_PrintStream() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         Properties myProps = new Properties();
@@ -151,6 +184,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#list(java.io.PrintWriter)
      */
     public void test_listLjava_io_PrintWriter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(baos);
         Properties myProps = new Properties();
@@ -178,6 +215,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#load(java.io.InputStream)
      */
     public void test_loadLjava_io_InputStream() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InputStream is = new ByteArrayInputStream(writeProperties());
         Properties prop = new Properties();
         prop.load(is);
@@ -264,6 +305,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#load(java.io.InputStream)
      */
     public void test_loadLjava_io_InputStream_Special() throws IOException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test for method void java.util.Properties.load(java.io.InputStream)
         Properties prop = null;
         prop = new Properties();
@@ -283,6 +328,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#load(java.io.InputStream)
      */
     public void test_loadLjava_io_InputStream_subtest0() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InputStream is = Support_Resources
                 .getStream("hyts_PropertiesTest.properties");
         Properties props = new Properties();
@@ -307,6 +356,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#propertyNames()
      */
     public void test_propertyNames() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties myPro = new Properties(tProps);
         Enumeration names = myPro.propertyNames();
         while (names.hasMoreElements()) {
@@ -327,6 +380,10 @@ public class PropertiesTest extends junit.framework.TestCase {
     }
 
     public void test_propertyNames_sequence() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties parent = new Properties();
         parent.setProperty("parent.a.key", "parent.a.value");
         parent.setProperty("parent.b.key", "parent.b.value");
@@ -367,6 +424,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      */
     public void test_saveLjava_io_OutputStreamLjava_lang_String()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties myProps = new Properties();
         myProps.setProperty("Property A", "aye");
         myProps.setProperty("Property B", "bee");
@@ -395,6 +456,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      *        java.lang.String)
      */
     public void test_setPropertyLjava_lang_StringLjava_lang_String() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties myProps = new Properties();
         myProps.setProperty("Yoink", "Yabba");
         assertEquals("Failed to set property", "Yabba", myProps
@@ -409,6 +474,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      */
     public void test_storeLjava_io_OutputStreamLjava_lang_String()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties myProps = new Properties();
         myProps.put("Property A", " aye\\\f\t\n\r\b");
         myProps.put("Property B", "b ee#!=:");
@@ -436,6 +505,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * @tests java.util.Properties#loadFromXML(java.io.InputStream)
      */
     public void test_loadFromXMLLjava_io_InputStream() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InputStream is = new ByteArrayInputStream(writePropertiesXML("UTF-8"));
         Properties prop = new Properties();
         prop.loadFromXML(is);
@@ -470,6 +543,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      */
     public void test_storeToXMLLjava_io_OutputStreamLjava_lang_StringLjava_lang_String()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties myProps = new Properties();
         myProps.setProperty("key1", "value1");
         myProps.setProperty("key2", "value2");
@@ -535,6 +612,10 @@ public class PropertiesTest extends junit.framework.TestCase {
      * should be same as loading from "hello="
      */
     public void testLoadSingleLine() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Properties props = new Properties();
         InputStream sr = new ByteArrayInputStream("hello".getBytes());
         props.load(sr);

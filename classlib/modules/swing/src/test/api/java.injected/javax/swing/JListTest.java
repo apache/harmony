@@ -38,6 +38,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ListUI;
 import javax.swing.text.Position;
+import tests.support.Support_Excludes;
 
 public class JListTest extends SwingTestCase {
     private JList list;
@@ -76,6 +77,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testJList() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list = new JList();
         assertNotNull(list.getModel());
         assertTrue(list.getSelectionModel() instanceof DefaultListSelectionModel);
@@ -111,6 +116,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testAddGetRemoveListSelectionListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, list.getListSelectionListeners().length);
         TestListSelectionListener l = new TestListSelectionListener();
         list.addListSelectionListener(l);
@@ -122,6 +131,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testAddSelectionInterval() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.isSelectionEmpty());
         assertTrue(list.getSelectionModel().isSelectionEmpty());
         list.addSelectionInterval(1, 2);
@@ -142,6 +155,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testClearSelection() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.isSelectionEmpty());
         assertTrue(list.getSelectionModel().isSelectionEmpty());
         list.setSelectedIndex(1);
@@ -153,10 +170,18 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testCreateSelectionModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(new TestList().createSelectionModel() instanceof DefaultListSelectionModel);
     }
 
     public void testEnsureIndexIsVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane scroller = insertListToFrame();
         assertNotNull(scroller);
         Rectangle bounds = list.getCellBounds(1, 1);
@@ -175,6 +200,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testFireSelectionValueChanged() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestListSelectionListener l1 = new TestListSelectionListener();
         TestListSelectionListener l2 = new TestListSelectionListener();
         TestListSelectionListener l3 = new TestListSelectionListener();
@@ -209,16 +238,28 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetAccssibleContext() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.getAccessibleContext() instanceof JList.AccessibleJList);
     }
 
     public void testGetAnchorSelectionIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.addSelectionInterval(2, 1);
         assertEquals(2, list.getAnchorSelectionIndex());
         assertEquals(2, list.getSelectionModel().getAnchorSelectionIndex());
     }
 
     public void testGetCellBounds() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.setUI(new ListUI() {
             @Override
             public Point indexToLocation(final JList arg0, final int arg1) {
@@ -239,6 +280,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetCellRenderer() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.getCellRenderer() instanceof DefaultListCellRenderer);
         ListCellRenderer testRenderer = new ListCellRenderer() {
             public Component getListCellRendererComponent(final JList list, final Object value,
@@ -251,12 +296,20 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetDragEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(list.getDragEnabled());
         list.setDragEnabled(true);
         assertTrue(list.getDragEnabled());
     }
 
     public void testGetFirstVisibleIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane scroller = insertListToFrame();
         Rectangle bounds = list.getCellBounds(1, 1);
         assertNotNull(bounds);
@@ -266,6 +319,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetFixedCellHeight() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, list.getFixedCellHeight());
         list.setFixedCellHeight(10);
         assertEquals(10, list.getFixedCellHeight());
@@ -273,6 +330,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetFixedCellWidth() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, list.getFixedCellWidth());
         list.setFixedCellWidth(10);
         assertEquals(10, list.getFixedCellWidth());
@@ -280,6 +341,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetLastVisibleIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane scroller = insertListToFrame();
         Rectangle bounds = list.getCellBounds(1, 1);
         assertNotNull(bounds);
@@ -289,6 +354,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetLayoutOrientation() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(JList.VERTICAL, list.getLayoutOrientation());
         list.setLayoutOrientation(JList.VERTICAL_WRAP);
         assertEquals(JList.VERTICAL_WRAP, list.getLayoutOrientation());
@@ -304,24 +373,40 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetLeadSelectionIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.addSelectionInterval(2, 1);
         assertEquals(1, list.getLeadSelectionIndex());
         assertEquals(1, list.getSelectionModel().getLeadSelectionIndex());
     }
 
     public void testGetMaxSelectionIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.addSelectionInterval(2, 1);
         assertEquals(2, list.getMaxSelectionIndex());
         assertEquals(2, list.getSelectionModel().getMaxSelectionIndex());
     }
 
     public void testGetMinSelectionIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.addSelectionInterval(2, 1);
         assertEquals(1, list.getMinSelectionIndex());
         assertEquals(1, list.getSelectionModel().getMinSelectionIndex());
     }
 
     public void testGetSetModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(list.getModel());
         ListModel m = new DefaultListModel();
         list.setModel(m);
@@ -330,6 +415,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetNextMatch() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list = new JList(new Object[] { "a1", "b1", "c1", "a2", "B2", "c2" });
         assertEquals(0, list.getNextMatch("a", 0, Position.Bias.Forward));
         assertEquals(3, list.getNextMatch("a", 1, Position.Bias.Forward));
@@ -360,6 +449,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetPreferredScrollableViewportSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.setFixedCellHeight(10);
         list.setFixedCellWidth(100);
         list.setVisibleRowCount(5);
@@ -380,6 +473,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetPrototypeCellValue() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(list.getPrototypeCellValue());
         list.setFixedCellHeight(1);
         list.setFixedCellWidth(1);
@@ -394,6 +491,10 @@ public class JListTest extends SwingTestCase {
 
     //TODO
     public void testGetScrollableBlockIncrement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list.setListData(new Object[] { "a", "b", "c", "d", "e", "f", "g", "h" });
         JScrollPane scroller = insertListToFrame(50);
         int lastVisibleIndex = list.getLastVisibleIndex();
@@ -424,6 +525,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetScrollableTracksViewportHeight() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane scroller = insertListToFrame();
         assertNotNull(scroller);
         list.setPreferredSize(new Dimension(1000, 10));
@@ -439,6 +544,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetScrollableTracksViewportWidth() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane scroller = insertListToFrame();
         assertNotNull(scroller);
         list.setPreferredSize(new Dimension(10, 1000));
@@ -454,6 +563,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetScrollableUnitIncrement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane scroller = insertListToFrame();
         assertEquals(0, list.getFirstVisibleIndex());
         int rowHeight = list.getCellBounds(0, 0).height;
@@ -505,6 +618,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectedIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, list.getSelectedIndex());
         list.setSelectedIndex(2);
         assertEquals(2, list.getSelectedIndex());
@@ -514,6 +631,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectedIndices() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, list.getSelectedIndices().length);
         list.setSelectedIndices(new int[] { 0, 2 });
         assertEquals(2, list.getSelectedIndices().length);
@@ -525,6 +646,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectedValue() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(list.getSelectedValue());
         list.setSelectedIndex(1);
         assertEquals("b", list.getSelectedValue());
@@ -538,6 +663,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSelectedValues() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, list.getSelectedValues().length);
         list.setSelectedIndex(1);
         assertEquals(1, list.getSelectedValues().length);
@@ -551,6 +680,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectionBackground() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(list.getSelectionBackground());
         list.setSelectionBackground(Color.red);
         assertEquals(Color.red, list.getSelectionBackground());
@@ -558,6 +691,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectionForeground() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(list.getSelectionForeground());
         list.setSelectionForeground(Color.red);
         assertEquals(Color.red, list.getSelectionForeground());
@@ -565,6 +702,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectionMode() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, list.getSelectionMode());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         assertEquals(ListSelectionModel.SINGLE_SELECTION, list.getSelectionMode());
@@ -573,6 +714,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetSelectionModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.getSelectionModel() instanceof DefaultListSelectionModel);
         ListSelectionModel model = new DefaultListSelectionModel();
         list.setSelectionModel(model);
@@ -581,6 +726,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetToolTipText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         insertListToFrame();
         assertNull(list.getToolTipText());
         list.setToolTipText("list tooltip");
@@ -606,6 +755,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetUpdateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ListUI ui = new ListUI() {
             @Override
             public Point indexToLocation(final JList arg0, final int arg1) {
@@ -629,10 +782,18 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetUICalssID() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("ListUI", list.getUIClassID());
     }
 
     public void testGetSetValueIsAdjusting() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(list.getValueIsAdjusting());
         list.setValueIsAdjusting(true);
         assertTrue(list.getValueIsAdjusting());
@@ -640,6 +801,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testGetSetVisibleRowCount() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(8, list.getVisibleRowCount());
         list.setVisibleRowCount(10);
         assertEquals(10, list.getVisibleRowCount());
@@ -651,6 +816,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testIndexToLocation() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ListUI ui = new ListUI() {
             @Override
             public Point indexToLocation(final JList arg0, final int arg1) {
@@ -672,6 +841,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testIsSelectedIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(list.isSelectedIndex(0));
         list.setSelectedIndex(0);
         assertTrue(list.isSelectedIndex(0));
@@ -679,6 +852,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testIsSelectionEmpty() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.isSelectionEmpty());
         list.setSelectedIndex(1);
         assertFalse(list.isSelectionEmpty());
@@ -686,6 +863,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testLocationToIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ListUI ui = new ListUI() {
             @Override
             public Point indexToLocation(final JList arg0, final int arg1) {
@@ -707,6 +888,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testRemoveSelectionInterval() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(list.isSelectionEmpty());
         assertTrue(list.getSelectionModel().isSelectionEmpty());
         list.addSelectionInterval(0, 2);
@@ -720,6 +905,10 @@ public class JListTest extends SwingTestCase {
     }
 
     public void testSetListData() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ListModel model = list.getModel();
         assertEquals(3, model.getSize());
         list.setListData(new Object[] { "1", "2" });

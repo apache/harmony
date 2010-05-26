@@ -26,6 +26,7 @@ import java.awt.Insets;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingTestCase;
+import tests.support.Support_Excludes;
 
 public class EtchedBorderTest extends SwingTestCase {
     public static void main(final String[] args) {
@@ -36,6 +37,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for void EtchedBorder()
      */
     public void testEtchedBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int etchType = EtchedBorder.LOWERED;
         Color shadowColor = null;
         Color highlightedColor = null;
@@ -50,6 +55,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for void EtchedBorder(int)
      */
     public void testEtchedBorderint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int etchType = EtchedBorder.LOWERED;
         Color shadowColor = null;
         Color highlightedColor = null;
@@ -70,6 +79,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for void EtchedBorder(Color, Color)
      */
     public void testEtchedBorderColorColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int etchType = EtchedBorder.LOWERED;
         Color shadowColor = Color.YELLOW;
         Color highlightedColor = Color.RED;
@@ -91,6 +104,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for void EtchedBorder(int, Color, Color)
      */
     public void testEtchedBorderintColorColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int etchType = EtchedBorder.LOWERED;
         Color shadowColor = Color.YELLOW;
         Color highlightedColor = Color.RED;
@@ -113,6 +130,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component, Insets)
      */
     public void testGetBorderInsetsComponentInsets() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int thickness1 = 2;
         int thickness2 = 22;
         int thickness3 = 33;
@@ -147,6 +168,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component)
      */
     public void testGetBorderInsetsComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int thickness1 = 2;
         int thickness2 = 22;
         int thickness3 = 33;
@@ -174,6 +199,10 @@ public class EtchedBorderTest extends SwingTestCase {
     }
 
     public void testPaintBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //        JPanel panel1 = new JPanel();
         //        JPanel panel2 = new JPanel();
         //        JPanel panel3 = new JPanel();
@@ -198,6 +227,10 @@ public class EtchedBorderTest extends SwingTestCase {
     }
 
     public void testIsBorderOpaque() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Color shadowColor = Color.GREEN;
         Color highlightedColor = Color.RED;
         EtchedBorder border = new EtchedBorder(highlightedColor, shadowColor);
@@ -210,6 +243,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for Color getShadowColor(Component)
      */
     public void testGetShadowColorComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent c1 = new JPanel();
         JComponent c2 = new JPanel();
         c1.setBackground(new Color(110, 110, 110));
@@ -230,6 +267,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for Color getHighlightColor(Component)
      */
     public void testGetHighlightColorComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent c1 = new JPanel();
         JComponent c2 = new JPanel();
         c1.setBackground(new Color(110, 110, 110));
@@ -254,6 +295,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for Color getShadowColor()
      */
     public void testGetShadowColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Color shadowColor = Color.YELLOW;
         Color highlightedColor = Color.RED;
         EtchedBorder border = new EtchedBorder(highlightedColor, shadowColor);
@@ -268,6 +313,10 @@ public class EtchedBorderTest extends SwingTestCase {
      * Class under test for Color getHighlightColor()
      */
     public void testGetHighlightColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Color shadowColor = Color.YELLOW;
         Color highlightedColor = Color.RED;
         EtchedBorder border = new EtchedBorder(highlightedColor, shadowColor);
@@ -281,6 +330,10 @@ public class EtchedBorderTest extends SwingTestCase {
     }
 
     public void testGetEtchType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int etchType = EtchedBorder.LOWERED;
         EtchedBorder border = new EtchedBorder(etchType);
         assertEquals("Etch type coinsides", etchType, border.getEtchType());
@@ -290,6 +343,10 @@ public class EtchedBorderTest extends SwingTestCase {
     }
 
     public void testReadWriteObject() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Color shadowColor1 = Color.RED;
         Color shadowColor2 = Color.BLUE;
         Color highlightedColor1 = Color.YELLOW;

@@ -27,10 +27,15 @@ import java.text.StringCharacterIterator;
 import java.util.Locale;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class RuleBasedCollatorTest extends TestCase {
 
 	public void test_getCollationKeyLjava_lang_String() {
+	    if (Support_Excludes.isExcluded()) {
+	        return;
+	    }
+
 		// Regression test for HARMONY-28
 		String source = null;
 		RuleBasedCollator rbc = null;
@@ -45,6 +50,10 @@ public class RuleBasedCollatorTest extends TestCase {
 	}
     
     public void testHashCode() throws ParseException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         {
             String rule = "< a < b < c < d";
             RuleBasedCollator coll = new RuleBasedCollator(rule);
@@ -60,6 +69,10 @@ public class RuleBasedCollatorTest extends TestCase {
     }
 
     public void testClone() throws ParseException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RuleBasedCollator coll = (RuleBasedCollator) Collator
                 .getInstance(Locale.US);
         RuleBasedCollator clone = (RuleBasedCollator) coll.clone();
@@ -73,6 +86,10 @@ public class RuleBasedCollatorTest extends TestCase {
      * Class under test for boolean equals(java.lang.Object)
      */
     public void testEqualsObject() throws ParseException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String rule = "< a < b < c < d < e";
         RuleBasedCollator coll = new RuleBasedCollator(rule);
 
@@ -93,12 +110,20 @@ public class RuleBasedCollatorTest extends TestCase {
      * Class under test for int compare(java.lang.String, java.lang.String)
      */
     public void testCompareStringString() throws ParseException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String rule = "< c < b < a";
         RuleBasedCollator coll = new RuleBasedCollator(rule);
         assertEquals(-1, coll.compare("c", "a"));
     }
 
     public void testGetCollationKey() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RuleBasedCollator coll = (RuleBasedCollator) Collator
                 .getInstance(Locale.GERMAN);
         String source = "abc";
@@ -113,6 +138,10 @@ public class RuleBasedCollatorTest extends TestCase {
     }
 
     public void testGetRules() throws ParseException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String rule = "< a = b < c";
         RuleBasedCollator coll = new RuleBasedCollator(rule);
         assertEquals(rule, coll.getRules());
@@ -123,6 +152,10 @@ public class RuleBasedCollatorTest extends TestCase {
      * getCollationElementIterator(java.lang.String)
      */
     public void testGetCollationElementIteratorString() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         {
             Locale locale = new Locale("es", "", "TRADITIONAL");
             RuleBasedCollator coll = (RuleBasedCollator) Collator
@@ -172,6 +205,10 @@ public class RuleBasedCollatorTest extends TestCase {
      * getCollationElementIterator(java.text.CharacterIterator)
      */
     public void testGetCollationElementIteratorCharacterIterator() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         {
             Locale locale = new Locale("es", "", "TRADITIONAL");
             RuleBasedCollator coll = (RuleBasedCollator) Collator
@@ -220,6 +257,10 @@ public class RuleBasedCollatorTest extends TestCase {
     }
 
     public void testStrength() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RuleBasedCollator coll = (RuleBasedCollator) Collator
                 .getInstance(Locale.US);
         for (int i = 0; i < 4; i++) {
@@ -230,6 +271,10 @@ public class RuleBasedCollatorTest extends TestCase {
     }
 
     public void testDecomposition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RuleBasedCollator coll = (RuleBasedCollator) Collator
                 .getInstance(Locale.US);
         for (int i = 0; i < 2; i++) {
@@ -239,6 +284,10 @@ public class RuleBasedCollatorTest extends TestCase {
     }
 
     public void testCollator_GetInstance() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Collator coll = Collator.getInstance();
         Object obj1 = "a";
         Object obj2 = "b";
@@ -249,6 +298,10 @@ public class RuleBasedCollatorTest extends TestCase {
     }
 
     public void testGetAvailableLocales() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Locale[] locales = Collator.getAvailableLocales();
         // for (int i = 0; i < locales.length; i++) {
         // Locale locale = locales[i];
@@ -257,6 +310,10 @@ public class RuleBasedCollatorTest extends TestCase {
 
     // Test CollationKey
     public void testCollationKey() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Collator coll = Collator.getInstance(Locale.US);
         String text = "abc";
         CollationKey key = coll.getCollationKey(text);
@@ -271,6 +328,10 @@ public class RuleBasedCollatorTest extends TestCase {
      * @tests java.text.RuleBasedCollator.RuleBasedCollator(java.lang.String)
      */
     public void testNullPointerException() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //Regression for HARMONY-241
         try {
             new RuleBasedCollator(null);
@@ -283,6 +344,10 @@ public class RuleBasedCollatorTest extends TestCase {
      * @tests java.text.RuleBasedCollator.compare(java.lang.String, java.lang.String)
      */
     public void testCompareNull() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //Regression for HARMONY-836
         try {
             new RuleBasedCollator("< a").compare(null, null);
@@ -295,6 +360,10 @@ public class RuleBasedCollatorTest extends TestCase {
      * @tests java.text.RuleBasedCollator.RuleBasedCollator(java.lang.String)
      */
     public void testEmptyStringException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //Regression for HARMONY-241
         try {
             new RuleBasedCollator("");

@@ -27,6 +27,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingTestCase;
 import javax.swing.text.Position.Bias;
+import tests.support.Support_Excludes;
 
 /**
  * Tests model/view conversions in PlainViewI18N class.
@@ -79,6 +80,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionEast01() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -97,6 +102,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionEast02() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, view.getNextVisualPositionFrom(1, Bias.Forward, shape,
                 SwingConstants.EAST, bias));
         assertSame(Bias.Forward, bias[0]);
@@ -112,6 +121,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionEast03() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -130,6 +143,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionEast04() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(6, view.getNextVisualPositionFrom(3, Bias.Forward, shape,
                 SwingConstants.EAST, bias));
         assertSame(Bias.Forward, bias[0]);
@@ -145,6 +162,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionWest01() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -163,6 +184,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionWest02() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -181,6 +206,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionWest03() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -199,6 +228,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * with Forward and Backward biases.
      */
     public void testGetNextVisualPositionWest04() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(4, view.getNextVisualPositionFrom(3, Bias.Forward, shape,
                 SwingConstants.WEST, bias));
         assertSame(Bias.Forward, bias[0]);
@@ -224,6 +257,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
      * <p>The offsets used are 0, 2.
      */
     public void testModelToView01() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Rectangle viewAt0F = (Rectangle) view.modelToView(0, shape, Bias.Forward);
         Rectangle viewAt2B = (Rectangle) view.modelToView(2, shape, Bias.Forward);
         assertEquals(viewAt0F.x, viewAt2B.x);
@@ -234,6 +271,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
     }
 
     public void testModelToView02() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Rectangle viewAt1F = (Rectangle) view.modelToView(1, shape, Bias.Forward);
         Rectangle viewAt1B = (Rectangle) view.modelToView(1, shape, Bias.Backward);
         assertEquals(viewAt1F, viewAt1B);
@@ -242,6 +283,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
     }
 
     public void testViewToModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(2, view.viewToModel(rtlWidth, 0, shape, bias));
         assertSame(Bias.Forward, bias[0]);
         bias[0] = null;
@@ -257,6 +302,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
     }
 
     public void testViewToModelRTL() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         View rtl;
         if (BasicSwingTestCase.isHarmony()) {
             rtl = view.getView(0).getView(0);
@@ -277,6 +326,10 @@ public class PlainViewI18N_ModelViewTest extends SwingTestCase {
     }
 
     public void testViewToModelLTR() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         View ltr;
         if (BasicSwingTestCase.isHarmony()) {
             ltr = view.getView(0).getView(1);

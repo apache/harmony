@@ -36,6 +36,7 @@ import javax.swing.JTextArea;
 import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
+import tests.support.Support_Excludes;
 
 public class DefaultEditorKitRTest extends BasicSwingTestCase {
     protected DefaultEditorKit kit = null;
@@ -111,6 +112,10 @@ public class DefaultEditorKitRTest extends BasicSwingTestCase {
     }
 
     public void testInsertContentActionPerformed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = getAction(DefaultEditorKit.insertContentAction);
         JTextArea c = getInitedComponent(2, 7, "0123456789");
         performAction(new JTextArea(), action, "command\ncontent");
@@ -125,6 +130,10 @@ public class DefaultEditorKitRTest extends BasicSwingTestCase {
     }
 
     public void testReadInputStreamDocumentint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker readerMarker = new Marker();
         DefaultEditorKit kit = new DefaultEditorKit() {
             private static final long serialVersionUID = 1L;
@@ -140,6 +149,10 @@ public class DefaultEditorKitRTest extends BasicSwingTestCase {
     }
 
     public void testWriteOutputStreamDocumentintint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker writeMarker = new Marker();
         DefaultEditorKit kit = new DefaultEditorKit() {
             private static final long serialVersionUID = 1L;
@@ -155,6 +168,10 @@ public class DefaultEditorKitRTest extends BasicSwingTestCase {
     }
 
     public void testInsertContentActionPerformed_NullEvent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final TextAction action = (TextAction) getAction(DefaultEditorKit.insertContentAction);
         final JTextArea c = getInitedComponent(2, 7, "0123456789");
         assertNotNull(c);
@@ -173,6 +190,10 @@ public class DefaultEditorKitRTest extends BasicSwingTestCase {
     }
 
     public void testRead() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String str1 = "Windows line-end\r\nUnix-style\nMacOS\rUnknown\n\r";
         String str2 = "Windows line-end\nUnix-style\nMacOS\nUnknown\n\n";
         InputStream reader = new ByteArrayInputStream(str1.getBytes());

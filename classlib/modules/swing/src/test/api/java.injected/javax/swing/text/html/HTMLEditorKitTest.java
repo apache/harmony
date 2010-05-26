@@ -41,6 +41,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLEditorKit.InsertHTMLTextAction;
+import tests.support.Support_Excludes;
 
 public class HTMLEditorKitTest extends SwingTestCase {
     private static final String HTML_TEXT = "<title>t</title>html <i>text</i>";
@@ -66,16 +67,28 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testHTMLEditorKit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         editorKit = new HTMLEditorKit();
 
         assertNotNull(editorKit.getActions());
     }
 
     public void testClone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: implement
     }
 
     public void testCreateDefaultDocument() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Document doc = editorKit.createDefaultDocument();
         assertTrue(doc instanceof HTMLDocument);
 
@@ -90,6 +103,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testDeinstallJEditorPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JEditorPane pane = new JEditorPane();
         int mouseListenersCount = pane.getMouseListeners().length;
         int mouseMotionListenersCount = pane.getMouseMotionListeners().length;
@@ -104,10 +121,18 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: implement
     }
 
     public void testGetActions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action[] ancestorActions = new StyledEditorKit().getActions();
         Action[] actions = editorKit.getActions();
         assertEquals(12, actions.length - ancestorActions.length);
@@ -127,6 +152,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testNextLinkAction() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = findActionWithName(
             editorKit.getActions(), "next-link-action");
         assertNotNull(action);
@@ -148,6 +177,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testPreviousLinkAction() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = findActionWithName(
             editorKit.getActions(), "previous-link-action");
         assertNotNull(action);
@@ -169,6 +202,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testActivateLinkAction() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action action = findActionWithName(
             editorKit.getActions(), "activate-link-action");
         assertNotNull(action);
@@ -197,6 +234,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testInsertHRAction() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InsertHTMLTextAction action = (InsertHTMLTextAction)findActionWithName(
             editorKit.getActions(), "InsertHR");
         assertNotNull(action);
@@ -218,10 +259,18 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testGetContentType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("text/html", editorKit.getContentType());
     }
 
     public void testGetInputAttributes() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JEditorPane pane = new JEditorPane();
         editorKit.install(pane);
         editorKit.read(new StringReader("normal<i>italic</i>"),
@@ -232,6 +281,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testGetViewFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ViewFactory factory = editorKit.getViewFactory();
         assertTrue(factory instanceof HTMLEditorKit.HTMLFactory);
         assertSame(factory, editorKit.getViewFactory());
@@ -239,6 +292,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testInsertHTML() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final String HTML_TEXT2 = "<i>_another text_</i>";
         final String HTML_TEXT3 = ("");
         final String INSERTION_RESULT = "  \nhtml_another text_ text";
@@ -276,6 +333,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testInstallJEditorPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JEditorPane pane = new JEditorPane();
         int mouseListenersCount = pane.getMouseListeners().length;
         int mouseMotionListenersCount = pane.getMouseMotionListeners().length;
@@ -289,6 +350,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testRead() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final StringReader in1 = new StringReader(HTML_TEXT);
         final StringReader in2 = new StringReader("another text");
         final StringReader in3 = new StringReader("");
@@ -343,6 +408,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testSetIsAutoFormSubmission() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(editorKit.isAutoFormSubmission());
 
         editorKit.setAutoFormSubmission(false);
@@ -350,6 +419,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testSetGetDefaultCursor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR),
                    editorKit.getDefaultCursor());
 
@@ -359,6 +432,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testSetGetLinkCursor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR),
                    editorKit.getLinkCursor());
 
@@ -368,6 +445,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testSetStyleSheet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         StyleSheet ss = new StyleSheet();
         editorKit.setStyleSheet(ss);
         assertSame(ss, editorKit.getStyleSheet());
@@ -377,6 +458,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testGetStyleSheet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         StyleSheet ss = editorKit.getStyleSheet();
         assertNotNull(ss);
         assertSame(ss, editorKit.getStyleSheet());
@@ -386,6 +471,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testWrite() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         StringWriter writer = new StringWriter();
         final String content = "Hello, World!";
         final int start = 1;
@@ -412,6 +501,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testGetParser() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         HTMLEditorKit.Parser parser = editorKit.getParser();
         assertNotNull(parser);
         assertSame(parser, editorKit.getParser());
@@ -419,6 +512,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testCreateInputAttributes() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         document.insertAfterStart(document.getDefaultRootElement(), "<b>bold</b>");
         Element e = document.getDefaultRootElement().getElement(0);
         SimpleAttributeSet attrSet = new SimpleAttributeSet();
@@ -429,6 +526,10 @@ public class HTMLEditorKitTest extends SwingTestCase {
     }
 
     public void testParserCallback() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object implied = HTMLEditorKit.ParserCallback.IMPLIED;
         assertTrue(implied instanceof String);
         assertFalse("".equals(implied));

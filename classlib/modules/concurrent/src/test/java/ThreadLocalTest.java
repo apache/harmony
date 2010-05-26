@@ -8,6 +8,7 @@
 
 import junit.framework.*;
 import java.util.concurrent.Semaphore;
+import tests.support.Support_Excludes;
 
 public class ThreadLocalTest extends JSR166TestCase {
     public static void main(String[] args) {
@@ -39,6 +40,10 @@ public class ThreadLocalTest extends JSR166TestCase {
      * remove causes next access to return initial value
      */
     public void testRemove() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(tl.get(), one);
         tl.set(two);
         assertEquals(tl.get(), two);
@@ -51,6 +56,10 @@ public class ThreadLocalTest extends JSR166TestCase {
      * initial value
      */
     public void testRemoveITL() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(itl.get(), zero);
         itl.set(two);
         assertEquals(itl.get(), two);
@@ -89,6 +98,10 @@ public class ThreadLocalTest extends JSR166TestCase {
      * InheritableThreadLocal propagates generic values.
      */
     public void testGenericITL() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final int threadCount = 10;
         final int x[] = new int[threadCount];
         Thread progenitor = new ITLThread(x);

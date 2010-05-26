@@ -31,6 +31,7 @@ import javax.swing.text.Element;
 import javax.swing.text.PlainView;
 import javax.swing.text.WrappedPlainView;
 import junit.framework.AssertionFailedError;
+import tests.support.Support_Excludes;
 
 public class BasicTextAreaUITest extends SwingTestCase {
     JFrame jf;
@@ -84,6 +85,10 @@ public class BasicTextAreaUITest extends SwingTestCase {
 
     // TODO add test for bidirectional text (after creation PlainViewi18n)
     public void testCreateElement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Document doc = jta.getDocument();
         Element elem = doc.getDefaultRootElement();
         BasicTextUI ui = (BasicTextUI) jta.getUI();
@@ -105,11 +110,19 @@ public class BasicTextAreaUITest extends SwingTestCase {
     }
 
     public void testGetPropertyPrefix() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("TextArea", ((BasicTextAreaUI) jta.getUI()).getPropertyPrefix());
         assertEquals("TextArea", ((BasicTextAreaUI) bidiJta.getUI()).getPropertyPrefix());
     }
 
     public void testPropertyChange() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TextAreaUI ui = (TextAreaUI) jta.getUI();
         ui.flagModelChanged = false;
         jta.setLineWrap(true);
@@ -126,6 +139,10 @@ public class BasicTextAreaUITest extends SwingTestCase {
     }
 
     public void testCreateUIJComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JTextArea jta = new JTextArea();
         ComponentUI ui = BasicTextAreaUI.createUI(jta);
         assertTrue(ui instanceof BasicTextAreaUI);
@@ -133,11 +150,23 @@ public class BasicTextAreaUITest extends SwingTestCase {
     }
 
     public void testGetPrefferedSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetMinimumSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testInstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 }

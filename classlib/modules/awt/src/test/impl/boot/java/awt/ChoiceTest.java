@@ -26,6 +26,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 /**
  * ChoiceTest
@@ -365,6 +366,10 @@ public class ChoiceTest extends TestCase {
     }
 
     public void testDeadLoop4887() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final int count[] = new int[1];
         Component c = new Choice() {
             public void paint(Graphics g) {

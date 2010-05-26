@@ -26,10 +26,15 @@ import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class GetSupportedAttributeValuesTest extends TestCase {
 
     public void testGetSupportedAttributeValues() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         System.out
                 .println("============= START testGetSupportedAttributeValues ================");
 

@@ -21,6 +21,7 @@ package java.awt;
 import java.awt.event.*;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 /**
  * ListTest

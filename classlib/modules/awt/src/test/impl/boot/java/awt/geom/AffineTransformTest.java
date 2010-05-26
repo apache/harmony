@@ -19,6 +19,7 @@ package java.awt.geom;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeomTestCase;
+import tests.support.Support_Excludes;
 
 
 public class AffineTransformTest extends GeomTestCase {
@@ -124,6 +125,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreate1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_IDENTITY,
                 new double[]{1, 0, 0, 1, 0, 0},
@@ -132,6 +137,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreate2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
                 new double[]{2, 3, 4, 5, 6, 7},
@@ -140,6 +149,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreate3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
                 new double[]{2, 3, 4, 5, 6, 7},
@@ -148,6 +161,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreate4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
                 new double[]{2, 3, 4, 5, 6, 7},
@@ -156,6 +173,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreate5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
                 new double[]{2, 3, 4, 5, 6, 7},
@@ -164,6 +185,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreate6() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
                 new double[]{2, 3, 4, 5, 6, 7},
@@ -228,6 +253,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[] element : type) {
             assertEquals(
                     matrixToStr(element) + " Type",
@@ -237,35 +266,67 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetScaleX() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(2.0, t.getScaleX(), 0.0);
     }
 
     public void testGetScaleY() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(5.0, t.getScaleY(), 0.0);
     }
 
     public void testGetShearX() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(4.0, t.getShearX(), 0.0);
     }
 
     public void testGetShearY() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(3.0, t.getShearY(), 0.0);
     }
 
     public void testGetTranslateX() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(6.0, t.getTranslateX(), 0.0);
     }
 
     public void testGetTranslateY() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(7.0, t.getTranslateY(), 0.0);
     }
 
     public void testIsEdentity() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(t.isIdentity());
         assertTrue(new AffineTransform(1, 0, 0, 1, 0, 0).isIdentity());
     }
 
     public void testGetMatrix() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         double[] matrix = new double[]{0, 0, 0, 0};
         t.getMatrix(matrix);
         assertEquals(new double[]{2, 3, 4, 5}, matrix, 4, 0.0);
@@ -275,10 +336,18 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetDeterminant() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-2, t.getDeterminant(), 0.0);
     }
 
     public void testSetTransform() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setTransform(8, 9, 10, 11, 12, 13);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -288,6 +357,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetTransform2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setTransform(new AffineTransform(8, 9, 10, 11, 12, 13));
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -297,6 +370,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetToIdentity() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setToIdentity();
         assertEquals(
                 AffineTransform.TYPE_IDENTITY,
@@ -306,6 +383,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetToTranslation() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setToTranslation(8, 9);
         assertEquals(
                 AffineTransform.TYPE_TRANSLATION,
@@ -321,6 +402,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetToScale() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setToScale(8, 9);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_SCALE,
@@ -336,6 +421,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetToShear() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setToShear(8, 9);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -351,6 +440,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetToRotation1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setToRotation(Math.PI * 0.5);
         assertEquals(
                 AffineTransform.TYPE_QUADRANT_ROTATION,
@@ -378,6 +471,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSetToRotation2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.setToRotation(0, 8, 9);
         assertEquals(
                 AffineTransform.TYPE_IDENTITY,
@@ -400,6 +497,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetTranslateInstance() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_TRANSLATION,
                 new double[]{1, 0, 0, 1, 8, 9},
@@ -413,6 +514,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetScaleInstance() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_SCALE,
                 new double[]{8, 0, 0, 9, 0, 0},
@@ -426,6 +531,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetShearInstance() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
                 new double[]{1, 9, 8, 1, 0, 0},
@@ -439,6 +548,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetRotateInstance1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_QUADRANT_ROTATION,
                 new double[]{0, 1, -1, 0, 0, 0},
@@ -462,6 +575,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testGetRotateInstance2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 AffineTransform.TYPE_IDENTITY,
                 new double[]{1, 0, 0, 1, 0, 0},
@@ -481,6 +598,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTranslate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.translate(0, 0);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -496,6 +617,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testScale() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.scale(1, 1);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -511,6 +636,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testShear() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.shear(0, 0);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -526,6 +655,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testRotate1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.rotate(0);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -547,6 +680,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testRotate2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         t.rotate(0, 8, 9);
         assertEquals(
                 AffineTransform.TYPE_GENERAL_TRANSFORM,
@@ -569,6 +706,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testConcatenate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[][] element : matrix) {
             AffineTransform a = new AffineTransform(element[0]);
             AffineTransform b = new AffineTransform(element[1]);
@@ -579,6 +720,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testPreConcatenate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[][] element : matrix) {
             AffineTransform a = new AffineTransform(element[0]);
             AffineTransform b = new AffineTransform(element[1]);
@@ -589,6 +734,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreateInvers() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (double[][] element : invers) {
             try {
                 AffineTransform at = new AffineTransform(element[0]);
@@ -609,6 +758,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTransformPoint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][] element : points) {
             AffineTransform at = new AffineTransform(element[0]);
             for(int j = 1; j < element.length; j++) {
@@ -636,6 +789,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTransformPointArray() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         Point2D[] src = new Point2D[]{
                 null,
@@ -649,6 +806,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTransformPointArrayBad() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression test HARMONY-1405
         
         AffineTransform at = new AffineTransform();
@@ -678,6 +839,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
     
     public void testTransformArray2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         double[] src = new double[]{0, 0, 0, 0, 0, 0, 1, 1, 0, 0};
         double[] dst = new double[6];
@@ -687,6 +852,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
     
     public void testTransformArray3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         float[] src = new float[]{0, 0, 0, 0, 0, 0, 1, 1, 0, 0};
         float[] dst = new float[6];
@@ -696,6 +865,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTransformArray4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         float[] src = new float[]{0, 0, 0, 0, 0, 0, 1, 1, 0, 0};
         double[] dst = new double[6];
@@ -705,6 +878,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTransformArray5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         double[] src = new double[]{0, 0, 0, 0, 0, 0, 1, 1, 0, 0};
         float[] dst = new float[6];
@@ -714,6 +891,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
     
     public void testTransformArrayOverlap1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regresion test HARMONY-1603
         AffineTransform at = AffineTransform.getTranslateInstance(2, 3);
         float[] src = new float[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
@@ -723,6 +904,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testTransformArrayOverlap2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regresion test HARMONY-1603
         AffineTransform at = AffineTransform.getTranslateInstance(2, 3);
         double[] src = new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
@@ -732,6 +917,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testDeltaTransform1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][] element : points) {
             AffineTransform at = new AffineTransform(element[0]);
             for(int j = 1; j < element.length; j++) {
@@ -759,6 +948,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testDeltaTransform2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         double[] src = new double[]{0, 0, 0, 0, 0, 0, 1, 1, 0, 0};
         double[] dst = new double[6];
@@ -768,6 +961,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testInversTransform1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             new AffineTransform(1, 1, 1, 1, 1, 1).inverseTransform(new Point2D.Double(), null);
             fail("Expected exception NoninvertibleTransformException");
@@ -805,6 +1002,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testInversTransform2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         double[] src = new double[]{0, 0, 0, 0, 0, 0, 1, 1, 0, 0};
         double[] dst = new double[6];
@@ -818,6 +1019,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testCreateTransformedShape() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AffineTransform at = new AffineTransform(0, 1, -2, 0, 3, 4);
         Shape actual = at.createTransformedShape(new Line2D.Double(1, 2, 3, 4));
         GeneralPath expected = new GeneralPath();
@@ -827,6 +1032,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testEquals() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for(int i = 0; i < equal.length; i++) {
             AffineTransform t1 = new AffineTransform(equal[i]);
             for(int j = 0; j < equal.length; j++){
@@ -841,6 +1050,10 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testHashCode() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for(int i = 0; i < equal.length; i++) {
             AffineTransform t1 = new AffineTransform(equal[i]);
             for(int j = 0; j < equal.length; j++){
@@ -855,10 +1068,18 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testClone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(t, t.clone());
     }
 
     public void testToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(
                 "java.awt.geom.AffineTransform[[2.0, 4.0, 6.0], [3.0, 5.0, 7.0]]",
                 t.toString());
@@ -875,18 +1096,34 @@ public class AffineTransformTest extends GeomTestCase {
     }
 
     public void testSerializeRead1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkRead(new AffineTransform());
     }
 
     public void testSerializeRead2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkRead(new AffineTransform(1, 2, 3, 4, 5, 6));
     }
 
     public void testSerializeWrite1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkWrite(new AffineTransform());
     }
 
     public void testSerializeWrite2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkWrite(new AffineTransform(1, 2, 3, 4, 5, 6));
     }
 

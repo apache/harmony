@@ -33,7 +33,7 @@
 
     <target name="test-module"
             depends="-test-module,-test-module-impl" />
-    <target name="-test-module" depends="test-jre-vm-info">
+    <target name="-test-module">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="x-net" jar="x-net_api_tests.jar">
             <junit-elements>

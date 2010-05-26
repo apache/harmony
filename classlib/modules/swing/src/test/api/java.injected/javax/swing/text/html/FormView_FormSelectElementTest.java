@@ -28,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.SwingTestCase;
 import javax.swing.text.Element;
+import tests.support.Support_Excludes;
 
 public class FormView_FormSelectElementTest extends SwingTestCase {
 
@@ -51,11 +52,19 @@ public class FormView_FormSelectElementTest extends SwingTestCase {
         }
 
         public void testModelAttributes() throws Exception {
+            if (Support_Excludes.isExcluded()) {
+                return;
+            }
+
             createHTMLSample();
 
         }
 
         public void testCreateComponent() throws Exception {
+            if (Support_Excludes.isExcluded()) {
+                return;
+            }
+
             createHTMLSample();
             createFormViewWithParent("option_disabled_attribute");
             JComboBox comboBox = (JComboBox)formView.getComponent();
@@ -74,6 +83,10 @@ public class FormView_FormSelectElementTest extends SwingTestCase {
         }
 
         public void testCreateMultipleSelectionComponent() throws Exception {
+            if (Support_Excludes.isExcluded()) {
+                return;
+            }
+
             createHTMLSample();
 
             createFormViewWithParent("select_multiple_name_only");
@@ -104,6 +117,10 @@ public class FormView_FormSelectElementTest extends SwingTestCase {
         }
 
         public void testCreateSimpleSelectionComponent() throws Exception {
+            if (Support_Excludes.isExcluded()) {
+                return;
+            }
+
             createHTMLSample();
 
             createFormViewWithParent("select");

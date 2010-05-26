@@ -23,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 /**
  * 

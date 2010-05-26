@@ -33,7 +33,7 @@
 
     <target name="test-module"
             depends="-test-module,-test-module-impl" />
-    <target name="-test-module" depends="test-jre-vm-info">
+    <target name="-test-module">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="security" jar="security_tests_api.jar">
             <junit-elements>

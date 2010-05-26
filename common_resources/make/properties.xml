@@ -120,14 +120,6 @@
     <property name="build.module" value="*" />
     <property name="exclude.module" value="nothing" />
 
-    <!-- names of exclude lists, used by prepare-exclude-list macro -->
-    <property name="common.exclude.file" value="exclude.common" />
-    <property name="common.exclude.interm" value="exclude.interm" />
-    <property name="platform.exclude.file"
-              value="exclude.${hy.platform}.${hy.test.vm.name}" />
-    <property name="platform.exclude.interm"
-              value="exclude.${hy.platform}.${hy.test.vm.name}.interm" />
-
     <!-- flags -->
     <property name="hy.no.thr" value="false" />
     <condition property="hy.skip.thr" value="true">
@@ -315,30 +307,6 @@ properties in preference to these:
         </sequential>
     </macrodef>
     <convert-test from="test.case" to="converted.tc" />
-    
-    <!-- Concatenate several exclude lists into single list -->
-    <macrodef name="prepare-exclude-list">
-       <attribute name="moduleName"/>
-       <!-- directory with exclude lists for the module -->
-       <attribute name="dir"/>
-       <!-- name of concatenated list, should be an absolute pathname -->
-       <attribute name="result"/>
-       <sequential>
-           <dirname file="@{result}" property="@{result}.dir" />
-           <mkdir dir="${@{result}.dir}" />
-
-           <echo message="" file="@{result}"/>
-           <concat destfile="@{result}" force="yes" fixlastline="yes" append="true">
-               <fileset dir="@{dir}">
-                   <include name="${common.exclude.file}"/> 
-                   <include name="${platform.exclude.file}"/>
-                   <include name="${common.exclude.interm}" if="exclude.interm" />
-                   <include name="${platform.exclude.interm}" if="exclude.interm" />
-                   <size value="0" when="more"/>
-               </fileset>
-           </concat>
-       </sequential>
-   </macrodef>
     
     <macrodef name="ensure-javac">
         <sequential>

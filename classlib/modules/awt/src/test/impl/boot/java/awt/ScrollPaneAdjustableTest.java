@@ -23,6 +23,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 /**
  * ScrollPaneAdjustableTest
@@ -220,6 +221,10 @@ public class ScrollPaneAdjustableTest extends TestCase {
     }
 
     public void testAddGetRemoveAdjustmentListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, vAdjustable.getAdjustmentListeners().length);
 
         AdjustmentListener listener = new AdjustmentListener() {

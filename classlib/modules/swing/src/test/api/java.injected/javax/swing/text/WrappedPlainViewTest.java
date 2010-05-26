@@ -25,6 +25,7 @@ import java.awt.Rectangle;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingTestCase;
+import tests.support.Support_Excludes;
 
 /**
  * Tests WrappedPlainView methods which require "real" initialization.
@@ -83,16 +84,28 @@ public class WrappedPlainViewTest extends SwingTestCase {
     }
 
     public void testGetMaximumSpan() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(Integer.MAX_VALUE, (int) view.getMaximumSpan(X_AXIS));
         assertEquals(getSum(Y_AXIS), (int) view.getMaximumSpan(Y_AXIS));
     }
 
     public void testGetMinimumSpan() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(view.getWidth(), (int) view.getMinimumSpan(X_AXIS));
         assertEquals(getSum(Y_AXIS), (int) view.getMinimumSpan(Y_AXIS));
     }
 
     public void testGetPreferredSpan() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(view.getWidth(), (int) view.getPreferredSpan(X_AXIS));
         assertEquals(getSum(Y_AXIS), (int) view.getPreferredSpan(Y_AXIS));
         assertEquals(shape.width, view.getWidth());
@@ -100,6 +113,10 @@ public class WrappedPlainViewTest extends SwingTestCase {
     }
 
     public void testDrawSelectedText() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         textArea.setText("line1\nline2");
         Graphics g = textArea.getGraphics();
         g.setFont(textArea.getFont());
@@ -126,6 +143,10 @@ public class WrappedPlainViewTest extends SwingTestCase {
     }
 
     public void testDrawUnselectedText() throws BadLocationException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         textArea.setText("line1\nline2");
         Graphics g = textArea.getGraphics();
         g.setFont(textArea.getFont());
@@ -152,6 +173,10 @@ public class WrappedPlainViewTest extends SwingTestCase {
     }
     /*
      public void testPaint() {
+         if (Support_Excludes.isExcluded()) {
+             return;
+         }
+
      }
      */
 }

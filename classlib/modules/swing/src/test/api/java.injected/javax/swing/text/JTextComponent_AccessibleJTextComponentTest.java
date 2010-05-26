@@ -40,6 +40,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingTestCase;
 import javax.swing.text.JTextComponentTest.JTextComp;
 import javax.swing.text.JTextComponentTest.SimplePropertyChangeListener;
+import tests.support.Support_Excludes;
 
 public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     JFrame jf;
@@ -178,6 +179,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testAccessibleJTextComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(accessible);
     }
 
@@ -192,6 +197,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testSetAttributesGetCharacterAttributes() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AttributeSet samples[] = new AttributeSet[20];
         AttributeSet as;
         String name1 = "ATTRIBUTE_NAME1";
@@ -246,6 +255,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testRemoveUpdate() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         listener.InterestProperty(AccessibleContext.ACCESSIBLE_TEXT_PROPERTY);
         try {
             jtc.getDocument().remove(0, 4);
@@ -263,6 +276,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testInsertUpdate() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         listener.InterestProperty(AccessibleContext.ACCESSIBLE_TEXT_PROPERTY);
         try {
             jtc.getDocument().insertString(0, "TEST", null);
@@ -284,6 +301,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testChangedUpdate() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         listener.InterestProperty(AccessibleContext.ACCESSIBLE_TEXT_PROPERTY);
         try {
             ((AbstractDocument) jtc.getDocument()).replace(0, 3, "TEST", null);
@@ -301,6 +322,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testCaretUpdate() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         listener.InterestProperty(AccessibleContext.ACCESSIBLE_CARET_PROPERTY);
         listener.InterestProperty(AccessibleContext.ACCESSIBLE_SELECTION_PROPERTY);
         String s[] = new String[] { AccessibleContext.ACCESSIBLE_CARET_PROPERTY,
@@ -334,6 +359,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetAccessibleText() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(accessible, accessible.getAccessibleText());
     }
 
@@ -365,6 +394,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetAccessibleStateSet() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AccessibleStateSet ass = accessible.getAccessibleStateSet();
         assertTrue(ass.contains(AccessibleState.MULTI_LINE));
         assertTrue(ass.contains(AccessibleState.EDITABLE));
@@ -379,23 +412,43 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetAccessibleRole() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(AccessibleRole.TEXT, accessible.getAccessibleRole());
     }
 
     public void testGetAccessibleEditableText() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(accessible, accessible.getAccessibleEditableText());
     }
 
     public void testGetAccessibleAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(accessible, accessible.getAccessibleAction());
     }
 
     public void testSetTextContents() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         accessible.setTextContents("NEW Text");
         assertEquals("NEW Text", jtc.getText());
     }
 
     public void testInsertTextAtIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jtc.setCaretPosition(5);
         jtc.setDocument(new DefaultStyledDocument());
         jtc.setText(text);
@@ -405,6 +458,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testReplaceText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         accessible.replaceText(5, 8, "XXX");
         assertEquals(text.replaceFirst("Com", "XXX"), jtc.getText());
         try {
@@ -419,11 +476,19 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetTextRange() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("JTextCo", accessible.getTextRange(0, 7));
         assertEquals("omponent\n" + "\u05dc" + "JTe", accessible.getTextRange(6, 19));
     }
 
     public void testGetAccessibleActionDescription() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (int i = 0; i < jtc.getActions().length; i++) {
             assertEquals(jtc.getActions()[i].getValue(Action.NAME), accessible
                     .getAccessibleActionDescription(i));
@@ -431,6 +496,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetSelectedText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jtc.setCaretPosition(5);
         assertNull(accessible.getSelectedText());
         jtc.moveCaretPosition(8);
@@ -438,11 +507,19 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testSelectText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         accessible.selectText(5, 8);
         assertEquals("Com", accessible.getSelectedText());
     }
 
     public void testDelete() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         accessible.delete(4, 6);
         text = text.replaceFirst("tC", "");
         assertEquals(text, jtc.getText());
@@ -489,6 +566,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testCut() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: uncomment when System clipboard is properly supported
         //        if (jtc.getToolkit().getSystemClipboard() == null)
         //            return;
@@ -509,12 +590,20 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testDoAccessibleAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(accessible.doAccessibleAction(0));
         assertTrue(accessible.doAccessibleAction(1));
         assertTrue(accessible.doAccessibleAction(2));
     }
 
     public void testPaste() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: uncomment when System clipboard is properly supported
         //        if (jtc.getToolkit().getSystemClipboard() == null)
         //            return;
@@ -529,6 +618,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetSelectionStartEnd() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jtc.setSelectionStart(5);
         jtc.setSelectionEnd(8);
         assertEquals(5, accessible.getSelectionStart());
@@ -536,10 +629,18 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetCharCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(jtc.getDocument().getLength(), accessible.getCharCount());
     }
 
     public void testGetCaretPosition() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jtc.setCaretPosition(5);
         assertEquals(5, accessible.getCaretPosition());
         jtc.setCaretPosition(7);
@@ -547,6 +648,10 @@ public class JTextComponent_AccessibleJTextComponentTest extends SwingTestCase {
     }
 
     public void testGetAccessibleActionCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(53, accessible.getAccessibleActionCount());
     }
 }

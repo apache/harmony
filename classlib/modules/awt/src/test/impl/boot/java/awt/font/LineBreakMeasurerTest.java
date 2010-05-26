@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.text.AttributedString;
 import java.text.AttributedCharacterIterator;
+import tests.support.Support_Excludes;
 
 public class LineBreakMeasurerTest extends TestCase
 {
@@ -68,6 +69,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testDeleteChar() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String s1 = "I TestItalic estPlain I";
 
         AttributedString as = new AttributedString(s1);
@@ -92,6 +97,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testGetPosition() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, measurer.getPosition());
         measurer.nextLayout(1000, 5, false);
         assertEquals(5, measurer.getPosition());
@@ -99,6 +108,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testInsertChar() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int offset = measurer.nextOffset(30); // This won't change
         measurer.setPosition(12);
         int offset1 = measurer.nextOffset(500); // And this should change
@@ -121,6 +134,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testNextLayout() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TextLayout l1 = measurer.nextLayout(100);
         TextLayout l2 = measurer.nextLayout(100);
         TextLayout l3 = measurer.nextLayout(500);
@@ -134,6 +151,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testNextLayout1() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TextLayout l1 = measurer.nextLayout(100, 5, false);
         TextLayout l2 = measurer.nextLayout(15, 20, true);
         TextLayout l3 = measurer.nextLayout(600, 20, true);
@@ -149,6 +170,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testNextOffset() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int o1 = measurer.nextOffset(40);
         int o2 = measurer.nextOffset(60);
         measurer.setPosition(o1);
@@ -167,6 +192,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testNextOffset1() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int o1 = measurer.nextOffset(40, 5, true);
         int o2 = measurer.nextOffset(60, 5, true);
         measurer.setPosition(o1);
@@ -187,6 +216,10 @@ public class LineBreakMeasurerTest extends TestCase
 
     public void testSetPosition() throws Exception
     {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         measurer.setPosition(10);
         assertEquals(measurer.getPosition(), 10);
     }

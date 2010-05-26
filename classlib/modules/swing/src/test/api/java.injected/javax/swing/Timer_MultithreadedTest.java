@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class Timer_MultithreadedTest extends TestCase {
     private Timer timer;
@@ -133,6 +134,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testFireActionPerformed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener1 = new ConcreteActionListener("1");
         ConcreteActionListener listener2 = new ConcreteActionListener("2");
         ConcreteActionListener listener3 = new ConcreteActionListener("3");
@@ -154,6 +159,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testSetRepeats() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener1 = new ConcreteActionListener("1");
         timer = new Timer(10, listener1);
         timer.setRepeats(true);
@@ -211,6 +220,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testSetInitialDelay() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener1 = new ConcreteActionListener("1");
         timer = new Timer(10, listener1);
         timer.setInitialDelay(100);
@@ -239,6 +252,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testSetDelay() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener = new ConcreteActionListener();
         timer = new Timer(10, listener);
         timer.setDelay(100);
@@ -266,6 +283,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testIsRunning() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener = new ConcreteActionListener();
         timer = new Timer(10, listener);
         listener.waitAction(200);
@@ -294,6 +315,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testStop() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener = new ConcreteActionListener();
         timer = new Timer(10, listener);
         listener.waitAction(200);
@@ -308,6 +333,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testStart() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener = new ConcreteActionListener("listener");
         timer = new Timer(10, listener);
         listener.waitAction(200);
@@ -362,6 +391,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testRestart() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ConcreteActionListener listener = new ConcreteActionListener();
         timer = new Timer(10, listener);
         listener.waitAction(200);
@@ -379,6 +412,10 @@ public class Timer_MultithreadedTest extends TestCase {
     }
 
     public void testSetLogTimers() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         class LogOutputStream extends OutputStream {
             public boolean written = false;
 

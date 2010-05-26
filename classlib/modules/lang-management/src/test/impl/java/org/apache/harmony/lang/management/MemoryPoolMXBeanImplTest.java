@@ -42,6 +42,7 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.harmony.lang.management.DynamicMXBeanImpl;
 import org.apache.harmony.lang.management.MemoryPoolMXBeanImpl;
+import tests.support.Support_Excludes;
 
 
 public class MemoryPoolMXBeanImplTest extends
@@ -442,6 +443,10 @@ public class MemoryPoolMXBeanImplTest extends
     }
 
     public void testSetUsageThresholdAttribute() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (DynamicMXBeanImpl mb : mbList) {
             if (((MemoryPoolMXBean) mb).isUsageThresholdSupported()) {
                 long originalUT = (Long) mb.getAttribute("UsageThreshold");
@@ -465,6 +470,10 @@ public class MemoryPoolMXBeanImplTest extends
     }
 
     public void testSetCollectionUsageThresholdAttribute() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (DynamicMXBeanImpl mb : mbList) {
             if (((MemoryPoolMXBean) mb).isCollectionUsageThresholdSupported()) {
                 long originalCUT = (Long) mb
@@ -490,6 +499,10 @@ public class MemoryPoolMXBeanImplTest extends
 
     @Override
     public void testSetAttribute() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (DynamicMXBeanImpl mb : mbList) {
             // Good case - set the UsageThreshold value
             if (((Boolean) mb.getAttribute("UsageThresholdSupported"))) {

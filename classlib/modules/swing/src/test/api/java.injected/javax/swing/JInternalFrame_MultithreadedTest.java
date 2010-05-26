@@ -25,6 +25,7 @@ import java.awt.Container;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
+import tests.support.Support_Excludes;
 
 /**
  * Tests for JInternalFrame class that cannot be run in Event Dispatch Thread.
@@ -75,6 +76,10 @@ public class JInternalFrame_MultithreadedTest extends BasicSwingTestCase {
      */
     public void testRestoreSubcomponentFocus() throws InterruptedException,
             InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Component comp1 = new JPanel();
         final Component comp2 = new JPanel();
         final Component comp3 = new JPanel();
@@ -129,6 +134,10 @@ public class JInternalFrame_MultithreadedTest extends BasicSwingTestCase {
      */
     public void testGetMostRecentFocusOwner() throws PropertyVetoException,
             InterruptedException, InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Component initial = new JPanel(); // initial focus component
         final Component def = new JPanel(); // default focus component
         final Component some = new JPanel(); // some another component
@@ -186,6 +195,10 @@ public class JInternalFrame_MultithreadedTest extends BasicSwingTestCase {
      * Class under test for Component getFocusOwner()
      */
     public void testGetFocusOwner() throws InterruptedException, InvocationTargetException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Component comp1 = new JPanel();
         final Component comp2 = new JPanel();
         final Component comp3 = new JPanel();

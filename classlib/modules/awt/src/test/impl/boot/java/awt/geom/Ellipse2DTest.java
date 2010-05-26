@@ -16,6 +16,8 @@
  */
 package java.awt.geom;
 
+import tests.support.Support_Excludes;
+
 public class Ellipse2DTest extends ShapeTestCase {
 
     public Ellipse2DTest(String name) {
@@ -25,6 +27,10 @@ public class Ellipse2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorEmpty() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression test HARMONY-1585
         Ellipse2D e = new Ellipse2D.Double();
         PathIterator p = e.getPathIterator(null);

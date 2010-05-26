@@ -40,6 +40,7 @@ import javax.print.attribute.standard.MediaName;
 import javax.print.attribute.standard.RequestingUserName;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class PrintTest extends TestCase {
     public static void main(String[] args) {
@@ -47,6 +48,10 @@ public class PrintTest extends TestCase {
     }
 
     public void testPrintSomething() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         /*Authenticator.setDefault(new PrintTestAuth());*/
 
         boolean testrun = true;

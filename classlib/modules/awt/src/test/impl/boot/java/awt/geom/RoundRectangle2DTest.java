@@ -17,6 +17,7 @@
 package java.awt.geom;
 
 import java.awt.geom.ShapeTestCase;
+import tests.support.Support_Excludes;
 
 public class RoundRectangle2DTest extends ShapeTestCase {
 
@@ -27,6 +28,10 @@ public class RoundRectangle2DTest extends ShapeTestCase {
     }
 
     public void testSetRoundRect() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RoundRectangle2D r = new RoundRectangle2D.Double(1, 2, 3, 4, 5, 6);
         r.setRoundRect(7, 8, 9, 10, 11, 12);
         assertEquals(7.0, r.getX(), 0.0);
@@ -38,6 +43,10 @@ public class RoundRectangle2DTest extends ShapeTestCase {
     }
 
     public void testSetFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RoundRectangle2D r = new RoundRectangle2D.Double(1, 2, 3, 4, 5, 6);
         r.setFrame(7, 8, 9, 10);
         assertEquals(7.0, r.getX(), 0.0);
@@ -49,6 +58,10 @@ public class RoundRectangle2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorEmpty() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression test HARMONY-1585
         RoundRectangle2D e = new RoundRectangle2D.Double();
         PathIterator p = e.getPathIterator(null);

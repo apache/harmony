@@ -36,6 +36,7 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
+import tests.support.Support_Excludes;
 
 public class MetalComboBoxUITest extends SwingTestCase {
     private TestUI ui;
@@ -59,11 +60,19 @@ public class MetalComboBoxUITest extends SwingTestCase {
     }
 
     public void testMetalComboBoxUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.getCurrentValuePane());
         assertFalse(ui.getCurrentValuePane().isVisible());
     }
 
     public void testCreateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentUI ui1 = MetalComboBoxUI.createUI(comboBox);
         assertTrue(ui1.getClass() == MetalComboBoxUI.class);
         ComponentUI ui2 = MetalComboBoxUI.createUI(comboBox);
@@ -71,15 +80,27 @@ public class MetalComboBoxUITest extends SwingTestCase {
     }
 
     public void testPaint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(comboBox);
         ui.paint(createGraphics(), null);
     }
 
     public void testCreatePropertyChangeListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ui.createPropertyChangeListener().getClass() == MetalComboBoxUI.MetalPropertyChangeListener.class);
     }
 
     public void testConfigureUnconfigureEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.setComboBox(comboBox);
         ui.setEditor(new JTextField());
         ui.configureEditor();
@@ -87,12 +108,20 @@ public class MetalComboBoxUITest extends SwingTestCase {
 
     //TODO
     public void testLayoutComboBox() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.setComboBox(comboBox);
         ui.layoutComboBox(null, (MetalComboBoxUI.MetalComboBoxLayoutManager) ui
                 .createLayoutManager());
     }
 
     public void testGetMinimumSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.setComboBox(comboBox);
         ComboPopup popup = new BasicComboPopup(comboBox);
         ui.setPopup(popup);
@@ -115,10 +144,18 @@ public class MetalComboBoxUITest extends SwingTestCase {
     }
 
     public void testCreateEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ui.createEditor().getClass() == MetalComboBoxEditor.UIResource.class);
     }
 
     public void testCreateArrowButton() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.setComboBox(comboBox);
         assertTrue(ui.createArrowButton().getClass() == MetalComboBoxButton.class);
         MetalComboBoxButton arrowButton = (MetalComboBoxButton) ui.createArrowButton();
@@ -137,10 +174,18 @@ public class MetalComboBoxUITest extends SwingTestCase {
     }
 
     public void testCreateLayoutManager() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ui.createLayoutManager().getClass() == MetalComboBoxUI.MetalComboBoxLayoutManager.class);
     }
 
     public void testCreatePopup() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.setComboBox(comboBox);
         assertTrue(ui.createPopup() instanceof BasicComboPopup);
     }

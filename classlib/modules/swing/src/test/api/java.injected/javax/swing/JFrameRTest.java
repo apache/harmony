@@ -20,6 +20,7 @@
 package javax.swing;
 
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import tests.support.Support_Excludes;
 
 public class JFrameRTest extends SwingTestCase {
     public JFrameRTest(final String name) {
@@ -27,6 +28,10 @@ public class JFrameRTest extends SwingTestCase {
     }
 
     public void testInitDecorations() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIManager.setLookAndFeel(new MetalLookAndFeel() {
             private static final long serialVersionUID = 1L;
 

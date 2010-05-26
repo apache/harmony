@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import java.util.logging.LoggingMXBean;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class LoggingMXBeanTest extends TestCase {
 
@@ -51,6 +52,10 @@ public class LoggingMXBeanTest extends TestCase {
      * Test method for 'java.util.logging.LoggingMXBean.getLoggerLevel(String)'
      */
     public void testGetLoggerLevel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Verify we get something sensible back for the known loggers...
         while (loggerNamesFromMgr.hasMoreElements()) {
             String logName = (String) loggerNamesFromMgr.nextElement();
@@ -69,6 +74,10 @@ public class LoggingMXBeanTest extends TestCase {
      * Test method for 'java.util.logging.LoggingMXBean.getLoggerNames()'
      */
     public void testGetLoggerNames() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Logger names from the bean...
         List<String> namesFromBean = lmb.getLoggerNames();
         assertNotNull(namesFromBean);
@@ -83,6 +92,10 @@ public class LoggingMXBeanTest extends TestCase {
      * 'java.util.logging.LoggingMXBean.getParentLoggerName(String)'
      */
     public void testGetParentLoggerName() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Verify we get something sensible back for the known loggers...
         while (loggerNamesFromMgr.hasMoreElements()) {
             String logName = (String) loggerNamesFromMgr.nextElement();
@@ -107,6 +120,10 @@ public class LoggingMXBeanTest extends TestCase {
      * String)'
      */
     public void testSetLoggerLevel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String logName = null;
         while (loggerNamesFromMgr.hasMoreElements()) {
             logName = (String) loggerNamesFromMgr.nextElement();

@@ -20,6 +20,7 @@
 package javax.swing;
 
 import java.awt.Frame;
+import tests.support.Support_Excludes;
 
 public class JOptionPaneRTest extends SwingTestCase {
     public JOptionPaneRTest(final String name) {
@@ -27,6 +28,10 @@ public class JOptionPaneRTest extends SwingTestCase {
     }
 
     public void testGetFrameForComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Frame f = new Frame();
         final JDialog dialog = new JDialog(f);
         assertSame(f, JOptionPane.getFrameForComponent(dialog));

@@ -21,6 +21,7 @@
 package javax.print.attribute;
 
 import java.io.ObjectStreamException;
+import tests.support.Support_Excludes;
 
 /*
  * Auxiliary class for EnumSyntax unit test

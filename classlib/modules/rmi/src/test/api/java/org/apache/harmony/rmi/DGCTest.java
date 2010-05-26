@@ -37,6 +37,7 @@ import org.apache.harmony.rmi.test.TestObject;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import tests.support.Support_Excludes;
 
 
 /**
@@ -95,6 +96,10 @@ public class DGCTest extends RMITestBase {
      *          If some error occurs.
      */
     public void test0() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         System.out.println("test0 starting");
         test0(CONFIG_DIRECT_SOCKET, true,
               CONFIG_DIRECT_SOCKET, true,
@@ -109,6 +114,10 @@ public class DGCTest extends RMITestBase {
      *          If some error occurs.
      */
     public void test3() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         System.out.println("test3 starting");
         test3(CONFIG_DIRECT_SOCKET, true);
         System.out.println("test3 complete");

@@ -30,6 +30,7 @@ import javax.swing.SwingTestCase;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.ComponentUI;
 import java.util.EventListener;
+import tests.support.Support_Excludes;
 
 public class BasicRootPaneUITest extends SwingTestCase {
     private JRootPane rootPane;
@@ -62,6 +63,10 @@ public class BasicRootPaneUITest extends SwingTestCase {
      * Class under test for constructor
      */
     public void testBasicRootPaneUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui = new BasicRootPaneUI();
         assertTrue(ui != null);
     }
@@ -88,6 +93,10 @@ public class BasicRootPaneUITest extends SwingTestCase {
      *     void uninstallUI(JComponent)
      */
     public void testInstallUninstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(rootPane);
         // check install listeners
         assertTrue(isListenerInstalled(rootPane, ui));
@@ -117,6 +126,10 @@ public class BasicRootPaneUITest extends SwingTestCase {
      * Class under test for void propertyChange()
      */
     public void testPropertyChange() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFrame frame = new JFrame();
         rootPane = frame.getRootPane();
         rootPane.setUI(ui);
@@ -143,6 +156,10 @@ public class BasicRootPaneUITest extends SwingTestCase {
      * Class under test for ComponentUI createUI(JComponent)
      */
     public void testCreateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentUI ui = BasicRootPaneUI.createUI(rootPane);
         assertTrue(ui != null);
         assertTrue(ui instanceof BasicRootPaneUI);

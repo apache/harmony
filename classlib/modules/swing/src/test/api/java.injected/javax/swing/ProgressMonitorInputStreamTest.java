@@ -25,6 +25,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import tests.support.Support_Excludes;
 
 public class ProgressMonitorInputStreamTest extends BasicSwingTestCase {
     private JFrame window;
@@ -66,6 +67,10 @@ public class ProgressMonitorInputStreamTest extends BasicSwingTestCase {
     }
 
     public void testProgressMonitorInputStream() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         in = new ProgressMonitorInputStream(window, "Here we go...", realIn);
         assertNotNull(in.getProgressMonitor());
         in.read();
@@ -76,6 +81,10 @@ public class ProgressMonitorInputStreamTest extends BasicSwingTestCase {
     }
 
     public void testMaximum() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         in = new ProgressMonitorInputStream(window, "Here we go...", new ErrorStream(realIn));
         assertEquals(0, in.getProgressMonitor().getMaximum());
         in.read();
@@ -87,6 +96,10 @@ public class ProgressMonitorInputStreamTest extends BasicSwingTestCase {
     }
 
     public void testReset() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         in = new ProgressMonitorInputStream(window, "Here we go...", realIn);
         ProgressMonitor pm = in.getProgressMonitor();
         in.read();
@@ -98,6 +111,10 @@ public class ProgressMonitorInputStreamTest extends BasicSwingTestCase {
     }
 
     public void testInterrupted() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         in = new ProgressMonitorInputStream(window, "Here we go...", realIn);
         in.read();
         Thread.sleep(600);

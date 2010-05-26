@@ -33,6 +33,7 @@ import javax.swing.plaf.TextUI;
 import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextUI;
 import javax.swing.plaf.basic.TextCompUI;
+import tests.support.Support_Excludes;
 
 public class JTextComponent_byAuxiliaryComponentTest extends SwingTestCase {
     JFrame jf;
@@ -107,6 +108,10 @@ public class JTextComponent_byAuxiliaryComponentTest extends SwingTestCase {
     }
 
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AccessibleContext ac = jtComp.getAccessibleContext();
         assertTrue(jtComp.getAccessibleContext() instanceof JTextComponent.AccessibleJTextComponent);
         assertTrue(jtComp.getAccessibleContext() instanceof JTextComponent.AccessibleJTextComponent);
@@ -114,6 +119,10 @@ public class JTextComponent_byAuxiliaryComponentTest extends SwingTestCase {
     }
 
     public void testGetActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action actions[] = new DefaultEditorKit().getActions();
         Action actions1[] = jtComp.getActions();
         Action actions2[] = new DefaultEditorKit().getActions();
@@ -125,6 +134,10 @@ public class JTextComponent_byAuxiliaryComponentTest extends SwingTestCase {
     }
 
     public void testUpdateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(jtComp.getUI() instanceof TextCompUI);
         TextUI textUI1 = jtComp.getUI();
         SimplePropertyChangeListener listener = new SimplePropertyChangeListener();
@@ -138,6 +151,10 @@ public class JTextComponent_byAuxiliaryComponentTest extends SwingTestCase {
     }
 
     public void testJTextComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jtComp = new JTextComp();
         assertNotNull(jtComp);
         assertTrue(jtComp.getUI() instanceof TextCompUI);
@@ -155,6 +172,10 @@ public class JTextComponent_byAuxiliaryComponentTest extends SwingTestCase {
     }
 
     public void testSetGetUITextUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(jtComp.getUI() instanceof TextCompUI);
         TextUI textUI1 = jtComp.getUI();
         SimplePropertyChangeListener listener = new SimplePropertyChangeListener();

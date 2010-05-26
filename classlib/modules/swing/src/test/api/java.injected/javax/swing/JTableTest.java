@@ -35,6 +35,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import tests.support.Support_Excludes;
 
 @SuppressWarnings("serial")
 public class JTableTest extends BasicSwingTestCase {
@@ -57,6 +58,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testJTable() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(DefaultTableModel.class, table.dataModel.getClass());
         assertSame(DefaultTableColumnModel.class, table.columnModel.getClass());
         assertSame(DefaultListSelectionModel.class, table.selectionModel.getClass());
@@ -92,6 +97,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testAddNotify() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker marker = new Marker();
         new JTable() {
             @Override
@@ -103,6 +112,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testRemoveNotify() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker marker = new Marker();
         new JTable() {
             @Override
@@ -114,6 +127,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testConfigureUnconfigureEnclosingScrollPane() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JScrollPane pane = new JScrollPane();
         pane.setViewportView(table);
         assertNull(pane.getColumnHeader());
@@ -125,6 +142,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetTableHeader() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(table.getTableHeader());
         assertEquals(table.tableHeader, table.getTableHeader());
         assertEquals(table, table.getTableHeader().getTable());
@@ -142,6 +163,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetRowHeight() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(16, table.rowHeight);
         assertEquals(16, table.getRowHeight());
         table.setRowHeight(30);
@@ -200,6 +225,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetRowMargin() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(1, table.getRowMargin());
         assertEquals(1, table.getIntercellSpacing().height);
         table.setRowMargin(10);
@@ -212,6 +241,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetIntercellSpacing() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Dimension(1, 1), table.getIntercellSpacing());
         assertNotSame(table.getIntercellSpacing(), table.getIntercellSpacing());
         table.setRowMargin(10);
@@ -229,6 +262,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetGridColor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(UIManager.getColor("Table.gridColor"), table.getGridColor());
         table.setGridColor(Color.RED);
         assertEquals(Color.RED, table.getGridColor());
@@ -236,6 +273,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testSetShowGrid() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getShowHorizontalLines());
         assertTrue(table.getShowVerticalLines());
         table.setShowGrid(false);
@@ -249,6 +290,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetShowHorizontalLines() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getShowHorizontalLines());
         table.setShowHorizontalLines(false);
         assertFalse(table.getShowHorizontalLines());
@@ -258,6 +303,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetShowVerticalLines() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getShowVerticalLines());
         table.setShowVerticalLines(false);
         assertFalse(table.getShowVerticalLines());
@@ -267,6 +316,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetAutoResizeMode() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS, table.getAutoResizeMode());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         assertEquals(JTable.AUTO_RESIZE_ALL_COLUMNS, table.getAutoResizeMode());
@@ -278,6 +331,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetAutoCreateColumnsFromModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getAutoCreateColumnsFromModel());
         table.setAutoCreateColumnsFromModel(false);
         assertFalse(table.getAutoCreateColumnsFromModel());
@@ -295,6 +352,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testCreateDefaultColumnsFromModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TableColumnModel columnModel = table.getColumnModel();
         assertEquals(0, columnModel.getColumnCount());
         TableColumn modelColumn1 = new TableColumn();
@@ -318,6 +379,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetDefaultRenderer() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(8, table.defaultRenderersByColumnClass.size());
         assertNotNull(table.getDefaultRenderer(String.class));
         assertSame(table.defaultRenderersByColumnClass.get(Object.class), table
@@ -339,6 +404,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetDefaultEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(3, table.defaultEditorsByColumnClass.size());
         assertNotNull(table.getDefaultEditor(String.class));
         assertSame(table.defaultEditorsByColumnClass.get(Object.class), table
@@ -357,12 +426,20 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetDragEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.getDragEnabled());
         table.setDragEnabled(true);
         assertTrue(table.getDragEnabled());
     }
 
     public void testSetSelectionMode() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, table.getSelectionModel()
                 .getSelectionMode());
         assertEquals(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, table.getColumnModel()
@@ -376,6 +453,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetRowSelectionAllowed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getRowSelectionAllowed());
         table.setRowSelectionAllowed(false);
         assertFalse(table.getRowSelectionAllowed());
@@ -383,6 +464,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetColumnSelectionAllowed() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.getColumnSelectionAllowed());
         assertFalse(table.getColumnModel().getColumnSelectionAllowed());
         table.setColumnSelectionAllowed(true);
@@ -392,6 +477,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetCellSelectionEnabled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.getCellSelectionEnabled());
         assertFalse(table.cellSelectionEnabled);
         table.setCellSelectionEnabled(false);
@@ -413,6 +502,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testSelectAllClearSelection() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, getSelectedIndices(table.getSelectionModel()).length);
         assertEquals(0, getSelectedIndices(table.getColumnModel().getSelectionModel()).length);
@@ -429,6 +522,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testSetRowSelectionInterval() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, getSelectedIndices(table.getSelectionModel()).length);
         table.setRowSelectionInterval(1, 2);
@@ -455,6 +552,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testSetColumnSelectionInterval() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, getSelectedIndices(table.getColumnModel().getSelectionModel()).length);
         table.setColumnSelectionInterval(1, 2);
@@ -481,6 +582,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testAddRemoveRowSelectionInterval() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, getSelectedIndices(table.getSelectionModel()).length);
         table.addRowSelectionInterval(0, 0);
@@ -520,6 +625,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testAddRemoveColumnSelectionInterval() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, getSelectedIndices(table.getColumnModel().getSelectionModel()).length);
         table.addColumnSelectionInterval(0, 0);
@@ -564,6 +673,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSelectedRow() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(-1, table.getSelectedRow());
         table.setRowSelectionInterval(1, 1);
@@ -573,6 +686,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSelectedColumn() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(-1, table.getSelectedColumn());
         table.setColumnSelectionInterval(1, 1);
@@ -582,6 +699,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSelectedRows() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, table.getSelectedRows().length);
         table.setRowSelectionInterval(1, 1);
@@ -594,6 +715,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSelectedColumns() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, table.getSelectedColumns().length);
         table.setColumnSelectionInterval(0, 1);
@@ -608,6 +733,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSelectedRowCount() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, table.getSelectedRowCount());
         table.setRowSelectionInterval(1, 1);
@@ -617,6 +746,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSelectedColumnCount() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(0, table.getSelectedColumnCount());
         table.setColumnSelectionInterval(0, 1);
@@ -626,6 +759,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testIsRowSelected() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertFalse(table.isRowSelected(0));
         assertFalse(table.isRowSelected(1));
@@ -639,6 +776,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testIsColumnSelected() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertFalse(table.isColumnSelected(0));
         assertFalse(table.isColumnSelected(1));
@@ -655,6 +796,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testIsCellSelected() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertTrue(table.getRowSelectionAllowed());
         assertFalse(table.getColumnSelectionAllowed());
@@ -760,6 +905,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testChangeSelection() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         table.setCellSelectionEnabled(true);
         table.changeSelection(1, 1, true, false);
@@ -812,6 +961,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetSelectionForegroundBackground() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(UIManager.getColor("Table.selectionForeground"), table
                 .getSelectionForeground());
         assertEquals(UIManager.getColor("Table.selectionBackground"), table
@@ -826,6 +979,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetColumn() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertNotNull(table.getColumn("A"));
         assertNotNull(table.getColumn("B"));
@@ -848,6 +1005,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testConvertColumnIndexToModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-5, table.convertColumnIndexToModel(-5));
         table = new JTable(3, 4);
         assertEquals(0, table.convertColumnIndexToModel(0));
@@ -876,6 +1037,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testConvertColumnIndexToView() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-5, table.convertColumnIndexToView(-5));
         assertEquals(-1, table.convertColumnIndexToView(10));
         table = new JTable(3, 4);
@@ -899,6 +1064,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetRowCount() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, table.getRowCount());
         table = new JTable(3, 4);
         assertEquals(3, table.getRowCount());
@@ -912,6 +1081,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetColumnCount() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, table.getColumnCount());
         table = new JTable(3, 4);
         assertEquals(4, table.getColumnCount());
@@ -925,6 +1098,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetColumnName() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals("A", table.getColumnName(0));
         assertEquals("B", table.getColumnName(1));
@@ -950,6 +1127,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetColumnClass() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(new DefaultTableModel(3, 4) {
             @Override
             public Class<?> getColumnClass(final int columnIndex) {
@@ -975,6 +1156,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetvalueAt() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertNull(table.getValueAt(0, 0));
         assertNull(table.getValueAt(0, 1));
@@ -998,6 +1183,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testIsCellEditable() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(new DefaultTableModel(3, 4) {
             @Override
             public boolean isCellEditable(final int row, final int column) {
@@ -1023,6 +1212,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testAddColumn() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, table.getColumnCount());
         TableColumn column1 = new TableColumn(0);
         column1.setIdentifier("column1");
@@ -1062,6 +1255,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testRemoveColumn() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, table.getColumnCount());
         TableColumn column1 = new TableColumn(0);
         column1.setIdentifier("column1");
@@ -1081,6 +1278,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testMoveColumn() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TableColumn column1 = new TableColumn(0);
         table.addColumn(column1);
         assertEquals(0, table.getColumnModel().getColumnIndex("A"));
@@ -1093,6 +1294,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testColumnAtPoint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, table.columnAtPoint(new Point(10, 10)));
         assertEquals(-1, table.columnAtPoint(new Point(-10, 10)));
         table.addColumn(new TableColumn(0, 20));
@@ -1109,6 +1314,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testRowAtPoint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, table.rowAtPoint(new Point(10, 10)));
         assertEquals(-1, table.rowAtPoint(new Point(10, -10)));
         table = new JTable(3, 4);
@@ -1129,6 +1338,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetCellRect() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Rectangle(), table.getCellRect(0, 0, true));
         assertEquals(new Rectangle(), table.getCellRect(0, 0, false));
         assertEquals(new Rectangle(), table.getCellRect(10, 10, true));
@@ -1152,6 +1365,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetToolTipText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(table.getToolTipText(new MouseEvent(table, MouseEvent.MOUSE_ENTERED, 0, 0,
                 0, 0, 0, false)));
         table = new JTable(3, 4) {
@@ -1177,6 +1394,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetSurrendersFocusOnKeystroke() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.getSurrendersFocusOnKeystroke());
         table.setSurrendersFocusOnKeystroke(true);
         assertTrue(table.getSurrendersFocusOnKeystroke());
@@ -1185,6 +1406,10 @@ public class JTableTest extends BasicSwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testEditCellAt() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.editCellAt(0, 0));
         assertFalse(table.isEditing());
         assertEquals(-1, table.getEditingRow());
@@ -1221,18 +1446,30 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testIsEditing() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.isEditing());
         table.cellEditor = new DefaultCellEditor(new JCheckBox());
         assertTrue(table.isEditing());
     }
 
     public void testGetEditingComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(table.getEditorComponent());
         table.editorComp = new JLabel();
         assertEquals(table.editorComp, table.getEditorComponent());
     }
 
     public void testGetSetEditingRowColumn() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, table.getEditingRow());
         assertEquals(-1, table.getEditingColumn());
         table.editingRow = 25;
@@ -1245,6 +1482,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetUpdateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getUI() instanceof BasicTableUI);
         TableUI ui = new BasicTableUI();
         table.setUI(ui);
@@ -1254,10 +1495,18 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetUIClassID() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("TableUI", table.getUIClassID());
     }
 
     public void testGetSetModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultTableModel oldModel = (DefaultTableModel) table.getModel();
         assertNotNull(oldModel);
         assertEquals(1, oldModel.getTableModelListeners().length);
@@ -1280,6 +1529,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetColumnModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         DefaultTableColumnModel oldModel = (DefaultTableColumnModel) table.getColumnModel();
         assertNotNull(oldModel);
@@ -1301,6 +1554,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetSelectionModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         DefaultListSelectionModel oldModel = (DefaultListSelectionModel) table
                 .getSelectionModel();
         assertNotNull(oldModel);
@@ -1320,6 +1577,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testEditingCanceled() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         table.editCellAt(0, 0);
         assertTrue(table.isEditing());
@@ -1335,6 +1596,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testEditingStoppped() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         table.editCellAt(0, 0);
         assertTrue(table.isEditing());
@@ -1350,6 +1615,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetSetPreferredScrollableViewportSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Dimension(450, 400), table.getPreferredScrollableViewportSize());
         table = new JTable(3, 4);
         assertEquals(new Dimension(450, 400), table.getPreferredScrollableViewportSize());
@@ -1365,23 +1634,43 @@ public class JTableTest extends BasicSwingTestCase {
 
     //TODO
     public void testGetScrollableUnitIncrement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     //TODO
     public void testGetScrollableBlockIncrement() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetScrollableTracksViewportWidth() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(table.getScrollableTracksViewportWidth());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         assertFalse(table.getScrollableTracksViewportWidth());
     }
 
     public void testGetScrollableTracksViewportHeight() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(table.getScrollableTracksViewportHeight());
     }
 
     public void testCreateDefaultRenderers() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(8, table.defaultRenderersByColumnClass.size());
         table.defaultRenderersByColumnClass = null;
         table.createDefaultRenderers();
@@ -1389,6 +1678,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testCreateDefaultEditors() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(3, table.defaultEditorsByColumnClass.size());
         table.defaultEditorsByColumnClass = null;
         table.createDefaultEditors();
@@ -1396,6 +1689,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testInitializeLocalVars() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table.rowMargin = 0;
         table.tableHeader = null;
         table.rowHeight = 0;
@@ -1420,27 +1717,47 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testCreateDefaultDataModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(DefaultTableModel.class, table.createDefaultDataModel().getClass());
         assertNotSame(table.createDefaultDataModel(), table.createDefaultDataModel());
     }
 
     public void testCreateDefaultColumnModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(DefaultTableColumnModel.class, table.createDefaultColumnModel().getClass());
         assertNotSame(table.createDefaultColumnModel(), table.createDefaultColumnModel());
     }
 
     public void testCreateDefaultSelectionModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(DefaultListSelectionModel.class, table.createDefaultSelectionModel()
                 .getClass());
         assertNotSame(table.createDefaultSelectionModel(), table.createDefaultSelectionModel());
     }
 
     public void testCreateDefaultTableHeader() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(JTableHeader.class, table.createDefaultTableHeader().getClass());
         assertNotSame(table.createDefaultTableHeader(), table.createDefaultTableHeader());
     }
 
     public void testGetSetCellEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(table.getCellEditor());
         TableCellEditor editor = new DefaultCellEditor(new JTextField());
         table.setCellEditor(editor);
@@ -1448,6 +1765,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetCellRenderer() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(table.defaultRenderersByColumnClass.get(Object.class), table
                 .getCellRenderer(0, 0));
@@ -1469,6 +1790,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testPrepareRenderer() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         assertSame(renderer, table.prepareRenderer(renderer, 0, 0));
@@ -1481,6 +1806,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testPrepareEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         JTextField editorComponent = new JTextField();
         DefaultCellEditor editor = new DefaultCellEditor(editorComponent);
@@ -1492,6 +1821,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testGetCellEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table = new JTable(3, 4);
         assertEquals(table.defaultEditorsByColumnClass.get(Object.class), table.getCellEditor(
                 0, 0));
@@ -1513,6 +1846,10 @@ public class JTableTest extends BasicSwingTestCase {
     }
 
     public void testRemoveEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         table.removeEditor();
         int childrenCount = table.getComponentCount();
         table.setCellEditor(new DefaultCellEditor(new JTextField()));

@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 @SuppressWarnings("serial")
 public class ComponentTest extends TestCase {
@@ -196,6 +197,10 @@ public class ComponentTest extends TestCase {
         methodCalled = setBoundsCalled = reshapeCalled = false;
     }
     public void testCreate(){
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(tc);
         assertNotNull(myTestComp);
     }
@@ -339,6 +344,10 @@ public class ComponentTest extends TestCase {
     }
     
     public void testGetFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-1605
         final Font defaultFont = new Font("Dialog", Font.PLAIN, 12); //$NON-NLS-1$
         final Window w = new Window(new Frame());

@@ -26,6 +26,7 @@ import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import javax.accessibility.AccessibleRole;
 import javax.swing.plaf.OptionPaneUI;
+import tests.support.Support_Excludes;
 
 public class JOptionPaneTest extends SwingTestCase {
     JOptionPane pane = null;
@@ -40,6 +41,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boolean assertedValue = (pane.getAccessibleContext() != null && pane
                 .getAccessibleContext().getClass().getName().equals(
                         "javax.swing.JOptionPane$AccessibleJOptionPane"));
@@ -49,14 +54,26 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testParamString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue("ParamString returns a string ", pane.toString() != null);
     }
 
     public void testGetUIClassID() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("UI class ID", "OptionPaneUI", pane.getUIClassID());
     }
 
     public void testUpdateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         OptionPaneUI ui = new OptionPaneUI() {
             @Override
             public void selectInitialValue(JOptionPane arg0) {
@@ -77,6 +94,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane()
      */
     public void testJOptionPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("message", "JOptionPane message", pane.getMessage());
         assertEquals("message type", JOptionPane.PLAIN_MESSAGE, pane.getMessageType());
         assertEquals("option type", JOptionPane.DEFAULT_OPTION, pane.getOptionType());
@@ -91,6 +112,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane(Object)
      */
     public void testJOptionPaneObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message";
         pane = new JOptionPane(message);
         assertEquals("message", message, pane.getMessage());
@@ -106,6 +131,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane(Object, int)
      */
     public void testJOptionPaneObjectint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message";
         int messageType1 = JOptionPane.ERROR_MESSAGE;
         int messageType2 = -100;
@@ -130,6 +159,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane(Object, int, int)
      */
     public void testJOptionPaneObjectintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message";
         int messageType1 = JOptionPane.ERROR_MESSAGE;
         int messageType2 = -100;
@@ -163,6 +196,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane(Object, int, int, Icon)
      */
     public void testJOptionPaneObjectintintIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message";
         Icon icon1 = new ImageIcon();
         Icon icon2 = null;
@@ -205,6 +242,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane(Object, int, int, Icon, Object[])
      */
     public void testJOptionPaneObjectintintIconObjectArray() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message";
         Icon icon1 = new ImageIcon();
         Icon icon2 = null;
@@ -258,6 +299,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void JOptionPane(Object, int, int, Icon, Object[], Object)
      */
     public void testJOptionPaneObjectintintIconObjectArrayObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String message = "message";
         Icon icon1 = new ImageIcon();
         Icon icon2 = null;
@@ -325,6 +370,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInputDialog(Object)
      */
     public void testShowInputDialogObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInputDialog().
     }
 
@@ -332,6 +381,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInputDialog(Object, Object)
      */
     public void testShowInputDialogObjectObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInputDialog().
     }
 
@@ -339,6 +392,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInputDialog(Component, Object)
      */
     public void testShowInputDialogComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInputDialog().
     }
 
@@ -346,6 +403,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInputDialog(Component, Object, Object)
      */
     public void testShowInputDialogComponentObjectObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInputDialog().
     }
 
@@ -353,6 +414,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInputDialog(Component, Object, String, int)
      */
     public void testShowInputDialogComponentObjectStringint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInputDialog().
     }
 
@@ -360,6 +425,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for Object showInputDialog(Component, Object, String, int, Icon, Object[], Object)
      */
     public void testShowInputDialogComponentObjectStringintIconObjectArrayObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInputDialog().
     }
 
@@ -367,6 +436,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void showMessageDialog(Component, Object)
      */
     public void testShowMessageDialogComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showMessageDialog().
     }
 
@@ -374,6 +447,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void showMessageDialog(Component, Object, String, int)
      */
     public void testShowMessageDialogComponentObjectStringint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showMessageDialog().
     }
 
@@ -381,6 +458,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void showMessageDialog(Component, Object, String, int, Icon)
      */
     public void testShowMessageDialogComponentObjectStringintIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showMessageDialog().
     }
 
@@ -388,6 +469,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showConfirmDialog(Component, Object)
      */
     public void testShowConfirmDialogComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showConfirmDialog().
     }
 
@@ -395,6 +480,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showConfirmDialog(Component, Object, String, int)
      */
     public void testShowConfirmDialogComponentObjectStringint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showConfirmDialog().
     }
 
@@ -402,6 +491,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showConfirmDialog(Component, Object, String, int, int)
      */
     public void testShowConfirmDialogComponentObjectStringintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showConfirmDialog().
     }
 
@@ -409,14 +502,26 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showConfirmDialog(Component, Object, String, int, int, Icon)
      */
     public void testShowConfirmDialogComponentObjectStringintintIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showConfirmDialog().
     }
 
     public void testShowOptionDialog() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showOptionDialog().
     }
 
     public void testCreateInternalFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JDesktopPane deskTop = new JDesktopPane();
         JFrame frame = new JFrame();
         JPanel panel = new JPanel();
@@ -448,6 +553,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testCreateDialog() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFrame frame = new JFrame();
         JPanel panel = new JPanel();
         String title = "title-title";
@@ -466,6 +575,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void showInternalMessageDialog(Component, Object)
      */
     public void testShowInternalMessageDialogComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalMessageDialog().
         //        JFrame frame = new JFrame();
         //        JPanel panel = new JPanel();
@@ -480,6 +593,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void showInternalMessageDialog(Component, Object, String, int)
      */
     public void testShowInternalMessageDialogComponentObjectStringint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalMessageDialog().
     }
 
@@ -487,6 +604,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for void showInternalMessageDialog(Component, Object, String, int, Icon)
      */
     public void testShowInternalMessageDialogComponentObjectStringintIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalMessageDialog().
     }
 
@@ -494,6 +615,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showInternalConfirmDialog(Component, Object)
      */
     public void testShowInternalConfirmDialogComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalConfirmDialog().
     }
 
@@ -501,6 +626,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showInternalConfirmDialog(Component, Object, String, int)
      */
     public void testShowInternalConfirmDialogComponentObjectStringint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalConfirmDialog().
     }
 
@@ -508,6 +637,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showInternalConfirmDialog(Component, Object, String, int, int)
      */
     public void testShowInternalConfirmDialogComponentObjectStringintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalConfirmDialog().
     }
 
@@ -515,10 +648,18 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for int showInternalConfirmDialog(Component, Object, String, int, int, Icon)
      */
     public void testShowInternalConfirmDialogComponentObjectStringintintIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalConfirmDialog().
     }
 
     public void testShowInternalOptionDialog() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalOptionDialog().
     }
 
@@ -526,6 +667,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInternalInputDialog(Component, Object)
      */
     public void testShowInternalInputDialogComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalInputDialog().
     }
 
@@ -533,6 +678,10 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for String showInternalInputDialog(Component, Object, String, int)
      */
     public void testShowInternalInputDialogComponentObjectStringint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalInputDialog().
     }
 
@@ -540,10 +689,18 @@ public class JOptionPaneTest extends SwingTestCase {
      * Class under test for Object showInternalInputDialog(Component, Object, String, int, Icon, Object[], Object)
      */
     public void testShowInternalInputDialogComponentObjectStringintIconObjectArrayObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement showInternalInputDialog().
     }
 
     public void testGetFrameForComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Frame defaultFrame = JOptionPane.getRootFrame();
         JPanel panel = new JPanel();
         JFrame frame = new JFrame();
@@ -561,6 +718,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetDesktopPaneForComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel panel = new JPanel();
         JDesktopPane frame = new JDesktopPane();
         assertNull("frame", JOptionPane.getDesktopPaneForComponent(null));
@@ -570,6 +731,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testSetRootFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Frame frame1 = new Frame();
         Frame frame2 = new JFrame();
         JOptionPane.setRootFrame(frame1);
@@ -582,6 +747,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetRootFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Frame frame1 = JOptionPane.getRootFrame();
         frame1.add(new JPanel());
         frame1.add(new JPanel());
@@ -595,13 +764,25 @@ public class JOptionPaneTest extends SwingTestCase {
      * is beinng tested in BasicOptionPaneUITest
      */
     public void testSetUIOptionPaneUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue("ui is returned ", pane.getUI() != null);
     }
 
     public void testSetMessage() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PropertyChangeController listener1 = new PropertyChangeController();
         String message1 = "message1";
         String message2 = "message2";
@@ -620,10 +801,18 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetMessage() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("message", "JOptionPane message", pane.getMessage());
     }
 
     public void testSetIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Icon icon1 = new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_BYTE_GRAY));
         Icon icon2 = new ImageIcon(new BufferedImage(20, 20, BufferedImage.TYPE_BYTE_GRAY));
         PropertyChangeController listener1 = new PropertyChangeController();
@@ -646,10 +835,18 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull("icon", pane.getIcon());
     }
 
     public void testSetValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JButton button1 = new JButton("1");
         JButton button2 = new JButton("2");
         PropertyChangeController listener1 = new PropertyChangeController();
@@ -664,10 +861,18 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("value", JOptionPane.UNINITIALIZED_VALUE, pane.getValue());
     }
 
     public void testSetOptions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object options2[] = new Object[] { new JButton("1"), new ImageIcon(), "asdasd" };
         Object options22[] = options2.clone();
         Object options3[] = new Object[] { "asd", new InputMap(), new JPanel() };
@@ -693,12 +898,20 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetOptions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue("options", pane.getOptions() == null || pane.getOptions().length == 0);
 
         assertNull(new JOptionPane().getOptions());
     }
 
     public void testSetInitialValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JButton button1 = new JButton("1");
         JButton button2 = new JButton("2");
         pane.setWantsInput(false);
@@ -715,10 +928,18 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetInitialValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull("InitialValue", pane.getInitialValue());
     }
 
     public void testSetMessageType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PropertyChangeController listener1 = new PropertyChangeController();
         pane.addPropertyChangeListener(listener1);
         pane.setMessageType(JOptionPane.ERROR_MESSAGE);
@@ -745,10 +966,18 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetMessageType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("message type", JOptionPane.PLAIN_MESSAGE, pane.getMessageType());
     }
 
     public void testSetOptionType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PropertyChangeController listener1 = new PropertyChangeController();
         pane.addPropertyChangeListener(listener1);
         pane.setOptionType(JOptionPane.CANCEL_OPTION);
@@ -774,10 +1003,18 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetOptionType() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("option type", JOptionPane.CLOSED_OPTION, pane.getOptionType());
     }
 
     public void testSetSelectionValues() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object buttons2[] = new Object[] { new JButton("1"), new JButton("2") };
         Object buttons3[] = new Object[] { new JButton("1"), new JButton("2") };
         PropertyChangeController listener1 = new PropertyChangeController();
@@ -810,6 +1047,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetSelectionValues() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object buttons2[] = new Object[] { new JButton("1"), new JButton("2") };
         Object buttons3[] = new Object[] { new JButton("1"), new JButton("2") };
         assertNull("SelectionValues", pane.getSelectionValues());
@@ -822,6 +1063,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testSetInitialSelectionValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object str1 = "String1";
         Object str2 = "String2";
         pane.setWantsInput(false);
@@ -836,6 +1081,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetInitialSelectionValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JButton button1 = new JButton("1");
         JButton button2 = new JButton("2");
         assertNull("InitialSelectionValue", pane.getInitialSelectionValue());
@@ -848,6 +1097,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testSetInputValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PropertyChangeController listener1 = new PropertyChangeController();
         JButton button1 = new JButton("1");
         JButton button2 = new JButton("2");
@@ -866,18 +1119,34 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetInputValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("input value", JOptionPane.UNINITIALIZED_VALUE, pane.getInputValue());
     }
 
     public void testGetMaxCharactersPerLineCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("num characters", Integer.MAX_VALUE, pane.getMaxCharactersPerLineCount());
     }
 
     public void testSelectInitialValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //TODO Implement selectInitialValue().
     }
 
     public void testSetWantsInput() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         PropertyChangeController listener1 = new PropertyChangeController();
         pane.addPropertyChangeListener(listener1);
         pane.setWantsInput(true);
@@ -894,6 +1163,10 @@ public class JOptionPaneTest extends SwingTestCase {
     }
 
     public void testGetWantsInput() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse("wants input", pane.getWantsInput());
     }
 }

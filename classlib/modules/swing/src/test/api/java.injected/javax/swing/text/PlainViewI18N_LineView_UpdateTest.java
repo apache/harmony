@@ -26,6 +26,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent.ElementChange;
 import javax.swing.text.PlainViewI18N_BidiTextViewTest.PreferenceChange;
 import javax.swing.text.PlainViewI18N_LineViewTest.PlainViewI18NWithTextArea;
+import tests.support.Support_Excludes;
 
 /**
  * Tests PlainViewI18N.LineView class, in particular how it reacts to changes
@@ -79,6 +80,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
     }
 
     public void testInsertUpdateLTRNoChange() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -90,6 +95,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
     }
 
     public void testInsertUpdateRTLNoChange() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -100,6 +109,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
     }
 
     public void testInsertUpdateLTRWithChange() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -113,6 +126,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
     }
 
     public void testInsertUpdateRTLWithChange() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -131,6 +148,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
     // handle this situation, these tests may become actual.
     /*
      public void testRemoveUpdateLTRNoChange() throws Exception {
+         if (Support_Excludes.isExcluded()) {
+             return;
+         }
+
      doc.remove(startOffset + PlainViewI18N_LineViewTest.RTLLength + 1, 1);
 
      view.removeUpdate(removeEvent, shape, null);
@@ -139,6 +160,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
      }
 
      public void testRemoveUpdateRTLNoChange() throws Exception {
+         if (Support_Excludes.isExcluded()) {
+             return;
+         }
+
      doc.remove(startOffset + 1, 1);
 
      view.removeUpdate(removeEvent, shape, null);
@@ -147,6 +172,10 @@ public class PlainViewI18N_LineView_UpdateTest extends SwingTestCase implements
      }
      */
     public void testRemoveUpdateWithChange() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }

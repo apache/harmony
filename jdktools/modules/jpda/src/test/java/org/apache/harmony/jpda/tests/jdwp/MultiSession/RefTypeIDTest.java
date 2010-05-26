@@ -29,6 +29,7 @@ import org.apache.harmony.jpda.tests.framework.TestOptions;
 import org.apache.harmony.jpda.tests.jdwp.share.JDWPSyncTestCase;
 import org.apache.harmony.jpda.tests.jdwp.share.JDWPUnitDebuggeeWrapper;
 import org.apache.harmony.jpda.tests.share.JPDADebuggeeSynchronizer;
+import tests.support.Support_Excludes;
 
 
 /**
@@ -52,6 +53,10 @@ public class RefTypeIDTest extends JDWPSyncTestCase {
      * <BR>It is expected that INVALID_OBJECT or INVALID_CLASS error is returned.
      */
     public void testRefTypeID001() {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         synchronizer.receiveMessage(JPDADebuggeeSynchronizer.SGNL_READY);
         

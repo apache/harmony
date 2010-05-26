@@ -22,6 +22,7 @@ package javax.swing;
 import java.awt.event.ActionEvent;
 import javax.accessibility.AccessibleRole;
 import javax.swing.JToggleButton.ToggleButtonModel;
+import tests.support.Support_Excludes;
 
 public class JCheckBoxMenuItemTest extends JMenuItemTest {
     @Override
@@ -40,6 +41,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.JCheckBoxMenuItem()'
      */
     public void testJCheckBoxMenuItem() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(menuItem.isSelected());
         assertTrue("default buttonModel ", button.getModel() instanceof ToggleButtonModel);
         assertNull("icon ", button.getIcon());
@@ -55,6 +60,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.JCheckBoxMenuItem(Icon)'
      */
     public void testJCheckBoxMenuItemIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Icon icon = createNewIcon();
         menuItem = new JCheckBoxMenuItem(icon);
         assertTrue("default buttonModel ", button.getModel() instanceof ToggleButtonModel);
@@ -71,6 +80,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.JCheckBoxMenuItem(String)'
      */
     public void testJCheckBoxMenuItemString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "texttext";
         menuItem = new JCheckBoxMenuItem(text);
         assertFalse(menuItem.isSelected());
@@ -87,6 +100,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.JCheckBoxMenuItem(String, Icon)'
      */
     public void testJCheckBoxMenuItemStringIcon() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Icon icon = createNewIcon();
         String text = "texttext";
         menuItem = new JCheckBoxMenuItem(text, icon);
@@ -105,6 +122,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.JCheckBoxMenuItem(Action)'
      */
     public void testJCheckBoxMenuItemAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final String command = "dnammoc";
         final KeyStroke accelerator = KeyStroke.getKeyStroke('a');
         class MyAction extends AbstractAction {
@@ -159,6 +180,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.JCheckBoxMenuItem(String, Icon, boolean)'
      */
     public void testJCheckBoxMenuItemStringIconBoolean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Icon icon = createNewIcon();
         String text = "texttext";
         menuItem = new JCheckBoxMenuItem(text, icon, true);
@@ -180,6 +205,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      */
     @Override
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boolean assertedValue = (menuItem.getAccessibleContext() != null && menuItem
                 .getAccessibleContext().getClass().getName().equals(
                         "javax.swing.JCheckBoxMenuItem$AccessibleJCheckBoxMenuItem"));
@@ -193,6 +222,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      */
     @Override
     public void testGetUIClassID() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("CheckBoxMenuItemUI", menuItem.getUIClassID());
     }
 
@@ -201,6 +234,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      */
     @Override
     public void testGetSelectedObjects() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String text = "texttext";
         menuItem = new JCheckBoxMenuItem(text);
         assertNull(((JCheckBoxMenuItem) menuItem).getSelectedObjects());
@@ -213,6 +250,10 @@ public class JCheckBoxMenuItemTest extends JMenuItemTest {
      * Test method for 'javax.swing.JCheckBoxMenuItem.getState()'
      */
     public void testGetSetState() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("default Selected", ((JCheckBoxMenuItem) menuItem).getState(), menuItem
                 .isSelected());
         menuItem.setSelected(true);

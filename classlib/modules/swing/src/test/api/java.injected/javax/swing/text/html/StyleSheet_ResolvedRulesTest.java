@@ -31,6 +31,7 @@ import javax.swing.text.Element;
 import javax.swing.text.Style;
 import javax.swing.text.html.CSS.Attribute;
 import javax.swing.text.html.HTML.Tag;
+import tests.support.Support_Excludes;
 
 public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     private static final int P_EM_START_OFFSET = 20;
@@ -63,6 +64,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_NoContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -72,6 +77,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_NoContext_Same() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -80,6 +89,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_Context() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -92,6 +105,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_Context_Same() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -100,6 +117,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AutoChange_NoContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -116,6 +137,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AutoChange_NoContextOverride() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -131,6 +156,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AutoChange_Context() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -150,6 +179,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AutoChange_ContextOverride() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -168,6 +201,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AutoChange_ChangeStyle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -190,6 +227,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AutoChange_ChangeStyle_Override() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -212,6 +253,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_AddStyle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -227,6 +272,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_AddStyle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(5, getStyleNumber());
         assertNull(ss.getStyle("em"));
 
@@ -239,6 +288,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRule_NotSame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET); // With no context associated
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -250,6 +303,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRule_Same() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET); // With no context associated
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -259,6 +316,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRule_Same_Context() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(PSMALL_EM_START_OFFSET); // With context associated
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -268,16 +329,28 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_NoContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rule = ss.getRule("em");
         assertEquals(0, rule.getAttributeCount());
     }
 
     public void testGetRuleString_ContextClass() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rule = ss.getRule("p.small em");
         assertEquals(2, rule.getAttributeCount());
     }
 
     public void testGetRuleString_ContextNoClass() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addRule("p em { text-decoration: underline }");
         rule = ss.getRule("p em");
         assertEquals(2, rule.getAttributeCount());
@@ -289,6 +362,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_Autochange_ContextNoClass01() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addRule("p em { text-decoration: underline }");
         rule = ss.getRule("p em");
         assertEquals(2, rule.getAttributeCount());
@@ -306,6 +383,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_Autochange_ContextNoClass02() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addRule("p em { text-decoration: underline }");
         rule = ss.getRule("p em");
         assertEquals(2, rule.getAttributeCount());
@@ -321,6 +402,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_AutoChange_NoContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rule = ss.getRule("em");
         assertEquals(0, rule.getAttributeCount());
 
@@ -333,6 +418,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_Listeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -357,6 +446,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleTagElement_RemoveStyle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element em = doc.getCharacterElement(P_EM_START_OFFSET);
         assertNotNull(em.getAttributes().getAttribute(Tag.EM));
 
@@ -373,6 +466,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_Partial() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addRule("em { color: rgb(255, 255, 150) }");
 
         rule = ss.getRule("em");
@@ -386,6 +483,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_NoRules() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rule = ss.getRule(HTML.Tag.ADDRESS.toString());
 
         assertEquals(0, rule.getAttributeCount());
@@ -404,6 +505,10 @@ public class StyleSheet_ResolvedRulesTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleString_NoRulesStyles() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ss.addStyleSheet(new StyleSheet());
         rule = ss.getRule(HTML.Tag.ADDRESS.toString());
 

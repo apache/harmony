@@ -32,6 +32,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
 import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.parser.ParserDelegator;
+import tests.support.Support_Excludes;
 
 public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
 
@@ -50,6 +51,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterEnd_Specs() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         loadDocument(htmlDoc, "<table><tr><td>table</td></td></tr></table>");
         htmlDoc.setEditable(false);
@@ -99,6 +104,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterEnd_Specs2() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         htmlDoc.setEditable(false);
         
@@ -124,6 +133,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterEnd_Events() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -143,6 +156,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterEnd_Structure() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -178,6 +195,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
         
     public void testInsertAfterEnd_Exceptions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
@@ -195,6 +216,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterStart_Specs() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         loadDocument(htmlDoc, "<table><tr><td><div>cell</div></td></tr></table>");
         htmlDoc.setEditable(true);
@@ -255,6 +280,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterStart_Specs2() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         htmlDoc.setEditable(false);
         
@@ -275,6 +304,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertAfterStart_Events() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -298,6 +331,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testInsertAfterStart_Strucutre() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -330,6 +367,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testInsertAfterStart_Exceptions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -358,6 +399,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeEnd_Specs() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         loadDocument(htmlDoc, "<table><tr><td><div>table</div></td</td></tr></table>");
         htmlDoc.setEditable(false);
@@ -411,6 +456,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeEnd_Specs2() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         htmlDoc.setEditable(false);
         
@@ -431,6 +480,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeEnd_Events() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -450,6 +503,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testInsertBeforeEnd_Strucutre() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -486,6 +543,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeEnd_Exceptions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -514,6 +575,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeStart_Specs() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         loadDocument(htmlDoc, "<table><tr><td>table</td></tr></table>");
         htmlDoc.setEditable(true);
@@ -569,6 +634,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeStart_Specs2() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         htmlDoc.setEditable(false);
         
@@ -590,6 +659,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testInsertBeforeStart_Events() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
         Element branch2 = branch1.getElement(0);
@@ -617,6 +690,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testInsertBeforeStart_Structure() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Element root = htmlDoc.getDefaultRootElement();
         Element body = root.getElement(0);
         Element p = body.getElement(0);
@@ -649,6 +726,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testInsertBeforeStart_Exceptions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -666,6 +747,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetInnerHTML_Specs() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         loadDocument(htmlDoc, "<table><tr><td>table</td></tr></table>");
         htmlDoc.setEditable(false);
@@ -733,6 +818,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetInnerHTML_Specs2() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         htmlDoc.setEditable(false);
         
@@ -756,6 +845,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetInnerHTML_Events() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -778,6 +871,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetInnerHTML_Structure() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -800,6 +897,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testSetInnerHTML_Exceptions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -823,6 +924,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetOuterHTML_Specs() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         loadDocument(htmlDoc, "<table><tr><td><br>table</td></tr></table>");
         
@@ -903,6 +1008,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetOuterHTML_Specs2() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         htmlDoc.setParser(new ParserDelegator());
         
         Element root = htmlDoc.getDefaultRootElement();
@@ -925,6 +1034,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetOuterHTML_Events() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -953,6 +1066,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
     
     public void testSetOuterHTML_Structure() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);
@@ -974,6 +1091,10 @@ public class HTMLDocument_InsertsTest extends HTMLDocumentTestCase {
     }
 
     public void testSetOuterHTML_Exceptions() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         addElements();
         Element root = htmlDoc.getDefaultRootElement();
         Element branch1 = root.getElement(0);

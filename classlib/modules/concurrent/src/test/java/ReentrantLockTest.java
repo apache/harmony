@@ -11,6 +11,7 @@ import java.util.concurrent.locks.*;
 import java.util.concurrent.*;
 import java.util.*;
 import java.io.*;
+import tests.support.Support_Excludes;
 
 public class ReentrantLockTest extends JSR166TestCase {
     public static void main(String[] args) {
@@ -68,6 +69,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * Constructor sets given fairness
      */
     public void testConstructor() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ReentrantLock rl = new ReentrantLock();
         assertFalse(rl.isFair());
 	ReentrantLock r2 = new ReentrantLock(true);
@@ -78,6 +83,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * locking an unlocked lock succeeds
      */
     public void testLock() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ReentrantLock rl = new ReentrantLock();
         rl.lock();
         assertTrue(rl.isLocked());
@@ -88,6 +97,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * locking an unlocked fair lock succeeds
      */
     public void testFairLock() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ReentrantLock rl = new ReentrantLock(true);
         rl.lock();
         assertTrue(rl.isLocked());
@@ -98,6 +111,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * Unlocking an unlocked lock throws IllegalMonitorStateException
      */
     public void testUnlock_IllegalMonitorStateException() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ReentrantLock rl = new ReentrantLock();
 	try {
 	    rl.unlock();
@@ -110,6 +127,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * tryLock on an unlocked lock succeeds
      */
     public void testTryLock() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ReentrantLock rl = new ReentrantLock();
         assertTrue(rl.tryLock());
         assertTrue(rl.isLocked());
@@ -121,6 +142,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasQueuedThreads reports whether there are waiting threads
      */
     public void testhasQueuedThreads() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -150,6 +175,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getQueueLength reports number of waiting threads
      */
     public void testGetQueueLength() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -179,6 +208,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getQueueLength reports number of waiting threads
      */
     public void testGetQueueLength_fair() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock(true);
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -208,6 +241,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasQueuedThread(null) throws NPE
      */
     public void testHasQueuedThreadNPE() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock sync = new ReentrantLock();
         try {
             sync.hasQueuedThread(null);
@@ -220,6 +257,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasQueuedThread reports whether a thread is queued.
      */
     public void testHasQueuedThread() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock sync = new ReentrantLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(sync));
         Thread t2 = new Thread(new InterruptibleLockRunnable(sync));
@@ -255,6 +296,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getQueuedThreads includes waiting threads
      */
     public void testGetQueuedThreads() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final PublicReentrantLock lock = new PublicReentrantLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -288,6 +333,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * timed tryLock is interruptible.
      */
     public void testInterruptedException2() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
 	lock.lock();
 	Thread t = new Thread(new Runnable() {
@@ -311,6 +360,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * TryLock on a locked lock fails
      */
     public void testTryLockWhenLocked() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
 	lock.lock();
 	Thread t = new Thread(new Runnable() {
@@ -331,6 +384,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * Timed tryLock on a locked lock times out
      */
     public void testTryLock_Timeout() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
 	lock.lock();
 	Thread t = new Thread(new Runnable() {
@@ -355,6 +412,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getHoldCount returns number of recursive holds
      */
     public void testGetHoldCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ReentrantLock lock = new ReentrantLock();
 	for(int i = 1; i <= SIZE; i++) {
 	    lock.lock();
@@ -371,6 +432,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * isLocked is true when locked and false when not
      */
     public void testIsLocked() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
 	lock.lock();
 	assertTrue(lock.isLocked());
@@ -404,6 +469,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * lockInterruptibly is interruptible.
      */
     public void testLockInterruptibly1() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
 	lock.lock();
 	Thread t = new Thread(new InterruptedLockRunnable(lock));
@@ -423,6 +492,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * lockInterruptibly succeeds when unlocked, else is interruptible
      */
     public void testLockInterruptibly2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
 	try {
             lock.lockInterruptibly();
@@ -445,6 +518,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * Calling await without holding lock throws IllegalMonitorStateException
      */
     public void testAwait_IllegalMonitor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
         try {
@@ -462,6 +539,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * Calling signal without holding lock throws IllegalMonitorStateException
      */
     public void testSignal_IllegalMonitor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
         try {
@@ -479,6 +560,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * awaitNanos without a signal times out
      */
     public void testAwaitNanos_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
         try {
@@ -496,6 +581,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      *  timed await without a signal times out
      */
     public void testAwait_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
         try {
@@ -512,6 +601,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * awaitUntil without a signal times out
      */
     public void testAwaitUntil_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
         try {
@@ -529,6 +622,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * await returns when signalled
      */
     public void testAwait() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -562,6 +659,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasWaiters throws NPE if null
      */
     public void testHasWaitersNPE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         try {
             lock.hasWaiters(null);
@@ -576,6 +677,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitQueueLength throws NPE if null
      */
     public void testGetWaitQueueLengthNPE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         try {
             lock.getWaitQueueLength(null);
@@ -591,6 +696,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitingThreads throws NPE if null
      */
     public void testGetWaitingThreadsNPE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final PublicReentrantLock lock = new PublicReentrantLock();
         try {
             lock.getWaitingThreads(null);
@@ -606,6 +715,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasWaiters throws IAE if not owned
      */
     public void testHasWaitersIAE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         final Condition c = (lock.newCondition());
 	final ReentrantLock lock2 = new ReentrantLock();
@@ -622,6 +735,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasWaiters throws IMSE if not locked
      */
     public void testHasWaitersIMSE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         final Condition c = (lock.newCondition());
         try {
@@ -638,6 +755,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitQueueLength throws IAE if not owned
      */
     public void testGetWaitQueueLengthIAE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         final Condition c = (lock.newCondition());
 	final ReentrantLock lock2 = new ReentrantLock();
@@ -654,6 +775,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitQueueLength throws IMSE if not locked
      */
     public void testGetWaitQueueLengthIMSE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();
         final Condition c = (lock.newCondition());
         try {
@@ -670,6 +795,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitingThreads throws IAE if not owned
      */
     public void testGetWaitingThreadsIAE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final PublicReentrantLock lock = new PublicReentrantLock();	
         final Condition c = (lock.newCondition());
 	final PublicReentrantLock lock2 = new PublicReentrantLock();	
@@ -686,6 +815,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitingThreads throws IMSE if not locked
      */
     public void testGetWaitingThreadsIMSE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final PublicReentrantLock lock = new PublicReentrantLock();	
         final Condition c = (lock.newCondition());
         try {
@@ -703,6 +836,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * hasWaiters returns true when a thread is waiting, else false
      */
     public void testHasWaiters() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -745,6 +882,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitQueueLength returns number of waiting threads
      */
     public void testGetWaitQueueLength() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -806,6 +947,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * getWaitingThreads returns only and all waiting threads
      */
     public void testGetWaitingThreads() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final PublicReentrantLock lock = new PublicReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -896,6 +1041,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * awaitUninterruptibly doesn't abort on interrupt
      */
     public void testAwaitUninterruptibly() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final ReentrantLock lock = new ReentrantLock();
         final Condition c = lock.newCondition();
         UninterruptableThread thread = new UninterruptableThread(lock, c);
@@ -928,6 +1077,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * await is interruptible
      */
     public void testAwait_Interrupt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -959,6 +1112,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * awaitNanos is interruptible
      */
     public void testAwaitNanos_Interrupt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -990,6 +1147,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * awaitUntil is interruptible
      */
     public void testAwaitUntil_Interrupt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1022,6 +1183,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * signalAll wakes up all threads
      */
     public void testSignalAll() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -1071,6 +1236,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * await after multiple reentrant locking preserves lock count
      */
     public void testAwaitLockCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final ReentrantLock lock = new ReentrantLock();	
         final Condition c = lock.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -1126,6 +1295,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * A serialized lock deserializes as unlocked
      */
     public void testSerialization() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ReentrantLock l = new ReentrantLock();
         l.lock();
         l.unlock();
@@ -1151,6 +1324,10 @@ public class ReentrantLockTest extends JSR166TestCase {
      * toString indicates current lock state
      */
     public void testToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ReentrantLock lock = new ReentrantLock();
         String us = lock.toString();
         assertTrue(us.indexOf("Unlocked") >= 0);

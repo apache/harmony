@@ -36,6 +36,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.SwingTestCase;
 import javax.swing.plaf.ComponentUI;
+import tests.support.Support_Excludes;
 
 public class BasicComboBoxUITest extends SwingTestCase {
     private BasicComboBoxUI ui;
@@ -63,11 +64,19 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testBasicComboBoxUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.currentValuePane);
         assertFalse(ui.currentValuePane.isVisible());
     }
 
     public void testCreateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentUI ui1 = BasicComboBoxUI.createUI(new JComboBox());
         assertNotNull(ui1);
         ComponentUI ui2 = BasicComboBoxUI.createUI(new JComboBox());
@@ -76,6 +85,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testCreatePopup() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.popup);
         ui.comboBox = comboBox;
         assertNotSame(ui.createPopup(), ui.createPopup());
@@ -83,48 +96,84 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testCreateKeyListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertTrue(ui.createKeyListener() instanceof BasicComboBoxUI.KeyHandler);
         }
     }
 
     public void testCreateFocusListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertTrue(ui.createFocusListener() instanceof BasicComboBoxUI.FocusHandler);
         }
     }
 
     public void testCreateListDataListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertTrue(ui.createListDataListener() instanceof BasicComboBoxUI.ListDataHandler);
         }
     }
 
     public void testCreateItemListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.createItemListener());
     }
 
     public void testCreatePropertyChangeListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertTrue(ui.createPropertyChangeListener() instanceof BasicComboBoxUI.PropertyChangeHandler);
         }
     }
 
     public void testCreateLayoutManager() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertTrue(ui.createLayoutManager() instanceof BasicComboBoxUI.ComboBoxLayoutManager);
         }
     }
 
     public void testCreateRenderer() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ui.createRenderer() instanceof BasicComboBoxRenderer.UIResource);
     }
 
     public void testCreateEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(ui.createEditor().getClass() == BasicComboBoxEditor.UIResource.class);
     }
 
     public void testAddRemoveEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.uninstallComponents();
         assertEquals(0, ui.comboBox.getComponentCount());
@@ -139,6 +188,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testCreateArrowButton() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JButton arrowButton = ui.createArrowButton();
         assertTrue(arrowButton instanceof BasicArrowButton);
         assertEquals(SwingConstants.SOUTH, ((BasicArrowButton) arrowButton).getDirection());
@@ -146,6 +199,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testIsPopupVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createVisibleCombo();
         ui.popup = new BasicComboPopup(comboBox);
         assertFalse(ui.isPopupVisible(comboBox));
@@ -156,6 +213,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testSetPopupVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createVisibleCombo();
         ui.popup = new BasicComboPopup(comboBox);
         assertFalse(ui.isPopupVisible(comboBox));
@@ -166,6 +227,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testIsFocusTraversable() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         assertTrue(ui.isFocusTraversable(comboBox));
         comboBox.setEditable(true);
@@ -173,6 +238,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testGetPreferredSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.listBox = ui.popup.getList();
@@ -184,6 +253,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testGetMinimumSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.installUI(comboBox);
         comboBox.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -205,6 +278,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testSelectNextPossibleValue() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         assertEquals(-1, comboBox.getSelectedIndex());
         ui.selectNextPossibleValue();
@@ -222,6 +299,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testSelectPreviousPossibleValue() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         assertEquals(-1, comboBox.getSelectedIndex());
         ui.selectPreviousPossibleValue();
@@ -242,6 +323,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testToggleOpenClose() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         createVisibleCombo();
         ui.popup = new BasicComboPopup(comboBox);
         assertFalse(ui.isPopupVisible(comboBox));
@@ -252,6 +337,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testRectangleForCurrentValue() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         Rectangle r1 = ui.rectangleForCurrentValue();
         assertEquals(new Rectangle(0, 0, 0, 0), r1);
@@ -261,6 +350,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
 
     // Regression test for HARMONY-2896
     public void testGetAccessibleChildrenCount() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = null;
         try {
             ui.getAccessibleChildrenCount(new JComponent() {});
@@ -277,6 +370,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testGetInsets() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         assertEquals(comboBox.getInsets(), ui.getInsets());
         comboBox.setBorder(BorderFactory.createEmptyBorder(1, 2, 3, 4));
@@ -285,6 +382,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testGetDefaultSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.listBox = new BasicComboPopup(comboBox).getList();
         if (isHarmony()) {
@@ -298,6 +399,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testGetDisplaySize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.listBox = ui.popup.getList();
@@ -315,6 +420,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testInstallDefaults() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         comboBox.setFont(null);
         comboBox.setForeground(null);
         comboBox.setBackground(null);
@@ -328,6 +437,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testInstallUninstallListeners() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.uninstallListeners();
@@ -373,6 +486,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testInstallUninstallComponents() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.uninstallComponents();
@@ -397,6 +514,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testInstallUninstallUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.uninstallUI(null);
@@ -412,12 +533,20 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testPaintCurrentValueBackground() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.paintCurrentValueBackground(createTestGraphics(), new Rectangle(0, 0, 10, 10), true);
     }
 
     // Regression test for HARMONY-2898
     public void testPaintCurrentValueBackground_Null() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = null;
         try {
             ui.paintCurrentValueBackground(createTestGraphics(), new Rectangle(0, 0, 10, 10), true);
@@ -428,6 +557,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testPaintCurrentValue() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.listBox = ui.popup.getList();
@@ -435,6 +568,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testPaint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.popup = new BasicComboPopup(comboBox);
         ui.listBox = ui.popup.getList();
@@ -442,6 +579,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testConfigureUnconfigureEditor() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.comboBox = comboBox;
         ui.editor = new JTextField();
         int focusListenerCount = ui.editor.getFocusListeners().length;
@@ -452,6 +593,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testConfigureUnconfigureArrowButton() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.configureArrowButton();
         ui.unconfigureArrowButton();
         ui.popup = new BasicComboPopup(comboBox);
@@ -469,6 +614,10 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testPropertyChangeHandler() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(comboBox);
         Font newFont = comboBox.getFont().deriveFont(30f);
         comboBox.setFont(newFont);
@@ -497,12 +646,20 @@ public class BasicComboBoxUITest extends SwingTestCase {
     }
 
     public void testRemove_NullEditor() throws Exception{
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression test for Harmony-1749
         BasicComboBoxUI cb = new BasicComboBoxUI();
         cb.removeEditor();
     }
 
     public void testComboBoxLayoutManager() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BasicComboBoxUI ui = new BasicComboBoxUI();
         BasicComboBoxUI.ComboBoxLayoutManager b = ui.new ComboBoxLayoutManager();
 

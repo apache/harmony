@@ -25,6 +25,7 @@ import java.lang.management.MemoryManagerMXBean;
 import java.util.List;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class MemoryManagerMXBeanTest extends TestCase {
 
@@ -48,6 +49,10 @@ public class MemoryManagerMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryManagerMXBean.getMemoryPoolNames()'
      */
     public void testGetMemoryPoolNames() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (MemoryManagerMXBean mb : allBeans) {
             String[] managedPools = mb.getMemoryPoolNames();
             assertNotNull(managedPools);
@@ -62,6 +67,10 @@ public class MemoryManagerMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryManagerMXBean.getName()'
      */
     public void testGetName() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (MemoryManagerMXBean mb : allBeans) {
             String name = mb.getName();
             assertNotNull(name);

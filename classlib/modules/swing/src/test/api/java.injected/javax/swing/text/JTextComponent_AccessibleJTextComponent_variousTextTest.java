@@ -28,6 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class JTextComponent_AccessibleJTextComponent_variousTextTest extends TestCase {
     JFrame jf;
@@ -86,6 +87,10 @@ public class JTextComponent_AccessibleJTextComponent_variousTextTest extends Tes
     }
 
     public void testGetBeforeAfterAtIndex() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Runnable test = new Runnable() {
             public void run() {
                 jtc.setText("In\n" + " this test. for AccessibleJTextComponent\n" + "LALALA");
@@ -127,6 +132,10 @@ public class JTextComponent_AccessibleJTextComponent_variousTextTest extends Tes
     }
 
     public void testGetCharacterBounds() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Runnable test = new Runnable() {
             public void run() {
                 jtc.setText("\u05dc" + "\u0061" + "\u05dc" + "\u0061");
@@ -140,6 +149,10 @@ public class JTextComponent_AccessibleJTextComponent_variousTextTest extends Tes
     }
 
     public void testGetIndexAtPoint() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Runnable test = new Runnable() {
             public void run() {
                 //Bidirectional text is not supported

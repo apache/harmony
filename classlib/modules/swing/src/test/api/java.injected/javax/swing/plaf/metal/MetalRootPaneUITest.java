@@ -26,6 +26,7 @@ import javax.swing.JRootPane;
 import javax.swing.SwingTestCase;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
+import tests.support.Support_Excludes;
 
 public class MetalRootPaneUITest extends SwingTestCase {
     private JRootPane rootPane;
@@ -64,6 +65,10 @@ public class MetalRootPaneUITest extends SwingTestCase {
      * Class under test for void installUI(JComponent)
      */
     public void testInstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // test install with windowDecorationStyle = JRootPane.NONE
         Border saveBorder = rootPane.getBorder();
         LayoutManager saveLayout = rootPane.getLayout();
@@ -92,6 +97,10 @@ public class MetalRootPaneUITest extends SwingTestCase {
      * Class under test for void uninstallUI(JComponent)
      */
     public void testUninstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // test uninstall with windowDecorationStyle = JRootPane.NONE
         ui.installUI(rootPane);
         Border saveBorder = rootPane.getBorder();
@@ -119,6 +128,10 @@ public class MetalRootPaneUITest extends SwingTestCase {
      * Class under test for void propertyChange(PropertyChangeEvent)
      */
     public void testPropertyChange() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         rootPane.setUI(ui);
         Border saveBorder = rootPane.getBorder();
         LayoutManager saveLayout = rootPane.getLayout();
@@ -147,6 +160,10 @@ public class MetalRootPaneUITest extends SwingTestCase {
      * Class under test for ComponentUI createUI(JComponent)
      */
     public void testCreateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentUI ui = MetalRootPaneUI.createUI(rootPane);
         assertTrue("not null", ui != null);
         assertTrue("instanceof MetalRootPaneUI", ui instanceof MetalRootPaneUI);
@@ -158,6 +175,10 @@ public class MetalRootPaneUITest extends SwingTestCase {
      * Class under test for MetalRootPaneUI()
      */
     public void testMetalRootPaneUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // test that it doesn't crash
         ui = new MetalRootPaneUI();
     }

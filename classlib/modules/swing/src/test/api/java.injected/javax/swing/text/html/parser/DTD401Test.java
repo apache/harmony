@@ -28,6 +28,7 @@ import java.util.Vector;
 import javax.swing.SwingTestCase;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class DTD401Test extends TestCase {
     DTD dtd;
@@ -67,6 +68,10 @@ public class DTD401Test extends TestCase {
     }
 
     public void testEntities() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!SwingTestCase.isHarmony()) {
             Utils401.check32Entities(dtd.entityHash);
         } else {
@@ -75,6 +80,10 @@ public class DTD401Test extends TestCase {
     }
 
     public void testElements() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!SwingTestCase.isHarmony()) {
             return;
         }
@@ -101,6 +110,10 @@ public class DTD401Test extends TestCase {
 
 
     public void testFields() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!SwingTestCase.isHarmony()) {
             return;
         }

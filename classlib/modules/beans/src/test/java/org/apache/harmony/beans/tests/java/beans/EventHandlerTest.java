@@ -34,6 +34,7 @@ import junit.textui.TestRunner;
 import org.apache.harmony.beans.tests.support.SampleEvent;
 import org.apache.harmony.beans.tests.support.SampleListener;
 import org.apache.harmony.beans.tests.support.mock.MockButton;
+import tests.support.Support_Excludes;
 
 /**
  * Unit test for EventHandler.
@@ -60,6 +61,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks event handler accessors
      */
     public void testAccessors() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InvocationObject invocationObject = new InvocationObject();
         EventHandler handler = new EventHandler(invocationObject, "someText",
                 "source.text", "actionPerformed");
@@ -73,6 +78,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks the method invoke() with null listener value
      */
     public void testNullListenerMethodName() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InvocationObject invocationObject = new InvocationObject();
 
         EventHandler handler = new EventHandler(invocationObject, "someText",
@@ -92,6 +101,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks the method invoke()
      */
     public void testInvoke() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InvocationObject invocationObject = new InvocationObject();
 
         EventHandler handler = new EventHandler(invocationObject, "someText",
@@ -112,6 +125,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks the method invoke() with null property name
      */
     public void testInvokeWithNullPropertyName() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InvocationObject invocationObject = new InvocationObject();
 
         EventHandler handler = new EventHandler(invocationObject,
@@ -139,6 +156,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks the object created with the create() method call
      */
     public void testCreateWithMethodCall() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object invocationObject = new InvocationObject();
         ActionListener listener = EventHandler.create(ActionListener.class,
                 invocationObject, "doSomething");
@@ -157,6 +178,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks the setter is initialized properly
      */
     public void testCreateWithSetterCall() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object invocationObject = new InvocationObject();
         ActionEvent ae = new ActionEvent(this, 0, "");
         ActionListener listener = EventHandler.create(ActionListener.class,
@@ -176,6 +201,10 @@ public class EventHandlerTest extends TestCase {
      * dot-separated property
      */
     public void testCreateWithDottedParameterCall() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object invocationObject = new InvocationObject();
         ActionEvent ae = new ActionEvent(this, 0, "");
         ActionListener listener = EventHandler.create(ActionListener.class,
@@ -194,6 +223,10 @@ public class EventHandlerTest extends TestCase {
      * The test checks the event is fired for object created with the create()
      */
     public void testCreateWithMethodCallWhichIsSetter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InvocationObject invocationObject = new InvocationObject();
         SampleEvent event = new SampleEvent("bean");
 
@@ -210,6 +243,10 @@ public class EventHandlerTest extends TestCase {
      * fireSampleEvent scenario
      */
     public void testCreateForStaticMethodAsPropertyGetter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         InvocationObject invocationObject = new InvocationObject();
         SampleEvent event = new SampleEvent("bean");
 
@@ -225,6 +262,10 @@ public class EventHandlerTest extends TestCase {
      * fileSampleEvent scenario by throwing RuntimeException
      */
     public void test_Create_WithThrowRuntimeException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for Harmony-2434
         InvocationObject invocationObject = new InvocationObject();
         SampleListener listener = EventHandler.create(SampleListener.class,invocationObject, "throwRuntimeException");
@@ -281,6 +322,10 @@ public class EventHandlerTest extends TestCase {
      * Class under test for Object create(Class, Object, String)
      */
     public void testCreateClassObjectString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -295,6 +340,10 @@ public class EventHandlerTest extends TestCase {
      * listenerInterface class is null
      */
     public void testCreateClassObjectString_ClassNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         try {
             EventHandler.create(null, target, "setCalled");
@@ -307,6 +356,10 @@ public class EventHandlerTest extends TestCase {
      * listenerInterface is not a interface
      */
     public void testCreateClassObjectString_ClassInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         try {
             EventHandler.create(MockButton.class, target, "setCalled");
@@ -319,6 +372,10 @@ public class EventHandlerTest extends TestCase {
      * the target object is null
      */
     public void testCreateClassObjectString_ObjectNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             EventHandler
                     .create(PropertyChangeListener.class, null, "setCalled");
@@ -331,6 +388,10 @@ public class EventHandlerTest extends TestCase {
      * the target's method is null
      */
     public void testCreateClassObjectString_MethodNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         try {
@@ -354,6 +415,10 @@ public class EventHandlerTest extends TestCase {
      * the target's method is invalid
      */
     public void testCreateClassObjectString_MethodEmpty() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -371,6 +436,10 @@ public class EventHandlerTest extends TestCase {
      * Class under test for Object create(Class, Object, String, String)
      */
     public void testCreateClassObjectStringString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -389,6 +458,10 @@ public class EventHandlerTest extends TestCase {
      * listenerInterface is null
      */
     public void testCreateClassObjectStringString_ClassNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         try {
             EventHandler.create(null, target, "text", "source.label");
@@ -401,6 +474,10 @@ public class EventHandlerTest extends TestCase {
      * the target object is null
      */
     public void testCreateClassObjectStringString_TargetNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             EventHandler.create(PropertyChangeListener.class, null, "text",
                     "source.label");
@@ -413,6 +490,10 @@ public class EventHandlerTest extends TestCase {
      * the action is null
      */
     public void testCreateClassObjectStringString_ActionNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         try {
@@ -428,6 +509,10 @@ public class EventHandlerTest extends TestCase {
      * action is invalid
      */
     public void testCreateClassObjectStringString_ActionInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -448,6 +533,10 @@ public class EventHandlerTest extends TestCase {
      * propertyname is null
      */
     public void testCreateClassObjectStringString_PropertyNameNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -467,6 +556,10 @@ public class EventHandlerTest extends TestCase {
      * property name is invalid
      */
     public void testCreateClassObjectStringString_PropertyNameInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -489,6 +582,10 @@ public class EventHandlerTest extends TestCase {
      * Class under test for Object create(Class, Object, String, String, String)
      */
     public void testCreateClassObjectStringStringString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -508,6 +605,10 @@ public class EventHandlerTest extends TestCase {
      * listenerInterface is null
      */
     public void testCreateClassObjectStringStringString_ClassNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         try {
             EventHandler.create(null, target, "text", "source.label",
@@ -522,6 +623,10 @@ public class EventHandlerTest extends TestCase {
      * listenerInterface is invalid
      */
     public void testCreateClassObjectStringStringString_ClassInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         try {
             EventHandler.create(String.class, target, "text", "source.label",
@@ -535,6 +640,10 @@ public class EventHandlerTest extends TestCase {
      * the target object is null
      */
     public void testCreateClassObjectStringStringString_TargetNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             EventHandler.create(PropertyChangeListener.class, null, "text",
                     "source.label", "propertyChange");
@@ -547,6 +656,10 @@ public class EventHandlerTest extends TestCase {
      * action is null
      */
     public void testCreateClassObjectStringStringString_ActionNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         try {
@@ -563,6 +676,10 @@ public class EventHandlerTest extends TestCase {
      * action is invalid
      */
     public void testCreateClassObjectStringStringString_ActionInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -583,6 +700,10 @@ public class EventHandlerTest extends TestCase {
      * property name is null
      */
     public void testCreateClassObjectStringStringString_PropertyNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         String newLabel = "New Value: set text.";
@@ -604,6 +725,10 @@ public class EventHandlerTest extends TestCase {
      * property name is invalid
      */
     public void testCreateClassObjectStringStringString_PropertyInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -624,6 +749,10 @@ public class EventHandlerTest extends TestCase {
      * listenerMethodName is null
      */
     public void testCreateClassObjectStringStringString_MethodNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -643,6 +772,10 @@ public class EventHandlerTest extends TestCase {
      * listenerMethodName is invalid
      */
     public void testCreateClassObjectStringStringString_MethodInvalid() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -661,6 +794,10 @@ public class EventHandlerTest extends TestCase {
      * eventPropertyName, String listenerMethodName)
      */
     public void testEventHandler() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         String action = "text";
         String eventPropertyName = "source.label";
@@ -677,6 +814,10 @@ public class EventHandlerTest extends TestCase {
      * target is null
      */
     public void testEventHandler_TargetNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String action = "text";
         String eventPropertyName = "source.label";
         String listenerMethodName = "propertyChange";
@@ -693,6 +834,10 @@ public class EventHandlerTest extends TestCase {
      * action is null
      */
     public void testEventHandler_ActionNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         String eventPropertyName = "source.label";
         String listenerMethodName = "propertyChange";
@@ -715,6 +860,10 @@ public class EventHandlerTest extends TestCase {
      * EventProperty is null
      */
     public void testEventHandler_EventPropertyNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         String action = "text";
         String listenerMethodName = "propertyChange";
@@ -730,6 +879,10 @@ public class EventHandlerTest extends TestCase {
      * Method is null
      */
     public void testEventHandler_MethodNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         String action = "text";
         String eventPropertyName = "source.label";
@@ -742,6 +895,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_1() throws SecurityException, NoSuchMethodException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -772,6 +929,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testIncompatibleMethod() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -789,6 +950,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testCoverage_1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockTarget target = new MockTarget();
         MockButton button = new MockButton();
         PropertyChangeListener proxy = EventHandler.create(
@@ -806,6 +971,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -819,6 +988,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend1_1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -836,6 +1009,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -854,6 +1031,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -867,6 +1048,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -880,6 +1065,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend4_BooleanObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -894,6 +1083,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -907,6 +1100,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend6() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -920,6 +1117,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend7() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -933,6 +1134,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend8() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -946,6 +1151,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend9() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -959,6 +1168,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend10() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -972,6 +1185,10 @@ public class EventHandlerTest extends TestCase {
     }
 
     public void testInvoke_extend11() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MockFish fish = new MockFish();
         MockFishTarget target = new MockFishTarget();
         PropertyChangeSupport support = new PropertyChangeSupport(fish);
@@ -989,6 +1206,10 @@ public class EventHandlerTest extends TestCase {
      *        java.lang.Object, java.lang.String))
      */
     public void testEventHandlerCreate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Regression for HARMONY-429
         EventHandler.create(FredListener.class, new Untitled1(), "i", "i")
                 .fireFredEvent(new FredEvent("bean2"));
@@ -1001,6 +1222,10 @@ public class EventHandlerTest extends TestCase {
      * please refer HARMONY-1884 for details
      */
     public void testInvalidProperties_HY1884() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BeanWithInvalidProps bean = new BeanWithInvalidProps();
         Object proxy;
 

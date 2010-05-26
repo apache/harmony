@@ -10,6 +10,7 @@ import junit.framework.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import tests.support.Support_Excludes;
 
 public class ScheduledExecutorTest extends JSR166TestCase {
     public static void main(String[] args) {
@@ -24,6 +25,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * execute successfully executes a runnable
      */
     public void testExecute() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             TrackedShortRunnable runnable =new TrackedShortRunnable();
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
@@ -51,6 +56,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * delayed schedule of callable successfully executes after delay
      */
     public void testSchedule1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             TrackedCallable callable = new TrackedCallable();
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
@@ -72,6 +81,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  delayed schedule of runnable successfully executes after delay
      */
     public void testSchedule3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             TrackedShortRunnable runnable = new TrackedShortRunnable();
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
@@ -91,6 +104,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * scheduleAtFixedRate executes runnable after given initial delay
      */
     public void testSchedule4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             TrackedShortRunnable runnable = new TrackedShortRunnable();
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
@@ -114,6 +131,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * scheduleWithFixedDelay executes runnable after given initial delay
      */
     public void testSchedule5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             TrackedShortRunnable runnable = new TrackedShortRunnable();
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
@@ -132,6 +153,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * scheduleAtFixedRate executes series of tasks at given rate
      */
     public void testFixedRateSequence() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
             RunnableCounter counter = new RunnableCounter();
@@ -154,6 +179,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * scheduleWithFixedDelay executes series of tasks with given period
      */
     public void testFixedDelaySequence() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	try {
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
             RunnableCounter counter = new RunnableCounter();
@@ -175,6 +204,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  execute (null) throws NPE
      */
     public void testExecuteNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor se = null;
         try {
 	    se = new ScheduledThreadPoolExecutor(1);
@@ -192,6 +225,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * schedule (null) throws NPE
      */
     public void testScheduleNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor se = new ScheduledThreadPoolExecutor(1);
 	try {
             TrackedCallable callable = null;
@@ -208,6 +245,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * execute throws RejectedExecutionException if shutdown
      */
     public void testSchedule1_RejectedExecutionException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor se = new ScheduledThreadPoolExecutor(1);
         try {
             se.shutdown();
@@ -226,6 +267,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * schedule throws RejectedExecutionException if shutdown
      */
     public void testSchedule2_RejectedExecutionException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor se = new ScheduledThreadPoolExecutor(1);
         try {
             se.shutdown();
@@ -242,6 +287,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * schedule callable throws RejectedExecutionException if shutdown
      */
      public void testSchedule3_RejectedExecutionException() {
+         if (Support_Excludes.isExcluded()) {
+             return;
+         }
+
          ScheduledThreadPoolExecutor se = new ScheduledThreadPoolExecutor(1);
          try {
             se.shutdown();
@@ -258,6 +307,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  scheduleAtFixedRate throws RejectedExecutionException if shutdown
      */
     public void testScheduleAtFixedRate1_RejectedExecutionException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor se = new ScheduledThreadPoolExecutor(1);
         try {
             se.shutdown();
@@ -274,6 +327,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * scheduleWithFixedDelay throws RejectedExecutionException if shutdown
      */
     public void testScheduleWithFixedDelay1_RejectedExecutionException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor se = new ScheduledThreadPoolExecutor(1);
         try {
             se.shutdown();
@@ -291,6 +348,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  thread becomes active
      */
     public void testGetActiveCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p2 = new ScheduledThreadPoolExecutor(2);
         assertEquals(0, p2.getActiveCount());
         p2.execute(new SmallRunnable());
@@ -308,6 +369,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *   when tasks complete
      */
     public void testGetCompletedTaskCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p2 = new ScheduledThreadPoolExecutor(2);
         assertEquals(0, p2.getCompletedTaskCount());
         p2.execute(new SmallRunnable());
@@ -324,6 +389,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  getCorePoolSize returns size given in constructor if not otherwise set 
      */
     public void testGetCorePoolSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         assertEquals(1, p1.getCorePoolSize());
         joinPool(p1);
@@ -334,6 +403,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *   multiple threads active
      */
     public void testGetLargestPoolSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p2 = new ScheduledThreadPoolExecutor(2);
         assertEquals(0, p2.getLargestPoolSize());
         p2.execute(new SmallRunnable());
@@ -352,6 +425,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *   become active
      */
     public void testGetPoolSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         assertEquals(0, p1.getPoolSize());
         p1.execute(new SmallRunnable());
@@ -364,6 +441,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *    submitted
      */
     public void testGetTaskCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         assertEquals(0, p1.getTaskCount());
         for(int i = 0; i < 5; i++)
@@ -381,6 +462,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * getThreadFactory returns factory in constructor if not set
      */
     public void testGetThreadFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ThreadFactory tf = new SimpleThreadFactory();
 	ScheduledThreadPoolExecutor p = new ScheduledThreadPoolExecutor(1, tf);
         assertSame(tf, p.getThreadFactory());
@@ -391,6 +476,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * setThreadFactory sets the thread factory returned by getThreadFactory
      */
     public void testSetThreadFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ThreadFactory tf = new SimpleThreadFactory();
 	ScheduledThreadPoolExecutor p = new ScheduledThreadPoolExecutor(1);
         p.setThreadFactory(tf);
@@ -402,6 +491,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * setThreadFactory(null) throws NPE
      */
     public void testSetThreadFactoryNull() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ScheduledThreadPoolExecutor p = new ScheduledThreadPoolExecutor(1);
         try {
             p.setThreadFactory(null);
@@ -417,6 +510,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      */
     public void testIsShutdown() {
         
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         try {
             assertFalse(p1.isShutdown());
@@ -432,6 +529,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *   isTerminated is false before termination, true after
      */
     public void testIsTerminated() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         try {
             p1.execute(new SmallRunnable());
@@ -450,6 +551,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  isTerminating is not true when running or when terminated
      */
     public void testIsTerminating() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         assertFalse(p1.isTerminating());
         try {
@@ -471,6 +576,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * getQueue returns the work queue, which contains queued tasks
      */
     public void testGetQueue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         ScheduledFuture[] tasks = new ScheduledFuture[5];
         for(int i = 0; i < 5; i++){
@@ -492,6 +601,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * remove(task) removes queued task, and fails to remove active task
      */
     public void testRemove() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         ScheduledFuture[] tasks = new ScheduledFuture[5];
         for(int i = 0; i < 5; i++){
@@ -520,6 +633,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  purge removes cancelled tasks from the queue
      */
     public void testPurge() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         ScheduledFuture[] tasks = new ScheduledFuture[5];
         for(int i = 0; i < 5; i++){
@@ -551,6 +668,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      *  shutDownNow returns a list containing tasks that were not run
      */
     public void testShutDownNow() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         for(int i = 0; i < 5; i++)
             p1.schedule(new SmallPossiblyInterruptedRunnable(), SHORT_DELAY_MS, TimeUnit.MILLISECONDS);
@@ -570,6 +691,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * tasks at shutdown
      */
     public void testShutDown1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
             assertTrue(p1.getExecuteExistingDelayedTasksAfterShutdownPolicy());
@@ -603,6 +728,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * delayed tasks are cancelled at shutdown
      */
     public void testShutDown2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
             p1.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
@@ -627,6 +756,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * periodic tasks are not cancelled at shutdown
      */
     public void testShutDown3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
             p1.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
@@ -649,6 +782,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * periodic tasks are cancelled at shutdown
      */
     public void testShutDown4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ScheduledThreadPoolExecutor p1 = new ScheduledThreadPoolExecutor(1);
         try {
             p1.setContinueExistingPeriodicTasksAfterShutdownPolicy(true);
@@ -678,6 +815,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * completed submit of callable returns result
      */
     public void testSubmitCallable() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             Future<String> future = e.submit(new StringTask());
@@ -698,6 +839,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * completed submit of runnable returns successfully
      */
     public void testSubmitRunnable() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             Future<?> future = e.submit(new NoOpRunnable());
@@ -718,6 +863,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * completed submit of (runnable, result) returns result
      */
     public void testSubmitRunnable2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             Future<String> future = e.submit(new NoOpRunnable(), TEST_STRING);
@@ -738,6 +887,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAny(null) throws NPE
      */
     public void testInvokeAny1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             e.invokeAny(null);
@@ -753,6 +906,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAny(empty collection) throws IAE
      */
     public void testInvokeAny2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             e.invokeAny(new ArrayList<Callable<String>>());
@@ -768,6 +925,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAny(c) throws NPE if c has null elements
      */
     public void testInvokeAny3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -786,6 +947,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAny(c) throws ExecutionException if no task completes
      */
     public void testInvokeAny4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -803,6 +968,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAny(c) returns result of some task
      */
     public void testInvokeAny5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -822,6 +991,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAll(null) throws NPE
      */
     public void testInvokeAll1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             e.invokeAll(null);
@@ -837,6 +1010,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAll(empty collection) returns empty collection
      */
     public void testInvokeAll2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             List<Future<String>> r = e.invokeAll(new ArrayList<Callable<String>>());
@@ -852,6 +1029,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAll(c) throws NPE if c has null elements
      */
     public void testInvokeAll3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -870,6 +1051,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * get of invokeAll(c) throws exception on failed task
      */
     public void testInvokeAll4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -890,6 +1075,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * invokeAll(c) returns results of all completed tasks
      */
     public void testInvokeAll5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -911,6 +1100,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAny(null) throws NPE
      */
     public void testTimedInvokeAny1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             e.invokeAny(null, MEDIUM_DELAY_MS, TimeUnit.MILLISECONDS);
@@ -926,6 +1119,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAny(,,null) throws NPE
      */
     public void testTimedInvokeAnyNullTimeUnit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -943,6 +1140,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAny(empty collection) throws IAE
      */
     public void testTimedInvokeAny2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             e.invokeAny(new ArrayList<Callable<String>>(), MEDIUM_DELAY_MS, TimeUnit.MILLISECONDS);
@@ -958,6 +1159,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAny(c) throws NPE if c has null elements
      */
     public void testTimedInvokeAny3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -977,6 +1182,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAny(c) throws ExecutionException if no task completes
      */
     public void testTimedInvokeAny4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -994,6 +1203,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAny(c) returns result of some task
      */
     public void testTimedInvokeAny5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -1013,6 +1226,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAll(null) throws NPE
      */
     public void testTimedInvokeAll1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             e.invokeAll(null, MEDIUM_DELAY_MS, TimeUnit.MILLISECONDS);
@@ -1028,6 +1245,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAll(,,null) throws NPE
      */
     public void testTimedInvokeAllNullTimeUnit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -1045,6 +1266,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAll(empty collection) returns empty collection
      */
     public void testTimedInvokeAll2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             List<Future<String>> r = e.invokeAll(new ArrayList<Callable<String>>(), MEDIUM_DELAY_MS, TimeUnit.MILLISECONDS);
@@ -1060,6 +1285,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAll(c) throws NPE if c has null elements
      */
     public void testTimedInvokeAll3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -1078,6 +1307,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * get of element of invokeAll(c) throws exception on failed task
      */
     public void testTimedInvokeAll4() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -1098,6 +1331,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAll(c) returns results of all completed tasks
      */
     public void testTimedInvokeAll5() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();
@@ -1119,6 +1356,10 @@ public class ScheduledExecutorTest extends JSR166TestCase {
      * timed invokeAll(c) cancels tasks not completed by timeout
      */
     public void testTimedInvokeAll6() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ExecutorService e = new ScheduledThreadPoolExecutor(2);
         try {
             ArrayList<Callable<String>> l = new ArrayList<Callable<String>>();

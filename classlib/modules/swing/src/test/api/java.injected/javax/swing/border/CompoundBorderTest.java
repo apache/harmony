@@ -25,12 +25,17 @@ import java.awt.Color;
 import java.awt.Insets;
 import javax.swing.JPanel;
 import javax.swing.SwingTestCase;
+import tests.support.Support_Excludes;
 
 public class CompoundBorderTest extends SwingTestCase {
     /*
      * Class under test for Insets getBorderInsets(Component, Insets)
      */
     public void testGetBorderInsetsComponentInsets() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 10, false);
         LineBorder border2 = new LineBorder(Color.red, 3, false);
         CompoundBorder border4 = new CompoundBorder(border1, border2);
@@ -59,6 +64,10 @@ public class CompoundBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component)
      */
     public void testGetBorderInsetsComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 10, false);
         LineBorder border2 = new LineBorder(Color.red, 3, false);
         EmptyBorder border3 = new EmptyBorder(101, 102, 103, 104);
@@ -87,6 +96,10 @@ public class CompoundBorderTest extends SwingTestCase {
     }
 
     public void testPaintBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //        JPanel panel1 = new JPanel();
         //        JPanel panel2 = new JPanel();
         //        JPanel panel3 = new JPanel();
@@ -118,6 +131,10 @@ public class CompoundBorderTest extends SwingTestCase {
     }
 
     public void testIsBorderOpaque() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 33, false);
         LineBorder border2 = new LineBorder(Color.red, 33, false);
         EmptyBorder border3 = new EmptyBorder(1, 1, 1, 1);
@@ -137,6 +154,10 @@ public class CompoundBorderTest extends SwingTestCase {
      * Class under test for void CompoundBorder(Border, Border)
      */
     public void testCompoundBorderBorderBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 33, false);
         LineBorder border2 = new LineBorder(Color.red, 33, true);
         EmptyBorder border3 = new EmptyBorder(1, 1, 1, 1);
@@ -158,12 +179,20 @@ public class CompoundBorderTest extends SwingTestCase {
      * Class under test for void CompoundBorder()
      */
     public void testCompoundBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         CompoundBorder border = new CompoundBorder();
         assertNull(border.getInsideBorder());
         assertNull(border.getOutsideBorder());
     }
 
     public void testGetOutsideBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 33, false);
         LineBorder border2 = new LineBorder(Color.red, 33, true);
         EmptyBorder border3 = new EmptyBorder(1, 1, 1, 1);
@@ -180,6 +209,10 @@ public class CompoundBorderTest extends SwingTestCase {
     }
 
     public void testGetInsideBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 33, false);
         LineBorder border2 = new LineBorder(Color.red, 33, true);
         EmptyBorder border3 = new EmptyBorder(1, 1, 1, 1);
@@ -196,6 +229,10 @@ public class CompoundBorderTest extends SwingTestCase {
     }
 
     public void testReadWriteObject() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LineBorder border1 = new LineBorder(Color.red, 33, false);
         EmptyBorder border2 = new EmptyBorder(1, 1, 1, 1);
         CompoundBorder border3 = new CompoundBorder(border1, border2);

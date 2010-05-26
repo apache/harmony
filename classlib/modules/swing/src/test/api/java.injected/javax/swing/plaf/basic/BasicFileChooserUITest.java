@@ -26,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingTestCase;
 import javax.swing.UIManager;
+import tests.support.Support_Excludes;
 
 public class BasicFileChooserUITest extends SwingTestCase {
     private BasicFileChooserUI ui;
@@ -45,6 +46,10 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetAcceptAllFileFilter() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertNotNull(ui.getAcceptAllFileFilter(fc));
         assertEquals(UIManager.getString("FileChooser.acceptAllFileFilterText"), ui
@@ -53,6 +58,10 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetApproveButtonText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertEquals(UIManager.get("FileChooser.openDialogTitleText"), ui.getDialogTitle(fc));
         assertEquals(UIManager.get("FileChooser.openButtonText"), ui.getApproveButtonText(fc));
@@ -75,6 +84,10 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetApproveButtonToolTipText() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {     
             javax.swing.plaf.basic.BasicFileChooserUI b = 
                 new javax.swing.plaf.basic.BasicFileChooserUI(new JFileChooser("")); 
@@ -86,11 +99,19 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertNotNull(ui.getModel());
     }
 
     public void testBasicFileView() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         BasicFileChooserUI.BasicFileView fileView = new BasicFileChooserUI(fc).new BasicFileView();
         assertNotNull(fileView);
         assertEquals(0, fileView.iconCache.size());
@@ -112,15 +133,27 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testCreatePropertyChangeListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.createPropertyChangeListener(fc));
     }
 
     public void testGetApproveButton() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertNull(ui.getApproveButton(fc));
     }
 
     public void testGetDialogTitle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.getDialogTitle(fc));
         ui.installUI(fc);
         fc.setDialogTitle("my");
@@ -128,12 +161,20 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetFileView() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertNotNull(ui.getFileView(fc));
         assertTrue(ui.getFileView(fc) instanceof BasicFileChooserUI.BasicFileView);
     }
 
     public void testGetSetDirectory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.getDirectory());
         ui.installUI(fc);
         assertNull(ui.getDirectory());
@@ -143,18 +184,30 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetSetDirectoryName() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.getDirectoryName());
         ui.setDirectoryName("a");
         assertNull(ui.getDirectoryName());
     }
 
     public void testGetSetDirectorySelected() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(ui.isDirectorySelected());
         ui.setDirectorySelected(true);
         assertTrue(ui.isDirectorySelected());
     }
 
     public void testGetAccessoryPanel() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.getAccessoryPanel());
         ui.installUI(fc);
         assertNotNull(ui.getAccessoryPanel());
@@ -164,18 +217,30 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetApproveButtonAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertNotNull(ui.getApproveSelectionAction());
         assertEquals(ui.getApproveSelectionAction(), ui.getApproveSelectionAction());
     }
 
     public void testGetPreferredSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(ui.getPreferredSize(fc));
         ui.installUI(fc);
         assertNull(ui.getPreferredSize(fc));
     }
 
     public void testEnsureFileIsVisible() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {   
             BasicFileChooserUI fc = new BasicFileChooserUI(null);  
             fc.ensureFileIsVisible(new JFileChooser(), new File("a")); 
@@ -186,6 +251,10 @@ public class BasicFileChooserUITest extends SwingTestCase {
     }
 
     public void testInstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             new BasicFileChooserUI(null) {
                 public void installDefaults(JFileChooser fc) {

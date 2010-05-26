@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import javax.swing.border.EmptyBorder;
+import tests.support.Support_Excludes;
 
 public class OverlayLayoutTest extends SwingTestCase {
     protected OverlayLayout layout = null;
@@ -42,6 +43,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testOverlayLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         boolean thrown = false;
         try {
@@ -63,6 +68,10 @@ public class OverlayLayoutTest extends SwingTestCase {
      * Class under test for void addLayoutComponent(Component, Object)
      */
     public void testAddLayoutComponentComponentObject() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -87,6 +96,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testPreferredLayoutSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -138,6 +151,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testMinimumLayoutSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -189,6 +206,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testMaximumLayoutSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -243,6 +264,10 @@ public class OverlayLayoutTest extends SwingTestCase {
      * Class under test for void addLayoutComponent(String, Component)
      */
     public void testAddLayoutComponentStringComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -279,6 +304,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testLayoutContainer1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -328,6 +357,10 @@ public class OverlayLayoutTest extends SwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testLayoutContainer2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JWindow window = new JWindow();
         JComponent panel = new JPanel();
         JComponent panel1 = new JPanel();
@@ -362,6 +395,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testInvalidateLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -384,6 +421,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testGetLayoutAlignmentY() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -422,6 +463,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testGetLayoutAlignmentX() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -460,6 +505,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testRemoveLayoutComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         JComponent component1 = new JPanel();
         JComponent component2 = new JPanel();
@@ -491,6 +540,10 @@ public class OverlayLayoutTest extends SwingTestCase {
 
     // Layout sharing testcases and so on
     public void testSharingLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         layout = new OverlayLayout(container);
         boolean thrown = false;
@@ -566,6 +619,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testWriteObject() throws IOException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new JPanel();
         OverlayLayout layout1 = new OverlayLayout(container);
         ByteArrayOutputStream fo = new ByteArrayOutputStream();
@@ -575,6 +632,10 @@ public class OverlayLayoutTest extends SwingTestCase {
     }
 
     public void testReadObject() throws ClassNotFoundException, IOException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container container = new Panel();
         OverlayLayout layout1 = new OverlayLayout(container);
         ByteArrayOutputStream fo = new ByteArrayOutputStream();

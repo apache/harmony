@@ -29,6 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingWaitTestCase;
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class TextAction_MultithreadedTest extends TestCase {
     JDialog window1;
@@ -60,6 +61,10 @@ public class TextAction_MultithreadedTest extends TestCase {
     }
 
     public void testGetFocusedComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TextAction action = new TextAction("") {
             private static final long serialVersionUID = 1L;
 
@@ -94,6 +99,10 @@ public class TextAction_MultithreadedTest extends TestCase {
     }
 
     public void testGetTextComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TextAction action = new TextAction("") {
             private static final long serialVersionUID = 1L;
 

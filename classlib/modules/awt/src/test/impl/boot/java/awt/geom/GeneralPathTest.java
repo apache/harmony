@@ -22,6 +22,7 @@ package java.awt.geom;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Tools;
+import tests.support.Support_Excludes;
 
 public class GeneralPathTest extends ShapeTestCase {
 
@@ -132,16 +133,28 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testCreate1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new GeneralPath(), new GeneralPath(GeneralPath.WIND_NON_ZERO), 0.0);
         assertEquals(new GeneralPath(), new GeneralPath(GeneralPath.WIND_NON_ZERO), 0.0f);
     }
 
     public void testCreate2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new GeneralPath(GeneralPath.WIND_NON_ZERO, 20), new GeneralPath(GeneralPath.WIND_NON_ZERO), 0.0);
         assertEquals(new GeneralPath(GeneralPath.WIND_NON_ZERO, 20), new GeneralPath(GeneralPath.WIND_NON_ZERO), 0.0f);
     }
 
     public void testCreate3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(5, 6);
         g.lineTo(7, 8);
         assertEquals(g, new GeneralPath(g), 0.0);
@@ -149,15 +162,27 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testConstants() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("WIND_EVEN_ODD", PathIterator.WIND_EVEN_ODD, GeneralPath.WIND_EVEN_ODD);
         assertEquals("WIND_NON_ZERO", PathIterator.WIND_NON_ZERO, GeneralPath.WIND_NON_ZERO);
     }
 
     public void testGetWindingRule() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("Rule", GeneralPath.WIND_EVEN_ODD, g.getWindingRule());
     }
 
     public void testSetWindingRule() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.setWindingRule(GeneralPath.WIND_NON_ZERO);
         assertEquals("Rule", GeneralPath.WIND_NON_ZERO, g.getWindingRule());
         g.setWindingRule(GeneralPath.WIND_EVEN_ODD);
@@ -171,6 +196,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testIllegalPathStateException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             g.lineTo(10, 20);
             fail("GeneralPath.lineTo() should throw exception IllegalPathStateException");
@@ -194,18 +223,30 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testMoveToDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         PathIterator p = g.getPathIterator(null);
         checkPathMove(p, true, 10, 20, 0.0);
     }
 
     public void testMoveToFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         PathIterator p = g.getPathIterator(null);
         checkPathMove(p, true, 10, 20, 0.0f);
     }
 
     public void testLineToDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.lineTo(30, 40);
         PathIterator p = g.getPathIterator(null);
@@ -214,6 +255,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testLineToFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.lineTo(30, 40);
         PathIterator p = g.getPathIterator(null);
@@ -222,6 +267,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testQuadToDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.quadTo(30, 40, 50, 60);
         PathIterator p = g.getPathIterator(null);
@@ -230,6 +279,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testQuadToFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.quadTo(30, 40, 50, 60);
         PathIterator p = g.getPathIterator(null);
@@ -238,6 +291,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testCurveToDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.curveTo(30, 40, 50, 60, 70, 80);
         PathIterator p = g.getPathIterator(null);
@@ -246,6 +303,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testCurveToFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.curveTo(30, 40, 50, 60, 70, 80);
         PathIterator p = g.getPathIterator(null);
@@ -254,6 +315,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testClosePathDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.closePath();
         PathIterator p = g.getPathIterator(null);
@@ -262,6 +327,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testClosePathFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.closePath();
         PathIterator p = g.getPathIterator(null);
@@ -270,6 +339,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testClosePath2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.closePath();
         g.closePath();
@@ -279,6 +352,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testClosePath3() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.lineTo(30, 40);
         g.closePath();
@@ -316,6 +393,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testAppendShape() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][][] element : shapes1) {
             GeneralPath src1 = createPath(element[0]);
             GeneralPath src2 = createPath(element[1]);
@@ -328,6 +409,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testAppendPath() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][][] element : shapes1) {
             GeneralPath src1 = createPath(element[0]);
             GeneralPath src2 = createPath(element[1]);
@@ -340,6 +425,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testGetCurrentPoint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(g.getCurrentPoint());
         g.moveTo(10, 20);
         assertEquals(new Point2D.Float(10, 20), g.getCurrentPoint());
@@ -360,6 +449,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testReset1() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.lineTo(30, 40);
         g.closePath();
@@ -370,6 +463,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testReset2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         g.moveTo(10, 20);
         g.lineTo(30, 40);
         g.closePath();
@@ -383,6 +480,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testTransform() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][][] element : shapes2) {
             GeneralPath src = createPath(element[0]);
             GeneralPath dst = createPath(element[2]);
@@ -394,6 +495,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testCreateTransformedShape() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][][] element : shapes2) {
             GeneralPath src = createPath(element[0]);
             Shape dst1 = createPath(element[2]);
@@ -405,6 +510,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testGetBounds2D() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][][] element : bounds) {
             GeneralPath src = createPath(element[0]);
             Rectangle2D bound = new Rectangle2D.Float(
@@ -417,6 +526,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testGetBounds() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (float[][][] element : bounds) {
             GeneralPath src = createPath(element[0]);
             Rectangle2D bound = new Rectangle(
@@ -429,6 +542,10 @@ public class GeneralPathTest extends ShapeTestCase {
     }
 
     public void testClone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(g, (GeneralPath)g.clone(), 0.0);
         g.moveTo(10, 20);
         g.lineTo(30, 40);

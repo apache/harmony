@@ -39,6 +39,7 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.InsetsUIResource;
+import tests.support.Support_Excludes;
 
 public class BasicMenuUITest extends SwingTestCase {
     protected BasicMenuUI menuUI;
@@ -67,6 +68,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.getMaximumSize(JComponent)'
      */
     public void testGetMaximumSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JMenuBar bar = new JMenuBar();
         JMenu menu1 = new JMenu();
         menu1.setUI(menuUI);
@@ -95,6 +100,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createUI(JComponent)'
      */
     public void testCreateUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ComponentUI ui1 = BasicMenuUI.createUI(null);
         ComponentUI ui2 = BasicMenuUI.createUI(null);
         assertTrue(ui1 instanceof BasicMenuUI);
@@ -105,6 +114,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.getPropertyPrefix()'
      */
     public void testGetPropertyPrefix() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("Menu", menuUI.getPropertyPrefix());
     }
 
@@ -112,6 +125,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.installDefaults()'
      */
     public void testInstallUninstallDefaults() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JMenu menu = new JMenu();
         UIManager.getDefaults().put("Menu.background", new ColorUIResource(Color.red));
         UIManager.getDefaults().put("Menu.foreground", new ColorUIResource(Color.yellow));
@@ -177,6 +194,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.installListeners()'
      */
     public void testInstallUninstallListeners() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JMenu menu = new JMenu();
         menuUI = (BasicMenuUI) menu.getUI();
         menuUI.uninstallListeners();
@@ -222,6 +243,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.installKeyboardActions()'
      */
     public void testInstallUninstallKeyboardActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JMenu menu = new JMenu();
         menu.setUI(menuUI);
         menuUI.uninstallKeyboardActions();
@@ -246,6 +271,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createMouseInputListener(JComponent)'
      */
     public void testCreateMouseInputListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(menuUI.createMouseInputListener(null));
     }
 
@@ -253,6 +282,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createMenuDragMouseListener(JComponent)'
      */
     public void testCreateMenuDragMouseListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(menuUI.createMenuDragMouseListener(null));
         if (isHarmony()) {
             assertSame(menuUI.createMenuDragMouseListener(null), menuUI
@@ -264,6 +297,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createMenuKeyListener(JComponent)'
      */
     public void testCreateMenuKeyListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             assertNull(menuUI.createMenuKeyListener(null));
             assertSame(menuUI.createMenuKeyListener(null), menuUI.createMenuKeyListener(null));
@@ -276,6 +313,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.BasicMenuUI()'
      */
     public void testBasicMenuUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(menuUI.changeListener);
         assertNull(menuUI.menuListener);
         assertNull(menuUI.propertyChangeListener);
@@ -285,6 +326,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createChangeListener(JComponent)'
      */
     public void testCreateChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(menuUI.createChangeListener(null));
         assertNull(menuUI.createChangeListener(new JMenu()));
     }
@@ -293,6 +338,10 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createMenuListener(JComponent)'
      */
     public void testCreateMenuListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!isHarmony()) {
             return;
         }
@@ -305,10 +354,18 @@ public class BasicMenuUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuUI.createPropertyChangeListener(JComponent)'
      */
     public void testCreatePropertyChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(menuUI.createPropertyChangeListener(null));
     }
 
     public void testInstallUninstallUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JMenu item = new JMenu();
         menuUI.installUI(item);
         assertNotNull(item.getBorder());

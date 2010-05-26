@@ -48,6 +48,7 @@ import javax.accessibility.AccessibleStateSet;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
+import tests.support.Support_Excludes;
 
 public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants {
     class UIActionMap extends ActionMap implements UIResource {
@@ -62,6 +63,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
      * Class under test for String layoutCompoundLabel(JComponent, FontMetrics, String, Icon, int, int, int, int, Rectangle, Rectangle, Rectangle, int)
      */
     public void testLayoutCompoundLabelJComponentFontMetricsStringIconintintintintRectangleRectangleRectangleint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent panel = new JPanel();
         Font font = new Font("Fixed", Font.PLAIN, 12);
         FontMetrics metrics = getFontMetrics(font);
@@ -130,6 +135,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
      * Class under test for String layoutCompoundLabel(FontMetrics, String, Icon, int, int, int, int, Rectangle, Rectangle, Rectangle, int)
      */
     public void testLayoutCompoundLabelFontMetricsStringIconintintintintRectangleRectangleRectangleint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Font font = new Font("Fixed", Font.PLAIN, 12);
         FontMetrics metrics = getFontMetrics(font);
         Rectangle viewR = new Rectangle(0, 0, 10, 10);
@@ -261,6 +270,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testNotifyAction() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         class NATestAction implements Action {
             public boolean enabled = true;
 
@@ -359,6 +372,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
 
     @SuppressWarnings("deprecation")
     public void testConvertMouseEvent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MouseEvent eventBefore, eventToPass, eventAfter;
         JWindow window1 = new JWindow();
         JWindow window2 = new JWindow();
@@ -453,6 +470,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
 
     @SuppressWarnings("deprecation")
     public void testConvertRectangle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int width = 100;
         int height = 200;
         Rectangle rectBefore, rectToPass, rectAfter;
@@ -526,6 +547,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
      * this function is being tested by testConvertPointComponentPointComponent()
      */
     public void testConvertPointComponentintintComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     /*
@@ -533,6 +558,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
      */
     @SuppressWarnings("deprecation")
     public void testConvertPointComponentPointComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Point pointBefore, pointToPass, pointAfter;
         JWindow window1 = new JWindow();
         JWindow window2 = new JWindow();
@@ -593,6 +622,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAccessibleAt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO uncomment when Accessibility is implemented
         /*
          class JComponentInaccessible extends JComponent {
@@ -662,6 +695,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testCalculateInnerArea() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JWindow window = new JWindow();
         JComponent panel1 = new JPanel();
         JComponent panel2 = new JPanel();
@@ -708,6 +745,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testComputeDifference() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Rectangle rect11 = new Rectangle(0, 0, 300, 300);
         Rectangle rect12 = new Rectangle(100, 100, 100, 100);
         // different null testcases
@@ -763,6 +804,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAncestorNamed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String name1 = "name1";
         String name2 = "name2";
         String name3 = "name3";
@@ -802,6 +847,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAncestorOfClass() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Window window = new Window(new Frame());
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
@@ -836,12 +885,20 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
      * this method is being tested by testPaintComponentGraphicsComponentContainerintintintint()
      */
     public void testPaintComponentGraphicsComponentContainerRectangle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     /*
      * Class under test for void paintComponent(Graphics, Component, Container, int, int, int, int)
      */
     public void testPaintComponentGraphicsComponentContainerintintintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //        final JComponent component = new JButton("JButton");
         //        JFrame window = new JFrame() {
         //            public void paint(Graphics g) {
@@ -861,6 +918,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetRootPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(SwingUtilities.getRootPane(null));
         assertNull(SwingUtilities.getRootPane(new JButton()));
         JWindow window = new JWindow(new Frame());
@@ -884,6 +945,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testReplaceUIInputMap() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIInputMap uiInputMap1 = new UIInputMap();
         UIInputMap uiInputMap2 = new UIInputMap();
         JComponent component = new JPanel();
@@ -916,6 +981,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetUIInputMap() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIInputMap uiInputMap1 = new UIInputMap();
         UIInputMap uiInputMap2 = new UIInputMap();
         JComponent component = new JPanel();
@@ -948,6 +1017,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testReplaceUIActionMap() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIActionMap uiActionMap1 = new UIActionMap();
         UIActionMap uiActionMap2 = new UIActionMap();
         JComponent component = new JPanel();
@@ -969,6 +1042,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetUIActionMap() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         UIActionMap uiActionMap1 = new UIActionMap();
         UIActionMap uiActionMap2 = new UIActionMap();
         JComponent component = new JPanel();
@@ -994,6 +1071,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAccessibleStateSet() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Component component1 = new JPanel();
         Component component3 = new JDialog();
         AccessibleStateSet stateSet = SwingUtilities.getAccessibleStateSet(component1);
@@ -1010,6 +1091,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAccessibleChild() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(SwingUtilities.getAccessibleIndexInParent(new JButton()) == -1);
         JPanel panel = new JPanel();
         assertTrue(SwingUtilities.getAccessibleIndexInParent(panel) == -1);
@@ -1030,6 +1115,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testComputeStringWidth() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JFrame frame = new JFrame();
         JWindow window = new JWindow(frame);
         window.setVisible(true);
@@ -1058,6 +1147,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testWindowForComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Window window = new Window(new Frame());
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
@@ -1078,6 +1171,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetWindowAncestor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Window window = new Window(new Frame());
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
@@ -1107,6 +1204,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testIsRectangleContainingRectangle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Rectangle rect1 = new Rectangle(100, 100, 100, 100);
         Rectangle rect2 = new Rectangle(150, 150, 30, 30);
         Rectangle rect3 = new Rectangle(150, 150, 50, 50);
@@ -1123,6 +1224,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testComputeUnion() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(SwingUtilities.computeUnion(0, 0, 100, 100,
                 new Rectangle(100, 100, 100, 100)).equals(new Rectangle(0, 0, 200, 200)));
         assertTrue(SwingUtilities.computeUnion(100, 100, 100, 100,
@@ -1138,6 +1243,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testComputeIntersection() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Dimension(0, 0), SwingUtilities.computeIntersection(0, 0, 100, 100,
                 new Rectangle(100, 100, 100, 100)).getSize());
         assertEquals(new Rectangle(150, 150, 20, 20), SwingUtilities.computeIntersection(100,
@@ -1157,6 +1266,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetLocalBounds() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         int width = 200;
         int height = 200;
         Component component = new JPanel();
@@ -1175,6 +1288,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testConvertPointToScreen() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Point point;
         JComponent panel1 = new JPanel();
         JComponent panel2 = new JPanel();
@@ -1195,6 +1312,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testConvertPointFromScreen() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Point point;
         JComponent panel1 = new JPanel();
         JComponent panel2 = new JPanel();
@@ -1215,6 +1336,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testIsDescendingFrom() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Window window = new Window(new Frame());
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
@@ -1246,6 +1371,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
 
     @SuppressWarnings("deprecation")
     public void testGetDeepestComponentAt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             return;
         }
@@ -1272,6 +1401,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetRoot() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JWindow window1 = new JWindow();
         // Code should be enabled when JApplet is supported.
         //JApplet window2 = new JApplet();
@@ -1308,21 +1441,37 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
      * this method is supposed to be tested by FocusManager.getCurrentManager().getFocusOwner()
      */
     public void testFindFocusOwner() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     /**
      * this method is supposed to be tested by EventQueue.invokeLater()
      */
     public void testInvokeLater() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     /**
      * this method is supposed to be tested by EventQueue.invokeAndWait()
      */
     public void testInvokeAndWait() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testIsRightMouseButton() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent panel = new JPanel();
         panel.setPreferredSize(new Dimension(100, 100));
         MouseEvent event1 = new MouseEvent(panel, 100, 100, InputEvent.BUTTON1_DOWN_MASK, 50,
@@ -1337,6 +1486,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testIsMiddleMouseButton() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent panel = new JPanel();
         panel.setPreferredSize(new Dimension(100, 100));
         MouseEvent event1 = new MouseEvent(panel, 100, 100, InputEvent.BUTTON1_DOWN_MASK, 50,
@@ -1351,6 +1504,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testIsLeftMouseButton() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent panel = new JPanel();
         panel.setPreferredSize(new Dimension(100, 100));
         MouseEvent event1 = new MouseEvent(panel, 100, 100, InputEvent.BUTTON1_DOWN_MASK, 50,
@@ -1365,6 +1522,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testProcessKeyBindings() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         class ActionListenerDummy implements ActionListener {
             public ActionEvent event = null;
 
@@ -1466,6 +1627,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testUpdateComponentTreeUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         LookAndFeel laf = UIManager.getLookAndFeel();
         try {
             JPanel panel1 = new JPanel();
@@ -1509,6 +1674,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAccessibleIndexInParent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(SwingUtilities.getAccessibleIndexInParent(new JButton()) == -1);
         JPanel panel = new JPanel();
         assertTrue(SwingUtilities.getAccessibleIndexInParent(panel) == -1);
@@ -1529,6 +1698,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testGetAccessibleChildrenCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         testExceptionalCase(new NullPointerCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -1549,6 +1722,10 @@ public class SwingUtilitiesTest extends SwingTestCase implements SwingConstants 
     }
 
     public void testIsEventDispatchThread() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(SwingUtilities.isEventDispatchThread());
     }
 }

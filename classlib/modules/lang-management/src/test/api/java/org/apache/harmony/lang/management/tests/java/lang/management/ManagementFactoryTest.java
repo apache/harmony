@@ -38,6 +38,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class ManagementFactoryTest extends TestCase {
 
@@ -54,6 +55,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getClassLoadingMXBean()'
      */
     public void testGetClassLoadingMXBean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ClassLoadingMXBean mb = ManagementFactory.getClassLoadingMXBean();
         assertNotNull(mb);
 
@@ -68,6 +73,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getCompilationMXBean()'
      */
     public void testGetCompilationMXBean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         CompilationMXBean mb = ManagementFactory.getCompilationMXBean();
         assertNotNull(mb);
 
@@ -82,6 +91,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getGarbageCollectorMXBeans()'
      */
     public void testGetGarbageCollectorMXBeans() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         List<GarbageCollectorMXBean> allBeans = ManagementFactory
                 .getGarbageCollectorMXBeans();
         assertNotNull(allBeans);
@@ -96,6 +109,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getMemoryManagerMXBeans()'
      */
     public void testGetMemoryManagerMXBeans() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         List<MemoryManagerMXBean> allBeans = ManagementFactory
                 .getMemoryManagerMXBeans();
         assertNotNull(allBeans);
@@ -110,6 +127,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getMemoryMXBean()'
      */
     public void testGetMemoryMXBean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MemoryMXBean mb = ManagementFactory.getMemoryMXBean();
         assertNotNull(mb);
 
@@ -124,6 +145,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getMemoryPoolMXBeans()'
      */
     public void testGetMemoryPoolMXBeans() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         List<MemoryPoolMXBean> allBeans = ManagementFactory
                 .getMemoryPoolMXBeans();
         assertNotNull(allBeans);
@@ -138,6 +163,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getOperatingSystemMXBean()'
      */
     public void testGetOperatingSystemMXBean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         OperatingSystemMXBean mb = ManagementFactory.getOperatingSystemMXBean();
         assertNotNull(mb);
 
@@ -153,6 +182,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getPlatformMBeanServer()'
      */
     public void testGetPlatformMBeanServer() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MBeanServer pServer = ManagementFactory.getPlatformMBeanServer();
         assertNotNull(pServer);
 
@@ -170,6 +203,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getRuntimeMXBean()'
      */
     public void testGetRuntimeMXBean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RuntimeMXBean mb = ManagementFactory.getRuntimeMXBean();
         assertNotNull(mb);
 
@@ -184,6 +221,10 @@ public class ManagementFactoryTest extends TestCase {
      * 'java.lang.management.ManagementFactory.getThreadMXBean()'
      */
     public void testGetThreadMXBean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ThreadMXBean mb = ManagementFactory.getThreadMXBean();
         assertNotNull(mb);
 
@@ -199,6 +240,10 @@ public class ManagementFactoryTest extends TestCase {
      * String, Class<T>) <T>'
      */
     public void testNewPlatformMXBeanProxy() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Test that the general case fails as expected..
 
         // MXBean name deliberately in wrong format
@@ -281,6 +326,10 @@ public class ManagementFactoryTest extends TestCase {
      */
     public void testNewPlatformMXBeanProxy_ClassLoadingMXBean()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ClassLoadingMXBean proxy = ManagementFactory.newPlatformMXBeanProxy(
                 ManagementFactory.getPlatformMBeanServer(),
                 "java.lang:type=ClassLoading", ClassLoadingMXBean.class);
@@ -308,6 +357,10 @@ public class ManagementFactoryTest extends TestCase {
      * String, Class<T>) <T>'
      */
     public void testNewPlatformMXBeanProxy_CompilationMXBean() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         CompilationMXBean proxy = ManagementFactory.newPlatformMXBeanProxy(
                 ManagementFactory.getPlatformMBeanServer(),
                 "java.lang:type=Compilation", CompilationMXBean.class);
@@ -325,6 +378,10 @@ public class ManagementFactoryTest extends TestCase {
      */
     public void testNewPlatformMXBeanProxy_GarbageCollectorMXBean()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         List<GarbageCollectorMXBean> allBeans = ManagementFactory
                 .getGarbageCollectorMXBeans();
         for (GarbageCollectorMXBean mb : allBeans) {
@@ -353,6 +410,10 @@ public class ManagementFactoryTest extends TestCase {
      */
     public void testNewPlatformMXBeanProxy_MemoryManagerMXBean()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         List<MemoryManagerMXBean> allBeans = ManagementFactory
                 .getMemoryManagerMXBeans();
         for (MemoryManagerMXBean mb : allBeans) {
@@ -385,6 +446,10 @@ public class ManagementFactoryTest extends TestCase {
      * String, Class<T>) <T>'
      */
     public void testNewPlatformMXBeanProxy_MemoryMXBean() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MemoryMXBean proxy = ManagementFactory.newPlatformMXBeanProxy(
                 ManagementFactory.getPlatformMBeanServer(),
                 "java.lang:type=Memory", MemoryMXBean.class);
@@ -418,6 +483,10 @@ public class ManagementFactoryTest extends TestCase {
      * String, Class<T>) <T>'
      */
     public void testNewPlatformMXBeanProxy_MemoryPoolMXBean() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         List<MemoryPoolMXBean> allBeans = ManagementFactory
                 .getMemoryPoolMXBeans();
         for (MemoryPoolMXBean mb : allBeans) {
@@ -447,6 +516,10 @@ public class ManagementFactoryTest extends TestCase {
      */
     public void testNewPlatformMXBeanProxy_OperatingSystemMXBean()
             throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         OperatingSystemMXBean proxy = ManagementFactory.newPlatformMXBeanProxy(
                 ManagementFactory.getPlatformMBeanServer(),
                 "java.lang:type=OperatingSystem", OperatingSystemMXBean.class);
@@ -465,6 +538,10 @@ public class ManagementFactoryTest extends TestCase {
      * String, Class<T>) <T>'
      */
     public void testNewPlatformMXBeanProxy_RuntimeMXBean() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         RuntimeMXBean proxy = ManagementFactory.newPlatformMXBeanProxy(
                 ManagementFactory.getPlatformMBeanServer(),
                 "java.lang:type=Runtime", RuntimeMXBean.class);
@@ -488,6 +565,10 @@ public class ManagementFactoryTest extends TestCase {
      * String, Class<T>) <T>'
      */
     public void testNewPlatformMXBeanProxy_ThreadMXBean() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ThreadMXBean proxy = ManagementFactory.newPlatformMXBeanProxy(
                 ManagementFactory.getPlatformMBeanServer(),
                 "java.lang:type=Threading", ThreadMXBean.class);

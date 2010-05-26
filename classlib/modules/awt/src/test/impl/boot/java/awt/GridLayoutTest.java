@@ -19,6 +19,8 @@
  */
 package java.awt;
 
+import tests.support.Support_Excludes;
+
 public class GridLayoutTest extends AWTTestCase {
 
     @SuppressWarnings("serial")
@@ -72,6 +74,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testGridLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(layout.getColumns(), 0);
         assertEquals(layout.getRows(), 1);
         assertEquals(layout.getHgap(), 0);
@@ -79,6 +85,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testGridLayoutintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         layout = new GridLayout(2, 3);
         assertEquals(layout.getColumns(), 3);
         assertEquals(layout.getRows(), 2);
@@ -95,6 +105,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testGridLayoutintintintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         layout = new GridLayout(2, 3, 10, 20);
         assertEquals(layout.getColumns(), 3);
         assertEquals(layout.getRows(), 2);
@@ -111,6 +125,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         layout = new GridLayout(1,2,3,4);
         assertTrue(new String("java.awt.GridLayout[hgap=3,vgap=4,rows=1,cols=2]").equals(layout.toString()));
     }
@@ -130,6 +148,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testGetSetColumns() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         layout = new GridLayout(2, 3);
         layout.setColumns(10);
         assertEquals(layout.getColumns(), 10);
@@ -145,6 +167,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testGetSetRows() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         layout = new GridLayout(2, 3);
         layout.setRows(10);
         assertEquals(layout.getRows(), 10);
@@ -160,6 +186,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testAddLayoutComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container c = new Container();
         c.setSize(200, 20);
         c.add(b1);
@@ -178,6 +208,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testRemoveLayoutComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Container c = new Container();
         c.setSize(200, 20);
         c.add(b1);
@@ -194,6 +228,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testMinimumLayoutSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Dimension expected = new Dimension();
         Insets insets = frame.getInsets();
 
@@ -220,6 +258,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testPreferredLayoutSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Dimension expected = new Dimension();
         Insets insets = frame.getInsets();
 
@@ -246,6 +288,10 @@ public class GridLayoutTest extends AWTTestCase {
     }
 
     public void testLayoutContainer() {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         Insets insets = frame.getInsets();
 

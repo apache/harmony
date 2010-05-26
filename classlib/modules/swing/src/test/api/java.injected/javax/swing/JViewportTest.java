@@ -34,6 +34,7 @@ import javax.swing.JViewport.ViewListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicViewportUI;
+import tests.support.Support_Excludes;
 
 public class JViewportTest extends SwingTestCase {
     private JViewport port;
@@ -61,6 +62,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testAddRemoveChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final List<String> test = new Vector<String>();
         assertEquals(0, port.getChangeListeners().length);
         ChangeListener listener = new ChangeListener() {
@@ -79,6 +84,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testAddRemovePropertyChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final List<String> test = new Vector<String>();
         assertEquals(0, port.getPropertyChangeListeners().length);
         PropertyChangeListener listener = new PropertyChangeListener() {
@@ -97,6 +106,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testGetExtentSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Dimension(0, 0), port.getExtentSize());
         Dimension d = new Dimension(3, 5);
         port.setExtentSize(d);
@@ -105,11 +118,19 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testGetInsets() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(new Insets(0, 0, 0, 0), port.getInsets());
         assertEquals(new Insets(0, 0, 0, 0), port.getInsets(new Insets(1, 2, 3, 4)));
     }
 
     public void testGetScrollMode() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(1, port.getScrollMode());
         port.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
         assertEquals(2, port.getScrollMode());
@@ -125,11 +146,19 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testGetUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(port.getUI());
         assertEquals("ViewportUI", port.getUIClassID());
     }
 
     public void testGetView() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(port.getView());
         JLabel l = new JLabel();
         port.add(l);
@@ -140,6 +169,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testGetSetViewPosition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLabel l = new JLabel();
         l.setPreferredSize(new Dimension(200, 200));
         port.add(l);
@@ -156,6 +189,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testGetViewRect() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLabel l = new JLabel();
         l.setPreferredSize(new Dimension(20, 40));
         port.add(l);
@@ -163,6 +200,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testGetSetViewSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLabel l = new JLabel();
         port.add(l);
         Dimension dimension = new Dimension(20, 50);
@@ -178,6 +219,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testSetBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             port.setBorder(BorderFactory.createEmptyBorder());
             fail("must throw an exception");
@@ -189,10 +234,18 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testIsOptimizedDrawingEnabled() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(port.isOptimizedDrawingEnabled());
     }
 
     public void testParamString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(port.paramString().indexOf(",isViewSizeSet=") > 0);
         assertTrue(port.paramString().indexOf(",lastPaintPosition=") > 0);
         assertTrue(port.paramString().indexOf(",scrollUnderway=") > 0);
@@ -200,6 +253,10 @@ public class JViewportTest extends SwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testScrollRectToVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLabel label = new JLabel();
         label.setPreferredSize(new Dimension(300, 300));
         label.setBackground(Color.RED);
@@ -261,11 +318,19 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testSetUI() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("ViewportUI", port.getUIClassID());
         assertTrue(port.getUI() instanceof BasicViewportUI);
     }
 
     public void testToViewCoordinates() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLabel l = new JLabel();
         Dimension dimension = new Dimension(20, 50);
         l.setPreferredSize(dimension);
@@ -277,6 +342,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testCreateLayoutManager() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JLabel l = new JLabel();
         Dimension dimension = new Dimension(20, 50);
         l.setPreferredSize(dimension);
@@ -287,17 +356,29 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testCreateViewListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ViewListener viewListener = port.createViewListener();
         assertNotNull(viewListener);
     }
 
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AccessibleContext accessibleContext = port.getAccessibleContext();
         assertNotNull(accessibleContext);
         assertTrue(AccessibleRole.VIEWPORT == accessibleContext.getAccessibleRole());
     }
 
     public void testSetView() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         port.setView(null);
         JComponent comp = newJComponent();
         port.setView(comp);
@@ -309,6 +390,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testEnsureIndexIsVisible() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         list = new JList(new Object[] { "a", "b", "c" });
         JScrollPane scroller = insertListToFrame();
         assertNotNull(scroller);
@@ -319,6 +404,10 @@ public class JViewportTest extends SwingTestCase {
     }
 
     public void testIsOpaque() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(port.isOpaque());
     }
 

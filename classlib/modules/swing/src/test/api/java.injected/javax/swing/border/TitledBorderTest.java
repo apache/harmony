@@ -31,6 +31,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingTestCase;
 import javax.swing.UIManager;
+import tests.support.Support_Excludes;
 
 public class TitledBorderTest extends SwingTestCase {
     protected JComponent panel;
@@ -57,6 +58,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for void TitledBorder(Border, String, int, int, Font, Color)
      */
     public void testTitledBorderBorderStringintintFontColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Color color1 = Color.GREEN;
         Color color2 = null;
         Font font1 = new Font(null, Font.TRUETYPE_FONT, 30);
@@ -94,6 +99,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for void TitledBorder(Border, String, int, int, Font)
      */
     public void testTitledBorderBorderStringintintFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Font font1 = new Font(null, Font.TRUETYPE_FONT, 30);
         Font font2 = null;
         String string1 = "string1";
@@ -130,6 +139,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for void TitledBorder(Border, String, int, int)
      */
     public void testTitledBorderBorderStringintint() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String string1 = "string1";
         String string2 = null;
         Border border3 = new EmptyBorder(1, 1, 1, 1);
@@ -165,6 +178,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for void TitledBorder(Border, String)
      */
     public void testTitledBorderBorderString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String string1 = "string1";
         String string2 = null;
         Border border3 = new EmptyBorder(1, 1, 1, 1);
@@ -198,6 +215,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for void TitledBorder(Border)
      */
     public void testTitledBorderBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Border border3 = new EmptyBorder(1, 1, 1, 1);
         Border border4 = null;
         TitledBorder border1 = new TitledBorder(border3);
@@ -229,6 +250,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for void TitledBorder(String)
      */
     public void testTitledBorderString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String string1 = "string1";
         String string2 = null;
         TitledBorder border1 = new TitledBorder(string1);
@@ -261,6 +286,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component, Insets)
      */
     public void testGetBorderInsetsComponentInsets() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Insets insets = new Insets(0, 0, 0, 0);
         Font font1 = new Font(null, Font.BOLD, 10);
         Font font2 = new Font(null, Font.ITALIC, 20);
@@ -293,6 +322,10 @@ public class TitledBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component)
      */
     public void testGetBorderInsetsComponent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Font font1 = new Font(null, Font.BOLD, 10);
         Font font2 = new Font(null, Font.ITALIC, 20);
         Border border1 = new EmptyBorder(10, 10, 10, 10);
@@ -339,6 +372,10 @@ public class TitledBorderTest extends SwingTestCase {
     }
 
     public void testPaintBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         //        int numJust = 6;
         //        int numPos = 7;
         //        String title = "Title";
@@ -361,6 +398,10 @@ public class TitledBorderTest extends SwingTestCase {
     }
 
     public void testIsBorderOpaque() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Border border1 = new TitledBorder("Text");
         Border border2 = new TitledBorder(new LineBorder(Color.WHITE));
         Border border3 = new TitledBorder(new LineBorder(Color.WHITE), "Text");
@@ -370,6 +411,10 @@ public class TitledBorderTest extends SwingTestCase {
     }
 
     public void testGetFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         class PublicTitledBorder extends TitledBorder {
             private static final long serialVersionUID = 1L;
 
@@ -401,6 +446,10 @@ public class TitledBorderTest extends SwingTestCase {
     }
 
     public void testGetMinimumSize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Font font1 = new Font(null, Font.BOLD, 10);
         Font font2 = new Font(null, Font.ITALIC, 20);
         Border border1 = new EmptyBorder(10, 10, 10, 10);
@@ -432,9 +481,17 @@ public class TitledBorderTest extends SwingTestCase {
      * This method is being tested in testGetBorder()
      */
     public void testSetBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetBorder() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TitledBorder titledBorder = new TitledBorder("hello, border!!");
         Border border1 = new EmptyBorder(1, 1, 1, 1);
         Border border2 = new EmptyBorder(2, 2, 2, 2);
@@ -456,9 +513,17 @@ public class TitledBorderTest extends SwingTestCase {
      * This method is being tested in testGetTitle()
      */
     public void testSetTitle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetTitle() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TitledBorder titledBorder = new TitledBorder("hello, border!!");
         String string1 = "string1";
         String string2 = "string2";
@@ -478,9 +543,17 @@ public class TitledBorderTest extends SwingTestCase {
      * This method is being tested in testGetTitleFont()
      */
     public void testSetTitleFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetTitleFont() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TitledBorder titledBorder = new TitledBorder("hello, border!!");
         Font newFont1 = new Font(null, Font.BOLD, 10);
         Font newFont2 = new Font(null, Font.ITALIC, 20);
@@ -502,9 +575,17 @@ public class TitledBorderTest extends SwingTestCase {
      * This method is being tested in testGetTitleColor()
      */
     public void testSetTitleColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetTitleColor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TitledBorder titledBorder = new TitledBorder("hello, border!!");
         Color color1 = Color.RED;
         Color color2 = Color.YELLOW;
@@ -526,9 +607,17 @@ public class TitledBorderTest extends SwingTestCase {
      * This method is being tested in testGetTitlePosition()
      */
     public void testSetTitlePosition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetTitlePosition() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TitledBorder titledBorder = new TitledBorder("hello, border!!");
         int pos1 = 0;
         int pos2 = 3;
@@ -561,9 +650,17 @@ public class TitledBorderTest extends SwingTestCase {
      * This method is being tested in testGetTitleJustification()
      */
     public void testSetTitleJustification() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetTitleJustification() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TitledBorder titledBorder = new TitledBorder("hello, border!!");
         int just1 = 0;
         int just2 = 3;
@@ -596,6 +693,10 @@ public class TitledBorderTest extends SwingTestCase {
     }
 
     public void testReadWriteObject() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Border border3 = new LineBorder(Color.red, 33, false);
         String title4 = "new LineBorder(Color.yellow, 47, true);";
         TitledBorder border1 = new TitledBorder(border3);

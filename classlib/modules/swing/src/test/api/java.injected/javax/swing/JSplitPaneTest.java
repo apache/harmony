@@ -25,6 +25,7 @@ import java.awt.Graphics;
 import javax.swing.plaf.SplitPaneUI;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.plaf.metal.MetalSplitPaneUI;
+import tests.support.Support_Excludes;
 
 public class JSplitPaneTest extends SwingTestCase {
     private JSplitPane pane;
@@ -46,6 +47,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testJSplitPane() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pane.getLeftComponent() instanceof JButton);
         assertTrue(pane.getRightComponent() instanceof JButton);
         assertFalse(pane.isContinuousLayout());
@@ -100,6 +105,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetUpdateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(pane.getUI());
         SplitPaneUI ui = new MetalSplitPaneUI();
         pane.setUI(ui);
@@ -109,10 +118,18 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetUIClassID() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("SplitPaneUI", pane.getUIClassID());
     }
 
     public void testGetSetDividerSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(UIManager.getInt("SplitPane.dividerSize"), pane.getDividerSize());
         pane.setDividerSize(20);
         assertEquals(20, pane.getDividerSize());
@@ -120,6 +137,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetLeftTopComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pane.getLeftComponent() instanceof JButton);
         Component left = new JPanel();
         pane.setLeftComponent(left);
@@ -134,6 +155,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetRightBottomComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pane.getRightComponent() instanceof JButton);
         Component right = new JPanel();
         pane.setRightComponent(right);
@@ -148,6 +173,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testIsSetOneTouchExpandable() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(pane.isOneTouchExpandable());
         pane.setOneTouchExpandable(true);
         assertTrue(pane.isOneTouchExpandable());
@@ -155,6 +184,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetLastDividerLocation() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, pane.getLastDividerLocation());
         pane.setLastDividerLocation(20);
         assertEquals(20, pane.getLastDividerLocation());
@@ -162,6 +195,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetOrientation() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(JSplitPane.HORIZONTAL_SPLIT, pane.getOrientation());
         pane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         assertEquals(JSplitPane.VERTICAL_SPLIT, pane.getOrientation());
@@ -169,6 +206,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testIsSetContinuousLayout() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(pane.isContinuousLayout());
         pane.setContinuousLayout(true);
         assertTrue(pane.isContinuousLayout());
@@ -176,6 +217,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetResizeWeight() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, 0, pane.getResizeWeight());
         pane.setResizeWeight(0.4);
         assertEquals(0, 0.4, pane.getResizeWeight());
@@ -195,6 +240,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testResetToPreferredSizes() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (isHarmony()) {
             ((JComponent) pane.getLeftComponent()).setPreferredSize(new Dimension(100, 50));
             ((JComponent) pane.getRightComponent()).setPreferredSize(new Dimension(100, 50));
@@ -208,6 +257,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetSetDividerLocation() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, pane.getDividerLocation());
         ((JComponent) pane.getLeftComponent()).setPreferredSize(new Dimension(100, 50));
         ((JComponent) pane.getRightComponent()).setPreferredSize(new Dimension(100, 50));
@@ -233,6 +286,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetMinimumMaximumDividerLocation() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SplitPaneUI ui = new BasicSplitPaneUI() {
             @Override
             public int getMinimumDividerLocation(final JSplitPane sp) {
@@ -250,6 +307,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testRemove() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(pane.getLeftComponent());
         pane.remove(pane.getLeftComponent());
         assertNull(pane.getLeftComponent());
@@ -272,10 +333,18 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testIsValidateRoot() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pane.isValidateRoot());
     }
 
     public void testAddImpl() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         pane.removeAll();
         assertEquals(0, pane.getComponentCount());
         Component left = new JButton();
@@ -330,6 +399,10 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testPaintChildren() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final Marker m = new Marker();
         SplitPaneUI ui = new BasicSplitPaneUI() {
             @Override
@@ -343,10 +416,18 @@ public class JSplitPaneTest extends SwingTestCase {
     }
 
     public void testGetAccessibleContext() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pane.getAccessibleContext() instanceof JSplitPane.AccessibleJSplitPane);
     }
 
     public void testIsOpaque() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pane.isOpaque());
     }
 

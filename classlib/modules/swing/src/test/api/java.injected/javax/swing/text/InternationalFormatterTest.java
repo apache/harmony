@@ -25,6 +25,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import javax.swing.JFormattedTextField;
 import javax.swing.SwingTestCase;
+import tests.support.Support_Excludes;
 
 public class InternationalFormatterTest extends SwingTestCase {
     InternationalFormatter formatter;
@@ -67,11 +68,19 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testInternationalFormatter() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(formatter.getFormat());
         checkMainProperties();
     }
 
     public void testInternationalFormatterFormat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Format format = NumberFormat.getNumberInstance();
         formatter = new InternationalFormatter(format);
         assertEquals(format, formatter.getFormat());
@@ -79,6 +88,10 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testClone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object clone = null;
         formatter.install(ftf);
         formatter.setValueClass(Integer.class);
@@ -107,9 +120,17 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testGetActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testStringToValue() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(formatter.getFormat());
         assertNull(formatter.getValueClass());
         try {
@@ -153,6 +174,10 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testValueToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             assertEquals("", formatter.valueToString(null));
             Object value;
@@ -174,6 +199,10 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testGetFields() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ftf.setValue(new Integer(345));
         formatter = (InternationalFormatter) ftf.getFormatter();
         Format format = formatter.getFormat();
@@ -188,12 +217,20 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testSetGetFormat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Format format = NumberFormat.getCurrencyInstance();
         formatter.setFormat(format);
         assertEquals(format, formatter.getFormat());
     }
 
     public void testSetGetMaximum() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Integer max = new Integer(35);
         Integer min = new Integer(40);
         formatter.setMaximum(max);
@@ -203,6 +240,10 @@ public class InternationalFormatterTest extends SwingTestCase {
     }
 
     public void testSetGetMinimum() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Integer max = new Integer(10);
         Integer min = new Integer(20);
         formatter.setMinimum(min);

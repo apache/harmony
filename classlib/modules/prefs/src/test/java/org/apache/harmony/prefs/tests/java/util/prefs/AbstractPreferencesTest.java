@@ -43,6 +43,7 @@ import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+import tests.support.Support_Excludes;
 
 /**
  * TODO: refine this test to adapt all implementations
@@ -114,6 +115,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testConstructor() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref = new MockAbstractPreferences(
                     (AbstractPreferences) Preferences.userRoot(), "mo/ck");
@@ -162,6 +167,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testProtectedFields() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -178,6 +187,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("User Preference Node: " + pref.absolutePath(), pref
                 .toString());
 
@@ -188,6 +201,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testAbsolutePath() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("/java/util/prefs/mock", pref.absolutePath());
 
         pref = new MockAbstractPreferences(pref, " ");
@@ -195,6 +212,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testChildrenNames() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, pref.childrenNames().length);
 
         // MockAbstractPreferences child1 = new MockAbstractPreferences(pref,
@@ -217,6 +238,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testClear() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         pref.put("testClearKey", "testClearValue");
         pref.put("testClearKey1", "testClearValue1");
         assertEquals("testClearValue", pref.get("testClearKey", null));
@@ -227,6 +252,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGet() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(pref.get("", null));
         assertEquals("default", pref.get("key", "default"));
         assertNull(pref.get("key", null));
@@ -262,6 +291,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetBoolean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.getBoolean(null, false);
             fail("should throw NullPointerException");
@@ -276,6 +309,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPutByteArray() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.putByteArray(null, new byte[0]);
             fail("should throw NullPointerException");
@@ -318,6 +355,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetByteArray() throws UnsupportedEncodingException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.getByteArray(null, new byte[0]);
             fail("should throw NullPointerException");
@@ -349,6 +390,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.getDouble(null, 0);
             fail("should throw NullPointerException");
@@ -367,6 +412,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.getFloat(null, 0f);
             fail("should throw NullPointerException");
@@ -380,6 +429,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.getInt(null, 0);
             fail("should throw NullPointerException");
@@ -394,6 +447,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetLong() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.getLong(null, 0);
             fail("should throw NullPointerException");
@@ -408,6 +465,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testIsUserNode() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertTrue(pref.isUserNode());
 
         pref = new MockAbstractPreferences((AbstractPreferences) Preferences
@@ -418,6 +479,10 @@ public class AbstractPreferencesTest extends TestCase {
     // TODO, how to test the "stored defaults"
     // TODO, how to test the multi-thread
     public void testKeys() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(0, pref.keys().length);
 
         pref.put("key0", "value");
@@ -434,6 +499,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testName() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals("mock", pref.name());
 
         pref = new MockAbstractPreferences(pref, " ");
@@ -441,6 +510,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testCharCase() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(pref.node("samechild"), pref.node("samechild"));
         assertNotSame(pref.node("sameChild"), pref.node("samechild"));
         assertNotSame(pref.node("child"), pref.node("Child"));
@@ -477,6 +550,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testNode() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.node(null);
             fail("should throw NullPointerException");
@@ -541,6 +618,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testNodeExists() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.nodeExists(null);
             fail("should throw NullPointerException");
@@ -581,6 +662,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void test_nodeExists() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AbstractPreferences test = (AbstractPreferences) Preferences.userRoot()
                 .node("test");
         try {
@@ -600,6 +685,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testParent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertSame(parent, pref.parent());
         AbstractPreferences child1 = new MockAbstractPreferences(pref, "child1");
         assertSame(pref, child1.parent());
@@ -607,6 +696,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPut() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         pref.put("", "emptyvalue");
         assertEquals("emptyvalue", pref.get("", null));
         pref.put("testPutkey", "value1");
@@ -660,6 +753,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPutBoolean() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.putBoolean(null, false);
             fail("should throw NullPointerException");
@@ -679,6 +776,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPutDouble() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.putDouble(null, 3);
             fail("should throw NullPointerException");
@@ -698,6 +799,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPutFloat() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.putFloat(null, 3f);
             fail("should throw NullPointerException");
@@ -717,6 +822,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPutInt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.putInt(null, 3);
             fail("should throw NullPointerException");
@@ -736,6 +845,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testPutLong() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.putLong(null, 3L);
             fail("should throw NullPointerException");
@@ -755,6 +868,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testRemove() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         pref.remove("key");
 
         pref.put("key", "value");
@@ -781,6 +898,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testRemoveNode() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Preferences child = pref.node("child");
         Preferences child1 = pref.node("child1");
         Preferences grandchild = child.node("grandchild");
@@ -888,10 +1009,18 @@ public class AbstractPreferencesTest extends TestCase {
     // }
 
     public void testAddPreferenceChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // TODO: start from here
     }
 
     public void testRemoveNodeChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.removeNodeChangeListener(null);
             fail("should throw IllegalArgumentException");
@@ -920,6 +1049,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testRemovePreferenceChangeListener() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.removePreferenceChangeListener(null);
             fail("should throw IllegalArgumentException");
@@ -948,6 +1081,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testSync() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         pref.sync();
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
@@ -987,6 +1124,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testFlush() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         pref.flush();
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
@@ -1035,6 +1176,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testGetChild() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1062,6 +1207,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testIsRemoved() throws BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1072,6 +1221,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testExportNode() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.exportNode(null);
             fail("should throw NullPointerException");
@@ -1125,6 +1278,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testExportSubtree() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             pref.exportSubtree(null);
             fail("should throw NullPointerException");
@@ -1182,6 +1339,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testCachedChildren() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1223,6 +1384,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testAbstractMethod() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1240,6 +1405,10 @@ public class AbstractPreferencesTest extends TestCase {
 
     public void testBackingStoreException() throws IOException,
     BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1348,6 +1517,10 @@ public class AbstractPreferencesTest extends TestCase {
 
     public void testRuntimeException() throws IOException,
     BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1494,6 +1667,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testSPIReturnNull() throws IOException, BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1580,6 +1757,10 @@ public class AbstractPreferencesTest extends TestCase {
 
     public void testIllegalStateException() throws IOException,
     BackingStoreException {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1796,6 +1977,10 @@ public class AbstractPreferencesTest extends TestCase {
     }
 
     public void testNullAndIllegalStateException() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         if (!(pref instanceof MockAbstractPreferences)) {
             return;
         }
@@ -1915,6 +2100,10 @@ public class AbstractPreferencesTest extends TestCase {
      * Regression for HARMONY-828
      */
     public void testLongPath() throws Exception { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertFalse(pref.nodeExists("ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"));
     } 
 

@@ -20,6 +20,7 @@
 package java.awt;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 @SuppressWarnings("serial")
 public class ContainerOrderFocusTraversalPolicyTest extends TestCase {
     Frame frame;

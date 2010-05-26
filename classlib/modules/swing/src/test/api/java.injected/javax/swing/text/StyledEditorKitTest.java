@@ -25,6 +25,7 @@ import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.SwingTestCase;
 import javax.swing.event.ChangeListener;
+import tests.support.Support_Excludes;
 
 public class StyledEditorKitTest extends SwingTestCase {
     StyledEditorKit kit;
@@ -96,15 +97,27 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testStyledEditorKit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testClone() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Object kit1 = kit.clone();
         assertNotSame(kit1, kit);
         assertTrue(kit1 instanceof StyledEditorKit);
     }
 
     public void testGetActions() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Action[] actions = kit.getActions();
         Action[] superActions = new DefaultEditorKit().getActions();
         Action[] newActions = new Action[] {
@@ -163,6 +176,10 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testCreateDefaultDocument() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Document doc1 = kit.createDefaultDocument();
         Document doc2 = kit.createDefaultDocument();
         String className = "javax.swing.text.DefaultStyledDocument";
@@ -192,6 +209,10 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testCreateInputAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleAttributeSet sas = createAttributeSet();
         SimpleElement element = new SimpleElement("");
         element.setAttributeSet(sas);
@@ -205,9 +226,17 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testDeinstallJEditorPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
 
     public void testGetCharacterAttributeRun() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleAttributeSet set = createAttributeSet();
         JEditorPane jep = new JEditorPane();
         DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -224,6 +253,10 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testGetInputAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         SimpleAttributeSet set = createAttributeSet();
         JEditorPane jep = new JEditorPane();
         DefaultStyledDocument doc = new DefaultStyledDocument();
@@ -244,6 +277,10 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
     
     public void testGetInputAttributesNoComponent() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final AttributeSet as = kit.getInputAttributes();
         assertNotNull(as);
         assertEquals(0, as.getAttributeCount());
@@ -259,6 +296,10 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testGetViewFactory() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ViewFactory factory = kit.getViewFactory();
         Element element = new SimpleElement(AbstractDocument.ContentElementName);
         assertEquals("javax.swing.text.LabelView", factory.create(element).getClass().getName());
@@ -281,6 +322,10 @@ public class StyledEditorKitTest extends SwingTestCase {
     }
 
     public void testInstallJEditorPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
     }
     
     
@@ -289,6 +334,10 @@ public class StyledEditorKitTest extends SwingTestCase {
      * Regression test for HARMONY-2594
      * */
     public void testcreateInputAttributes() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MyStyledEditorKit msek = new MyStyledEditorKit();
         MutableAttributeSet set = new Style() {
             public void removeChangeListener(ChangeListener p0) {
@@ -358,6 +407,10 @@ public class StyledEditorKitTest extends SwingTestCase {
      * Regression test for HARMONY-2594
      * */
     public void testCreateInputAttributes2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MyStyledEditorKit msek = new MyStyledEditorKit();
         try {
             msek.createInputAttributes(new SimpleElement(""), null);

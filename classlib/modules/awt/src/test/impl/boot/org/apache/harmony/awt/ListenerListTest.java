@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.EventListener;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class ListenerListTest extends TestCase {
 
@@ -34,6 +35,10 @@ public class ListenerListTest extends TestCase {
     }
 
     public void testSerialize() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ListenerList<EventListener> list = new ListenerList<EventListener>();
 
         list.addUserListener(new EventListener() {

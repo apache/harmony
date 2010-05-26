@@ -32,6 +32,7 @@ import org.apache.harmony.jpda.tests.framework.jdwp.ReplyPacket;
 import org.apache.harmony.jpda.tests.framework.jdwp.Value;
 import org.apache.harmony.jpda.tests.jdwp.share.JDWPSyncTestCase;
 import org.apache.harmony.jpda.tests.share.JPDADebuggeeSynchronizer;
+import tests.support.Support_Excludes;
 
 
 /**
@@ -58,6 +59,10 @@ public class EnableCollectionTest extends JDWPSyncTestCase {
      * <BR>If so the test passes. Otherwise it fails in case when pattern object is unloaded.
      */
     public void testEnableCollection001() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         String thisTestName = "testEnableCollection001";
         logWriter.println("==> " + thisTestName + " for " + thisCommandName + ": START...");
         synchronizer.receiveMessage(JPDADebuggeeSynchronizer.SGNL_READY);

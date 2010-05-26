@@ -29,6 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWaitTestCase;
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class JTextComponent_MultithreadedTest extends TestCase {
     JFrame jf;
@@ -67,6 +68,10 @@ public class JTextComponent_MultithreadedTest extends TestCase {
     }
 
     public void testReplaceSelection() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Runnable test = new Runnable() {
             public void run() {
                 jtc.setText("JTextComponent");
@@ -106,6 +111,10 @@ public class JTextComponent_MultithreadedTest extends TestCase {
     }
 
     public void testModelToView() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Runnable test = new Runnable() {
             public void run() {
                 jtc.setText(sLTR + sRTL + sLTR + sRTL + sLTR);
@@ -131,6 +140,10 @@ public class JTextComponent_MultithreadedTest extends TestCase {
     }
 
     public void testViewToModel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Runnable test = new Runnable() {
             public void run() {
                 jtc.setText("test View To Model");
@@ -185,6 +198,10 @@ public class JTextComponent_MultithreadedTest extends TestCase {
     }
 
     public void testScrollable() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         jf.dispose();
         jf = new JFrame();
         jep = new JTextField();

@@ -25,6 +25,7 @@ import java.lang.management.ManagementFactory;
 import java.util.List;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 public class GarbageCollectorMXBeanTest extends TestCase {
 
@@ -48,6 +49,10 @@ public class GarbageCollectorMXBeanTest extends TestCase {
      * 'java.lang.management.GarbageCollectorMXBean.getCollectionCount()'
      */
     public void testGetCollectionCount() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (GarbageCollectorMXBean mb : allBeans) {
             // spec says that the collection count value may be -1 if it is
             // undefined for a given garbage collector
@@ -60,6 +65,10 @@ public class GarbageCollectorMXBeanTest extends TestCase {
      * 'java.lang.management.GarbageCollectorMXBean.getCollectionTime()'
      */
     public void testGetCollectionTime() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (GarbageCollectorMXBean mb : allBeans) {
             // spec says that the collection time value may be -1 if it is
             // undefined for a given garbage collector
@@ -72,6 +81,10 @@ public class GarbageCollectorMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryManagerMXBean.getMemoryPoolNames()'
      */
     public void testGetMemoryPoolNames() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (GarbageCollectorMXBean mb : allBeans) {
             String[] managedPools = mb.getMemoryPoolNames();
             assertNotNull(managedPools);
@@ -86,6 +99,10 @@ public class GarbageCollectorMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryManagerMXBean.getName()'
      */
     public void testGetName() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         for (GarbageCollectorMXBean mb : allBeans) {
             String name = mb.getName();
             assertNotNull(name);

@@ -36,6 +36,7 @@ import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleState;
 import org.apache.harmony.x.swing.StringConstants;
+import tests.support.Support_Excludes;
 
 public class JFrameTest extends SwingTestCase {
     /*
@@ -120,6 +121,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void JFrame()
      */
     public void testJFrame() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         frame = new JFrame();
         assertEquals("title is empty", "", frame.getTitle());
         assertFalse("JFrame is invisible by default", frame.isVisible());
@@ -130,6 +135,10 @@ public class JFrameTest extends SwingTestCase {
     }
 
     public void testFrameInit() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         assertTrue("rootPaneCheckingEnabled is true", frame.isRootPaneCheckingEnabled());
         assertTrue("layout is not null", frame.getLayout() != null);
@@ -166,6 +175,10 @@ public class JFrameTest extends SwingTestCase {
      *     int getDefaultCloseOperation()
      */
     public void testSetGetDefaultCloseOperation() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // default value is JFrame.HIDE_ON_CLOSE
         assertEquals(WindowConstants.HIDE_ON_CLOSE, frame.getDefaultCloseOperation());
         // test setting valid value
@@ -217,6 +230,10 @@ public class JFrameTest extends SwingTestCase {
      *     static boolean isDefaultLookAndFeelDecorated()
      */
     public void testSetIsDefaultLookAndFeelDecorated() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // test for default value
         assertFalse(JFrame.isDefaultLookAndFeelDecorated());
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -231,6 +248,10 @@ public class JFrameTest extends SwingTestCase {
      *     boolean isRootPaneCheckingEnabled()
      */
     public void testSetIsRootPaneCheckingEnabled() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         assertTrue("rootPaneCheckingEnabled is true by default", frame
                 .isRootPaneCheckingEnabled());
@@ -243,6 +264,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void JFrame(String, GraphicsConfiguration)
      */
     public void testJFrameStringGraphicsConfiguration() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final String title = "Test frame.";
         final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration();
@@ -267,6 +292,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void JFrame(String)
      */
     public void testJFrameString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final String title = "Test frame.";
         // test with valid title
         frame = new JFrame(title);
@@ -286,6 +315,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void JFrame(GraphicsConfiguration)
      */
     public void testJFrameGraphicsConfiguration() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration();
         // test with valid gc
@@ -309,6 +342,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void addImpl(Component, Object, int)
      */
     public void testAddImpl() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JComponent comp = new JPanel();
         // rootPaneCheckingEnabled is true, exception must be thrown
         frame.setRootPaneCheckingEnabled(true);
@@ -342,6 +379,10 @@ public class JFrameTest extends SwingTestCase {
      *     JRootPane getRootPane()
      */
     public void testSetGetRootPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         assertTrue("setRootPane() is called from the constructor", TestFrame.setRootPaneCalled);
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
@@ -360,6 +401,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for JRootPane createRootPane()
      */
     public void testCreateRootPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         assertTrue("createRootPane() is called from the constructor",
                 TestFrame.createRootPaneCalled);
@@ -373,6 +418,10 @@ public class JFrameTest extends SwingTestCase {
      *     JMenuBar getJMenuBar()
      */
     public void testSetGetJMenuBar() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNull(frame.getJMenuBar());
         JMenuBar menuBar = new JMenuBar();
         frame.setJMenuBar(menuBar);
@@ -387,6 +436,10 @@ public class JFrameTest extends SwingTestCase {
      *     JLayeredPane getLayeredPane()
      */
     public void testSetGetLayeredPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener("layeredPane", listener);
         JLayeredPane pane = new JLayeredPane();
@@ -412,6 +465,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for AccessibleContext getAccessibleContext()
      */
     public void testGetAccessibleContext() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         AccessibleContext c = frame.getAccessibleContext();
         assertTrue("class is ok", c instanceof JFrame.AccessibleJFrame);
         assertTrue("AccessibleRole is ok", c.getAccessibleRole() == AccessibleRole.FRAME);
@@ -433,6 +490,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for String paramString()
      */
     public void testParamString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         assertTrue("paramString() cannot return null", frame.paramString() != null);
     }
@@ -441,6 +502,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void processWindowEvent(WindowEvent)
      */
     public void testProcessWindowEvent() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         frame.setVisible(true);
         WindowEvent e = new WindowEvent(frame, WindowEvent.WINDOW_CLOSING);
@@ -470,6 +535,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void setLayout(LayoutManager)
      */
     public void testSetLayout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         LayoutManager contentLayout = frame.getContentPane().getLayout();
         LayoutManager frameLayout = frame.getLayout();
@@ -506,6 +575,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void update(Graphics)
      */
     public void testUpdate() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Note: painting code, cannot test
     }
 
@@ -515,6 +588,10 @@ public class JFrameTest extends SwingTestCase {
      *     Container getContentPane()
      */
     public void testSetGetContentPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener("contentPane", listener);
         JPanel pane = new JPanel();
@@ -542,6 +619,10 @@ public class JFrameTest extends SwingTestCase {
      *     Component getGlassPane()
      */
     public void testSetGetGlassPane() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener("glassPane", listener);
         JPanel pane = new JPanel();
@@ -567,6 +648,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void remove(Component)
      */
     public void testRemove() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         TestFrame frame = new TestFrame();
         JComponent comp = new JPanel();
         frame.getContentPane().add(comp);
@@ -604,6 +689,10 @@ public class JFrameTest extends SwingTestCase {
      * Class under test for void setIconImage(Image image)
      */
     public void testSetIconImage() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Image image = new BufferedImage(5, 5, BufferedImage.TYPE_BYTE_INDEXED);
         PropertyChangeController cont = new PropertyChangeController();
         frame.addPropertyChangeListener(cont);

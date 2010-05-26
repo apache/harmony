@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 import java.io.*;
+import tests.support.Support_Excludes;
 
 public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
     public static void main(String[] args) {
@@ -97,6 +98,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * isHeldExclusively is false upon construction
      */
     public void testIsHeldExclusively() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	Mutex rl = new Mutex();
         assertFalse(rl.isHeldExclusively());
     }
@@ -105,6 +110,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquiring released sync succeeds
      */
     public void testAcquire() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	Mutex rl = new Mutex();
         rl.acquire(1);
         assertTrue(rl.isHeldExclusively());
@@ -116,6 +125,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * tryAcquire on an released sync succeeds
      */
     public void testTryAcquire() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	Mutex rl = new Mutex();
         assertTrue(rl.tryAcquire(1));
         assertTrue(rl.isHeldExclusively());
@@ -126,6 +139,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * hasQueuedThreads reports whether there are waiting threads
      */
     public void testhasQueuedThreads() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -155,6 +172,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * isQueued(null) throws NPE
      */
     public void testIsQueuedNPE() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         try {
             sync.isQueued(null);
@@ -167,6 +188,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * isQueued reports whether a thread is queued.
      */
     public void testIsQueued() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -201,6 +226,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getFirstQueuedThread returns first waiting thread or null if none
      */
     public void testGetFirstQueuedThread() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -232,6 +261,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * hasContended reports false if no thread has ever blocked, else true
      */
     public void testHasContended() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -261,6 +294,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getQueuedThreads includes waiting threads
      */
     public void testGetQueuedThreads() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -293,6 +330,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getExclusiveQueuedThreads includes waiting threads
      */
     public void testGetExclusiveQueuedThreads() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -325,6 +366,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getSharedQueuedThreads does not include exclusively waiting threads
      */
     public void testGetSharedQueuedThreads() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         Thread t1 = new Thread(new InterruptedSyncRunnable(sync));
         Thread t2 = new Thread(new InterruptibleSyncRunnable(sync));
@@ -355,6 +400,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * tryAcquireNanos is interruptible.
      */
     public void testInterruptedException2() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
 	sync.acquire(1);
 	Thread t = new Thread(new Runnable() {
@@ -378,6 +427,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * TryAcquire on exclusively held sync fails
      */
     public void testTryAcquireWhenSynced() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
 	sync.acquire(1);
 	Thread t = new Thread(new Runnable() {
@@ -398,6 +451,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * tryAcquireNanos on an exclusively held sync times out
      */
     public void testAcquireNanos_Timeout() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
 	sync.acquire(1);
 	Thread t = new Thread(new Runnable() {
@@ -423,6 +480,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getState is true when acquired and false when not
      */
     public void testGetState() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
 	sync.acquire(1);
 	assertTrue(sync.isHeldExclusively());
@@ -456,6 +517,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireInterruptibly is interruptible.
      */
     public void testAcquireInterruptibly1() { 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
 	sync.acquire(1);
 	Thread t = new Thread(new InterruptedSyncRunnable(sync));
@@ -475,6 +540,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireInterruptibly succeeds when released, else is interruptible
      */
     public void testAcquireInterruptibly2() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
 	try {
             sync.acquireInterruptibly(1);
@@ -496,6 +565,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * owns is true for a condition created by sync else false
      */
     public void testOwns() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
         final Mutex sync2 = new Mutex();
@@ -507,6 +580,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * Calling await without holding sync throws IllegalMonitorStateException
      */
     public void testAwait_IllegalMonitor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
         try {
@@ -524,6 +601,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * Calling signal without holding sync throws IllegalMonitorStateException
      */
     public void testSignal_IllegalMonitor() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
         try {
@@ -541,6 +622,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * awaitNanos without a signal times out
      */
     public void testAwaitNanos_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
         try {
@@ -558,6 +643,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      *  Timed await without a signal times out
      */
     public void testAwait_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
         try {
@@ -574,6 +663,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * awaitUntil without a signal times out
      */
     public void testAwaitUntil_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
         try {
@@ -591,6 +684,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * await returns when signalled
      */
     public void testAwait() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -626,6 +723,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * hasWaiters throws NPE if null
      */
     public void testHasWaitersNPE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         try {
             sync.hasWaiters(null);
@@ -640,6 +741,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitQueueLength throws NPE if null
      */
     public void testGetWaitQueueLengthNPE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         try {
             sync.getWaitQueueLength(null);
@@ -655,6 +760,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitingThreads throws NPE if null
      */
     public void testGetWaitingThreadsNPE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         try {
             sync.getWaitingThreads(null);
@@ -670,6 +779,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * hasWaiters throws IAE if not owned
      */
     public void testHasWaitersIAE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         final AbstractQueuedSynchronizer.ConditionObject c = (sync.newCondition());
 	final Mutex sync2 = new Mutex();
@@ -686,6 +799,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * hasWaiters throws IMSE if not synced
      */
     public void testHasWaitersIMSE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         final AbstractQueuedSynchronizer.ConditionObject c = (sync.newCondition());
         try {
@@ -702,6 +819,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitQueueLength throws IAE if not owned
      */
     public void testGetWaitQueueLengthIAE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         final AbstractQueuedSynchronizer.ConditionObject c = (sync.newCondition());
 	final Mutex sync2 = new Mutex();
@@ -718,6 +839,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitQueueLength throws IMSE if not synced
      */
     public void testGetWaitQueueLengthIMSE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();
         final AbstractQueuedSynchronizer.ConditionObject c = (sync.newCondition());
         try {
@@ -734,6 +859,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitingThreads throws IAE if not owned
      */
     public void testGetWaitingThreadsIAE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = (sync.newCondition());
 	final Mutex sync2 = new Mutex();	
@@ -750,6 +879,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitingThreads throws IMSE if not synced
      */
     public void testGetWaitingThreadsIMSE() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = (sync.newCondition());
         try {
@@ -767,6 +900,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * hasWaiters returns true when a thread is waiting, else false
      */
     public void testHasWaiters() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -809,6 +946,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitQueueLength returns number of waiting threads
      */
     public void testGetWaitQueueLength() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -870,6 +1011,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * getWaitingThreads returns only and all waiting threads
      */
     public void testGetWaitingThreads() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -935,6 +1080,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * awaitUninterruptibly doesn't abort on interrupt
      */
     public void testAwaitUninterruptibly() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -964,6 +1113,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * await is interruptible
      */
     public void testAwait_Interrupt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -995,6 +1148,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * awaitNanos is interruptible
      */
     public void testAwaitNanos_Interrupt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1026,6 +1183,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * awaitUntil is interruptible
      */
     public void testAwaitUntil_Interrupt() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1058,6 +1219,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * signalAll wakes up all threads
      */
     public void testSignalAll() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final Mutex sync = new Mutex();	
         final AbstractQueuedSynchronizer.ConditionObject c = sync.newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -1108,6 +1273,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * toString indicates current state
      */
     public void testToString() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Mutex sync = new Mutex();
         String us = sync.toString();
         assertTrue(us.indexOf("State = 0") >= 0);
@@ -1120,6 +1289,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * A serialized AQS deserializes with current state
      */
     public void testSerialization() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         Mutex l = new Mutex();
         l.acquire(1);
         assertTrue(l.isHeldExclusively());
@@ -1145,6 +1318,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * tryReleaseShared setting state changes getState
      */
     public void testGetStateWithReleaseShared() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final BooleanLatch l = new BooleanLatch();
 	assertFalse(l.isSignalled());
 	l.releaseShared(0);
@@ -1155,6 +1332,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * releaseShared has no effect when already signalled
      */
     public void testReleaseShared() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final BooleanLatch l = new BooleanLatch();
 	assertFalse(l.isSignalled());
 	l.releaseShared(0);
@@ -1167,6 +1348,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireSharedInterruptibly returns after release, but not before
      */
     public void testAcquireSharedInterruptibly() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final BooleanLatch l = new BooleanLatch();
 
 	Thread t = new Thread(new Runnable() {
@@ -1197,6 +1382,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireSharedTimed returns after release
      */
     public void testAsquireSharedTimed() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
 	final BooleanLatch l = new BooleanLatch();
 
 	Thread t = new Thread(new Runnable() {
@@ -1227,6 +1416,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireSharedInterruptibly throws IE if interrupted before released
      */
     public void testAcquireSharedInterruptibly_InterruptedException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final BooleanLatch l = new BooleanLatch();
         Thread t = new Thread(new Runnable() {
                 public void run() {
@@ -1251,6 +1444,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireSharedTimed throws IE if interrupted before released
      */
     public void testAcquireSharedNanos_InterruptedException() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final BooleanLatch l = new BooleanLatch();
         Thread t = new Thread(new Runnable() {
                 public void run() {
@@ -1276,6 +1473,10 @@ public class AbstractQueuedSynchronizerTest extends JSR166TestCase {
      * acquireSharedTimed times out if not released before timeout
      */
     public void testAcquireSharedNanos_Timeout() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         final BooleanLatch l = new BooleanLatch();
         Thread t = new Thread(new Runnable() {
                 public void run() {

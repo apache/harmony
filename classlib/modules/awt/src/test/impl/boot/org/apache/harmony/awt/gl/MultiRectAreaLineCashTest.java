@@ -20,6 +20,7 @@
 package org.apache.harmony.awt.gl;
 
 import org.apache.harmony.awt.gl.MultiRectArea;
+import tests.support.Support_Excludes;
 
 public class MultiRectAreaLineCashTest extends MultiRectAreaTestCase {
 
@@ -56,6 +57,10 @@ public class MultiRectAreaLineCashTest extends MultiRectAreaTestCase {
     // 15      ####
     // 16   ## ##
     public void testCash() {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         checkArea("LineCash1", area, new int[]{});
 
         area.setLine(10);

@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.text.Position.Bias;
 
 import junit.framework.TestCase;
+import tests.support.Support_Excludes;
 
 /**
  * Tests how <code>CompositeView</code> traverses view hierarchy to calculate
@@ -198,6 +199,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_01Edge_NonFlipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = false;
 
         // Forward
@@ -231,6 +236,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_01Edge_Flipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = true;
 
         // Forward
@@ -261,6 +270,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Right_12Edge_NonFlipped()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         boxViewFlip = false;
 
@@ -298,6 +311,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_12Edge_Flipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = true;
 
         // Forward
@@ -331,6 +348,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_0Middle_NonFlipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = false;
 
         // Forward
@@ -361,6 +382,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Right_0Middle_Flipped()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         boxViewFlip = true;
 
@@ -393,6 +418,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_AtBeginning0()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Forward
         assertNextPosition(1, Forward, 0, Forward, View.EAST);
         assertEquals(1, visPosCalled.size());
@@ -421,6 +450,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Right_AtBeginningMinus1()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         assertEquals(-1, view.getViewIndex(-1, Forward));
 
@@ -451,6 +484,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_AtBeginningMinus2()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, view.getViewIndex(-2, Forward));
         try {
             assertNextPosition(length, Forward, -2, Forward, View.EAST);
@@ -463,6 +500,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Right_AtEndLength()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         assertEquals(2, view.getViewIndex(length, Forward));
 
@@ -495,6 +536,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Right_AtEndLength1()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertEquals(-1, view.getViewIndex(length + 1, Forward));
         try {
             assertNextPosition(length, Forward, length + 1, Forward, View.EAST);
@@ -508,6 +553,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Left_01Edge_NonFlipped()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         boxViewFlip = false;
 
@@ -540,6 +589,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Left_01Edge_Flipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = true;
 
         // Forward
@@ -570,6 +623,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Left_12Edge_NonFlipped()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         boxViewFlip = false;
 
@@ -604,6 +661,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Left_12Edge_Flipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = true;
 
         // Forward
@@ -634,6 +695,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Left_0Middle_NonFlipped()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         boxViewFlip = false;
 
@@ -666,6 +731,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Left_0Middle_Flipped()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         boxViewFlip = true;
 
         // Forward
@@ -697,6 +766,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Left_AtBeginning0()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Forward
         assertNextPosition(-1, null, 0, Forward, View.WEST);
         assertEquals(1, visPosCalled.size());
@@ -726,6 +799,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Left_AtBeginningMinus1()
         throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         // Forward
         assertNextPosition(length, Forward, -1, Forward, View.WEST);
         assertEquals(1, visPosCalled.size());
@@ -754,6 +831,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_Left_AtBeginningMinus2()
     throws BadLocationException {
 
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         try {
             assertNextPosition(length, Forward, -2, Forward, View.WEST);
             fail("ArrayIndexOutOfBoundsException is expected");
@@ -765,6 +846,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Left_AtEndLength()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         // Forward
         assertNextPosition(length - 1, Forward, length, Forward, View.WEST);
@@ -794,6 +879,10 @@ public class CompositeView_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_Left_AtEndLength1()
         throws BadLocationException {
+
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
 
         try {
             assertNextPosition(length, Forward, length + 1, Forward, View.WEST);

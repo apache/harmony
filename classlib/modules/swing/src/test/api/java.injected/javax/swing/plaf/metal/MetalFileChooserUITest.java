@@ -29,6 +29,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingTestCase;
+import tests.support.Support_Excludes;
 
 public class MetalFileChooserUITest extends SwingTestCase {
     private MetalFileChooserUI ui;
@@ -52,10 +53,18 @@ public class MetalFileChooserUITest extends SwingTestCase {
     }
 
     public void testCreateUI() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotSame(MetalFileChooserUI.createUI(fc), MetalFileChooserUI.createUI(fc));
     }
 
     public void testGetButtonPanel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel buttonPanel = ui.getButtonPanel();
         assertNotNull(buttonPanel);
         assertEquals(0, buttonPanel.getComponentCount());
@@ -63,6 +72,10 @@ public class MetalFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetBottomPanel() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         JPanel bottomPanel = ui.getBottomPanel();
         assertNotNull(bottomPanel);
         assertEquals(0, bottomPanel.getComponentCount());
@@ -70,12 +83,20 @@ public class MetalFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetActionMap() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ActionMap actionMap = ui.getActionMap();
         assertNotNull(actionMap);
         assertNotSame(ui.getActionMap(), ui.getActionMap());
     }
 
     public void testCreateActionMap() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         ActionMap map = ui.createActionMap();
         List<Object> allKeys = Arrays.asList(map.allKeys());
@@ -89,6 +110,10 @@ public class MetalFileChooserUITest extends SwingTestCase {
     }
 
     public void testCreateList() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         JPanel listPanel = ui.createList(fc);
         assertNotNull(listPanel);
@@ -104,6 +129,10 @@ public class MetalFileChooserUITest extends SwingTestCase {
 
     // TODO: detail view is not implemented yet
     public void testCreateDetailsView() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         //        JPanel detailsView = ui.createDetailsView(fc);
         //        assertNotNull(detailsView);
@@ -116,30 +145,54 @@ public class MetalFileChooserUITest extends SwingTestCase {
     }
 
     public void testCreateListSelectionListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.createListSelectionListener(null));
         assertNotSame(ui.createListSelectionListener(null), ui
                 .createListSelectionListener(null));
     }
 
     public void testGetPreferredSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.getPreferredSize(fc));
     }
 
     public void testGetMinimumSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.getMinimumSize(fc));
     }
 
     public void testGetMaxiumumSize() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.getMaximumSize(null));
         assertEquals(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE), ui
                 .getMaximumSize(null));
     }
 
     public void testCreatePropertyChangeListener() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         assertNotNull(ui.createPropertyChangeListener(null));
     }
 
     public void testGetApproveSelectionButton() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         JButton button = ui.getApproveButton(null);
         assertNotNull(button);
@@ -147,6 +200,10 @@ public class MetalFileChooserUITest extends SwingTestCase {
     }
 
     public void testGetApproveButton() throws Exception {
+        if (Support_Excludes.isExcluded()) {
+            return;
+        }
+
         ui.installUI(fc);
         assertNotNull(ui.getApproveButton(fc));
         assertEquals(ui.getApproveButton(fc), ui.getApproveButton(fc));
