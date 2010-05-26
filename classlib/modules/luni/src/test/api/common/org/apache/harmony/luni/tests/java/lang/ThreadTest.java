@@ -20,7 +20,6 @@ package org.apache.harmony.luni.tests.java.lang;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.security.Permission;
 import java.util.Map;
-import tests.support.Support_Excludes;
 
 public class ThreadTest extends junit.framework.TestCase {
 
@@ -127,10 +126,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#Thread()
 	 */
 	public void test_Constructor() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.Thread()
 
 		Thread t;
@@ -166,10 +161,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#Thread(java.lang.Runnable)
 	 */
 	public void test_ConstructorLjava_lang_Runnable() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
             // Test for method java.lang.Thread(java.lang.Runnable)
             ct = new Thread(new SimpleThread(10));
             ct.start();
@@ -179,10 +170,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#Thread(java.lang.Runnable, java.lang.String)
 	 */
 	public void test_ConstructorLjava_lang_RunnableLjava_lang_String() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.Thread(java.lang.Runnable,
 		// java.lang.String)
 		Thread st1 = new Thread(new SimpleThread(1), "SimpleThread1");
@@ -195,10 +182,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#Thread(java.lang.String)
 	 */
 	public void test_ConstructorLjava_lang_String() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.Thread(java.lang.String)
 		Thread t = new Thread("Testing");
 		assertEquals("Created tread with incorrect name", 
@@ -210,10 +193,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#Thread(java.lang.ThreadGroup, java.lang.Runnable)
 	 */
 	public void test_ConstructorLjava_lang_ThreadGroupLjava_lang_Runnable() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.Thread(java.lang.ThreadGroup,
 		// java.lang.Runnable)
 		ThreadGroup tg = new ThreadGroup("Test Group1");
@@ -232,10 +211,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 *        java.lang.String)
 	 */
 	public void test_ConstructorLjava_lang_ThreadGroupLjava_lang_RunnableLjava_lang_String() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.Thread(java.lang.ThreadGroup,
 		// java.lang.Runnable, java.lang.String)
 		ThreadGroup tg = new ThreadGroup("Test Group2");
@@ -270,10 +245,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#Thread(java.lang.ThreadGroup, java.lang.String)
 	 */
 	public void test_ConstructorLjava_lang_ThreadGroupLjava_lang_String() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.Thread(java.lang.ThreadGroup,
 		// java.lang.String)
 		st = new Thread(new SimpleThread(1), "SimpleThread4");
@@ -286,10 +257,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#activeCount()
 	 */
 	public void test_activeCount() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method int java.lang.Thread.activeCount()
 		Thread t = new Thread(new SimpleThread(10));
 		int active = 0;
@@ -308,10 +275,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#checkAccess()
 	 */
 	public void test_checkAccess() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.checkAccess()
 		ThreadGroup tg = new ThreadGroup("Test Group3");
 		try {
@@ -334,10 +297,6 @@ public class ThreadTest extends junit.framework.TestCase {
      */
     @SuppressWarnings("deprecation")
     public void test_countStackFrames() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         /*
          * Thread.countStackFrames() is unpredictable, so we just test that it
          * doesn't throw an exception.
@@ -349,10 +308,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#currentThread()
 	 */
 	public void test_currentThread() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 	    assertNotNull(Thread.currentThread());
 	}
 
@@ -361,10 +316,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_destroy() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	    try {
 	        new Thread().destroy();
             // FIXME uncomment when IBM VME is updated
@@ -377,10 +328,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#enumerate(java.lang.Thread[])
 	 */
     public void test_enumerate$Ljava_lang_Thread() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method int java.lang.Thread.enumerate(java.lang.Thread [])
         // The test has been updated according to HARMONY-1974 JIRA issue.
 
@@ -466,10 +413,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#getContextClassLoader()
 	 */
 	public void test_getContextClassLoader() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.ClassLoader
 		// java.lang.Thread.getContextClassLoader()
 		Thread t = new Thread();
@@ -484,10 +427,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#getName()
 	 */
 	public void test_getName() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.String java.lang.Thread.getName()
 		st = new Thread(new SimpleThread(1), "SimpleThread6");
 		assertEquals("Returned incorrect thread name", 
@@ -499,10 +438,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#getPriority()
 	 */
 	public void test_getPriority() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method int java.lang.Thread.getPriority()
 		st = new Thread(new SimpleThread(1));
 		st.setPriority(Thread.MAX_PRIORITY);
@@ -515,10 +450,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#getThreadGroup()
 	 */
 	public void test_getThreadGroup() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.ThreadGroup
 		// java.lang.Thread.getThreadGroup()
 		ThreadGroup tg = new ThreadGroup("Test Group4");
@@ -560,10 +491,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#interrupt()
 	 */
 	public void test_interrupt() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.interrupt()
 		final Object lock = new Object();
 		class ChildThread1 extends Thread {
@@ -625,10 +552,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#interrupted()
 	 */
 	public void test_interrupted() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
         assertFalse("Interrupted returned true for non-interrupted thread", Thread
                 .interrupted());
         Thread.currentThread().interrupt();
@@ -640,10 +563,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#isAlive()
 	 */
 	public void test_isAlive() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method boolean java.lang.Thread.isAlive()
 		SimpleThread simple;
 		st = new Thread(simple = new SimpleThread(500));
@@ -668,10 +587,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#isDaemon()
 	 */
 	public void test_isDaemon() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method boolean java.lang.Thread.isDaemon()
 		st = new Thread(new SimpleThread(1), "SimpleThread10");
 		assertTrue("Non-Daemon thread returned true", !st.isDaemon());
@@ -684,10 +599,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#isInterrupted()
 	 */
 	public void test_isInterrupted() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method boolean java.lang.Thread.isInterrupted()
 		class SpinThread implements Runnable {
 			public volatile boolean done = false;
@@ -721,10 +632,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#join()
 	 */
 	public void test_join() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.join()
 		SimpleThread simple;
 		try {
@@ -756,10 +663,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#join(long)
 	 */
 	public void test_joinJ() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.join(long)
 		SimpleThread simple;
 		try {
@@ -826,10 +729,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#join(long, int)
 	 */
 	public void test_joinJI() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.join(long, int)
 		SimpleThread simple;
                 st = new Thread(simple = new SimpleThread(1000), "Squawk1");
@@ -884,10 +783,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_resume() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 		// Test for method void java.lang.Thread.resume()
 		int orgval;
 		ResSupThread t;
@@ -919,10 +814,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#run()
 	 */
 	public void test_run() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.run()
 		class RunThread implements Runnable {
 			boolean didThreadRun = false;
@@ -952,10 +843,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#setDaemon(boolean)
 	 */
 	public void test_setDaemonZ() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.setDaemon(boolean)
 		st = new Thread(new SimpleThread(1), "SimpleThread14");
 		st.setDaemon(true);
@@ -967,10 +854,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#setName(java.lang.String)
 	 */
 	public void test_setNameLjava_lang_String() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.setName(java.lang.String)
 		st = new Thread(new SimpleThread(1), "SimpleThread15");
 		st.setName("Bogus Name");
@@ -990,10 +873,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#setPriority(int)
 	 */
 	public void test_setPriorityI() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.setPriority(int)
 		st = new Thread(new SimpleThread(1));
 		st.setPriority(Thread.MAX_PRIORITY);
@@ -1006,10 +885,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#sleep(long)
 	 */
 	public void test_sleepJ() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.sleep(long)
 
 		// TODO : Test needs enhancing.
@@ -1028,10 +903,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#sleep(long, int)
 	 */
 	public void test_sleepJI() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.sleep(long, int)
 
 		// TODO : Test needs revisiting.
@@ -1052,10 +923,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#start()
 	 */
 	public void test_start() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.lang.Thread.start()
 		try {
 			ResSupThread t = new ResSupThread(Thread.currentThread());
@@ -1080,10 +947,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_stop() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 		// Test for method void java.lang.Thread.stop()
 		try {
 			Runnable r = new ResSupThread(null);
@@ -1112,10 +975,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_stop_subtest0() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 		Thread t = new Thread("t");
 		class MySecurityManager extends SecurityManager {
 			public boolean intest = false;
@@ -1168,10 +1027,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_stopLjava_lang_Throwable_subtest0() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 		Thread t = new Thread("t");
 		class MySecurityManager extends SecurityManager {
 			public boolean intest = false;
@@ -1229,10 +1084,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_stopLjava_lang_Throwable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 		// Test for method void java.lang.Thread.stop(java.lang.Throwable)
 		ResSupThread t = new ResSupThread(Thread.currentThread());
 		synchronized (t) {
@@ -1261,10 +1112,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 */
 	@SuppressWarnings("deprecation")
     public void test_suspend() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 		// Test for method void java.lang.Thread.suspend()
 		int orgval;
 		ResSupThread t = new ResSupThread(Thread.currentThread());
@@ -1317,10 +1164,6 @@ public class ThreadTest extends junit.framework.TestCase {
 	 * @tests java.lang.Thread#toString()
 	 */
 	public void test_toString() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.String java.lang.Thread.toString()
 		ThreadGroup tg = new ThreadGroup("Test Group5");
 		st = new Thread(tg, new SimpleThread(1), "SimpleThread17");
@@ -1340,10 +1183,6 @@ public class ThreadTest extends junit.framework.TestCase {
      * @tests java.lang.Thread#getAllStackTraces()
      */
     public void test_getAllStackTraces() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Map<Thread, StackTraceElement[]> stMap = Thread.getAllStackTraces();
         assertNotNull(stMap);
         //TODO add security-based tests
@@ -1354,10 +1193,6 @@ public class ThreadTest extends junit.framework.TestCase {
      * @tests java.lang.Thread#setDefaultUncaughtExceptionHandler
      */
     public void test_get_setDefaultUncaughtExceptionHandler() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         class Handler implements UncaughtExceptionHandler {
             public void uncaughtException(Thread thread, Throwable ex) {
             }
@@ -1376,10 +1211,6 @@ public class ThreadTest extends junit.framework.TestCase {
      * @tests java.lang.Thread#getStackTrace()
      */
     public void test_getStackTrace() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         
         assertNotNull(stackTrace);
@@ -1403,10 +1234,6 @@ public class ThreadTest extends junit.framework.TestCase {
      * @tests java.lang.Thread#getState()
      */
     public void test_getState() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Thread.State state = Thread.currentThread().getState();
         assertNotNull(state);
         assertEquals(Thread.State.RUNNABLE, state);
@@ -1418,10 +1245,6 @@ public class ThreadTest extends junit.framework.TestCase {
      * @tests java.lang.Thread#setUncaughtExceptionHandler
      */
     public void test_get_setUncaughtExceptionHandler() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         class Handler implements UncaughtExceptionHandler {
             public void uncaughtException(Thread thread, Throwable ex) {
             }
@@ -1440,10 +1263,6 @@ public class ThreadTest extends junit.framework.TestCase {
      * @tests java.lang.Thread#getId()
      */
     public void test_getId() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue("current thread's ID is not positive", Thread.currentThread().getId() > 0);
         
         //check all the current threads for positive IDs
