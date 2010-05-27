@@ -1,4 +1,1 @@
 org/apache/harmony/luni/tests/java/net/MulticastSocketTest.java
-
-# HARMONY-4043 (was duplicate HARMONY-4753)
-org/apache/harmony/luni/tests/java/lang/SecurityManager2Test.java
