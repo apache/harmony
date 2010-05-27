@@ -733,15 +733,20 @@ Usage:
         </condition>
         <property name="harmony.arch" value="${os.arch}" />
 
+        <condition property="version.prefix" value="select-">
+            <istrue value="${hy.select}" />
+        </condition>
+        <property name="version.prefix" value="" />
+
         <property name="harmony.deploy.suffix" value="-snapshot" />
 
         <property name="harmony.java.version" value="5.0" />
 
         <property name="deploy.file.prefix"
-                  value="apache-harmony-${harmony.java.version}-" />
+            value="apache-harmony-${version.prefix}${harmony.java.version}-" />
 
         <property name="archive.dir.prefix"
-                  value="harmony-${harmony.java.version}-" />
+            value="harmony-${version.prefix}${harmony.java.version}-" />
 
         <property name="deploy.hdk.file.prefix"
                  value="${deploy.file.prefix}hdk-r${harmony.version}" />
