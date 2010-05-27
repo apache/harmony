@@ -78,11 +78,11 @@ module:
     <property name="tests.output" location="build/test_report" />
     <property name="tests.support.output" location="build/test_support" />
     <property name="tests.report.dir" value="${tests.output}/html"/>
-    <property file="make/depends.properties" />
 
     <!-- import properties for snapshot targets -->
     <import file="make/properties.xml" />
     <import file="make/depends.xml" />
+    <property file="make/depends.properties" />
 
     <condition property="needs.vme.v3.hack" value="true">
         <or>
