@@ -19,5 +19,3 @@ org/apache/harmony/lang/management/tests/java/lang/management/MemoryMXBeanTest.j
 org/apache/harmony/lang/management/tests/java/lang/management/MemoryPoolMXBeanTest.java
 org/apache/harmony/lang/management/tests/java/lang/management/RuntimeMXBeanTest.java
 org/apache/harmony/lang/management/tests/java/lang/management/ThreadMXBeanTest.java
-
-tests/java/util/logging/LoggingMXBeanTest.java
