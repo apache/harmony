@@ -195,9 +195,8 @@
                 <linkerarg value="/DEF:${vm.home}/vmcore/src/harmonyvm.def" if="is.windows.x86"/>
                 <linkerarg value="--version-script=${vm.home}/vmcore/build/vmcore.exp" if="is.unix"/>
                 
-                <syslibset type="shared" libs="m,dl,stdc++,xml2,pthread,gcc_s,rt" if="is.linux"/>
+                <syslibset type="shared" libs="m,dl,stdc++,pthread,gcc_s,rt" if="is.linux"/>
                 <syslibset type="shared" libs="m,stdc++,pthread" if="is.freebsd"/> 
-                <libset libs="xml2" dir="/usr/local/lib" if="is.freebsd"/>
                 <linkerarg value="--export-dynamic" if="is.freebsd"/>
             </linker>
         </link-lib>        

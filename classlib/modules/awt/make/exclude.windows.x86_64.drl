@@ -12,9 +12,3 @@ java/awt/image/MultiPixelPackedSampleModelTest.java
 java/awt/image/SinglePixelPackedSampleModelTest.java
 org/apache/harmony/awt/gl/MultiRectAreaLineCashTest.java
 org/apache/harmony/awt/tests/nativebridge/PointerPointerTest.java
-
-#HARMONY-4181
-java/awt/geom/AreaTest.java
-
-#HARMONY-4307
-org/apache/harmony/awt/ListenerListTest.java

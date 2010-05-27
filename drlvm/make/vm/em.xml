@@ -46,9 +46,8 @@
             <libset libs="harmonyvm,hythr" dir="${drlvm.shlib.dir}" />
             <libset libs="port,apr-1" dir="${drlvm.lib.dir}" />
             
-            <syslibset type="shared" libs="m,dl,stdc++,z,xml2,pthread" if="is.linux"/>
+            <syslibset type="shared" libs="m,dl,stdc++,z,pthread" if="is.linux"/>
             <syslibset type="shared" libs="m,stdc++,z,pthread" if="is.freebsd"/>
-            <libset libs="xml2" dir="/usr/local/lib" if="is.freebsd"/>
             <linkerarg value="--export-dynamic" if="is.freebsd"/>
             
             <linkerarg value="--version-script=${vm.home}/em/build/em.exp" if="is.unix"/>

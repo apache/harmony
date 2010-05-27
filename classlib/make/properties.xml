@@ -286,6 +286,13 @@
     </condition>
     <property name="jpeg.home" value="/usr" />
     
+    <condition property="is.select" value="true">
+        <istrue value="${hy.select}" />
+    </condition>
+    <condition property="is.not.select" value="true">
+        <not><istrue value="${hy.select}" /></not>
+    </condition>
+
     <!-- default property for poll-modules macro - i.e. all modules -->
     <property name="build.module" value="*" />
     <condition property="exclude.module"
@@ -1073,6 +1080,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 </fileset>
             </auxClasspath>
             <sourcePath path="src/main/java" />
+            <sourcePath path="src/main/java5" />
             <sourcePath path="src/main/java/common" />
             <sourcePath path="src/main/java/${hy.os.family}" />
             <class location="@{jarFile}" />

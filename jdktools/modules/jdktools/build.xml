@@ -36,11 +36,10 @@
         <check-one-file src="${icu.url}" dest="${icu.jar}" />
         <check-one-file src="${ecj.jar.url}" dest="${ecj.jar}" />
         <check-one-file src="${bcel.jar}" dest="${bcel.jar}" />
-        <copy todir="${hy.hdk}/jdk/jre/lib/boot">
-            <fileset dir="${depends.jars}">
-                <patternset includes="${bcel.version}/*.jar" />
-            </fileset>
-            <fileset dir="depends/manifests"/>
+        <mkdir dir="${hy.hdk}/jdk/jre/lib/boot/${bcel.base}" />
+        <copy todir="${hy.hdk}/jdk/jre/lib/boot/${bcel.base}">
+            <fileset file="${bcel.jar}" />
+            <fileset dir="depends/bcel" />
         </copy>
     </target>
     
@@ -112,6 +111,13 @@
                 <pathelement path="${ant.library.dir}/ant-launcher.jar" />
                 <pathelement path="${ant.library.dir}/ant-nodeps.jar" />
             </classpath>
+
+            <exclude name="org/apache/harmony/tools/appletviewer/**"
+                     if="is.select"/>
+            <exclude name="org/apache/harmony/tools/rmi*/**" if="is.select"/>
+            <exclude name="org/apache/harmony/tools/serialver/**"
+                     if="is.select"/>
+
         </hy.javac>
     </target>
 
@@ -179,6 +185,8 @@
                 <src>
                     <pathelement location="src/test/java" />
                 </src>
+                <exclude name="org/apache/harmony/tests/tools/serialver/**"
+                         if="is.select"/>
                 <classpath>
                     <pathelement path="${hy.jdk}/lib/tools.jar"/>
                 </classpath>

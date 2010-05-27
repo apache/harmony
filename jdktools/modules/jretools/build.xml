@@ -76,6 +76,10 @@
                     <include name="**/*.jar" />
                 </fileset>
             </bootclasspath>
+
+            <exclude name="org/apache/harmony/jretools/policytool/**"
+                     if="is.select"/>
+
         </hy.javac>
     </target>
 
