@@ -55,7 +55,7 @@
         <delete-patternset module="${hy.module}" />
     </target>
 
-    <target name="-clean-native" unless="skip.java.build">
+    <target name="-clean-native" unless="skip.java.native">
         <make dir="src/main/native/accessors/${hy.os.family}" target="clean" />
     </target>
 
