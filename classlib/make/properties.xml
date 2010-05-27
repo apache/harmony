@@ -1078,6 +1078,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 </fileset>
             </auxClasspath>
             <sourcePath path="src/main/java" />
+            <sourcePath path="src/main/java5" />
             <sourcePath path="src/main/java/common" />
             <sourcePath path="src/main/java/${hy.os.family}" />
             <class location="@{jarFile}" />
