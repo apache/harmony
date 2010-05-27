@@ -207,6 +207,7 @@
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />
+            <fileset dir="src/test/resources" />
         </hy.jar.bin>
  
         <mkdir dir="${tests.excludes.hdk.dir}"/>
