@@ -14,8 +14,6 @@
 #  limitations under the License.
 
 DEFINES += -DLINUX -DLINUX_X86 -DHYX86 -DIPv6_FUNCTION_SUPPORT
-PLATFORM += -m32 -march=pentium3
-ASFLAGS += -a32
-LDFLAGS += -m32
+PLATFORM += -march=pentium3
 OSLIBS += -ldl
 HY_CAN_LINK_DEBUG = yes
