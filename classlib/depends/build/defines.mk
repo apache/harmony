@@ -17,6 +17,8 @@
 # Configuration Makefile
 #
 
+include $(HY_HDK)/build/make/properties.mk
+
 CXX = $(CC)
 CPP = $(CC) -E
 AS = as

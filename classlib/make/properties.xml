@@ -259,6 +259,11 @@
     </condition>
     <property name="make.arg" value="" />
 
+    <condition property="make.suffix" value="mak">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="make.suffix" value="mk" />
+
     <condition property="png.home" value="/usr/local">
         <isset property="is.freebsd"/>
     </condition>
@@ -316,6 +321,11 @@
         <not>
             <equals arg1="${hy.no.thr}" arg2="false" />
         </not>
+    </condition>
+
+    <property name="hy.thr.no.deploy" value="false" />
+    <condition property="hy.thr.deploy" value="true">
+        <equals arg1="${hy.thr.no.deploy}" arg2="false" />
     </condition>
 
     <property name="hy.local.zlib" value="false" />
@@ -584,21 +594,23 @@ properties in preference to these:
         <element name="make-elements" optional="true" />
         <sequential>
             <echo>Making "@{target}" in @{dir}</echo>
+            <echo file="${hy.hdk}/build/make/properties.${make.suffix}">
+HY_ZIP_API=${hy.zip.api}
+HY_PORTLIB_STUBS=${hy.portlib.stubs}
+HY_CFG=${hy.cfg}
+HY_ARCH=${hy.arch}
+HY_OS=${hy.os}
+HY_PLATFORM=${hy.platform}
+HY_NO_THR=${hy.no.thr}
+HY_THR_NO_DEPLOY=${hy.thr.no.deploy}
+HY_LOCAL_ZLIB=${hy.local.zlib}
+HY_SHLIB_SUFFIX=${shlib.suffix}
+HY_LINKLIB_SUFFIX=${linklib.suffix}
+            </echo>                
             <exec failonerror="true"
                   executable="${make.command}"
                   dir="@{dir}">
-                <env key="HY_ZIP_API" value="${hy.zip.api}" />
-                <env key="HY_PORTLIB_STUBS" value="${hy.portlib.stubs}" />
                 <env key="HY_HDK" value="${hy.hdk}" />
-                <env key="HY_CFG" value="${hy.cfg}" />
-                <env key="HY_ARCH" value="${hy.arch}" />
-                <env key="HY_OS" value="${hy.os}" />
-                <env key="HY_PLATFORM" value="${hy.platform}" />
-                <env key="HY_NO_THR" value="${hy.no.thr}" />
-                <env key="HY_THR_NO_DEPLOY" value="${hy.thr.nodeploy}" />
-                <env key="HY_LOCAL_ZLIB" value="${hy.local.zlib}" />
-                <env key="HY_SHLIB_SUFFIX" value="${shlib.suffix}" />
-                <env key="HY_LINKLIB_SUFFIX" value="${linklib.suffix}" />
                 <arg line="${make.arg}" />
                 <arg line="@{target}" />
                 <make-elements />
