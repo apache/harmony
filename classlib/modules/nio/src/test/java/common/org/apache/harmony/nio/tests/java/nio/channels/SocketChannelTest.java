@@ -491,8 +491,6 @@ public class SocketChannelTest extends TestCase {
         assertEquals(s.getPort(), address.getPort());
         assertNotNull(s.getLocalSocketAddress());
         assertTrue(s.getReceiveBufferSize() >= 8192);
-        // equal , not same
-        assertNotSame(s.getRemoteSocketAddress(), (SocketAddress) address);
         assertEquals(s.getRemoteSocketAddress(), (SocketAddress) address);
         // assertFalse(s.getReuseAddress());
         assertTrue(s.getSendBufferSize() >= 8192);

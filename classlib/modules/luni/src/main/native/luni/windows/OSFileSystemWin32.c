@@ -307,7 +307,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_sizeI
   BY_HANDLE_FILE_INFORMATION info;
   HANDLE hfile = (HANDLE)fd;    	
   if (GetFileInformationByHandle(hfile, (LPBY_HANDLE_FILE_INFORMATION) &info)) {
-    return (jlong) ((info.nFileSizeHigh<<0x20) + info.nFileSizeLow);
+    return (jlong) (((DWORDLONG)info.nFileSizeHigh<<0x20) + info.nFileSizeLow);
   } else {
     return (jlong)-1;
   }

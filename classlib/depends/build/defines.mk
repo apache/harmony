@@ -17,6 +17,8 @@
 # Configuration Makefile
 #
 
+include $(HY_HDK)/build/make/properties.mk
+
 CXX = $(CC)
 CPP = $(CC) -E
 AS = as
@@ -27,7 +29,7 @@ DLL_LD = $(CC)
 DLL_LDFLAGS = -shared -Wl,-soname=$(@F) -Wl,--version-script,$(EXPFILE)
 CXX_DLL_LD = $(CXX)
 STDCLIBS = -lstdc++
-OSLIBS = -lc -lm
+OSLIBS = -lc
 XLIBS = -L/usr/X11R6/lib -lX11 -lXft -lXext -lXtst
 MDLLIBPREFIX = -Xlinker --start-group
 MDLLIBSUFFIX = -Xlinker --end-group
@@ -80,12 +82,4 @@ endif
 
 ifeq ($(HY_ZIP_API),true)
 DEFINES += -DHY_ZIP_API
-endif
-
-ifeq ($(HY_LOCAL_ZLIB),true)
-DEFINES += -DHY_LOCAL_ZLIB
-OSLIBS += -lz
-MDLLIBZLIB =
-else
-MDLLIBZLIB += $(DLLPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
 endif

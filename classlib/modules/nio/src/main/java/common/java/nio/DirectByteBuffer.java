@@ -34,10 +34,7 @@ import org.apache.harmony.nio.internal.nls.Messages;
  * </p>
  * 
  */
-abstract class DirectByteBuffer extends BaseByteBuffer implements DirectBuffer {
-
-    // This is the base address of the buffer memory.
-    protected PlatformAddress address;
+abstract class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
 
     // This is the offset from the base address at which this buffer logically
     // starts.
@@ -59,6 +56,7 @@ abstract class DirectByteBuffer extends BaseByteBuffer implements DirectBuffer {
         super(capacity);
         this.address = address;
         this.offset = offset;
+        address.autoFree();
     }
 
     /*
@@ -274,5 +272,55 @@ abstract class DirectByteBuffer extends BaseByteBuffer implements DirectBuffer {
 
     public final int getByteCapacity() {
         return capacity;
+    }
+
+    @Override
+    public final CharBuffer asCharBuffer() {
+        return CharToByteBufferAdapter.wrap(this);
+    }
+
+    @Override
+    public final DoubleBuffer asDoubleBuffer() {
+        return DoubleToByteBufferAdapter.wrap(this);
+    }
+
+    @Override
+    public final FloatBuffer asFloatBuffer() {
+        return FloatToByteBufferAdapter.wrap(this);
+    }
+
+    @Override
+    public final IntBuffer asIntBuffer() {
+        return IntToByteBufferAdapter.wrap(this);
+    }
+
+    @Override
+    public final LongBuffer asLongBuffer() {
+        return LongToByteBufferAdapter.wrap(this);
+    }
+
+    @Override
+    public final ShortBuffer asShortBuffer() {
+        return ShortToByteBufferAdapter.wrap(this);
+    }
+
+    @Override
+    public final char getChar() {
+        return (char) getShort();
+    }
+
+    @Override
+    public final char getChar(int index) {
+        return (char) getShort(index);
+    }
+
+    @Override
+    public final ByteBuffer putChar(char value) {
+        return putShort((short) value);
+    }
+
+    @Override
+    public final ByteBuffer putChar(int index, char value) {
+        return putShort(index, (short) value);
     }
 }

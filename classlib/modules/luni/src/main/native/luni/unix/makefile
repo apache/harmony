@@ -47,6 +47,8 @@ endif
 MDLLIBFILES += $(LIBPATH)libhypool.a $(LIBPATH)libhyfdlibm.a \
 	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
+OSLIBS += -lm
+
 DLLNAME = $(DLLPATH)libhyluni$(HY_SHLIB_SUFFIX)
 EXPNAME = HYLUNI_0.1
 

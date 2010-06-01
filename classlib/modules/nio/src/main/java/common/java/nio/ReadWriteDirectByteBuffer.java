@@ -52,6 +52,15 @@ final class ReadWriteDirectByteBuffer extends DirectByteBuffer {
         super(address, capacity, offset);
     }
 
+    /*
+     * This constructor is specifically for MappedByteBuffer construction
+     */
+    ReadWriteDirectByteBuffer(PlatformAddress address, int capacity,
+            int offset, int mapMode) {
+        super(address, capacity, offset);
+        this.mapMode = mapMode;
+    }
+
     @Override
     public ByteBuffer asReadOnlyBuffer() {
         return ReadOnlyDirectByteBuffer.copy(this, mark);

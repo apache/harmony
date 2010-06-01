@@ -15,6 +15,6 @@
 
 DEFINES += -DFREEBSD -DFREEBSD_X86_64 -DHYX86_64 -DNEEDS_SYS_TYPES \
            -DIPv6_FUNCTION_SUPPORT
-OSLIBS = -L/usr/local/lib -lpthread -lm
+OSLIBS = -L/usr/local/lib -lpthread
 INCLUDES += -I/usr/local/include
 XLIBS = -lX11 -lXft -lXext -lXtst

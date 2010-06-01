@@ -28,6 +28,17 @@
     <property file="../../make/depends.properties" />
     <property file="${common.resources}/make/depends.properties" />
     
+    <target name="check-depends" unless="skip.test.build">
+        <check-one-file dest="${junit.jar}" src="${junit.jar.url}"/>
+        <check-one-file dest="${hamcrest-library.jar}"
+                        src="${hamcrest-library.jar.url}"/>
+    </target>
+
+    <target name="fetch-depends" unless="skip.test.build">
+        <fetch dep="junit.jar"/>
+        <fetch dep="hamcrest-library.jar"/>
+    </target>
+    
     <target name="build" depends="-build-jar,-test-jar" />
 
     <target name="test" depends="-test-module">

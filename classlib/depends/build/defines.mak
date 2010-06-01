@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+!include <$(HY_HDK)/build/make/properties.mak>
+
 !ifndef APPVER
 APPVER=4.0 #Default Windows version
 !endif
