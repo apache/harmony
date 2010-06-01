@@ -22,7 +22,7 @@ DEFINES += -DMACOSX -DMACOSX_X86 -DHYX86 -DIPv6_FUNCTION_SUPPORT
 INCLUDES += -I/opt/local/include
 PLATFORM = -fPIC -fno-common -arch i386 -mmacosx-version-min=10.5
 ASFLAGS += -arch i386
-OSLIBS = -L/opt/local/lib -lc -lm -ldl -liconv
+OSLIBS = -L/opt/local/lib -lc -ldl -liconv
 XLIBS = -L/usr/X11R6/lib -lX11 -lXft -lXext -lXtst -lXrender -lexpat \
         -lfreetype -lfontconfig
 MDLLIBPREFIX =

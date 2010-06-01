@@ -29,7 +29,7 @@ DLL_LD = $(CC)
 DLL_LDFLAGS = -shared -Wl,-soname=$(@F) -Wl,--version-script,$(EXPFILE)
 CXX_DLL_LD = $(CXX)
 STDCLIBS = -lstdc++
-OSLIBS = -lc -lm
+OSLIBS = -lc
 XLIBS = -L/usr/X11R6/lib -lX11 -lXft -lXext -lXtst
 MDLLIBPREFIX = -Xlinker --start-group
 MDLLIBSUFFIX = -Xlinker --end-group
