@@ -24,20 +24,45 @@ import java.security.PrivilegedAction;
 
 import org.apache.harmony.luni.platform.PlatformAddress;
 
+import org.apache.harmony.luni.platform.IMemorySystem;
+import org.apache.harmony.luni.platform.MappedPlatformAddress;
+import org.apache.harmony.luni.platform.PlatformAddress;
+import org.apache.harmony.nio.internal.DirectBuffer;
+
 class MappedByteBufferFactory {
 
-    static final Constructor<?> constructor;
+    static final Constructor<?> readOnlyConstructor;
+    static final Constructor<?> readWriteConstructor;
 
     static {
-        constructor = AccessController
+        readOnlyConstructor = AccessController
                 .doPrivileged(new PrivilegedAction<Constructor<?>>() {
                     public Constructor<?> run() {
                         try {
                             Class<?> wrapperClazz = ClassLoader
                                     .getSystemClassLoader().loadClass(
-                                            "java.nio.MappedByteBufferAdapter"); //$NON-NLS-1$
+                                            "java.nio.ReadOnlyDirectByteBuffer"); //$NON-NLS-1$
                             Constructor<?> result = wrapperClazz
-                                    .getConstructor(new Class[] {
+                                    .getDeclaredConstructor(new Class[] {
+                                            PlatformAddress.class, int.class,
+                                            int.class, int.class });
+                            result.setAccessible(true);
+                            return result;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+
+        readWriteConstructor = AccessController
+                .doPrivileged(new PrivilegedAction<Constructor<?>>() {
+                    public Constructor<?> run() {
+                        try {
+                            Class<?> wrapperClazz = ClassLoader
+                                    .getSystemClassLoader().loadClass(
+                                            "java.nio.ReadWriteDirectByteBuffer"); //$NON-NLS-1$
+                            Constructor<?> result = wrapperClazz
+                                    .getDeclaredConstructor(new Class[] {
                                             PlatformAddress.class, int.class,
                                             int.class, int.class });
                             result.setAccessible(true);
@@ -55,8 +80,18 @@ class MappedByteBufferFactory {
          * Spec points out explicitly that the size of map should be no greater
          * than Integer.MAX_VALUE, so long to int cast is safe here.
          */
-        return (MappedByteBuffer) constructor.newInstance(new Object[] { addr,
+        switch (mapmode) {
+            case IMemorySystem.MMAP_READ_ONLY:
+                return (MappedByteBuffer) readOnlyConstructor.newInstance(new Object[] { addr,
                                                                          Integer.valueOf((int)size), Integer.valueOf(offset),
                                                                          Integer.valueOf(mapmode) });
+            case IMemorySystem.MMAP_READ_WRITE:
+            case IMemorySystem.MMAP_WRITE_COPY:
+                return (MappedByteBuffer) readWriteConstructor.newInstance(new Object[] { addr,
+                                                                         Integer.valueOf((int)size), Integer.valueOf(offset),
+                                                                         Integer.valueOf(mapmode) });
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }
