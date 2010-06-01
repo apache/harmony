@@ -79,11 +79,3 @@ endif
 ifeq ($(HY_ZIP_API),true)
 DEFINES += -DHY_ZIP_API
 endif
-
-ifeq ($(HY_LOCAL_ZLIB),true)
-DEFINES += -DHY_LOCAL_ZLIB
-OSLIBS += -lz
-MDLLIBZLIB =
-else
-MDLLIBZLIB += $(DLLPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
-endif
