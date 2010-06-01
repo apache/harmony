@@ -318,9 +318,7 @@
     <!-- flags -->
     <property name="hy.no.thr" value="false" />
     <condition property="hy.skip.thr" value="true">
-        <not>
-            <equals arg1="${hy.no.thr}" arg2="false" />
-        </not>
+        <istrue value="${hy.no.thr}" />
     </condition>
 
     <property name="hy.thr.no.deploy" value="false" />
@@ -330,16 +328,12 @@
 
     <property name="hy.local.zlib" value="false" />
     <condition property="hy.skip.zlib" value="true">
-        <not>
-            <equals arg1="${hy.local.zlib}" arg2="false" />
-        </not>
+        <istrue value="${hy.local.zlib}" />
     </condition>
 
     <property name="hy.zip.api" value="false" />
     <condition property="hy.skip.zip.api" value="true">
-        <not>
-            <equals arg1="${hy.zip.api}" arg2="true" />
-        </not>
+        <isfalse value="${hy.zip.api}" />
      </condition>
 
     <condition property="hy.portlib.stubs" value="true">
