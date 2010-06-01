@@ -77,7 +77,7 @@ public class Proxy implements Serializable {
      * @param loader
      *            the class loader that will define the proxy class
      * @param interfaces
-     *            an array of {@code Class} objects, each one identifying an
+     *            a list of {@code Class} objects, each one identifying an
      *            interface that will be implemented by the returned proxy
      *            class
      * @return a proxy class that implements all of the interfaces referred to
@@ -89,7 +89,7 @@ public class Proxy implements Serializable {
      *                {@code null}
      */
     public static Class<?> getProxyClass(ClassLoader loader,
-            Class<?>[] interfaces) throws IllegalArgumentException {
+            Class<?>... interfaces) throws IllegalArgumentException {
         // check that interfaces are a valid array of visible interfaces
         if (interfaces == null) {
             throw new NullPointerException();
