@@ -50,7 +50,7 @@ Thanks.
     <property name="vm.dir" value="drlvm" />
     <property name="vm.dir.loc" location="${vm.dir}" />
 
-    <property name="hy.local.zlib" value="false" />
+    <import file="common_resources/make/properties.xml" />
 
     <description>
         Apache Harmony project federation script
@@ -669,68 +669,10 @@ Usage:
     <!-- ============================================================== -->
     <!-- sets up a platform                                             -->
     <!-- ============================================================== -->
-    <target name="init" depends="-svn-prop">
-        <!-- Determine our operating system -->
-        <condition property="is.windows">
-            <os family="windows" />
-        </condition>
+    <target name="init" depends="-svn-info">
 
-        <condition property="is.unix">
-            <os family="unix" />
-        </condition>
-
-        <condition property="is.linux">
-            <os name="linux" />
-        </condition>
-
-        <!-- this special case makes sense -->
-        <condition property="harmony.os" value="windows">
-            <isset property="is.windows"/>
-        </condition>
-        <condition property="harmony.os" value="linux">
-            <os name="linux" />
-        </condition>
-
-        <property name="harmony.os" value="${os.name}" />
-
-        <!-- Conditions for different architectures -->
-        <condition property="is.x86_64">
-            <os arch="x86_64"/>
-        </condition>
-        <condition property="is.x86">
-            <or>
-                <os arch="x86"/>
-                <os arch="i386"/>
-            </or>
-        </condition>
-        <condition property="is.ia64">
-            <os arch="ia64" />
-        </condition>
-        <condition property="is.64bit">
-            <or>
-                <os arch="ia64" />
-                <os arch="x86_64"/>
-            </or>
-        </condition>
-        <condition property="is.32bit">
-            <or>
-                <os arch="x86"/>
-                <os arch="i386"/>
-            </or>
-        </condition>
-
-        <!-- Normalized architecture name -->
-        <condition property="harmony.arch" value="x86">
-            <isset property="is.x86" />
-        </condition>
-        <condition property="harmony.arch" value="x86_64">
-            <or>
-                <os arch="x86_64"/>
-                <os arch="amd64"/>
-                <os arch="em64t"/>
-            </or>
-        </condition>
-        <property name="harmony.arch" value="${os.arch}" />
+        <property name="harmony.version" value="${svn.revision}" />
+        <property name="harmony.long.version" value="${svn.info}" />
 
         <condition property="version.prefix" value="select-">
             <istrue value="${hy.select}" />
@@ -750,23 +692,23 @@ Usage:
         <property name="deploy.hdk.file.prefix"
                  value="${deploy.file.prefix}hdk-r${harmony.version}" />
         <property name="deploy.hdk.tar"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.tar.gz" />
+                 value="${deploy.hdk.file.prefix}-${hy.os}-${hy.arch}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.hdk.zip"
-                 value="${deploy.hdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.zip" />
+                 value="${deploy.hdk.file.prefix}-${hy.os}-${hy.arch}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jdk.file.prefix"
                  value="${deploy.file.prefix}jdk-r${harmony.version}" />
         <property name="deploy.jdk.tar"
-                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.tar.gz" />
+                 value="${deploy.jdk.file.prefix}-${hy.os}-${hy.arch}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jdk.zip"
-                 value="${deploy.jdk.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.zip" />
+                 value="${deploy.jdk.file.prefix}-${hy.os}-${hy.arch}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.jre.file.prefix"
                  value="${deploy.file.prefix}jre-r${harmony.version}" />
         <property name="deploy.jre.tar"
-                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.tar.gz" />
+                 value="${deploy.jre.file.prefix}-${hy.os}-${hy.arch}${harmony.deploy.suffix}.tar.gz" />
         <property name="deploy.jre.zip"
-                 value="${deploy.jre.file.prefix}-${harmony.os}-${harmony.arch}${harmony.deploy.suffix}.zip" />
+                 value="${deploy.jre.file.prefix}-${hy.os}-${hy.arch}${harmony.deploy.suffix}.zip" />
 
         <property name="deploy.src.file.prefix"
                  value="${deploy.file.prefix}src-r${harmony.version}" />
@@ -793,8 +735,8 @@ Usage:
                    Apache Harmony Federated Build
             ==========================================
             svn rev          :  ${harmony.version}
-            operating system :  ${harmony.os}
-            CPU architecture :  ${harmony.arch}
+            operating system :  ${hy.os}
+            CPU architecture :  ${hy.arch}
             ant os name/arch :  ${os.name}/${os.arch}
             hosting Java     :  ${java.version} (${java.vendor})
             build mode       :  ${hy.cfg}
@@ -803,46 +745,6 @@ Usage:
         </echo>
     </target>
 
-    <!-- ============================================================== -->
-    <!-- svn-prop: gets svn revision number of the build.xml file       -->
-    <!-- ============================================================== -->
-    <target name="-svn-prop">
-        
-        <tempfile suffix=".xml" property="svn.tmp"/>
-        <exec executable="svn" output="${svn.tmp}" resultproperty="svn.rc">
-            <arg line="info ${basedir} --non-interactive --xml" />
-        </exec>
-        <condition property="svn.info.file" value="${svn.tmp}">
-            <equals arg1="0" arg2="${svn.rc}"/>
-        </condition>
-        <xmlproperty file="${svn.info.file}" prefix="federated" 
-            keeproot="no" collapseAttributes="yes"/>
-        <delete file="${svn.tmp}" quiet="true"/>
-
-        <condition property="is.svn">
-            <isset property="federated.entry.revision"/>
-        </condition>
-
-        <condition property="svn.revision" value="${federated.entry.revision}" else="unknown">
-            <isset property="is.svn"/>
-        </condition>
-            <condition property="svn.root" 
-                value="${federated.entry.repository.root}"
-                else="http://svn.apache.org/repos/asf">
-                <isset property="is.svn"/>
-            </condition>
-
-        <condition property="svn.info" value="${svn.root} ${svn.revision}">
-            <isset property="is.svn"/>
-        </condition>
-        <tstamp>
-            <format property="svn.info" pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
-        </tstamp>
-
-        <property name="harmony.version" value="${svn.revision}" />
-        <property name="harmony.long.version" value="${svn.info}" />
-
-    </target>
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
 
