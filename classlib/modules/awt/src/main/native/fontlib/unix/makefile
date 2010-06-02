@@ -32,10 +32,6 @@ BUILDFILES = \
   FontLibExports.o \
   $(SHAREDSUB)TypeDefinition.o
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 OSLIBS += $(STDCLIBS)

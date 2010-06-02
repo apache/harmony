@@ -34,10 +34,6 @@ BUILDFILES = \
 
 OSLIBS += -lpng
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a
-endif
-
 MDLLIBFILES += $(MDLLIBZLIB) \
 	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 

@@ -20,10 +20,6 @@ INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)/include
 BUILDFILES = \
   $(SHAREDSUB)/org_apache_harmony_awt_gl_opengl_GL.o
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 OSLIBS += $(STDCLIBS)

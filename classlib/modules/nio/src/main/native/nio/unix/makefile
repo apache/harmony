@@ -25,10 +25,6 @@ ifeq ($(HY_OS),linux)
 BUILDFILES += EpollSelectorImpl.o
 endif
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a 
-endif
-
 MDLLIBFILES = $(LIBPATH)libhycommon.a
 
 DLLNAME = $(DLLPATH)libhynio$(HY_SHLIB_SUFFIX)

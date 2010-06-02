@@ -21,10 +21,6 @@ BUILDFILES = $(SHAREDSUB)JpegDecoder.o
 
 OSLIBS += -ljpeg
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 DLLNAME=$(DLLPATH)libjpegdecoder$(HY_SHLIB_SUFFIX)
