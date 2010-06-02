@@ -22,7 +22,11 @@ include $(HY_HDK)/build/make/defines.mk
 INCLUDES += -I../../zlib_dist
 
 BUILDFILES = $(SHAREDSUB)zcpool.o $(SHAREDSUB)zipalloc.o \
-	$(SHAREDSUB)zipcache.o $(SHAREDSUB)zipsup.o
+	$(SHAREDSUB)zipcache.o $(SHAREDSUB)zipsup.o pool.o pool_cap.o
+
 LIBNAME = $(LIBPATH)libhyzip.a
+
+%.o: $(LIBPATH)libhypool.a(%.o)
+	ar xo $(LIBPATH)libhypool.a $@
 
 include $(HY_HDK)/build/make/rules.mk

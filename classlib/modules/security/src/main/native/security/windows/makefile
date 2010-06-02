@@ -28,7 +28,7 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib
 
-MDLLIBFILES = $(LIBPATH)hycommon$(HY_LINKLIB_SUFFIX) $(LIBPATH)hypool$(HY_LINKLIB_SUFFIX)
+MDLLIBFILES = $(LIBPATH)hycommon$(HY_LINKLIB_SUFFIX)
 DLLBASE=0x1300000
 
 !include <$(HY_HDK)\build\make\rules.mak>

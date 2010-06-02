@@ -20,7 +20,7 @@
 include $(HY_HDK)/build/make/defines.mk
 
 BUILDFILES = $(SHAREDSUB)vmi_copyright.o $(SHAREDSUB)vmi.o
-MDLLIBFILES = $(LIBPATH)libhypool.a
+MDLLIBFILES =
 
 DLLNAME = ../libvmi$(HY_SHLIB_SUFFIX)
 EXPNAME = VMI_0.1

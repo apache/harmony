@@ -26,5 +26,6 @@ BUILDFILES = \
 	$(SHAREDSUB)zipcache.obj $(SHAREDSUB)zipsup.obj
 
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB) /I..\..\include\shared /I..\..\include\windows
+MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)hypool$(HY_LINKLIB_SUFFIX)
 
 !include <$(HY_HDK)\build\make\rules.mak>

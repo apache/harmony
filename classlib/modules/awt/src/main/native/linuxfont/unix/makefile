@@ -30,7 +30,7 @@ ifneq ($(HY_ZIP_API),true)
 MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
 endif
 
-MDLLIBFILES += $(LIBPATH)libhypool.a \
+MDLLIBFILES += \
 	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX) \
 	$(DLLPATH)libFL$(HY_LINKLIB_SUFFIX)
 
