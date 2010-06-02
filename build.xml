@@ -50,6 +50,9 @@ Thanks.
     <property name="vm.dir" value="drlvm" />
     <property name="vm.dir.loc" location="${vm.dir}" />
 
+    <!-- import some vm-specific properties -->
+    <property file="${vm.dir.loc}/make/build.properties" />
+
     <import file="common_resources/make/properties.xml" />
 
     <description>
@@ -453,6 +456,8 @@ Usage:
         <propertyref name="use.libstdc++5" />
         <propertyref name="harmony.java.version" />
         <propertyref name="is.federated.build" />
+        <propertyref name="hy.no.thr" />
+        <propertyref name="hy.zip.api" />
     </propertyset>
     
     <target name="build-classlib"
