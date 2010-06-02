@@ -27,8 +27,6 @@ BUILDFILES = $(SHAREDSUB)org_apache_harmony_awt_gl_opengl_GL.obj
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib
 
-MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)vmi$(HY_LINKLIB_SUFFIX)
-
 DLLBASE=0x13300000
 
 !include <$(HY_HDK)\build\make\rules.mak>

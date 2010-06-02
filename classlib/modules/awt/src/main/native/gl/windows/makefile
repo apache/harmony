@@ -45,7 +45,6 @@ SYSLIBFILES = ws2_32.lib Iphlpapi.lib \
               Msimg32.lib gdiplus.lib User32.lib uxTheme.lib 
 
 MDLLIBFILES = $(MDLLIBFILES) \
-  $(LIBPATH)vmi$(HY_LINKLIB_SUFFIX) \
   $(LIBPATH)hyzlib$(HY_LINKLIB_SUFFIX) $(PNG_DIR)libpng$(HY_LINKLIB_SUFFIX)
 
 DLLBASE=0x13300000

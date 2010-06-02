@@ -26,14 +26,6 @@ MDLLIBFILES += $(LIBPATH)libpng.a
 DEFINES += -DPNGAPI=
 endif
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
-OSLIBS += $(STDCLIBS)
-
 ifeq ($(HY_OS),zos)
 MDLLIBFILES += $(MDLLIBZLIB)
 endif

@@ -29,8 +29,6 @@ BUILDFILES = \
 VIRTFILES = accessors.res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib
 
-MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)vmi$(HY_LINKLIB_SUFFIX)
-
 DLLBASE=0x13300000
 
 !include <$(HY_HDK)\build\make\rules.mak>

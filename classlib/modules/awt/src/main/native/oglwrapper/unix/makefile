@@ -20,8 +20,6 @@ INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)/include
 BUILDFILES = \
   $(SHAREDSUB)/org_apache_harmony_awt_gl_opengl_GL.o
 
-MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
 OSLIBS += $(STDCLIBS)
 
 DLLNAME=$(DLLPATH)liboglwrapper$(HY_SHLIB_SUFFIX)
