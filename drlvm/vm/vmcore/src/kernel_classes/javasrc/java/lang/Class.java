@@ -333,7 +333,7 @@ public final class Class<T> implements Serializable, AnnotatedElement, GenericDe
      * Note: We don't check member access permission for each super class.
      * Java 1.5 API specification doesn't require this check.
      */
-    public Class[] getClasses() {
+    public Class<?>[] getClasses() {
         checkMemberAccess(Member.PUBLIC);
         Class<?> clss = this;
         ArrayList<Class<?>> classes = null;
@@ -378,7 +378,7 @@ public final class Class<T> implements Serializable, AnnotatedElement, GenericDe
         return VMClassRegistry.getComponentType(this);
     }
 
-    public Constructor<T> getConstructor(Class... argumentTypes)
+    public Constructor<T> getConstructor(Class<?>... argumentTypes)
         throws NoSuchMethodException {
         checkMemberAccess(Member.PUBLIC);
         Constructor<T> ctors[] = getReflectionData().getPublicConstructors(); 
@@ -395,19 +395,19 @@ public final class Class<T> implements Serializable, AnnotatedElement, GenericDe
     }
 
     @SuppressWarnings("unchecked")
-    public Constructor[] getConstructors() {
+    public Constructor<?>[] getConstructors() {
         checkMemberAccess(Member.PUBLIC);
         return Reflection.copyConstructors(getReflectionData().getPublicConstructors());
     }
 
     @SuppressWarnings("unchecked")
-    public Class[] getDeclaredClasses() {
+    public Class<?>[] getDeclaredClasses() {
         checkMemberAccess(Member.DECLARED);
         return VMClassRegistry.getDeclaredClasses(this);
     }
 
     @SuppressWarnings("unchecked")
-    public Constructor<T> getDeclaredConstructor(Class... argumentTypes)
+    public Constructor<T> getDeclaredConstructor(Class<?>... argumentTypes)
         throws NoSuchMethodException {
         checkMemberAccess(Member.DECLARED);
         return Reflection
@@ -415,7 +415,7 @@ public final class Class<T> implements Serializable, AnnotatedElement, GenericDe
     }
 
     @SuppressWarnings("unchecked")
-    public Constructor[] getDeclaredConstructors() {
+    public Constructor<?>[] getDeclaredConstructors() {
         checkMemberAccess(Member.DECLARED);
         return Reflection.copyConstructors(getReflectionData().getDeclaredConstructors());
     }
@@ -438,7 +438,8 @@ public final class Class<T> implements Serializable, AnnotatedElement, GenericDe
     }
 
     @SuppressWarnings("unchecked")
-    public Method getDeclaredMethod(String methodName, Class... argumentTypes)
+    public Method getDeclaredMethod(String methodName,
+                                    Class<?>... argumentTypes)
         throws NoSuchMethodException {
         checkMemberAccess(Member.DECLARED);
         return Reflection
@@ -472,12 +473,12 @@ public final class Class<T> implements Serializable, AnnotatedElement, GenericDe
     }
 
     @SuppressWarnings("unchecked")
-    public Class[] getInterfaces() {
+    public Class<?>[] getInterfaces() {
         return VMClassRegistry.getInterfaces(this);
     }
 
     @SuppressWarnings("unchecked")
-    public Method getMethod(String methodName, Class... argumentTypes)
+    public Method getMethod(String methodName, Class<?>... argumentTypes)
         throws NoSuchMethodException {
         checkMemberAccess(Member.PUBLIC);
         return Reflection

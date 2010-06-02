@@ -48,7 +48,7 @@ public interface Member {
      * @return the declaring class
      */
     @SuppressWarnings("unchecked")
-    Class getDeclaringClass();
+    Class<?> getDeclaringClass();
 
     /**
      * Returns the modifiers for this member. The {@link Modifier} class should

@@ -214,7 +214,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      */
     @SuppressWarnings("unchecked") // According to spec
-    public Class[] getClasses() {
+    public Class<?>[] getClasses() {
         return null;
     }
 
@@ -322,7 +322,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      * @see #getDeclaredConstructor(Class[])
      */
-    public Constructor<T> getConstructor(Class... parameterTypes)
+    public Constructor<T> getConstructor(Class<?>... parameterTypes)
             throws NoSuchMethodException, SecurityException {
         return null;
     }
@@ -340,7 +340,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      * @see #getDeclaredConstructors()
      */
-    public Constructor[] getConstructors() throws SecurityException {
+    public Constructor<?>[] getConstructors() throws SecurityException {
         return null;
     }
 
@@ -371,7 +371,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             if a security manager exists and it does not allow member
      *             access.
      */
-    public Class[] getDeclaredClasses() throws SecurityException {
+    public Class<?>[] getDeclaredClasses() throws SecurityException {
         return new Class[0];
     }
 
@@ -390,7 +390,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      * @see #getConstructor(Class[])
      */
-    public Constructor<T> getDeclaredConstructor(Class... parameterTypes)
+    public Constructor<T> getDeclaredConstructor(Class<?>... parameterTypes)
             throws NoSuchMethodException, SecurityException {
         return null;
     }
@@ -409,7 +409,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      * @see #getConstructors()
      */
-    public Constructor[] getDeclaredConstructors() throws SecurityException {
+    public Constructor<?>[] getDeclaredConstructors() throws SecurityException {
         return new Constructor[0];
     }
 
@@ -468,7 +468,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      * @see #getMethod(String, Class[])
      */
-    public Method getDeclaredMethod(String name, Class... parameterTypes)
+    public Method getDeclaredMethod(String name, Class<?>... parameterTypes)
             throws NoSuchMethodException, SecurityException {
         return null;
     }
@@ -618,7 +618,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      * @return an array with the interfaces of the class represented by this
      *         class.
      */
-    public Class[] getInterfaces() {
+    public Class<?>[] getInterfaces() {
         return new Class[0];
     }
 
@@ -641,7 +641,7 @@ public final class Class<T> implements Serializable, AnnotatedElement,
      *             access.
      * @see #getDeclaredMethod(String, Class[])
      */
-    public Method getMethod(String name, Class... parameterTypes)
+    public Method getMethod(String name, Class<?>... parameterTypes)
             throws NoSuchMethodException, SecurityException {
         return null;
     }
