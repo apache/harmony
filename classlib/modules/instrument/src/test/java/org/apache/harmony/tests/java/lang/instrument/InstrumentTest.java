@@ -205,4 +205,16 @@ public class InstrumentTest extends TestCase {
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
     }
+
+    /**
+     * @tests test manifest Boot-Class-Path property is treated 
+     *        correctly
+     */
+    public void test_boot_class_path() throws Exception {
+        String[] arg = new String[2];
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/BCPTest.jar";
+        arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
+        String result = Support_Exec.execJava(arg, null, true);
+        assertEquals("Hello World", result.trim());
+    }
 }

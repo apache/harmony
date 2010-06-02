@@ -380,10 +380,35 @@ jint Parse_Options(JavaVM *vm, JNIEnv *env, jvmtiEnv *jvmti,  const char *agent)
     //add bootclasspath
 
     bootclasspath = read_attribute(vm, manifest, lwrmanifest,"boot-class-path");
-    if(NULL != bootclasspath){
+    if (NULL != bootclasspath){
+        
+#if defined(WIN32) || defined(WIN64)
+        // On Windows the agent jar path can have a mixture of forward and back slashes.
+        // For ease, convert forward slashes to back slashes
+        char *currentSlash = strchr(jar_name, '/');
+        while (currentSlash) {
+            *currentSlash = '\\';
+            currentSlash = strchr(currentSlash, '/');
+        }
+#endif
+
         bootclasspath_item = strtok(bootclasspath, " ");
         while(NULL != bootclasspath_item){
-            check_jvmti_error(env, (*jvmti)->AddToBootstrapClassLoaderSearch(jvmti, bootclasspath_item),"Failed to add bootstrap classpath.");
+            if ((bootclasspath_item[0] != DIR_SEPARATOR) && (strrchr(jar_name, DIR_SEPARATOR))) {
+                // This is not an absolute path, so add this relative path to the path of the agent library
+                int lastSeparatorOff = strrchr(jar_name, DIR_SEPARATOR) - jar_name + 1;
+                int size = lastSeparatorOff + strlen(bootclasspath_item) + 1;
+                char *jarPath = (char *)hymem_allocate_memory(size);
+                
+                memcpy(jarPath, jar_name, lastSeparatorOff);
+                strcpy(jarPath + lastSeparatorOff, bootclasspath_item);
+                check_jvmti_error(env, (*jvmti)->AddToBootstrapClassLoaderSearch(jvmti, jarPath),"Failed to add bootstrap classpath.");
+                hymem_free_memory(jarPath);
+            } else {
+                // This is either an absolute path of jar_name has not path before the filename
+                check_jvmti_error(env, (*jvmti)->AddToBootstrapClassLoaderSearch(jvmti, bootclasspath_item),"Failed to add bootstrap classpath.");
+            }           
+
             bootclasspath_item = strtok(NULL, " ");
         }
         hymem_free_memory(bootclasspath);
