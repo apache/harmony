@@ -24,7 +24,9 @@ CPP = $(CC) -E
 AS = as
 AR = ar
 RANLIB=echo
-ARFLAGS = rcv
+ARFLAGS =
+ARCREATE = rcv
+AREXTRACT = xo
 DLL_LD = $(CC)
 DLL_LDFLAGS = -shared -Wl,-soname=$(@F) -Wl,--version-script,$(EXPFILE)
 CXX_DLL_LD = $(CXX)
