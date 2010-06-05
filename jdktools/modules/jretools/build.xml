@@ -19,11 +19,10 @@
 <project name="JRE Tools Build" default="build" basedir=".">
     <description>Build for JRE Tools component</description>
 
+    <property name="hy.component" value="jdktools" />
     <property name="hy.module" value="jretools" />
-    <property name="hy.hdk" location="../../deploy" />
-    <import file="../../make/properties.xml" />
-    <property name="depends.dir" location="${common.resources}/depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
     <property file="../../make/depends.properties" />
     <property file="${common.resources}/make/depends.properties" />
@@ -60,22 +59,22 @@
     <target name="-clean-java" unless="skip.java.build">
         <delete file="${hy.jre}/lib/tools.jar" />
         <delete file="${hy.jre}/lib/tools-src.jar" />
-        <delete dir="bin/main" includeemptydirs="true" failonerror="false" />
+        <delete dir="${hy.build.mod}/java" includeemptydirs="true" failonerror="false" />
     </target>
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin/test"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
         <echo message="Compiling ${hy.module} classes" />
         <ensure-javac/>
-        <mkdir dir="bin/main" />
+        <mkdir dir="${hy.build.mod}/java" />
 
         <hy.javac sourcepath=""
                srcdir="src/main/java"
-               destdir="bin/main">
+               destdir="${hy.build.mod}/java">
 
             <compilerarg line="${build.compilerarg}" />
 
@@ -107,7 +106,7 @@
 
         <hy.jar.bin destfile="${hy.jre}/lib/tools.jar"
              manifest="META-INF/MANIFEST.MF">
-            <fileset dir="bin/main" />
+            <fileset dir="${hy.build.mod}/java" />
             <fileset dir="src/main/java">
                 <exclude name="**/*.java" />
             </fileset>
@@ -125,7 +124,7 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
-            <fileset dir="bin/test" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
 
         <mkdir dir="${tests.excludes.hdk.dir}"/>
