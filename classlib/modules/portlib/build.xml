@@ -158,8 +158,8 @@
         </copy>
     </target>
 
-    <target name="-build-copy-thread" unless="hy.thr.nodeploy">
-        <!-- TOFIX: should add property for: unless="skip.native.build" -->
+    <target name="-build-copy-thread" if="hy.thr.deploy"
+            unless="skip.native.build">
         <copy todir="${hy.jdk}/jre/bin" preservelastmodified="true">
             <fileset dir="src/main/native/thread">
                 <include name="*${shlib.suffix}*" />

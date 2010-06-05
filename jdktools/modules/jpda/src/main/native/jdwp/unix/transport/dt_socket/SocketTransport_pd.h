@@ -57,7 +57,9 @@ typedef int SOCKET;
 typedef timeval TIMEVAL;
 typedef int BOOL;
 
-const int TRUE = 1;
+#ifndef TRUE
+#define TRUE 1
+#endif
 const int SOCKET_ERROR = -1;
 const int SOCKET_ERROR_EINTR = EINTR;
 const int INVALID_SOCKET = -1;

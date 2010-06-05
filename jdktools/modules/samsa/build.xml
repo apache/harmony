@@ -31,7 +31,7 @@
     <target name="-test-module" depends="run-tests" />
 
     <target name="build-native" unless="skip.native.build"
-            depends="-compile-native,-copy-native-exe,
+            depends="-compile-native,-copy-native-exe,-copy-native-not-select,
                      -copy-native-exe-windows,-copy-native-data" />
 
     <!-- compile universal samsa binary -->
@@ -64,9 +64,6 @@
         <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/jarsigner${exe.suffix}" />
         <chmod file="${hy.jdk}/bin/jarsigner${exe.suffix}" perm="ugo+x" />
 
-        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/appletviewer${exe.suffix}" />
-        <chmod file="${hy.jdk}/bin/appletviewer${exe.suffix}" perm="ugo+x" />
-
         <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/keytool${exe.suffix}" />
         <chmod file="${hy.jdk}/bin/keytool${exe.suffix}" perm="ugo+x" />
 
@@ -82,16 +79,6 @@
         <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/jar${exe.suffix}" />
         <chmod file="${hy.jdk}/bin/jar${exe.suffix}" perm="ugo+x" />
 
-        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/rmic${exe.suffix}" />
-        <chmod file="${hy.jdk}/bin/rmic${exe.suffix}" perm="ugo+x" />
-        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/rmid${exe.suffix}" />
-        <chmod file="${hy.jdk}/bin/rmid${exe.suffix}" perm="ugo+x" />
-        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/rmiregistry${exe.suffix}" />
-        <chmod file="${hy.jdk}/bin/rmiregistry${exe.suffix}" perm="ugo+x" />
-
-        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/serialver${exe.suffix}" />
-        <chmod file="${hy.jdk}/bin/serialver${exe.suffix}" perm="ugo+x" />
-
         <copy file="${hy.samsa.exe}" tofile="${hy.jre}/bin/keytool${exe.suffix}" />
         <chmod file="${hy.jre}/bin/keytool${exe.suffix}" perm="ugo+x" />
 
@@ -101,7 +88,30 @@
     	<copy file="${hy.samsa.exe}" tofile="${hy.jre}/bin/pack200${exe.suffix}" />
     	<chmod file="${hy.jre}/bin/pack200${exe.suffix}" perm="ugo+x" />
 
-    	<copy file="${hy.samsa.exe}" tofile="${hy.jre}/bin/policytool${exe.suffix}" />
+    </target>
+
+    <!-- copy samsa executable for different tools -->
+    <target name="-copy-native-not-select" unless="skip.native.build"
+            if="is.not.select">
+
+        <copy file="${hy.samsa.exe}"
+              tofile="${hy.jdk}/bin/appletviewer${exe.suffix}" />
+        <chmod file="${hy.jdk}/bin/appletviewer${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/rmic${exe.suffix}" />
+        <chmod file="${hy.jdk}/bin/rmic${exe.suffix}" perm="ugo+x" />
+        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/rmid${exe.suffix}" />
+        <chmod file="${hy.jdk}/bin/rmid${exe.suffix}" perm="ugo+x" />
+        <copy file="${hy.samsa.exe}"
+              tofile="${hy.jdk}/bin/rmiregistry${exe.suffix}" />
+        <chmod file="${hy.jdk}/bin/rmiregistry${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}"
+              tofile="${hy.jdk}/bin/serialver${exe.suffix}" />
+        <chmod file="${hy.jdk}/bin/serialver${exe.suffix}" perm="ugo+x" />
+
+    	<copy file="${hy.samsa.exe}"
+              tofile="${hy.jre}/bin/policytool${exe.suffix}" />
         <chmod file="${hy.jre}/bin/policytool${exe.suffix}" perm="ugo+x" />
 
     </target>

@@ -18,14 +18,14 @@ DEFINES += -DAIX -DAIX_PPC64 -DHYPPC64 -D_Xconst="" -DIPv6_FUNCTION_SUPPORT
 PLATFORM += -qcpluscmt -q64 -DPPC64 -q mbcs -qlanglvl=extended -qarch=ppc \
             -qinfo=pro -qalias=noansi -D_XOPEN_SOURCE_EXTENDED=1 -D_ALL_SOURCE \
             -D_LARGE_FILES -qsuppress=1500-010
-OSLIBS = -lc_r -lC_r -lm -lpthread -liconv
+OSLIBS = -lc_r -lC_r -lpthread -liconv
 XLIBS = -L/opt/freeware/lib -lX11 -lXft -lfreetype -lfontconfig -lXext -lXtst
 STDCLIBS = 
 WARNFLAGS =
 HYDEBUGCFLAGS = -g -O0
 HYRELEASEFLAGS = -s -O3 -DNDEBUG
 
-ARFLAGS = -X64 rcv
+ARFLAGS = -X64
 ASFLAGS += -a64 -many
 DLL_LD = $(LD)
 DLL_LDFLAGS = -bE:$(EXPFILE)

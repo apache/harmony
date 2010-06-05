@@ -34,12 +34,17 @@
         <check-one-file src="${jdt.jdimodel.jar.url}"
                         dest="${jdt.jdimodel.jar}" />
         <check-one-file src="${icu.url}" dest="${icu.jar}" />
+        <check-one-file dest="${junit.jar}" src="${junit.jar.url}"/>
+        <check-one-file dest="${hamcrest-library.jar}"
+                        src="${hamcrest-library.jar.url}"/>
     </target>
 
     <target name="fetch-depends" unless="skip.java.build">
         <fetch dep="jdt.jdi.jar"/>
         <fetch dep="jdt.jdimodel.jar"/>
         <fetch dep="icu"/>
+        <fetch dep="junit.jar"/>
+        <fetch dep="hamcrest-library.jar"/>
     </target>
 
     <target name="build"

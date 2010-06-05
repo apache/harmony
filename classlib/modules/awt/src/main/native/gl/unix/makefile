@@ -34,14 +34,6 @@ BUILDFILES = \
 
 OSLIBS += -lpng
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a
-endif
-
-MDLLIBFILES += $(MDLLIBZLIB) \
-	$(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
 OSLIBS += $(STDCLIBS) $(XLIBS)
 
 DLLNAME=$(DLLPATH)libgl$(HY_SHLIB_SUFFIX)

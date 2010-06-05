@@ -26,13 +26,6 @@ BUILDFILES = \
 
 OSLIBS += -llcms
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += $(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
 DLLNAME=$(DLLPATH)liblcmm$(HY_SHLIB_SUFFIX)
 EXPNAME=HYLCMM_0.1
 

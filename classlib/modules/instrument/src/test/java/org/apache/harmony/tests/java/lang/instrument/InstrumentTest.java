@@ -28,10 +28,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_addTransformer_null() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_addTransformer_null.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Premain_addTransformer_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_addTransformer_null.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Premain_addTransformer_null.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
     }
@@ -41,10 +41,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_removeTransformer_null() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_null.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_null.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_null.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
     }
@@ -54,10 +54,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_removeTransformer_notExists() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_notExists.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_notExists.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_notExists.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_notExists.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
     }
@@ -67,10 +67,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_loadClass_null() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/loading_class.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/loading_class.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/loading_class.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/loading_class.jar";
         try {
             Support_Exec.execJava(arg, path, true);
             fail("Should fail here!");
@@ -85,10 +85,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_new_classLoader_Exists() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/new_classloader.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/new_classloader.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/new_classloader.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/new_classloader.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertNotNull(result);
     }
@@ -98,10 +98,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_Property_Premain_null() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Property_Premain_null.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Property_Premain_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Property_Premain_null.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Property_Premain_null.jar";
         try {
             Support_Exec.execJava(arg, path, true);
             fail("Should fail here!");
@@ -120,10 +120,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_Property_other_null() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Property_other_null.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Property_other_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Property_other_null.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Property_other_null.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertNotNull(result);
     }
@@ -133,10 +133,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_Properity_case_sensitive() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Properity_case_sensitive.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Properity_case_sensitive.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Properity_case_sensitive.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Properity_case_sensitive.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
     }
@@ -146,10 +146,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_BadFormatJar() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/BadFormatJar.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/BadFormatJar.jar";
         arg[1] = "";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/BadFormatJar.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/BadFormatJar.jar";
         try {
             Support_Exec.execJava(arg, path, true);
             fail("Should fail here!");
@@ -167,10 +167,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_Premain_Class_null() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_Class_null.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/Premain_Class_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_Class_null.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/Premain_Class_null.jar";
         try {
             Support_Exec.execJava(arg, path, true);
             fail("Should fail here!");
@@ -185,10 +185,10 @@ public class InstrumentTest extends TestCase {
      */
     public void test_zero_byte_transformer() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/zero_byte_class.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/zero_byte_class.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/zero_byte_class.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/zero_byte_class.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
     }
@@ -198,11 +198,23 @@ public class InstrumentTest extends TestCase {
      */
     public void test_old_version() throws Exception {
         String[] arg = new String[2];
-        arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/old_version_class.jar";
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/old_version_class.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
         String[] path = new String[1];
-        path[0] = "src/test/resources/jars/org/apache/harmony/tests/instrument/old_version_class.jar";
+        path[0] = "resources/jars/org/apache/harmony/tests/instrument/old_version_class.jar";
         String result = Support_Exec.execJava(arg, path, true);
         assertEquals("", result);
+    }
+
+    /**
+     * @tests test manifest Boot-Class-Path property is treated 
+     *        correctly
+     */
+    public void test_boot_class_path() throws Exception {
+        String[] arg = new String[2];
+        arg[0] = "-javaagent:resources/jars/org/apache/harmony/tests/instrument/BCPTest.jar";
+        arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
+        String result = Support_Exec.execJava(arg, null, true);
+        assertEquals("Hello World", result.trim());
     }
 }

@@ -21,13 +21,7 @@ include $(HY_HDK)/build/make/defines.mk
 
 BUILDFILES = $(SHAREDSUB)auth_copyright.o authnix.o
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += \
-        $(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
+MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 DLLNAME = $(DLLPATH)libhyauth$(HY_SHLIB_SUFFIX)
 EXPNAME = HYAUTH_0.1

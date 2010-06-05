@@ -29,9 +29,15 @@ ifneq ($(HY_ZIP_API),true)
 MDLLIBFILES +=	$(LIBPATH)libhyzip.a
 endif
 
+ifeq ($(HY_LOCAL_ZLIB),true)
+DEFINES += -DHY_LOCAL_ZLIB
+OSLIBS += -lz
+else
+MDLLIBZLIB += $(DLLPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
+endif
+
 MDLLIBFILES += \
-	$(MDLLIBZLIB) $(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
+	$(MDLLIBZLIB) $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 DLLNAME=$(DLLPATH)libhyarchive$(HY_SHLIB_SUFFIX)
 EXPNAME=HYARCHIVE_0.1
