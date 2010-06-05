@@ -19,15 +19,16 @@
 <project name="LUNI Build" default="build" basedir=".">
     <description>Build for LUNI component</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="luni" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
     <property file="../../make/depends.properties" />
 
-    <property name="fdlibm.dist" location="src/main/native/fdlibm_dist"/>
+    <property name="fdlibm.dist"
+              location="${hy.target}/depends/native/fdlibm_dist"/>
 
     <target name="build" depends="-build-no-check"/>
     <target name="-build-no-check" depends="-build-jar,-test-jar" />
@@ -79,14 +80,12 @@
              runtime the libvmi.so provided by the VM
              implementation is loaded
           -->
-        <copy todir="${hy.hdk}/lib" failonerror="false"
-              preservelastmodified="true">
-            <fileset dir="src/main/native/vmi">
+        <copy todir="${hy.hdk}/lib" flatten="true" preservelastmodified="true">
+            <fileset dir="${hy.build.mod}/native/vmi">
                 <include name="libvmi${shlib.suffix}"/>
-            </fileset>
-            <!-- Copy link exports file on z/OS -->
-            <fileset dir="src/main/native/vmi/${hy.os.family}">
-                <include name="*${linklib.suffix}" if="is.zos" />
+                <!-- Copy link exports file on z/OS -->
+                <include name="${hy.os.family}/*${linklib.suffix}"
+                         if="is.zos" />
             </fileset>
         </copy>
     </target>
@@ -121,6 +120,7 @@
 
     <!-- Overlay OSS packages into their required locations -->
     <target name="-unzip-oss" unless="skip.native.build">
+        <mkdir dir="${fdlibm.dist}"/>
         <untar src="${fdlibm.tar}" compression="gzip" dest="${fdlibm.dist}">
             <patternset>
                 <exclude name="fdlibm53"/>
@@ -228,7 +228,7 @@
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
@@ -267,11 +267,11 @@
               tofile="${tests.hdk.dir}/build.xml" />
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_api.jar">
-            <fileset dir="bin/test/api" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_impl.jar">
-            <fileset dir="bin/test/impl" />
+            <fileset dir="${hy.build.mod}/test/impl" />
         </hy.jar.bin>
 
         <copy todir="${tests.resources.hdk.dir}">
@@ -308,7 +308,7 @@
     <!-- compile both api tests and impl tests-->
     <target name="-compile-tests" unless="skip.test.build">
         <compile-tests description="${hy.module} api tests"
-                       destdir="bin/test/api">
+                       destdir="${hy.build.mod}/test/api">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/api/common" />
@@ -318,7 +318,7 @@
             </javac-elements>
         </compile-tests>
         <compile-tests description="${hy.module} impl tests"
-                       destdir="bin/test/impl">
+                       destdir="${hy.build.mod}/test/impl">
             <javac-elements>
                 <src>
                    <pathelement location="src/test/impl/common" />

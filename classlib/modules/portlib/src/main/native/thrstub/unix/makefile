@@ -14,15 +14,16 @@
 #  limitations under the License.
 
 #
-# Makefile for module 'thread'
+# Makefile for module 'thrstub'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/portlib/native/thrstub/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = $(SHAREDSUB)hythread.o
+BUILDFILES = hythread.o
 
 DLLNAME = $(LIBPATH)libhythr$(HY_SHLIB_SUFFIX)
 DBGPATH = $(LIBPATH)
 EXPNAME = HYTHR_0.2
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

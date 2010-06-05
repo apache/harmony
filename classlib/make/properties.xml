@@ -22,18 +22,33 @@
 <project name="Top-Level property definitions" default="echo" basedir="..">
     <description>
         Ant file of common properties to be imported by other ant files.
-        Property "hy.hdk" must be defined before this file is imported.
+        Property "hy.target" must be defined before this file is imported.
     </description>
 
     <property file="${user.home}/.harmony-classlib.properties" />
 
-    <fail message="Property 'hy.hdk' is not defined">
+    <fail message="Property 'hy.target' is not defined">
         <condition>
-            <not><isset property="hy.hdk" /></not>
+            <not><isset property="hy.target" /></not>
         </condition>
     </fail>
+    <fail message="Property 'hy.component' is not defined">
+        <condition>
+            <not><isset property="hy.component" /></not>
+        </condition>
+    </fail>
+    <fail message="Property 'hy.module' is not defined">
+        <condition>
+            <not><isset property="hy.module" /></not>
+        </condition>
+    </fail>
+    <property name="hy.hdk" location="${hy.target}/hdk" />
     <property name="hy.jdk" location="${hy.hdk}/jdk" />
     <property name="hy.jre" location="${hy.jdk}/jre" />
+    <property name="hy.build" location="${hy.target}/build/${hy.component}" />
+    <property name="hy.build.top" location="${hy.build}/toplevel" />
+    <property name="hy.build.mod" location="${hy.build}/${hy.module}" />
+    <property name="depends.dir" location="${hy.target}/depends" />
 
     <!-- Debug or release version -->
     <property name="hy.cfg" value="debug" />
@@ -41,7 +56,8 @@
 
     <!-- Javac properties -->
     <!-- Explicitly set to ECJ as the default compiler. -->
-    <property name="hy.javac.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+    <property name="hy.javac.compiler"
+              value="org.eclipse.jdt.core.JDTCompilerAdapter" />
     <property name="hy.javac.source" value="1.5" />
     <property name="hy.javac.target" value="1.5" />
     <property name="hy.javac.maxmem" value="384M" />
@@ -353,7 +369,7 @@
               value="${hy.platform}${hy.libstdc++.suffix}" />
 
     <!-- fileset to represent classes built by a module. -->
-    <fileset id="classes" dir="../../build/classes">
+    <fileset id="classes" dir="${hy.build.top}/java">
         <includesfile name="${hy.hdk}/build/ant/patternsets/${hy.module}.txt" />
     </fileset>
 
@@ -375,6 +391,16 @@
               value="${tests.hdk.dir}/resources" />
 
     <property name="findBugs.report" location="../../build/findbugs_report" />
+
+    <propertyset id="module.props">
+        <propertyref name="hy.component" />
+        <propertyref name="hy.test.vm.name" />
+        <propertyref name="svn.revision" />
+        <propertyref name="svn.info" />
+        <propertyref name="hy.no.thr" />
+        <propertyref name="hy.zip.api" />
+    </propertyset>
+
 
     <target name="echo" depends="-svn-prop, -svn-info, test-jre-vm-info"
             description="Display the properties defined by this ant file" >
@@ -568,12 +594,8 @@ properties in preference to these:
             <subant target="@{target}">
                 <!-- TODO: modules probably need to work these properties
                      out for themselves in order to reduce coupling -->
-                <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
-                <property name="hy.hdk" value="${hy.hdk}"/>
-                <property name="svn.revision" value="${svn.revision}"/>
-                <property name="svn.info" value="${svn.info}"/>
-                <property name="hy.no.thr" value="${hy.no.thr}"/>
-                <property name="hy.zip.api" value="${hy.zip.api}"/>
+                <property name="hy.target" location="${hy.target}"/>
+                <propertyset refid="module.props" />
                 <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}">
                     <containsregexp expression="&lt;target[^&gt;]*name=&quot;@{target}&quot;"/>
                 </fileset>
@@ -607,6 +629,7 @@ HY_LINKLIB_SUFFIX=${linklib.suffix}
                   executable="${make.command}"
                   dir="@{dir}">
                 <env key="HY_HDK" value="${hy.hdk}" />
+                <env key="HY_TARGET" value="${hy.target}" />
                 <arg line="${make.arg}" />
                 <arg line="@{target}" />
                 <make-elements />
@@ -748,7 +771,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
    
     <macrodef name="compile-classes">
         <attribute name="description" default="" />
-        <attribute name="destdir" default="../../build/classes" />
+        <attribute name="destdir" default="${hy.build.top}/java" />
         <element name="javac-elements" />
         <sequential>
             <echo message="Compiling @{description}" />
@@ -769,7 +792,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
 
     <macrodef name="compile-tests">
         <attribute name="description" default="" />
-        <attribute name="destdir" default="bin/test" />
+        <attribute name="destdir" default="${hy.build.mod}/test/api" />
         <element name="javac-elements" />
         <sequential>
             <echo message="Compiling @{description}" />
@@ -794,7 +817,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                     </fileset>
                 </bootclasspath>
 
-                <classpath location="../../build/classes" />
+                <classpath location="${hy.build.top}/java" />
                 <classpath location="${hy.hdk}/build/test/junit.jar" />
                 <classpath
                      location="${hy.hdk}/build/test/hamcrest-library.jar" />

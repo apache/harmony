@@ -13,28 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/awt/native/fontlib/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)include
 
-BUILDFILES = \
-  $(SHAREDSUB)fljni.o \
-  $(SHAREDSUB)EncodedValue.o \
-  $(SHAREDSUB)Environment.o \
-  $(SHAREDSUB)Font.o \
-  $(SHAREDSUB)Glyph.o \
-  $(SHAREDSUB)Outline.o \
-  $(SHAREDSUB)ParsingTables.o \
-  $(SHAREDSUB)T1Font.o \
-  $(SHAREDSUB)T1Glyph.o \
-  $(SHAREDSUB)TTCurve.o \
-  $(SHAREDSUB)TTFont.o \
-  FontLibExports.o \
-  $(SHAREDSUB)TypeDefinition.o
+BUILDFILES = fljni.o EncodedValue.o Environment.o Font.o Glyph.o Outline.o \
+  ParsingTables.o T1Font.o T1Glyph.o TTCurve.o TTFont.o FontLibExports.o \
+  TypeDefinition.o
 
 OSLIBS += $(STDCLIBS)
 
 DLLNAME=$(DLLPATH)libFL$(HY_LINKLIB_SUFFIX)
 EXPNAME=HYFONTLIB_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

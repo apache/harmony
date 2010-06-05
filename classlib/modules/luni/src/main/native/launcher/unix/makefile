@@ -17,11 +17,11 @@
 # Makefile for 'launcher'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/luni/native/launcher/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = $(SHAREDSUB)main.o $(SHAREDSUB)cmain.o \
-	$(SHAREDSUB)launcher_copyright.o $(SHAREDSUB)strbuf.o \
-	$(SHAREDSUB)libhlp.o
+BUILDFILES = main.o cmain.o launcher_copyright.o strbuf.o libhlp.o
+
 ifeq ($(HY_NO_THR),false)
 MDLLIBFILES += $(DLLPATH)libhyprt$(HY_LINKLIB_SUFFIX)
 else
@@ -34,4 +34,4 @@ ifeq ($(HY_OS),zos)
 MDLLIBFILES = $(LIBPATH)libhya2e.a $(LIBPATH)libhycommon.a
 endif
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

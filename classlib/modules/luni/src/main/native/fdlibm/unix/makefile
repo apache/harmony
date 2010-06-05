@@ -17,32 +17,24 @@
 # Makefile for module 'fdlibm'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/luni/native/fdlibm/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-FDLIBM_DIST=../../fdlibm_dist/
+OSS_DIST=$(HY_TARGET)/depends/native/fdlibm_dist/# Path to fdlibm
 
 BUILDFILES = \
-	$(FDLIBM_DIST)e_acos.o $(FDLIBM_DIST)e_acosh.o $(FDLIBM_DIST)e_asin.o $(FDLIBM_DIST)e_atan2.o \
-	$(FDLIBM_DIST)e_atanh.o $(FDLIBM_DIST)e_cosh.o $(FDLIBM_DIST)e_exp.o $(FDLIBM_DIST)e_fmod.o \
-	$(FDLIBM_DIST)e_gamma.o $(FDLIBM_DIST)e_gamma_r.o $(FDLIBM_DIST)e_hypot.o $(FDLIBM_DIST)e_j0.o \
-	$(FDLIBM_DIST)e_j1.o $(FDLIBM_DIST)e_jn.o $(FDLIBM_DIST)e_lgamma.o $(FDLIBM_DIST)e_lgamma_r.o \
-	$(FDLIBM_DIST)e_log.o $(FDLIBM_DIST)e_log10.o $(FDLIBM_DIST)e_pow.o $(FDLIBM_DIST)e_rem_pio2.o \
-	$(FDLIBM_DIST)e_remainder.o $(FDLIBM_DIST)e_scalb.o $(FDLIBM_DIST)e_sinh.o $(FDLIBM_DIST)e_sqrt.o \
-	$(FDLIBM_DIST)k_cos.o $(FDLIBM_DIST)k_rem_pio2.o $(FDLIBM_DIST)k_sin.o $(FDLIBM_DIST)k_standard.o \
-	$(FDLIBM_DIST)k_tan.o $(FDLIBM_DIST)s_asinh.o $(FDLIBM_DIST)s_atan.o $(FDLIBM_DIST)s_cbrt.o $(FDLIBM_DIST)s_ceil.o \
-	$(FDLIBM_DIST)s_copysign.o $(FDLIBM_DIST)s_cos.o $(FDLIBM_DIST)s_erf.o $(FDLIBM_DIST)s_expm1.o \
-	$(FDLIBM_DIST)s_fabs.o $(FDLIBM_DIST)s_finite.o $(FDLIBM_DIST)s_floor.o $(FDLIBM_DIST)s_frexp.o \
-	$(FDLIBM_DIST)s_ilogb.o $(FDLIBM_DIST)s_isnan.o $(FDLIBM_DIST)s_ldexp.o \
-	$(SHAREDSUB)s_lib_version.o \
-	$(FDLIBM_DIST)s_log1p.o $(FDLIBM_DIST)s_logb.o $(FDLIBM_DIST)s_matherr.o $(FDLIBM_DIST)s_modf.o \
-	$(FDLIBM_DIST)s_nextafter.o $(FDLIBM_DIST)s_rint.o $(FDLIBM_DIST)s_scalbn.o $(FDLIBM_DIST)s_signgam.o \
-	$(FDLIBM_DIST)s_significand.o $(FDLIBM_DIST)s_sin.o $(FDLIBM_DIST)s_tan.o $(FDLIBM_DIST)s_tanh.o \
-	$(FDLIBM_DIST)w_acos.o $(FDLIBM_DIST)w_acosh.o $(FDLIBM_DIST)w_asin.o $(FDLIBM_DIST)w_atan2.o \
-	$(FDLIBM_DIST)w_atanh.o $(FDLIBM_DIST)w_cosh.o $(FDLIBM_DIST)w_exp.o $(FDLIBM_DIST)w_fmod.o \
-	$(FDLIBM_DIST)w_gamma.o $(FDLIBM_DIST)w_gamma_r.o $(FDLIBM_DIST)w_hypot.o $(FDLIBM_DIST)w_j0.o \
-	$(FDLIBM_DIST)w_j1.o $(FDLIBM_DIST)w_jn.o $(FDLIBM_DIST)w_lgamma.o $(FDLIBM_DIST)w_lgamma_r.o \
-	$(FDLIBM_DIST)w_log.o $(FDLIBM_DIST)w_log10.o $(FDLIBM_DIST)w_pow.o $(FDLIBM_DIST)w_remainder.o \
-	$(FDLIBM_DIST)w_scalb.o $(FDLIBM_DIST)w_sinh.o $(FDLIBM_DIST)w_sqrt.o
+  e_acos.o e_acosh.o e_asin.o e_atan2.o e_atanh.o e_cosh.o e_exp.o e_fmod.o \
+  e_gamma.o e_gamma_r.o e_hypot.o e_j0.o e_j1.o e_jn.o e_lgamma.o \
+  e_lgamma_r.o e_log.o e_log10.o e_pow.o e_rem_pio2.o e_remainder.o e_scalb.o \
+  e_sinh.o e_sqrt.o \
+  k_cos.o k_rem_pio2.o k_sin.o k_standard.o k_tan.o \
+  s_asinh.o s_atan.o s_cbrt.o s_ceil.o s_copysign.o s_cos.o s_erf.o s_expm1.o \
+  s_fabs.o s_finite.o s_floor.o s_frexp.o s_ilogb.o s_isnan.o s_ldexp.o \
+  s_lib_version.o s_log1p.o s_logb.o s_matherr.o s_modf.o s_nextafter.o \
+  s_rint.o s_scalbn.o s_signgam.o s_significand.o s_sin.o s_tan.o s_tanh.o \
+  w_acos.o w_acosh.o w_asin.o w_atan2.o w_atanh.o w_cosh.o w_exp.o w_fmod.o \
+  w_gamma.o w_gamma_r.o w_hypot.o w_j0.o w_j1.o w_jn.o w_lgamma.o w_lgamma_r.o \
+  w_log.o w_log10.o w_pow.o w_remainder.o w_scalb.o w_sinh.o w_sqrt.o
 
 DEFINES += -D_IEEE_LIBM
 
@@ -56,4 +48,4 @@ endif
 endif
 PLATFORM := $(subst -fpic,-fPIC,$(PLATFORM))
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

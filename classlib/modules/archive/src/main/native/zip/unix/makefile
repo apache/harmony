@@ -17,16 +17,16 @@
 # Makefile for module 'zip'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/archive/native/zip/
+include $(HY_TARGET)/hdk/build/make/defines.mk
+ZLIB_DIST = $(HY_TARGET)/depends/native/zlib_dist/
+INCLUDES += -I$(ZLIB_DIST)
 
-INCLUDES += -I../../zlib_dist
-
-BUILDFILES = $(SHAREDSUB)zcpool.o $(SHAREDSUB)zipalloc.o \
-	$(SHAREDSUB)zipcache.o $(SHAREDSUB)zipsup.o pool.o pool_cap.o
+BUILDFILES = zcpool.o zipalloc.o zipcache.o zipsup.o pool.o pool_cap.o
 
 LIBNAME = $(LIBPATH)libhyzip.a
 
-%.o: $(LIBPATH)libhypool.a(%.o)
-	ar $(ARFLAGS) xo $(LIBPATH)libhypool.a $@
+$(HY_BIN)%.o: $(LIBPATH)libhypool.a(%.o)
+	( cd $(HY_BIN) && ar $(ARFLAGS) xo $(LIBPATH)libhypool.a $@ )
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

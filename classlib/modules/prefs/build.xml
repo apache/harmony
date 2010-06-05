@@ -21,10 +21,10 @@
 <project name="PREFS Build" default="build" basedir=".">
     <description>Build for PREFS component</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="prefs" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
     <property file="../../make/depends.properties" />
 
@@ -72,7 +72,7 @@
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
@@ -110,7 +110,7 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
-            <fileset dir="bin/test" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
 
         <mkdir dir="${tests.excludes.hdk.dir}"/>

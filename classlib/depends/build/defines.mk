@@ -17,6 +17,7 @@
 # Configuration Makefile
 #
 
+HY_HDK=$(HY_TARGET)/hdk
 include $(HY_HDK)/build/make/properties.mk
 
 CXX = $(CC)

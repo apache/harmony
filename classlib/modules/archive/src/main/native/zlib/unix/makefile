@@ -20,7 +20,8 @@
 # We don't need to debug into zlib
 HY_CFG=release
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/archive/native/zlib/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 HYRELEASECFLAGS = -O2
 
@@ -29,12 +30,11 @@ ifneq (,$(findstring x86,$(HY_ARCH)))
 HYRELEASECFLAGS += -DUNALIGNED_OK
 endif
 
-ZLIB_DIST=../../zlib_dist/# Path to zlib
+OSS_DIST=$(HY_TARGET)/depends/native/zlib_dist/# Path to zlib
 
 BUILDFILES = \
-	$(SHAREDSUB)zlib_copyright.o $(ZLIB_DIST)adler32.o $(ZLIB_DIST)compress.o \
-	$(ZLIB_DIST)crc32.o $(ZLIB_DIST)deflate.o $(ZLIB_DIST)infback.o $(ZLIB_DIST)inffast.o \
-	$(ZLIB_DIST)inflate.o $(ZLIB_DIST)inftrees.o $(ZLIB_DIST)trees.o $(ZLIB_DIST)uncompr.o $(ZLIB_DIST)zutil.o
+  zlib_copyright.o adler32.o compress.o crc32.o deflate.o infback.o \
+  inffast.o inflate.o inftrees.o trees.o uncompr.o zutil.o
 
 DLLNAME = $(DLLPATH)libhyzlib$(HY_SHLIB_SUFFIX)
 EXPNAME = HYZLIB_0.1
@@ -51,4 +51,4 @@ ifeq ($(HY_OS),zos)
 OPT += -DSTDC
 endif
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

@@ -19,7 +19,9 @@
 
 CFLAGS := $(DEFINES) $(INCLUDES) $(OPT) $(PLATFORM) $(CFLAGS) $(WARNFLAGS)
 CXXFLAGS := $(DEFINES) $(INCLUDES) $(OPT) $(PLATFORM) $(CXXFLAGS) $(WARNFLAGS)
-EXPFILE = $(notdir $(basename $(DLLNAME))).exp
+EXPFILE = $(HY_BIN)$(notdir $(basename $(DLLNAME))).exp
+
+BUILDFILES := $(addprefix $(HY_BIN),$(BUILDFILES))
 
 ifneq ($(HY_OS),zos)
 # Convert $(LIBPATH)libblah.so to -L$(LIBPATH) ... -lblah, also for $(DLLPATH)
@@ -34,7 +36,7 @@ MDLLIBARGS := \
   $(MDLLIBPREFIX) $(MDLLIBFILES) $(MDLLIBSUFFIX)
 endif
 
-all: $(DLLNAME) $(EXENAME) $(LIBNAME)
+all: $(HY_BIN) $(DLLNAME) $(EXENAME) $(LIBNAME)
 
 $(LIBNAME): $(BUILDFILES)
 	$(AR) $(ARFLAGS) $(ARCREATE) $@ $(BUILDFILES)
@@ -75,3 +77,59 @@ $(EXENAME): $(BUILDFILES) $(MDLLIBFILES)
 clean:
 	-rm -f $(BUILDFILES) $(DLLNAME) $(EXENAME) $(LIBNAME) $(EXPFILE) \
 	       $(CLEANFILES) $(DBGPATH)$(notdir $(DLLNAME)).dbg
+
+$(HY_BIN):
+	mkdir -p $(HY_BIN)
+
+# C rules
+$(HY_BIN)%.o: $(HY_PLATFORM)/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(HY_ARCH)/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(HY_OS)/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)additional/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: %.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(OSS_DIST)%.c # for zlib_dist / fdlibm_dist
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+# C++ rules
+$(HY_BIN)%.o: $(HY_ARCH)/%.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(HY_OS)/%.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)%.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+
+# assembler rules
+$(HY_BIN)%.o: $(HY_PLATFORM)/%.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: $(HY_ARCH)/%.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: $(HY_OS)/%.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)%.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: %.s
+	$(AS) $(ASFLAGS) -o $@ $<
+

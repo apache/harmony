@@ -33,7 +33,7 @@ Thanks.
     </fail>
 
     <!-- name of the target directory to use for building and final assembly -->
-    <property name="target.dir" value="target" />
+    <property name="hy.target" value="target" />
 
     <!-- release property file which is added to source release -->
     <property file="release.properties" />
@@ -41,7 +41,7 @@ Thanks.
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
-    <property name="hy.hdk" location="target/hdk" />
+    <property name="hy.hdk" location="${hy.target}/hdk" />
 
     <!-- property to identify when components are being built by the 
          federated build -->
@@ -138,10 +138,10 @@ Usage:
             <classpath path="${rat.home}/apache-rat-core/target/apache-rat-core-0.7-SNAPSHOT.jar" />
             <classpath path="${rat.home}/apache-rat/target/apache-rat-0.7-SNAPSHOT.jar" />
         </typedef>
-        <delete file="target/rat.report.txt" />
+        <delete file="${hy.target}/rat.report.txt" />
         <rat:report xmlns:rat="antlib:org.apache.rat.anttasks"
-                    reportFile="target/rat.report.txt" >
-            <fileset dir="target/src" excludesfile="rat.excludes" />
+                    reportFile="${hy.target}/rat.report.txt" >
+            <fileset dir="${hy.target}/src" excludesfile="rat.excludes" />
         </rat:report>
     </target>
 
@@ -180,8 +180,8 @@ Usage:
 
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
-        <tar tarfile="${target.dir}/${deploy.hdk.tar}" compression="gzip">
-            <tarfileset dir="${target.dir}/hdk"
+        <tar tarfile="${hy.target}/${deploy.hdk.tar}" compression="gzip">
+            <tarfileset dir="${hy.target}/hdk"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}"
                         mode="755">
                 <include name="jdk/jre/bin/java"/>
@@ -191,7 +191,7 @@ Usage:
                 <include name="jdk/jre/bin/unpack200"/>
                 <include name="jdk/bin/*"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk"
+            <tarfileset dir="${hy.target}/hdk"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java"/>
@@ -202,22 +202,22 @@ Usage:
                 <exclude name="jdk/bin/*"/>
                 <exclude name="jdk/jre/README"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+            <tarfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="README"/>
             </tarfileset>
         </tar>
 
-        <chksum dir="${target.dir}" file="${deploy.hdk.tar}" />
-        <chksum dir="${target.dir}" file="${deploy.hdk.tar}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.hdk.tar}" />
+        <chksum dir="${hy.target}" file="${deploy.hdk.tar}" type="sha" />
 
     </target>
 
     <target name="bundle-hdk-zip" depends="init" unless="is.unix">
         <!-- create the tar file and then md5 checksum using harmony-hdk-rev as the root,
              and setting exec bits as needed -->
-        <zip destfile="${target.dir}/${deploy.hdk.zip}" >
-            <zipfileset dir="${target.dir}/hdk"
+        <zip destfile="${hy.target}/${deploy.hdk.zip}" >
+            <zipfileset dir="${hy.target}/hdk"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}"
                         filemode="755">
                 <include name="jdk/jre/bin/java.exe"/>
@@ -228,7 +228,7 @@ Usage:
                 <include name="jdk/jre/bin/unpack200.exe"/>
                 <include name="jdk/bin/*"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk"
+            <zipfileset dir="${hy.target}/hdk"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jdk/jre/bin/java.exe"/>
@@ -240,14 +240,14 @@ Usage:
                 <exclude name="jdk/bin/*"/>
                 <exclude name="jdk/jre/README"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+            <zipfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}hdk-${harmony.version}">
                 <include name="README"/>
             </zipfileset>
         </zip>
 
-        <chksum dir="${target.dir}" file="${deploy.hdk.zip}" />
-        <chksum dir="${target.dir}" file="${deploy.hdk.zip}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.hdk.zip}" />
+        <chksum dir="${hy.target}" file="${deploy.hdk.zip}" type="sha" />
     </target>
 
     <!-- ============================================================== -->
@@ -260,8 +260,8 @@ Usage:
 
     <target name="bundle-jdk-tgz" depends="init" if="is.unix">
 
-        <tar tarfile="${target.dir}/${deploy.jdk.tar}" compression="gzip" >
-            <tarfileset dir="${target.dir}/hdk/jdk"
+        <tar tarfile="${hy.target}/${deploy.jdk.tar}" compression="gzip" >
+            <tarfileset dir="${hy.target}/hdk/jdk"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}"
                         mode="755">
                 <include name="jre/bin/java"/>
@@ -271,7 +271,7 @@ Usage:
                 <include name="jre/bin/unpack200"/>
                 <include name="bin/*"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk"
+            <tarfileset dir="${hy.target}/hdk/jdk"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java"/>
@@ -282,20 +282,20 @@ Usage:
                 <exclude name="bin/*"/>
                 <exclude name="jre/README"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+            <tarfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="README"/>
             </tarfileset>
         </tar>
 
-        <chksum dir="${target.dir}" file="${deploy.jdk.tar}" />
-        <chksum dir="${target.dir}" file="${deploy.jdk.tar}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.jdk.tar}" />
+        <chksum dir="${hy.target}" file="${deploy.jdk.tar}" type="sha" />
 
     </target>
 
     <target name="bundle-jdk-zip" depends="init" unless="is.unix">
-        <zip destfile="${target.dir}/${deploy.jdk.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk"
+        <zip destfile="${hy.target}/${deploy.jdk.zip}">
+            <zipfileset dir="${hy.target}/hdk/jdk"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}"
                         filemode="755">
                 <include name="jre/bin/java.exe"/>
@@ -306,7 +306,7 @@ Usage:
                 <include name="jre/bin/unpack200.exe"/>
                 <include name="bin/*"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk"
+            <zipfileset dir="${hy.target}/hdk/jdk"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="**"/>
                 <exclude name="jre/bin/java.exe"/>
@@ -318,13 +318,13 @@ Usage:
                 <exclude name="bin/*"/>
                 <exclude name="jre/README"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+            <zipfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jdk-${harmony.version}">
                 <include name="README"/>
             </zipfileset>
         </zip>
-        <chksum dir="${target.dir}" file="${deploy.jdk.zip}" />
-        <chksum dir="${target.dir}" file="${deploy.jdk.zip}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.jdk.zip}" />
+        <chksum dir="${hy.target}" file="${deploy.jdk.zip}" type="sha" />
     </target>
 
     <!-- ============================================================== -->
@@ -338,8 +338,8 @@ Usage:
 
     <target name="bundle-jre-tgz" depends="init" if="is.unix">
 
-        <tar tarfile="${target.dir}/${deploy.jre.tar}" compression="gzip" >
-            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+        <tar tarfile="${hy.target}/${deploy.jre.tar}" compression="gzip" >
+            <tarfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jre-${harmony.version}"
                         mode="755">
                 <include name="bin/java"/>
@@ -348,7 +348,7 @@ Usage:
                 <include name="bin/policytool"/>
                 <include name="bin/unpack200"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/hdk/jdk/jre"
+            <tarfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java"/>
@@ -359,14 +359,14 @@ Usage:
             </tarfileset>
         </tar>
 
-        <chksum dir="${target.dir}" file="${deploy.jre.tar}" />
-        <chksum dir="${target.dir}" file="${deploy.jre.tar}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.jre.tar}" />
+        <chksum dir="${hy.target}" file="${deploy.jre.tar}" type="sha" />
 
     </target>
 
     <target name="bundle-jre-zip" depends="init" unless="is.unix">
-        <zip destfile="${target.dir}/${deploy.jre.zip}">
-            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+        <zip destfile="${hy.target}/${deploy.jre.zip}">
+            <zipfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jre-${harmony.version}"
                         filemode="755">
                 <include name="bin/java.exe"/>
@@ -376,7 +376,7 @@ Usage:
                 <include name="bin/policytool.exe"/>
                 <include name="bin/unpack200.exe"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/hdk/jdk/jre"
+            <zipfileset dir="${hy.target}/hdk/jdk/jre"
                         prefix="${archive.dir.prefix}jre-${harmony.version}">
                 <include name="**"/>
                 <exclude name="bin/java.exe"/>
@@ -387,8 +387,8 @@ Usage:
                 <exclude name="bin/unpack200.exe"/>
             </zipfileset>
         </zip>
-        <chksum dir="${target.dir}" file="${deploy.jre.zip}" />
-        <chksum dir="${target.dir}" file="${deploy.jre.zip}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.jre.zip}" />
+        <chksum dir="${hy.target}" file="${deploy.jre.zip}" type="sha" />
     </target>
 
 
@@ -401,12 +401,12 @@ Usage:
                  chmod-stuff"/>
 
     <target name="chmod-stuff" if="is.unix">
-        <chmod file="${target.dir}/hdk/jdk/bin/*" perm="ugo+x" />
-        <chmod file="${target.dir}/hdk/jdk/jre/bin/java*" perm="ugo+x" />
-        <chmod file="${target.dir}/hdk/jdk/jre/bin/keytool*" perm="ugo+x" />
-        <chmod file="${target.dir}/hdk/jdk/jre/bin/policytool*" perm="ugo+x" />
-        <chmod file="${target.dir}/hdk/jdk/jre/bin/unpack200*" perm="ugo+x" />
-        <chmod file="${target.dir}/hdk/jdk/jre/bin/pack200*" perm="ugo+x" />
+        <chmod file="${hy.target}/hdk/jdk/bin/*" perm="ugo+x" />
+        <chmod file="${hy.target}/hdk/jdk/jre/bin/java*" perm="ugo+x" />
+        <chmod file="${hy.target}/hdk/jdk/jre/bin/keytool*" perm="ugo+x" />
+        <chmod file="${hy.target}/hdk/jdk/jre/bin/policytool*" perm="ugo+x" />
+        <chmod file="${hy.target}/hdk/jdk/jre/bin/unpack200*" perm="ugo+x" />
+        <chmod file="${hy.target}/hdk/jdk/jre/bin/pack200*" perm="ugo+x" />
     </target>
 
     <!-- ============================================================== -->
@@ -414,7 +414,7 @@ Usage:
     <!-- ============================================================== -->
     <target name="assemble-hdk-doc">
 
-        <copy todir="${target.dir}/hdk" overwrite="true">
+        <copy todir="${hy.target}/hdk" overwrite="true">
             <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
@@ -428,7 +428,7 @@ Usage:
     <!-- ============================================================== -->
     <target name="assemble-jre-doc">
 
-        <copy todir="${target.dir}/hdk/jdk/jre" overwrite="true">
+        <copy todir="${hy.target}/hdk/jdk/jre" overwrite="true">
             <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
@@ -437,7 +437,7 @@ Usage:
     </target>
 
     <target name="assemble-jdk-doc">
-        <copy todir="${target.dir}/hdk/jdk/" overwrite="true">
+        <copy todir="${hy.target}/hdk/jdk/" overwrite="true">
             <fileset dir=".">
                 <include name="LICENSE" />
                 <include name="NOTICE" />
@@ -468,6 +468,7 @@ Usage:
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
         <!-- hack to make sure the federated build doesn't use the classlib
              LICENSE/NOTICE files as they don't cover ICU4C
@@ -485,6 +486,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -494,6 +496,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -503,6 +506,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -512,6 +516,7 @@ Usage:
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -520,6 +525,7 @@ Usage:
              target="-init-hdk-for-clean" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="keep.working" value="true" />
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -535,6 +541,7 @@ Usage:
             <property name="deploy.canonical.flag" value="false"/>
             <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
             <property name="import.hdk" value="false"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -543,6 +550,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -552,6 +560,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -561,6 +570,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -573,6 +583,7 @@ Usage:
             <property name="deploy.canonical.flag" value="false"/>
             <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
             <property name="import.hdk" value="false"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -587,6 +598,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -596,6 +608,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -605,6 +618,7 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -618,6 +632,7 @@ Usage:
             <property name="common.resources" location="common_resources" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -625,6 +640,7 @@ Usage:
         <ant target="fetch-jdktools-libs" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="common.resources" location="common_resources" />
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -633,6 +649,7 @@ Usage:
              inheritall="false" >
             <propertyset refid="required.props" />
             <property name="common.resources" location="common_resources" />
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -641,6 +658,7 @@ Usage:
              inheritall="false" >
             <propertyset refid="required.props" />
             <property name="common.resources" location="common_resources" />
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -650,6 +668,7 @@ Usage:
             <property name="common.resources" location="common_resources" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
         </ant>
     </target>
 
@@ -657,8 +676,8 @@ Usage:
     <!-- recreates distribution dir                                     -->
     <!-- ============================================================== -->
     <target name="setup" depends="init, properties">
-        <delete dir="${target.dir}"/>
-        <mkdir dir="${target.dir}"/>
+        <delete dir="${hy.target}"/>
+        <mkdir dir="${hy.target}"/>
     </target>
 
 
@@ -668,7 +687,7 @@ Usage:
                  clean-classlib,
                  clean-vm,
                  clean-tests" >
-        <delete dir="${target.dir}" failonerror="false" />
+        <delete dir="${hy.target}" failonerror="false" />
     </target>
 
     <!-- ============================================================== -->
@@ -750,7 +769,7 @@ Usage:
             ant os name/arch :  ${os.name}/${os.arch}
             hosting Java     :  ${java.version} (${java.vendor})
             build mode       :  ${hy.cfg}
-            output location  :  ${target.dir}
+            output location  :  ${hy.target}
             SVN root         :  ${svn.root}
             archive.dir      :  ${archive.dir.prefix}
             archive.name     :  ${deploy.file.prefix}
@@ -760,68 +779,69 @@ Usage:
 
     <target name="bundle-src-tgz" depends="init" if="is.unix">
 
-        <tar tarfile="${target.dir}/${deploy.src.tar}" compression="gzip"
+        <tar tarfile="${hy.target}/${deploy.src.tar}" compression="gzip"
              longfile="gnu" >
-            <tarfileset dir="${target.dir}/src" prefix="${deploy.file.prefix}src-r${harmony.version}" mode="755">
+            <tarfileset dir="${hy.target}/src" prefix="${deploy.file.prefix}src-r${harmony.version}" mode="755">
                 <include name="debian/rules"/>
             </tarfileset>
-            <tarfileset dir="${target.dir}/src" prefix="${deploy.file.prefix}src-r${harmony.version}">
+            <tarfileset dir="${hy.target}/src" prefix="${deploy.file.prefix}src-r${harmony.version}">
                 <include name="**"/>
                 <exclude name="debian/rules"/>
             </tarfileset>
         </tar>
 
-        <chksum dir="${target.dir}" file="${deploy.src.tar}" />
-        <chksum dir="${target.dir}" file="${deploy.src.tar}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.src.tar}" />
+        <chksum dir="${hy.target}" file="${deploy.src.tar}" type="sha" />
 
     </target>
 
     <target name="bundle-src-zip" depends="init" unless="is.unix">
-        <zip destfile="${target.dir}/${deploy.src.zip}">
-            <zipfileset dir="${target.dir}/src"
+        <zip destfile="${hy.target}/${deploy.src.zip}">
+            <zipfileset dir="${hy.target}/src"
                         prefix="${deploy.file.prefix}src-r${harmony.version}"
                         filemode="755">
                 <include name="debian/rules"/>
             </zipfileset>
-            <zipfileset dir="${target.dir}/src"
+            <zipfileset dir="${hy.target}/src"
                         prefix="${deploy.file.prefix}src-r${harmony.version}">
                 <include name="**"/>
                 <exclude name="debian/rules"/>
             </zipfileset>
         </zip>
-        <chksum dir="${target.dir}" file="${deploy.src.zip}" />
-        <chksum dir="${target.dir}" file="${deploy.src.zip}" type="sha" />
+        <chksum dir="${hy.target}" file="${deploy.src.zip}" />
+        <chksum dir="${hy.target}" file="${deploy.src.zip}" type="sha" />
     </target>
 
     <target name="copy-src" depends="init">
         <exec executable="svn">
             <arg value="export" />
             <arg value="." />
-            <arg value="${target.dir}/src" />
+            <arg value="${hy.target}/src" />
         </exec>
-        <echo file="${target.dir}/src/release.properties">
+        <echo file="${hy.target}/src/release.properties">
 harmony.version=${harmony.version}
 harmony.long.version=${harmony.long.version}
 harmony.deploy.suffix=${harmony.deploy.suffix}
 harmony.java.version=${harmony.java.version}
         </echo>
-        <chmod file="${target.dir}/src/debian/rules" perm="ugo+x" />
+        <chmod file="${hy.target}/src/debian/rules" perm="ugo+x" />
     </target>
 
     <target name="test" depends="clean-tests">
-        <ant antfile="target/hdk/build/test/build.xml"
+        <ant antfile="${hy.target}/hdk/build/test/build.xml"
              target="test" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
-            <property name="tests.output" location="target/test_report" />
-            <property name="test.jre.home" location="target/hdk/jdk/jre" />
+            <property name="tests.output" location="${hy.target}/test_report"/>
+            <property name="test.jre.home"
+                      location="${hy.target}/hdk/jdk/jre" />
         </ant>
     </target>
 
     <target name="clean-tests">
-        <delete dir="target/test_report" />
+        <delete dir="${hy.target}/test_report" />
     </target>
 
     <!-- ============================================================== -->
