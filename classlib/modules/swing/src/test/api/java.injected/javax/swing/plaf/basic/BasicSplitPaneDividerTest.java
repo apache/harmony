@@ -27,7 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JSplitPane;
 import javax.swing.SwingTestCase;
 import javax.swing.border.Border;
-import tests.support.Support_Excludes;
 
 public class BasicSplitPaneDividerTest extends SwingTestCase {
     private BasicSplitPaneDivider divider;
@@ -51,10 +50,6 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
     }
 
     public void testBasicSplitPaneDivider() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(pane.getUI(), divider.splitPaneUI);
         assertEquals(pane, divider.splitPane);
         assertNotNull(divider.mouseHandler);
@@ -68,10 +63,6 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
     }
 
     public void testGetSetBasicSplitPaneUI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JSplitPane newPane = new JSplitPane();
         divider.setBasicSplitPaneUI((BasicSplitPaneUI) newPane.getUI());
         assertEquals(newPane.getUI(), divider.splitPaneUI);
@@ -80,10 +71,6 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
     }
 
     public void testGetSetDividerSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, divider.getDividerSize());
         divider.setDividerSize(20);
         assertEquals(20, divider.getDividerSize());
@@ -92,10 +79,6 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
     }
 
     public void testGetSetBorder() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(divider.getBorder());
         Border b = BorderFactory.createEmptyBorder();
         divider.setBorder(b);
@@ -103,30 +86,18 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
     }
 
     public void testGetInsets() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Insets(0, 0, 0, 0), divider.getInsets());
         divider.setBorder(BorderFactory.createEmptyBorder(5, 10, 15, 20));
         assertEquals(new Insets(5, 10, 15, 20), divider.getInsets());
     }
 
     public void testIsSetMouseOver() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(divider.isMouseOver());
         divider.setMouseOver(true);
         assertTrue(divider.isMouseOver());
     }
 
     public void testGetMinimumMaximumPreferredSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Dimension(0, 1), divider.getPreferredSize());
         assertEquals(new Dimension(0, 1), divider.getMinimumSize());
         assertEquals(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE), divider.getMaximumSize());
@@ -142,17 +113,9 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
 
     //TODO
     public void testPropertyChange() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testOneTouchExpandableChanged() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(pane.isOneTouchExpandable());
         assertNull(divider.leftButton);
         assertNull(divider.rightButton);
@@ -163,20 +126,12 @@ public class BasicSplitPaneDividerTest extends SwingTestCase {
     }
 
     public void testCreateLeftOneTouchButton() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JButton left = divider.createLeftOneTouchButton();
         assertNotNull(left);
         assertNotSame(left, divider.createLeftOneTouchButton());
     }
 
     public void testCreateRightOneTouchButton() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JButton right = divider.createRightOneTouchButton();
         assertNotNull(right);
         assertNotSame(right, divider.createRightOneTouchButton());

@@ -33,16 +33,11 @@ import java.util.Locale;
 import junit.framework.TestCase;
 
 import org.apache.harmony.testframework.serialization.SerializationTest;
-import tests.support.Support_Excludes;
 
 
 public class DecimalFormatTest extends TestCase {
 
     public void testAttributedCharacterIterator() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression for http://issues.apache.org/jira/browse/HARMONY-333
         AttributedCharacterIterator iterator = new DecimalFormat().formatToCharacterIterator(new Integer(1));
         assertNotNull(iterator);
@@ -54,10 +49,6 @@ public class DecimalFormatTest extends TestCase {
      * test the default value of them.
      */
     public void test_isParseBigDecimalLjava_lang_Boolean_isParseIntegerOnlyLjava_lang_Boolean() {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // parseBigDecimal default to false
         DecimalFormat form = (DecimalFormat) DecimalFormat.getInstance(Locale.US);
@@ -74,10 +65,6 @@ public class DecimalFormatTest extends TestCase {
     // Test the type of the returned object
 
     public void test_parseLjava_lang_String_Ljava_text_ParsePosition() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat form = (DecimalFormat) DecimalFormat.getInstance(Locale.US);
         Number number = form.parse("23.1", new ParsePosition(0));
         assertTrue(number instanceof Double);
@@ -345,10 +332,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_getMaximumFractionDigits() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -373,10 +356,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_getMinimumFractionDigits() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -398,10 +377,6 @@ public class DecimalFormatTest extends TestCase {
 
     //FIXME This test fails on Harmony ClassLibrary
     public void test_getMaximumIntegerDigits() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final int maxIntDigit = 309;
 
         // When use default locale, in this case zh_CN
@@ -450,10 +425,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_getMinimumIntegerDigits() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final int minIntDigit = 1;
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
@@ -476,10 +447,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_formatLjava_lang_Obj_Ljava_StringBuffer_Ljava_text_FieldPosition() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -635,10 +602,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_setMaximumFractionDigitsLjava_lang_Integer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -650,10 +613,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_setMinimumFractionDigitsLjava_lang_Integer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -665,10 +624,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_setMaximumIntegerDigitsLjava_lang_Integer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -680,10 +635,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_setMinimumIntegerDigitsLjava_lang_Integer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -697,10 +648,6 @@ public class DecimalFormatTest extends TestCase {
     // When MaxFractionDigits is set first and less than MinFractionDigits, max
     // will be changed to min value
     public void test_setMinimumFactionDigitsLjava_lang_Integer_setMaximumFractionDigitsLjava_lang_Integer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -720,10 +667,6 @@ public class DecimalFormatTest extends TestCase {
     // When MinFractionDigits is set first and less than MaxFractionDigits, min
     // will be changed to max value
     public void test_setMaximumFactionDigitsLjava_lang_Integer_setMinimumFractionDigitsLjava_lang_Integer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
 
@@ -741,10 +684,6 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_equalsLjava_lang_Object() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.US);
         DecimalFormat cloned = (DecimalFormat) format.clone();
         cloned.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
@@ -757,46 +696,26 @@ public class DecimalFormatTest extends TestCase {
     }
 
     public void test_setPositivePrefixLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = new DecimalFormat();
         assertEquals("", format.getPositivePrefix());
     }
 
     public void test_setPositiveSuffixLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = new DecimalFormat();
         assertEquals("", format.getPositiveSuffix());
     }
 
     public void test_setNegativePrefixLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = new DecimalFormat();
         assertEquals("-", format.getNegativePrefix());
     }
 
     public void test_setNegativeSuffixLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = new DecimalFormat();
         assertEquals("", format.getNegativeSuffix());
     }
 
     public void test_setGroupingUse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = new DecimalFormat();
         StringBuffer buf = new StringBuffer();
         format.setGroupingUsed(false);
@@ -809,10 +728,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#DecimalFormat(java.lang.String)
      */
     public void test_ConstructorLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.text.DecimalFormat(java.lang.String)
         // the constructor form that specifies a pattern is equal to the form
         // constructed with no pattern and applying that pattern using the
@@ -828,10 +743,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#applyPattern(java.lang.String)
      */
     public void test_applyPatternLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = new DecimalFormat("#.#");
         assertEquals("Wrong pattern 1", "#0.#", format.toPattern());
         format = new DecimalFormat("#.");
@@ -846,10 +757,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#clone()
      */
     public void test_clone() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.US);
         DecimalFormat cloned = (DecimalFormat) format.clone();
         assertEquals(cloned.getDecimalFormatSymbols(), format
@@ -885,10 +792,6 @@ public class DecimalFormatTest extends TestCase {
      */
     //FIXME This test fails on Harmony ClassLibrary
     public void test_formatDLjava_lang_StringBufferLjava_text_FieldPosition() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         new Support_DecimalFormat(
                 "test_formatDLjava_lang_StringBufferLjava_text_FieldPosition")
                 .t_format_with_FieldPosition();
@@ -1122,10 +1025,6 @@ public class DecimalFormatTest extends TestCase {
      */
     //FIXME This test fails on Harmony ClassLibrary
     public void test_formatJLjava_lang_StringBufferLjava_text_FieldPosition() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int failCount = 0;
         BitSet failures = new BitSet();
 
@@ -1200,10 +1099,6 @@ public class DecimalFormatTest extends TestCase {
     //FIXME This test fails on Harmony ClassLibrary
     public void test_formatToCharacterIteratorLjava_lang_Object() {
 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             // Regression for HARMONY-466
             new DecimalFormat().formatToCharacterIterator(null);
@@ -1221,10 +1116,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#format(double)
      */
     public void test_formatD() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = (DecimalFormat) NumberFormat
                 .getInstance(Locale.ENGLISH);
         format.setGroupingUsed(false);
@@ -1274,10 +1165,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#getDecimalFormatSymbols()
      */
     public void test_getDecimalFormatSymbols() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = (DecimalFormat) NumberFormat
                 .getInstance(Locale.ENGLISH);
         DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
@@ -1289,10 +1176,6 @@ public class DecimalFormatTest extends TestCase {
      */
     //FIXME This test fails on Harmony ClassLibrary
     public void test_getCurrency() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Currency currK = Currency.getInstance("KRW");
         Currency currX = Currency.getInstance("XXX");
         Currency currE = Currency.getInstance("EUR");
@@ -1334,10 +1217,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#getGroupingSize()
      */
     public void test_getGroupingSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##");
         assertEquals("Wrong unset size", 0, df.getGroupingSize());
         df = new DecimalFormat("#,##0.##");
@@ -1350,10 +1229,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#getMultiplier()
      */
     public void test_getMultiplier() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final int defaultMultiplier = 1;
         NumberFormat nform = DecimalFormat.getInstance(Locale.US);
         DecimalFormat form = (DecimalFormat) nform;
@@ -1371,10 +1246,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#isDecimalSeparatorAlwaysShown()
      */
     public void test_isDecimalSeparatorAlwaysShown() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##");
         assertTrue("Wrong unset value", !df.isDecimalSeparatorAlwaysShown());
         df = new DecimalFormat("###0.00");
@@ -1389,10 +1260,6 @@ public class DecimalFormatTest extends TestCase {
      */
     //FIXME This test fails on Harmony ClassLibrary
     public void test_parseLjava_lang_StringLjava_text_ParsePosition() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat format = (DecimalFormat) NumberFormat
                 .getNumberInstance(Locale.ENGLISH);
         ParsePosition pos = new ParsePosition(0);
@@ -1486,10 +1353,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setDecimalFormatSymbols(java.text.DecimalFormatSymbols)
      */
     public void test_setDecimalFormatSymbolsLjava_text_DecimalFormatSymbols() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##");
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setDecimalSeparator('@');
@@ -1511,10 +1374,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setDecimalSeparatorAlwaysShown(boolean)
      */
     public void test_setDecimalSeparatorAlwaysShownZ() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##",
                                              new DecimalFormatSymbols(Locale.US));
         assertEquals("Wrong default result", "5", df.format(5));
@@ -1527,10 +1386,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setCurrency(java.util.Currency)
      */
     public void test_setCurrencyLjava_util_Currency() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Locale locale = Locale.CANADA;
         DecimalFormat df = ((DecimalFormat) NumberFormat
                 .getCurrencyInstance(locale));
@@ -1557,10 +1412,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setGroupingSize(int)
      */
     public void test_setGroupingSizeI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##",
                 new DecimalFormatSymbols(Locale.ENGLISH));
         df.setGroupingUsed(true);
@@ -1574,10 +1425,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setMaximumFractionDigits(int)
      */
     public void test_setMaximumFractionDigitsI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##",
                                              new DecimalFormatSymbols(Locale.US));
         df.setMaximumFractionDigits(3);
@@ -1592,10 +1439,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setMaximumIntegerDigits(int)
      */
     public void test_setMaximumIntegerDigitsI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##");
         df.setMaximumIntegerDigits(2);
         assertEquals("Not set", 2, df.getMaximumIntegerDigits());
@@ -1609,10 +1452,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setMinimumFractionDigits(int)
      */
     public void test_setMinimumFractionDigitsI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##",
                                              new DecimalFormatSymbols(Locale.US));
         df.setMinimumFractionDigits(4);
@@ -1627,10 +1466,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests java.text.DecimalFormat#setMinimumIntegerDigits(int)
      */
     public void test_setMinimumIntegerDigitsI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##",
                                              new DecimalFormatSymbols(Locale.US));
         df.setMinimumIntegerDigits(3);
@@ -1646,10 +1481,6 @@ public class DecimalFormatTest extends TestCase {
      */
     //FIXME This test fails on Harmony ClassLibrary
     public void test_setMultiplierI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DecimalFormat df = new DecimalFormat("###0.##");
         df.setMultiplier(10);
         assertEquals("Wrong multiplier", 10, df.getMultiplier());
@@ -1666,10 +1497,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests serialization/deserialization compatibility.
      */
     public void testSerializationSelf() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SerializationTest.verifySelf(new DecimalFormat());
     }
 
@@ -1677,10 +1504,6 @@ public class DecimalFormatTest extends TestCase {
      * @tests serialization compatibility with RI
      */
     public void test_serializationHarmonyRICompatible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberFormat nf = NumberFormat.getInstance(Locale.FRANCE);
 
         DecimalFormat df = null;
@@ -1739,10 +1562,6 @@ public class DecimalFormatTest extends TestCase {
      * Test whether DecimalFormat can parse Positive infinity correctly
      */
     public void testParseInfinityBigDecimalFalse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression test for HARMONY-106
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance();
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -1756,10 +1575,6 @@ public class DecimalFormatTest extends TestCase {
      * Test whether DecimalFormat can parse Negative infinity correctly
      */
     public void testParseMinusInfinityBigDecimalFalse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression test for HARMONY-106
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance();
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -1774,10 +1589,6 @@ public class DecimalFormatTest extends TestCase {
      * when it is called with null parameter.
      */
     public void testSetDecimalFormatSymbolsAsNull(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	// Regression for HARMONY-1070
         DecimalFormat format = (DecimalFormat)DecimalFormat.getInstance();
         format.setDecimalFormatSymbols(null);                     

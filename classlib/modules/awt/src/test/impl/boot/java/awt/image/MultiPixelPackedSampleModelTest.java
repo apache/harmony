@@ -33,7 +33,6 @@ import java.util.Random;
 import javax.swing.JSplitPane;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class MultiPixelPackedSampleModelTest extends TestCase {
     final int w = 20;

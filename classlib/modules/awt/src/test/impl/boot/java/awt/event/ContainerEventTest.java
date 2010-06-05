@@ -23,7 +23,6 @@ import java.awt.Button;
 import java.awt.Container;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ContainerEventTest extends TestCase {
 

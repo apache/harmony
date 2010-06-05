@@ -33,7 +33,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-import tests.support.Support_Excludes;
 
 public class BasicTextPaneUITest extends SwingTestCase {
     JTextPane textPane;
@@ -80,10 +79,6 @@ public class BasicTextPaneUITest extends SwingTestCase {
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = BasicTextPaneUI.createUI(textPane);
         assertTrue(ui1 instanceof BasicTextPaneUI);
         ui1 = BasicTextPaneUI.createUI(new JTextField());
@@ -95,18 +90,10 @@ public class BasicTextPaneUITest extends SwingTestCase {
     }
 
     public void testGetPropertyPrefix() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("TextPane", ui.getPropertyPrefix());
     }
 
     public void testPropertyChange() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Style style = textPane.getStyle(StyleContext.DEFAULT_STYLE);
         //Font
         assertFalse(25 == ((Integer) style.getAttribute(StyleConstants.FontSize)).intValue());
@@ -143,10 +130,6 @@ public class BasicTextPaneUITest extends SwingTestCase {
     }
 
     public void testProPertyChange_FontFamilyName() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Style style = textPane.getStyle(StyleContext.DEFAULT_STYLE);
         textPane.setFont(font);
         assertFalse(font.getFamily().equals(style.getAttribute(StyleConstants.FontFamily)));

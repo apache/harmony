@@ -28,14 +28,9 @@ import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
-import tests.support.Support_Excludes;
 
 public class SwingUtilitiesRTest extends SwingTestCase {
     public void testLayoutCompoundLabel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent c = new JButton();
         FontMetrics fm = c.getFontMetrics(c.getFont());
         Rectangle viewRectangle = new Rectangle(1000, 1000);
@@ -50,10 +45,6 @@ public class SwingUtilitiesRTest extends SwingTestCase {
     }
 
     public void testIsLeftMiddleRightMouseButton() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent panel = new JPanel();
         panel.setPreferredSize(new Dimension(100, 100));
         MouseEvent button1DownEvent = new MouseEvent(panel, 100, 0,
@@ -110,20 +101,12 @@ public class SwingUtilitiesRTest extends SwingTestCase {
     }
 
     public void testGetAncestorOfClass() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Frame f = new Frame();
         final JDialog dialog = new JDialog(f);
         assertSame(f, SwingUtilities.getAncestorOfClass(Frame.class, dialog));
     }
     
     public void testDeadLoop_4820() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final int DEAD_LOOP_TIMEOUT = 1000;
         final int VALID_NUMBER_OF_CALLS = 15;
         final int counter[] = {0};

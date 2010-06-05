@@ -57,7 +57,6 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.VariableHeightLayoutCache;
 import javax.swing.tree.AbstractLayoutCache.NodeDimensions;
-import tests.support.Support_Excludes;
 
 public class BasicTreeUITest extends BasicSwingTestCase {
     private BasicTreeUI ui;
@@ -147,20 +146,12 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testPaint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Graphics g = createTestGraphics();
         g.setClip(0, 0, 100, 100);
         ui.paint(g, tree);
     }
 
     public void testGetPreferredSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.validCachedPreferredSize);
         assertEquals(new Dimension(0, 0), ui.preferredSize);
         assertNotSame(new Dimension(0, 0), ui.getPreferredSize(tree));
@@ -180,10 +171,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetMinimumSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Dimension(0, 0), ui.getMinimumSize(tree));
         ui.preferredMinSize = new Dimension(100, 100);
         assertEquals(ui.preferredMinSize, ui.getMinimumSize(tree));
@@ -194,10 +181,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetMaximumSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(ui.getPreferredSize(null), ui.getMaximumSize(null));
         ui.preferredSize = new Dimension(-100, -100);
         assertEquals(new Dimension(-100, -100), ui.getMaximumSize(tree));
@@ -212,17 +195,9 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUninstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testInstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallUI(tree);
         ui.installUI(tree);
         assertNotNull(ui.treeModel);
@@ -230,27 +205,15 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotSame(BasicTreeUI.createUI(tree), BasicTreeUI.createUI(tree));
     }
 
     public void testGetClosestPathForLocation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(ui.getClosestPathForLocation(tree, 5, 5), ui.treeState.getPathClosestTo(5,
                 5));
     }
 
     public void testGetPathBounds() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tree.setBorder(BorderFactory.createEmptyBorder(5, 12, 15, 20));
         TreePath p1 = new TreePath(new Object[] { root, node2 });
         TreePath p2 = new TreePath(new Object[] { root, node3 });
@@ -265,10 +228,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetPathForRow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath p = new TreePath(new Object[] { root, node2 });
         assertTrue(tree.isRootVisible());
         assertNull(ui.getPathForRow(tree, 7));
@@ -289,10 +248,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetRowCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(tree.isRootVisible());
         assertEquals(4, ui.treeState.getRowCount());
         assertEquals(4, ui.getRowCount(new JTree()));
@@ -310,10 +265,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetRowForPath() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(tree.isRootVisible());
         TreePath p = new TreePath(new Object[] { root, node2 });
         assertEquals(2, ui.getRowForPath(tree, p));
@@ -330,30 +281,18 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testIsEditing() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.isEditing(tree));
         ui.editingComponent = new JLabel();
         assertTrue(ui.isEditing(tree));
     }
 
     public void testGetEditingPath() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.getEditingPath(tree));
         ui.editingPath = new TreePath(root);
         assertNotNull(ui.getEditingPath(tree));
     }
 
     public void testStartEditingAtPath() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.isEditing(tree));
         ui.startEditingAtPath(tree, new TreePath(root));
         assertFalse(ui.isEditing(tree));
@@ -377,10 +316,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testStartEditing() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.isEditing(tree));
         ui.startEditing(new TreePath(root), null);
         assertFalse(ui.isEditing(tree));
@@ -402,10 +337,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCancelEditing() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String initialValue = node1.getUserObject().toString();
         tree.setEditable(true);
         ui.startEditing(new TreePath(root).pathByAddingChild(node1), null);
@@ -421,10 +352,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testStopEditing() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String initialValue = node1.getUserObject().toString();
         tree.setEditable(true);
         ui.startEditing(new TreePath(root).pathByAddingChild(node1), null);
@@ -441,20 +368,12 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetHashColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(UIManager.getColor("Tree.hash"), ui.getHashColor());
         ui.setHashColor(Color.RED);
         assertEquals(Color.RED, ui.getHashColor());
     }
 
     public void testSetGetLeftChildIndent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(UIManager.getInt("Tree.leftChildIndent"), ui.getLeftChildIndent());
         ui.setLeftChildIndent(20);
         assertEquals(20, ui.getLeftChildIndent());
@@ -463,10 +382,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetRightChildIndent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(UIManager.getInt("Tree.rightChildIndent"), ui.getRightChildIndent());
         ui.setRightChildIndent(20);
         assertEquals(20, ui.getRightChildIndent());
@@ -475,10 +390,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetExpandedIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.getExpandedIcon());
         ImageIcon imageIcon = new ImageIcon("icon");
         ui.setExpandedIcon(imageIcon);
@@ -486,10 +397,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetCollapsedIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.getCollapsedIcon());
         ImageIcon imageIcon = new ImageIcon("icon");
         ui.setCollapsedIcon(imageIcon);
@@ -497,20 +404,12 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetIsLargeModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.isLargeModel());
         ui.setLargeModel(true);
         assertTrue(ui.isLargeModel());
     }
 
     public void testSetGetRowHeight() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(UIManager.getInt("Tree.rowHeight"), ui.getRowHeight());
         tree.setRowHeight(20);
         assertEquals(20, ui.getRowHeight());
@@ -519,10 +418,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetCellRenderer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.getCellRenderer() instanceof DefaultTreeCellRenderer);
         DefaultTreeCellRenderer r = new DefaultTreeCellRenderer();
         tree.setCellRenderer(r);
@@ -544,10 +439,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.getModel() instanceof DefaultTreeModel);
         DefaultTreeModel m = new DefaultTreeModel(new DefaultMutableTreeNode("root"));
         ui.setModel(m);
@@ -556,10 +447,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetIsRootVisible() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.isRootVisible());
         tree.setRootVisible(false);
         assertFalse(ui.isRootVisible());
@@ -570,10 +457,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetShowsRootHandles() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.getShowsRootHandles());
         tree.setShowsRootHandles(true);
         assertTrue(ui.getShowsRootHandles());
@@ -584,10 +467,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetCellEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.getCellEditor());
         DefaultTreeCellEditor editor = new DefaultTreeCellEditor(tree,
                 new DefaultTreeCellRenderer());
@@ -598,10 +477,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetIsEditable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.isEditable());
         assertNull(ui.getCellEditor());
         tree.setEditable(true);
@@ -616,10 +491,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetSelectionModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.getSelectionModel() instanceof DefaultTreeSelectionModel);
         DefaultTreeSelectionModel m = new DefaultTreeSelectionModel();
         ui.setSelectionModel(m);
@@ -628,10 +499,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testPrepareForUIInstallUninstall() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui = new BasicTreeUI();
         ui.tree = tree;
         ui.prepareForUIInstall();
@@ -641,10 +508,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCompleteUIInstallUninstall() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, ui.drawingCache.size());
         assertEquals(tree.getModel(), ui.treeModel);
         ui.completeUIUninstall();
@@ -653,10 +516,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testInstallUninstallDefaults() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.collapsedIcon);
         assertNull(ui.expandedIcon);
         assertNull(ui.preferredMinSize);
@@ -688,10 +547,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testInstallUninstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (!isHarmony()) {
             return;
         }
@@ -731,10 +586,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testInstallUninstallKeyboardActions() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installKeyboardActions();
         assertNotNull(SwingUtilities.getUIInputMap(tree, JComponent.WHEN_FOCUSED));
         assertNotNull(SwingUtilities.getUIInputMap(tree,
@@ -746,10 +597,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testInstallUninstallComponents() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallComponents();
         assertEquals(0, tree.getComponentCount());
         ui.installComponents();
@@ -763,10 +610,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateNodeDimensions() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tree.setRowHeight(40);
         ui.setLeftChildIndent(10);
         ui.setRightChildIndent(20);
@@ -795,10 +638,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateNodeDimensionsRTL() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tree.setRowHeight(40);
         tree.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         NodeDimensions n = ui.createNodeDimensions();
@@ -829,10 +668,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreatePropertyChangeListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createPropertyChangeListener());
         if (isHarmony()) {
             assertTrue(ui.createPropertyChangeListener() instanceof BasicTreeUI.PropertyChangeHandler);
@@ -841,10 +676,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateMouseListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createMouseListener());
         if (isHarmony()) {
             assertTrue(ui.createMouseListener() instanceof BasicTreeUI.MouseHandler);
@@ -853,10 +684,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateFocusListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createFocusListener());
         if (isHarmony()) {
             assertTrue(ui.createFocusListener() instanceof BasicTreeUI.FocusHandler);
@@ -865,10 +692,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateKeyListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createKeyListener());
         if (isHarmony()) {
             assertTrue(ui.createKeyListener() instanceof BasicTreeUI.KeyHandler);
@@ -877,10 +700,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateSelectionModelPropertyChangeListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createSelectionModelPropertyChangeListener());
         if (isHarmony()) {
             assertTrue(ui.createSelectionModelPropertyChangeListener() instanceof BasicTreeUI.SelectionModelPropertyChangeHandler);
@@ -890,10 +709,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateTreeSelectionListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createTreeSelectionListener());
         if (isHarmony()) {
             assertTrue(ui.createTreeSelectionListener() instanceof BasicTreeUI.TreeSelectionHandler);
@@ -902,10 +717,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateCellEditorListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createCellEditorListener());
         if (isHarmony()) {
             assertTrue(ui.createCellEditorListener() instanceof BasicTreeUI.CellEditorHandler);
@@ -914,20 +725,12 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateComponentListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createComponentListener());
         assertTrue(ui.createComponentListener() instanceof BasicTreeUI.ComponentHandler);
         assertNotSame(ui.createComponentListener(), ui.createComponentListener());
     }
 
     public void testCreateTreeExpansionListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createTreeExpansionListener());
         if (isHarmony()) {
             assertTrue(ui.createTreeExpansionListener() instanceof BasicTreeUI.TreeExpansionHandler);
@@ -936,10 +739,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateLayoutCache() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tree.setRowHeight(0);
         assertNotNull(ui.createLayoutCache());
         assertNotSame(ui.createLayoutCache(), ui.createLayoutCache());
@@ -958,37 +757,21 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCreateCellRendererPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createCellRendererPane());
         assertNotSame(ui.createCellRendererPane(), ui.createCellRendererPane());
     }
 
     public void testCreateDefaultCellEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.createDefaultCellEditor() instanceof DefaultTreeCellEditor);
         assertNotSame(ui.createDefaultCellEditor(), ui.createDefaultCellEditor());
     }
 
     public void testCreateDefaultCellRenderer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.createDefaultCellRenderer() instanceof DefaultTreeCellRenderer);
         assertNotSame(ui.createDefaultCellRenderer(), ui.createDefaultCellRenderer());
     }
 
     public void testCreateTreeModelListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createTreeModelListener());
         if (isHarmony()) {
             assertTrue(ui.createTreeModelListener() instanceof BasicTreeUI.TreeModelHandler);
@@ -997,10 +780,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testShouldPaintExpandControl() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath rootPath = new TreePath(root);
         assertFalse(ui.shouldPaintExpandControl(rootPath, -10, false, false, false));
         assertFalse(ui.shouldPaintExpandControl(rootPath, 10, false, false, false));
@@ -1026,26 +805,14 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetVerticalLegBuffer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, ui.getVerticalLegBuffer());
     }
 
     public void testGetHorizontalLegBuffer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, ui.getHorizontalLegBuffer());
     }
 
     public void testGetRowX() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, ui.getRowX(-10, 0));
         assertEquals(ui.totalChildIndent, ui.getRowX(-10, 1));
         ui.totalChildIndent = 15;
@@ -1067,19 +834,11 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUpdateLayoutCacheExpandedNodes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.treeModel = null;
         ui.updateLayoutCacheExpandedNodes();
     }
 
     public void testUpdateExpandedDescendants() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath pathToExpand = new TreePath(tree.getModel().getRoot())
                 .pathByAddingChild(node1);
         tree.expandPath(pathToExpand);
@@ -1092,10 +851,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetLastChildPath() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath rootPath = new TreePath(root);
         TreePath lastChildPath = rootPath.pathByAddingChild(tree.getModel().getChild(root,
                 tree.getModel().getChildCount(root) - 1));
@@ -1105,10 +860,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUpdateDepthOffset() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.depthOffset = -100;
         ui.updateDepthOffset();
         assertEquals(0, ui.depthOffset);
@@ -1123,10 +874,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUpdateCellEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultTreeCellEditor e1 = new DefaultTreeCellEditor(tree,
                 new DefaultTreeCellRenderer());
         tree.setCellEditor(e1);
@@ -1164,10 +911,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUpdateRenderer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultTreeCellRenderer r1 = new DefaultTreeCellRenderer();
         tree.setCellRenderer(r1);
         assertSame(r1, tree.getCellRenderer());
@@ -1190,10 +933,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testConfigureLayoutCache() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath expandedPath = new TreePath(tree.getModel().getRoot())
                 .pathByAddingChild(node1);
         tree.expandPath(expandedPath);
@@ -1208,10 +947,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUpdateSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.preferredSize = new Dimension(100, 100);
         ui.preferredMinSize = new Dimension(200, 200);
         ui.validCachedPreferredSize = true;
@@ -1222,10 +957,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testUpdateCachedPreferredSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Dimension originalSize = ui.getPreferredSize(tree);
         ui.preferredSize = new Dimension(100, 100);
         assertTrue(ui.validCachedPreferredSize);
@@ -1238,10 +969,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testPathWasExpanded() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath rootPath = new TreePath(root);
         TreePath path1 = rootPath.pathByAddingChild(node1);
         assertFalse(ui.treeState.isExpanded(path1));
@@ -1251,10 +978,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testPathWasCollapsed() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath rootPath = new TreePath(root);
         TreePath path1 = rootPath.pathByAddingChild(node1);
         tree.expandPath(path1);
@@ -1264,10 +987,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testGetSetPreferredMinSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.preferredMinSize);
         assertNull(ui.getPreferredMinSize());
         Dimension prefMinSize = new Dimension(10, 10);
@@ -1277,10 +996,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCompleteEditing() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker stopMarker = new Marker();
         final Marker cancelMarker = new Marker();
         final Marker valueMarker = new Marker();
@@ -1336,10 +1051,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testCheckForClickInExpandControl() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath path1 = new TreePath(root).pathByAddingChild(node1);
         assertFalse(tree.isExpanded(path1));
         assertTrue(ui.isLocationInExpandControl(path1, 8, 20));
@@ -1350,10 +1061,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testIsLocationInExpandControl() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath rootPath = new TreePath(root);
         TreePath path1 = rootPath.pathByAddingChild(node1);
         assertFalse(ui.isLocationInExpandControl(rootPath, 0, 5));
@@ -1424,10 +1131,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testHandleExpandControlClick() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath path1 = new TreePath(root).pathByAddingChild(node1);
         assertFalse(tree.isExpanded(path1));
         ui.handleExpandControlClick(path1, -10, -10);
@@ -1437,10 +1140,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testToggleExpandState() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath path1 = new TreePath(root).pathByAddingChild(node1);
         assertFalse(tree.isExpanded(path1));
         ui.toggleExpandState(path1);
@@ -1450,10 +1149,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testIsToggleSelectionEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.isToggleSelectionEvent(new MouseEvent(tree, MouseEvent.MOUSE_PRESSED, 0,
                 InputEvent.CTRL_DOWN_MASK, 0, 0, 1, false, MouseEvent.BUTTON1)));
         assertTrue(ui.isToggleSelectionEvent(new MouseEvent(tree, MouseEvent.MOUSE_PRESSED, 0,
@@ -1467,10 +1162,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testIsMultiSelectEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.isMultiSelectEvent(new MouseEvent(tree, MouseEvent.MOUSE_PRESSED, 0,
                 InputEvent.SHIFT_DOWN_MASK, 0, 0, 1, false, MouseEvent.BUTTON1)));
         assertTrue(ui.isMultiSelectEvent(new MouseEvent(tree, MouseEvent.MOUSE_PRESSED, 0,
@@ -1484,10 +1175,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testIsToggleEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.isToggleEvent(new MouseEvent(tree, MouseEvent.MOUSE_PRESSED, 0, 0, 0, 0,
                 2, false, MouseEvent.BUTTON1)));
         assertFalse(ui.isToggleEvent(new MouseEvent(tree, MouseEvent.MOUSE_PRESSED, 0, 0, 0, 0,
@@ -1505,10 +1192,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testSelectPathForEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TreePath rootPath = new TreePath(root);
         TreePath path1 = rootPath.pathByAddingChild(node1);
         TreePath path11 = path1.pathByAddingChild(node11);
@@ -1552,10 +1235,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testIsLeaf() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(ui.isLeaf(0));
         assertFalse(ui.isLeaf(1));
         tree.expandRow(1);
@@ -1563,10 +1242,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testKeyHandler() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicTreeUI.KeyHandler handler = ui.new KeyHandler();
         assertFalse(handler.isKeyDown);
         assertNull(handler.repeatKeyAction);
@@ -1614,10 +1289,6 @@ public class BasicTreeUITest extends BasicSwingTestCase {
     }
 
     public void testComponentHandler() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JScrollPane pane = new JScrollPane(tree);
         assertFalse(hasListener(tree.getComponentListeners(),
                 BasicTreeUI.ComponentHandler.class));

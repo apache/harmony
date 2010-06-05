@@ -31,7 +31,7 @@
 
     <target name="test" depends="test-module" />
 
-    <target name="test-module">
+    <target name="test-module" depends="test-jre-vm-info">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="text" jar="text_tests.jar" />
     </target>

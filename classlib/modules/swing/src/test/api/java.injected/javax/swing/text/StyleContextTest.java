@@ -29,7 +29,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.StyleContext.SmallAttributeSet;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class StyleContextTest extends TestCase implements ChangeListener {
     /**
@@ -145,10 +144,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
      * contain exactly one style (default).
      */
     public void testStyleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int count = 0;
         Enumeration<?> names = sc.getStyleNames();
         Object name = null;
@@ -161,10 +156,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testCollectGarbageInCache() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (!BasicSwingTestCase.isHarmony()) {
             // This is internal test only
             return;
@@ -191,10 +182,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testCollectGarbageInCacheFont() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (!BasicSwingTestCase.isHarmony()) {
             // This is internal test only
             return;
@@ -216,10 +203,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testAddStyle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Style aStyle = sc.addStyle("aStyle", null);
         Style anotherStyle = sc.addStyle("anotherStyle", aStyle);
         int count = 0;
@@ -259,10 +242,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testAddStyleMisc() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Add styles with diff parameters
         Object[] styles = { null, null, "one", null, null, sc.new NamedStyle(), "two",
                 sc.new NamedStyle() };
@@ -274,10 +253,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testAddStyleTwice() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String styleName = "styleName";
         final Style style = sc.addStyle(styleName, null);
         final Style another = sc.addStyle(styleName, null);
@@ -286,10 +261,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testCreateSmallAttributeSet() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AttributeSet as = sc.createSmallAttributeSet(sc.getEmptySet());
         assertTrue(as instanceof SmallAttributeSet);
         assertEquals(0, as.getAttributeCount());
@@ -297,10 +268,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testGetStyle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Style style = sc.getStyle("default");
         assertEquals("default", style.getName());
         sc.addStyle("aStyle", style);
@@ -310,29 +277,17 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testCreateLargeAttributeSet() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AttributeSet as = sc.createLargeAttributeSet(new SimpleAttributeSet());
         assertTrue(as instanceof SimpleAttributeSet);
     }
 
     public void testGetEmptySet() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(sc.getEmptySet(), sc.getEmptySet());
         assertEquals(0, sc.getEmptySet().getAttributeCount());
     }
 
     // test {add,remove}ChangeListener while adding styles
     public void testChangeListenerAddStyle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         bStateChanged = false;
         sc.addStyle("one", null);
         assertFalse(bStateChanged);
@@ -348,10 +303,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
 
     // test if a listener gets called when adding style with null name
     public void testChangeListenerAddStyleNull() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         sc.addChangeListener(this);
         bStateChanged = false;
         sc.addStyle(null, StyleContext.getDefaultStyleContext().new NamedStyle());
@@ -370,10 +321,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
 
     // test {add,remove}ChangeListener while removing styles
     public void testChangeListenerRemoveStyle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         sc.addStyle("one", null);
         sc.addStyle("two", null);
         sc.addStyle("three", null);
@@ -391,10 +338,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testGetChangeListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ChangeListener[] listeners = sc.getChangeListeners();
         assertEquals(0, listeners.length);
         sc.addChangeListener(this);
@@ -406,10 +349,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testGetStyleNamesDef() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         boolean wasDefault = false;
         int count = 0;
         Enumeration<?> names = sc.getStyleNames();
@@ -423,10 +362,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testGetStyleNames() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         sc.addStyle("style", null);
         boolean wasDefault = false;
         boolean wasStyle = false;
@@ -444,10 +379,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testRemoveStyle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         sc.addStyle("style", null);
         sc.removeStyle("style");
         boolean wasDefault = false;
@@ -466,10 +397,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Style style = sc.getStyle(StyleContext.DEFAULT_STYLE);
         style.addAttribute(StyleConstants.Bold, Boolean.TRUE);
         style.addAttribute(StyleConstants.Italic, Boolean.FALSE);
@@ -529,18 +456,10 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testGetCompressionThreshold() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(9, sc.getCompressionThreshold());
     }
 
     public void testGetDefaultStyleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StyleContext def;
         assertSame(def = StyleContext.getDefaultStyleContext(), StyleContext
                 .getDefaultStyleContext());
@@ -589,10 +508,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
     }
 
     public void testCaching() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StyleContextX sc = new StyleContextX();
         int addStyle = sc.count;
         sc.addStyle("aStyle", null);
@@ -605,10 +520,6 @@ public class StyleContextTest extends TestCase implements ChangeListener {
 
     /*
      public void testReclaim() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
      }
      */
     public void stateChanged(final ChangeEvent event) {

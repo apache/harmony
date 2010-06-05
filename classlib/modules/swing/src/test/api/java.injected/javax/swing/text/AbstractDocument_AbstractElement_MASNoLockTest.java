@@ -21,7 +21,6 @@ package javax.swing.text;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import tests.support.Support_Excludes;
 
 /**
  * Tests AbstractDocument.AbstractElement class - the part which
@@ -69,10 +68,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testAddAttribute() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testAddAttribute();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -82,10 +77,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testAddAttributes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testAddAttributes();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -95,10 +86,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testRemoveAttribute() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testRemoveAttribute();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -108,10 +95,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testRemoveAttributesAttributeSetDiff() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testRemoveAttributesAttributeSetDiff();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -121,10 +104,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testRemoveAttributesAttributeSetSame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testRemoveAttributesAttributeSetSame();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -134,10 +113,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testRemoveAttributesEnumeration() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testRemoveAttributesEnumeration();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -147,10 +122,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
 
     @Override
     public void testSetResolveParent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             super.testSetResolveParent();
             fail("Error should be thrown, the reason " + "being no write lock acquired");
@@ -171,10 +142,6 @@ public class AbstractDocument_AbstractElement_MASNoLockTest extends
      * @throws InterruptedException if sleep is interrupted.
      */
     public void testAddAttributeAnotherThread() throws InterruptedException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         aDocument.writeLock();
         new Thread(new Runnable() {
             public void run() {

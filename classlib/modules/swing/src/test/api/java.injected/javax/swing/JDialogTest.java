@@ -34,7 +34,6 @@ import java.beans.PropertyChangeListener;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleState;
-import tests.support.Support_Excludes;
 
 public class JDialogTest extends SwingTestCase {
     /*
@@ -134,10 +133,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog()
      */
     public void testJDialog() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         dialog = new JDialog();
         // title == null, isModal() == false
         checkDialogCorrectness(dialog, null, false);
@@ -147,10 +142,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void dialogInit()
      */
     public void testDialogInit() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         assertTrue("onwer is not null", dialog.getOwner() != null);
         assertTrue("rootPaneCheckingEnabled is true", dialog.isRootPaneCheckingEnabled());
@@ -186,10 +177,6 @@ public class JDialogTest extends SwingTestCase {
      *     int getDefaultCloseOperation()
      */
     public void testSetGetDefaultCloseOperation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // default value is JDialog.HIDE_ON_CLOSE
         assertEquals(WindowConstants.HIDE_ON_CLOSE, dialog.getDefaultCloseOperation());
         // test setting valid value
@@ -219,10 +206,6 @@ public class JDialogTest extends SwingTestCase {
      *     static boolean isDefaultLookAndFeelDecorated()
      */
     public void testSetIsDefaultLookAndFeelDecorated() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test for default value
         assertFalse(JDialog.isDefaultLookAndFeelDecorated());
         JDialog.setDefaultLookAndFeelDecorated(true);
@@ -237,10 +220,6 @@ public class JDialogTest extends SwingTestCase {
      *     boolean isRootPaneCheckingEnabled()
      */
     public void testSetIsRootPaneCheckingEnabled() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         assertTrue("rootPaneCheckingEnabled is true by default", dialog
                 .isRootPaneCheckingEnabled());
@@ -253,10 +232,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Frame, String, boolean, GraphicsConfiguration)
      */
     public void testJDialogFrameStringbooleanGraphicsConfiguration() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame owner = new Frame();
         final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration();
@@ -286,10 +261,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Dialog, String, boolean, GraphicsConfiguration)
      */
     public void testJDialogDialogStringbooleanGraphicsConfiguration() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Dialog owner = new Dialog(new Frame());
         final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration();
@@ -312,10 +283,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Frame, String, boolean)
      */
     public void testJDialogFrameStringboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame owner = new Frame();
         // test with corrent owner, correct title, modal == false
         dialog = new JDialog(owner, "Test JDialog", false);
@@ -341,10 +308,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Frame, String)
      */
     public void testJDialogFrameString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame owner = new Frame();
         // test with corrent owner, correct title
         dialog = new JDialog(owner, "Test JDialog");
@@ -365,10 +328,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Dialog, String, boolean)
      */
     public void testJDialogDialogStringboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Dialog owner = new Dialog(new Frame());
         // test with corrent owner, correct title, modal == false
         dialog = new JDialog(owner, "Test JDialog", false);
@@ -392,10 +351,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Dialog, String)
      */
     public void testJDialogDialogString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Dialog owner = new Dialog(new Frame());
         // test with corrent owner, correct title
         dialog = new JDialog(owner, "Test JDialog");
@@ -414,10 +369,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Frame, boolean)
      */
     public void testJDialogFrameboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame owner = new Frame();
         // test with corrent owner, modal == false
         dialog = new JDialog(owner, false);
@@ -439,10 +390,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Frame)
      */
     public void testJDialogFrame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame owner = new Frame();
         // test with corrent owner
         dialog = new JDialog(owner);
@@ -459,10 +406,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Dialog, boolean)
      */
     public void testJDialogDialogboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Dialog owner = new Dialog(new Frame());
         // test with corrent owner, modal == false
         dialog = new JDialog(owner, false);
@@ -481,10 +424,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void JDialog(Dialog)
      */
     public void testJDialogDialog() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Dialog owner = new Dialog(new Frame());
         // test with corrent owner
         dialog = new JDialog(owner);
@@ -498,10 +437,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void addImpl(Component, Object, int)
      */
     public void testAddImpl() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         JComponent comp = new JPanel();
         // rootPaneCheckingEnabled is true, no exception since 1.5
@@ -536,10 +471,6 @@ public class JDialogTest extends SwingTestCase {
      *     JRootPane getRootPane()
      */
     public void testSetGetRootPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         assertTrue("setRootPane() is called from the constructor", TestDialog.setRootPaneCalled);
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
@@ -558,10 +489,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for JRootPane createRootPane()
      */
     public void testCreateRootPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         assertTrue("createRootPane() is called from the constructor",
                 TestDialog.createRootPaneCalled);
@@ -575,10 +502,6 @@ public class JDialogTest extends SwingTestCase {
      *     JMenuBar getJMenuBar()
      */
     public void testSetGetJMenuBarJMenuBar() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(dialog.getJMenuBar());
         JMenuBar menuBar = new JMenuBar();
         dialog.setJMenuBar(menuBar);
@@ -593,10 +516,6 @@ public class JDialogTest extends SwingTestCase {
      *     JLayeredPane getLayeredPane()
      */
     public void testSetGetLayeredPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         dialog.addPropertyChangeListener("layeredPane", listener);
         JLayeredPane pane = new JLayeredPane();
@@ -622,10 +541,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for AccessibleContext getAccessibleContext()
      */
     public void testGetAccessibleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AccessibleContext c = dialog.getAccessibleContext();
         assertTrue("class is ok", c instanceof JDialog.AccessibleJDialog);
         assertTrue("AccessibleRole is ok", c.getAccessibleRole() == AccessibleRole.DIALOG);
@@ -647,10 +562,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for String paramString()
      */
     public void testParamString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         assertTrue("paramString() cannot return null", dialog.paramString() != null);
     }
@@ -659,10 +570,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void processWindowEvent(WindowEvent)
      */
     public void testProcessWindowEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         dialog.setVisible(true);
         WindowEvent e = new WindowEvent(dialog, WindowEvent.WINDOW_CLOSING);
@@ -691,10 +598,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void setLayout(LayoutManager)
      */
     public void testSetLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestDialog dialog = new TestDialog();
         LayoutManager contentLayout = dialog.getContentPane().getLayout();
         LayoutManager dialogLayout = dialog.getLayout();
@@ -731,10 +634,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void update(Graphics)
      */
     public void testUpdate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Note: painting code, cannot test
     }
 
@@ -744,10 +643,6 @@ public class JDialogTest extends SwingTestCase {
      *     Container getContentPane()
      */
     public void testSetGetContentPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         dialog.addPropertyChangeListener("contentPane", listener);
         JPanel pane = new JPanel();
@@ -775,10 +670,6 @@ public class JDialogTest extends SwingTestCase {
      *     Component getGlassPane()
      */
     public void testSetGetGlassPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         dialog.addPropertyChangeListener("glassPane", listener);
         JPanel pane = new JPanel();
@@ -804,10 +695,6 @@ public class JDialogTest extends SwingTestCase {
      * Class under test for void remove(Component)
      */
     public void testRemove() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent comp = new JPanel();
         dialog.getContentPane().add(comp);
         assertTrue("added to contentPane", dialog.isAncestorOf(comp));

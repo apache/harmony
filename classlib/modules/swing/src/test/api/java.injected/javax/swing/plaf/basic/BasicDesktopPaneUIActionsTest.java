@@ -27,7 +27,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class BasicDesktopPaneUIActionsTest extends SwingTestCase {
     private JFrame frame;
@@ -66,10 +65,6 @@ public class BasicDesktopPaneUIActionsTest extends SwingTestCase {
     }
 
     public void testNavigateAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (!isHarmony()) {
             return;
         }
@@ -101,40 +96,24 @@ public class BasicDesktopPaneUIActionsTest extends SwingTestCase {
     }
 
     public void testCloseAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractAction action = ui.new CloseAction();
         action.actionPerformed(null);
         assertTrue(desktop.getSelectedFrame().isClosed());
     }
 
     public void testMaximizeAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractAction action = ui.new MaximizeAction();
         action.actionPerformed(null);
         assertTrue(desktop.getSelectedFrame().isMaximum());
     }
 
     public void testMinimizeAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractAction action = ui.new MinimizeAction();
         action.actionPerformed(null);
         assertTrue(desktop.getSelectedFrame().isIcon());
     }
 
     public void testOpenAction() throws PropertyVetoException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractAction action = ui.new OpenAction();
         desktop.getSelectedFrame().setMaximum(true);
         action.actionPerformed(null);

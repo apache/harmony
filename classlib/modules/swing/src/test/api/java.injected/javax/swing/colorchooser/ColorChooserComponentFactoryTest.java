@@ -30,7 +30,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.UIManager;
-import tests.support.Support_Excludes;
 
 public class ColorChooserComponentFactoryTest extends BasicSwingTestCase {
     private JColorChooser colorChooser;
@@ -46,10 +45,6 @@ public class ColorChooserComponentFactoryTest extends BasicSwingTestCase {
     }
 
     public void testSwatchPanel() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractColorChooserPanel swatchPanel = ColorChooserComponentFactory
                 .getDefaultChooserPanels()[0];
         UIManager.put("ColorChooser.swatchesSwatchSize", new Dimension(25, 25));
@@ -59,10 +54,6 @@ public class ColorChooserComponentFactoryTest extends BasicSwingTestCase {
     }
 
     public void testRGBPanel() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractColorChooserPanel rgbPanel = ColorChooserComponentFactory
                 .getDefaultChooserPanels()[2];
         assertEquals("RGB", rgbPanel.getDisplayName());
@@ -123,10 +114,6 @@ public class ColorChooserComponentFactoryTest extends BasicSwingTestCase {
     }
 
     public void testHSBPanel() throws InterruptedException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AbstractColorChooserPanel hsbPanel = ColorChooserComponentFactory
                 .getDefaultChooserPanels()[1];
         assertEquals("HSB", hsbPanel.getDisplayName());
@@ -178,10 +165,6 @@ public class ColorChooserComponentFactoryTest extends BasicSwingTestCase {
     }
 
     public void testPreviewPanel() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent panel = ColorChooserComponentFactory.getPreviewPanel();
         assertTrue(panel instanceof JPanel);
         assertEquals(colorChooser.getPreviewPanel().getForeground(), Color.GREEN);

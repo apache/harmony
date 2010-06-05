@@ -20,7 +20,6 @@
 package org.apache.harmony.awt.wtk;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ShutdownWatchdogTest extends TestCase {
     
@@ -37,10 +36,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
     
     public void testSetWindowListEmptyTrue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         wd.setWindowListEmpty(true);
         sleep();
@@ -49,10 +44,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
     
     public void testSetWindowListEmptyFalse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         wd.setWindowListEmpty(false);
         assertTrue(isShutdownThreadRunning());
@@ -60,10 +51,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
 
     public void testSetAwtQueueEmptyTrue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         wd.setAwtQueueEmpty(true);
         sleep();
@@ -72,10 +59,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
     
     public void testSetAwtQueueEmptyFalse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         wd.setAwtQueueEmpty(false);
         assertTrue(isShutdownThreadRunning());
@@ -83,10 +66,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
 
     public void testSetNativeQueueEmptyTrue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         wd.setNativeQueueEmpty(true);
         sleep();
@@ -95,10 +74,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
     
     public void testSetNativeQueueEmptyFalse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         wd.setNativeQueueEmpty(false);
         assertTrue(isShutdownThreadRunning());
@@ -106,10 +81,6 @@ public class ShutdownWatchdogTest extends TestCase {
     }
 
     public void testStartThenForceShutdown() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         intro();
         outro();
     }

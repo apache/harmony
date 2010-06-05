@@ -38,7 +38,6 @@ import javax.management.MBeanOperationInfo;
 
 import org.apache.harmony.lang.management.DynamicMXBeanImpl;
 import org.apache.harmony.lang.management.GarbageCollectorMXBeanImpl;
-import tests.support.Support_Excludes;
 
 
 public class GarbageCollectorMXBeanImplTest extends

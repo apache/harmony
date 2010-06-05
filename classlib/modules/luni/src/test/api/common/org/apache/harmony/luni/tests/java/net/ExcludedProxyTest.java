@@ -30,7 +30,6 @@ import java.net.URLConnection;
 import tests.support.Support_Configuration;
 import tests.support.resource.Support_Resources;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /*
  * This test is designed for collecting all the testcases which needs a proxy
@@ -44,10 +43,6 @@ public class ExcludedProxyTest extends TestCase {
      * @tests java.net.HttpURLConnection#usingProxy()
      */
     public void test_usingProxy() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             System.setProperty("http.proxyHost",
                     Support_Configuration.ProxyServerTestHost);
@@ -122,10 +117,6 @@ public class ExcludedProxyTest extends TestCase {
      * @tests java.net.SocketImpl#SocketImpl()
      */
     public void test_Constructor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             try {
                 System.setProperty("socksProxyHost",
@@ -166,10 +157,6 @@ public class ExcludedProxyTest extends TestCase {
      * @tests java.net.URL#openConnection(Proxy)
      */
     public void test_openConnectionLjava_net_Proxy() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SocketAddress addr1 = new InetSocketAddress(
                 Support_Configuration.ProxyServerTestHost, 808);
         SocketAddress addr2 = new InetSocketAddress(

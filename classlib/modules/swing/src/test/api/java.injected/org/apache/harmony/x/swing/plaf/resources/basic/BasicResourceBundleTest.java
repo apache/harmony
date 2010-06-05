@@ -26,16 +26,11 @@ import java.util.Collections;
 import java.util.ResourceBundle;
 
 import javax.swing.BasicSwingTestCase;
-import tests.support.Support_Excludes;
 
 public class BasicResourceBundleTest extends BasicSwingTestCase {
     private static final String RESOURCE_BUNDLE = "org.apache.harmony.x.swing.plaf.resources.basic.BasicResourceBundle";
 
     public void testKeys() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ResourceBundle bundle = ResourceBundle.getBundle(RESOURCE_BUNDLE);
         assertFalse(Collections.list(bundle.getKeys()).isEmpty());
         if (isHarmony()) {

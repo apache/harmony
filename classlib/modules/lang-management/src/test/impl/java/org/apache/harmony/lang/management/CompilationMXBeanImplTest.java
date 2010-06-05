@@ -35,7 +35,6 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 
 import org.apache.harmony.lang.management.CompilationMXBeanImpl;
-import tests.support.Support_Excludes;
 
 
 public class CompilationMXBeanImplTest extends

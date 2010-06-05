@@ -38,7 +38,6 @@ import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
-import tests.support.Support_Excludes;
 
 public class BasicListUITest extends SwingTestCase {
     private JList list;
@@ -84,10 +83,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testBasicListUI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(-1, ui.cellHeight);
         assertEquals(-1, ui.cellWidth);
         assertNull(ui.cellHeights);
@@ -97,10 +92,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testBasicListUI_FocusListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.focusListener);
         int listenersCount = list.getFocusListeners().length;
         ui.installUI(list);
@@ -115,17 +106,9 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testBasicListUI_ListDataHandler() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testConvertRowToY() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertEquals(-1, ui.convertRowToY(0));
         assertEquals(-1, ui.convertRowToY(-1));
@@ -139,10 +122,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testConvertYToRow() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertEquals(-1, ui.convertYToRow(0));
         list.setListData(new Object[] { "a", "b" });
@@ -155,70 +134,42 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testCreateFocusListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(ui.createFocusListener() instanceof BasicListUI.FocusHandler);
         }
     }
 
     public void testCreateListDataListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(ui.createListDataListener() instanceof BasicListUI.ListDataHandler);
         }
     }
 
     public void testCreateListSelectionListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(ui.createListSelectionListener() instanceof BasicListUI.ListSelectionHandler);
         }
     }
 
     public void testCreateMouseInputListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(ui.createMouseInputListener() instanceof BasicListUI.MouseInputHandler);
         }
     }
 
     public void testCreatePropertyChangeListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(ui.createPropertyChangeListener() instanceof BasicListUI.PropertyChangeHandler);
         }
     }
 
     public void testCreateUI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicListUI newUI1 = (BasicListUI) BasicListUI.createUI(list);
         BasicListUI newUI2 = (BasicListUI) BasicListUI.createUI(list);
         assertNotSame(newUI1, newUI2);
     }
 
     public void testGetCellBounds() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertNull(ui.getCellBounds(list, 0, 0));
         assertNull(ui.getCellBounds(list, -1, -1));
@@ -240,10 +191,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testGetCellBounds_Null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new NullPointerCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -259,28 +206,16 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testGetMaximumSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertEquals(ui.getPreferredSize(list), ui.getMaximumSize(list));
     }
 
     public void testGetMinimumSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertEquals(ui.getPreferredSize(list), ui.getMinimumSize(list));
     }
 
     public void testGetPreferredSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         list.setSize(100, 100);
         assertEquals(new Dimension(0, 0), ui.getPreferredSize(list));
@@ -299,10 +234,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testGetRowHeight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(-1, ui.getRowHeight(-1));
         ui.installUI(list);
         assertEquals(-1, ui.getRowHeight(0));
@@ -319,10 +250,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testIndexToLocation() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertNull(ui.indexToLocation(list, -1));
         assertNull(ui.indexToLocation(list, 0));
@@ -341,10 +268,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testInstallDefaults() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UIManager.getDefaults().put("List.background", new ColorUIResource(Color.red));
         UIManager.getDefaults().put("List.foreground", new ColorUIResource(Color.yellow));
         Font font = new FontUIResource(list.getFont().deriveFont(100f));
@@ -363,10 +286,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testUninstallDefaults() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UIManager.getDefaults().put("List.background", new ColorUIResource(Color.red));
         UIManager.getDefaults().put("List.foreground", new ColorUIResource(Color.yellow));
         Font font = new FontUIResource(list.getFont().deriveFont(100f));
@@ -396,29 +315,17 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testInstallKeyboardActions() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         list.setUI(ui);
         assertNotNull(SwingUtilities.getUIInputMap(list, JComponent.WHEN_FOCUSED));
     }
 
     public void testUninstallKeyboardActions() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         list.setUI(ui);
         ui.uninstallKeyboardActions();
         assertNull(SwingUtilities.getUIInputMap(list, JComponent.WHEN_FOCUSED));
     }
 
     public void testInstallListeners() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         list.setUI(ui);
         assertNotNull(ui.focusListener);
         assertTrue(list.getFocusListeners().length > 0);
@@ -431,10 +338,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testUninstallListeners() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         list.setUI(ui);
         int focusListenersCount = list.getFocusListeners().length;
         int mouseListenersCount = list.getMouseListeners().length;
@@ -452,10 +355,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testInstallUI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertNotNull(list.getBackground());
         assertNotNull(SwingUtilities.getUIInputMap(list, JComponent.WHEN_FOCUSED));
@@ -465,10 +364,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testUninstallUI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         list.setUI(ui);
         ui.uninstallUI(list);
         if (isHarmony()) {
@@ -479,10 +374,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testLocationToIndex() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertEquals(-1, ui.locationToIndex(list, new Point(3, 3)));
         list.setListData(new Object[] { "aa", "bb" });
@@ -508,10 +399,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testMaybeUpdateLayoutState() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertTrue(ui.updateLayoutStateNeeded != 0);
         ui.maybeUpdateLayoutState();
@@ -520,25 +407,13 @@ public class BasicListUITest extends SwingTestCase {
 
     //TODO
     public void testPaint() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     //TODO
     public void testPaintCell() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testUpdateLayoutState() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         assertEquals(-1, ui.cellHeight);
         assertEquals(-1, ui.cellWidth);
@@ -564,10 +439,6 @@ public class BasicListUITest extends SwingTestCase {
     }
 
     public void testSelectNextPreviousIndex() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(list);
         list.setListData(new Object[] { "1", "2", "3" });
         assertTrue(list.isSelectionEmpty());
@@ -636,10 +507,6 @@ public class BasicListUITest extends SwingTestCase {
      * Regression test for HARMONY-2653 
      * */
     public void testRGetPreferredSize() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try { 
             BasicListUI bl = new BasicListUI(); 
             bl.getPreferredSize(new JFileChooser() ); 

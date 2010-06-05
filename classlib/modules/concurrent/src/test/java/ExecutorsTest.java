@@ -12,7 +12,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.math.BigInteger;
 import java.security.*;
-import tests.support.Support_Excludes;
 
 public class ExecutorsTest extends JSR166TestCase{
     public static void main(String[] args) {
@@ -66,10 +65,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A newCachedThreadPool can execute runnables
      */
     public void testNewCachedThreadPool1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newCachedThreadPool();
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -81,10 +76,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A newCachedThreadPool with given ThreadFactory can execute runnables
      */
     public void testNewCachedThreadPool2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newCachedThreadPool(new SimpleThreadFactory());
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -96,10 +87,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A newCachedThreadPool with null ThreadFactory throws NPE
      */
     public void testNewCachedThreadPool3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             ExecutorService e = Executors.newCachedThreadPool(null);
             shouldThrow();
@@ -113,10 +100,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new SingleThreadExecutor can execute runnables
      */
     public void testNewSingleThreadExecutor1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newSingleThreadExecutor();
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -128,10 +111,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new SingleThreadExecutor with given ThreadFactory can execute runnables
      */
     public void testNewSingleThreadExecutor2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newSingleThreadExecutor(new SimpleThreadFactory());
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -143,10 +122,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new SingleThreadExecutor with null ThreadFactory throws NPE
      */
     public void testNewSingleThreadExecutor3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             ExecutorService e = Executors.newSingleThreadExecutor(null);
             shouldThrow();
@@ -159,10 +134,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new SingleThreadExecutor cannot be casted to concrete implementation
      */
     public void testCastNewSingleThreadExecutor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newSingleThreadExecutor();
         try {
             ThreadPoolExecutor tpe = (ThreadPoolExecutor)e;
@@ -177,10 +148,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new newFixedThreadPool can execute runnables
      */
     public void testNewFixedThreadPool1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newFixedThreadPool(2);
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -192,10 +159,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new newFixedThreadPool with given ThreadFactory can execute runnables
      */
     public void testNewFixedThreadPool2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.newFixedThreadPool(2, new SimpleThreadFactory());
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -207,10 +170,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new newFixedThreadPool with null ThreadFactory throws NPE
      */
     public void testNewFixedThreadPool3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             ExecutorService e = Executors.newFixedThreadPool(2, null);
             shouldThrow();
@@ -223,10 +182,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * A new newFixedThreadPool with 0 threads throws IAE
      */
     public void testNewFixedThreadPool4() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             ExecutorService e = Executors.newFixedThreadPool(0);
             shouldThrow();
@@ -240,10 +195,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * An unconfigurable newFixedThreadPool can execute runnables
      */
     public void testunconfigurableExecutorService() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ExecutorService e = Executors.unconfigurableExecutorService(Executors.newFixedThreadPool(2));
         e.execute(new NoOpRunnable());
         e.execute(new NoOpRunnable());
@@ -255,10 +206,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * unconfigurableExecutorService(null) throws NPE
      */
     public void testunconfigurableExecutorServiceNPE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             ExecutorService e = Executors.unconfigurableExecutorService(null);
         }
@@ -270,10 +217,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * unconfigurableScheduledExecutorService(null) throws NPE
      */
     public void testunconfigurableScheduledExecutorServiceNPE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             ExecutorService e = Executors.unconfigurableScheduledExecutorService(null);
         }
@@ -286,10 +229,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * a newSingleThreadScheduledExecutor successfully runs delayed task
      */
     public void testNewSingleThreadScheduledExecutor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	try {
             TrackedCallable callable = new TrackedCallable();
             ScheduledExecutorService p1 = Executors.newSingleThreadScheduledExecutor();
@@ -310,10 +249,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * a newScheduledThreadPool successfully runs delayed task
      */
     public void testnewScheduledThreadPool() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	try {
             TrackedCallable callable = new TrackedCallable();
             ScheduledExecutorService p1 = Executors.newScheduledThreadPool(2);
@@ -334,10 +269,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * an unconfigurable  newScheduledThreadPool successfully runs delayed task
      */
     public void testunconfigurableScheduledExecutorService() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	try {
             TrackedCallable callable = new TrackedCallable();
             ScheduledExecutorService p1 = Executors.unconfigurableScheduledExecutorService(Executors.newScheduledThreadPool(2));
@@ -358,10 +289,6 @@ public class ExecutorsTest extends JSR166TestCase{
      *  timeouts from execute will time out if they compute too long.
      */
     public void testTimedCallable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int N = 10000;
         ExecutorService executor = Executors.newSingleThreadExecutor();
         List<Callable<BigInteger>> tasks = new ArrayList<Callable<BigInteger>>(N);
@@ -404,10 +331,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * specified group, priority, daemon status, and name
      */
     public void testDefaultThreadFactory() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final ThreadGroup egroup = Thread.currentThread().getThreadGroup();
         Runnable r = new Runnable() {
                 public void run() {
@@ -451,10 +374,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * access control context and context class loader
      */
     public void testPrivilegedThreadFactory() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Policy savedPolicy = null;
         try {
             savedPolicy = Policy.getPolicy();
@@ -524,10 +443,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * privilegedCallableUsingCurrentClassLoader throws ACE
      */
     public void testCreatePrivilegedCallableUsingCCLWithNoPrivs() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	Policy savedPolicy = null;
         try {
             savedPolicy = Policy.getPolicy();
@@ -563,10 +478,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * privilegedCallableUsingCurrentClassLoader does not throw ACE
      */
     public void testprivilegedCallableUsingCCLWithPrivs() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	Policy savedPolicy = null;
         try {
             savedPolicy = Policy.getPolicy();
@@ -593,10 +504,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * Without permissions, calling privilegedCallable throws ACE
      */
     public void testprivilegedCallableWithNoPrivs() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Callable task;
         Policy savedPolicy = null;
         AdjustablePolicy policy = null;
@@ -637,10 +544,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * With permissions, calling privilegedCallable succeeds
      */
     public void testprivilegedCallableWithPrivs() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	Policy savedPolicy = null;
         try {
             savedPolicy = Policy.getPolicy();
@@ -666,10 +569,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(Runnable) returns null when called
      */ 
     public void testCallable1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Callable c = Executors.callable(new NoOpRunnable());
             assertNull(c.call());
@@ -683,10 +582,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(Runnable, result) returns result when called
      */ 
     public void testCallable2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Callable c = Executors.callable(new NoOpRunnable(), one);
             assertEquals(one, c.call());
@@ -699,10 +594,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(PrivilegedAction) returns its result when called
      */ 
     public void testCallable3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Callable c = Executors.callable(new PrivilegedAction() {
                     public Object run() { return one; }});
@@ -716,10 +607,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(PrivilegedExceptionAction) returns its result when called
      */ 
     public void testCallable4() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Callable c = Executors.callable(new PrivilegedExceptionAction() {
                     public Object run() { return one; }});
@@ -734,10 +621,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(null Runnable) throws NPE
      */ 
     public void testCallableNPE1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Runnable r = null;
             Callable c = Executors.callable(r);
@@ -749,10 +632,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(null, result) throws NPE
      */ 
     public void testCallableNPE2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Runnable r = null;
             Callable c = Executors.callable(r, one);
@@ -764,10 +643,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(null PrivilegedAction) throws NPE
      */ 
     public void testCallableNPE3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             PrivilegedAction r = null;
             Callable c = Executors.callable(r);
@@ -779,10 +654,6 @@ public class ExecutorsTest extends JSR166TestCase{
      * callable(null PrivilegedExceptionAction) throws NPE
      */ 
     public void testCallableNPE4() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             PrivilegedExceptionAction r = null;
             Callable c = Executors.callable(r);

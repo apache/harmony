@@ -49,7 +49,6 @@ import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicToolBarUI.DragWindow;
-import tests.support.Support_Excludes;
 
 public class BasicToolBarUITest extends SwingTestCase {
     private class TestBasicToolBarUI extends BasicToolBarUI {
@@ -144,10 +143,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui = new TestBasicToolBarUI();
         ui.installUI(toolBar);
         assertSame(ui.toolBar, toolBar);
@@ -159,10 +154,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallUI(toolBar);
         assertNull(toolBar.getBorder());
         assertFalse(Arrays.asList(toolBar.getContainerListeners()).contains(
@@ -172,10 +163,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallUIWhenFloating() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         prepareToTestFloating();
         Point p = new Point(1, 2);
         ui.dragTo(p, p);
@@ -188,10 +175,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = BasicToolBarUI.createUI(toolBar);
         assertTrue(ui1 instanceof BasicToolBarUI);
         ComponentUI ui2 = BasicToolBarUI.createUI(toolBar);
@@ -199,20 +182,12 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testBasicToolBarUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui = new TestBasicToolBarUI();
         assertEquals(BorderLayout.NORTH, ui.constraintBeforeFloating);
         assertEquals(-1, ui.focusedCompIndex);
     }
 
     public void testCanDock() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel panel = new JPanel();
         panel.add(toolBar);
         panel.setSize(400, 300);
@@ -229,28 +204,16 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateDockingListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createDockingListener());
     }
 
     public void testCreateDragWindow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DragWindow dragWindow = ui.createDragWindow(toolBar);
         assertNotNull(ui.createDragWindow(toolBar));
         assertNotNull(dragWindow.getOwner());
     }
 
     public void testCreateFloatingFrame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.setName("The toolbar");
         JFrame floatingFrame = ui.createFloatingFrame(toolBar);
         assertEquals("The toolbar", floatingFrame.getTitle());
@@ -260,10 +223,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateFloatingWindow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.setName("The toolbar");
         RootPaneContainer floatingWindow = ui.createFloatingWindow(toolBar);
         assertTrue(floatingWindow instanceof JDialog);
@@ -274,18 +233,10 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateFrameListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.createFrameListener() instanceof BasicToolBarUI.FrameListener);
     }
 
     public void testCreateNonRolloverBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createRolloverBorder());
         if (isHarmony()) {
             assertTrue(ui.createRolloverBorder() instanceof UIResource);
@@ -293,18 +244,10 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testCreatePropertyListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createPropertyListener());
     }
 
     public void testCreateRolloverBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createRolloverBorder());
         if (isHarmony()) {
             assertTrue(ui.createRolloverBorder() instanceof UIResource);
@@ -312,26 +255,14 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateToolBarContListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createToolBarContListener());
     }
 
     public void testCreateToolBarFocusListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createToolBarFocusListener());
     }
 
     public void testDragTo() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         prepareToTestFloating();
         Point origin = new Point(1, 2);
         Point position1 = frame.getLocation();
@@ -354,10 +285,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testFloatAt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         prepareToTestFloating();
         Point origin = new Point(1, 2);
         Point position1 = frame.getLocation();
@@ -376,10 +303,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetGetDockingColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(ui.getDockingColor(), ui.dockingColor);
         Color c = Color.RED;
         ui.setDockingColor(c);
@@ -388,10 +311,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetGetFloatingColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(ui.getFloatingColor(), ui.floatingColor);
         Color c = Color.RED;
         ui.setFloatingColor(c);
@@ -400,10 +319,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallComponents() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(b);
         ui.uninstallComponents();
         int compCount = toolBar.getComponentCount();
@@ -412,10 +327,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallComponents() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(b);
         int compCount = toolBar.getComponentCount();
         ui.uninstallComponents();
@@ -423,10 +334,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallDefaults() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui = new TestBasicToolBarUI();
         ui.toolBar = toolBar;
         toolBar.add(b);
@@ -447,10 +354,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallDefaults() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         b.setBorder(null);
         toolBar.add(b);
         ui.uninstallDefaults();
@@ -460,10 +363,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallKeyboardActions() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallKeyboardActions();
         ui.installKeyboardActions();
         assertSame(UIManager.get("ToolBar.ancestorInputMap"), SwingUtilities.getUIInputMap(
@@ -472,10 +371,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallKeyboardActions() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallKeyboardActions();
         assertNull(SwingUtilities.getUIInputMap(toolBar,
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT));
@@ -483,10 +378,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallListeners();
         toolBar.add(b);
         ui.installListeners();
@@ -503,10 +394,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(b);
         ui.uninstallListeners();
         assertFalse(Arrays.asList(toolBar.getContainerListeners()).contains(
@@ -522,10 +409,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallNonRolloverBorders() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(b);
         toolBar.add(label);
         b.setBorder(null);
@@ -536,10 +419,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallNormalBorders() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Border bBorder = b.getBorder();
         Border labelBorder = label.getBorder();
         toolBar.add(b);
@@ -550,10 +429,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallRolloverBorders() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(b);
         toolBar.add(label);
         b.setBorder(null);
@@ -564,10 +439,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testNavigateFocusedComp() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(new TestJButton());
         toolBar.add(new TestJButton());
         toolBar.add(new TestJButton());
@@ -583,18 +454,10 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testPaintDragWindow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Note: painting code, cannot test
     }
 
     public void testSetBorderToNonRollover() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.setBorderToNonRollover(b);
         assertSame(ui.nonRolloverBorder, b.getBorder());
         assertFalse(b.isRolloverEnabled());
@@ -608,10 +471,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetBorderToNormal() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Border oldBorder = b.getBorder();
         boolean oldRolloverEnabled = b.isRolloverEnabled();
         ui.setBorderToRollover(b);
@@ -628,10 +487,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetBorderToRollover() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         b.setRolloverEnabled(false);
         ui.setBorderToRollover(b);
         assertSame(ui.rolloverBorder, b.getBorder());
@@ -646,10 +501,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetIsFloating() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         prepareToTestFloating();
         Point origin = new Point(1, 2);
         Point position1 = frame.getLocation();
@@ -682,10 +533,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetFloatingLocation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         prepareToTestFloating();
         Point origin = new Point(100, 200);
         Point position1 = frame.getLocation();
@@ -703,10 +550,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetOrientation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.setOrientation(SwingConstants.VERTICAL);
         assertEquals(SwingConstants.VERTICAL, toolBar.getOrientation());
         ui.setOrientation(SwingConstants.HORIZONTAL);
@@ -714,10 +557,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testSetIsRolloverBorders() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.setRolloverBorders(false);
         toolBar.add(b);
         toolBar.add(label);
@@ -734,10 +573,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testDockingListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createAndShowFrame();
         BasicToolBarUI.DockingListener l = ui.new DockingListener(toolBar);
         MouseEvent e = new MouseEvent(toolBar, MouseEvent.MOUSE_DRAGGED, 0, 0, 0, 0, 0, false);
@@ -752,10 +587,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testFrameListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         prepareToTestFloating();
         WindowListener l = ui.createFrameListener();
         ui.dragTo(new Point(1, 1), new Point(0, 0));
@@ -768,10 +599,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testPropertyListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.setRollover(false);
         toolBar.add(b);
         toolBar.setRollover(true);
@@ -781,10 +608,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testToolBarContListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ContainerListener l = ui.createToolBarContListener();
         Border border = b.getBorder();
         ContainerEvent e = new ContainerEvent(toolBar, ContainerEvent.COMPONENT_ADDED, b);
@@ -796,10 +619,6 @@ public class BasicToolBarUITest extends SwingTestCase {
     }
 
     public void testToolBarFocusListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         toolBar.add(b);
         FocusListener l = ui.createToolBarFocusListener();
         FocusEvent e = new FocusEvent(b, FocusEvent.FOCUS_GAINED);

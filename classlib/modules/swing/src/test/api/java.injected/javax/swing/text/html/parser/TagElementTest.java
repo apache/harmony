@@ -22,7 +22,6 @@ package javax.swing.text.html.parser;
 import javax.swing.text.html.HTML;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class TagElementTest extends TestCase {
     Element element;
@@ -36,10 +35,6 @@ public class TagElementTest extends TestCase {
     }
 
     public void testFictional() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(tagElement.fictional());
         tagElement = new TagElement(element, true);
         assertTrue(tagElement.fictional());
@@ -48,10 +43,6 @@ public class TagElementTest extends TestCase {
     }
 
     public void testGetHTMLTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         HTML.Tag tag = tagElement.getHTMLTag();
         assertTrue(tag instanceof HTML.UnknownTag);
         //name check
@@ -65,18 +56,10 @@ public class TagElementTest extends TestCase {
     }
 
     public void testGetElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(element, tagElement.getElement());
     }
 
     public void testIsPreformatted() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(tagElement.isPreformatted());
         element.name = DTDTest.conv("pre");
         tagElement = new TagElement(element);
@@ -87,10 +70,6 @@ public class TagElementTest extends TestCase {
     }
 
     public void testBreaksFlow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         element.name = DTDTest.conv("td");
         tagElement = new TagElement(element);
         assertTrue(tagElement.breaksFlow());

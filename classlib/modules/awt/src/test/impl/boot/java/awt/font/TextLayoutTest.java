@@ -32,7 +32,6 @@ import java.text.AttributedCharacterIterator;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.HashMap;
 import java.util.Map;
-import tests.support.Support_Excludes;
 
 public class TextLayoutTest extends TestCase
 {
@@ -99,10 +98,6 @@ public class TextLayoutTest extends TestCase
 
     public void testHashCode() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for(int i=0; i<strings.length; i++) {
             for(int j=0; j<strings.length; j++) {
                 if(i == j) {
@@ -116,19 +111,11 @@ public class TextLayoutTest extends TestCase
 
     public void testClone() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(tl.equals(tl.clone()));
     }
 
     public void testEquals() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for(int i=0; i<strings.length; i++) {
             for(int j=0; j<strings.length; j++) {
                 if(i == j) {
@@ -142,28 +129,16 @@ public class TextLayoutTest extends TestCase
 
     public void testToString() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tl.toString();
     }
 
     public void testDraw() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tl.draw((Graphics2D) im.getGraphics(), 1, (float) tl.getBounds().getHeight() + 1);
     }
 
     public void testGetAdvance() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int left = im.getWidth(), right = 0;
 
         for(int i=0; i<im.getWidth(); i++) {
@@ -179,28 +154,16 @@ public class TextLayoutTest extends TestCase
 
     public void testGetAscent() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals((int) tl.getAscent(), (int) f1.getLineMetrics(s, frc).getAscent());
     }
 
     public void testGetBaseline() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(tl.getBaseline(), Font.ROMAN_BASELINE);
     }
 
     public void testGetBaselineOffsets() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LineMetrics lm = f.getLineMetrics("A", frc);
         float correctBaselineOffsets[] = lm.getBaselineOffsets();
         float compatibleBaselineOffsets[] = {0, -9, -21};
@@ -241,10 +204,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetBlackBoxBounds() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape bounds = tl.getBlackBoxBounds(2, 7);
         bounds = tl.getBlackBoxBounds(0, 1);
         Rectangle2D rect = bounds.getBounds2D();
@@ -259,10 +218,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetBounds() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int left = im.getWidth(), right = 0, top = 0, bottom = im.getHeight();
 
         for(int i=0; i<im.getWidth(); i++) {
@@ -287,10 +242,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetCaretInfo() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         float cInfo[] = tl.getCaretInfo(TextHitInfo.beforeOffset(0));
         assertEquals(cInfo[0], 0f, 0.1f);
         assertEquals(cInfo[1], f.getItalicAngle(), 0.1f);
@@ -307,19 +258,11 @@ public class TextLayoutTest extends TestCase
 
     public void testGetCaretInfo1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testGetCaretInfo(); // Same thing
     }
 
     public void testGetCaretShape() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape cShape = tl.getCaretShape(TextHitInfo.trailing(0));
 
         int letterBounds[] = findFirstLetterBounds();
@@ -358,19 +301,11 @@ public class TextLayoutTest extends TestCase
 
     public void testGetCaretShape1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testGetCaretShape(); // Same
     }
 
     public void testGetCaretShapes() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape[] shapes = tl.getCaretShapes(1);
         assertNull(shapes[1]);
 
@@ -395,55 +330,31 @@ public class TextLayoutTest extends TestCase
 
     public void testGetCaretShapes1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testGetCaretShapes();
     }
 
     public void testGetCaretShapes2() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testGetCaretShapes();
     }
 
     public void testGetCharacterCount() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(tl.getCharacterCount(), s.length());
     }
 
     public void testGetCharacterLevel() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(tl.getCharacterLevel(5), 0);
     }
 
     public void testGetDescent() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals((int) tl.getDescent(), (int) f1.getLineMetrics(s, frc).getDescent());
     }
 
     public void testGetJustifiedLayout() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextLayout j1 = tl.getJustifiedLayout(500);
         TextLayout j2 = tl.getJustifiedLayout(200);
 
@@ -456,19 +367,11 @@ public class TextLayoutTest extends TestCase
 
     public void testGetLeading() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals((int) tl.getLeading(), (int) f1.getLineMetrics(s, frc).getLeading());
     }
 
     public void testGetLogicalHighlightShape() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape highlight = tl.getLogicalHighlightShape(7,3);
         Rectangle2D bbb = tl.getBlackBoxBounds(3, 7).getBounds2D();
         Rectangle2D bounds = highlight.getBounds2D();
@@ -485,10 +388,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetLogicalHighlightShape1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape highlight = tl.getLogicalHighlightShape(7, 3, tl.getBounds());
         Rectangle2D bbb = tl.getBlackBoxBounds(3, 7).getBounds2D();
         Rectangle2D bounds = highlight.getBounds2D();
@@ -505,10 +404,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetLogicalRangesForVisualSelection() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = TextHitInfo.leading(0);
         TextHitInfo i2 = TextHitInfo.leading(4);
         TextHitInfo i3 = TextHitInfo.trailing(9);
@@ -534,10 +429,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetNextLeftHit() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getNextLeftHit(0);
         assertNull(i1);
 
@@ -548,10 +439,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetNextLeftHit1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getNextLeftHit(TextHitInfo.leading(0));
         assertNull(i1);
 
@@ -562,10 +449,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetNextLeftHit2() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getNextLeftHit(0, TextLayout.DEFAULT_CARET_POLICY);
         assertNull(i1);
 
@@ -576,10 +459,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetNextRightHit() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getNextRightHit(tl.getCharacterCount());
         assertNull(i1);
 
@@ -590,10 +469,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetNextRightHit1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getNextRightHit(TextHitInfo.trailing(tl.getCharacterCount()-1));
         assertNull(i1);
 
@@ -604,10 +479,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetNextRightHit2() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getNextRightHit(tl.getCharacterCount(), TextLayout.DEFAULT_CARET_POLICY);
         assertNull(i1);
 
@@ -618,10 +489,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetOutline() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape outline1 = equals[0].getOutline(null);
         assertFalse(outline1.getBounds2D().getWidth() == 0);
 
@@ -689,19 +556,11 @@ public class TextLayoutTest extends TestCase
 
     public void testGetVisibleAdvance() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(tl.getBounds().getWidth(), tl.getVisibleAdvance(), 1f);
     }
 
     public void testGetVisualHighlightShape() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape highlight = tl.getVisualHighlightShape(TextHitInfo.trailing(7), TextHitInfo.leading(3));
         Rectangle2D bbb = tl.getBlackBoxBounds(3, 7).getBounds2D();
         Rectangle2D bounds = highlight.getBounds2D();
@@ -718,10 +577,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetVisualHighlightShape1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape highlight = tl.getVisualHighlightShape(TextHitInfo.trailing(7), TextHitInfo.leading(3), tl.getBounds());
         Rectangle2D bbb = tl.getBlackBoxBounds(3, 7).getBounds2D();
         Rectangle2D bounds = highlight.getBounds2D();
@@ -738,10 +593,6 @@ public class TextLayoutTest extends TestCase
 
     public void testGetVisualOtherHit() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i1 = tl.getVisualOtherHit(TextHitInfo.leading(3));
         assertEquals(TextHitInfo.trailing(2), i1);
 
@@ -754,10 +605,6 @@ public class TextLayoutTest extends TestCase
 
     public void testHandleJustify() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tl.handleJustify(500);
         assertEquals(500, tl.getAdvance(), 7);
 
@@ -772,10 +619,6 @@ public class TextLayoutTest extends TestCase
 
     public void testHitTestChar() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle2D bounds = tl.getBlackBoxBounds(3, 4).getBounds2D();
 
         TextHitInfo i1 = tl.hitTestChar((float) bounds.getCenterX()+2, (float) bounds.getCenterY()+2, tl.getBounds());
@@ -790,10 +633,6 @@ public class TextLayoutTest extends TestCase
 
     public void testHitTestChar1() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle2D bounds = tl.getBlackBoxBounds(3, 4).getBounds2D();
 
         TextHitInfo i1 = tl.hitTestChar((float) bounds.getCenterX()+2, (float) bounds.getCenterY()+2);
@@ -808,37 +647,21 @@ public class TextLayoutTest extends TestCase
 
     public void testIsLeftToRight() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(tl.isLeftToRight());
     }
 
     public void testIsVertical() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(tl.isVertical());
     }
 
     public void testGetStrongCaret() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextHitInfo i = TextLayout.DEFAULT_CARET_POLICY.getStrongCaret(TextHitInfo.trailing(4), TextHitInfo.leading(5), tl);
         assertEquals(TextHitInfo.leading(5), i);
     }
 
     public void testTextLayoutConstructorConstraints() throws Exception{
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // regression test for Harmony-1464
         try{
             new TextLayout(null, (Font)null, null);

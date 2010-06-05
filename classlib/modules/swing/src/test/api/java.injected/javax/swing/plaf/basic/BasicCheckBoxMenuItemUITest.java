@@ -20,7 +20,6 @@
 package javax.swing.plaf.basic;
 
 import javax.swing.plaf.ComponentUI;
-import tests.support.Support_Excludes;
 
 public class BasicCheckBoxMenuItemUITest extends BasicMenuItemUITest {
     protected BasicCheckBoxMenuItemUI checkBoxUI;
@@ -45,10 +44,6 @@ public class BasicCheckBoxMenuItemUITest extends BasicMenuItemUITest {
      */
     @Override
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = BasicCheckBoxMenuItemUI.createUI(null);
         ComponentUI ui2 = BasicCheckBoxMenuItemUI.createUI(null);
         assertTrue(ui1 instanceof BasicCheckBoxMenuItemUI);
@@ -60,10 +55,6 @@ public class BasicCheckBoxMenuItemUITest extends BasicMenuItemUITest {
      */
     @Override
     public void testGetPropertyPrefix() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("CheckBoxMenuItem", menuItemUI.getPropertyPrefix());
     }
 
@@ -71,20 +62,12 @@ public class BasicCheckBoxMenuItemUITest extends BasicMenuItemUITest {
      * Test method for 'javax.swing.plaf.basic.BasicCheckBoxMenuItemUI.processMouseEvent(JMenuItem, MouseEvent, MenuElement[], MenuSelectionManager)'
      */
     public void testProcessMouseEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     /*
      * Test method for 'javax.swing.plaf.basic.BasicCheckBoxMenuItemUI.getMinimumSize(null)/getMaximumSize(null)'
      */
     public void testGetSizes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try { //Regression test for HARMONY-2695
             checkBoxUI.getMinimumSize(null);
             fail("NullPointerException should have been thrown");

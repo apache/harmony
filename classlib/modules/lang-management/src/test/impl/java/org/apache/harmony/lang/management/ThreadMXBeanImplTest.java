@@ -37,7 +37,6 @@ import javax.management.MBeanOperationInfo;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.harmony.lang.management.ThreadMXBeanImpl;
-import tests.support.Support_Excludes;
 
 
 

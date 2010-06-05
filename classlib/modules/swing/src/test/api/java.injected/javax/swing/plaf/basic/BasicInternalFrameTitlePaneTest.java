@@ -39,7 +39,6 @@ import javax.swing.UIManager;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.metal.MetalInternalFrameTitlePane;
-import tests.support.Support_Excludes;
 
 public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     private BasicInternalFrameTitlePane pane;
@@ -116,10 +115,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testAddSubComponents() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = new JInternalFrame("", true, true, true, true);
         pane = new BasicInternalFrameTitlePane(frame);
         assertEquals(4, pane.getComponentCount());
@@ -131,10 +126,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testCreateActions() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         pane.createActions();
         // test created actions
         assertTrue("closeAction != null", pane.closeAction != null);
@@ -158,10 +149,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testCreateButtons() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         pane.createButtons();
         // test created buttons
         assertTrue("maxButton != null", pane.maxButton != null);
@@ -173,10 +160,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testEnableActions() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // iconifyAction test
         frame.setIconifiable(false);
         checkEnabledActions();
@@ -220,10 +203,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testInstallDefaults() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(UIManager.getIcon("InternalFrame.closeIcon"), pane.closeIcon);
         assertSame(UIManager.getIcon("InternalFrame.maximizeIcon"), pane.maxIcon);
         assertSame(UIManager.getIcon("InternalFrame.minimizeIcon"), pane.minIcon);
@@ -240,10 +219,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testInstallUninstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         pane.uninstallListeners();
         assertFalse("listener was uninstalled", belongs(pane.propertyChangeListener, frame
                 .getPropertyChangeListeners()));
@@ -257,10 +232,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testInstallTitlePane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         pane.installTitlePane();
         assertSame(UIManager.getIcon("InternalFrame.closeIcon"), pane.closeIcon);
         assertTrue("listener != null", pane.propertyChangeListener != null);
@@ -275,10 +246,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testSetButtonIcons() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkButtonIcons();
         // test icons in Maximum state
         frame.setMaximizable(true);
@@ -309,10 +276,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testShowSystemMenu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createAndShowRootFrame();
         pane.showSystemMenu();
         assertTrue("", pane.windowMenu.isPopupMenuVisible());
@@ -326,28 +289,16 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testUninstallDefaults() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // nothing to test
     }
 
     public void testBasicInternalFrameTitlePane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         pane = new BasicInternalFrameTitlePane(frame);
         assertTrue("frame is set", pane.frame == frame);
         assertTrue("layout", pane.getLayout() != null);
     }
 
     public void testGetTitle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createAndShowRootFrame();
         final String title = "Document #1";
         Font font = new Font("Fixed", Font.PLAIN, 10);
@@ -359,38 +310,22 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testCreateSystemMenuBar() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuBar menuBar = pane.createSystemMenuBar();
         assertEquals(0, menuBar.getMenuCount());
     }
 
     public void testAddSystemMenuItems() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenu menu = new JMenu();
         pane.addSystemMenuItems(menu);
         assertEquals(7, menu.getItemCount());
     }
 
     public void testCreateSystemMenu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenu menu = pane.createSystemMenu();
         assertEquals(0, menu.getItemCount());
     }
 
     public void testAssembleSystemMenu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         pane.assembleSystemMenu();
         assertTrue("windowMenu != null", pane.windowMenu != null);
         assertEquals("7 items", 7, pane.windowMenu.getItemCount());
@@ -399,10 +334,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testPostClosingEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         class MyInternalFrameAdapter extends InternalFrameAdapter {
             boolean ok = false;
 
@@ -420,10 +351,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testCreatePropertyChangeListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         PropertyChangeListener listener = pane.createPropertyChangeListener();
         assertTrue("!= null", listener != null);
         if (isHarmony()) {
@@ -433,10 +360,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testCreateLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LayoutManager layout = pane.createLayout();
         assertTrue("!= null", layout != null);
         if (isHarmony()) {
@@ -446,10 +369,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testCloseButton() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test with isClosable == false
         pane.closeButton.doClick(0);
         assertFalse("not closed", frame.isClosed());
@@ -460,10 +379,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testIconifyButton() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test with isIconifiable == false
         pane.iconButton.doClick(0);
         assertFalse("not iconified", frame.isIcon());
@@ -488,10 +403,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testMaximizeButton() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test with isMaximizable == false
         pane.maxButton.doClick(0);
         assertFalse("not maximized", frame.isMaximum());
@@ -520,10 +431,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testRestoreAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.setMaximizable(true);
         pane.maxButton.doClick(0);
         assertTrue("maximized", frame.isMaximum());
@@ -555,26 +462,14 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testSizeAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // cannot test
     }
 
     public void testMoveAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // cannot test
     }
 
     public void testTitlePaneLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LayoutManager layout = pane.new TitlePaneLayout();
         pane.setSize(200, 31);
         final Rectangle menuBarBounds = new Rectangle(2, 7, 16, 16);
@@ -613,10 +508,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testSystemMenuBar() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuBar menuBar = pane.new SystemMenuBar();
         assertTrue("opaque", menuBar.isOpaque());
         assertFalse("isFocusTraversable", menuBar.isFocusTraversable());
@@ -624,10 +515,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testPropertyChangeHandler() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test "iconable" property change
         frame.setIconifiable(false);
         frame.setIconifiable(true);
@@ -649,19 +536,11 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
     }
 
     public void testPaintTitleBackground() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Note: painting code, cannot test
     }
 
     
     public void testConstructor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {     
             new BasicInternalFrameTitlePane((JInternalFrame) null); 
             fail("NPE should be thrown");
@@ -670,10 +549,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
         }
     }
     public void testPaintComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Note: painting code, cannot test
     }
     
@@ -681,10 +556,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
      * Regression test for HARMONY-2608
      * */
     public void testMoveActionKey() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicInternalFrameTitlePane.MoveAction m = pane.new MoveAction();
         assertEquals(1, m.getKeys().length);
         String key = (String)m.getKeys()[0];
@@ -696,10 +567,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
      * Regression test for HARMONY-2608
      * */
     public void testMoveActionPerformed() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicInternalFrameTitlePane.MoveAction m = pane.new MoveAction();
         try {
             m.actionPerformed(null);
@@ -712,10 +579,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
      * Regression test for HARMONY-2604
      * */
     public void testSizeActionPerformed() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String str = "test string";
         JInternalFrame jf = new JInternalFrame(str);
         MetalInternalFrameTitlePane jp = new MetalInternalFrameTitlePane(jf);
@@ -731,10 +594,6 @@ public class BasicInternalFrameTitlePaneTest extends SwingTestCase {
      * Regression test for HARMONY-2588
      * */
     public void testSizeActionKey() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String str = "test string";
         JInternalFrame jf = new JInternalFrame(str);
         MetalInternalFrameTitlePane jp = new MetalInternalFrameTitlePane(jf);

@@ -18,7 +18,6 @@ package java.awt.geom;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import tests.support.Support_Excludes;
 
 public class Rectangle2DTest extends ShapeTestCase {
 
@@ -127,46 +126,26 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testSetRect() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         r.setRect(new Rectangle2D.Double(5, 6, 7, 8));
         assertEquals(new Rectangle2D.Double(5, 6, 7, 8), r);
     }
 
     public void testSetFrame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         r.setFrame(5.0, 6.0, 7.0, 8.0);
         assertEquals(new Rectangle2D.Double(5, 6, 7, 8), r);
     }
 
     public void testGetBounds2D() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Rectangle2D.Double(1, 2, 3, 4), r.getBounds2D());
     }
 
     public void testOutcode() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Just check it works
         assertEquals(Rectangle2D.OUT_LEFT | Rectangle2D.OUT_TOP,     r.outcode(0, 0));
         assertEquals(0, r.outcode(new Point2D.Double(2, 3)));
     }
 
     public void testEquals() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(r.equals(new Rectangle(1, 2, 3, 4)));
         assertTrue(!r.equals(new Rectangle(0, 2, 3, 4)));
         assertTrue(!r.equals(new Rectangle(1, 0, 3, 4)));
@@ -175,10 +154,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testHashCode() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(r.hashCode() == new Rectangle(1, 2, 3, 4).hashCode());
         assertTrue(r.hashCode() != new Rectangle(0, 2, 3, 4).hashCode());
         assertTrue(r.hashCode() != new Rectangle(1, 0, 3, 4).hashCode());
@@ -187,10 +162,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testIntersectsLine1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle2D rr = new Rectangle2D.Double(1, 2, 3, 4);
         for (int[] element : lines) {
             int x1 = element[0];
@@ -205,10 +176,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testIntersectsLine2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle2D rr = new Rectangle2D.Double(1, 2, 3, 4);
         for (int[] element : lines) {
             int x1 = element[0];
@@ -223,10 +190,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testIntersect() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle dst = new Rectangle();
         Rectangle2D.intersect(r, new Rectangle(1, 2, 3, 4), dst);
         assertEquals(new Rectangle(1, 2, 3, 4), dst); // The same
@@ -241,10 +204,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testUnion() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle dst = new Rectangle();
         Rectangle2D.union(r, new Rectangle(1, 2, 3, 4), dst);
         assertEquals(new Rectangle(1, 2, 3, 4), dst); // The same
@@ -259,10 +218,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testAdd1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         r.add(1.0, 1.0);
         assertEquals(new Rectangle2D.Double(1, 1, 3, 5), r);
         r.add(7.0, 8.0);
@@ -276,10 +231,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testAdd2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         r.add(new Point(0, 0));
         assertEquals(new Rectangle2D.Double(0, 0, 4, 6), r);
         r.add(new Point(1, 1));
@@ -293,10 +244,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testAdd3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         r.add(new Rectangle(1, 2, 3, 4)); // The same
         assertEquals(new Rectangle2D.Double(1, 2, 3, 4), r);
         r.add(new Rectangle(2, 3, 2, 3)); // Inside
@@ -330,10 +277,6 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorDouble() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorDouble(
                 new Rectangle(1, 2, 0, 0).getPathIterator(null),
                 new double[]{1, 2, 1, 2, 1, 2, 1, 2});
@@ -343,50 +286,30 @@ public class Rectangle2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorFloat() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorFloat(
                 r.getPathIterator(null),
                 new float[]{1, 2, 4, 2, 4, 6, 1, 6});
     }
 
     public void testGetPathIteratorDoubleFlat() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorDouble(
                 r.getPathIterator(null, 2),
                 new double[]{1, 2, 4, 2, 4, 6, 1, 6});
     }
 
     public void testGetPathIteratorFloatFlat() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorFloat(
                 r.getPathIterator(null, 5),
                 new float[]{1, 2, 4, 2, 4, 6, 1, 6});
     }
 
     public void testGetPathIteratorDoubleAffine() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorDouble(
                 r.getPathIterator(AffineTransform.getTranslateInstance(3, 1)),
                 new double[]{4, 3, 7, 3, 7, 7, 4, 7});
     }
 
     public void testGetPathIteratorFloatAffine() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorFloat(
                 r.getPathIterator(AffineTransform.getTranslateInstance(3, 1)),
                 new float[]{4, 3, 7, 3, 7, 7, 4, 7});

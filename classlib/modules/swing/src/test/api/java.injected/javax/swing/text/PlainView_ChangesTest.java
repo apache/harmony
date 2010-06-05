@@ -30,7 +30,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
 import javax.swing.text.AbstractDocument.ElementEdit;
-import tests.support.Support_Excludes;
 
 /**
  * Tests mostly methods which are used when processing change
@@ -113,19 +112,11 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
     private PlainView view;
 
     public void testChangedUpdate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view.changedUpdate(event, shape, null);
         assertTrue(updateDamageCalled);
     }
 
     public void testDamageLineRange() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view.updateMetrics();
         final int height = view.metrics.getHeight();
         final int y = 300;
@@ -158,19 +149,11 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * <code>updateDamage</code> to perform the actual updates.
      */
     public void testInsertUpdateDamage() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view.insertUpdate(event, shape, null);
         assertTrue(updateDamageCalled);
     }
 
     public void testLineToRect() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view.updateMetrics();
         final int height = view.metrics.getHeight();
         assertEquals(new Rectangle(0, 0, 500, height), view.lineToRect(shape, 0));
@@ -183,10 +166,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * Tests nextTabStop method with TabSize set to 4.
      */
     public void testNextTabStop02() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Set tab size to 4
         doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(4));
         assertEquals(4, view.getTabSize());
@@ -203,10 +182,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * Tests nextTabStop method with TabSize set to a negative value.
      */
     public void testNextTabStop03() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Set tab size to -4
         doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(-4));
         assertEquals(-4, view.getTabSize());
@@ -225,10 +200,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * Tests nextTabStop method with TabSize set to zero.
      */
     public void testNextTabStop04() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Set tab size to 0
         doc.putProperty(PlainDocument.tabSizeAttribute, new Integer(0));
         assertEquals(0, view.getTabSize());
@@ -243,10 +214,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
     }
 
     public void testRemoveUpdate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view.removeUpdate(event, shape, null);
         assertTrue(updateDamageCalled);
     }
@@ -255,10 +222,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * Tests updateDamage with insert event
      */
     public void testUpdateDamage01() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createEvent();
         doc.insertString(0, "1:0123\n2:\n3:abcdefg", null);
         //                   0123456 789 012345678
@@ -308,10 +271,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * Tests updateDamage with remove event
      */
     public void testUpdateDamage02() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createEvent();
         doc.insertString(0, "1:0123\n2:\n3:abcdefg", null);
         //                   0123456 789 012345678
@@ -344,10 +303,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
      * Tests updateDamage with change event
      */
     public void testUpdateDamage03() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createEvent();
         doc.insertString(0, "1:0123\n2:\n3:abcdefg", null);
         //                   0123456 789 012345678
@@ -380,10 +335,6 @@ public class PlainView_ChangesTest extends BasicSwingTestCase {
     }
 
     public void testUpdateMetrics() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(view.metrics);
         view.updateMetrics();
         assertNotNull(view.metrics);

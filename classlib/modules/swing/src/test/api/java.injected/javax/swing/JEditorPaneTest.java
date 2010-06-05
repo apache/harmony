@@ -44,7 +44,6 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyledEditorKit;
-import tests.support.Support_Excludes;
 
 //import javax.swing.text.html.HTMLEditorKit;
 //import javax.swing.text.rtf.RTFEditorKit;
@@ -193,10 +192,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testGetAccessibleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -212,10 +207,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testGetPreferredSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             jep1.setMinimumSize(new Dimension(3, 3));
             JViewport parent = (JViewport) jep1.getParent();
@@ -226,18 +217,10 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testGetUIClassID() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("EditorPaneUI", jep.getUIClassID());
     }
 
     public void testGetScrollableTracksViewportWidthHeight() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JViewport parent = (JViewport) jep1.getParent();
         jep1.setMinimumSize(new Dimension(3, 3));
         Dimension minSize = jep1.getMinimumSize();
@@ -257,10 +240,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testReplaceSelection() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jep.setText("testReplaceSelection");
         jep.setSelectionStart(4);
         jep.setSelectionEnd(7);
@@ -284,10 +263,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testReplaceSelectionNotEditable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jep.setText("replaceSelectionNotEditable");
         jep.setEditable(false);
         jep.setSelectionStart(3);
@@ -298,10 +273,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testReplaceSelectionWithAttributes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -343,10 +314,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testSetGetText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -407,10 +374,6 @@ public class JEditorPaneTest extends SwingTestCase {
      assertNotSame(contentKit1, contentKit2);
      }*/
     public void testRegisterEditorKitForContentTypeStringString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JEditorPane.registerEditorKitForContentType("text/test1",
                 "javax.swing.text.DefaultEditorKit");
         assertEquals("javax.swing.text.DefaultEditorKit", JEditorPane
@@ -430,10 +393,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testRegisterEditorKitForContentTypeStringStringClassLoader() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -460,19 +419,11 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testJEditorPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkBaseValues("javax.swing.text.PlainDocument",
                 "javax.swing.JEditorPane$PlainEditorKit", "text/plain", null, jep);
     }
 
     public void testJEditorPaneString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -486,10 +437,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testJEditorPaneStringString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -500,10 +447,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testJEditorPaneURL() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -517,10 +460,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testJEditorPaneJarHTML() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression for HARMONY-4529
         URL jar = getClass().getResource("testhtml.jar");
         URL url = new URL("jar:" + jar + "!/index.html");
@@ -536,10 +475,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testAddRemoveGetHyperlinkListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         HyperlinkListener listener1 = new SimpleHyperlinkListener("1");
         HyperlinkListener listener2 = new SimpleHyperlinkListener("2");
         HyperlinkListener listener3 = new SimpleHyperlinkListener("3");
@@ -580,10 +515,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testCreateDefaultEditorKit() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         EditorKit kit1 = jep.createDefaultEditorKit();
         EditorKit kit2 = jep.createDefaultEditorKit();
         assertEquals("javax.swing.JEditorPane$PlainEditorKit", kit1.getClass().getName());
@@ -595,10 +526,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testFireHyperlinkUpdate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleHyperlinkListener listener1 = new SimpleHyperlinkListener("1");
         SimpleHyperlinkListener listener2 = new SimpleHyperlinkListener("2");
         SimpleHyperlinkListener listener3 = new SimpleHyperlinkListener("3");
@@ -628,10 +555,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testSetGetPage1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimplePropertyChangeListener listener = new SimplePropertyChangeListener();
         jep.addPropertyChangeListener(listener);
         assertNull(jep.getPage());
@@ -653,10 +576,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testSetGetPage2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -683,10 +602,6 @@ public class JEditorPaneTest extends SwingTestCase {
      }
      }*/
     public void testReadHTML() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -728,10 +643,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testReadPlain() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         byte bytes[] = plainString.getBytes();
         ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
         try {
@@ -744,10 +655,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testReadRTF() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -771,17 +678,9 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testScrollToReference() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testSetGetContentType() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -833,10 +732,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testGetContentType() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression for HARMONY-4696
         checkContentType("txt", "text/plain");
         checkContentType("html", "text/html");
@@ -887,10 +782,6 @@ public class JEditorPaneTest extends SwingTestCase {
      .getEditorKitClassNameForContentType(content));
      }*/
     public void testSetGetEditorKit() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (true) {
             throw new UnsupportedOperationException("Not implemented");
         }
@@ -948,28 +839,16 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testConstants() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("JEditorPane.honorDisplayProperties", JEditorPane.HONOR_DISPLAY_PROPERTIES);
         assertEquals("JEditorPane.w3cLengthUnits", JEditorPane.W3C_LENGTH_UNITS);
     }
 
     public void testPlainEditorKit() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         EditorKit kit = jep.getEditorKit();
         assertEquals(kit, kit.getViewFactory());
     }
 
     public void testGetEditorKitClassNameForContentType() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("javax.swing.JEditorPane$PlainEditorKit", JEditorPane
                 .getEditorKitClassNameForContentType("text/plain"));
         assertEquals("javax.swing.text.html.HTMLEditorKit", JEditorPane
@@ -987,10 +866,6 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testSetEditorKitForContentType() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {          
             JEditorPane ep = new JEditorPane();
             ep.setEditorKitForContentType("abc", null);
@@ -1017,19 +892,11 @@ public class JEditorPaneTest extends SwingTestCase {
     }
 
     public void testIsFocusCycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression test for HARMONY-2573
         assertTrue(new JEditorPane().isFocusCycleRoot());
     }
 
     public void testCreateEditorKitForContentType() throws Exception {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         // Regression test for HARMONY-3453, HARMONY-3454
         final ClassLoader classLoader1 = new ArrayClassLoader();

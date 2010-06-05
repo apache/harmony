@@ -20,7 +20,6 @@
 package javax.swing;
 
 import java.awt.Window;
-import tests.support.Support_Excludes;
 
 public class PopupFactoryTest extends BasicSwingTestCase {
     public PopupFactoryTest(final String name) {
@@ -28,10 +27,6 @@ public class PopupFactoryTest extends BasicSwingTestCase {
     }
 
     public void testGetSetSharedInstance() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(PopupFactory.getSharedInstance());
         PopupFactory factory = new PopupFactory();
         PopupFactory.setSharedInstance(factory);
@@ -45,10 +40,6 @@ public class PopupFactoryTest extends BasicSwingTestCase {
     }
 
     public void testGetPopup() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JButton content1 = new JButton();
         Popup p1 = PopupFactory.getSharedInstance().getPopup(null, content1, 10, 10);
         p1.show();

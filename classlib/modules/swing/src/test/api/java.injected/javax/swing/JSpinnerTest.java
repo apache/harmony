@@ -37,7 +37,6 @@ import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 import org.apache.harmony.x.swing.StringConstants;
 import org.apache.harmony.x.swing.Utilities;
-import tests.support.Support_Excludes;
 
 public class JSpinnerTest extends BasicSwingTestCase {
     private JSpinner spinner;
@@ -86,20 +85,12 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testJSpinner() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(spinner.getModel() instanceof SpinnerNumberModel);
         assertTrue(spinner.getEditor() instanceof JSpinner.NumberEditor);
         assertTrue(Arrays.asList(spinner.getChangeListeners()).contains(spinner.getEditor()));
     }
 
     public void testSetGetUpdateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(spinner.getUIClassID(), "SpinnerUI");
         SpinnerUI defaultUI = spinner.getUI();
         assertNotNull(defaultUI);
@@ -115,10 +106,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testSetGetModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SpinnerNumberModel newModel = new SpinnerNumberModel(0, -1, 1, 1);
         spinner.setModel(newModel);
         assertSame(newModel, spinner.getModel());
@@ -143,29 +130,17 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testSetGetValue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         spinner.setValue(new Integer(10));
         assertTrue(chl.isChanged());
         assertEquals(spinner.getModel().getValue(), spinner.getValue());
     }
 
     public void testGetPreviousNextValue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(spinner.getNextValue(), spinner.getModel().getNextValue());
         assertEquals(spinner.getPreviousValue(), spinner.getModel().getPreviousValue());
     }
 
     public void testAddRemoveGetChangeListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(2, spinner.getChangeListeners().length);
         assertTrue(Arrays.asList(spinner.getChangeListeners()).contains(chl));
         ChangeListener listener = new ChangeListener() {
@@ -180,19 +155,11 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testFireStateChanged() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         spinner.getModel().setValue(new Integer(10));
         assertTrue(chl.isChanged());
     }
 
     public void testSetGetEditor() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent oldEditor = spinner.getEditor();
         assertNotNull(oldEditor);
         JComponent editor = new JProgressBar();
@@ -227,10 +194,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testCreateEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SpinnerModel model = new SpinnerNumberModel();
         spinner.setModel(model);
         assertTrue(spinner.createEditor(model) instanceof JSpinner.NumberEditor);
@@ -244,17 +207,9 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testGetAccessibleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testDefaultEditor_DefaultEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultEditor defaultEditor = (DefaultEditor) spinner.createEditor(abstractModel);
         spinner.setEditor(defaultEditor);
         assertTrue(Arrays.asList(defaultEditor.getTextField().getPropertyChangeListeners())
@@ -270,10 +225,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testDefaultEditor_propertyChange() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultEditor defaultEditor = (DefaultEditor) spinner.getEditor();
         PropertyChangeController pcc = new PropertyChangeController();
         ChangeController modelController = new ChangeController();
@@ -302,10 +253,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testDefaultEditor_stateChange() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultEditor defaultEditor = (DefaultEditor) spinner.getEditor();
         PropertyChangeController pcc = new PropertyChangeController();
         defaultEditor.getTextField().addPropertyChangeListener(pcc);
@@ -314,10 +261,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testDefaultEditor_LayoutSizes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultEditor defaultEditor = (DefaultEditor) spinner.createEditor(abstractModel);
         spinner.setEditor(defaultEditor);
         assertEquals(defaultEditor.minimumLayoutSize(spinner), Utilities.addInsets(
@@ -327,10 +270,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testNumberEditor_NumberEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         spinner.getModel().setValue(new Integer(5));
         NumberEditor numEditor = new NumberEditor(spinner);
         spinner.setEditor(numEditor);
@@ -352,10 +291,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testNumberEditor_formatter() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberEditor numEditor = new NumberEditor(spinner);
         spinner.setEditor(numEditor);
         final Integer max1 = new Integer(777);
@@ -377,10 +312,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testNumberEditor_getModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         NumberEditor numEditor = new NumberEditor(spinner);
         spinner.setEditor(numEditor);
         assertSame(numEditor.getModel(), spinner.getModel());
@@ -394,10 +325,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testDateEditor_DateEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         spinner.setModel(new SpinnerDateModel());
         DateEditor dateEditor = (DateEditor) spinner.getEditor();
         spinner.setEditor(dateEditor);
@@ -416,10 +343,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testDateEditor_formatter() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         spinner.setModel(new SpinnerDateModel());
         DateEditor dateEditor = new DateEditor(spinner);
         spinner.setEditor(dateEditor);
@@ -441,10 +364,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testListEditor_ListEditor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Object[] values = { "arrline1", "arrline2", "text", new Integer(33), spinner };
         spinner.setModel(new SpinnerListModel(values));
         ListEditor listEditor = new ListEditor(spinner);
@@ -460,10 +379,6 @@ public class JSpinnerTest extends BasicSwingTestCase {
     }
 
     public void testListEditor_formatter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent comp = new JButton();
         Object[] values = { "arrline1", "arrline2", "text", new Integer(33), comp };
         spinner.setModel(new SpinnerListModel(values));

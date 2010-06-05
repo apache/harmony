@@ -34,7 +34,6 @@ import java.util.Enumeration;
 
 import tests.support.Support_NetworkInterface;
 import tests.support.Support_PortManager;
-import tests.support.Support_Excludes;
 
 public class MulticastSocketTest extends SocketTestCase {
 
@@ -135,10 +134,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#MulticastSocket()
 	 */
 	public void test_Constructor() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// regression test for 497
         MulticastSocket s = new MulticastSocket();
         // regression test for Harmony-1162
@@ -149,10 +144,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#MulticastSocket(int)
 	 */
 	public void test_ConstructorI() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 	    MulticastSocket orig = new MulticastSocket();
         int port = orig.getLocalPort();
         orig.close();
@@ -172,10 +163,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#getInterface()
 	 */
 	public void test_getInterface() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.net.InetAddress
 		// java.net.MulticastSocket.getInterface()
 		assertTrue("Used for testing.", true);
@@ -231,10 +218,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#getNetworkInterface()
 	 */
 	public void test_getNetworkInterface() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
         int groupPort = Support_PortManager.getNextPortForUDP();
         if (atLeastOneInterface) {
             // validate that we get the expected response when one was not
@@ -306,10 +289,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#getTimeToLive()
 	 */
 	public void test_getTimeToLive() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			mss = new MulticastSocket();
 			mss.setTimeToLive(120);
@@ -328,10 +307,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#getTTL()
 	 */
 	public void test_getTTL() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method byte java.net.MulticastSocket.getTTL()
 
 		try {
@@ -349,10 +324,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#joinGroup(java.net.InetAddress)
 	 */
 	public void test_joinGroupLjava_net_InetAddress() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void
 		// java.net.MulticastSocket.joinGroup(java.net.InetAddress)
                 String msg = null;
@@ -381,10 +352,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#joinGroup(java.net.SocketAddress,java.net.NetworkInterface)
 	 */
 	public void test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface() throws IOException, InterruptedException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// security manager that allows us to check that we only return the
 		// addresses that we should
 		class mySecurityManager extends SecurityManager {
@@ -601,10 +568,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#leaveGroup(java.net.InetAddress)
 	 */
 	public void test_leaveGroupLjava_net_InetAddress() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void
 		// java.net.MulticastSocket.leaveGroup(java.net.InetAddress)
 		String msg = null;
@@ -638,10 +601,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#leaveGroup(java.net.SocketAddress,java.net.NetworkInterface)
 	 */
 	public void test_leaveGroupLjava_net_SocketAddressLjava_net_NetworkInterface() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// security manager that allows us to check that we only return the
 		// addresses that we should
 		class mySecurityManager extends SecurityManager {
@@ -737,10 +696,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#send(java.net.DatagramPacket, byte)
 	 */
 	public void test_sendLjava_net_DatagramPacketB() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void
 		// java.net.MulticastSocket.send(java.net.DatagramPacket, byte)
 
@@ -780,10 +735,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#setInterface(java.net.InetAddress)
 	 */
 	public void test_setInterfaceLjava_net_InetAddress() throws UnknownHostException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void
 		// java.net.MulticastSocket.setInterface(java.net.InetAddress)
 		// Note that the machine is not multi-homed
@@ -838,10 +789,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#setNetworkInterface(java.net.NetworkInterface)
 	 */
 	public void test_setNetworkInterfaceLjava_net_NetworkInterface() throws IOException, InterruptedException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		String msg = null;
 		InetAddress group = null;
 		int[] ports = Support_PortManager.getNextPortsForUDP(2);
@@ -918,10 +865,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#setTimeToLive(int)
 	 */
 	public void test_setTimeToLiveI() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			mss = new MulticastSocket();
 			mss.setTimeToLive(120);
@@ -940,10 +883,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#setTTL(byte)
 	 */
 	public void test_setTTLB() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.net.MulticastSocket.setTTL(byte)
 		try {
 			mss = new MulticastSocket();
@@ -959,10 +898,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#MulticastSocket(java.net.SocketAddress)
 	 */
 	public void test_ConstructorLjava_net_SocketAddress() throws Exception {	
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		MulticastSocket ms = new MulticastSocket((SocketAddress) null);
         assertTrue("should not be bound", !ms.isBound() && !ms.isClosed()
                 && !ms.isConnected());
@@ -1003,10 +938,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#getLoopbackMode()
 	 */
 	public void test_getLoopbackMode() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			MulticastSocket ms = new MulticastSocket((SocketAddress) null);
 			assertTrue("should not be bound", !ms.isBound() && !ms.isClosed()
@@ -1026,10 +957,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#setLoopbackMode(boolean)
 	 */
 	public void test_setLoopbackModeZ() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			MulticastSocket ms = new MulticastSocket();
 			ms.setLoopbackMode(true);
@@ -1048,10 +975,6 @@ public class MulticastSocketTest extends SocketTestCase {
      * @tests java.net.MulticastSocket#setLoopbackMode(boolean)
      */
     public void test_setLoopbackModeSendReceive() throws IOException{
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String ADDRESS = "224.1.2.3";
         final int PORT = Support_PortManager.getNextPortForUDP();
         final String message = "Hello, world!";
@@ -1092,10 +1015,6 @@ public class MulticastSocketTest extends SocketTestCase {
 	 * @tests java.net.MulticastSocket#setReuseAddress(boolean)
 	 */
 	public void test_setReuseAddressZ() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			// test case were we set it to false
 			MulticastSocket theSocket1 = null;

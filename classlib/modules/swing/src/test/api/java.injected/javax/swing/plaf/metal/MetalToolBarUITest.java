@@ -35,7 +35,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
-import tests.support.Support_Excludes;
 
 public class MetalToolBarUITest extends SwingTestCase {
     private class TestMetalToolBarUI extends MetalToolBarUI {
@@ -118,34 +117,18 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testUpdate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // painting code, cannot test
     }
 
     public void testUninstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // nothing to test
     }
 
     public void testInstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // nothing to test
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = MetalToolBarUI.createUI(toolBar);
         assertTrue(ui1 instanceof MetalToolBarUI);
         ComponentUI ui2 = MetalToolBarUI.createUI(toolBar);
@@ -153,18 +136,10 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateDockingListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(ui.createDockingListener() instanceof MetalToolBarUI.MetalDockingListener);
     }
 
     public void testCreateRolloverBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createRolloverBorder());
         if (isHarmony()) {
             assertTrue(ui.createRolloverBorder() instanceof UIResource);
@@ -172,10 +147,6 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testCreateNonRolloverBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(ui.createNonRolloverBorder());
         if (isHarmony()) {
             assertTrue(ui.createNonRolloverBorder() instanceof UIResource);
@@ -183,10 +154,6 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testInstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestMetalToolBarUI ui = new TestMetalToolBarUI();
         toolBar.setUI(ui);
         assertTrue(Arrays.asList(toolBar.getContainerListeners()).contains(ui.contListener));
@@ -197,10 +164,6 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testUninstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestMetalToolBarUI ui = new TestMetalToolBarUI();
         toolBar.setUI(ui);
         ui.uninstallListeners();
@@ -210,10 +173,6 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testSetBorderToNonRollover() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestMetalToolBarUI ui = new TestMetalToolBarUI();
         toolBar.setUI(ui);
         ui.setBorderToNonRollover(b);
@@ -229,34 +188,18 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testMetalToolBarUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // nothing to test
     }
 
     public void testCreateContainerListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.createContainerListener());
     }
 
     public void testCreateRolloverListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(ui.createRolloverListener());
     }
 
     public void testSetDragOffset() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestMetalToolBarUI ui = new TestMetalToolBarUI();
         toolBar.setUI(ui);
         Point offset = new Point(1, 2);
@@ -265,10 +208,6 @@ public class MetalToolBarUITest extends SwingTestCase {
     }
 
     public void testMetalDockingListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestMetalToolBarUI ui = new TestMetalToolBarUI();
         toolBar.setUI(ui);
         toolBar.add(b);

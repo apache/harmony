@@ -22,7 +22,6 @@ package javax.swing.text.html.parser;
 import java.io.IOException;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class DocumentParserTest extends TestCase {
     Utils.ExtDocumentParser dp;
@@ -37,62 +36,30 @@ public class DocumentParserTest extends TestCase {
     //parse method)... Otherwise, NPE will be thrown (no callback...)
 /*
     public void testHandleError() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         dp.handleError(5, "That's an error message");
     }
 
     public void testHandleEndTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testHandleStartTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testHandleEmptyTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testHandleComment() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testHandleText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
 
     public void testDocumentParser() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     */
     public void testParseReaderParserCallbackBoolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Utils.ParserCallback cb = new Utils.ParserCallback();
         cb.checkArguments = true;
         cb.setParser(dp);

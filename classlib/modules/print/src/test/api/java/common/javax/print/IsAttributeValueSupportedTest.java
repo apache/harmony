@@ -33,14 +33,9 @@ import javax.print.attribute.standard.RequestingUserName;
 import javax.print.attribute.standard.Sides;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class IsAttributeValueSupportedTest extends TestCase {
     public void testIsAttributeValueSupported() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out
                 .println("============= START testIsAttributeValueSupported ================");
 

@@ -19,8 +19,6 @@
  */
 package java.awt.geom;
 
-import tests.support.Support_Excludes;
-
 public class CubicCurve2DFloatTest extends GeomTestCase {
 
     CubicCurve2D.Float c;
@@ -42,133 +40,69 @@ public class CubicCurve2DFloatTest extends GeomTestCase {
     }
 
     public void testCreate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new CubicCurve2D.Float(), new CubicCurve2D.Float(0, 0, 0, 0, 0, 0, 0, 0), 0.0f);
     }
 
 
     public void testGetX1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(1.0, c.getX1(), 0.0);
     }
 
     public void testGetY1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(2.0, c.getY1(), 0.0);
     }
 
     public void testGetCtrlX1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(3.0, c.getCtrlX1(), 0.0);
     }
 
     public void testGetCtrlY1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(4.0, c.getCtrlY1(), 0.0);
     }
 
     public void testGetCtrlX2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(5.0, c.getCtrlX2(), 0.0);
     }
 
     public void testGetCtrlY2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(6.0, c.getCtrlY2(), 0.0);
     }
 
     public void testGetX2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(7.0, c.getX2(), 0.0);
     }
 
     public void testGetY2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(8.0, c.getY2(), 0.0);
     }
 
     public void testGetP1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Point2D.Float(1, 2), c.getP1());
     }
 
     public void testGetCtrlP1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Point2D.Float(3, 4), c.getCtrlP1());
     }
 
     public void testGetCtrlP2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Point2D.Float(5, 6), c.getCtrlP2());
     }
 
     public void testGetP2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Point2D.Float(7, 8), c.getP2());
     }
 
     public void testSetCurve1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         c.setCurve(9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0);
         assertEquals(new CubicCurve2D.Float(9, 10, 11, 12, 13, 14, 15, 16), c, 0.0);
     }
 
     public void testSetCurve2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         c.setCurve(9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f);
         assertEquals(new CubicCurve2D.Float(9, 10, 11, 12, 13, 14, 15, 16), c, 0.0);
     }
 
     public void testGetBounds2D() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[][] element : CubicCurve2DTest.bounds) {
             CubicCurve2D curve = new CubicCurve2D.Float();
             curve.setCurve(element[0], 0);

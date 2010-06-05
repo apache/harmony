@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class SinglePixelPackedSampleModelTest extends TestCase {
     int w = 10;

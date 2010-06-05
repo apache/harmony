@@ -20,7 +20,6 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 @SuppressWarnings("serial")
 public class KeyboardFocusManagerRTest extends TestCase {
     Robot robot;

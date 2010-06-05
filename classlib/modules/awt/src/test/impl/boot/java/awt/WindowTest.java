@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class WindowTest extends TestCase {
     Frame f;
@@ -69,10 +68,6 @@ public class WindowTest extends TestCase {
 
     @SuppressWarnings("deprecation")
     public void testSetLocationRelativeTo() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Rectangle screenRect = f.getGraphicsConfiguration().getBounds();
         Point centerScreen = screenRect.getLocation();
         centerScreen.translate((screenRect.width - 1) / 2,
@@ -179,19 +174,11 @@ public class WindowTest extends TestCase {
      * Check if getFont() returns null for if font wasn't set before.
      */
     public void testGetFont_Default(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // regression test for Harmony-1605
         assertEquals(null, w.getFont());
     }
 
     public void testPack() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Button b = new Button();
 
         assertNull(b.getFont());

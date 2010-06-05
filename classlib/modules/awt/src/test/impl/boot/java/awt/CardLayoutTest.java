@@ -19,9 +19,6 @@
  */
 package java.awt;
 
-import tests.support.Support_Excludes;
-
-
 @SuppressWarnings("serial")
 public class CardLayoutTest extends AWTTestCase {
 
@@ -75,29 +72,17 @@ public class CardLayoutTest extends AWTTestCase {
     }
 
     public void testCardLayoutintint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout = new CardLayout(10, 5);
         assertEquals(layout.getHgap(), 10);
         assertEquals(layout.getVgap(), 5);
     }
 
     public void testCardLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(layout.getHgap(), 0);
         assertEquals(layout.getVgap(), 0);
     }
 
     public void testToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(new String("java.awt.CardLayout[hgap=10,vgap=20]").equals(new CardLayout(10,20).toString()));
     }
 
@@ -125,10 +110,6 @@ public class CardLayoutTest extends AWTTestCase {
 
     @SuppressWarnings("deprecation")
     public void testAddLayoutComponentComponentObject() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Container c = new Container();
         c.setSize(1, 2);
         c.add(b1);        
@@ -152,10 +133,6 @@ public class CardLayoutTest extends AWTTestCase {
 
     @SuppressWarnings("deprecation")
     public void testRemoveLayoutComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Container c = new Container();
         c.setSize(13, 13);
         c.add(b1);        
@@ -179,10 +156,6 @@ public class CardLayoutTest extends AWTTestCase {
 
     public void testFirstLast() {
 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.add(b1, "");
         frame.add(b2, "");
         frame.add(b3, "");
@@ -200,10 +173,6 @@ public class CardLayoutTest extends AWTTestCase {
     }
 
     public void testNextPrev() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.add(b1, "");
         frame.add(b2, "");
         frame.add(b3, "");
@@ -225,10 +194,6 @@ public class CardLayoutTest extends AWTTestCase {
 
     public void testShow() {
 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.add(b1, "1");
         frame.add(b2, "2");
         frame.add(b3, "3");
@@ -245,18 +210,10 @@ public class CardLayoutTest extends AWTTestCase {
     }
 
     public void testMaximumLayoutSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(layout.maximumLayoutSize(frame), new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
     }
 
     public void testMinimumLayoutSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.add(b1, "1");
         frame.add(b2, "2");
         frame.add(b3, "3");
@@ -277,10 +234,6 @@ public class CardLayoutTest extends AWTTestCase {
     }
 
     public void testPreferredLayoutSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.add(b1, "1");
         frame.add(b2, "2");
         frame.add(b3, "3");
@@ -301,10 +254,6 @@ public class CardLayoutTest extends AWTTestCase {
     }
 
     public void testLayoutContainer() {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         frame.add(b1, "1");
         frame.add(b2, "2");

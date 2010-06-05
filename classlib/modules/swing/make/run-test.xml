@@ -31,11 +31,11 @@
 
     <target name="test" depends="test-module" />
 
-    <target name="test-module">
+    <target name="test-module" depends="test-jre-vm-info">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="swing" jar="swing_tests.jar">
             <junit-elements>
-                <jvmarg value="-Xbootclasspath/a:swing_tests.jar${path.separator}../junit.jar${path.separator}../support.jar"/>
+                <jvmarg value="-Xbootclasspath/a:swing_tests.jar${path.separator}../junit.jar"/>
             </junit-elements>
         </run-hdk-tests>
     </target>

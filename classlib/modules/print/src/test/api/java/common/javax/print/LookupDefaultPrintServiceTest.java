@@ -31,14 +31,9 @@ import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.Sides;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class LookupDefaultPrintServiceTest extends TestCase {
     public void testLookupDefaultPrintService() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out
                 .println("======= START LookupDefaultPrintServiceTest ======");
 

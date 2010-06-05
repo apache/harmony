@@ -27,7 +27,6 @@ import javax.swing.SwingTestCase;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.tree.DefaultMutableTreeNode;
-import tests.support.Support_Excludes;
 
 public class MetalTreeUITest extends SwingTestCase {
     private MetalTreeUI ui;
@@ -91,30 +90,18 @@ public class MetalTreeUITest extends SwingTestCase {
     }
 
     public void testPaint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Graphics g = createTestGraphics();
         g.setClip(0, 0, 10, 10);
         ui.paint(g, tree);
     }
 
     public void testUninstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallUI(tree);
         assertNotNull(ui.getExpandedIcon());
         assertNotNull(ui.getCollapsedIcon());
     }
 
     public void testInstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.uninstallUI(tree);
         ui.installUI(tree);
         assertNotNull(ui.getExpandedIcon());
@@ -122,26 +109,14 @@ public class MetalTreeUITest extends SwingTestCase {
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotSame(MetalTreeUI.createUI(tree), MetalTreeUI.createUI(tree));
     }
 
     public void testGetHorizontalLegBuffer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(4, ui.getHorizontalLegBuffer());
     }
 
     public void testIsLocationInExpandControl() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         tree.setShowsRootHandles(false);
         tree.expandPath(tree.getPathForRow(1));
         assertFalse(ui.isLocationInExpandControl(0, 0, -26, 25));

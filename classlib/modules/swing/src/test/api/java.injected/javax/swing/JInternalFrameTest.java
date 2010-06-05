@@ -39,7 +39,6 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
-import tests.support.Support_Excludes;
 
 @SuppressWarnings("serial")
 public class JInternalFrameTest extends SwingTestCase {
@@ -229,10 +228,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * instead.
      */
     public void testReshape() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Point location = new Point(20, 21);
         final int width = 22;
         final int height = 23;
@@ -247,10 +242,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void updateUI()
      */
     public void testUpdateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.updateUI();
         ComponentUI ui1 = frame.getUI();
         ComponentUI ui2 = UIManager.getUI(frame);
@@ -289,10 +280,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void JInternalFrame()
      */
     public void testJInternalFrame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = new JInternalFrame();
         checkJInternalFrameCorrectness("", false, false, false, false);
     }
@@ -301,10 +288,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void doDefaultCloseAction()
      */
     public void testDoDefaultCloseAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         MyInternalFrameListener listener = new MyInternalFrameListener();
         frame.addInternalFrameListener(listener);
@@ -338,10 +321,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void pack()
      */
     public void testPack() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JComponent comp1 = new JPanel();
         final JComponent comp2 = new JPanel();
         comp2.setPreferredSize(new Dimension(60, 20));
@@ -359,10 +338,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void moveToBack()
      */
     public void testMoveToBack() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test without JDesktopPane set
         frame.moveToBack();
         // test with JDesktopPane set
@@ -384,10 +359,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void moveToFront()
      */
     public void testMoveToFront() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test without JDesktopPane set
         frame.moveToFront();
         // test with JDesktopPane set
@@ -410,10 +381,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void toBack()
      */
     public void testToBack() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test without JDesktopPane set
         frame.toBack();
         // test with JDesktopPane set
@@ -435,10 +402,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void toFront()
      */
     public void testToFront() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test without JDesktopPane set
         frame.toFront();
         // test with JDesktopPane set
@@ -460,10 +423,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void fireInternalFrameEvent(int)
      */
     public void testFireInternalFrameEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         MyInternalFrameListener l = new MyInternalFrameListener();
         frame.addInternalFrameListener(l);
@@ -499,10 +458,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     int getDefaultCloseOperation()
      */
     public void testSetGetDefaultCloseOperation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // default value is JInternalFrame.DISPOSE_ON_CLOSE
         assertEquals(WindowConstants.DISPOSE_ON_CLOSE, frame.getDefaultCloseOperation());
         // test setting valid value
@@ -529,10 +484,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     int getLayer()
      */
     public void testSetGetLayer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue("default level is 0", frame.getLayer() == 0);
         // test setLayer() without JDesktopPane set
         frame.setLayer(1);
@@ -550,10 +501,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void setLayer(Integer)
      */
     public void testSetLayerInteger() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // test setLayer() without JDesktopPane set
         frame.setLayer(new Integer(1));
         assertTrue("layer is set", frame.getLayer() == 1);
@@ -572,10 +519,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isClosable()
      */
     public void testSetIsClosable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse("closable is false by default", frame.isClosable());
         frame.setClosable(true);
         assertTrue("closable is set", frame.isClosable());
@@ -587,10 +530,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isClosed()
      */
     public void testSetIsClosed() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyInternalFrameListener frameListener = new MyInternalFrameListener();
         frame.addInternalFrameListener(frameListener);
         MyPropertyChangeListener l = new MyPropertyChangeListener();
@@ -667,10 +606,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isIcon()
      */
     public void testSetIsIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JDesktopPane desktop = new JDesktopPane();
         desktop.add(frame);
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
@@ -738,10 +673,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isIconifiable()
      */
     public void testSetIsIconifiable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse("iconable is false by default", frame.isIconifiable());
         frame.setIconifiable(true);
         assertTrue("iconable is set", frame.isIconifiable());
@@ -753,10 +684,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isMaximizable()
      */
     public void testSetIsMaximizable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse("maximizable is false by default", frame.isMaximizable());
         frame.setMaximizable(true);
         assertTrue("maximizable is set", frame.isMaximizable());
@@ -768,10 +695,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isMaximum()
      */
     public void testSetIsMaximum() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JDesktopPane desktop = new JDesktopPane();
         desktop.add(frame);
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
@@ -829,10 +752,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isResizable()
      */
     public void testSetIsResizable() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse("resizable is false by default", frame.isResizable());
         frame.setResizable(true);
         assertTrue("resizable is set", frame.isResizable());
@@ -844,10 +763,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isRootPaneCheckingEnabled()
      */
     public void testSetIsRootPaneCheckingEnabled() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         assertTrue("rootPaneCheckingEnabled is true by default", frame
                 .isRootPaneCheckingEnabled());
@@ -862,10 +777,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isSelected()
      */
     public void testSetIsSelected() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createAndShowRootFrame();
         rootFrame.getContentPane().add(new JInternalFrame()); // to make 'frame' not selectable by default
         //rootFrame.getContentPane().add(frame);
@@ -977,10 +888,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void JInternalFrame(String, boolean, boolean, boolean, boolean)
      */
     public void testJInternalFrameStringbooleanbooleanbooleanboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String title = "Test title";
         frame = new JInternalFrame(title, true, true, true, true);
         checkJInternalFrameCorrectness(title, true, true, true, true);
@@ -994,10 +901,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void JInternalFrame(String, boolean, boolean, boolean)
      */
     public void testJInternalFrameStringbooleanbooleanboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String title = "Test title";
         frame = new JInternalFrame(title, true, true, true);
         checkJInternalFrameCorrectness(title, true, true, true, false);
@@ -1011,10 +914,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void JInternalFrame(String, boolean, boolean)
      */
     public void testJInternalFrameStringbooleanboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String title = "Test title";
         frame = new JInternalFrame(title, true, true);
         checkJInternalFrameCorrectness(title, true, true, false, false);
@@ -1028,10 +927,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void JInternalFrame(String, boolean)
      */
     public void testJInternalFrameStringboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String title = "Test title";
         frame = new JInternalFrame(title, false);
         checkJInternalFrameCorrectness(title, false, false, false, false);
@@ -1043,10 +938,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void JInternalFrame(String)
      */
     public void testJInternalFrameString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String title = "Test title";
         frame = new JInternalFrame(title);
         checkJInternalFrameCorrectness(title, false, false, false, false);
@@ -1056,10 +947,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void addImpl(Component, Object, int)
      */
     public void testAddImpl() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         JComponent comp = new JPanel();
         // rootPaneCheckingEnabled is true, no exception since 1.5
@@ -1094,10 +981,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     InternalFrameUI getUI()
      */
     public void testSetGetUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicInternalFrameUI ui = new BasicInternalFrameUI(frame);
         frame.setUI(ui);
         assertTrue(frame.getUI() == ui);
@@ -1124,10 +1007,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     InternalFrameListener[] getInternalFrameListeners()
      */
     public void testAddRemoveGetInternalFrameListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         InternalFrameListener l = new MyInternalFrameListener();
         frame.addInternalFrameListener(l);
         InternalFrameListener[] listeners = frame.getInternalFrameListeners();
@@ -1143,10 +1022,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     JRootPane getRootPane()
      */
     public void testSetGetRootPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         assertTrue("setRootPane() is called from the constructor",
                 TestInternalFrame.setRootPaneCalled);
@@ -1166,10 +1041,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for JRootPane createRootPane()
      */
     public void testCreateRootPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         assertTrue("createRootPane() is called from the constructor",
                 TestInternalFrame.createRootPaneCalled);
@@ -1184,10 +1055,6 @@ public class JInternalFrameTest extends SwingTestCase {
      */
     @SuppressWarnings("deprecation")
     public void testSetGetMenuBar() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(frame.getMenuBar());
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(JInternalFrame.MENU_BAR_PROPERTY, listener);
@@ -1205,10 +1072,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     JMenuBar getJMenuBar()
      */
     public void testSetGetJMenuBar() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(frame.getJMenuBar());
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(JInternalFrame.MENU_BAR_PROPERTY, listener);
@@ -1226,10 +1089,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     JLayeredPane getLayeredPane()
      */
     public void testSetGetLayeredPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(JInternalFrame.LAYERED_PANE_PROPERTY, listener);
         JLayeredPane pane = new JLayeredPane();
@@ -1257,10 +1116,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     JDesktopIcon getDesktopIcon()
      */
     public void testSetGetDesktopIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue("desktopIcon is not null by default", frame.getDesktopIcon() != null);
         JInternalFrame.JDesktopIcon icon = new JInternalFrame.JDesktopIcon(frame);
         assertTrue("desktopIcon is not set", frame.getDesktopIcon() != icon);
@@ -1274,10 +1129,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for JDesktopPane getDesktopPane()
      */
     public void testGetDesktopPane() throws NullPointerException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // no desktopPane
         assertNull("desktopPane is null by default", frame.getDesktopPane());
         //JInternalFrame.JDesktopIcon icon = new JInternalFrame.JDesktopIcon(frame);
@@ -1310,10 +1161,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     Icon getFrameIcon()
      */
     public void testSetGetFrameIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = new ImageIcon();
         assertTrue("frameIcon is not null by default", frame.getFrameIcon() != null);
         frame.setFrameIcon(icon);
@@ -1326,10 +1173,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for AccessibleContext getAccessibleContext()
      */
     public void testGetAccessibleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AccessibleContext c = frame.getAccessibleContext();
         assertTrue("instanceof AccessibleJInternalFrame",
                 c instanceof JInternalFrame.AccessibleJInternalFrame);
@@ -1373,10 +1216,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     String getTitle()
      */
     public void testSetGetTitle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String title = "Test title";
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(JInternalFrame.TITLE_PROPERTY, listener);
@@ -1394,10 +1233,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for String paramString()
      */
     public void testParamString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         assertTrue("paramString() cannot return null", frame.paramString() != null);
     }
@@ -1406,10 +1241,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for String getUIClassID()
      */
     public void testGetUIClassID() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue("InternalFrameUI" == frame.getUIClassID());
     }
 
@@ -1419,10 +1250,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     Rectangle getNormalBounds()
      */
     public void testSetGetNormalBounds() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(listener);
         JDesktopPane desktopPane = new JDesktopPane();
@@ -1457,10 +1284,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void setLayout(LayoutManager)
      */
     public void testSetLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TestInternalFrame frame = new TestInternalFrame();
         LayoutManager contentLayout = frame.getContentPane().getLayout();
         LayoutManager frameLayout = frame.getLayout();
@@ -1497,10 +1320,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void paintComponent(Graphics)
      */
     public void testPaintComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Note: painting code, cannot test
     }
 
@@ -1510,10 +1329,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     Container getContentPane()
      */
     public void testSetGetContentPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(JInternalFrame.CONTENT_PANE_PROPERTY, listener);
         JPanel pane = new JPanel();
@@ -1541,10 +1356,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     Component getGlassPane()
      */
     public void testSetGetGlassPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyPropertyChangeListener listener = new MyPropertyChangeListener();
         frame.addPropertyChangeListener(JInternalFrame.GLASS_PANE_PROPERTY, listener);
         JPanel pane = new JPanel();
@@ -1570,10 +1381,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void remove(Component)
      */
     public void testRemove() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComponent comp = new JPanel();
         frame.getContentPane().add(comp);
         assertTrue("label is in contentPane", frame.isAncestorOf(comp));
@@ -1644,10 +1451,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for String getWarningString()
      */
     public void testGetWarningString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull("getWarningString() always returns null", frame.getWarningString());
     }
 
@@ -1657,10 +1460,6 @@ public class JInternalFrameTest extends SwingTestCase {
      *     boolean isFocusCycleRoot()
      */
     public void testFocusCycleRoot() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue("isFocusCycleRoot is always true", frame.isFocusCycleRoot());
         frame.setFocusCycleRoot(false);
         assertTrue("isFocusCycleRoot is always true", frame.isFocusCycleRoot());
@@ -1672,10 +1471,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for Container getFocusCycleRootAncestor()
      */
     public void testGetFocusCycleRootAncestor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull("always returns null", frame.getFocusCycleRootAncestor());
     }
 
@@ -1683,10 +1478,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void hide()
      */
     public void testHide() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.setVisible(true);
         frame.hide();
         assertFalse("frame is hided", frame.isVisible());
@@ -1699,10 +1490,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void show()
      */
     public void testShow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MyInternalFrameListener l = new MyInternalFrameListener();
         frame.addInternalFrameListener(l);
         frame.show();
@@ -1746,10 +1533,6 @@ public class JInternalFrameTest extends SwingTestCase {
      * Class under test for void dispose()
      */
     public void testDispose() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createAndShowRootFrame();
         MyInternalFrameListener l = new MyInternalFrameListener();
         frame.addInternalFrameListener(l);
@@ -1774,10 +1557,6 @@ public class JInternalFrameTest extends SwingTestCase {
     }
 
     public void testSetBounds() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression for HARMONY-1801
         final Marker validateMarker = new Marker();
         final Marker revalidateMarker = new Marker();

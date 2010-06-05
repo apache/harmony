@@ -25,7 +25,6 @@ import java.awt.Color;
 import java.awt.Insets;
 import javax.swing.JPanel;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class LineBorderTest extends SwingTestCase {
     public static void main(final String[] args) {
@@ -36,10 +35,6 @@ public class LineBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component, Insets)
      */
     public void testGetBorderInsetsComponentInsets() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int thickness1 = 11;
         int thickness2 = 22;
         int thickness3 = 33;
@@ -70,10 +65,6 @@ public class LineBorderTest extends SwingTestCase {
      * Class under test for Insets getBorderInsets(Component)
      */
     public void testGetBorderInsetsComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int thickness = 11;
         LineBorder border = new LineBorder(Color.black, thickness);
         Insets insets = null;
@@ -93,10 +84,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testPaintBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         //        JPanel panel = new JPanel();
         //
         //        panel.setBorder(new LineBorder(Color.red, 10, true));
@@ -110,10 +97,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testIsBorderOpaque() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LineBorder border1 = new LineBorder(Color.black);
         LineBorder border2 = new LineBorder(Color.black, 11, true);
         LineBorder border3 = new LineBorder(Color.black, 13, false);
@@ -126,10 +109,6 @@ public class LineBorderTest extends SwingTestCase {
      * Class under test for void LineBorder(Color, int, boolean)
      */
     public void testLineBorderColorintboolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int thickness = 11;
         boolean roundedCorners = true;
         Color color = Color.yellow;
@@ -157,10 +136,6 @@ public class LineBorderTest extends SwingTestCase {
      * Class under test for void LineBorder(Color, int)
      */
     public void testLineBorderColorint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int thickness = 11;
         boolean roundedCorners = false;
         Color color = Color.yellow;
@@ -186,10 +161,6 @@ public class LineBorderTest extends SwingTestCase {
      * Class under test for void LineBorder(Color)
      */
     public void testLineBorderColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int thickness = 1;
         boolean roundedCorners = false;
         Color color = Color.yellow;
@@ -210,10 +181,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testGetLineColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Color color = Color.yellow;
         LineBorder border = new LineBorder(color, 1, true);
         assertEquals("Colors coinsides", color, border.getLineColor());
@@ -226,10 +193,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testGetRoundedCorners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         boolean roundedCorners = true;
         LineBorder border = new LineBorder(Color.black, 1, roundedCorners);
         assertEquals("RoundedCorners coinsides", roundedCorners, border.getRoundedCorners());
@@ -241,10 +204,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testGetThickness() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int thickness = 11;
         LineBorder border = new LineBorder(Color.black, thickness);
         assertEquals("Thickness coinsides", thickness, border.getThickness());
@@ -257,10 +216,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testCreateGrayLineBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LineBorder border = (LineBorder) LineBorder.createGrayLineBorder();
         assertEquals("Thickness coinsides", 1, border.getThickness());
         assertFalse("RoundedCorners coinsides", border.getRoundedCorners());
@@ -268,10 +223,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testCreateBlackLineBorder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LineBorder border = (LineBorder) LineBorder.createBlackLineBorder();
         assertEquals("Thickness coinsides", 1, border.getThickness());
         assertFalse("RoundedCorners coinsides", border.getRoundedCorners());
@@ -279,10 +230,6 @@ public class LineBorderTest extends SwingTestCase {
     }
 
     public void testReadWriteObject() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         LineBorder border1 = new LineBorder(Color.red, 33, false);
         LineBorder border2 = new LineBorder(Color.yellow, 47, true);
         LineBorder resurrectedBorder = (LineBorder) serializeObject(border1);

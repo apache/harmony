@@ -35,7 +35,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWaitTestCase;
 import org.apache.harmony.awt.text.ComposedTextParams;
 import org.apache.harmony.awt.text.PropertyNames;
-import tests.support.Support_Excludes;
 
 public class JTextComponent_IMLocationTest extends SwingWaitTestCase {
     JTextArea jta;
@@ -142,10 +141,6 @@ public class JTextComponent_IMLocationTest extends SwingWaitTestCase {
     }
 
     public void testGetLocationOffset() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             setComposedText();
             Rectangle rect;
@@ -166,10 +161,6 @@ public class JTextComponent_IMLocationTest extends SwingWaitTestCase {
     }
 
     public void testGetTextLocation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             setComposedText();
             int pos = 7;

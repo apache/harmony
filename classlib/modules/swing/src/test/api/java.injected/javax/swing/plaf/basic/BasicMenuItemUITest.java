@@ -46,7 +46,6 @@ import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.InsetsUIResource;
-import tests.support.Support_Excludes;
 
 public class BasicMenuItemUITest extends SwingTestCase {
     protected String prefix;
@@ -80,10 +79,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      */
     @SuppressWarnings("deprecation")
     public void testPaint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame frame = new JFrame();
         JMenuItem item = new JMenuItem();
         item.setUI(menuItemUI);
@@ -97,10 +92,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.getPreferredSize(JComponent)'
      */
     public void testGetSizes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem() {
             private static final long serialVersionUID = 1L;
 
@@ -148,10 +139,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.uninstallUI(JComponent)'
      */
     public void testInstallUninstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem();
         menuItemUI.installUI(item);
         assertNotNull(item.getBorder());
@@ -176,10 +163,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.createUI(JComponent)'
      */
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = BasicMenuItemUI.createUI(null);
         ComponentUI ui2 = BasicMenuItemUI.createUI(null);
         assertTrue(ui1 instanceof BasicMenuItemUI);
@@ -190,10 +173,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.installDefaults()'
      */
     public void testInstallUninstallDefaults() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem();
         item.setUI(menuItemUI);
         UIManager.getDefaults().put(prefix + "background", new ColorUIResource(Color.red));
@@ -263,10 +242,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.getPropertyPrefix()'
      */
     public void testGetPropertyPrefix() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("MenuItem", menuItemUI.getPropertyPrefix());
     }
 
@@ -274,10 +249,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.installListeners()'
      */
     public void testInstallUninstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem();
         menuItemUI = (BasicMenuItemUI) item.getUI();
         menuItemUI.uninstallListeners();
@@ -311,10 +282,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.installKeyboardActions()'
      */
     public void testInstallUninstallKeyboardActions() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem();
         item.setUI(menuItemUI);
         menuItemUI.uninstallKeyboardActions();
@@ -336,10 +303,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.createMouseInputListener(JComponent)'
      */
     public void testCreateMouseInputListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(menuItemUI.createMouseInputListener(null));
     }
 
@@ -347,10 +310,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.createMenuDragMouseListener(JComponent)'
      */
     public void testCreateMenuDragMouseListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(menuItemUI.createMenuDragMouseListener(null));
     }
 
@@ -358,10 +317,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.createMenuKeyListener(JComponent)'
      */
     public void testCreateMenuKeyListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertNull(menuItemUI.createMenuKeyListener(null));
         } else {
@@ -373,10 +328,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.getPreferredMenuItemSize(JComponent, Icon, Icon, int)'
      */
     public void testGetPreferredMenuItemSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon1 = null;
         Icon icon2 = new ImageIcon(new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB));
         Icon icon3 = new ImageIcon(new BufferedImage(100, 20, BufferedImage.TYPE_INT_RGB));
@@ -418,10 +369,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      */
     @SuppressWarnings("deprecation")
     public void testGetPath() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame frame = new JFrame();
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("menu");
@@ -463,10 +410,6 @@ public class BasicMenuItemUITest extends SwingTestCase {
      * Test method for 'javax.swing.plaf.basic.BasicMenuItemUI.doClick(MenuSelectionManager)'
      */
     public void testDoClick() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         class MyJMenuItem extends JMenuItem {
             private static final long serialVersionUID = 1L;
 

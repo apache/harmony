@@ -47,7 +47,6 @@ import java.util.Set;
 
 import tests.support.Support_TestProvider;
 import tests.support.resource.Support_Resources;
-import tests.support.Support_Excludes;
 
 public class KeyStore2Test extends junit.framework.TestCase {
     static PrivateKey privateKey;
@@ -160,10 +159,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#aliases()
 	 */
 	public void test_aliases() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.util.Enumeration
 		// java.security.KeyStore.aliases()
 		// NOT COMPATIBLE WITH PCS#12
@@ -202,10 +197,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#containsAlias(java.lang.String)
 	 */
 	public void test_containsAliasLjava_lang_String() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method boolean
 		// java.security.KeyStore.containsAlias(java.lang.String)
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -230,10 +221,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#getCertificate(java.lang.String)
 	 */
 	public void test_getCertificateLjava_lang_String() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.security.cert.Certificate
 		// java.security.KeyStore.getCertificate(java.lang.String)
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -268,10 +255,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 */
 	public void test_getCertificateAliasLjava_security_cert_Certificate()
 			throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.String
 		// java.security.KeyStore.getCertificateAlias(java.security.cert.Certificate)
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -306,10 +289,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#getCertificateChain(java.lang.String)
 	 */
 	public void test_getCertificateChainLjava_lang_String() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.security.cert.Certificate []
 		// java.security.KeyStore.getCertificateChain(java.lang.String)
 		// creatCertificate();
@@ -344,10 +323,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#getInstance(java.lang.String)
 	 */
 	public void test_getInstanceLjava_lang_String() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.security.KeyStore
 		// java.security.KeyStore.getInstance(java.lang.String)
 		KeyStore keyTest = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -362,10 +337,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 */
 	public void test_getInstanceLjava_lang_StringLjava_lang_String()
 			throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.security.KeyStore
 		// java.security.KeyStore.getInstance(java.lang.String,
 		// java.lang.String)
@@ -381,10 +352,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#getKey(java.lang.String, char[])
 	 */
 	public void test_getKeyLjava_lang_String$C() throws Exception {
-
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
 
 		// Test for method java.security.Key
 		// java.security.KeyStore.getKey(java.lang.String, char [])
@@ -424,10 +391,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#getProvider()
 	 */
 	public void test_getProvider() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.security.Provider
 		// java.security.KeyStore.getProvider()
 		KeyStore keyTest = KeyStore.getInstance("PKCS#12/Netscape",
@@ -441,10 +404,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#getType()
 	 */
 	public void test_getType() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method java.lang.String java.security.KeyStore.getType()
 		KeyStore keyTest = KeyStore.getInstance("PKCS#12/Netscape",
 				"TestProvider");
@@ -457,10 +416,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#isCertificateEntry(java.lang.String)
 	 */
 	public void test_isCertificateEntryLjava_lang_String() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method boolean
 		// java.security.KeyStore.isCertificateEntry(java.lang.String)
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -485,10 +440,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#isKeyEntry(java.lang.String)
 	 */
 	public void test_isKeyEntryLjava_lang_String() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method boolean
 		// java.security.KeyStore.isKeyEntry(java.lang.String)
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -513,10 +464,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#load(java.io.InputStream, char[])
 	 */
 	public void test_loadLjava_io_InputStream$C() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void java.security.KeyStore.load(java.io.InputStream,
 		// char [])
 		byte[] keyStore = creatCertificate();
@@ -557,10 +504,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 */
 	public void test_setCertificateEntryLjava_lang_StringLjava_security_cert_Certificate()
 			throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void
 		// java.security.KeyStore.setCertificateEntry(java.lang.String,
 		// java.security.cert.Certificate)
@@ -589,10 +532,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	public void test_setKeyEntryLjava_lang_String$B$Ljava_security_cert_Certificate()
 			throws Exception {
 
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 //		fail("Test hangs - requires a full math implementation ??");
 
 		// Test for method void
@@ -619,10 +558,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	public void test_setKeyEntryLjava_lang_StringLjava_security_Key$C$Ljava_security_cert_Certificate()
 			throws Exception {
 
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method void
 		// java.security.KeyStore.setKeyEntry(java.lang.String,
 		// java.security.Key, char [], java.security.cert.Certificate [])
@@ -643,10 +578,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
 	 * @tests java.security.KeyStore#size()
 	 */
 	public void test_size() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// Test for method int java.security.KeyStore.size()
 
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -669,10 +600,6 @@ public class KeyStore2Test extends junit.framework.TestCase {
     
     
     public void test_Constructor() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStore ks = new MockKeyStore(new MockKeyStoreSpi(), null,
                 "MockKeyStore");
         ks.load(null, null);

@@ -40,7 +40,6 @@ import tests.support.Support_HttpServerSocket;
 import tests.support.Support_Jetty;
 import tests.support.Support_PortManager;
 import tests.support.Support_URLConnector;
-import tests.support.Support_Excludes;
 
 /**
  * Tests for <code>HttpURLConnection</code> persistence.
@@ -231,10 +230,6 @@ public class PersistenceTest extends TestCase {
      * Test that an HTTP connection persists
      */
     public void testConnectionsPersist() throws IOException, InterruptedException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int initialFreeConnections = HttpConnectionManager.getDefault().numFreeConnections();
         MockServer httpServer =
                 new MockServer("ServerSocket for HttpURLConnectionTest");
@@ -265,10 +260,6 @@ public class PersistenceTest extends TestCase {
      * Test that multiple HTTP connections persist
      */
     public void testMultipleConnectionsPersist() throws IOException, InterruptedException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int initialFreeConnections = HttpConnectionManager.getDefault().numFreeConnections();
         MockServer httpServer =
                 new MockServer("ServerSocket for HttpURLConnectionTest");
@@ -324,10 +315,6 @@ public class PersistenceTest extends TestCase {
      * @throws URISyntaxException
      */
     public void testForcedClosure() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int initialFreeConnections = HttpConnectionManager.getDefault().numFreeConnections();
         MockServer httpServer =
                 new MockServer("ServerSocket for HttpURLConnectionTest");
@@ -355,10 +342,6 @@ public class PersistenceTest extends TestCase {
      * @throws Exception
      */
     public void testIncorrectUsage() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int initialFreeConnections = HttpConnectionManager.getDefault().numFreeConnections();
         HttpURLConnection c = (HttpURLConnection)
             new URL("http://localhost:" + port).openConnection();
@@ -374,10 +357,6 @@ public class PersistenceTest extends TestCase {
      * Here client gets NOT_FOUND response.
      */
     public void testConnectionNonPersistence() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MockHTTPServer httpServer =
             new MockHTTPServer("HTTP Server for NOT FOUND checking", 1,
                     MockHTTPServer.NOT_FOUND_CODE);
@@ -418,10 +397,6 @@ public class PersistenceTest extends TestCase {
      * @throws Exception 
      */
     public void testCorrectUsage() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int initialFreeConnections = HttpConnectionManager.getDefault().numFreeConnections();
         HttpURLConnection c = (HttpURLConnection)
             new URL("http://localhost:" + port).openConnection();
@@ -457,10 +432,6 @@ public class PersistenceTest extends TestCase {
      * Test that the http.keepAlive system property has the required effect on persistent connections
      */
     public void testKeepAliveSystemProperty() throws IOException, InterruptedException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.setProperty("http.keepAlive", "false");
         MockServer httpServer =
                 new MockServer("ServerSocket for HttpURLConnectionTest");
@@ -486,10 +457,6 @@ public class PersistenceTest extends TestCase {
      * @throws Exception
      */
     public void testMaxConnectionsSystemProperty() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int initialFreeConnections = HttpConnectionManager.getDefault().numFreeConnections();
         System.setProperty("http.maxConnections", "2");
         HttpURLConnection c = (HttpURLConnection)
@@ -521,10 +488,6 @@ public class PersistenceTest extends TestCase {
     }
     
     public void testClosingOutputStream() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 //      create a serversocket
         Support_HttpServerSocket serversocket = new Support_HttpServerSocket();
         int portNumber = Support_PortManager.getNextPort();

@@ -31,7 +31,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingTestCase;
 import javax.swing.plaf.basic.BasicTextUI;
-import tests.support.Support_Excludes;
 
 public class UtilitiesTest extends SwingTestCase {
     JTextComponent textComponent;
@@ -226,10 +225,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testDrawTabbedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         drawTabbedTextTest(jta);
         drawTabbedTextTest(jtf);
         //drawTabbedTextTest(jtp);
@@ -265,10 +260,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetTabbedTextWidth() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getTabbedTextWidthTest(jta);
         getTabbedTextWidthTest(jtf);
         //getTabbedTextWidthTest(jtp);
@@ -338,10 +329,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetTabbedTextOffsetRound_BoundaryCases() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getTabbedTextOffsetRoundTest_BoundaryCases(jta);
         getTabbedTextOffsetRoundTest_BoundaryCases(jtf);
         //getTabbedTextOffsetRoundTest(jtp);
@@ -375,10 +362,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetTabbedTextOffsetRound() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getTabbedTextOffsetRoundTest(jta);
         getTabbedTextOffsetRoundTest(jtf);
         //getTabbedTextOffsetRoundTest(jtp);
@@ -413,10 +396,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetTabbedTextOffsetRound_NoTabExpander() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getTabbedTextOffsetRoundTest_NoTabExpander(jta);
         getTabbedTextOffsetRoundTest_NoTabExpander(jtf);
         //getTabbedTextOffsetRoundTest_NoTabExpander(jtp);
@@ -450,10 +429,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetTabbedTextOffset() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getTabbedTextOffsetTest(jta);
         getTabbedTextOffsetTest(jtf);
         //getTabbedTextOffsetTest(jtp);
@@ -509,10 +484,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetBreakLocation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             getBreakLocationTest(jta);
         }
@@ -540,10 +511,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetParagraphElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getParagraphElementTest(jta);
         //getParagraphElementTest(jtp);
         getParagraphElementTest(jtf);
@@ -658,10 +625,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetPositionAboveBelow() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getPositionAboveBelowTest(jta);
         //getPositionAboveBelowTest(jtp);
         getPositionAboveBelowTest(jtf);
@@ -669,20 +632,12 @@ public class UtilitiesTest extends SwingTestCase {
 
     // HARMONY-2745
     public void testGetPositionAbove() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta = new JTextArea();
         assertEquals(-1, Utilities.getPositionAbove(jta, 1, 0));
     }
 
     // HARMONY-2745
     public void testGetPositionBelow() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta = new JTextArea();
         assertEquals(-1, Utilities.getPositionBelow(jta, 1, 0));
     }
@@ -730,10 +685,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetWordStart() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getWordStartTest(jta);
         //getWordStartTest(jtp);
         getWordStartTest(jtf);
@@ -776,10 +727,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetWordEnd() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getWordEndTest(jta);
         //getWordEndTest(jtp);
         getWordEndTest(jtf);
@@ -881,10 +828,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetRowStartEnd() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getRowStartEndTest(jta);
         //getRowStartEndTest(jtp);
         getRowStartEndTest(jtf);
@@ -937,10 +880,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetPreviousWord() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getPreviousWordTest(jta);
         //getPreviousWordTest(jtp);
         getPreviousWordTest(jtf);
@@ -995,10 +934,6 @@ public class UtilitiesTest extends SwingTestCase {
     }
 
     public void testGetNextWord() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         getNextWordTest(jta);
         getNextWordTest(jtf);
         //getNextWordTest(jtp);
@@ -1006,10 +941,6 @@ public class UtilitiesTest extends SwingTestCase {
 
     // HARMONY-2744
     public void testGetNextWord02() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta = new JTextArea("");
         try {
             Utilities.getNextWord(jta, 0);
@@ -1021,10 +952,6 @@ public class UtilitiesTest extends SwingTestCase {
 
     // HARMONY-2744
     public void testGetNextWord03() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta = new JTextArea("a");
         try {
             Utilities.getNextWord(jta, 0);
@@ -1043,10 +970,6 @@ public class UtilitiesTest extends SwingTestCase {
 
     // HARMONY-2744
     public void testGetNextWord04() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta = new JTextArea("a b");
         assertEquals(2, Utilities.getNextWord(jta, 0));
         assertEquals(2, Utilities.getNextWord(jta, 1));

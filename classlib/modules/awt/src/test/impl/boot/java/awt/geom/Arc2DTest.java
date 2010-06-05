@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Arc2D;
 import java.awt.geom.ShapeTestCase;
-import tests.support.Support_Excludes;
 
 public class Arc2DTest extends ShapeTestCase {
 
@@ -185,18 +184,10 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testGetArcType() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("Arc type", Arc2D.PIE, a.getArcType());
     }
 
     public void testSetArcType() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         a.setArcType(Arc2D.CHORD);
         assertEquals("Arc type", Arc2D.CHORD, a.getArcType());
         
@@ -211,10 +202,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testGetStartPoint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : angles) {
             double angle = element[0];
             assertEquals(
@@ -226,10 +213,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testGetEndPoint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : angles) {
             double angle = element[0];
             assertEquals(
@@ -241,10 +224,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testGetBounds2D() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : bounds) {
             int type = (int)element[0];
             double start = element[1];
@@ -264,10 +243,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testContainsAngle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : arcs) {
             double start = element[0];
             double extent = element[1];
@@ -280,10 +255,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testSetFrame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int type = a.getArcType();
         double start = a.getAngleStart();
         double extent = a.getAngleExtent();
@@ -292,46 +263,26 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testSetArc1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         a.setArc(new Point(7, 8), new Dimension(9, 10), 11, 12, Arc2D.CHORD);
         assertEquals(new Arc2D.Double(7, 8, 9, 10, 11, 12, Arc2D.CHORD), a);
     }
 
     public void testSetArc2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         a.setArc(new Rectangle(7, 8, 9, 10), 11, 12, Arc2D.CHORD);
         assertEquals(new Arc2D.Double(7, 8, 9, 10, 11, 12, Arc2D.CHORD), a);
     }
 
     public void testSetArc3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         a.setArc(new Arc2D.Double(7, 8, 9, 10, 11, 12, Arc2D.CHORD));
         assertEquals(new Arc2D.Double(7, 8, 9, 10, 11, 12, Arc2D.CHORD), a);
     }
 
     public void testSetArcByCenter() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         a.setArcByCenter(7, 8, 3, 11, 12, Arc2D.CHORD);
         assertEquals(new Arc2D.Double(4, 5, 6, 6, 11, 12, Arc2D.CHORD), a);
     }
 
     public void testSetArcByTangent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : tangent) {
             double x1 = element[0];
             double y1 = element[1];
@@ -363,10 +314,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testSetAngleStart() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : points1) {
             double x = element[0];
             double y = element[1];
@@ -381,10 +328,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testSetAngels1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : points2) {
             double x1 = element[0];
             double y1 = element[1];
@@ -407,10 +350,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testSetAngels2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : points2) {
             double x1 = element[0];
             double y1 = element[1];
@@ -433,10 +372,6 @@ public class Arc2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorEmpty() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression test HARMONY-1585
         Arc2D a = new Arc2D.Double();
         PathIterator p = a.getPathIterator(null);

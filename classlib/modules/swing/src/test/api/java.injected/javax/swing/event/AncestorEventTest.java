@@ -27,7 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import tests.support.Support_Excludes;
 
 public class AncestorEventTest extends BasicSwingTestCase {
     protected static class TestAncestorListener extends EventsController implements
@@ -121,10 +120,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorEvent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int id = 123;
         JComponent source = new JPanel();
         AncestorEvent event = new AncestorEvent(source, id, null, null);
@@ -133,37 +128,21 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testGetComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AncestorEvent event = new AncestorEvent(component, 0, null, null);
         assertEquals(component, event.getComponent());
     }
 
     public void testGetAncestor() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AncestorEvent event = new AncestorEvent(component, 0, ancestor, null);
         assertEquals(ancestor, event.getAncestor());
     }
 
     public void testGetAncestorParent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AncestorEvent event = new AncestorEvent(component, 0, null, ancestor);
         assertEquals(ancestor, event.getAncestorParent());
     }
 
     public void testAncestorAddedEventWhenAncestorVisible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setVisible(false);
         component.setVisible(true);
@@ -176,10 +155,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorAddedEventWhenComponentVisible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setVisible(true);
         component.setVisible(false);
@@ -192,10 +167,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorAddedEventWhenInvisibleComponentAncestorVisible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setVisible(false);
         component.setVisible(false);
@@ -207,10 +178,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorAddedEventWhenInvisibleAncestorComponentVisible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setVisible(false);
         component.setVisible(false);
@@ -222,10 +189,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorAddedEventWhenComponentAdded() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.remove(component);
         waitForIdle();
@@ -241,10 +204,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorAddedEventWhenAncestorAdded() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         waitForIdle();
         assertTrue(listener.getNumEvents() >= 3);
@@ -258,10 +217,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorMovedEventWhenAncestorInvisibleAncestorMoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setBounds(10, 10, 10, 10);
         ancestor.setVisible(false);
@@ -278,10 +233,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorMovedEventWhenComponentInvisibleAncestorMoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setBounds(10, 10, 10, 10);
         component.setVisible(false);
@@ -297,10 +248,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorMovedEventWhenAncestorInvisibleComponentMoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         component.setBounds(10, 10, 10, 10);
         ancestor.setVisible(false);
@@ -317,10 +264,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorMovedEventWhenComponentInvisibleComponentMoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         component.setBounds(10, 10, 10, 10);
         component.setVisible(false);
@@ -337,10 +280,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorMovedEventWhenAncestorMoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         ancestor.setBounds(10, 10, 10, 10);
         waitForIdle();
@@ -356,10 +295,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorMovedEventWhenComponentMoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         component.setSize(200, 200);
         waitForIdle();
         assertEquals(0, listener.getNumEvents());
@@ -374,10 +309,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorRemovedEventWhenComponentInvisible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         waitForIdle();
         listener.reset();
@@ -388,10 +319,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorRemovedEventWhenComponentRemoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         waitForIdle();
         listener.reset();
@@ -402,10 +329,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorRemovedEventWhenAncestorInvisible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         waitForIdle();
         listener.reset();
@@ -416,10 +339,6 @@ public class AncestorEventTest extends BasicSwingTestCase {
     }
 
     public void testAncestorRemovedEventWhenAncestorRemoved() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame = createVisibleFrameWithAncestor();
         waitForIdle();
         listener.reset();

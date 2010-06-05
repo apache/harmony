@@ -57,7 +57,6 @@ import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import tests.support.Support_Excludes;
 
 public class JTextComponentTest extends SwingTestCase {
     JFrame jf;
@@ -275,17 +274,9 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testRemoveNotify() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testGetToolTipTextMouseEvent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jf.dispose();
         jf = new JFrame();
         jtc = new JTextArea("just for prefSize");
@@ -309,19 +300,11 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetNavigationFilter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(jtc.getNavigationFilter());
         jtc.setNavigationFilter(navFilter);
     }
 
     public void testSetGetKeymap() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Keymap keyMap1 = jtc.getKeymap();
         assertNotNull(keyMap1);
         SimpleKeyMap keyMap2 = new SimpleKeyMap("Second");
@@ -331,10 +314,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetHighlighter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultHighlighter dh1 = (DefaultHighlighter) jtc.getHighlighter();
         DefaultHighlighter dh2 = new DefaultHighlighter();
         assertTrue(jtc.getHighlighter() instanceof DefaultHighlighter);
@@ -344,10 +323,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetDocument() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(jtc.getDocument());
         jtc.setText("testSetGetDocument");
         Highlighter highlighter = jtc.getHighlighter();
@@ -368,10 +343,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetCaret() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultCaret dc1 = (DefaultCaret) jtc.getCaret();
         DefaultCaret dc2 = new DefaultCaret();
         assertTrue(jtc.getCaret() instanceof DefaultCaret);
@@ -390,10 +361,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testCaretListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jtc.addCaretListener(null);
         SimpleCaretListener listener1 = new SimpleCaretListener("1");
         SimpleCaretListener listener2 = new SimpleCaretListener("2");
@@ -420,10 +387,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testFireCaretUpdate() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jtc.setText("JTextComponent");
         SimpleCaretListener listener1 = new SimpleCaretListener("1");
         SimpleCaretListener listener2 = new SimpleCaretListener("2");
@@ -439,19 +402,11 @@ public class JTextComponentTest extends SwingTestCase {
 
     // Regression for HARMONY-2819
     public void testFireCaretUpdateNull() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         new JTextArea().fireCaretUpdate(null);
         // no exception is expected
     }
 
     public void testSetGetText() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(jtc.getText().equals(""));
         jtc.setText("JTextComponent");
         assertTrue(jtc.getText().equals("JTextComponent"));
@@ -467,10 +422,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testReplaceSelection() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jtc.setText("JTextComponent");
         jtc.select(5, 8);
         jtc.replaceSelection(null);
@@ -488,10 +439,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testReadWrite() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String s = "JTextComponent\nRead\nWrite\n";
         String sProperty = "CurrentStreamDescriptionProperty";
         StringWriter writer = new StringWriter();
@@ -514,10 +461,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testAddInputMethodListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleInputMethodListener listener1 = new SimpleInputMethodListener("1");
         SimpleInputMethodListener listener2 = new SimpleInputMethodListener("2");
         SimpleInputMethodListener listener3 = new SimpleInputMethodListener("3");
@@ -541,10 +484,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testProcessInputMethodEventInputMethodEvent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleInputMethodListener listener1 = new SimpleInputMethodListener("1");
         SimpleInputMethodListener listener2 = new SimpleInputMethodListener("2");
         SimpleInputMethodListener listener3 = new SimpleInputMethodListener("3");
@@ -562,10 +501,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetMargin() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Insets insets1 = new Insets(0, 0, 0, 0);
         assertEquals(insets1, jtc.getMargin());
         Insets insets2 = new Insets(10, 20, 30, 40);
@@ -575,10 +510,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetComponentOrientation() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(ComponentOrientation.UNKNOWN, jtc.getComponentOrientation());
         docXXX = (AbstractDocument) jtc.getDocument();
         jtc.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -597,10 +528,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetColors() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Color color1 = getColorProperty("caretForeground");
         assertEquals(color1, jtc.getCaretColor());
         jtc.setCaretColor(color);
@@ -624,10 +551,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetIsEditable() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(jtc.isEditable());
         jtc.setEditable(false);
         assertEqualsPropertyChangeEvent("editable", new Boolean(true), new Boolean(false),
@@ -636,10 +559,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetDragEnabled() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         /*
          * class RunnableCase0 extends RunnableWrap { public void run() {
          * assertFalse(jtc.getDragEnabled());
@@ -685,10 +604,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSelect() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jtc.setText("JTextComponent");
         jtc.select(5, 8);
         assertEquals("Com", jtc.getSelectedText());
@@ -717,10 +632,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetSelectionStartEnd() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (!isHarmony()) {
             return;
         }
@@ -788,10 +699,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetCaretPosition() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, jtc.getCaretPosition());
         jtc.setText("JTextComponent");
         assertEquals(14, jtc.getCaretPosition());
@@ -820,10 +727,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testMoveCaretPosition() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jtc.setText("JTextComponent");
         jtc.setCaretPosition(5);
         jtc.moveCaretPosition(8);
@@ -851,10 +754,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSetGetFocusAccelerator() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         //TODO It's very strange but in 1.5.0 PropertyChangeEvent's
         //name doesn't equal JTextComponent.FOCUS_ACCELERATOR_KEY
         String name = JTextComponent.FOCUS_ACCELERATOR_KEY;
@@ -872,10 +771,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testSelectAll() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jtc.selectAll();
         assertNull(jtc.getSelectedText());
         jtc.setText("JTextComponent");
@@ -890,10 +785,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testPaste() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // TODO: uncomment when System clipboard is properly supported
         //        if (jtc.getToolkit().getSystemClipboard() == null)
         //            return;
@@ -922,10 +813,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testCut() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // TODO: uncomment when System clipboard is properly supported
         //        if (jtc.getToolkit().getSystemClipboard() == null)
         //            return;
@@ -964,10 +851,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testCopy() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // TODO: uncomment when System clipboard is properly supported
         //        if (jtc.getToolkit().getSystemClipboard() == null)
         //            return;
@@ -986,10 +869,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testAddRemoveKeymaps() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Keymap keyMap = jtc.getKeymap();
         Keymap keyMap1 = JTextComponent.addKeymap("First", keyMap);
         assertEquals("First", keyMap1.getName());
@@ -1021,10 +900,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testLoadKeymap() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JTextArea jta = new JTextArea();
         Keymap k = jta.getKeymap();
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK);
@@ -1071,19 +946,11 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testConstants() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("default", JTextComponent.DEFAULT_KEYMAP);
         assertEquals("focusAcceleratorKey", JTextComponent.FOCUS_ACCELERATOR_KEY);
     }
 
     public void testJTextComponent_KeyBinding() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK);
         JTextComponent.KeyBinding keyBinding = new JTextComponent.KeyBinding(keyStroke, s);
         assertNotNull(keyBinding);
@@ -1144,10 +1011,6 @@ public class JTextComponentTest extends SwingTestCase {
      assertEquals(0, jtc1.getHighlighter().getHighlights().length);
      } */
     public void testKeyMap() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStrokeA = KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK);
         KeyStroke keyStrokeB = KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_MASK);
         KeyStroke keyStrokeC = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK);
@@ -1172,10 +1035,6 @@ public class JTextComponentTest extends SwingTestCase {
     }
 
     public void testKeymapToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStrokeX = KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK);
         KeyStroke keyStrokeY = KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK);
         KeyStroke keyStrokeZ = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK);

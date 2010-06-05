@@ -35,14 +35,9 @@ import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.RequestingUserName;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class GetUnsupportedAttributesTest extends TestCase {
     public void testIsAttributeValueSupported() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out
                 .println("============= START GetUnsupportedAttributesTest ================");
 

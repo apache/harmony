@@ -22,7 +22,6 @@ package javax.swing.text;
 import java.util.Vector;
 import javax.swing.BasicSwingTestCase;
 import javax.swing.undo.UndoableEdit;
-import tests.support.Support_Excludes;
 
 public class StringContentTest_CommonTest extends GapContentTest {
     @Override
@@ -34,10 +33,6 @@ public class StringContentTest_CommonTest extends GapContentTest {
 
     @Override
     public void testGetCharsImpliedCharPartial() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         obj = content = new StringContent();
         assertEquals(1, content.length());
         text.setPartialReturn(false);
@@ -50,10 +45,6 @@ public class StringContentTest_CommonTest extends GapContentTest {
 
     @Override
     public void testGetPositionsInRangeVector() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<Object> v = new Vector<Object>();
         v.add(new Object());
         v.add(new Object());
@@ -76,10 +67,6 @@ public class StringContentTest_CommonTest extends GapContentTest {
      */
     @Override
     public void testGetPositionsInRangeEnd() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content.createPosition(10);
         Vector<?> v = ((StringContent) content).getPositionsInRange(null, 0, 10);
         assertEquals(1, v.size());
@@ -87,10 +74,6 @@ public class StringContentTest_CommonTest extends GapContentTest {
 
     @Override
     public void testGetPositionsInRange() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<Position> pos = new Vector<Position>();
         for (int i = 0; i < content.length(); i += 2) {
             Position p = content.createPosition(i);
@@ -113,91 +96,51 @@ public class StringContentTest_CommonTest extends GapContentTest {
 
     @Override
     public void testGetCharsNegativeLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Is Already tested in StringContentTest
     }
 
     @Override
     public void testGetCharsAfterGapNoImplied() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsAfterGap() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsBeforeGap() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsFullLength() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsFullActualLength() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsImpliedChar() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsPartial() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetCharsWithGap() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // N/A
     }
 
     @Override
     public void testGetStringNegativeLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Is Already tested in StringContentTest
     }
 }

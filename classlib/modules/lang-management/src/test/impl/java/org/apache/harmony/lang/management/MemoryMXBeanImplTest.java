@@ -44,7 +44,6 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.harmony.lang.management.ManagementUtils;
 import org.apache.harmony.lang.management.MemoryMXBeanImpl;
-import tests.support.Support_Excludes;
 
 
 public class MemoryMXBeanImplTest extends SingleInstanceDynamicMXBeanImplTestBase {

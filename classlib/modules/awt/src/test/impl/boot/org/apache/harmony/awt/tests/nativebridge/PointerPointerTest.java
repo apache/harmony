@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 import org.apache.harmony.awt.nativebridge.NativeBridge;
 import org.apache.harmony.awt.nativebridge.PointerPointer;
 import org.apache.harmony.awt.nativebridge.ByteBase;
-import tests.support.Support_Excludes;
 
 public class PointerPointerTest extends TestCase {
     private PointerPointer p;
@@ -40,28 +39,16 @@ public class PointerPointerTest extends TestCase {
     }
 
     public void test_get() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull("*p != 0", p.get(0));
         assertNull("*(p+1) != 0", p1.get(1));
     }
 
     public void test_getAddress() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("*p != 0", 0, p.getAddress(0));
         assertEquals("*(p+1) != 0", 0, p1.getAddress(1));
     }
 
     public void test_set() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         byte dst[] = new byte[8];
 
         p.set(1, NativeBridge.getInstance().createInt32Pointer(0x04030201L));
@@ -73,10 +60,6 @@ public class PointerPointerTest extends TestCase {
     }
 
     public void test_setAddress() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         byte dst[] = new byte[8];
 
         p.setAddress(1, 0x04030201L);

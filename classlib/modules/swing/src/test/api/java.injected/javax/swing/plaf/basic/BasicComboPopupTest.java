@@ -31,7 +31,6 @@ import javax.swing.SwingTestCase;
 import javax.swing.border.LineBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import tests.support.Support_Excludes;
 
 public class BasicComboPopupTest extends SwingTestCase {
     private BasicComboPopup popup;
@@ -56,10 +55,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testBasicComboPopup() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(popup.comboBox);
         assertNotNull(popup.list);
         assertNotNull(popup.scroller);
@@ -78,10 +73,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testShowHide() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createVisibleComboBox();
         popup.show();
         assertTrue(popup.isShowing());
@@ -96,10 +87,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testGetList() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(popup.getList());
         assertEquals(popup.list, popup.getList());
         JList newList = new JList();
@@ -108,10 +95,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testGetMouseListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.mouseListener);
         assertEquals(popup.getMouseListener(), popup.mouseListener);
         if (isHarmony()) {
@@ -120,10 +103,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testGetMouseMotionListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.mouseMotionListener);
         assertEquals(popup.getMouseMotionListener(), popup.mouseMotionListener);
         if (isHarmony()) {
@@ -132,19 +111,11 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testGetKeyListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.keyListener);
         assertNull(popup.getKeyListener());
     }
 
     public void testUninstallingUI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         comboBox = new JComboBox();
         int mouseListenerCount = comboBox.getMouseListeners().length;
         int mouseMotionListenerCount = comboBox.getMouseMotionListeners().length;
@@ -167,10 +138,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testFirePopupMenuWillBecomeVisibleInvisibleCanceled() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         PopupMenuController comboController = new PopupMenuController();
         PopupMenuController popupController = new PopupMenuController();
         popup.addPopupMenuListener(popupController);
@@ -197,10 +164,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateMouseListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(popup.createMouseListener().getClass() == BasicComboPopup.InvocationMouseHandler.class);
             assertFalse(popup.createMouseListener() == popup.createMouseListener());
@@ -208,10 +171,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateMouseMotionListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(popup.createMouseMotionListener().getClass() == BasicComboPopup.InvocationMouseMotionHandler.class);
             assertFalse(popup.createMouseMotionListener() == popup.createMouseMotionListener());
@@ -219,36 +178,20 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateKeyListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.createKeyListener());
     }
 
     public void testCreateListSelectionListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.createListSelectionListener());
         assertNull(popup.listSelectionListener);
     }
 
     public void testCreateListDataListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.createListDataListener());
         assertNull(popup.listDataListener);
     }
 
     public void testCreateListMouseListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(popup.listMouseListener.getClass() == BasicComboPopup.ListMouseHandler.class);
             assertTrue(popup.createListMouseListener().getClass() == BasicComboPopup.ListMouseHandler.class);
@@ -257,10 +200,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateListMouseMotionListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(popup.listMouseMotionListener.getClass() == BasicComboPopup.ListMouseMotionHandler.class);
             assertTrue(popup.createListMouseMotionListener().getClass() == BasicComboPopup.ListMouseMotionHandler.class);
@@ -270,10 +209,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreatePropertyChangeListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(popup.propertyChangeListener.getClass() == BasicComboPopup.PropertyChangeHandler.class);
             assertTrue(popup.createPropertyChangeListener().getClass() == BasicComboPopup.PropertyChangeHandler.class);
@@ -283,10 +218,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateItemListener() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             assertTrue(popup.itemListener.getClass() == BasicComboPopup.ItemHandler.class);
             assertTrue(popup.createItemListener().getClass() == BasicComboPopup.ItemHandler.class);
@@ -295,19 +226,11 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateList() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotSame(popup.createList(), popup.createList());
         assertNotSame(popup.createList(), popup.list);
     }
 
     public void testConfigureList() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         popup.list = new JList();
         int mouseListenerCount = popup.list.getMouseListeners().length;
         int mouseMotionListenerCount = popup.list.getMouseMotionListeners().length;
@@ -318,38 +241,22 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testCreateScroller() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(popup.scroller);
         assertNotSame(popup.createScroller(), popup.createScroller());
         assertNotSame(popup.createScroller(), popup.scroller);
     }
 
     public void testConfigureScroller() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         popup.scroller = new JScrollPane();
         popup.configureScroller();
     }
 
     public void testInstallUninstallComboBoxModelListeners() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         popup.installComboBoxModelListeners(null);
         popup.uninstallComboBoxModelListeners(null);
     }
 
     public void testInstallUninstallComboBoxListeners() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int mouseListenerCount = comboBox.getMouseListeners().length;
         int mouseMotionListenerCount = comboBox.getMouseMotionListeners().length;
         int itemListenerCount = comboBox.getItemListeners().length;
@@ -365,10 +272,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testInstallUninstallKeyboardActions() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int count = popup.comboBox.getActionMap().allKeys().length;
         popup.uninstallKeyboardActions();
         assertEquals(count, popup.comboBox.getActionMap().allKeys().length);
@@ -377,10 +280,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testInstallListListeners() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int mouseListenerCount = popup.list.getMouseListeners().length;
         int mouseMotionListenerCount = popup.list.getMouseMotionListeners().length;
         int selectionListenerCount = popup.list.getListSelectionListeners().length;
@@ -391,18 +290,10 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testIsFocusTraversable() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(popup.isFocusTraversable());
     }
 
     public void testStartStopAutoscrolloing() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(popup.autoscrollTimer);
         assertFalse(popup.isAutoScrolling);
         popup.startAutoScrolling(BasicComboPopup.SCROLL_UP);
@@ -418,10 +309,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testAutoScrollUpDown() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             createVisibleComboBox();
             popup.show();
@@ -440,20 +327,12 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testGetAccessibleContext() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(popup.getAccessibleContext());
         //        Is not clear how it should be
         //        assertEquals(popup.comboBox, popup.getAccessibleContext().getAccessibleParent());
     }
 
     public void testTogglePopup() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createVisibleComboBox();
         assertFalse(popup.isShowing());
         popup.togglePopup();
@@ -463,10 +342,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testConvertMouseEvent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MouseEvent original = createMouseEvent(0, 0);
         assertNotSame(original, popup.convertMouseEvent(original));
         comboBox.setLocation(0, 0);
@@ -482,10 +357,6 @@ public class BasicComboPopupTest extends SwingTestCase {
     }
 
     public void testGetPopupHeightForRowCount() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         popup = new BasicComboPopup(new JComboBox());
         assertEquals(100, popup.getPopupHeightForRowCount(0));
         assertEquals(100, popup.getPopupHeightForRowCount(1));

@@ -25,14 +25,9 @@ import junit.framework.TestCase;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.VolatileImage;
-import tests.support.Support_Excludes;
 
 public class XGraphics2DRTest extends TestCase {
     public void testNullClip() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             GraphicsConfiguration gconf =
                     GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
@@ -46,10 +41,6 @@ public class XGraphics2DRTest extends TestCase {
     }
 
     public void testCopyArea() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         GraphicsConfiguration gconf =
                 GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         VolatileImage vim = gconf.createCompatibleVolatileImage(20, 20);

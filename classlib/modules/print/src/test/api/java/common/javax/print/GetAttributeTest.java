@@ -26,15 +26,10 @@ import javax.print.attribute.standard.PrinterState;
 import javax.print.attribute.standard.QueuedJobCount;
 import javax.print.attribute.standard.RequestingUserName;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class GetAttributeTest extends TestCase {
     @SuppressWarnings("unchecked")
     public void testGetAttribute() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         PrintService[] services;
         Object probe;
         Class[] clazz = new Class[] { PrinterIsAcceptingJobs.ACCEPTING_JOBS.getCategory(),

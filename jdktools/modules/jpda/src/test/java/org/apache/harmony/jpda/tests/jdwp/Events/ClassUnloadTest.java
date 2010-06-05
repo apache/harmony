@@ -32,7 +32,6 @@ import org.apache.harmony.jpda.tests.framework.jdwp.ParsedEvent;
 import org.apache.harmony.jpda.tests.framework.jdwp.ReplyPacket;
 import org.apache.harmony.jpda.tests.framework.jdwp.exceptions.TimeoutException;
 import org.apache.harmony.jpda.tests.share.JPDADebuggeeSynchronizer;
-import tests.support.Support_Excludes;
 
 /**
  * JDWP Unit test for CLASS_UNLOAD event.
@@ -57,10 +56,6 @@ public class ClassUnloadTest extends JDWPEventTestCase {
      * This testcase is for CLASS_UNLOAD event.
      */
     public void testClassUnloadEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         logWriter.println("==> testClassUnloadEvent started");
         
         synchronizer.receiveMessage(JPDADebuggeeSynchronizer.SGNL_READY);

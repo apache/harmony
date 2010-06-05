@@ -26,7 +26,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingTestCase;
 import javax.swing.text.Position.Bias;
-import tests.support.Support_Excludes;
 
 /**
  * Tests default implementation of View.getNextVisualPositionFrom method.
@@ -63,10 +62,6 @@ public class View_NextVisualPositionFromTest extends SwingTestCase {
     private Bias[] bias;
 
     public void testGetNextVisualPositionFromEast() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(1, view.getNextVisualPositionFrom(0, Bias.Forward, shape,
                 SwingConstants.EAST, bias));
         assertSame(Bias.Forward, bias[0]);
@@ -89,10 +84,6 @@ public class View_NextVisualPositionFromTest extends SwingTestCase {
     }
 
     public void testGetNextVisualPositionFromWest() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(1, view.getNextVisualPositionFrom(2, Bias.Forward, shape,
                 SwingConstants.WEST, bias));
         assertSame(Bias.Forward, bias[0]);
@@ -104,10 +95,6 @@ public class View_NextVisualPositionFromTest extends SwingTestCase {
     }
 
     public void testGetNextVisualPositionFromNorth() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape posRect = view.modelToView(doc.getLength(), shape, Bias.Forward);
         caret.magicPoint = posRect.getBounds().getLocation();
         assertNotNull(caret.getMagicCaretPosition());
@@ -128,10 +115,6 @@ public class View_NextVisualPositionFromTest extends SwingTestCase {
     }
 
     public void testGetNextVisualPositionFromSouth() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape posRect = view.modelToView(doc.getLength(), shape, Bias.Forward);
         caret.magicPoint = posRect.getBounds().getLocation();
         assertNotNull(area.getCaret().getMagicCaretPosition());
@@ -155,10 +138,6 @@ public class View_NextVisualPositionFromTest extends SwingTestCase {
     }
 
     public void testGetNextVisualPositionFromInvalid() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // BadLocation left
         try {
             int p = view.getNextVisualPositionFrom(-2, Bias.Forward, shape,

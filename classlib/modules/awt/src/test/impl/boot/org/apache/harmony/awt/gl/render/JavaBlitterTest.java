@@ -40,7 +40,6 @@ import org.apache.harmony.awt.gl.image.OrdinaryWritableRaster;
 
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class JavaBlitterTest extends TestCase{
     int w, h;

@@ -38,7 +38,6 @@ import junit.framework.TestCase;
 
 import org.apache.harmony.logging.tests.java.util.logging.HandlerTest.NullOutputStream;
 import org.apache.harmony.logging.tests.java.util.logging.util.EnvironmentHelper;
-import tests.support.Support_Excludes;
 
 /**
  * 
@@ -110,10 +109,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddGetLogger() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		Logger log = new MockLogger(FOO, null);
 		Logger foo = mockManager.getLogger(FOO);
 		assertNull(foo);
@@ -147,10 +142,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddGetLogger_duplicateName() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// add logger with duplicate name has no effect
 		Logger foo = new MockLogger(FOO, null);
 		Logger foo2 = new MockLogger(FOO, null);
@@ -168,10 +159,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddGetLogger_Hierachy() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		Logger foo = new MockLogger("testAddGetLogger_Hierachy.foo", null);
 		Logger child = new MockLogger("testAddGetLogger_Hierachy.foo.child",
 				null);
@@ -215,10 +202,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddLoggerReverseOrder() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		Logger root = new MockLogger("testAddLoggerReverseOrder", null);
 		Logger foo = new MockLogger("testAddLoggerReverseOrder.foo", null);
 		Logger fooChild = new MockLogger("testAddLoggerReverseOrder.foo.child",
@@ -254,10 +237,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddSimiliarLogger() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		Logger root = new MockLogger("testAddSimiliarLogger", null);
 		Logger foo = new MockLogger("testAddSimiliarLogger.foo", null);
 		Logger similiarFoo = new MockLogger("testAddSimiliarLogger.fop", null);
@@ -292,10 +271,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddGetLogger_nameWithSpace() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		Logger foo = new MockLogger(FOO, null);
 		Logger fooBeforeSpace = new MockLogger(FOO+" ", null);
 		Logger fooAfterSpace = new MockLogger(" "+FOO, null);
@@ -312,10 +287,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddGetLogger_addRoot() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		Logger foo = new MockLogger(FOO, null);
 		Logger fooChild = new MockLogger(FOO+".child", null);
 		Logger other = new MockLogger("other", null);
@@ -346,10 +317,6 @@ public class LogManagerTest extends TestCase {
 	 * @tests java.util.logging.LogManager#addLogger(Logger)
 	 */
 	public void test_addLoggerLLogger_Security() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// regression test for Harmony-1286
 		SecurityManager originalSecurityManager = System.getSecurityManager();
 		System.setSecurityManager(new SecurityManager());
@@ -363,10 +330,6 @@ public class LogManagerTest extends TestCase {
 	}
 	
 	public void testDefaultLoggerProperties() throws Exception{
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// mock LogManager has no default logger
 		assertNull(mockManager.getLogger(""));
 		assertNull(mockManager.getLogger("global"));
@@ -392,10 +355,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testLoggingPermission() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		System.setSecurityManager(new MockSecurityManagerLogPermission());
 		mockManager.addLogger(new MockLogger("abc", null));
 		mockManager.getLogger("");
@@ -448,10 +407,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testMockGetProperty() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// mock manager doesn't read configuration until you call
 		// readConfiguration()
 		Logger root = new MockLogger("", null);
@@ -470,10 +425,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testGetProperty() throws SecurityException, IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 //      //FIXME: move it to exec
         //        manager.readConfiguration(EnvironmentHelper.PropertiesToInputStream(props));
 //		Logger root = manager.getLogger("");
@@ -497,10 +448,6 @@ public class LogManagerTest extends TestCase {
 
 	public void testReadConfiguration_null() throws SecurityException,
 			IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			manager.readConfiguration(null);
 			fail("should throw null pointer exception");
@@ -511,10 +458,6 @@ public class LogManagerTest extends TestCase {
 
     public void testReadConfiguration() throws SecurityException,
             IOException {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         MockConfigLogManager lm = new MockConfigLogManager();
         assertFalse(lm.isCalled);
@@ -585,10 +528,6 @@ public class LogManagerTest extends TestCase {
 	 * Class under test for void readConfiguration(InputStream)
 	 */
 	public void testReadConfigurationInputStream() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// mock LogManager
 		InputStream stream = EnvironmentHelper.PropertiesToInputStream(props);
 
@@ -621,10 +560,6 @@ public class LogManagerTest extends TestCase {
 
 	public void testReadConfigurationInputStream_null()
 			throws SecurityException, IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		try {
 			mockManager.readConfiguration(null);
 			fail("should throw null pointer exception");
@@ -634,10 +569,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testReadConfigurationInputStream_root() throws IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		InputStream stream = EnvironmentHelper.PropertiesToInputStream(props);
 		manager.readConfiguration(EnvironmentHelper.PropertiesToInputStream(props));
 
@@ -671,10 +602,6 @@ public class LogManagerTest extends TestCase {
 
     public void testReadConfigurationUpdatesRootLoggersHandlers()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Properties properties = new Properties();
         LogManager.getLogManager().readConfiguration(
                 EnvironmentHelper.PropertiesToInputStream(properties));
@@ -691,10 +618,6 @@ public class LogManagerTest extends TestCase {
 
     public void testReadConfigurationDoesNotUpdateOtherLoggers()
             throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Properties properties = new Properties();
         LogManager.getLogManager().readConfiguration(
                 EnvironmentHelper.PropertiesToInputStream(properties));
@@ -711,10 +634,6 @@ public class LogManagerTest extends TestCase {
     }
 
 	public void testAddRemovePropertyChangeListener() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		MockPropertyChangeListener listener1 = new MockPropertyChangeListener();
 		MockPropertyChangeListener listener2 = new MockPropertyChangeListener();
 		// add same listener1 two times
@@ -761,10 +680,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testAddRemovePropertyChangeListener_null() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// seems nothing happened
         try{
             mockManager.addPropertyChangeListener(null);
@@ -775,10 +690,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testReset() throws SecurityException, IOException {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		// mock LogManager
 		mockManager.readConfiguration(EnvironmentHelper.PropertiesToInputStream(props));
 		assertNotNull(mockManager.getProperty("handlers"));
@@ -813,10 +724,6 @@ public class LogManagerTest extends TestCase {
 	}
 
 	public void testGlobalPropertyConfig() throws Exception {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
         PrintStream err = System.err;
         try {
             System.setErr(new PrintStream(new NullOutputStream()));
@@ -907,10 +814,6 @@ public class LogManagerTest extends TestCase {
     }
 
     public void testValidConfigClass() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String oldPropertyValue = System.getProperty(CONFIG_CLASS);
         try {
             System.setProperty(CONFIG_CLASS, this.getClass().getName()
@@ -934,10 +837,6 @@ public class LogManagerTest extends TestCase {
     }
 
     public void testNotExistConfigFile() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String oldPropertyValue = System.getProperty(CONFIG_FILE);
         System.setProperty(CONFIG_FILE, "not.exist.config.file");
         try {
@@ -957,10 +856,6 @@ public class LogManagerTest extends TestCase {
 
     // regression for HARMONY-3075
     public void testGetLoggingMXBean() throws Exception{
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(LogManager.getLoggingMXBean());
     }
     

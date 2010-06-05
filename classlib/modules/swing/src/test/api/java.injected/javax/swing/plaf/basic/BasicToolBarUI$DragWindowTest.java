@@ -27,7 +27,6 @@ import javax.swing.JFrame;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class BasicToolBarUI$DragWindowTest extends SwingTestCase {
     private JToolBar toolBar;
@@ -57,47 +56,27 @@ public class BasicToolBarUI$DragWindowTest extends SwingTestCase {
     }
 
     public void testGetInsets() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Insets(1, 1, 1, 1), dragWindow.getInsets());
     }
 
     public void testSetGetBorderColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         dragWindow.setBorderColor(Color.red);
         assertSame(Color.red, dragWindow.getBorderColor());
     }
 
     public void testSetGetOffset() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Point offset = new Point(1, 2);
         dragWindow.setOffset(offset);
         assertSame(offset, dragWindow.getOffset());
     }
 
     public void testSetOrientation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         dragWindow.setSize(1, 2);
         dragWindow.setOrientation(SwingConstants.VERTICAL);
         assertEquals(new Dimension(1, 2), dragWindow.getSize());
     }
 
     public void testPaint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Note: painting code, cannot test
     }
 }

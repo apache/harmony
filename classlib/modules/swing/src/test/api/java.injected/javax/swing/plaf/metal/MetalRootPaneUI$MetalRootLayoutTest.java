@@ -29,7 +29,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JRootPane;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class MetalRootPaneUI$MetalRootLayoutTest extends SwingTestCase {
     private JRootPane rootPane;
@@ -61,30 +60,18 @@ public class MetalRootPaneUI$MetalRootLayoutTest extends SwingTestCase {
     }
 
     public void testPreferredLayoutSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ((JComponent) frame.getContentPane()).setPreferredSize(new Dimension(200, 300));
         titlePane.setPreferredSize(new Dimension(20, 20));
         assertEquals(new Dimension(230, 340), layout.preferredLayoutSize(rootPane));
     }
 
     public void testMinimumLayoutSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ((JComponent) frame.getContentPane()).setMinimumSize(new Dimension(200, 300));
         titlePane.setMinimumSize(new Dimension(20, 20));
         assertEquals(new Dimension(230, 340), layout.minimumLayoutSize(rootPane));
     }
 
     public void testMaximumLayoutSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ((JComponent) frame.getContentPane()).setMaximumSize(new Dimension(200, 300));
         titlePane.setMaximumSize(new Dimension(30, 400));
         if (isHarmony()) {
@@ -96,10 +83,6 @@ public class MetalRootPaneUI$MetalRootLayoutTest extends SwingTestCase {
     }
 
     public void testLayoutContainer() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Dimension rootPaneDimension = new Dimension(640, 480);
         final Rectangle glassPaneBounds = new Rectangle(10, 5, 610, 460);
         final Rectangle titlePaneBounds = new Rectangle(0, 0, 610, 20);

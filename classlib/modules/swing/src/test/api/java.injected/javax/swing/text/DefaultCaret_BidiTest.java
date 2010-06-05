@@ -22,7 +22,6 @@ package javax.swing.text;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class DefaultCaret_BidiTest extends SwingTestCase {
     AbstractDocument ad;
@@ -114,10 +113,6 @@ public class DefaultCaret_BidiTest extends SwingTestCase {
     }
 
     public void testBidiInsert() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         insertCase(0, sLTR, 2, Position.Bias.Forward, 3, Position.Bias.Forward);
         insertCase(1, sLTR, 2, Position.Bias.Forward, 3, Position.Bias.Forward);
         insertCase(2, sLTR, 2, Position.Bias.Forward, 3, Position.Bias.Backward);//b=f
@@ -157,10 +152,6 @@ public class DefaultCaret_BidiTest extends SwingTestCase {
     }
 
     public void testBidiRemove() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String s1 = sLTR + sRTL + sLTR + sRTL + sLTR + sRTL + sLTR + sRTL + sLTR;
         String s2 = sRTL + sRTL + sLTR + sLTR + sRTL + sRTL + sLTR + sLTR + sRTL;
         //s1 = sLTR + sRTL + sLTR + sRTL + sLTR + sRTL + sLTR + sRTL +
@@ -198,10 +189,6 @@ public class DefaultCaret_BidiTest extends SwingTestCase {
     }
 
     public void testBidiSetDot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         setDotCase(0, Position.Bias.Forward, "Forward)");
         setDotCase(1, Position.Bias.Backward, "Backward)");
         setDotCase(2, Position.Bias.Forward, "Forward)");
@@ -210,10 +197,6 @@ public class DefaultCaret_BidiTest extends SwingTestCase {
     }
 
     public void testBidiMoveDot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta.setText(sLTR + sRTL + sLTR + sRTL + sLTR);
         dc.setDot(1, Position.Bias.Backward);
         dotTest(1, Position.Bias.Backward, "Dot=(1, Backward) Mark=(1, Backward)");

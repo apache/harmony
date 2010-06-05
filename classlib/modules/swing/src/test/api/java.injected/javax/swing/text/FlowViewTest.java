@@ -28,7 +28,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.text.FlowView.FlowStrategy;
 import javax.swing.text.ViewTestHelpers.ChildrenFactory;
 import javax.swing.text.ViewTestHelpers.ElementPartView;
-import tests.support.Support_Excludes;
 
 /**
  * Tests the majority of methods of FlowView class.
@@ -118,10 +117,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testSetParent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(view.getParent());
         assertNull(view.layoutPool);
         assertEquals(0, view.getViewCount());
@@ -137,10 +132,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testSetParentWithFactory() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         assertNull(view.getParent());
         assertNull(view.layoutPool);
@@ -161,10 +152,6 @@ public class FlowViewTest extends BasicSwingTestCase {
      * elements.
      */
     public void testGetViewIndexAtPositionEntire() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, view.getViewCount());
         final ViewFactory vf = new ChildrenFactory();
         final Element first = root.getElement(0);
@@ -188,10 +175,6 @@ public class FlowViewTest extends BasicSwingTestCase {
      * of elements.
      */
     public void testGetViewIndexAtPositionPartial() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, view.getViewCount());
         final ViewFactory vf = new ChildrenFactory();
         final Element first = root.getElement(0);
@@ -215,10 +198,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testLoadChildren() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(view.layoutPool);
         assertNull(view.getViewFactory());
         view.loadChildren(new ChildrenFactory());
@@ -229,10 +208,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testLoadChildrenWithFactory() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         assertNull(view.layoutPool);
         assertNotNull(view.getViewFactory());
@@ -244,10 +219,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testLoadChildrenWithFactoryEmtpyPool() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         assertNull(view.layoutPool);
         assertNotNull(view.getViewFactory());
@@ -259,10 +230,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testLoadChildrenEmtpyPoolNullFactory() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         assertNull(view.layoutPool);
         assertNotNull(view.getViewFactory());
@@ -274,10 +241,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testLoadChildrenStrategy() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final boolean[] called = new boolean[] { false };
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         view.strategy = new FlowStrategy() {
@@ -295,10 +258,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testCalculateMinorAxisRequirements() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view.layoutPool = new PlainView(root) {
             @Override
             public float getPreferredSpan(int axis) {
@@ -334,10 +293,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final List<Integer> layoutChanges = new ArrayList<Integer>();
         final Marker prefMarker = new Marker();
         view = new FlowViewImplWithFactory(root, View.Y_AXIS) {
@@ -414,10 +369,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testFlowView() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(root, view.getElement());
         assertEquals(View.Y_AXIS, view.getAxis());
         assertEquals(Short.MAX_VALUE, view.layoutSpan);
@@ -428,10 +379,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetFlowAxis() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(View.Y_AXIS, view.getAxis());
         assertEquals(View.X_AXIS, view.getFlowAxis());
         view = new FlowViewImpl(root, View.X_AXIS);
@@ -445,10 +392,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetFlowStart() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, view.getViewCount());
         assertEquals(0, view.getFlowStart(0));
         assertEquals(0, view.getFlowStart(1));
@@ -460,10 +403,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetFlowSpan() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, view.getViewCount());
         assertEquals(Short.MAX_VALUE, view.layoutSpan);
         view.layoutSpan = -10;
@@ -477,10 +416,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetSpanNoRow() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         view.loadChildren(null);
         assertEquals(0, view.getViewCount());
@@ -508,10 +443,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetSpanOneRowNoChildren() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         view.loadChildren(null);
         assertEquals(0, view.getViewCount());
@@ -541,10 +472,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetSpanOneRowOneChild() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         view.loadChildren(null);
         assertEquals(0, view.getViewCount());
@@ -575,10 +502,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetSpanNoRowFlexible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ChildrenFactory factory = new ChildrenFactory();
         factory.makeFlexible();
         view = new FlowViewImplWithFactory(root, View.Y_AXIS, factory);
@@ -604,10 +527,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetSpanOneRowNoChildrenFlexible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ChildrenFactory factory = new ChildrenFactory();
         factory.makeFlexible();
         view = new FlowViewImplWithFactory(root, View.Y_AXIS, factory);
@@ -635,10 +554,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetSpanOneRowOneChildFlexible() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ChildrenFactory factory = new ChildrenFactory();
         factory.makeFlexible();
         view = new FlowViewImplWithFactory(root, View.Y_AXIS, factory);
@@ -668,10 +583,6 @@ public class FlowViewTest extends BasicSwingTestCase {
     }
 
     public void testGetAttributesLayoutPool() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new FlowViewImplWithFactory(root, View.Y_AXIS);
         view.loadChildren(null);
         assertSame(view.getAttributes(), view.layoutPool.getAttributes());

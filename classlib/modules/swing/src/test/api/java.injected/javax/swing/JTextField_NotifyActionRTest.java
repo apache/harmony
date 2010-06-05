@@ -25,7 +25,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import tests.support.Support_Excludes;
 
 public class JTextField_NotifyActionRTest extends BasicSwingTestCase {
     private JFrame frame;
@@ -50,10 +49,6 @@ public class JTextField_NotifyActionRTest extends BasicSwingTestCase {
     }
 
     public void testActionPerformed() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         c = new JPanel();
         Container parent = new Panel();
         textField = new JTextField("   ");

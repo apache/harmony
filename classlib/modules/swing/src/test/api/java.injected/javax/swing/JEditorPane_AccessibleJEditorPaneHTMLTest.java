@@ -19,8 +19,6 @@
  */
 package javax.swing;
 
-import tests.support.Support_Excludes;
-
 public class JEditorPane_AccessibleJEditorPaneHTMLTest extends SwingTestCase {
     JEditorPane jep;
 
@@ -48,31 +46,15 @@ public class JEditorPane_AccessibleJEditorPaneHTMLTest extends SwingTestCase {
     }
 
     public void testGetAccessibleText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(accessible.getAccessibleText() instanceof JEditorPane.JEditorPaneAccessibleHypertextSupport);
     }
 
     public void testGetAccessibleAt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testGetAccessibleChild(final int i) {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testGetAccessibleChildrenCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 }

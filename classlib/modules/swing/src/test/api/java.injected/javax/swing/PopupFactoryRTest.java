@@ -19,18 +19,12 @@
  */
 package javax.swing;
 
-import tests.support.Support_Excludes;
-
 public class PopupFactoryRTest extends BasicSwingTestCase {
     public PopupFactoryRTest(final String name) {
         super(name);
     }
 
     public void testGetPopup() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Popup p1 = PopupFactory.getSharedInstance().getPopup(null, new JPanel(), 10, 10);
         p1.show();
         p1.hide();

@@ -27,7 +27,6 @@ import java.lang.management.MemoryUsage;
 import java.util.List;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class MemoryPoolMXBeanTest extends TestCase {
 
@@ -50,10 +49,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.getCollectionUsage()'
      */
     public void testGetCollectionUsage() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             // If this method is not supported then it returns null.
             MemoryUsage mu = mb.getCollectionUsage();
@@ -70,10 +65,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.getCollectionUsageThreshold()'
      */
     public void testGetCollectionUsageThreshold() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isCollectionUsageThresholdSupported()) {
                 assertTrue(mb.getCollectionUsageThreshold() > -1);
@@ -92,10 +83,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.getCollectionUsageThresholdCount()'
      */
     public void testGetCollectionUsageThresholdCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isCollectionUsageThresholdSupported()) {
                 assertTrue(mb.getCollectionUsageThresholdCount() > -1);
@@ -114,10 +101,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.getMemoryManagerNames()'
      */
     public void testGetMemoryManagerNames() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             String[] managers = mb.getMemoryManagerNames();
             assertNotNull(managers);
@@ -132,10 +115,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryPoolMXBean.getName()'
      */
     public void testGetName() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         allBeans = ManagementFactory.getMemoryPoolMXBeans();
         for (MemoryPoolMXBean mb : allBeans) {
             String name = mb.getName();
@@ -148,10 +127,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryPoolMXBean.getPeakUsage()'
      */
     public void testGetPeakUsage() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isValid()) {
                 MemoryUsage mu = mb.getPeakUsage();
@@ -173,10 +148,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryPoolMXBean.getType()'
      */
     public void testGetType() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MemoryType[] allTypes = MemoryType.values();
         for (MemoryPoolMXBean mb : allBeans) {
             MemoryType type = mb.getType();
@@ -196,10 +167,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryPoolMXBean.getUsage()'
      */
     public void testGetUsage() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isValid()) {
                 MemoryUsage mu = mb.getUsage();
@@ -222,10 +189,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.getUsageThreshold()'
      */
     public void testGetUsageThreshold() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isUsageThresholdSupported()) {
                 assertTrue(mb.getUsageThreshold() > -1);
@@ -244,10 +207,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.getUsageThresholdCount()'
      */
     public void testGetUsageThresholdCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isUsageThresholdSupported()) {
                 assertTrue(mb.getUsageThresholdCount() > -1);
@@ -266,10 +225,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.isCollectionUsageThresholdExceeded()'
      */
     public void testIsCollectionUsageThresholdExceeded() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isCollectionUsageThresholdSupported()) {
                 // Not a lot to test here. Maybe it will throw an exception ?
@@ -289,10 +244,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.isUsageThresholdExceeded()'
      */
     public void testIsUsageThresholdExceeded() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isUsageThresholdSupported()) {
                 mb.isUsageThresholdExceeded();
@@ -310,10 +261,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.MemoryPoolMXBean.resetPeakUsage()'
      */
     public void testResetPeakUsage() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             MemoryUsage current = mb.getUsage();
             mb.resetPeakUsage();
@@ -330,10 +277,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.setCollectionUsageThreshold(long)'
      */
     public void testSetCollectionUsageThreshold() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isCollectionUsageThresholdSupported()) {
                 long before = mb.getCollectionUsageThreshold();
@@ -355,10 +298,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.setCollectionUsageThreshold(long)'
      */
     public void testSetCollectionUsageThresholdWithNegative() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isCollectionUsageThresholdSupported()) {
                 try {
@@ -381,10 +320,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.setUsageThreshold(long)'
      */
     public void testSetUsageThreshold() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isUsageThresholdSupported()) {
                 long before = mb.getUsageThreshold();
@@ -406,10 +341,6 @@ public class MemoryPoolMXBeanTest extends TestCase {
      * 'java.lang.management.MemoryPoolMXBean.setUsageThreshold(long)'
      */
     public void testSetUsageThresholdWithNegative() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (MemoryPoolMXBean mb : allBeans) {
             if (mb.isUsageThresholdSupported()) {
                 try {

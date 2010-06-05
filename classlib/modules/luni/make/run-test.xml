@@ -33,7 +33,7 @@
 
     <target name="test-module"
             depends="-test-module,-test-module-impl" />
-    <target name="-test-module">
+    <target name="-test-module" depends="test-jre-vm-info">
         <convert-test-as-class from="test.case" to="converted.tc.class" />
         <run-hdk-tests module="luni" jar="luni_tests_api.jar">
             <excludeorinclude>

@@ -31,7 +31,7 @@
 
     <target name="test" depends="test-module" />
 
-    <target name="test-module">
+    <target name="test-module" depends="test-jre-vm-info">
         <echo message="Running SAMSA tests" />
         <echo message="test.jre.home=${test.jre.home}" />
 

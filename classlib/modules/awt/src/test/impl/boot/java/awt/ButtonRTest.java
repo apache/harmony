@@ -25,15 +25,10 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ButtonRTest extends TestCase {
   
     public void testShowAndPack() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame frm = new Frame("Test");
         Button btnClose = new Button("MyClose");
         btnClose.setBounds(10, 10, 80, 22);
@@ -52,10 +47,6 @@ public class ButtonRTest extends TestCase {
     // Regression test for HARMONY-2305
     // Currently fails on Linux version of RI
     public void testHarmony2305() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Frame f = new Frame();
         final Button b1 = new Button("B1"); //$NON-NLS-1$
         final Button b2 = new Button("B2"); //$NON-NLS-1$
@@ -92,20 +83,12 @@ public class ButtonRTest extends TestCase {
     
     // Regression test for HARMONY-3701
     public void testHarmony3701() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         setName("testHarmony3701"); //$NON-NLS-1$
         testHarmony2305();
         testHarmony2305();
     }
 
     public void testDeadLoop4887() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final int count[] = new int[1];
         Button b = new Button() {
             public void paint(Graphics g) {

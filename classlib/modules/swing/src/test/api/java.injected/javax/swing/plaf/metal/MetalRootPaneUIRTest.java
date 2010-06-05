@@ -23,7 +23,6 @@ import java.awt.Component;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class MetalRootPaneUIRTest extends SwingTestCase {
     public MetalRootPaneUIRTest(final String name) {
@@ -41,10 +40,6 @@ public class MetalRootPaneUIRTest extends SwingTestCase {
     }
 
     public void testDialogCloseButton() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JDialog.setDefaultLookAndFeelDecorated(true);
         JDialog d = new JDialog();
         Component[] comps = d.getLayeredPane().getComponents();

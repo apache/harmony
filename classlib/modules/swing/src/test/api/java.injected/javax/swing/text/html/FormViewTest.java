@@ -50,7 +50,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.View;
 
 import org.apache.harmony.x.swing.text.html.form.FormAttributes;
-import tests.support.Support_Excludes;
 
 public class FormViewTest extends SwingTestCase {
 
@@ -149,10 +148,6 @@ public class FormViewTest extends SwingTestCase {
 
     public void testFormView() throws Exception {
 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Wrong element
         elem = createElement();
         formView = new FormView(elem);
@@ -238,10 +233,6 @@ public class FormViewTest extends SwingTestCase {
     }
 
     public void testFormView_Models() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createFormView(FormAttributes.INPUT_TYPE_BUTTON);
         if (isHarmony()) {
             //TODO uncomment when HTMLDocument would be implemented
@@ -275,10 +266,6 @@ public class FormViewTest extends SwingTestCase {
     }
 
     public void testCreateComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Component component;
 
         createFormView(FormAttributes.INPUT_TYPE_BUTTON);
@@ -386,10 +373,6 @@ public class FormViewTest extends SwingTestCase {
     }
 
     public void testCreateComponent_Models() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Component component;
 
         createFormView(FormAttributes.INPUT_TYPE_BUTTON);
@@ -516,10 +499,6 @@ public class FormViewTest extends SwingTestCase {
 
     public void testGetMaximumSpan() throws Exception {
 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         elem = doc.getElement(FormAttributes.INPUT_TYPE_TEXT);
         formView = new FormView(elem) {
             protected Component createComponent() {
@@ -615,10 +594,6 @@ public class FormViewTest extends SwingTestCase {
     }
 
     public void testGetMaximumSpan_WithValidElements() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         createFormView(FormAttributes.INPUT_TYPE_BUTTON);
         checkMaxSpan(formView);
 
@@ -703,26 +678,14 @@ public class FormViewTest extends SwingTestCase {
     }
 
     public void testImageSubmit() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         throw new UnsupportedOperationException("Not implemented");
     }
 
     public void testSubmitData() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         throw new UnsupportedOperationException("Not implemented");
     }
 
     public void testActionPerformed() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Component component;
 
         elem = doc.getElement("submit2");
@@ -748,10 +711,6 @@ public class FormViewTest extends SwingTestCase {
     }
 
     public void testIsElementSuccessfull() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StringBuffer src = new StringBuffer();
         src.append("<HTML><HEAD></HEAD><BODY> Test");
         src.append("<FORM ACTION = \"\">");

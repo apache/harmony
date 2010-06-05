@@ -34,7 +34,6 @@ import org.apache.harmony.jpda.tests.framework.jdwp.Value;
 import org.apache.harmony.jpda.tests.jdwp.share.JDWPSyncTestCase;
 import org.apache.harmony.jpda.tests.jdwp.share.JDWPUnitDebuggeeWrapper;
 import org.apache.harmony.jpda.tests.share.JPDADebuggeeSynchronizer;
-import tests.support.Support_Excludes;
 
 
 /**
@@ -60,10 +59,6 @@ public class EnableCollectionTest extends JDWPSyncTestCase {
      * <BR>It is expected that checked object is garbage collected after re-connection.
      */
     public void testEnableCollection001() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String thisTestName = "testEnableCollection001";
         logWriter.println("==> testEnableCollection001 started..");
         synchronizer.receiveMessage(JPDADebuggeeSynchronizer.SGNL_READY);

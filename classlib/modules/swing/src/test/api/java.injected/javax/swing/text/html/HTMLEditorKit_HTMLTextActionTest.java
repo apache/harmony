@@ -31,7 +31,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
-import tests.support.Support_Excludes;
 
 public class HTMLEditorKit_HTMLTextActionTest extends SwingTestCase {
     private static final String HTML_TEXT = "<i>Italic text</i>";
@@ -70,19 +69,11 @@ public class HTMLEditorKit_HTMLTextActionTest extends SwingTestCase {
     }
 
     public void testHTMLTextAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         action = new TestHTMLTextAction("actionName");
         assertEquals("actionName", action.getValue(AbstractAction.NAME));
     }
 
     public void testElementCountToTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         loadHTML();
         final int offset = editorPane.getDocument().getLength();
 
@@ -97,10 +88,6 @@ public class HTMLEditorKit_HTMLTextActionTest extends SwingTestCase {
     }
 
     public void testFindElementMatchingTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         loadHTML();
         final int offset = editorPane.getDocument().getLength();
         Element[] elems = action.getElementsAt(document, offset);
@@ -119,10 +106,6 @@ public class HTMLEditorKit_HTMLTextActionTest extends SwingTestCase {
     }
 
     public void testGetElementsAt() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         loadHTML();
         final int offset = editorPane.getDocument().getLength();
 
@@ -144,19 +127,11 @@ public class HTMLEditorKit_HTMLTextActionTest extends SwingTestCase {
     }
 
     public void testGetHTMLDocument() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(editorPane.getDocument(),
                    action.getHTMLDocument(editorPane));
     }
 
     public void testGetHTMLEditorKit() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(editorPane.getEditorKit(),
                    action.getHTMLEditorKit(editorPane));
 

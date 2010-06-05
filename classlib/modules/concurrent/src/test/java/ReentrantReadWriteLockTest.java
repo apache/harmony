@@ -11,7 +11,6 @@ import java.util.concurrent.locks.*;
 import java.util.concurrent.*;
 import java.io.*;
 import java.util.*;
-import tests.support.Support_Excludes;
 
 public class ReentrantReadWriteLockTest extends JSR166TestCase {
     public static void main(String[] args) {
@@ -67,10 +66,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Constructor sets given fairness, and is in unlocked state
      */
     public void testConstructor() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	ReentrantReadWriteLock rl = new ReentrantReadWriteLock();
         assertFalse(rl.isFair());
         assertFalse(rl.isWriteLocked());
@@ -85,10 +80,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write-locking and read-locking an unlocked lock succeed
      */
     public void testLock() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	ReentrantReadWriteLock rl = new ReentrantReadWriteLock();
         rl.writeLock().lock();
         assertTrue(rl.isWriteLocked());
@@ -113,10 +104,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * locking an unlocked fair lock succeeds
      */
     public void testFairLock() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	ReentrantReadWriteLock rl = new ReentrantReadWriteLock(true);
         rl.writeLock().lock();
         assertTrue(rl.isWriteLocked());
@@ -140,10 +127,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWriteHoldCount returns number of recursive holds
      */
     public void testGetWriteHoldCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	for(int i = 1; i <= SIZE; i++) {
 	    lock.writeLock().lock();
@@ -160,10 +143,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write-unlocking an unlocked lock throws IllegalMonitorStateException
      */
     public void testUnlock_IllegalMonitorStateException() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	ReentrantReadWriteLock rl = new ReentrantReadWriteLock();
 	try {
 	    rl.writeLock().unlock();
@@ -176,10 +155,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write-lockInterruptibly is interruptible
      */
     public void testWriteLockInterruptibly_Interrupted() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	Thread t = new Thread(new Runnable() {
                 public void run() {
@@ -208,10 +183,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * timed write-tryLock is interruptible
      */
     public void testWriteTryLock_Interrupted() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -235,10 +206,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * read-lockInterruptibly is interruptible
      */
     public void testReadLockInterruptibly_Interrupted() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -264,10 +231,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * timed read-tryLock is interruptible
      */
     public void testReadTryLock_Interrupted() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -292,10 +255,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write-tryLock fails if locked
      */
     public void testWriteTryLockWhenLocked() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -316,10 +275,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * read-tryLock fails if locked
      */
     public void testReadTryLockWhenLocked() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -340,10 +295,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Multiple threads can hold a read lock when not write-locked
      */
     public void testMultipleReadLocks() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.readLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -365,10 +316,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * A writelock succeeds after reading threads unlock
      */
     public void testWriteAfterMultipleReadLocks() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.readLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -403,10 +350,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Readlocks succeed after a writing thread unlocks
      */
     public void testReadAfterWriteLock() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -441,10 +384,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Read trylock succeeds if write locked by current thread
      */
     public void testReadHoldingWriteLock() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
         assertTrue(lock.readLock().tryLock());
@@ -457,10 +396,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * other threads are waiting for readlock
      */
     public void testReadHoldingWriteLock2() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -500,10 +435,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * other threads are waiting for writelock
      */
     public void testReadHoldingWriteLock3() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -544,10 +475,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * other threads are waiting for writelock
      */
     public void testWriteHoldingWriteLock4() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -587,10 +514,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Fair Read trylock succeeds if write locked by current thread
      */
     public void testReadHoldingWriteLockFair() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	lock.writeLock().lock();
         assertTrue(lock.readLock().tryLock());
@@ -603,10 +526,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * other threads are waiting for readlock
      */
     public void testReadHoldingWriteLockFair2() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -647,10 +566,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * other threads are waiting for writelock
      */
     public void testReadHoldingWriteLockFair3() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -691,10 +606,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * other threads are waiting for writelock
      */
     public void testWriteHoldingWriteLockFair4() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	lock.writeLock().lock();
 	Thread t1 = new Thread(new Runnable() {
@@ -737,10 +648,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Read tryLock succeeds if readlocked but not writelocked
      */
     public void testTryLockWhenReadLocked() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.readLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -764,10 +671,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write tryLock fails when readlocked
      */
     public void testWriteTryLockWhenReadLocked() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.readLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -789,10 +692,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Fair Read tryLock succeeds if readlocked but not writelocked
      */
     public void testTryLockWhenReadLockedFair() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	lock.readLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -816,10 +715,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Fair write tryLock fails when readlocked
      */
     public void testWriteTryLockWhenReadLockedFair() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
 	lock.readLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -842,10 +737,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write timed tryLock times out if locked
      */
     public void testWriteTryLock_Timeout() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -870,10 +761,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * read timed tryLock times out if write-locked
      */
     public void testReadTryLock_Timeout() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	lock.writeLock().lock();
 	Thread t = new Thread(new Runnable() {
@@ -899,10 +786,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * write lockInterruptibly succeeds if lock free else is interruptible
      */
     public void testWriteLockInterruptibly() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	try {
             lock.writeLock().lockInterruptibly();
@@ -935,10 +818,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      *  read lockInterruptibly succeeds if lock free else is interruptible
      */
     public void testReadLockInterruptibly() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	try {
             lock.writeLock().lockInterruptibly();
@@ -970,10 +849,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Calling await without holding lock throws IllegalMonitorStateException
      */
     public void testAwait_IllegalMonitor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
         try {
@@ -991,10 +866,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * Calling signal without holding lock throws IllegalMonitorStateException
      */
     public void testSignal_IllegalMonitor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
         try {
@@ -1012,10 +883,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * awaitNanos without a signal times out
      */
     public void testAwaitNanos_Timeout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
         try {
@@ -1034,10 +901,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      *  timed await without a signal times out
      */
     public void testAwait_Timeout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
         try {
@@ -1053,10 +916,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * awaitUntil without a signal times out
      */
     public void testAwaitUntil_Timeout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
         try {
@@ -1073,10 +932,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * await returns when signalled
      */
     public void testAwait() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1137,10 +992,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * awaitUninterruptibly doesn't abort on interrupt
      */
     public void testAwaitUninterruptibly() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = lock.writeLock().newCondition();
         UninterruptableThread thread = new UninterruptableThread(lock.writeLock(), c);
@@ -1173,10 +1024,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * await is interruptible
      */
     public void testAwait_Interrupt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1208,10 +1055,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * awaitNanos is interruptible
      */
     public void testAwaitNanos_Interrupt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1243,10 +1086,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * awaitUntil is interruptible
      */
     public void testAwaitUntil_Interrupt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
 	Thread t = new Thread(new Runnable() { 
@@ -1279,10 +1118,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * signalAll wakes up all threads
      */
     public void testSignalAll() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -1332,10 +1167,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * A serialized lock deserializes as unlocked
      */
     public void testSerialization() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ReentrantReadWriteLock l = new ReentrantReadWriteLock();
         l.readLock().lock();
         l.readLock().unlock();
@@ -1361,10 +1192,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasQueuedThreads reports whether there are waiting threads
      */
     public void testhasQueuedThreads() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -1394,10 +1221,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasQueuedThread(null) throws NPE
      */
     public void testHasQueuedThreadNPE() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock sync = new ReentrantReadWriteLock();
         try {
             sync.hasQueuedThread(null);
@@ -1410,10 +1233,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasQueuedThread reports whether a thread is queued.
      */
     public void testHasQueuedThread() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock sync = new ReentrantReadWriteLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(sync));
         Thread t2 = new Thread(new InterruptibleLockRunnable(sync));
@@ -1449,10 +1268,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getQueueLength reports number of waiting threads
      */
     public void testGetQueueLength() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -1482,10 +1297,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getQueuedThreads includes waiting threads
      */
     public void testGetQueuedThreads() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final PublicReentrantReadWriteLock lock = new PublicReentrantReadWriteLock();
         Thread t1 = new Thread(new InterruptedLockRunnable(lock));
         Thread t2 = new Thread(new InterruptibleLockRunnable(lock));
@@ -1518,10 +1329,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasWaiters throws NPE if null
      */
     public void testHasWaitersNPE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         try {
             lock.hasWaiters(null);
@@ -1536,10 +1343,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitQueueLength throws NPE if null
      */
     public void testGetWaitQueueLengthNPE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         try {
             lock.getWaitQueueLength(null);
@@ -1555,10 +1358,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitingThreads throws NPE if null
      */
     public void testGetWaitingThreadsNPE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final PublicReentrantReadWriteLock lock = new PublicReentrantReadWriteLock();
         try {
             lock.getWaitingThreads(null);
@@ -1573,10 +1372,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasWaiters throws IAE if not owned
      */
     public void testHasWaitersIAE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = (lock.writeLock().newCondition());
 	final ReentrantReadWriteLock lock2 = new ReentrantReadWriteLock();
@@ -1593,10 +1388,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasWaiters throws IMSE if not locked
      */
     public void testHasWaitersIMSE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = (lock.writeLock().newCondition());
         try {
@@ -1613,10 +1404,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitQueueLength throws IAE if not owned
      */
     public void testGetWaitQueueLengthIAE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = (lock.writeLock().newCondition());
 	final ReentrantReadWriteLock lock2 = new ReentrantReadWriteLock();
@@ -1633,10 +1420,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitQueueLength throws IMSE if not locked
      */
     public void testGetWaitQueueLengthIMSE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = (lock.writeLock().newCondition());
         try {
@@ -1653,10 +1436,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitingThreads throws IAE if not owned
      */
     public void testGetWaitingThreadsIAE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final PublicReentrantReadWriteLock lock = new PublicReentrantReadWriteLock();	
         final Condition c = (lock.writeLock().newCondition());
 	final PublicReentrantReadWriteLock lock2 = new PublicReentrantReadWriteLock();	
@@ -1673,10 +1452,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitingThreads throws IMSE if not locked
      */
     public void testGetWaitingThreadsIMSE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final PublicReentrantReadWriteLock lock = new PublicReentrantReadWriteLock();	
         final Condition c = (lock.writeLock().newCondition());
         try {
@@ -1693,10 +1468,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * hasWaiters returns true when a thread is waiting, else false
      */
     public void testHasWaiters() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = (lock.writeLock().newCondition());
 	Thread t = new Thread(new Runnable() { 
@@ -1739,10 +1510,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitQueueLength returns number of waiting threads
      */
     public void testGetWaitQueueLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         final Condition c = (lock.writeLock().newCondition());
 	Thread t = new Thread(new Runnable() { 
@@ -1786,10 +1553,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * getWaitingThreads returns only and all waiting threads
      */
     public void testGetWaitingThreads() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
 	final PublicReentrantReadWriteLock lock = new PublicReentrantReadWriteLock();	
         final Condition c = lock.writeLock().newCondition();
 	Thread t1 = new Thread(new Runnable() { 
@@ -1853,10 +1616,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * toString indicates current lock state
      */
     public void testToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         String us = lock.toString();
         assertTrue(us.indexOf("Write locks = 0") >= 0);
@@ -1877,10 +1636,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * readLock.toString indicates current lock state
      */
     public void testReadLockToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         String us = lock.readLock().toString();
         assertTrue(us.indexOf("Read locks = 0") >= 0);
@@ -1894,10 +1649,6 @@ public class ReentrantReadWriteLockTest extends JSR166TestCase {
      * writeLock.toString indicates current lock state
      */
     public void testWriteLockToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         String us = lock.writeLock().toString();
         assertTrue(us.indexOf("Unlocked") >= 0);

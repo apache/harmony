@@ -21,7 +21,6 @@ package javax.swing.plaf.metal;
 
 import javax.swing.JLabel;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class MetalComboBoxIconTest extends SwingTestCase {
     private MetalComboBoxIcon icon;
@@ -41,26 +40,14 @@ public class MetalComboBoxIconTest extends SwingTestCase {
     }
 
     public void testGetIconHeight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(5, icon.getIconHeight());
     }
 
     public void testGetIconWidth() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(10, icon.getIconWidth());
     }
 
     public void testPaintIcon() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         icon.paintIcon(new JLabel(), createTestGraphics(), 0, 0);
     }
 }

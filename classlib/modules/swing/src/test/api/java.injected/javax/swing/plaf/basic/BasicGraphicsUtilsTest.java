@@ -34,7 +34,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class BasicGraphicsUtilsTest extends SwingTestCase {
     private JFrame frame;
@@ -77,18 +76,10 @@ public class BasicGraphicsUtilsTest extends SwingTestCase {
     }
 
     public void testBasicGraphicsUtils() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         new BasicGraphicsUtils();
     }
 
     public void testDrawEtchedRect() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Color color = g.getColor();
         BasicGraphicsUtils.drawEtchedRect(g, x, y, w, h, shadow, darkShadow, highlight,
                 lightHighlight);
@@ -96,36 +87,20 @@ public class BasicGraphicsUtilsTest extends SwingTestCase {
     }
 
     public void testGetEtchedInsets() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Insets(2, 2, 2, 2), BasicGraphicsUtils.getEtchedInsets());
     }
 
     public void testDrawGroove() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Color color = g.getColor();
         BasicGraphicsUtils.drawGroove(g, x, y, w, h, shadow, highlight);
         assertSame(color, g.getColor());
     }
 
     public void testGetGrooveInsets() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(new Insets(2, 2, 2, 2), BasicGraphicsUtils.getGrooveInsets());
     }
 
     public void testDrawBezel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Color color = g.getColor();
         BasicGraphicsUtils.drawBezel(g, x, y, w, h, true, true, shadow, darkShadow, highlight,
                 lightHighlight);
@@ -139,10 +114,6 @@ public class BasicGraphicsUtilsTest extends SwingTestCase {
     }
 
     public void testDrawLoweredBezel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Color color = g.getColor();
         BasicGraphicsUtils.drawLoweredBezel(g, x, y, w, h, shadow, darkShadow, highlight,
                 lightHighlight);
@@ -152,26 +123,14 @@ public class BasicGraphicsUtilsTest extends SwingTestCase {
     }
 
     public void testDrawString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // TODO: implement
     }
 
     public void testDrawStringUnderlineCharAt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // TODO: implement
     }
 
     public void testDrawDashedRect() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         g = new DebugGraphics(g);
         Color color = g.getColor();
         BasicGraphicsUtils.drawDashedRect(g, x, y, w, h);
@@ -179,10 +138,6 @@ public class BasicGraphicsUtilsTest extends SwingTestCase {
     }
 
     public void testGetPreferredButtonSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = new ImageIcon(new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB));
         JMenuItem item = new JMenuItem() {
             private static final long serialVersionUID = 1L;

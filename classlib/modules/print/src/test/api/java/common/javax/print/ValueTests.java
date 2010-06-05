@@ -55,7 +55,6 @@ import javax.print.attribute.standard.PrintQuality;
 import javax.print.attribute.standard.PrinterLocation;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ValueTests extends TestCase {
 
@@ -81,10 +80,6 @@ static {
 }
 
 public void testDocFlavor() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("DocFlavor class testing...");
     DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
     assertEquals(flavor, new DocFlavor.INPUT_STREAM("image/gif"));
@@ -97,10 +92,6 @@ public void testDocFlavor() {
 }
 
 public void testSimpleDoc() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("SimpleDoc class testing...");
     
     DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
@@ -129,10 +120,6 @@ public void testSimpleDoc() {
 }
 
 public void testDefaultPrintService() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     boolean flg = false;
 
     startTest("PrintService class testing...");
@@ -165,10 +152,6 @@ public void testDefaultPrintService() {
 }
 
 public void testPrintJob() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("PrintJob class testing...");
     DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
     PrintRequestAttributeSet printRequestSet = 
@@ -184,10 +167,6 @@ public void testPrintJob() {
 }
 
 public void testStreamServiceFactory() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("StreamPrintServiceFactory class testing...");
     boolean flg = false;
     DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
@@ -217,10 +196,6 @@ public void testStreamServiceFactory() {
 }
 
 public void testStreamPrintService() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("StreamPrintService class testing...");
     
     DocFlavor flavor = DocFlavor.INPUT_STREAM.GIF;
@@ -253,10 +228,6 @@ public void testStreamPrintService() {
 }
 
 public void testStreamServicePrinting() throws Exception {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("StreamPrintServiceFactory class testing...");
     
     byte [] forChecking = {'%', '!', 'P', 'S', '-', 'A', 'd', 'o', 'b', 'e'};
@@ -299,10 +270,6 @@ public void testStreamServicePrinting() throws Exception {
 }
 
 public void testHashDocAttributeSet() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("HashDocAttributeSet class testing...");
 
     DocAttributeSet set1 = new HashDocAttributeSet();
@@ -345,10 +312,6 @@ public void testHashDocAttributeSet() {
 }
 
 public void testHashPrintJobAttributeSet() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("HashPrintJobAttributeSet class testing...");
 
     PrintJobAttributeSet set1 = new HashPrintJobAttributeSet();
@@ -391,10 +354,6 @@ public void testHashPrintJobAttributeSet() {
 }
 
 public void testHashPrintRequestAttributeSet() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("HashPrintRequestAttributeSet class testing...");
 
     Copies copies = new Copies(2);
@@ -434,10 +393,6 @@ public void testHashPrintRequestAttributeSet() {
 }
 
 public void testHashPrintServiceAttributeSet() {
-    if (Support_Excludes.isExcluded()) {
-        return;
-    }
-
     startTest("HashPrintJobAttributeSet class testing...");
 
     PrintServiceAttributeSet set1 = new HashPrintServiceAttributeSet();

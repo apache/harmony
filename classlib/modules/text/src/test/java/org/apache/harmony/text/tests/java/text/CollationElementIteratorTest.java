@@ -24,7 +24,6 @@ import java.text.StringCharacterIterator;
 import java.util.Locale;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * Test CollationElementIterator
@@ -41,10 +40,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testGetOffset() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		String text = "abc";
 		CollationElementIterator iterator = coll
 				.getCollationElementIterator(text);
@@ -60,10 +55,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testNext() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		String text = "abc";
 		CollationElementIterator iterator = coll
 				.getCollationElementIterator(text);
@@ -88,10 +79,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testReset() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		String text = "abc";
 		CollationElementIterator iterator = coll
 				.getCollationElementIterator(text);
@@ -111,10 +98,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testGetMaxExpansion() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		String text = "cha";
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("es", "", "TRADITIONAL"));
@@ -129,10 +112,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testPrimaryOrder() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("de", "DE"));
 		String text = "\u00e6";
@@ -148,10 +127,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testSecondaryOrder() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("fr", "FR"));
 		String text = "a\u00e0";
@@ -167,10 +142,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testTertiaryOrder() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("fr", "FR"));
 		String text = "abAB";
@@ -190,10 +161,6 @@ public class CollationElementIteratorTest extends TestCase {
 	}
 
 	public void testSetOffset() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("es", "", "TRADITIONAL"));
 		String text = "cha";
@@ -207,10 +174,6 @@ public class CollationElementIteratorTest extends TestCase {
 	 * Class under test for void setText(java.lang.String)
 	 */
 	public void testSetTextString() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("es", "", "TRADITIONAL"));
 		String text = "caa";
@@ -227,10 +190,6 @@ public class CollationElementIteratorTest extends TestCase {
 	 * Class under test for void setText(java.text.CharacterIterator)
 	 */
 	public void testSetTextCharacterIterator() {
-	    if (Support_Excludes.isExcluded()) {
-	        return;
-	    }
-
 		RuleBasedCollator rbColl = (RuleBasedCollator) Collator
 				.getInstance(new Locale("es", "", "TRADITIONAL"));
 		String text = "caa";

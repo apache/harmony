@@ -23,7 +23,6 @@ import java.awt.Rectangle;
 import java.awt.TextField;
 
 import javax.swing.SpringLayout.Constraints;
-import tests.support.Support_Excludes;
 
 public class SpringLayoutTest extends SwingTestCase {
     private Component component;
@@ -68,10 +67,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testSpringLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SpringLayout.Constraints constrains = new SpringLayout.Constraints();
         assertNull(constrains.getX());
         assertNull(constrains.getY());
@@ -118,30 +113,18 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testGetLayoutAlignmentX() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel container = new JPanel(layout);
         assertEquals(0.5f, layout.getLayoutAlignmentX(null), 0.01);
         assertEquals(0.5f, layout.getLayoutAlignmentX(container), 0.01);
     }
 
     public void testGetLayoutAlignmentY() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel container = new JPanel(layout);
         assertEquals(0.5f, layout.getLayoutAlignmentY(null), 0.01);
         assertEquals(0.5f, layout.getLayoutAlignmentY(container), 0.01);
     }
 
     public void testGetConstraints() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Constraints constraints = layout.getConstraints(null);
         assertNotNull(constraints);
         layout.addLayoutComponent(component, "not_constraints");
@@ -179,10 +162,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testGetConstraint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.putConstraint(SpringLayout.SOUTH, button, Spring.constant(5),
                              SpringLayout.NORTH, container);
         layout.putConstraint(SpringLayout.EAST, button, Spring.constant(5),
@@ -200,10 +179,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testPutConstraint_Cycles() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
           layout.putConstraint(SpringLayout.EAST, button, 5, SpringLayout.WEST, panel);
           layout.putConstraint(SpringLayout.EAST, panel, 5, SpringLayout.WEST, textField);
@@ -223,10 +198,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testPutConstraint() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame frame = new JFrame("testPutConstraint");
         container.setLayout(layout);
         layout.putConstraint(SpringLayout.SOUTH, button, 5, SpringLayout.NORTH, container);
@@ -310,10 +281,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testAddLayoutComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Constraints constraints = new Constraints(Spring.constant(1), Spring.constant(2),
                                                   Spring.constant(3), Spring.constant(4));
         layout.addLayoutComponent(null, constraints);
@@ -335,10 +302,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testRemoveLayoutComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.removeLayoutComponent(null);
         layout.removeLayoutComponent(new JLabel());
 
@@ -375,10 +338,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testInvalidateLayout() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame frame = new JFrame("testMinimumLayoutSize");
         frame.setContentPane(container);
         layout = new SpringLayout();
@@ -412,10 +371,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testLayoutContainer() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         button.setPreferredSize(new Dimension(11, 12));
 
         Constraints buttonConstraints = layout.getConstraints(button);
@@ -486,10 +441,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testMinimumLayoutSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         //container
         setComponentSizes(button, Spring.constant(2, 5, 100), Spring.constant(3, 6, 101));
         Constraints buttonConstraints = layout.getConstraints(button);
@@ -558,10 +509,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testPreferredLayoutSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         //container
         setComponentSizes(button,
                           Spring.constant(2, 5, 100),
@@ -663,10 +610,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testMaximumLayoutSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         //container
         setComponentSizes(button,
                           Spring.constant(2, 5, 100),
@@ -775,10 +718,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_Constraints() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Constraints constraints;
 
         //SpringLayout.Constraints()
@@ -847,10 +786,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_SetConstraint() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Constraints constraints;
         layout.getConstraints(container).setConstraint(SpringLayout.WEST,
                                                       Spring.constant(5));
@@ -907,10 +842,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_GetConstraint() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Constraints constraints;
         layout.getConstraints(container).setConstraint(SpringLayout.WEST,
                                                       Spring.constant(5));
@@ -996,10 +927,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_SetHeight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setHeight(Spring.constant(5));
         layout.getConstraints(button).setHeight(Spring.constant(6));
         layout.getConstraints(button).setHeight(Spring.constant(8));
@@ -1026,10 +953,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_GetHeight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setHeight(Spring.constant(5));
         layout.getConstraints(button).setHeight(Spring.constant(6));
         layout.getConstraints(button).setHeight(Spring.constant(8));
@@ -1067,10 +990,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_SetWidth() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setWidth(Spring.constant(5));
         layout.getConstraints(button).setWidth(Spring.constant(6));
         layout.getConstraints(button).setWidth(Spring.constant(8));
@@ -1097,10 +1016,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_GetWidth() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setWidth(Spring.constant(5));
         layout.getConstraints(button).setWidth(Spring.constant(6));
         layout.getConstraints(button).setWidth(Spring.constant(8));
@@ -1137,10 +1052,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_SetX() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setX(Spring.constant(5));
         layout.getConstraints(button).setX(Spring.constant(6));
         layout.getConstraints(button).setX(Spring.constant(7));
@@ -1167,10 +1078,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_GetX() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setX(Spring.constant(5));
         layout.getConstraints(button).setX(Spring.constant(6));
         layout.getConstraints(button).setX(Spring.constant(7));
@@ -1207,10 +1114,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_SetY() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setY(Spring.constant(5));
         layout.getConstraints(button).setY(Spring.constant(6));
         layout.getConstraints(button).setY(Spring.constant(8));
@@ -1237,10 +1140,6 @@ public class SpringLayoutTest extends SwingTestCase {
     }
 
     public void testConstraints_GetY() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         layout.getConstraints(container).setY(Spring.constant(5));
         layout.getConstraints(button).setY(Spring.constant(6));
         layout.getConstraints(button).setY(Spring.constant(8));

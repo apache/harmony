@@ -20,15 +20,10 @@ import java.security.Permission;
 
 import junit.framework.TestCase;
 import tests.support.Support_Exec;
-import tests.support.Support_Excludes;
 
 public class SecurityManager2Test extends TestCase {
 
     public void test_SecurityManager_via_SystemProperty() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[] {
                 "-Djava.security.manager=" + MySecurityManager.class.getName(),
                 TestForSystemProperty.class.getName() };

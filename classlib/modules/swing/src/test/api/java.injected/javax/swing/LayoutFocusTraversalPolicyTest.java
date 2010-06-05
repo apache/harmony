@@ -23,7 +23,6 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.GridLayout;
 import javax.swing.plaf.ComboBoxUI;
-import tests.support.Support_Excludes;
 
 public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     private LayoutFocusTraversalPolicy policy;
@@ -64,10 +63,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testAccept() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.setVisible(true);
         SwingWaitTestCase.isRealized(frame);
         Component invisible = new JPanel();
@@ -108,10 +103,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBefore() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
         assertEquals(button1, policy.getComponentBefore(cycleRoot, button2));
         assertEquals(button2, policy.getComponentBefore(cycleRoot, button3));
@@ -125,10 +116,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBefore_Null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
 
         try {
@@ -154,10 +141,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
         assertEquals(button1, policy.getComponentAfter(cycleRoot, button4));
         assertEquals(button2, policy.getComponentAfter(cycleRoot, button1));
@@ -171,10 +154,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfter_Null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
 
         try {
@@ -200,10 +179,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetLastComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
         assertEquals(button1, policy.getLastComponent(cycleRoot));
         cycleRoot = createTestPanel(ComponentOrientation.RIGHT_TO_LEFT);
@@ -211,10 +186,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetLastComponent_Null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
 
         try {
@@ -226,10 +197,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetFirstComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
         assertEquals(button2, policy.getFirstComponent(cycleRoot));
         cycleRoot = createTestPanel(ComponentOrientation.RIGHT_TO_LEFT);
@@ -237,10 +204,6 @@ public class LayoutFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetFirstComponent_Null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createTestPanel(ComponentOrientation.LEFT_TO_RIGHT);
 
         try {

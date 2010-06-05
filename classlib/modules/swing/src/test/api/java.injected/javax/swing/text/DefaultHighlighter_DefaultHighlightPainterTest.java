@@ -30,7 +30,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingWaitTestCase;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class DefaultHighlighter_DefaultHighlightPainterTest extends TestCase {
     JTextArea jta;
@@ -137,10 +136,6 @@ public class DefaultHighlighter_DefaultHighlightPainterTest extends TestCase {
     }
 
     public void testDefaultHighlightPainter() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(lp);
         assertEquals(Color.red, lp.getColor());
         lp = new DefaultHighlighter.DefaultHighlightPainter(null);
@@ -163,10 +158,6 @@ public class DefaultHighlighter_DefaultHighlightPainterTest extends TestCase {
     }
     /* hard link to coordinates
      public void testPaintLayer() throws Exception{
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
      String s1;
      String s2;
      paintCase("JTextArea",5,7,new Rectangle(28,0,12,16));

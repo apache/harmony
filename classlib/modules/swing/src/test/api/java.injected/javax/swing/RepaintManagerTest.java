@@ -31,7 +31,6 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.InvocationEvent;
 import org.apache.harmony.awt.ComponentInternals;
-import tests.support.Support_Excludes;
 
 public class RepaintManagerTest extends BasicSwingTestCase {
     private Dimension dbMaxSize;
@@ -54,10 +53,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testCurrentManager() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         RepaintManager inst1 = RepaintManager.currentManager(new JButton());
         assertNotNull(inst1);
         RepaintManager inst2 = RepaintManager.currentManager(new Button());
@@ -69,10 +64,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testSetCurrentManager() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         RepaintManager newInst = new RepaintManager();
         RepaintManager.setCurrentManager(newInst);
         assertTrue(RepaintManager.currentManager(null) == newInst);
@@ -82,10 +73,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testAddRemoveInvalidComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame f = new Frame();
         final JPanel rootPanel = new JPanel(new BorderLayout()) {
                 private static final long serialVersionUID = 1L;
@@ -182,10 +169,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testValidateInvalidComponents() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Frame f = new Frame();
         final JPanel rootPanel = new JPanel(new BorderLayout()) {
             private static final long serialVersionUID = 1L;
@@ -230,10 +213,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testAddDirtyRegion() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JPanel root = new JPanel(new BorderLayout());
         JFrame f = new JFrame();
         f.getContentPane().add(root);
@@ -269,10 +248,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testMarkCompletelyDirtyClean() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JPanel root = new JPanel(new BorderLayout());
         JFrame f = new JFrame();
         f.getContentPane().add(root);
@@ -321,10 +296,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testIsCompletelyDirty() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JPanel root = new JPanel(new BorderLayout());
         JFrame f = new JFrame();
         f.getContentPane().add(root);
@@ -367,10 +338,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testGetDirtyRegion() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JPanel root = new JPanel(new BorderLayout());
         JFrame f = new JFrame();
         f.getContentPane().add(root);
@@ -400,10 +367,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testPaintDirtyRegions() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker rootPaintMarker = new Marker();
         final Marker rootPaintImmediatelyMarker = new Marker();
         final JPanel root = new JPanel(null) {
@@ -620,20 +583,12 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testIsDoubleBufferingEnabled() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(RepaintManager.currentManager(null).isDoubleBufferingEnabled());
         RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
         assertFalse(RepaintManager.currentManager(null).isDoubleBufferingEnabled());
     }
 
     public void testGetDoubleBufferMaximumSize() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(Toolkit.getDefaultToolkit().getScreenSize(), RepaintManager
                 .currentManager(null).getDoubleBufferMaximumSize());
         Dimension bufferSize = new Dimension(100, 100);
@@ -643,10 +598,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testGetOffscreenBuffer() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel root = new JPanel();
         JFrame f = new JFrame();
         f.getContentPane().add(root);
@@ -706,10 +657,6 @@ public class RepaintManagerTest extends BasicSwingTestCase {
     }
 
     public void testGetVolatileOffscreenBuffer() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel root = new JPanel();
         JFrame f = new JFrame();
         f.getContentPane().add(root);

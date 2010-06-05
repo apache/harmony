@@ -22,7 +22,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import tests.support.resource.Support_Resources;
-import tests.support.Support_Excludes;
 
 public class PackageTest extends junit.framework.TestCase {
 
@@ -63,10 +62,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#getImplementationTitle()
      */
     public void test_helper_Attributes() throws Exception {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         Package p = getTestPackage("hyts_all_attributes.jar", "p.C");
         assertEquals(
@@ -177,10 +172,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#getName()
      */
     public void test_getName() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package p = getTestPackage("hyts_pq.jar", "p.q.C");
         assertEquals("Package getName returns a wrong string", "p.q", p
                 .getName());
@@ -190,10 +181,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#getPackage(java.lang.String)
      */
     public void test_getPackageLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame("Package getPackage failed for java.lang", Package
                 .getPackage("java.lang"), Package.getPackage("java.lang"));
 
@@ -205,10 +192,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#getPackages()
      */
     public void test_getPackages() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package[] pckgs = Package.getPackages();
         boolean found = false;
         for (int i = 0; i < pckgs.length; i++) {
@@ -224,10 +207,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#hashCode()
      */
     public void test_hashCode() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package p1 = Package.getPackage("java.lang");
         if (p1 != null) {
             assertEquals(p1.hashCode(), "java.lang".hashCode());
@@ -238,10 +217,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#isCompatibleWith(java.lang.String)
      */
     public void test_isCompatibleWithLjava_lang_String() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package p = getTestPackage("hyts_c.jar", "p.C");
 
         assertTrue("Package isCompatibleWith fails with lower version", p
@@ -292,10 +267,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#isSealed()
      */
     public void test_isSealed() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package p = getTestPackage("hyts_pq.jar", "p.q.C");
         assertTrue("Package isSealed returns wrong boolean", p.isSealed());
     }
@@ -304,10 +275,6 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#isSealed(java.net.URL)
      */
     public void test_isSealedLjava_net_URL() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package p = getTestPackage("hyts_c.jar", "p.C");
         assertFalse("Package isSealed returns wrong boolean (1)", p
                 .isSealed(new URL("file:/" + resPath + "/")));
@@ -319,20 +286,12 @@ public class PackageTest extends junit.framework.TestCase {
      * @tests java.lang.Package#toString()
      */
     public void test_toString() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Package p = getTestPackage("hyts_c.jar", "p.C");
         assertTrue("Package toString returns wrong string", p.toString()
                 .length() > 0);
     }
     
     public void test_SealedPackage_forName() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Support_Resources.copyFile(resources, "Package", "hyts_c.jar");
         Support_Resources.copyFile(resources, "Package", "hyts_d.jar");
         Support_Resources.copyFile(resources, "Package", "hyts_d1.jar");

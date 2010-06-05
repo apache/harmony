@@ -29,7 +29,6 @@ import java.math.BigInteger;
 import java.security.Permission;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * RobotTest

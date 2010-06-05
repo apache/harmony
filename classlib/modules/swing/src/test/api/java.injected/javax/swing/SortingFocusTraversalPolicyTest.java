@@ -21,7 +21,6 @@ package javax.swing;
 
 import java.awt.Component;
 import java.util.Comparator;
-import tests.support.Support_Excludes;
 
 @SuppressWarnings("unchecked")
 public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
@@ -65,30 +64,18 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testSortingFocusTraversalPolicy() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Comparator cmp = new TestComparator();
         policy = new SortingFocusTraversalPolicy(cmp);
         assertEquals(cmp, policy.getComparator());
     }
 
     public void testSetComparator() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Comparator cmp = new TestComparator();
         policy.setComparator(cmp);
         assertEquals(cmp, policy.getComparator());
     }
 
     public void testAccept() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         frame.setVisible(true);
         SwingWaitTestCase.isRealized(frame);
         Component invisible = new JPanel();
@@ -111,10 +98,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBeforeNoInnerCycleRoots() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createPanelWithButtons();
         frame.getContentPane().add(cycleRoot);
         cycleRoot.setFocusCycleRoot(true);
@@ -128,10 +111,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBeforeForNotCycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new IllegalArgumentCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -141,10 +120,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBeforeForNullCycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new IllegalArgumentCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -154,10 +129,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBeforeForNullComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JPanel cycleRoot = createPanelWithButtons();
         frame.getContentPane().add(cycleRoot);
         cycleRoot.setFocusCycleRoot(true);
@@ -173,10 +144,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfterNoInnerCycleRoots() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame f = new JFrame();
         f.setVisible(true);
         SwingWaitTestCase.isRealized(f);
@@ -191,10 +158,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfterForNotCycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new IllegalArgumentCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -204,10 +167,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfterForNullCycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new IllegalArgumentCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -217,10 +176,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfterForNullComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame f = new JFrame();
         f.setVisible(true);
         final JPanel cycleRoot = createPanelWithButtons();
@@ -236,10 +191,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetLastComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createPanelWithButtons();
         frame.getContentPane().add(cycleRoot);
         cycleRoot.setFocusCycleRoot(true);
@@ -250,10 +201,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetLastComponentForNotCycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new IllegalArgumentCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -263,10 +210,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetFirstComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createPanelWithButtons();
         frame.getContentPane().add(cycleRoot);
         cycleRoot.setFocusCycleRoot(true);
@@ -277,10 +220,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testGetDefaultComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createPanelWithButtons();
         frame.getContentPane().add(cycleRoot);
         cycleRoot.setFocusCycleRoot(true);
@@ -291,10 +230,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testComponentIsInACycleRoot() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final JPanel cycleRoot = createPanelWithButtons();
         JPanel innerCycleRoot = new JPanel();
         innerCycleRoot.setName("9 - the latest");
@@ -316,10 +251,6 @@ public class SortingFocusTraversalPolicyTest extends BasicSwingTestCase {
     }
 
     public void testInnerCycleRootsProcessingWithImplicitTraversal() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPanel cycleRoot = createPanelWithButtons();
         JPanel innerCycleRoot = new JPanel();
         innerCycleRoot.setName("9 - the latest");

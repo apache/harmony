@@ -20,7 +20,6 @@ package org.apache.harmony.tests.java.lang.instrument;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import tests.support.Support_Exec;
-import tests.support.Support_Excludes;
 
 public class InstrumentTest extends TestCase {
 
@@ -28,10 +27,6 @@ public class InstrumentTest extends TestCase {
      * @tests try to add a null Transformer
      */
     public void test_addTransformer_null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_addTransformer_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -45,10 +40,6 @@ public class InstrumentTest extends TestCase {
      * @tests try to remove a null Transformer
      */
     public void test_removeTransformer_null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -62,10 +53,6 @@ public class InstrumentTest extends TestCase {
      * @tests try to remove a non-exists Transformer
      */
     public void test_removeTransformer_notExists() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_removeTransformer_notExists.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -79,10 +66,6 @@ public class InstrumentTest extends TestCase {
      * @tests try to load a class that does not exist
      */
     public void test_loadClass_null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/loading_class.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -101,10 +84,6 @@ public class InstrumentTest extends TestCase {
      * @tests try to use a new ClassLoader
      */
     public void test_new_classLoader_Exists() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/new_classloader.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -118,10 +97,6 @@ public class InstrumentTest extends TestCase {
      * @tests test if attribute of "Premain-Class" is null
      */
     public void test_Property_Premain_null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Property_Premain_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -144,10 +119,6 @@ public class InstrumentTest extends TestCase {
      *        is null
      */
     public void test_Property_other_null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Property_other_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -161,10 +132,6 @@ public class InstrumentTest extends TestCase {
      * @tests test if the attributes is case-sensitive
      */
     public void test_Properity_case_sensitive() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Properity_case_sensitive.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -178,10 +145,6 @@ public class InstrumentTest extends TestCase {
      * @tests test if the jar file is bad
      */
     public void test_BadFormatJar() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/BadFormatJar.jar";
         arg[1] = "";
@@ -203,10 +166,6 @@ public class InstrumentTest extends TestCase {
      * @tests test if premain class is null
      */
     public void test_Premain_Class_null() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/Premain_Class_null.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -225,10 +184,6 @@ public class InstrumentTest extends TestCase {
      * @tests test transforming all classes to a zero byte
      */
     public void test_zero_byte_transformer() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/zero_byte_class.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";
@@ -242,10 +197,6 @@ public class InstrumentTest extends TestCase {
      * @tests test if complied by version 1.4
      */
     public void test_old_version() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String[] arg = new String[2];
         arg[0] = "-javaagent:src/test/resources/jars/org/apache/harmony/tests/instrument/old_version_class.jar";
         arg[1] = "org/apache/harmony/tests/java/lang/instrument/TestMain";

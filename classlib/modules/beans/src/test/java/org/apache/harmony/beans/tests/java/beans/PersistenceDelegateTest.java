@@ -36,7 +36,6 @@ import junit.framework.TestCase;
 
 import org.apache.harmony.beans.tests.support.mock.MockFoo;
 import org.apache.harmony.beans.tests.support.mock.MockFooStop;
-import tests.support.Support_Excludes;
 
 /**
  * Test java.beans.PersistenceDelegate
@@ -47,10 +46,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Test the constructor.
      */
     public void testConstructor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         new DummyPersistenceDelegate();
     }
 
@@ -58,10 +53,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests writeObject() under normal condition when mutatesTo() returns True.
      */
     public void testWriteObject_NormalMutatesToTrue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MockPersistenceDelegate2 pd = new MockPersistenceDelegate2(true);
         MockEncoder2 enc = new MockEncoder2();
         MockFoo foo = new MockFoo();
@@ -77,10 +68,6 @@ public class PersistenceDelegateTest extends TestCase {
      * false.
      */
     public void testWriteObject_NormalMutatesToFalse() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MockPersistenceDelegate2 pd = new MockPersistenceDelegate2(false);
         MockEncoder2 enc = new MockEncoder2();
         MockFoo foo = new MockFoo();
@@ -96,10 +83,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests writeObject() when object is null.
      */
     public void testWriteObject_NullObject() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MockPersistenceDelegate2 pd = new MockPersistenceDelegate2();
         Encoder enc = new Encoder();
 
@@ -115,10 +98,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests writeObject() when encoder is null.
      */
     public void testWriteObject_NullEncoder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MockPersistenceDelegate2 pd = new MockPersistenceDelegate2();
 
         try {
@@ -133,10 +112,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests initialize() under normal conditions.
      */
     public void testInitialize_Normal() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
         MockPersistenceDelegate3 pd3 = new MockPersistenceDelegate3();
         Encoder enc = new Encoder();
@@ -159,10 +134,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests initialize() with null class.
      */
     public void testInitialize_NullClass() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
         Encoder enc = new Encoder();
 
@@ -181,10 +152,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests initialize() with null old and new instances.
      */
     public void testInitialize_NullInstances() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
         MockPersistenceDelegate3 pd3 = new MockPersistenceDelegate3();
         Encoder enc = new Encoder();
@@ -198,10 +165,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests initialize() with null encoder.
      */
     public void testInitialize_NullEncoder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
 
         try {
@@ -217,10 +180,6 @@ public class PersistenceDelegateTest extends TestCase {
      * HARMONY-2073
      */
     public void testInitialize_circularRedundancy() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Encoder enc = new Encoder();
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
 
@@ -232,10 +191,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests mutatesTo() under normal conditions.
      */
     public void testMutatesTo_Normal() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
         assertTrue(pd.mutatesTo("test1", "test2"));
         assertFalse(pd.mutatesTo(new Object(), new Object() {
@@ -251,10 +206,6 @@ public class PersistenceDelegateTest extends TestCase {
      * Tests mutatesTo() with null parameters.
      */
     public void testMutatesTo_Null() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DummyPersistenceDelegate pd = new DummyPersistenceDelegate();
 
         assertFalse(pd.mutatesTo("test", null));
@@ -263,10 +214,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_LInteger_LXMLEncoder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -304,10 +251,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_Null_LXMLEncoder() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -325,10 +268,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_LArray_LXMLEncoder() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -361,10 +300,6 @@ public class PersistenceDelegateTest extends TestCase {
     };
 
     public void test_writeObject_Ljava_Lang_reflect_Proxy() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         InvocationHandler handler = new InvocationHandler() {
 
             public Object invoke(Object proxy, Method method, Object[] params)
@@ -410,10 +345,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_lang_string(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -428,10 +359,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_lang_class(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -458,10 +385,6 @@ public class PersistenceDelegateTest extends TestCase {
 
     public void test_writeObject_java_lang_reflect_Field()
             throws SecurityException, NoSuchFieldException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -481,10 +404,6 @@ public class PersistenceDelegateTest extends TestCase {
 
     public void test_writeObject_java_lang_reflect_Method()
             throws SecurityException, NoSuchMethodException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -503,10 +422,6 @@ public class PersistenceDelegateTest extends TestCase {
 
     @SuppressWarnings("unchecked")
     public void test_writeObject_java_util_Collection() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -527,10 +442,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_Choice() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
                 byteArrayOutputStream));
@@ -664,10 +575,6 @@ public class PersistenceDelegateTest extends TestCase {
     
     
     public void test_writeObject_java_util_HashTable(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -686,10 +593,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_beans_beancontext_BeanContextSupport() throws PropertyVetoException{
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -705,10 +608,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_awt_SystemColor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -723,10 +622,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_font_TextAttribute() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -741,10 +636,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_MenuShortcut() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -768,10 +659,6 @@ public class PersistenceDelegateTest extends TestCase {
         private static final long serialVersionUID = 1L;
     }
     public void test_writeObject_java_awt_Component() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -808,10 +695,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_Container() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -885,10 +768,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_awt_Menu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -924,10 +803,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_MenuBar() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -946,10 +821,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_List() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -972,10 +843,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_BorderLayout(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -994,10 +861,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_CardLayout(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1017,10 +880,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_GridBagLayout() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1042,10 +901,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_awt_Cursor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1063,10 +918,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_awt_Insets() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1083,10 +934,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_awt_point() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1103,10 +950,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_awt_ScrollPane() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1126,10 +969,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_util_Map(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1147,10 +986,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_java_util_List() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1193,10 +1028,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_util_AbstractList(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1214,10 +1045,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_java_util_AbstractMap() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1238,10 +1065,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_javax_swing_JFrame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1261,10 +1084,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_javax_swing_DefaultListModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1285,10 +1104,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_javax_swing_DefaultComboBoxModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1307,10 +1122,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_javax_swing_tree_DefaultMutableTreeNode() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1326,10 +1137,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_javax_swing_ToolTipManager() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1347,10 +1154,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
     
     public void test_writeObject_javax_swing_Box() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1367,10 +1170,6 @@ public class PersistenceDelegateTest extends TestCase {
     }
 
     public void test_writeObject_javax_swing_JMenu(){
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder(new BufferedOutputStream(
             byteArrayOutputStream));
@@ -1389,10 +1188,6 @@ public class PersistenceDelegateTest extends TestCase {
     
     public void test_writeObject_Integer_Class() {
         
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         System.err.println("Test 5");
@@ -1448,10 +1243,6 @@ public class PersistenceDelegateTest extends TestCase {
         }
     }
     public void test_writeExpression_writeObject() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         XMLEncoder encoder = new XMLEncoder( output );
 

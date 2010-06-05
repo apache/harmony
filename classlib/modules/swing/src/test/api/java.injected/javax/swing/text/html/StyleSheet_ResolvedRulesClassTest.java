@@ -26,7 +26,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
 import javax.swing.text.Style;
 import javax.swing.text.html.HTML.Tag;
-import tests.support.Support_Excludes;
 
 public class StyleSheet_ResolvedRulesClassTest extends BasicSwingTestCase {
     private HTMLDocument doc;
@@ -59,10 +58,6 @@ public class StyleSheet_ResolvedRulesClassTest extends BasicSwingTestCase {
     }
 
     public void testGetRule() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         p = doc.getParagraphElement(1);
         assertEquals(1, p.getStartOffset());
         assertEquals(59, p.getEndOffset());
@@ -74,10 +69,6 @@ public class StyleSheet_ResolvedRulesClassTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleSame() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         p = doc.getParagraphElement(59);
         assertEquals(59, p.getStartOffset());
         assertEquals(85, p.getEndOffset());
@@ -104,10 +95,6 @@ public class StyleSheet_ResolvedRulesClassTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleAutoChange() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         p = doc.getParagraphElement(1);
         assertEquals(1, p.getStartOffset());
         assertEquals(59, p.getEndOffset());
@@ -124,10 +111,6 @@ public class StyleSheet_ResolvedRulesClassTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleOL_LI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reInit();
 
         Element li = doc.getParagraphElement(1).getParentElement();
@@ -142,10 +125,6 @@ public class StyleSheet_ResolvedRulesClassTest extends BasicSwingTestCase {
     }
 
     public void testGetRuleUL_LI() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reInit();
 
         Element li = doc.getParagraphElement(22).getParentElement();

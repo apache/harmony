@@ -28,7 +28,6 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaSizeName;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class PrintJpegTest extends TestCase {
     public static void main(String[] args) throws Exception {
@@ -36,10 +35,6 @@ public class PrintJpegTest extends TestCase {
     }
     
     public void testPrintJpeg() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out.println("======== START PrintJpegTest ========");
 
         PrintService[] services;

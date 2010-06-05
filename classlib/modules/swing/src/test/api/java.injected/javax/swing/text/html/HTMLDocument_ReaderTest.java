@@ -38,7 +38,6 @@ import javax.swing.text.html.HTMLDocument.HTMLReader;
 import javax.swing.text.html.HTMLDocument.HTMLReader.TagAction;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
-import tests.support.Support_Excludes;
 
 public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     
@@ -61,10 +60,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Create() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
@@ -80,10 +75,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_NoCreate_IfEmptyBuffer() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
@@ -95,10 +86,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Create_PushPopNull() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B);
@@ -115,10 +102,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_Tag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B);
@@ -136,10 +119,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         editable = false;
         SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -157,10 +136,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_Wierd() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         editable = false;
         SimpleAttributeSet attr = new SimpleAttributeSet();
@@ -181,10 +156,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_ApplicationMoment1() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         reader = (HTMLReader)doc.getReader(1, 10, 100, Tag.I);
         reader.handleStartTag(Tag.I, new SimpleAttributeSet(), 0);
@@ -192,10 +163,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_ApplicationMoment2() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         reader = (HTMLReader)doc.getReader(-100, 10, 100, Tag.I);
         reader.registerTag(Tag.I, reader.new TagAction());
@@ -206,10 +173,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_ApplicationMoment3() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         reader = (HTMLReader)doc.getReader(-100, 10, 100, Tag.I);
         reader.registerTag(Tag.I, reader.new BlockAction());
@@ -218,10 +181,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_ApplicationMoment4() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         reader = (HTMLReader)doc.getReader(-100, 10, 100, Tag.I);
         reader.new BlockAction().start(Tag.I, new SimpleAttributeSet());
@@ -229,10 +188,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_ApplicationMoment5() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         reader = (HTMLReader)doc.getReader(-100, 0, 0, Tag.I);
         reader.registerTag(Tag.I, reader.new CharacterAction());
@@ -243,10 +198,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_PushPopTag_SpecsOrder() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         reader = (HTMLReader)doc.getReader(-100, 2, 3, Tag.I);
         reader.handleStartTag(Tag.I, new SimpleAttributeSet(), 1000);
@@ -257,10 +208,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         final String initialText = "text";
         doc.insertString(0, initialText, SimpleAttributeSet.EMPTY);
@@ -279,10 +226,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_NoInsert_IfEmptyBuffer() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         final String initialText = "text";
         doc.insertString(0, initialText, SimpleAttributeSet.EMPTY);
@@ -301,10 +244,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testFlush_Insert_Offset() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         final String initialText = "text";
         reader = (HTMLReader)doc.getReader(initialText.length());
@@ -324,10 +263,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleComment() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text1 = "data";
         String text2 = "datadata";
         reader.handleComment(text1.toCharArray(), 0);
@@ -360,10 +295,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleEndOfLineString() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text1 = "text1";
         String text2 = "text2";
         
@@ -375,10 +306,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleSimpleTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
         final Marker endMarker = new Marker();
@@ -407,10 +334,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleEndTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
         final Marker endMarker = new Marker();
@@ -437,10 +360,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleStartTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
         final Marker endMarker = new Marker();
@@ -467,10 +386,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleStartTag_StyleAttr() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(HTML.Attribute.STYLE, "color: red");
         reader.handleStartTag(Tag.P, attr, 0);
@@ -484,10 +399,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHandleSimpleTag_StyleAttr() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(HTML.Attribute.STYLE, "color: red");
         reader.handleSimpleTag(Tag.HR, attr, 0);
@@ -501,10 +412,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHandleText() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         reader.handleText(text.toCharArray(), 0);
         assertEquals(0, reader.charAttr.getAttributeCount());
@@ -529,10 +436,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_ContentMethodsCalls_Body() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -560,10 +463,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHandleText_ContentMethodsCalls_P() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -591,10 +490,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_ContentMethodsCalls_Implied() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -623,10 +518,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_ContentMethodsCalls_Pre() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -655,10 +546,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_ContentMethodsCalls_Title() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -684,10 +571,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_ContentMethodsCalls_Option() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -737,10 +620,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_ContentMethodsCalls_TextArea() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker addContentMarker = new Marker(); 
         final Marker preContentMarker = new Marker(); 
         final Marker textAreaMarker = new Marker(); 
@@ -801,10 +680,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_Implied() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         final SimpleAttributeSet attr = new SimpleAttributeSet();
         reader.handleStartTag(Tag.BODY, attr, 0);
@@ -833,20 +708,12 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_BlockOpenClose_P1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
         reader.blockClose(Tag.H1);
         checkTextInNotInserted();
     }
     
     public void testHandleText_BlockOpenClose_P2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
@@ -855,10 +722,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_BlockOpenClose_P3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
         reader.blockOpen(Tag.H2, new SimpleAttributeSet());
         reader.blockOpen(Tag.H3, new SimpleAttributeSet());
@@ -869,20 +732,12 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_BlockOpenClose_Implied1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockClose(Tag.IMPLIED);
         checkTextIsInserted();
     }
     
     public void testHandleText_BlockOpenClose_Implied2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
@@ -894,10 +749,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_BlockOpenClose_Implied3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
@@ -908,10 +759,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_BlockOpenClose_P_Implied1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.P, new SimpleAttributeSet());
         reader.blockOpen(Tag.P, new SimpleAttributeSet());
         reader.blockOpen(Tag.P, new SimpleAttributeSet());
@@ -922,10 +769,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHandleText_BlockOpenClose_P_Implied2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.P, new SimpleAttributeSet());
         reader.blockOpen(Tag.P, new SimpleAttributeSet());
         reader.blockOpen(Tag.P, new SimpleAttributeSet());
@@ -937,10 +780,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHandleText_BlockOpenClose_P_Implied3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
@@ -951,10 +790,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleText_BlockOpenClose_P_Implied4() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
         reader.blockOpen(Tag.IMPLIED, new SimpleAttributeSet());
@@ -964,10 +799,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testAddContent_BlockOpenClose_P1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
         reader.blockClose(Tag.H1);
         int numSpecs = reader.parseBuffer.size();
@@ -976,10 +807,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContent_BlockOpenClose_P2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockOpen(Tag.H1, new SimpleAttributeSet());
         reader.blockClose(Tag.H1);
         int numSpecs = reader.parseBuffer.size();
@@ -988,10 +815,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContent_BlockOpenClose_P_Implied5() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TagAction action = reader.new ParagraphAction(); 
         reader.handleStartTag(Tag.BODY, new SimpleAttributeSet(), 0);
         assertEquals(1, reader.parseBuffer.size());
@@ -1006,10 +829,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader = (HTMLReader)doc.getReader(10, 10, 20, Tag.B);
         assertNotNull(reader.parseBuffer);
         assertEquals(0, reader.parseBuffer.size());
@@ -1019,10 +838,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_TagParameter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkConstructorTagParameter(Tag.BR, "<a>link</a><b>asdasd</b>", 0);
         checkConstructorTagParameter(Tag.BR, "<a>link</a><b>asdasd</b><br>", 1);
         checkConstructorTagParameter(Tag.BR, "<a>link</a><b><br>asdasd</b>", 2);
@@ -1034,10 +849,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_TagParameter_Closed() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String text = "tag";
         editable = false;
         reader = (HTMLReader)doc.getReader(0, 0, 0, Tag.FORM);
@@ -1059,10 +870,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     
     
     public void testHTMLReaderIntIntIntTag_OffsetParameter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String str = "<a>0000</a><b>1111</b>";
         checkConstructorOffsetParameter(Tag.A, str, 0);
         checkConstructorOffsetParameter(Tag.A, str, 1);
@@ -1073,10 +880,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PopParameter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String str = "<a>link</a><b>asdasd</b>";
         checkConstructorPopParameter(Tag.A, str, 0, "coco");
         if (isHarmony()) {
@@ -1090,10 +893,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PushParameter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String str = "<a>link</a><b>asdasd</b>";
         checkConstructorPushParameter(Tag.A, str, 0, "coco");
         checkConstructorPushParameter(Tag.A, str, 1, "cpsncoco");
@@ -1105,10 +904,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PushPopParameter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String str = "<a>link</a><b>asdasd</b>";
         checkConstructorPopPushParameter(Tag.A, str, 0, 0, "coco");
         checkConstructorPopPushParameter(Tag.A, str, 1, 1, "cpeosncoco");
@@ -1123,10 +918,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PushPopParameter_JoinPrevSpec1() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editable = false;
         HTMLReader reader = (HTMLReader)doc.getReader(0, 0, 1, Tag.A);
         reader.new CharacterAction().start(Tag.A, new SimpleAttributeSet());
@@ -1135,10 +926,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PushPopParameter_JoinPrevSpec2() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editable = false;
         HTMLReader reader = (HTMLReader)doc.getReader(1, 1, 0, Tag.A);
         reader.new CharacterAction().start(Tag.A, new SimpleAttributeSet());
@@ -1147,10 +934,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PushPopParameter_JoinPrevSpec3() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editable = false;
         HTMLReader reader = (HTMLReader)doc.getReader(0, 1, 0, Tag.A);
         reader.new CharacterAction().start(Tag.A, new SimpleAttributeSet());
@@ -1159,10 +942,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_PushPopParameter_JoinPrevSpec4() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editable = false;
         HTMLReader reader = (HTMLReader)doc.getReader(0, 1, 0, Tag.P);
         reader.new ParagraphAction().start(Tag.P, new SimpleAttributeSet());
@@ -1171,10 +950,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHTMLReaderIntIntIntTag_PushPopParameter_JoinPrevSpec5() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Tag[] tags = HTML.getAllTags();
         Tag[] oddTags;
         if (!isHarmony()) {
@@ -1201,10 +976,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testHTMLReaderIntIntIntTag_PushPopParameter_BlockParagraph() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // trailing specs cutting for block and paragraph tags
         if (!isHarmony()) { 
             return;
@@ -1230,10 +1001,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderIntIntIntTag_OffsetPushPopParameter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String str = "<a>link</a><b>asdasd</b>";
         checkConstructorOffsetPopPushParameter(Tag.A, str, 0, 0, 0, "coco");
         checkConstructorOffsetPopPushParameter(Tag.A, str, 20, 1, 1, "eosncoco");
@@ -1248,10 +1015,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHTMLReaderInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(reader.parseBuffer);
         assertEquals(0, reader.parseBuffer.size());
         
@@ -1260,10 +1023,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testPushPopCharacterStyle() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.charAttr.addAttribute("initial", "true");
         final MutableAttributeSet attr1 = reader.charAttr; 
         final SimpleAttributeSet attr2 = new SimpleAttributeSet();
@@ -1310,10 +1069,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContentCharArrayIntIntBoolean_Implying_Necess() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         assertEquals(0, reader.parseBuffer.size());
         reader.addContent(text.toCharArray(), 1, 3, true);
@@ -1332,10 +1087,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContentCharArrayIntIntBoolean_Implying_Unnecess() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         reader.handleStartTag(Tag.H1, new SimpleAttributeSet(), 0);
         assertEquals(0, reader.charAttr.getAttributeCount());
@@ -1357,10 +1108,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContentCharArrayIntIntBoolean_NotImplying() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         assertEquals(0, reader.parseBuffer.size());
         reader.addContent(text.toCharArray(), 1, 3, false);
@@ -1376,10 +1123,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContentCharArrayIntInt_FullLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, reader.parseBuffer.size());
         String text = "da\na";
         reader.charAttr.addAttribute("aaaa", "bbbb");
@@ -1397,10 +1140,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContentCharArrayIntInt_PartLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(0, reader.parseBuffer.size());
         final SimpleAttributeSet initialSet = new SimpleAttributeSet();
         reader.charAttr = initialSet; 
@@ -1418,10 +1157,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddContent_CharAttr() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         assertEquals(0, reader.parseBuffer.size());
         final SimpleAttributeSet initialSet = new SimpleAttributeSet();
@@ -1444,10 +1179,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddSpecialElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         reader.handleStartTag(Tag.P, attr, 0);
@@ -1474,34 +1205,18 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddSpecialElement_AfterBlockOpen1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkAddSpecialAfterBlockOpen(Tag.HTML, Tag.IMPLIED);
     }
 
     public void testAddSpecialElement_AfterBlockOpen2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkAddSpecialAfterBlockOpen(Tag.HTML, Tag.I);
     }
 
     public void testAddSpecialElement_AfterBlockOpen3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkAddSpecialAfterBlockOpen(Tag.IMG, Tag.P);
     }
 
     public void testAddSpecialElement_AllTagsImpliedBlockOpenCheck() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Tag[] allTags = HTML.getAllTags();
         for (int i = 0; i < allTags.length; i++) {
             final Tag tag = allTags[i];
@@ -1519,10 +1234,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testAddSpecialElement_FrameImpliedBlockOpenCheck() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Tag specialTag = Tag.FRAME;
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
@@ -1541,10 +1252,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testAddSpecialElement_FrameImpliedBlockCloseCheck() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Tag specialTag = Tag.FRAME;
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
@@ -1593,10 +1300,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpen() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         reader.blockOpen(Tag.B, attr);
@@ -1615,10 +1318,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpen_ImpliedAttribute() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         attr.addAttribute(HTMLEditorKit.ParserCallback.IMPLIED, Boolean.TRUE);
@@ -1639,10 +1338,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockClose() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         reader.blockClose(Tag.B);
         assertEquals(0, reader.charAttr.getAttributeCount());
         assertEquals(1, reader.parseBuffer.size());
@@ -1651,10 +1346,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
 
     public void testBlockOpenClose() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
        SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -1688,10 +1379,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpenOpenCloseClose() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -1746,10 +1433,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpenOpenCloseClose_Implied() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -1800,10 +1483,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpenOpenCloseClose_ImpliedImplied() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -1854,10 +1533,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpenContentClose_B() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -1904,10 +1579,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testBlockOpenContentClose_Implied() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -1952,10 +1623,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testRegisterTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
         final Marker endMarker = new Marker();
@@ -1983,10 +1650,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testPreContent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "data";
         assertEquals(0, reader.parseBuffer.size());
         reader.charAttr.addAttribute("aaaa", "bbbb");
@@ -2008,10 +1671,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testPreContent_Calls() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker contentMarker = new Marker();
         doc = new HTMLDocument() {
             public ParserCallback getReader(int pos) {
@@ -2038,10 +1697,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testTextAreaContent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         String text1 = "data";
         String text2 = "atada";
@@ -2077,10 +1732,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleSimpleTag_Unknown() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         
@@ -2103,10 +1754,6 @@ public class HTMLDocument_ReaderTest extends HTMLDocumentTestCase {
     }
     
     public void testHandleStartEndTag_Unknown() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute("aaaa", "bbbb");
         

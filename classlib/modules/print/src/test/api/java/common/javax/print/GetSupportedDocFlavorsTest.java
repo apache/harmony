@@ -21,15 +21,10 @@
 package javax.print;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class GetSupportedDocFlavorsTest extends TestCase {
 
     public void testGetSupportedDocFlavors() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out
                 .println("============= START testGetSupportedDocFlavors ================");
 

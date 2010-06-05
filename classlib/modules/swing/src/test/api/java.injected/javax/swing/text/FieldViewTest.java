@@ -24,7 +24,6 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingTestCase;
 import javax.swing.plaf.basic.BasicTextUI;
-import tests.support.Support_Excludes;
 
 public class FieldViewTest extends SwingTestCase {
     JFrame jf;
@@ -51,10 +50,6 @@ public class FieldViewTest extends SwingTestCase {
     }
 
     public void testGetPreferredSpan() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         FontMetrics fm = fv.getFontMetrics();
         assertEquals(fm.getHeight(), (int) fv.getPreferredSpan(View.Y_AXIS));
         assertEquals(fm.stringWidth(jtf.getText()), (int) fv.getPreferredSpan(View.X_AXIS));
@@ -65,20 +60,12 @@ public class FieldViewTest extends SwingTestCase {
     }
 
     public void testGetResizeWeight() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(1, fv.getResizeWeight(View.X_AXIS));
         assertEquals(0, fv.getResizeWeight(View.Y_AXIS));
         assertEquals(0, fv.getResizeWeight(5000));
     }
 
     public void testGetFontMetrics() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(jtf.getFontMetrics(jtf.getFont()), fv.getFontMetrics());
         jtf.setFont(new java.awt.Font("SimSun", 0, 12));
         fv = (FieldView) ((BasicTextUI) jtf.getUI()).getRootView(jtf).getView(0);

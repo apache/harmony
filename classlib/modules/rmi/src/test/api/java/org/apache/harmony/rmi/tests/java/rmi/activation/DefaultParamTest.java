@@ -35,7 +35,6 @@ import org.apache.harmony.rmi.JavaInvoker;
 import org.apache.harmony.rmi.common.SubProcess;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class DefaultParamTest extends TestCase {
 
@@ -71,10 +70,6 @@ public class DefaultParamTest extends TestCase {
     }
 
     public void testSimpleInstall() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             Properties props = new Properties();
             ActivationGroupDesc groupDesc = new ActivationGroupDesc(props, null);

@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.awt.*;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ClipboardTest extends TestCase {
 

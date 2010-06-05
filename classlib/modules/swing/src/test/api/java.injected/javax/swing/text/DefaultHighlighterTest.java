@@ -22,7 +22,6 @@ package javax.swing.text;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingTestCase;
-import tests.support.Support_Excludes;
 
 public class DefaultHighlighterTest extends SwingTestCase {
     JTextArea jta;
@@ -75,10 +74,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testDefaultHighlighter() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DefaultHighlighter dh1 = new DefaultHighlighter();
         assertNotNull(dh1);
     }
@@ -91,10 +86,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testAddHighlightBadLocationException() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         bWasException = false;
         try {
             dh.addHighlight(-8, -1, lpnt);
@@ -116,10 +107,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testAddHighlight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             obj1 = dh.addHighlight(1, 5, lpnt);
         } catch (BadLocationException e) {
@@ -144,10 +131,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testInstall() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             obj1 = dh.addHighlight(1, 5, lpnt);
         } catch (BadLocationException e) {
@@ -170,10 +153,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testDeinstall() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             obj1 = dh.addHighlight(1, 5, lpnt);
         } catch (BadLocationException e) {
@@ -195,10 +174,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testChangeHighlight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             obj1 = dh.addHighlight(1, 5, lpnt);
         } catch (BadLocationException e) {
@@ -233,10 +208,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testChangeHighlightBadLocationException() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         bWasException = false;
         try {
             obj1 = dh.addHighlight(1, 5, lpnt);
@@ -266,10 +237,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testRemoveHighlight() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             obj1 = dh.addHighlight(1, 5, lpnt);
         } catch (BadLocationException e) {
@@ -292,20 +259,12 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testSetGetDrawsLayeredHighlights() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(dh.getDrawsLayeredHighlights());
         dh.setDrawsLayeredHighlights(false);
         assertFalse(dh.getDrawsLayeredHighlights());
     }
 
     public void testRemoveAllHighlights() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             dh.addHighlight(0, 1, lpnt);
             dh.addHighlight(0, 4, lpnt);
@@ -321,10 +280,6 @@ public class DefaultHighlighterTest extends SwingTestCase {
     }
 
     public void testGetHighlights() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final int N = 50;
         final int M = 25;
         Object[] obj = new Object[N];

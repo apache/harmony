@@ -24,15 +24,10 @@ import javax.print.attribute.Attribute;
 import javax.print.attribute.PrintServiceAttributeSet;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class GetAttributesTest extends TestCase {
 
     public void testGetAttributes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out
                 .println("============= START testGetAttributes ================");
 

@@ -24,7 +24,6 @@ import java.awt.Container;
 import java.awt.Font;
 import javax.swing.JTextArea;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * Tests GlyphView class, its methods to get attributes.
@@ -146,10 +145,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testGetForeground() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(StyleConstants.getForeground(leaf.getAttributes()), styledView
                 .getForeground());
         assertCalledMethods(FORE);
@@ -163,10 +158,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testGetBackground() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(styledView.getBackground());
         assertCalledMethods(NONE);
         assertNull(styledWithParent.getBackground());
@@ -183,10 +174,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testGetFont() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Font font = styledView.getFont();
         assertEquals(StyleConstants.getFontFamily(leaf.getAttributes()), font.getFamily());
         assertEquals(StyleConstants.getFontSize(leaf.getAttributes()), font.getSize());
@@ -202,10 +189,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testIsUnderline() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(styledView.isUnderline());
         assertFalse(styledWithParent.isUnderline());
         assertFalse(plainView.isUnderline());
@@ -216,10 +199,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testIsStrikeThrough() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(styledView.isStrikeThrough());
         assertFalse(styledWithParent.isStrikeThrough());
         assertFalse(plainView.isUnderline());
@@ -230,10 +209,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testIsSubscript() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(styledView.isSubscript());
         assertFalse(styledWithParent.isSubscript());
         assertFalse(plainView.isSubscript());
@@ -244,10 +219,6 @@ public class GlyphView_AttributesTest extends TestCase {
     }
 
     public void testIsSuperscript() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(styledView.isSuperscript());
         assertFalse(styledWithParent.isSuperscript());
         assertFalse(plainView.isSuperscript());

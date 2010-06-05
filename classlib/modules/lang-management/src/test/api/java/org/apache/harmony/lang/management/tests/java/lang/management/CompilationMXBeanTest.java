@@ -24,7 +24,6 @@ import java.lang.management.CompilationMXBean;
 import java.lang.management.ManagementFactory;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class CompilationMXBeanTest extends TestCase {
 
@@ -43,10 +42,6 @@ public class CompilationMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.CompilationMXBean.getName()'
      */
     public void testGetName() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(mb.getName());
     }
 
@@ -55,10 +50,6 @@ public class CompilationMXBeanTest extends TestCase {
      * 'java.lang.management.CompilationMXBean.getTotalCompilationTime()'
      */
     public void testGetTotalCompilationTime() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (mb.isCompilationTimeMonitoringSupported()) {
             assertTrue(mb.getTotalCompilationTime() > -1);
         } else {

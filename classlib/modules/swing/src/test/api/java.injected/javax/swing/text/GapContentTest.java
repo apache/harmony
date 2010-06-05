@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Vector;
 import javax.swing.BasicSwingTestCase;
 import javax.swing.undo.UndoableEdit;
-import tests.support.Support_Excludes;
 
 public class GapContentTest extends AbstractDocument_ContentTest {
     protected AbstractDocument.Content content;
@@ -40,10 +39,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetPositionsInRangeVector() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<Object> v = new Vector<Object>();
         v.add(new Object());
         v.add(new Object());
@@ -61,10 +56,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetPositionsInRange() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<Position> pos = new Vector<Position>();
         for (int i = 0; i < content.length(); i += 2) {
             Position p = content.createPosition(i);
@@ -86,10 +77,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testUpdatePositions() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         GapContent cont1 = new GapContent();
         final Vector<Position> pos = new Vector<Position>();
         final int posSize = 5;
@@ -132,20 +119,12 @@ public class GapContentTest extends AbstractDocument_ContentTest {
      * the returned vector.
      */
     public void testGetPositionsInRangeEnd() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content.createPosition(10);
         Vector<?> v = ((GapContent) content).getPositionsInRange(null, 0, 10);
         assertEquals(1, v.size());
     }
 
     public void testPositionGC() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<WeakReference<Position>> pos = new Vector<WeakReference<Position>>(10);
         ReferenceQueue<Position> rq = new ReferenceQueue<Position>();
         for (int i = 0; i < content.length(); i += 2) {
@@ -179,19 +158,11 @@ public class GapContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetCharsAfterGap() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         super.testGetCharsAfterGap();
         isContentArraySame(true);
     }
 
     public void testGetCharsAfterGapNoImplied() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Move the gap
         obj.insertString(10, "big ");
         // Don't include the implied char
@@ -202,29 +173,17 @@ public class GapContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetCharsBeforeGap() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         super.testGetCharsBeforeGap();
         isContentArraySame(true);
     }
 
     @Override
     public void testGetCharsFullLength() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         super.testGetCharsFullLength();
         isContentArraySame(false);
     }
 
     public void testGetCharsFullActualLength() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         obj.getChars(0, obj.length() - 1, text);
         assertEquals("This is a test string.", text.toString());
         isContentArraySame(true);
@@ -232,19 +191,11 @@ public class GapContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetCharsImpliedChar() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         super.testGetCharsImpliedChar();
         isContentArraySame(false);
     }
 
     public void testGetCharsImpliedCharPartial() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         obj = content = new GapContent();
         assertEquals(1, content.length());
         text.setPartialReturn(false);
@@ -259,30 +210,18 @@ public class GapContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetCharsPartial() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         super.testGetCharsPartial();
         isContentArraySame(true);
     }
 
     @Override
     public void testGetCharsWithGap() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         super.testGetCharsWithGap();
         isContentArraySame(false);
     }
 
     // Regression for HARMONY-2566
     public void testGetCharsMaxInteger() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             content.getChars(1, Integer.MAX_VALUE, null);
             fail("BadLocationException is expected");
@@ -291,10 +230,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetCharsNullSegment() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             content.getChars(1, 1, null);
             fail("NullPointerException is expected");
@@ -303,10 +238,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePositionBeforeUndo() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit ue = content.remove(3, 8);
         Position pos = content.createPosition(3);
         assertEquals(3, pos.getOffset());
@@ -317,10 +248,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePositionAfterUndone() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit ue = content.remove(3, 8);
         ue.undo();
         Position pos = content.createPosition(5);
@@ -332,10 +259,6 @@ public class GapContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePositionAfterInsert() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit ue = content.insertString(10, "big ");
         Position pos = content.createPosition(12);
         assertEquals(12, pos.getOffset());

@@ -24,7 +24,6 @@ import java.util.Arrays;
 import javax.swing.BasicSwingTestCase;
 import javax.swing.JProgressBar;
 import javax.swing.UIManager;
-import tests.support.Support_Excludes;
 
 public class BasicProgressBarUITest extends BasicSwingTestCase {
     private BasicProgressBarUI ui;
@@ -50,10 +49,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicProgressBarUI ui = (BasicProgressBarUI) BasicProgressBarUI.createUI(progressBar);
         assertNotNull(ui);
         assertNull(ui.changeListener);
@@ -61,10 +56,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testInstallUninstallUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(progressBar.getBorder());
         ui.installUI(progressBar);
         assertSame(ui.progressBar, progressBar);
@@ -83,10 +74,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testInstallUninstallListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.progressBar = progressBar;
         ui.installListeners();
         assertTrue(Arrays.asList(progressBar.getChangeListeners()).contains(ui.changeListener));
@@ -96,10 +83,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testGetSelectionBackForeGround() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(progressBar);
         assertEquals(UIManager.getColor("ProgressBar.selectionBackground"), ui
                 .getSelectionBackground());
@@ -108,10 +91,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testSetGetCellLengthSpacing() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(progressBar);
         assertEquals(UIManager.getInt("ProgressBar.cellLength"), ui.getCellLength());
         assertEquals(UIManager.getInt("ProgressBar.cellSpacing"), ui.getCellSpacing());
@@ -135,10 +114,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testGetPreferredSizes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(progressBar);
         Dimension inner = ui.getPreferredInnerHorizontal();
         assertSame(inner, ui.getPreferredInnerHorizontal());
@@ -153,10 +128,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testAnimation() throws ArithmeticException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ui.installUI(progressBar);
         progressBar.setIndeterminate(true);
         assertEquals(0, ui.getAnimationIndex());
@@ -175,10 +146,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
      * Regression test for HARMONY-2701 
      * */
     public void testGetBoxLength() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testBasicProgressBarUI pb = new testBasicProgressBarUI(); 
         assertEquals(0, pb.getBoxLength(0, 1)); 
     } 
@@ -187,10 +154,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
      * Regression test for HARMONY-2701 
      * */
     public void testGetBoxLength2() { 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testBasicProgressBarUI pb = new testBasicProgressBarUI(); 
         assertEquals(8, pb.getBoxLength(50, 1)); 
     }  
@@ -202,10 +165,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
 
     public void testStartStop() throws NullPointerException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BasicProgressBarUIExt pb = new BasicProgressBarUIExt();
         pb.startAnimationTimer(); 
 
@@ -224,10 +183,6 @@ public class BasicProgressBarUITest extends BasicSwingTestCase {
     }
     
     public void testHarmony2698Regression() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         class testBasicProgressBarUI extends BasicProgressBarUI { 
             public Dimension getPreferredInnerVertical() { 
                 return super.getPreferredInnerVertical(); 

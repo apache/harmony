@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 
 import java.awt.geom.AffineTransform;
 import java.awt.*;
-import tests.support.Support_Excludes;
 
 public class BufferedImageFilterTest extends TestCase {
     private BufferedImageFilter filter;
@@ -61,10 +60,6 @@ public class BufferedImageFilterTest extends TestCase {
     }
 
     public void testBufferedImageFilter() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BufferedImageOp op = new AffineTransformOp(
                 AffineTransform.getTranslateInstance(0, 0),
                 AffineTransformOp.TYPE_NEAREST_NEIGHBOR
@@ -81,18 +76,10 @@ public class BufferedImageFilterTest extends TestCase {
     }
 
     public void testGetBufferedImageOp() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(op, filter.getBufferedImageOp());
     }
 
     public void testFilterRGB() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Create source
         BufferedImage im = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
         for (int i=0; i<100; i++) {
@@ -113,10 +100,6 @@ public class BufferedImageFilterTest extends TestCase {
     }
 
     public void testFilterByteIndexed() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BufferedImage im = new BufferedImage(20, 20, BufferedImage.TYPE_BYTE_INDEXED);
         for (int i=0; i<400; i++) {
             im.getRaster().setPixel(i%20, i/20, new int[]{i});
@@ -136,10 +119,6 @@ public class BufferedImageFilterTest extends TestCase {
     }
 
     public void testFilterByte()  throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         BufferedImage im = new BufferedImage(20, 20, BufferedImage.TYPE_3BYTE_BGR);
         for (int i=0; i<400; i++) {
             im.getRaster().setPixel(i%20, i/20, new int[]{i,i+1,i+2});

@@ -26,7 +26,6 @@ import javax.print.attribute.HashDocAttributeSet;
 import javax.print.attribute.standard.MediaSizeName;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class PrintAutosenseTest extends TestCase {
     public static void main(String[] args) throws Exception {
@@ -34,10 +33,6 @@ public class PrintAutosenseTest extends TestCase {
     }
 
     public void testPrintAutosense() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out.println("======== START PrintAutosenseTest ========");
 
         PrintService[] services;

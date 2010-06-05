@@ -25,7 +25,6 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ThreadMXBeanTest extends TestCase {
 
@@ -45,10 +44,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.findMonitorDeadlockedThreads()'
      */
     public void testFindMonitorDeadlockedThreads() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Check that if there are no deadlocked threads we get back
         // a null rather than a zero length array.
         long[] ids = mb.findMonitorDeadlockedThreads();
@@ -61,10 +56,6 @@ public class ThreadMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.ThreadMXBean.getAllThreadIds()'
      */
     public void testGetAllThreadIds() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int count = mb.getThreadCount();
         long[] ids = mb.getAllThreadIds();
         assertNotNull(ids);
@@ -76,10 +67,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.getCurrentThreadCpuTime()'
      */
     public void testGetCurrentThreadCpuTime() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Outcome depends on whether or not CPU time measurement is supported
         // and enabled.
         if (mb.isCurrentThreadCpuTimeSupported()) {
@@ -102,10 +89,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.getCurrentThreadUserTime()'
      */
     public void testGetCurrentThreadUserTime() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Outcome depends on whether or not CPU time measurement is supported
         // and enabled.
         if (mb.isCurrentThreadCpuTimeSupported()) {
@@ -128,10 +111,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.getDaemonThreadCount()'
      */
     public void testGetDaemonThreadCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(mb.getDaemonThreadCount() > -1);
     }
 
@@ -139,10 +118,6 @@ public class ThreadMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.ThreadMXBean.getPeakThreadCount()'
      */
     public void testGetPeakThreadCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(mb.getPeakThreadCount() > -1);
     }
 
@@ -150,10 +125,6 @@ public class ThreadMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.ThreadMXBean.getThreadCount()'
      */
     public void testGetThreadCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(mb.getThreadCount() > -1);
     }
 
@@ -162,10 +133,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.getThreadCpuTime(long)'
      */
     public void testGetThreadCpuTime() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Outcome depends on whether or not CPU time measurement is supported
         // and enabled.
         if (mb.isThreadCpuTimeSupported()) {
@@ -198,10 +165,6 @@ public class ThreadMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.ThreadMXBean.getThreadInfo(long)'
      */
     public void testGetThreadInfoLong() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Should throw exception if a Thread id of 0 or less is input
         try {
             mb.getThreadInfo(0);
@@ -254,10 +217,6 @@ public class ThreadMXBeanTest extends TestCase {
      * Test method for 'java.lang.management.ThreadMXBean.getThreadInfo(long[])'
      */
     public void testGetThreadInfoLongArray() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Should throw exception if a Thread id of 0 or less is input
         try {
             long[] input = new long[] { 0 };
@@ -283,10 +242,6 @@ public class ThreadMXBeanTest extends TestCase {
      * int)'
      */
     public void testGetThreadInfoLongArrayInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Should throw exception if a Thread id of 0 or less is input
         try {
             long[] input = new long[] { 0 };
@@ -319,10 +274,6 @@ public class ThreadMXBeanTest extends TestCase {
      * int)'
      */
     public void testGetThreadInfoLongInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Should throw exception if a Thread id of 0 or less is input
         try {
             mb.getThreadInfo(0, 0);
@@ -346,10 +297,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.getThreadUserTime(long)'
      */
     public void testGetThreadUserTime() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Outcome depends on whether or not CPU time measurement is supported
         // and enabled.
         if (mb.isThreadCpuTimeSupported()) {
@@ -383,10 +330,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.getTotalStartedThreadCount()'
      */
     public void testGetTotalStartedThreadCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         long before = mb.getTotalStartedThreadCount();
 
         // Create another thread in the VM.
@@ -417,10 +360,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.isCurrentThreadCpuTimeSupported()'
      */
     public void testIsCurrentThreadCpuTimeSupported() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Should get the same response as a call to the
         // method isThreadCpuTimeSupported().
         assertEquals(mb.isCurrentThreadCpuTimeSupported(), mb
@@ -432,10 +371,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.resetPeakThreadCount()'
      */
     public void testResetPeakThreadCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int currentThreadCount = mb.getThreadCount();
         mb.resetPeakThreadCount();
         assertEquals(currentThreadCount, mb.getPeakThreadCount());
@@ -446,10 +381,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.setThreadContentionMonitoringEnabled(boolean)'
      */
     public void testSetThreadContentionMonitoringEnabled() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Response depends on whether or not thread contention
         // monitoring is supported.
         if (mb.isThreadContentionMonitoringSupported()) {
@@ -489,10 +420,6 @@ public class ThreadMXBeanTest extends TestCase {
      * 'java.lang.management.ThreadMXBean.setThreadCpuTimeEnabled(boolean)'
      */
     public void testSetThreadCpuTimeEnabled() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Depends on whether or not Thread CPU timing is actually
         // supported on the current VM.
         if (mb.isThreadCpuTimeSupported()) {

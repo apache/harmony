@@ -22,7 +22,6 @@ package javax.swing;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import tests.support.Support_Excludes;
 
 public class SpinnerDateModelTest extends BasicSwingTestCase {
     private SpinnerDateModel model;
@@ -60,10 +59,6 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testSpinnerDateModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(model.getDate().getDay(), (now.getDay() + 1) % 7);
         assertEquals(Calendar.DAY_OF_MONTH, model.getCalendarField());
         assertNull(model.getStart());
@@ -95,10 +90,6 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
     }
 
     public void testSetGetStart() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setStart(past);
         assertTrue(chl.isChanged());
         assertSame(past, model.getStart());
@@ -111,10 +102,6 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
     }
 
     public void testSetGetEnd() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setEnd(future);
         assertTrue(chl.isChanged());
         assertSame(future, model.getEnd());
@@ -127,10 +114,6 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
     }
 
     public void testSetGetValue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setValue(now);
         assertTrue(chl.isChanged());
         assertNotSame(now, model.getValue());
@@ -157,20 +140,12 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
     }
 
     public void testGetDate() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setValue(now);
         assertNotSame(now, model.getDate());
         assertEquals(model.getDate(), model.getValue());
     }
 
     public void testSetGetCalendarField() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setCalendarField(Calendar.ERA);
         assertTrue(chl.isChanged());
         assertEquals(Calendar.ERA, model.getCalendarField());
@@ -188,10 +163,6 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testGetNextValue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setValue(now.clone());
         model.setEnd(future);
         now.setDate(now.getDate() + 1);
@@ -206,10 +177,6 @@ public class SpinnerDateModelTest extends BasicSwingTestCase {
 
     @SuppressWarnings("deprecation")
     public void testGetPreviousValue() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         model.setValue(now.clone());
         model.setStart(past);
         now.setDate(now.getDate() - 1);

@@ -24,7 +24,6 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWaitTestCase;
-import tests.support.Support_Excludes;
 
 public class DefaultCaret_MultithreadedTest extends BasicSwingTestCase {
     AbstractDocument ad;
@@ -75,10 +74,6 @@ public class DefaultCaret_MultithreadedTest extends BasicSwingTestCase {
     };
 
     public void testAsyncUpdate() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         waitForIdle();
         SwingWaitTestCase.isRealized(jf);
         ad.writeLock();

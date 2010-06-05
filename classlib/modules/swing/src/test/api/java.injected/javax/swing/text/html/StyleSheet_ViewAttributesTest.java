@@ -27,7 +27,6 @@ import javax.swing.text.Element;
 import javax.swing.text.Style;
 import javax.swing.text.View;
 import javax.swing.text.html.HTML.Tag;
-import tests.support.Support_Excludes;
 
 public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     private HTMLDocument doc;
@@ -42,10 +41,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testViewGetAttributes() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker marker = new Marker();
         ss = new StyleSheet() {
             public AttributeSet getViewAttributes(final View v) {
@@ -61,10 +56,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesGetRuleInline() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker tag = new Marker();
         final Marker sel = new Marker();
         ss = new StyleSheet() {
@@ -85,10 +76,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesGetRuleBlock() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker tag = new Marker();
         final Marker sel = new Marker();
         ss = new StyleSheet() {
@@ -111,10 +98,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesGetRuleInlineEm() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker tag = new Marker();
         final Marker sel = new Marker();
         ss = new StyleSheet() {
@@ -145,10 +128,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesTranslate() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Marker marker = new Marker();
         final Element block = doc.getParagraphElement(0);
         ss = new StyleSheet() {
@@ -165,10 +144,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesResolverNull() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Element block = doc.getParagraphElement(0);
         view = new BlockView(block, View.Y_AXIS);
         AttributeSet va = ss.getViewAttributes(view);
@@ -177,10 +152,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesResolver() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Element block = doc.getParagraphElement(0);
         final Element inline = block.getElement(0);
 
@@ -194,10 +165,6 @@ public class StyleSheet_ViewAttributesTest extends BasicSwingTestCase {
     }
 
     public void testGetViewAttributesResolverChange() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Element block = doc.getParagraphElement(0);
         final Element inline = block.getElement(0);
 

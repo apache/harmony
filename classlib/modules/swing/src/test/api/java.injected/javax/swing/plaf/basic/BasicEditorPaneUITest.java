@@ -27,7 +27,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingTestCase;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.text.DefaultEditorKit;
-import tests.support.Support_Excludes;
 
 public class BasicEditorPaneUITest extends SwingTestCase {
     JEditorPane jep;
@@ -55,10 +54,6 @@ public class BasicEditorPaneUITest extends SwingTestCase {
     }
 
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = BasicEditorPaneUI.createUI(jep);
         ComponentUI ui2 = BasicEditorPaneUI.createUI(jep);
         assertTrue(ui1 instanceof BasicEditorPaneUI);
@@ -70,10 +65,6 @@ public class BasicEditorPaneUITest extends SwingTestCase {
     }
 
     public void testGetEditorKit() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(jep.getEditorKit(), ui.getEditorKit(jep));
         jep.setContentType("text/html");
         assertEquals(jep.getEditorKit(), ui.getEditorKit(jep));
@@ -89,10 +80,6 @@ public class BasicEditorPaneUITest extends SwingTestCase {
     }
 
     public void testGetPropertyPrefix() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("EditorPane", ui.getPropertyPrefix());
     }
 
@@ -114,10 +101,6 @@ public class BasicEditorPaneUITest extends SwingTestCase {
     }
 
     public void testPropertyChange() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Action a1[] = jep.getActions();
         Object a2[] = jep.getActionMap().getParent().getParent().allKeys();
         checkNames(a1, a2);

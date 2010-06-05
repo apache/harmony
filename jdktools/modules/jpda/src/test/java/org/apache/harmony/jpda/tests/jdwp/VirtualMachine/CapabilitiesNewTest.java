@@ -30,7 +30,6 @@ import org.apache.harmony.jpda.tests.framework.jdwp.JDWPCommands;
 import org.apache.harmony.jpda.tests.framework.jdwp.ReplyPacket;
 import org.apache.harmony.jpda.tests.jdwp.share.JDWPSyncTestCase;
 import org.apache.harmony.jpda.tests.share.JPDADebuggeeSynchronizer;
-import tests.support.Support_Excludes;
 
 
 /**
@@ -85,10 +84,6 @@ public class CapabilitiesNewTest extends JDWPSyncTestCase {
      * there are no extra data in the reply packet;
      */
     public void testCapabilitiesNew001() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         synchronizer.receiveMessage(JPDADebuggeeSynchronizer.SGNL_READY);
 
         CommandPacket packet = new CommandPacket(

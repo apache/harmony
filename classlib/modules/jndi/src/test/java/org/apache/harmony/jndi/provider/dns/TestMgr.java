@@ -24,7 +24,6 @@ package org.apache.harmony.jndi.provider.dns;
 
 
 import java.lang.reflect.Field;
-import tests.support.Support_Excludes;
 
 /**
  * Contains several utility methods. Is used from unit tests.

@@ -45,7 +45,6 @@ import javax.swing.text.html.HTMLDocument.RunElement;
 import javax.swing.text.html.HTMLDocumentTestCase.DocumentController;
 import javax.swing.text.html.HTMLDocumentTestCase.PublicHTMLDocument;
 import javax.swing.text.html.parser.ParserDelegator;
-import tests.support.Support_Excludes;
 
 public class HTMLDocumentTest extends DefaultStyledDocumentTest {
 
@@ -67,10 +66,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testHTMLDocumentContentStyleSheet() throws MalformedURLException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StyleSheet styles = new StyleSheet();
         final GapContent gapContent = new GapContent(10);
         htmlDoc = new PublicHTMLDocument(gapContent, styles);
@@ -84,10 +79,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testHTMLDocumentStyleSheet() throws BadLocationException, MalformedURLException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StyleSheet styles = new StyleSheet();
         htmlDoc = new PublicHTMLDocument(styles);
         assertSame(styles, htmlDoc.getAttributeContextPublicly());
@@ -101,10 +92,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testHTMLDocument() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         htmlDoc = new PublicHTMLDocument();
         assertTrue(htmlDoc.getContentPublicly() instanceof GapContent);
         AttributeContext styleSheet = htmlDoc.getAttributeContextPublicly();
@@ -119,10 +106,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testCreateLeafElement() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Element leaf = htmlDoc.createLeafElement(null, null, 0, 1);
         assertTrue(leaf instanceof HTMLDocument.RunElement);
         assertNull(leaf.getParentElement());
@@ -145,10 +128,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testCreateBranchElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Element branch = htmlDoc.createBranchElement(null, null);
         assertTrue(branch instanceof HTMLDocument.BlockElement);
         assertNull(branch.getParentElement());
@@ -189,10 +168,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testCreateDefaultRoot() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             htmlDoc.insertString(0, "123", null);
         } catch (BadLocationException e) {}
@@ -254,10 +229,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetElementElementObjectObject() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Element root = htmlDoc.getDefaultRootElement();
         final String value = "ASD";
         assertNull(htmlDoc.getElement(root, HTML.Attribute.ID, value));
@@ -284,10 +255,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetElementString() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final Element root = htmlDoc.getDefaultRootElement();
         final String value = "B";
         assertNull(htmlDoc.getElement(value));
@@ -303,10 +270,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetIterator() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final SimpleAttributeSet attr = new SimpleAttributeSet();
         attr.addAttribute(StyleConstants.NameAttribute, Tag.B.toString());
         htmlDoc.insertString(0, "0000", attr);
@@ -398,10 +361,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetReaderIntIntIntTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         HTMLEditorKit.ParserCallback reader1 = htmlDoc.getReader(0, 10, 100, null);
         HTMLEditorKit.ParserCallback reader2 = htmlDoc.getReader(0, 10, 100, null);
         HTMLEditorKit.ParserCallback reader3 = htmlDoc.getReader(10, 100, 10, Tag.P);
@@ -418,10 +377,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetReaderInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         HTMLEditorKit.ParserCallback reader1 = htmlDoc.getReader(0);
         HTMLEditorKit.ParserCallback reader2 = htmlDoc.getReader(0);
         HTMLEditorKit.ParserCallback reader3 = htmlDoc.getReader(1);
@@ -438,20 +393,12 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetStyleSheet() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AttributeContext styleSheet = htmlDoc.getAttributeContextPublicly();
         assertTrue(styleSheet instanceof StyleSheet);
         assertSame(styleSheet, htmlDoc.getStyleSheet());
     }
 
     public void testProcessHTMLFrameHyperlinkEvent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String frameSetHTML = "<FRAMESET><FRAME name=\"1\" src=\"1.html\"><FRAME name=\"2\" src=\"2.html\"><img name=\"3\" src=\"3.jpg\"></FRAMESET>";
         HTMLDocumentTestCase.loadDocument(htmlDoc, frameSetHTML);
         final Element body = htmlDoc.getDefaultRootElement().getElement(1);
@@ -524,10 +471,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
     
     public void testGetSetBase() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         URL u1 = new URL("http://www.apache.org");
         URL u2 = new URL("http://www.harmony.incubator.apache.org");
         String tail = "tail";
@@ -540,10 +483,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetSetParser() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(htmlDoc.getParser());
         ParserDelegator parser = new ParserDelegator();
         htmlDoc.setParser(parser);
@@ -551,10 +490,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetSetPreservesUnknownTags() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue(htmlDoc.getPreservesUnknownTags());
 
         htmlDoc.setPreservesUnknownTags(false);
@@ -588,10 +523,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetSetTokenThreshold() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(Integer.MAX_VALUE, htmlDoc.getTokenThreshold());
 
         htmlDoc.setTokenThreshold(100);
@@ -687,17 +618,9 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testGetDefaultRootElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testInsertUpdate() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         doc.insertString(0, "1111", null);
         final AttributeSet attr = doc.getCharacterElement(2).getAttributes();
         assertEquals(1, attr.getAttributeCount());
@@ -705,10 +628,6 @@ public class HTMLDocumentTest extends DefaultStyledDocumentTest {
     }
 
     public void testSerializable() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     protected static void checkAttributes(final AttributeSet attr, final Object key, final Object value) {

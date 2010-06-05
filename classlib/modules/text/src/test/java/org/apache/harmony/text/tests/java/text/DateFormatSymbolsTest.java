@@ -23,7 +23,6 @@ import java.io.ObjectOutputStream;
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.Locale;
-import tests.support.Support_Excludes;
 
 public class DateFormatSymbolsTest extends junit.framework.TestCase {
 
@@ -33,10 +32,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#DateFormatSymbols()
      */
     public void test_Constructor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.text.DateFormatSymbols()
         // Used in tests
         new DateFormatSymbols();
@@ -46,10 +41,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#DateFormatSymbols(java.util.Locale)
      */
     public void test_ConstructorLjava_util_Locale() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.text.DateFormatSymbols(java.util.Locale)
         new DateFormatSymbols(new Locale("en", "us"));
     }
@@ -58,10 +49,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#clone()
      */
     public void test_clone() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.Object java.text.DateFormatSymbols.clone()
         DateFormatSymbols symbols = new DateFormatSymbols();
         DateFormatSymbols clone = (DateFormatSymbols) symbols.clone();
@@ -72,10 +59,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#equals(java.lang.Object)
      */
     public void test_equalsLjava_lang_Object() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method boolean
         // java.text.DateFormatSymbols.equals(java.lang.Object)
         assertTrue("Equal object returned true", dfs.equals(dfs.clone()));
@@ -88,10 +71,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getAmPmStrings()
      */
     public void test_getAmPmStrings() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String []
         // java.text.DateFormatSymbols.getAmPmStrings()
         String[] retVal = dfs.getAmPmStrings();
@@ -106,10 +85,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getEras()
      */
     public void test_getEras() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String []
         // java.text.DateFormatSymbols.getEras()
         String[] retVal = dfs.getEras();
@@ -124,10 +99,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getLocalPatternChars()
      */
     public void test_getLocalPatternChars() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String
         // java.text.DateFormatSymbols.getLocalPatternChars()
         String retVal = dfs.getLocalPatternChars();
@@ -141,10 +112,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getMonths()
      */
     public void test_getMonths() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String []
         // java.text.DateFormatSymbols.getMonths()
         String[] retVal = dfs.getMonths();
@@ -160,10 +127,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getShortMonths()
      */
     public void test_getShortMonths() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String []
         // java.text.DateFormatSymbols.getShortMonths()
         String[] retVal = dfs.getShortMonths();
@@ -178,10 +141,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getShortWeekdays()
      */
     public void test_getShortWeekdays() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String []
         // java.text.DateFormatSymbols.getShortWeekdays()
         String[] retVal = dfs.getShortWeekdays();
@@ -196,10 +155,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getWeekdays()
      */
     public void test_getWeekdays() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String []
         // java.text.DateFormatSymbols.getWeekdays()
         String[] retVal = dfs.getWeekdays();
@@ -215,10 +170,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#getZoneStrings()
      */
     public void test_getZoneStrings() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method java.lang.String [][]
         // java.text.DateFormatSymbols.getZoneStrings()
         String[][] val = { { "XX" }, { "YY" } };
@@ -235,10 +186,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#hashCode()
      */
     public void test_hashCode() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method int java.text.DateFormatSymbols.hashCode()
         int hc1 = dfs.hashCode();
         int hc2 = dfs.hashCode();
@@ -252,10 +199,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setAmPmStrings(java.lang.String[])
      */
     public void test_setAmPmStrings$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setAmPmStrings(java.lang.String [])
         String[] val = { "XX", "YY" };
@@ -271,10 +214,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setEras(java.lang.String[])
      */
     public void test_setEras$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setEras(java.lang.String [])
         String[] val = { "XX", "YY" };
@@ -290,10 +229,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setLocalPatternChars(java.lang.String)
      */
     public void test_setLocalPatternCharsLjava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setLocalPatternChars(java.lang.String)
         dfs.setLocalPatternChars("GyMZZkHmsSEHHFwWahKz");
@@ -314,10 +249,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setMonths(java.lang.String[])
      */
     public void test_setMonths$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setMonths(java.lang.String [])
         String[] val = { "XX", "YY" };
@@ -334,10 +265,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setShortMonths(java.lang.String[])
      */
     public void test_setShortMonths$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setShortMonths(java.lang.String [])
         String[] val = { "XX", "YY" };
@@ -354,10 +281,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setShortWeekdays(java.lang.String[])
      */
     public void test_setShortWeekdays$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setShortWeekdays(java.lang.String [])
         String[] val = { "XX", "YY" };
@@ -374,10 +297,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setWeekdays(java.lang.String[])
      */
     public void test_setWeekdays$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setWeekdays(java.lang.String [])
         String[] val = { "XX", "YY" };
@@ -394,10 +313,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
      * @tests java.text.DateFormatSymbols#setZoneStrings(java.lang.String[][])
      */
     public void test_setZoneStrings$$Ljava_lang_String() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Test for method void
         // java.text.DateFormatSymbols.setZoneStrings(java.lang.String [][])
         String[][] val = { { "XX" }, { "YY" } };
@@ -431,10 +346,6 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
 
     // Test serialization mechanism of DateFormatSymbols
     public void test_serialization() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DateFormatSymbols symbols = new DateFormatSymbols(Locale.FRANCE);
         String[][] zoneStrings = symbols.getZoneStrings();
         assertNotNull(zoneStrings);

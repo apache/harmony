@@ -620,6 +620,39 @@ properties in preference to these:
     </macrodef>
     <convert-test from="test.case" to="converted.tc" />
     
+    <!-- Concatenate several exclude lists into single list -->
+    <macrodef name="prepare-exclude-list">
+       <attribute name="moduleName"/>
+       <!-- directory with exclude lists for the module -->
+       <attribute name="dir"/>
+       <!-- name of concatenated list, should be an absolute pathname -->
+       <attribute name="result"/>
+       <sequential>
+            <!-- names of exclude lists, used by prepare-exclude-list macro -->
+            <property name="common.exclude.file" value="exclude.common" />
+            <property name="common.exclude.interm" value="exclude.interm" />
+            <property name="platform.exclude.file"
+                      value="exclude.${hy.platform}.${hy.test.vm.name}" />
+            <property name="platform.exclude.interm"
+                      value="exclude.${hy.platform}.${hy.test.vm.name}.interm"
+            />
+
+            <dirname file="@{result}" property="@{result}.dir" />
+            <mkdir dir="${@{result}.dir}" />
+
+           <echo message="" file="@{result}"/>
+           <concat destfile="@{result}" force="yes" fixlastline="yes" append="true">
+               <fileset dir="@{dir}">
+                   <include name="${common.exclude.file}"/> 
+                   <include name="${platform.exclude.file}"/>
+                   <include name="${common.exclude.interm}" if="exclude.interm" />
+                   <include name="${platform.exclude.interm}" if="exclude.interm" />
+                   <size value="0" when="more"/>
+               </fileset>
+           </concat>
+       </sequential>
+   </macrodef>
+    
     <macrodef name="ensure-javac">
         <sequential>
             <fail>
@@ -764,8 +797,10 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
             <echo message="Running @{module} Unit Test from @{jar}" />
             <echo message="Tested jre: ${test.jre.home}/bin/java" />
             <property name="test.module.dir" value="${target.dir}/@{module}" />
+            <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
             <property name="test.resources.dir" value="${test.module.dir}/resources" />
             <property name="module.work.dir" location="${work.dir}/@{module}" />
+            <property name="test.exclude.file" value="${module.work.dir}/test.exclude" />
 
             <property name="module.temp.dir"
                       location="${work.dir}/@{module}/temp" />
@@ -781,6 +816,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
             <mkdir dir="${junit.java.io.tmpdir}" />
             <mkdir dir="${junit.user.home}" />
 
+            <prepare-exclude-list moduleName="@{module}" dir="${test.excludes.dir}" result="${test.exclude.file}" />
             <junit fork="yes" 
                    forkmode="${hy.test.forkmode}" 
                    timeout="${hy.test.timeout}" 
@@ -815,6 +851,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                         <include name="${converted.tc.class}" if="test.case" />
                         <!-- unless ${test.case} -->
                         <include name="**/*Test.class" unless="test.case" />
+                        <excludesfile name="${test.exclude.file}" unless="test.case"/>
                         <excludeorinclude/>
                     </zipfileset>
                 </batchtest>
@@ -855,8 +892,10 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
             <echo message="Running @{module} Unit Test from @{jar}" />
             <echo message="Tested jre: ${test.jre.home}/bin/java" />
             <property name="test.module.dir" value="${target.dir}/@{module}" />
+            <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
             <property name="test.resources.dir" value="${test.module.dir}/resources" />
             <property name="module.work.dir" location="${work.dir}/@{module}" />
+            <property name="test.exclude.file" value="${module.work.dir}/test.exclude" />
 
             <property name="module.temp.dir"
                       location="${work.dir}/@{module}/temp" />
@@ -872,6 +911,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
             <mkdir dir="${junit.java.io.tmpdir}" />
             <mkdir dir="${junit.user.home}" />
 
+            <prepare-exclude-list moduleName="@{module}" dir="${test.excludes.dir}" result="${test.exclude.file}" />
             <junit fork="yes" 
                    forkmode="${hy.test.forkmode}" 
                    timeout="${hy.test.timeout}" 
@@ -905,6 +945,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                         <!-- if ${test.case}     -->
                         <include name="${converted.tc.class}" if="test.case" />
                         <!-- unless ${test.case} -->
+                        <excludesfile name="${test.exclude.file}" unless="test.case"/>
                         <excludeorinclude/>
                     </zipfileset>
                 </batchtest>

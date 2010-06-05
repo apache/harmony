@@ -22,24 +22,15 @@ package javax.swing.plaf.metal;
 import javax.swing.Icon;
 import javax.swing.SwingTestCase;
 import javax.swing.plaf.UIResource;
-import tests.support.Support_Excludes;
 
 public class MetalIconFactoryTest extends SwingTestCase {
     public void testGetCheckBoxIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getCheckBoxIcon();
         checkIcon(icon, 13, 13);
         assertTrue(MetalIconFactory.getCheckBoxIcon() == MetalIconFactory.getCheckBoxIcon());
     }
 
     public void testGetCheckBoxMenuItemIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getCheckBoxMenuItemIcon();
         checkIcon(icon, 10, 10);
         assertTrue(icon instanceof UIResource);
@@ -48,10 +39,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetFileChooserDetailViewIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getFileChooserDetailViewIcon();
         checkIcon(icon, 18, 18);
         assertTrue(icon instanceof UIResource);
@@ -60,10 +47,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetFileChooserHomeFolderIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getFileChooserHomeFolderIcon();
         checkIcon(icon, 18, 18);
         assertTrue(icon instanceof UIResource);
@@ -72,10 +55,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetFileChooserListViewIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getFileChooserListViewIcon();
         checkIcon(icon, 18, 18);
         assertTrue(icon instanceof UIResource);
@@ -84,10 +63,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetFileChooserNewFolderIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getFileChooserNewFolderIcon();
         checkIcon(icon, 18, 18);
         assertTrue(icon instanceof UIResource);
@@ -96,10 +71,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetFileChooserUpFolserIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getFileChooserUpFolderIcon();
         checkIcon(icon, 18, 18);
         assertTrue(icon instanceof UIResource);
@@ -108,10 +79,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetHorizontalSliderThumbIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getHorizontalSliderThumbIcon();
         checkIcon(icon, 16, 15);
         assertTrue(icon instanceof UIResource);
@@ -120,10 +87,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetInternalFrameAltMaximizeIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int size = 10;
         Icon icon = MetalIconFactory.getInternalFrameAltMaximizeIcon(size);
         checkIcon(icon, size, size);
@@ -133,10 +96,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetInternalFrameCloseIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int size = 14;
         Icon icon = MetalIconFactory.getInternalFrameCloseIcon(size);
         checkIcon(icon, size, size);
@@ -146,10 +105,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetInternalFrameDefaultMenuIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getInternalFrameDefaultMenuIcon();
         checkIcon(icon, 16, 16);
         assertTrue(icon instanceof UIResource);
@@ -158,10 +113,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetInternalFrameMaximizeIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int size = 14;
         Icon icon = MetalIconFactory.getInternalFrameMaximizeIcon(size);
         checkIcon(icon, size, size);
@@ -171,10 +122,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetInternalFrameMinimizeIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int size = 15;
         Icon icon = MetalIconFactory.getInternalFrameMinimizeIcon(size);
         checkIcon(icon, size, size);
@@ -184,10 +131,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetMenuArrowIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getMenuArrowIcon();
         checkIcon(icon, 8, 4);
         assertTrue(icon instanceof UIResource);
@@ -195,10 +138,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetMenuItemArrowIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getMenuItemArrowIcon();
         checkIcon(icon, 8, 4);
         assertTrue(icon instanceof UIResource);
@@ -207,18 +146,10 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetMenuItemCheckIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(MetalIconFactory.getMenuItemCheckIcon());
     }
 
     public void testGetRadioButtonIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getRadioButtonIcon();
         checkIcon(icon, 13, 13);
         assertTrue(icon instanceof UIResource);
@@ -227,10 +158,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetRadioButtonMenuItemIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getRadioButtonMenuItemIcon();
         checkIcon(icon, 10, 10);
         assertTrue(icon instanceof UIResource);
@@ -239,10 +166,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetTreeComputerIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getTreeComputerIcon();
         checkIcon(icon, 16, 16);
         assertTrue(icon instanceof UIResource);
@@ -251,10 +174,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetTreeControlIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MetalIconFactory.TreeControlIcon icon = (MetalIconFactory.TreeControlIcon) MetalIconFactory
                 .getTreeControlIcon(true);
         checkIcon(icon, 18, 18);
@@ -265,10 +184,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetTreeFloppyDriveIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getTreeFloppyDriveIcon();
         checkIcon(icon, 16, 16);
         assertTrue(icon instanceof UIResource);
@@ -277,10 +192,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetTreeFolderIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MetalIconFactory.TreeFolderIcon icon = (MetalIconFactory.TreeFolderIcon) MetalIconFactory
                 .getTreeFolderIcon();
         checkIcon(icon, 18, 16);
@@ -292,10 +203,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetTreeHardDriveIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getTreeHardDriveIcon();
         checkIcon(icon, 16, 16);
         assertTrue(icon instanceof UIResource);
@@ -304,10 +211,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetTreeLeafIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MetalIconFactory.TreeLeafIcon icon = (MetalIconFactory.TreeLeafIcon) MetalIconFactory
                 .getTreeLeafIcon();
         checkIcon(icon, 20, 16);
@@ -318,10 +221,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testGetVerticalSliderThumbIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = MetalIconFactory.getVerticalSliderThumbIcon();
         checkIcon(icon, 15, 16);
         assertTrue(icon instanceof UIResource);
@@ -330,10 +229,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testPaletteCloseIcon() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MetalIconFactory.PaletteCloseIcon icon = new MetalIconFactory.PaletteCloseIcon();
         if (isHarmony()) {
             checkIcon(icon, 8, 8);
@@ -343,10 +238,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testFolderIcon16() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MetalIconFactory.FolderIcon16 icon = new MetalIconFactory.FolderIcon16();
         checkIcon(icon, 16, 16);
         assertFalse(icon instanceof UIResource);
@@ -355,10 +246,6 @@ public class MetalIconFactoryTest extends SwingTestCase {
     }
 
     public void testFileIcon16() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MetalIconFactory.FileIcon16 icon = new MetalIconFactory.FileIcon16();
         checkIcon(icon, 16, 16);
         assertFalse(icon instanceof UIResource);

@@ -22,7 +22,6 @@ package javax.swing;
 import java.awt.Container;
 import java.awt.GridLayout;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class JTextArea_MultithreadedTest extends TestCase {
     JFrame jf;
@@ -87,10 +86,6 @@ public class JTextArea_MultithreadedTest extends TestCase {
     }
 
     public void testReplaceRange() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta.replaceRange(str1, 5, 10);
         tmp = replaceRange(content, str1, 5, 10);
         assertEquals(tmp, jta.getText());
@@ -135,10 +130,6 @@ public class JTextArea_MultithreadedTest extends TestCase {
     }
 
     public void testInsert() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta.insert(str1, 5);
         tmp = insertString(content, str1, 5);
         assertEquals(tmp, jta.getText());
@@ -177,10 +168,6 @@ public class JTextArea_MultithreadedTest extends TestCase {
     }
 
     public void testAppend() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         jta.append(str1);
         tmp = content + str1;
         assertEquals(tmp, jta.getText());

@@ -28,7 +28,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.text.AttributedString;
 import java.text.AttributedCharacterIterator;
-import tests.support.Support_Excludes;
 
 public class TextMeasurerTest extends TestCase
 {
@@ -69,10 +68,6 @@ public class TextMeasurerTest extends TestCase
 
     public void testInsertChar() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         float oldAdvance = measurer.getAdvanceBetween(5, 14);
         float oldAdvanceNoChange = measurer.getAdvanceBetween(0, 5);
 
@@ -90,10 +85,6 @@ public class TextMeasurerTest extends TestCase
 
     public void testDeleteChar() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String s1 = "I TestItalic estPlain I";
 
         AttributedString as = new AttributedString(s1);
@@ -111,10 +102,6 @@ public class TextMeasurerTest extends TestCase
 
     public void testClone() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextMeasurer m = (TextMeasurer) measurer.clone();
         assertNotNull(m);
         assertTrue(m != measurer);
@@ -122,10 +109,6 @@ public class TextMeasurerTest extends TestCase
 
     public void testGetLayout() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         TextLayout l1 = measurer.getLayout(0, 15);
         TextLayout l2 = measurer.getLayout(2, 15);
         TextLayout l3 = measurer.getLayout(2, 4);
@@ -136,10 +119,6 @@ public class TextMeasurerTest extends TestCase
 
     public void testGetAdvanceBetween() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         float adv1 = measurer.getAdvanceBetween(1, 4);
         float adv2 = measurer.getAdvanceBetween(1, 5);
         float adv3 = measurer.getAdvanceBetween(0, 5);
@@ -152,10 +131,6 @@ public class TextMeasurerTest extends TestCase
 
     public void testGetLineBreakIndex() throws Exception
     {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(5, measurer.getLineBreakIndex(2, 35));
         assertEquals(11, measurer.getLineBreakIndex(0, 100));
         assertEquals(4, measurer.getLineBreakIndex(4, 1));

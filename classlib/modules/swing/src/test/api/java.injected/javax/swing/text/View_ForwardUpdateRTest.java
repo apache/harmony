@@ -30,7 +30,6 @@ import javax.swing.text.CompositeView_ModelViewTest.ChildView;
 import javax.swing.text.CompositeView_ModelViewTest.WithChildrenView;
 import javax.swing.text.Position.Bias;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class View_ForwardUpdateRTest extends TestCase {
     private class ParentView extends WithChildrenView {
@@ -168,10 +167,6 @@ public class View_ForwardUpdateRTest extends TestCase {
     private List<View> viewsForwardedTo = new ArrayList<View>();
 
     public void testForwardUpdate01() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         doc = new PlainDocument();
         doc.insertString(doc.getLength(), "line1", null);
         doc.insertString(doc.getLength(), "\nline2", null);
@@ -207,10 +202,6 @@ public class View_ForwardUpdateRTest extends TestCase {
     }
 
     public void testForwardUpdate02() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initStyledDocument();
         final MutableAttributeSet fontSize = new SimpleAttributeSet();
         StyleConstants.setFontSize(fontSize, 36);
@@ -237,10 +228,6 @@ public class View_ForwardUpdateRTest extends TestCase {
     }
 
     public void testForwardUpdate03() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initStyledDocument();
         final List<View> expected = new ArrayList<View>();
         // We will use the view for the second paragraph

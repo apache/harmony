@@ -27,7 +27,6 @@ import java.util.Arrays;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.BasicSwingTableTestCase;
-import tests.support.Support_Excludes;
 
 public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     private DefaultCellEditor editor;
@@ -42,10 +41,6 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     }
 
     public void testDefaultCellEditor() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JTextField field = new JTextField();
         editor = new DefaultCellEditor(field);
         assertEquals(field, editor.editorComponent);
@@ -56,10 +51,6 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
 
     @SuppressWarnings("deprecation")
     public void testEditorDelegate_TextField() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JTextField field = new JTextField();
         editor = new DefaultCellEditor(field);
         assertTrue(Arrays.asList(field.getActionListeners()).contains(editor.delegate));
@@ -108,10 +99,6 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     }
 
     public void testEditorDelegate_CheckBox() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JCheckBox check = new JCheckBox();
         editor = new DefaultCellEditor(check);
         assertTrue(Arrays.asList(check.getActionListeners()).contains(editor.delegate));
@@ -154,10 +141,6 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     }
 
     public void testEditorDelegate_ComboBox() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComboBox cb = new JComboBox();
         editor = new DefaultCellEditor(cb);
         assertTrue(Arrays.asList(cb.getActionListeners()).contains(editor.delegate));
@@ -208,20 +191,12 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     }
 
     public void testGetComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JComboBox cb = new JComboBox();
         editor = new DefaultCellEditor(cb);
         assertEquals(cb, editor.getComponent());
     }
 
     public void testGetSetClickCountToStart() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editor = new DefaultCellEditor(new JTextField());
         assertEquals(2, editor.getClickCountToStart());
         editor = new DefaultCellEditor(new JCheckBox());
@@ -235,10 +210,6 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     }
 
     public void testGetTreeCellEditorComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editor = new DefaultCellEditor(new JTextField());
         assertEquals(editor.getComponent(), editor.getTreeCellEditorComponent(new JTree(),
                 "any", false, false, false, 0));
@@ -246,10 +217,6 @@ public class DefaultCellEditorTest extends BasicSwingTableTestCase {
     }
 
     public void testGetTableCellEditorComponent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         editor = new DefaultCellEditor(new JTextField());
         assertEquals(editor.getComponent(), editor.getTableCellEditorComponent(new JTable(),
                 "any", false, 0, 0));

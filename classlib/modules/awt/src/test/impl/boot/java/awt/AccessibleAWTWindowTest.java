@@ -27,7 +27,6 @@ import javax.accessibility.AccessibleState;
 import javax.accessibility.AccessibleStateSet;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * AccessibleAWTWindowTest

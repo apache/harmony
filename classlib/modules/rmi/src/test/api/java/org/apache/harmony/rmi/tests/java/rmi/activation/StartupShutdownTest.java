@@ -23,14 +23,9 @@ import java.rmi.activation.ActivationSystem;
 import org.apache.harmony.rmi.JavaInvoker;
 import org.apache.harmony.rmi.common.SubProcess;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class StartupShutdownTest extends TestCase {
     public void testStartup() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SubProcess rmid = JavaInvoker.invokeSimilar((String[]) null,
                 "org.apache.harmony.rmi.activation.Rmid", (String[]) null, true, true);
         rmid.pipeError();

@@ -21,7 +21,6 @@ package javax.swing;
 
 import java.awt.Component;
 import java.util.Comparator;
-import tests.support.Support_Excludes;
 
 public class SortingFocusTraversalPolicyRTest extends BasicSwingTestCase {
     private SortingFocusTraversalPolicy policy;
@@ -61,10 +60,6 @@ public class SortingFocusTraversalPolicyRTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentAfterInNonDisplayableHierarchy() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame f = new JFrame();
         f.setVisible(true);
         SwingWaitTestCase.isRealized(f);
@@ -85,10 +80,6 @@ public class SortingFocusTraversalPolicyRTest extends BasicSwingTestCase {
     }
 
     public void testGetComponentBeforeAfterNotAcceptable() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame f = new JFrame();
         f.setVisible(true);
         SwingWaitTestCase.isRealized(f);

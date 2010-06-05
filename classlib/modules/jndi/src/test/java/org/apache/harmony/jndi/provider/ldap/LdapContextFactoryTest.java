@@ -32,7 +32,6 @@ import javax.naming.Context;
 import javax.net.SocketFactory;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class LdapContextFactoryTest extends TestCase {
     private Hashtable<String, Object> env = new Hashtable<String, Object>();
@@ -44,10 +43,6 @@ public class LdapContextFactoryTest extends TestCase {
     }
 
     public void test_getInitialContext() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         env.put(Context.PROVIDER_URL, "ldap://192.168.1.1:389");
 
         env.put("java.naming.ldap.factory.socket", MockSocketFactory.class

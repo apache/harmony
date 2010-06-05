@@ -28,7 +28,6 @@ import java.util.Vector;
 
 import javax.swing.SwingTestCase;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * That's a test for default dtd, doesn't check dtd 4.01 and read method.
@@ -67,10 +66,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testGetPutDTD() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             DTD dtd1 = DTD.getDTD("DTDTest1");
             DTD dtd2 = DTD.getDTD("DTDTest1");
@@ -136,10 +131,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testFILE_VERSION() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(1, DTD.FILE_VERSION);
     }
 
@@ -220,10 +211,6 @@ public class DTDTest extends TestCase {
 
 
     public void testDTD() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         DTD dtd1 = new DTD(null);
         assertNull(dtd1.getName());
 
@@ -247,18 +234,10 @@ public class DTDTest extends TestCase {
     }
 
     public void testToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(dtd.getName(), dtd.toString());
     }
 
     public void testDefContentModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Element e1 = new Element();
         e1.name = "e1";
         Element e2 = new Element();
@@ -269,10 +248,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefAttributeList() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String name = "name";
         int type = 22;
         int modifier = 23;
@@ -298,10 +273,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String name = "newElement";
         int type = 234;
         boolean omitStart = true;
@@ -339,10 +310,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefEntityStringintString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String name = "newStringEntity";
         int type = 123;
         String data = "AbcD";
@@ -358,10 +325,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefEntityStringintint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String name = "newCharEntity";
         int type = 123;
         char data = 'J';
@@ -380,10 +343,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefineAttributes() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String name = HTML;
         AttributeList attl = new AttributeList("new AttributeList");
         dtd.defineAttributes(HTML, attl);
@@ -401,10 +360,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefineElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Element elem = (Element)dtd.elementHash.get(HTML);
         String name = elem.getName();
         int type = elem.getType();
@@ -454,10 +409,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testDefineEntity() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Entity entity = (Entity)dtd.entityHash.get("#SPACE");
         String name = entity.getName();
         int type = entity.getType();
@@ -495,10 +446,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testGetElementint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initDefaultElementsVector();
         for (int i = 0; i < DEFAULT_SIZE; i++) {
             assertEquals(elementNames.get(i), dtd.getElement(i).getName());
@@ -510,10 +457,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testGetElementString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initDefaultElementsVector();
         for (int i = 0; i < DEFAULT_SIZE; i++) {
             String name = (String)elementNames.get(i);
@@ -530,10 +473,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testGetEntityint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         //RI
         if (!SwingTestCase.isHarmony()) {
             assertNull(dtd.getEntity(0));
@@ -546,10 +485,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testGetEntityString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(dtd.entityHash.get(SPACE_ENTITY_NAME),
                      dtd.getEntity(SPACE_ENTITY_NAME));
         assertEquals(dtd.entityHash.get(RS_ENTITY_NAME),
@@ -560,10 +495,6 @@ public class DTDTest extends TestCase {
     }
 
     public void testGetName() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("DTDTest1", dtd.getName());
     }
 }

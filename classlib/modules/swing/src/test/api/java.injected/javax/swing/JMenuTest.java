@@ -29,7 +29,6 @@ import java.util.EventListener;
 import javax.swing.JPopupMenuTest.MyAction;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import tests.support.Support_Excludes;
 
 @SuppressWarnings("serial")
 public class JMenuTest extends JMenuItemTest {
@@ -107,20 +106,12 @@ public class JMenuTest extends JMenuItemTest {
 
     @Override
     public void testJMenuItem() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     /*
      * Test method for 'javax.swing.JMenu.JMenu()'
      */
     public void testJMenu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertTrue("default buttonModel ", button.getModel() instanceof DefaultButtonModel);
         assertNull("icon ", button.getIcon());
         assertEquals("text ", "", button.getText());
@@ -145,10 +136,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.JMenu(String)'
      */
     public void testJMenuString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "texttext";
         button = menuItem = menu = new JMenu(text);
         assertTrue("default buttonModel ", button.getModel() instanceof DefaultButtonModel);
@@ -177,10 +164,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.JMenu(String, boolean)'
      */
     public void testJMenuStringBoolean() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text = "texttext";
         button = menuItem = menu = new JMenu(text, true);
         assertTrue("default buttonModel ", button.getModel() instanceof DefaultButtonModel);
@@ -209,10 +192,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.JMenu(Action)'
      */
     public void testJMenuAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String command = "dnammoc";
         class MyAction extends AbstractAction {
             public MyAction(final String text, final Icon icon) {
@@ -274,10 +253,6 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testGetAccessibleContext() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         boolean assertedValue = (menuItem.getAccessibleContext() != null && menuItem
                 .getAccessibleContext().getClass().getName().equals(
                         "javax.swing.JMenu$AccessibleJMenu"));
@@ -288,10 +263,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.applyComponentOrientation(ComponentOrientation)'
      */
     public void testApplyComponentOrientation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem();
         menu.applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         assertTrue(menu.getPopupMenu().getComponentOrientation().isLeftToRight());
@@ -306,10 +277,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.setComponentOrientation(ComponentOrientation)'
      */
     public void testSetComponentOrientation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item = new JMenuItem();
         menu.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         assertTrue(menu.getPopupMenu().getComponentOrientation().isLeftToRight());
@@ -324,10 +291,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.remove(int)'
      */
     public void testRemoveInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         menu.add(item1);
@@ -354,10 +317,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.remove(Component)'
      */
     public void testRemoveComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         menu.add(item1);
@@ -376,10 +335,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.remove(JMenuItem)'
      */
     public void testRemoveJMenuItem() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         menu.add(item1);
@@ -399,10 +354,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.removeAll()'
      */
     public void testRemoveAll() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         assertEquals(0, menu.getMenuComponentCount());
@@ -420,10 +371,6 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testGetUIClassID() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("MenuUI", menu.getUIClassID());
     }
 
@@ -432,20 +379,12 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testDoClick() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     /*
      * Test method for 'javax.swing.JMenu.doClick(int)'
      */
     public void testDoClickInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JFrame frame = new JFrame();
         JMenuBar menuBar = new JMenuBar();
         frame.getContentPane().add(menuBar);
@@ -466,10 +405,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.setSelected(boolean)'
      */
     public void testSetIsSelected() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ConcreteMenuListener listener = new ConcreteMenuListener();
         menu.addMenuListener(listener);
         menu.setSelected(true);
@@ -489,10 +424,6 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testSetAccelerator() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             menu.setAccelerator(null);
             fail("no exception has been thrown");
@@ -505,10 +436,6 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testGetComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertSame(menu, menu.getComponent());
     }
 
@@ -517,10 +444,6 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testGetSubElements() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         JMenuItem item3 = new JMenuItem();
@@ -557,10 +480,6 @@ public class JMenuTest extends JMenuItemTest {
      */
     @Override
     public void testMenuSelectionChanged() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ConcreteMenuListener listener = new ConcreteMenuListener();
         menu.addMenuListener(listener);
         menu.menuSelectionChanged(true);
@@ -579,10 +498,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.add(Action)'
      */
     public void testAddAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = createNewIcon();
         String text = "texttext";
         Action action = new JPopupMenuTest.MyAction(text, icon);
@@ -598,10 +513,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.add(String)'
      */
     public void testAddString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text1 = "text";
         String text2 = "texttext";
         JMenuItem item1 = menu.add(text1);
@@ -622,10 +533,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.add(JMenuItem)'
      */
     public void testAddJMenuItem() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         JPopupMenu popup = menu.getPopupMenu();
@@ -648,10 +555,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.add(Component)'
      */
     public void testAddComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Component item1 = new JMenuItem();
         Component item2 = new JMenuItem();
         Component item3 = new JButton();
@@ -683,10 +586,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.add(Component, int)'
      */
     public void testAddComponentInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Component item1 = new JMenuItem();
         Component item2 = new JMenuItem();
         Component item3 = new JButton();
@@ -718,10 +617,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.addSeparator()'
      */
     public void testAddSeparator() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         JPopupMenu popup = menu.getPopupMenu();
@@ -747,10 +642,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.addMenuListener(MenuListener)'
      */
     public void testAddGetRemoveMenuListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         MenuListener listener1 = new ConcreteMenuListener();
         MenuListener listener2 = new ConcreteMenuListener();
         MenuListener listener3 = new ConcreteMenuListener();
@@ -781,10 +672,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.createActionChangeListener(JMenuItem)'
      */
     public void testCreateActionChangeListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text1 = "text";
         String text2 = "texttext";
         String text3 = "texttexttext";
@@ -818,10 +705,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.createActionComponent(Action)'
      */
     public void testCreateActionComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String command = "dnammoc";
         class MyAction extends AbstractAction {
             public MyAction(final String text, final Icon icon) {
@@ -859,10 +742,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.createWinListener(JPopupMenu)'
      */
     public void testCreateWinListener() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JPopupMenu pupop = new JPopupMenu();
         JMenu.WinListener listener1 = menu.createWinListener(pupop);
         JMenu.WinListener listener2 = menu.createWinListener(pupop);
@@ -875,10 +754,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.fireMenuCanceled()'
      */
     public void testFireMenuCanceled() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ConcreteMenuListener listener1 = new ConcreteMenuListener();
         ConcreteMenuListener listener2 = new ConcreteMenuListener();
         menu.addMenuListener(listener1);
@@ -894,10 +769,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.fireMenuDeselected()'
      */
     public void testFireMenuDeselected() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ConcreteMenuListener listener1 = new ConcreteMenuListener();
         ConcreteMenuListener listener2 = new ConcreteMenuListener();
         menu.addMenuListener(listener1);
@@ -913,10 +784,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.fireMenuSelected()'
      */
     public void testFireMenuSelected() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ConcreteMenuListener listener1 = new ConcreteMenuListener();
         ConcreteMenuListener listener2 = new ConcreteMenuListener();
         menu.addMenuListener(listener1);
@@ -932,10 +799,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getMenuComponentCount()'
      */
     public void testGetMenuComponentCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         assertEquals(0, menu.getMenuComponentCount());
@@ -953,10 +816,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getItemCount()'
      */
     public void testGetItemCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         assertEquals(0, menu.getItemCount());
@@ -974,10 +833,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getMenuComponent(int)'
      */
     public void testGetMenuComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         assertNull(menu.getMenuComponent(0));
@@ -1001,10 +856,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getItem(int)'
      */
     public void testGetItem() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         assertNull(menu.getItem(0));
@@ -1028,10 +879,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getMenuComponents()'
      */
     public void testGetMenuComponents() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         JMenuItem item3 = new JMenuItem();
@@ -1068,10 +915,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getPopupMenu()'
      */
     public void testGetPopupMenu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNotNull(menu.getPopupMenu());
         assertNull(menu.getPopupMenu().getLabel());
         assertEquals(0, menu.getPopupMenu().getComponentCount());
@@ -1084,10 +927,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.getPopupMenuOrigin()'
      */
     public void testGetPopupMenuOrigin() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int offsetX1 = 50;
         int offsetY1 = 60;
         int offsetX2 = 20;
@@ -1129,10 +968,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.insert(String, int)'
      */
     public void testInsertStringInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String text1 = "text";
         String text2 = "texttext";
         menu.insert(text1, 0);
@@ -1165,10 +1000,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.insert(JMenuItem, int)'
      */
     public void testInsertJMenuItemInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         assertSame(item1, menu.insert(item1, 0));
@@ -1192,10 +1023,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.insert(Action, int)'
      */
     public void testInsertActionInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon = createNewIcon();
         String text = "texttext";
         MyAction action1 = new MyAction(text, icon);
@@ -1228,10 +1055,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.insertSeparator(int)'
      */
     public void testInsertSeparator() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         menu.insertSeparator(0);
         assertEquals(1, menu.getItemCount());
         assertNull(menu.getItem(0));
@@ -1255,10 +1078,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.isMenuComponent(Component)'
      */
     public void testIsMenuComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         JMenuItem item1 = new JMenuItem();
         JMenuItem item2 = new JMenuItem();
         JMenuItem item3 = new JMenuItem();
@@ -1301,10 +1120,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.isTearOff()'
      */
     public void testIsTearOff() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
             menu.isTearOff();
             fail("no exception has been thrown");
@@ -1316,10 +1131,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.isTopLevelMenu()'
      */
     public void testIsTopLevelMenu() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(menu.isTopLevelMenu());
         JMenuBar menuBar = new JMenuBar();
         JMenu menu2 = new JMenu();
@@ -1334,10 +1145,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.setDelay(int)'
      */
     public void testGetSetDelay() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int delay1 = 1000;
         int delay2 = -1000;
         menu.setDelay(0);
@@ -1354,10 +1161,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.setMenuLocation(int, int)'
      */
     public void testSetMenuLocation() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int x = 100;
         int y = 200;
         menu.getPopupMenu().setVisible(true);
@@ -1370,10 +1173,6 @@ public class JMenuTest extends JMenuItemTest {
      * Test method for 'javax.swing.JMenu.setPopupMenuVisible(boolean)'
      */
     public void testSetIsPopupMenuVisible() throws InterruptedException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         menu.setPopupMenuVisible(true);
         assertFalse(menu.isPopupMenuVisible());
         JWindow frame = new JWindow();
@@ -1398,10 +1197,6 @@ public class JMenuTest extends JMenuItemTest {
 
     @Override
     public void testNumberOfModelListeners() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         button.setUI(null);
         DefaultButtonModel model = (DefaultButtonModel) button.getModel();
         assertEquals("model's action listeners ", 1, model.getActionListeners().length);
@@ -1415,10 +1210,6 @@ public class JMenuTest extends JMenuItemTest {
 
     @Override
     public void testConfigurePropertiesFromAction() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Icon icon1 = createNewIcon();
         Icon icon2 = createNewIcon();
         KeyStroke ks1 = KeyStroke.getKeyStroke('a');

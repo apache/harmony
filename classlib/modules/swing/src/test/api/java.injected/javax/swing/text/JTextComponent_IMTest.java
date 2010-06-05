@@ -33,7 +33,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingTestCase;
 import org.apache.harmony.awt.text.ComposedTextParams;
 import org.apache.harmony.awt.text.PropertyNames;
-import tests.support.Support_Excludes;
 
 public class JTextComponent_IMTest extends SwingTestCase {
     JTextArea jta;
@@ -149,10 +148,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testProcessItME_Caret() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         setComposedText();
         for (int i = 0; i < 10; i++) {
             int pos = Math.min(12, i + 7);
@@ -166,10 +161,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testProcessIME_Text_NPE() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "12345";
         iter = getIterator(content, putSegmentAttribute(map, Color.RED));
         ime = getTextEvent(null, 0, null, null);
@@ -178,10 +169,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testProcessIME_Text() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "12345";
         iter = getIterator(content, putSegmentAttribute(map, Color.RED));
         ime = getTextEvent(iter, 0, TextHitInfo.afterOffset(0), TextHitInfo.afterOffset(0));
@@ -228,10 +215,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
 
     //InputMethodRequest tests==========================================
     public void testCancelLatestCommittedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         AttributedCharacterIterator.Attribute[] attributes = new AttributedCharacterIterator.Attribute[] { SEGMENT_ATTRIBUTE };
         assertNull(imr.cancelLatestCommittedText(attributes));
         String content = "fghij";
@@ -265,10 +248,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testGetCommittedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(7, imr.getCommittedTextLength());
         String content = "fghij";
         iter = getIterator(content, putSegmentAttribute(map, Color.BLACK));
@@ -305,10 +284,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testGetCommittedTextLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(7, imr.getCommittedTextLength());
         iter = getIterator("fghij", putSegmentAttribute(map, Color.BLACK));
         ime = getTextEvent(iter, 5, TextHitInfo.afterOffset(0), TextHitInfo.afterOffset(0));
@@ -321,10 +296,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testGetInsertPositionOffset() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         setComposedText();
         assertEquals(7, imr.getInsertPositionOffset());
         iter = getIterator("finish", putSegmentAttribute(map, Color.PINK));
@@ -334,10 +305,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testGetSelectedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNull(imr.getSelectedText(null));
         jta.select(2, 5);
         checkIterator(imr.getSelectedText(null), 0, 0, 3);
@@ -350,10 +317,6 @@ public class JTextComponent_IMTest extends SwingTestCase {
     }
 
     public void testDoubleCancelLatestCommittedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "fghij";
         iter = getIterator(content, putSegmentAttribute(map, Color.BLACK));
         ime = getTextEvent(iter, 5, TextHitInfo.afterOffset(0), TextHitInfo.afterOffset(0));

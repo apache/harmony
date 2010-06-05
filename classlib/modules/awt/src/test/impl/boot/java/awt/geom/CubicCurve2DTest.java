@@ -18,7 +18,6 @@ package java.awt.geom;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import tests.support.Support_Excludes;
 
 public class CubicCurve2DTest extends ShapeTestCase {
 
@@ -81,10 +80,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSetCurve1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         double coords[] = new double[] {7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17};
         c.setCurve(coords, 0);
         assertEquals(new CubicCurve2D.Double(7, 8, 9, 10, 11, 12, 13, 14), c, 0.0);
@@ -93,10 +88,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSetCurve2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Point2D[] points = new Point[] {
                 new Point(7, 8),
                 new Point(9, 10),
@@ -111,28 +102,16 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSetCurve3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         c.setCurve(new Point(7, 8), new Point(9, 10), new Point(11, 12), new Point(13, 14));
         assertEquals(new CubicCurve2D.Double(7, 8, 9, 10, 11, 12, 13, 14), c, 0.0);
     }
 
     public void testSetCurve4() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         c.setCurve(new CubicCurve2D.Double(7, 8, 9, 10, 11, 12, 13, 14));
         assertEquals(new CubicCurve2D.Double(7, 8, 9, 10, 11, 12, 13, 14), c, 0.0);
     }
 
     public void testGetFlatnessSq1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : curves3) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element, 0);
@@ -141,10 +120,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetFlatnessSq2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : curves3) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element, 0);
@@ -164,10 +139,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetFlatnessSq3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : curves3) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element, 0);
@@ -179,10 +150,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetFlatness1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : curves3) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element, 0);
@@ -191,10 +158,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetFlatness2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : curves3) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element, 0);
@@ -214,10 +177,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetFlatness3() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[] element : curves3) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element, 0);
@@ -229,10 +188,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSubdivide1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[][] element : curves1) {
             CubicCurve2D src1 = new CubicCurve2D.Double();
             CubicCurve2D left1 = new CubicCurve2D.Double();
@@ -254,10 +209,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSubdivide2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[][] element : curves2) {
             int srcOff = element[0][0] < 0.0 ? (int)-element[0][0] : 0;
             int leftOff = element[1][0] < 0.0 ? (int)-element[1][0] : 0;
@@ -280,10 +231,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSolveCubic1() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[][] element : equations) {
             double eqn[] = new double[4];
             System.arraycopy(element[0], 0, eqn, 0, 4);
@@ -301,10 +248,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testSolveCubic2() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[][] element : equations) {
             double res[] = new double[3];
             double eqn[] = new double[4];
@@ -324,18 +267,10 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testClone() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(c, (CubicCurve2D)c.clone(), 0.0);
     }
 
     public void testGetBounds() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (double[][] element : bounds) {
             CubicCurve2D curve = new CubicCurve2D.Double();
             curve.setCurve(element[0], 0);
@@ -363,30 +298,18 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorDouble() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorDouble(
                 c.getPathIterator(null),
                 new double[]{1, 2, 3, 4, 5, 6, 7, 8});
     }
 
     public void testGetPathIteratorFloat() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorFloat(
                 c.getPathIterator(null),
                 new float[]{1, 2, 3, 4, 5, 6, 7, 8});
     }
 
     public void testGetPathIteratorDoubleFlat() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         PathIterator p = new CubicCurve2D.Double(1, 1, 3, 7, 9, 5, 7, 3).getPathIterator(null, 2);
         checkPathRule(p, PathIterator.WIND_NON_ZERO);
         checkPathMove(p, false, 1, 1, 0.0);
@@ -395,10 +318,6 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorFloatFlat() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         PathIterator p = new CubicCurve2D.Double(1, 1, 3, 7, 9, 5, 7, 3).getPathIterator(null, 2);
         checkPathRule(p, PathIterator.WIND_NON_ZERO);
         checkPathMove(p, false, 1, 1, 0.0f);
@@ -407,20 +326,12 @@ public class CubicCurve2DTest extends ShapeTestCase {
     }
 
     public void testGetPathIteratorDoubleAffine() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorDouble(
                 c.getPathIterator(AffineTransform.getTranslateInstance(2, 1)),
                 new double[]{3, 3, 5, 5, 7, 7, 9, 9});
     }
 
     public void testGetPathIteratorFloatAffine() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         checkPathIteratorFloat(
                 c.getPathIterator(AffineTransform.getTranslateInstance(2, 1)),
                 new float[]{3, 3, 5, 5, 7, 7, 9, 9});

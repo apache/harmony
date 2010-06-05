@@ -31,7 +31,6 @@ import javax.management.openmbean.OpenType;
 import javax.management.openmbean.SimpleType;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * ThreadInfo objects can only be obtained from the ThreadMXBean or else by
@@ -224,10 +223,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getBlockedCount()'
      */
     public void testGetBlockedCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_BLOCKED_COUNT, ti.getBlockedCount());
     }
 
@@ -235,10 +230,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getBlockedTime()'
      */
     public void testGetBlockedTime() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_BLOCKED_TIME, ti.getBlockedTime());
     }
 
@@ -246,10 +237,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getLockOwnerId()'
      */
     public void testGetLockOwnerId() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_LOCK_OWNER_ID, ti.getLockOwnerId());
     }
 
@@ -257,10 +244,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getLockOwnerName()'
      */
     public void testGetLockOwnerName() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_LOCK_OWNER_NAME, ti.getLockOwnerName());
     }
 
@@ -268,10 +251,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getStackTrace()'
      */
     public void testGetStackTrace() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         StackTraceElement[] stack = ti.getStackTrace();
         assertEquals(GOOD_STACK_SIZE, stack.length);
         for (StackTraceElement element : stack) {
@@ -287,10 +266,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getThreadId()'
      */
     public void testGetThreadId() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_THREAD_ID, ti.getThreadId());
     }
 
@@ -298,10 +273,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getThreadName()'
      */
     public void testGetThreadName() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_THREAD_NAME, ti.getThreadName());
     }
 
@@ -309,10 +280,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getThreadState()'
      */
     public void testGetThreadState() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_THREAD_STATE, (ti.getThreadState()));
     }
 
@@ -320,10 +287,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getWaitedCount()'
      */
     public void testGetWaitedCount() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_WAITED_COUNT, ti.getWaitedCount());
     }
 
@@ -331,10 +294,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.getWaitedTime()'
      */
     public void testGetWaitedTime() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_WAITED_TIME, ti.getWaitedTime());
     }
 
@@ -342,10 +301,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.isInNative()'
      */
     public void testIsInNative() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_IN_NATIVE, ti.isInNative());
     }
 
@@ -353,10 +308,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.isSuspended()'
      */
     public void testIsSuspended() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(GOOD_SUSPENDED, ti.isSuspended());
     }
 
@@ -364,10 +315,6 @@ public class ThreadInfoTest extends TestCase {
      * Test method for 'java.lang.management.ThreadInfo.toString()'
      */
     public void testToString() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(getGoodToStringVal(), ti.toString());
     }
 
@@ -376,10 +323,6 @@ public class ThreadInfoTest extends TestCase {
      * with more than 13 essential fields
      */
     public void test_from_fields() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Object stackTraceElementData = createGoodStackTraceCompositeData();
         CompositeType stackTraceElementType = createGoodStackTraceElementCompositeType();
         String[] names = { "threadId", "threadName", "threadState",
@@ -437,10 +380,6 @@ public class ThreadInfoTest extends TestCase {
             "lock", 2L, "lockOwner", stackTraceElementData, "additionalValue" };
 
     public void test_from_scenario1() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
                 SimpleType.STRING, SimpleType.BOOLEAN, SimpleType.BOOLEAN,
@@ -475,10 +414,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario2() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[0] = "1";
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.STRING, SimpleType.STRING,
@@ -498,10 +433,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario3() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         int length = 10;
         String[] names = new String[length];
         for (int index = 0; index < length; index++) {
@@ -537,10 +468,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario4() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[0] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -560,10 +487,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario5() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[1] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -583,10 +506,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario6() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[2] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -606,10 +525,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario7() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[3] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -629,10 +544,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario8() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[4] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -652,10 +563,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario9() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[5] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -675,10 +582,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario10() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[6] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -698,10 +601,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario11() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[7] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -721,10 +620,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario12() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[8] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -744,10 +639,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario13() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[9] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -783,10 +674,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario14() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[10] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -806,10 +693,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario15() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[11] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,
@@ -846,10 +729,6 @@ public class ThreadInfoTest extends TestCase {
     }
 
     public void test_from_scenario16() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         initialValues[12] = null;
         ArrayType stackTraceArray = new ArrayType(1, stackTraceElementType);
         OpenType[] types = { SimpleType.LONG, SimpleType.STRING,

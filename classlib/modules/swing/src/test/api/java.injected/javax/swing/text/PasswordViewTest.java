@@ -28,7 +28,6 @@ import javax.swing.JFrame;
 import javax.swing.JPasswordField;
 import javax.swing.SwingTestCase;
 import javax.swing.plaf.basic.BasicTextUI;
-import tests.support.Support_Excludes;
 
 public class PasswordViewTest extends SwingTestCase {
     PasswordView view;
@@ -93,10 +92,6 @@ public class PasswordViewTest extends SwingTestCase {
     }
 
     public void testGetPreferredSpan() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(echoCharsWidth, (int) view.getPreferredSpan(View.X_AXIS));
         assertEquals(height, (int) view.getPreferredSpan(View.Y_AXIS));
         pf.setColumns(3);
@@ -110,10 +105,6 @@ public class PasswordViewTest extends SwingTestCase {
     }
 
     public void testDrawEchoCharacter() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         char c = '&';
         int m_width = fm.charWidth(c);
         Graphics g = pf.getGraphics();
@@ -123,10 +114,6 @@ public class PasswordViewTest extends SwingTestCase {
     }
 
     public void testDrawSelectedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Graphics g = pf.getGraphics();
         Color color = g.getColor();
         try {
@@ -142,10 +129,6 @@ public class PasswordViewTest extends SwingTestCase {
     }
 
     public void testDrawUnselectedText() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Graphics g = pf.getGraphics();
         Color old = g.getColor();
         try {
@@ -161,10 +144,6 @@ public class PasswordViewTest extends SwingTestCase {
     }
 
     public void testModelToView() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape shape = new Rectangle(2, 20, 30, 40);
         Rectangle adjustRect = view.adjustAllocation(shape).getBounds();
         Rectangle rect = (Rectangle) view.modelToView(1, shape, Position.Bias.Forward);
@@ -187,10 +166,6 @@ public class PasswordViewTest extends SwingTestCase {
     }
 
     public void testViewToModel() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Shape shape = new Rectangle(10, 20, 30, 40);
         int px = 10 + fm.stringWidth("***");
         int py = 20 + fm.getAscent() - 1;

@@ -19,8 +19,6 @@
  */
 package java.awt.geom;
 
-import tests.support.Support_Excludes;
-
 public class AreaTest extends PathIteratorTestCase {
 
     public AreaTest(String name) {
@@ -36,10 +34,6 @@ public class AreaTest extends PathIteratorTestCase {
     }
 
     public void testConstructor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression test HARMONY-1404
         try {
             new Area(null);
@@ -50,10 +44,6 @@ public class AreaTest extends PathIteratorTestCase {
     }
     
     public void testContainsPoint() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         try {
              // Regression test HARMONY-1404
              Area emptyArea = new Area();
@@ -84,10 +74,6 @@ public class AreaTest extends PathIteratorTestCase {
      }
 
      public void testContainsRect() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
          // Regression test HARMONY-1476
          GeneralPath path = new GeneralPath();
          path.moveTo(100, 500);
@@ -120,10 +106,6 @@ public class AreaTest extends PathIteratorTestCase {
      }
 
      public void testIntersectsRect() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
          // Regression test HARMONY-1476
          GeneralPath path = new GeneralPath();
          path.moveTo(100, 500);
@@ -156,10 +138,6 @@ public class AreaTest extends PathIteratorTestCase {
      }
      
      public void testIsRectangle() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
      	 // Regression test HARMONY-1476
      	Area area = new Area(new Rectangle2D.Double(200, 300, 400, 150));
      	assertTrue(area.isRectangular());
@@ -179,10 +157,6 @@ public class AreaTest extends PathIteratorTestCase {
      }
      
      public void testGetPathIterator() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
          // Regression test HARMONY-1860
          Area a = new Area();
          PathIterator path = a.getPathIterator(null);
@@ -191,10 +165,6 @@ public class AreaTest extends PathIteratorTestCase {
      }
      
      public void testCreateTransformedArea() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
          // Regression test HARMONY-1880
          AffineTransform t = AffineTransform.getScaleInstance(2, 3);
          Area a1 = new Area();        
@@ -205,10 +175,6 @@ public class AreaTest extends PathIteratorTestCase {
      }
      
      public void testSubtract() {
-         if (Support_Excludes.isExcluded()) {
-             return;
-         }
-
          // Regression test HARMONY-4410
  		Rectangle2D rect1 = new Rectangle2D.Double(300, 300, 200, 150);
 		Rectangle2D rect2 = new Rectangle2D.Double(350, 200, 300, 150);
@@ -227,10 +193,6 @@ public class AreaTest extends PathIteratorTestCase {
     }
      
     public void testTransformPathIterator() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression test HARMONY-4680
         AffineTransform transform = new AffineTransform(2.0, 0.0, 0.0, 200.0 / 140.0, 0.0, 0.0);
         Area ar = new Area(new Rectangle2D.Double(100, 100, 50.0, 100.0));

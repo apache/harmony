@@ -21,15 +21,10 @@
 package javax.print;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class GetSupportedAttributeCategoriesTest extends TestCase {
 
     public void testGetSupportedAttributeCategories() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         System.out.println("============= START testGetSupportedAttributeCategories ================");
 
         PrintService[] services;

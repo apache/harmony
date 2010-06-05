@@ -39,7 +39,6 @@ import javax.management.ReflectionException;
 
 import org.apache.harmony.lang.management.LoggingMXBeanImpl;
 import org.apache.harmony.lang.management.ManagementUtils;
-import tests.support.Support_Excludes;
 
 
 public class LoggingMXBeanImplTest extends SingleInstanceDynamicMXBeanImplTestBase {

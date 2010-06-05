@@ -28,7 +28,6 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.text.Element;
 import javax.swing.text.FieldView;
 import javax.swing.text.View;
-import tests.support.Support_Excludes;
 
 public class BasicTextFieldUITest extends SwingTestCase {
     JFrame jf;
@@ -67,10 +66,6 @@ public class BasicTextFieldUITest extends SwingTestCase {
     }
 
     public void testCreateElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Element element = jtf.getDocument().getDefaultRootElement();
         View view = ui.create(element);
         assertTrue(view instanceof FieldView);
@@ -86,39 +81,19 @@ public class BasicTextFieldUITest extends SwingTestCase {
     }
 
     public void testGetPropertyPrefix() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("TextField", ui.getPropertyPrefix());
     }
 
     public void testInstallUIJComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testPropertyChange() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testBasicTextFieldUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 
     public void testCreateUIJComponent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI componentUI = BasicTextFieldUI.createUI(null);
         assertTrue(componentUI instanceof BasicTextFieldUI);
         assertNotSame(BasicTextFieldUI.createUI(jtf), componentUI);

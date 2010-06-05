@@ -20,15 +20,10 @@
 package java.awt;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ToolkitRTest extends TestCase {
 
     public void testGetScreenInsets() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // regression test HARMONY-1339
         Toolkit tlk = Toolkit.getDefaultToolkit();
         GraphicsConfiguration gc = new Frame().getGraphicsConfiguration();
@@ -37,10 +32,6 @@ public class ToolkitRTest extends TestCase {
     }
 
     public void testGetScreenInsetsNull() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         boolean npe = false;
         Toolkit tlk = Toolkit.getDefaultToolkit();
         GraphicsConfiguration gc = null;
@@ -53,10 +44,6 @@ public class ToolkitRTest extends TestCase {
     }
 
     public void testGetPropertyWithNullName() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         boolean npe = false;
         try {
             Toolkit.getProperty(null, "text");
@@ -67,10 +54,6 @@ public class ToolkitRTest extends TestCase {
     }
 
     public void testInitializeDesktopProperties() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression for HARMONY-1483
         Toolkit.getDefaultToolkit().initializeDesktopProperties();
     }

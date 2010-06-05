@@ -24,7 +24,6 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Vector;
 import javax.swing.undo.UndoableEdit;
-import tests.support.Support_Excludes;
 
 /**
  * Tests StringContent class.
@@ -44,10 +43,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetCharsNegativeLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             testExceptionalCase(new BadLocationCase() {
                 @Override
@@ -70,10 +65,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetCharsPartial() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         obj.insertString(10, "big ");
         text.setPartialReturn(true);
         obj.getChars(8, 10, text);
@@ -82,10 +73,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
 
     @Override
     public void testGetStringNegativeLength() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (isHarmony()) {
             testExceptionalCase(new BadLocationCase() {
                 @Override
@@ -109,10 +96,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testStringContent() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         assertEquals(1, content.length());
         content.getChars(0, content.length(), text);
@@ -121,10 +104,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testStringContent_WithValidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent(20);
         assertEquals(1, content.length());
         content.getChars(0, content.length(), text);
@@ -133,10 +112,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testStringContent_WithInvalidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent(0);
         assertEquals(1, content.length());
         content.getChars(0, content.length(), text);
@@ -145,10 +120,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePositionBeforeUndo() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit undoable;
         content = new StringContent(10);
         content.insertString(0, "0123456789");
@@ -168,10 +139,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePositionAfterUndone() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit undoable;
         content = new StringContent(10);
         content.insertString(0, "0123456789");
@@ -186,10 +153,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePositionAfterInsert() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit undoable;
         content = new StringContent(10);
         content.insertString(0, "0123456789");
@@ -203,10 +166,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testCreatePosition_WithInvalidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent(10);
         content.insertString(0, "012345");
         if (isHarmony()) {
@@ -228,10 +187,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetChars_WithValidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         content.getChars(0, 1, text);
         content.getChars(0, 0, text);
@@ -241,10 +196,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetChars_WithInvalidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         if (isHarmony()) {
             testExceptionalCase(new BadLocationCase() {
@@ -285,10 +236,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetPositionsInRangeVector() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<Object> v = new Vector<Object>();
         v.add(new Object());
         v.add(new Object());
@@ -306,29 +253,17 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testGetPositionsInRange() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content.createPosition(10);
         Vector<?> v = content.getPositionsInRange(null, 0, 10);
         assertEquals(1, v.size());
     }
 
     public void testGetString_WithValidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content.getString(0, 0);
         content.getString(0, content.length());
     }
 
     public void testGetString_WithInValidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         testExceptionalCase(new BadLocationCase() {
             @Override
             public void exceptionalAction() throws Exception {
@@ -374,10 +309,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testInsertString_WithValidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit ue = content.insertString(2, "^^^");
         assertNotNull(ue);
         content.getChars(0, content.length(), text);
@@ -390,10 +321,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testInsertString_WithInvalidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         testExceptionalCase(new BadLocationCase() {
             @Override
@@ -416,10 +343,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testInsertString_UndoableEdit() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit undoable;
         final String redoName = isHarmony() ? "Redo addition" : "Redo";
         final String undoName = isHarmony() ? "Undo addition" : "Undo";
@@ -440,10 +363,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testRemove_WithValidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         content.insertString(0, "012345^11111");
         content.getChars(0, content.length(), text);
@@ -468,10 +387,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testRemove_UndoableEdit() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         UndoableEdit undoable = content.remove(2, 3);
         final String redoName = isHarmony() ? "Redo deletion" : "Redo";
         final String undoName = isHarmony() ? "Undo deletion" : "Undo";
@@ -496,10 +411,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testRemove_WithInvalidValues() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         content.insertString(0, "012345^11111");
         content.getChars(0, content.length(), text);
@@ -518,10 +429,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testPositionGC() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         Vector<WeakReference<Position>> pos = new Vector<WeakReference<Position>>(10);
         ReferenceQueue<Position> rq = new ReferenceQueue<Position>();
         for (int i = 0; i < content.length(); i += 2) {
@@ -544,10 +451,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testLength_ForStringContent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent();
         assertEquals(1, content.length());
         content.insertString(0, " Hello word ");
@@ -579,10 +482,6 @@ public class StringContentTest extends AbstractDocument_ContentTest {
     }
 
     public void testInnerContentSize() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         content = new StringContent(30);
         insertStringManyTimes("a", 160, content);
         content.getChars(0, content.length(), text);

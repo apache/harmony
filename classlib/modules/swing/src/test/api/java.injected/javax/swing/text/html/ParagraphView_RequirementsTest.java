@@ -30,7 +30,6 @@ import javax.swing.text.PlainView;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.ParagraphViewTest.ParagraphViewImpl;
-import tests.support.Support_Excludes;
 
 /**
  * Tests <code>calculateMinorAxisRequirements</code> method.
@@ -72,10 +71,6 @@ public class ParagraphView_RequirementsTest extends BasicSwingTestCase {
     }
 
     public void testCalculateMinorAxisRequirements01() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new ParagraphViewImpl(doc.getParagraphElement(10), factory);
         SizeRequirements sr =
             view.calculateMinorAxisRequirements(View.X_AXIS, null);
@@ -85,10 +80,6 @@ public class ParagraphView_RequirementsTest extends BasicSwingTestCase {
     }
 
     public void testCalculateMinorAxisRequirements02() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         view = new ParagraphViewImpl(doc.getParagraphElement(20), factory);
         SizeRequirements sr =
             view.calculateMinorAxisRequirements(View.X_AXIS, null);
@@ -98,10 +89,6 @@ public class ParagraphView_RequirementsTest extends BasicSwingTestCase {
     }
 
     public void testCalculateMinorAxisRequirements03() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         factory = new ViewFactory() {
             public View create(Element element) {
                 LabelView result = new LabelView(element);
@@ -131,10 +118,6 @@ public class ParagraphView_RequirementsTest extends BasicSwingTestCase {
     }
 
     public void testCalculateMinorAxisRequirements04() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         factory = new ViewFactory() {
             public View create(Element element) {
                 PlainView result = new PlainView(element) {

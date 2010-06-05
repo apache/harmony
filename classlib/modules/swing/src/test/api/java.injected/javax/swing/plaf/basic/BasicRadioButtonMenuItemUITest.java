@@ -20,7 +20,6 @@
 package javax.swing.plaf.basic;
 
 import javax.swing.plaf.ComponentUI;
-import tests.support.Support_Excludes;
 
 public class BasicRadioButtonMenuItemUITest extends BasicMenuItemUITest {
     protected BasicRadioButtonMenuItemUI radioUI;
@@ -45,10 +44,6 @@ public class BasicRadioButtonMenuItemUITest extends BasicMenuItemUITest {
      */
     @Override
     public void testCreateUI() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ComponentUI ui1 = BasicRadioButtonMenuItemUI.createUI(null);
         ComponentUI ui2 = BasicRadioButtonMenuItemUI.createUI(null);
         assertTrue(ui1 instanceof BasicRadioButtonMenuItemUI);
@@ -60,10 +55,6 @@ public class BasicRadioButtonMenuItemUITest extends BasicMenuItemUITest {
      */
     @Override
     public void testGetPropertyPrefix() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals("RadioButtonMenuItem", menuItemUI.getPropertyPrefix());
     }
 
@@ -72,9 +63,5 @@ public class BasicRadioButtonMenuItemUITest extends BasicMenuItemUITest {
      * as method has an empty body we wo't test it
      */
     public void testProcessMouseEvent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
     }
 }

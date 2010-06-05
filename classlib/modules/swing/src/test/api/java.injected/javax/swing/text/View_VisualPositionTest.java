@@ -18,7 +18,6 @@ package javax.swing.text;
 
 import static javax.swing.text.VisualPositionHelper.assertNextPosition;
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 /**
  * Tests <code>View.getNextVisualPositionFrom</code> method on
@@ -49,10 +48,6 @@ public class View_VisualPositionTest extends TestCase {
     }
 
     public void testGetNextVisualPositionFrom_Right() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (int i = 0; i < length; i++) {
             assertNextPosition(i + 1, i, View.EAST, view, null);
         };
@@ -60,10 +55,6 @@ public class View_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_RightAtBeginning()
         throws BadLocationException {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         assertNextPosition(0, -1, View.EAST, view, null);
 
@@ -77,10 +68,6 @@ public class View_VisualPositionTest extends TestCase {
     public void testGetNextVisualPositionFrom_RightAtEnd()
         throws BadLocationException {
 
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertNextPosition(length, length - 1, View.EAST, view, null);
         assertNextPosition(length, length, View.EAST, view, null);
 
@@ -92,10 +79,6 @@ public class View_VisualPositionTest extends TestCase {
     }
 
     public void testGetNextVisualPositionFrom_Left() throws BadLocationException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         for (int i = 1; i <= length; i++) {
             assertNextPosition(i - 1, i, View.WEST, view, null);
         };
@@ -103,10 +86,6 @@ public class View_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_LeftAtBeginning()
         throws BadLocationException {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         assertNextPosition(0, 1, View.WEST, view, null);
         assertNextPosition(0, 0, View.WEST, view, null);
@@ -121,10 +100,6 @@ public class View_VisualPositionTest extends TestCase {
 
     public void testGetNextVisualPositionFrom_LeftAtEnd()
         throws BadLocationException {
-
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
 
         assertNextPosition(length - 1, length, View.WEST, view, null);
         assertNextPosition(length, length + 1, View.WEST, view, null);

@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import tests.support.Support_Excludes;
 
 public class InputMapTest extends SwingTestCase {
     protected InputMap map;
@@ -58,10 +57,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testPut() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
         map.put(keyStroke1, "1");
@@ -78,10 +73,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testGet() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
         assertNull(map.get(keyStroke1));
@@ -108,10 +99,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testRemove() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
         map.put(keyStroke1, "1");
@@ -127,10 +114,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testKeys() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
         KeyStroke keyStroke3 = KeyStroke.getKeyStroke(KeyEvent.VK_1, 0);
@@ -162,10 +145,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testAllKeys() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_1, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_2, 0);
         KeyStroke keyStroke3 = KeyStroke.getKeyStroke(KeyEvent.VK_3, 0);
@@ -199,10 +178,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testSetGetParent() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         InputMap parent1 = new InputMap();
         InputMap parent2 = new InputMap();
         InputMap parent3 = null;
@@ -216,10 +191,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testClear() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, 0);
         assertTrue(map.size() == 0);
@@ -235,10 +206,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testSize() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_1, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_2, 0);
         KeyStroke keyStroke3 = KeyStroke.getKeyStroke(KeyEvent.VK_3, 0);
@@ -256,10 +223,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testWriteObject() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ObjectOutputStream so = new ObjectOutputStream(output);
         so.writeObject(map);
@@ -268,10 +231,6 @@ public class InputMapTest extends SwingTestCase {
     }
 
     public void testReadObject() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         KeyStroke keyStroke1 = KeyStroke.getKeyStroke(KeyEvent.VK_1, 0);
         KeyStroke keyStroke2 = KeyStroke.getKeyStroke(KeyEvent.VK_2, 0);
         Object object1 = "object1";

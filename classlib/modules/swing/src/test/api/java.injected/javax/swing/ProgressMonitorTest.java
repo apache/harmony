@@ -20,7 +20,6 @@
 package javax.swing;
 
 import java.awt.event.WindowEvent;
-import tests.support.Support_Excludes;
 
 public class ProgressMonitorTest extends BasicSwingTestCase {
     private ProgressMonitor progressMonitor;
@@ -41,20 +40,12 @@ public class ProgressMonitorTest extends BasicSwingTestCase {
     }
 
     public void testProgressMonitor() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         progressMonitor = new ProgressMonitor(window, "message test", "note test", 0, 100);
         assertEquals(progressMonitor.getMillisToDecideToPopup(), 500);
         assertEquals(progressMonitor.getMillisToPopup(), 2000);
     }
 
     public void testSetProgress() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         progressMonitor = new ProgressMonitor(window, "message test", "note test", 0, 100);
         assertEquals(0, window.getOwnedWindows().length);
         progressMonitor.setProgress(1);
@@ -78,10 +69,6 @@ public class ProgressMonitorTest extends BasicSwingTestCase {
     }
 
     public void testGetSetMaximum() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         progressMonitor = new ProgressMonitor(window, "message test", "note test", 0, 300);
         progressMonitor.setProgress(1);
         Thread.sleep(500 + 100);
@@ -95,10 +82,6 @@ public class ProgressMonitorTest extends BasicSwingTestCase {
     }
 
     public void testGetSetMinimum() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         progressMonitor = new ProgressMonitor(window, "message test", "note test", 0, 300);
         progressMonitor.setProgress(1);
         Thread.sleep(500 + 100);
@@ -112,10 +95,6 @@ public class ProgressMonitorTest extends BasicSwingTestCase {
     }
 
     public void testIsCancelled() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         progressMonitor = new ProgressMonitor(window, "message test", "note test", 0, 100);
         progressMonitor.setProgress(1);
         Thread.sleep(500 + 100);
@@ -138,10 +117,6 @@ public class ProgressMonitorTest extends BasicSwingTestCase {
     }
 
     public void testClose() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         progressMonitor = new ProgressMonitor(window, "message test", "note test", 0, 100);
         progressMonitor.setProgress(1);
         Thread.sleep(500 + 100);

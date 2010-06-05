@@ -22,15 +22,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import tests.support.Support_Excludes;
 
 public class ImageIOTest extends TestCase {
 
     public void testReadURL() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         // Regression for HARMONY-3135
         for (URL url : listImages()) {
             assertNotNull("Failed to load image from URL " + url,

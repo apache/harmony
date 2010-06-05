@@ -31,7 +31,6 @@ import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
-import tests.support.Support_Excludes;
 
 public class HTMLWriterTest extends SwingTestCase {
     private static final String HTML_TEXT = "normal <b>bold</b>";
@@ -98,10 +97,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testWrite() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         final String content = "<html>\n"
                              + "  <head>\n"
                              + "    \n"
@@ -122,10 +117,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testWriteLineSeparator() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         doc.putProperty(StyledEditorKit.EndOfLineStringProperty, "`");
         writer = new TestHTMLWriter(out, doc);
         writer.writeLineSeparator();
@@ -137,10 +128,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testOutput() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "abc<def";
         writer.output(content.toCharArray(), 0, content.length());
         assertEquals(content, out.toString());
@@ -154,26 +141,14 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testHTMLWriterWriterHTMLDocument() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(80, writer.getLineLength());
     }
 
     public void testHTMLWriterWriterHTMLDocumentIntInt() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertEquals(80, writer.getLineLength());
     }
 
     public void testComment() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.I, HTML.Tag.I);
         attrs.addAttribute(HTML.Attribute.COMMENT, "comment body");
@@ -190,10 +165,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testEmptyTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.I, HTML.Tag.I);
 
@@ -224,10 +195,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testIsBlockTag() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         assertFalse(writer.isBlockTag(attrs));
 
@@ -239,10 +206,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testMatchNameAttribute() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         assertFalse(writer.matchNameAttribute(attrs, null));
         assertFalse(writer.matchNameAttribute(attrs, HTML.Tag.BODY));
@@ -254,10 +217,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testStartTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.I, HTML.Tag.I);
         writer.writeEmbeddedTags(attrs);
@@ -287,10 +246,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testEndTag() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.I, HTML.Tag.I);
         writer.writeEmbeddedTags(attrs);
@@ -309,10 +264,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testSynthesizedElement() {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         assertFalse(writer.synthesizedElement(root));
 
         setTag(root, HTML.Tag.BODY);
@@ -323,10 +274,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testText() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "abc&lt;&gt; def";
         createDocument(content);
         createWriter();
@@ -347,10 +294,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testSelectContent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "<select>\n  <option selected>Component1</option>\n"
                 + "  <option>Component2</option>\n</select>";
         createDocument(content);
@@ -390,10 +333,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testTextAreaContent() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         String content = "<textarea>\n   First line&lt;.\n"
                 + "   Second line.\n   </textarea>";
         createDocument(content);
@@ -407,10 +346,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testWriteAttributes() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.H1, HTML.Tag.H2);
         attrs.addAttribute(StyleConstants.Bold, StyleConstants.Bold);
@@ -423,10 +358,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testWriteEmbeddedTags() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.I, HTML.Tag.B);
         attrs.addAttribute(HTML.Tag.H1, HTML.Tag.H2);
@@ -438,10 +369,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testCloseOutUnwantedEmbeddedTags() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         attrs.addAttribute(HTML.Tag.I, HTML.Tag.B);
         attrs.addAttribute(HTML.Tag.H1, HTML.Tag.H2);
@@ -463,10 +390,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testWriteOption() throws IOException {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         writer.incrIndent();
         SimpleAttributeSet attrs = new SimpleAttributeSet();
         Option option = new Option(attrs);
@@ -501,10 +424,6 @@ public class HTMLWriterTest extends SwingTestCase {
     }
 
     public void testWriteDocumentBase() throws Exception {
-        if (Support_Excludes.isExcluded()) {
-            return;
-        }
-
         if (!isHarmony()) {
             return;
         }
