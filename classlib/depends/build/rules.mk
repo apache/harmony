@@ -37,7 +37,7 @@ endif
 all: $(DLLNAME) $(EXENAME) $(LIBNAME)
 
 $(LIBNAME): $(BUILDFILES)
-	$(AR) $(ARFLAGS) $@ $(BUILDFILES)
+	$(AR) $(ARFLAGS) $(ARCREATE) $@ $(BUILDFILES)
 	$(RANLIB) $@
 
 $(EXPFILE): exports.txt

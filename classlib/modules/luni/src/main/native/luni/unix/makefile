@@ -40,11 +40,7 @@ BUILDFILES = \
 	$(SHAREDSUB)OSMemory.o OSMemoryLinux32.o $(SHAREDSUB)OSNetworkSystem.o \
 	OSNetworkSystemLinux.o hyenv.o consoleimpl.o
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += $(LIBPATH)libhypool.a $(LIBPATH)libhyfdlibm.a \
+MDLLIBFILES += $(LIBPATH)libhyfdlibm.a \
 	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 OSLIBS += -lm

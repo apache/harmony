@@ -24,13 +24,6 @@ BUILDFILES = \
   $(SHAREDSUB)org_apache_harmony_misc_accessors_ObjectAccessorImpl.o \
   $(SHAREDSUB)org_apache_harmony_misc_accessors_StringAccessorImpl.o
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += $(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
 DLLNAME=$(DLLPATH)libaccessors$(HY_SHLIB_SUFFIX)
 EXPNAME=HYMISC_0.1
 

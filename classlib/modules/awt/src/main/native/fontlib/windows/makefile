@@ -41,9 +41,7 @@ BUILDFILES = \
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib
 
-MDLLIBFILES = $(MDLLIBFILES) \
-  $(LIBPATH)hypool.lib $(LIBPATH)vmi.lib \
-  $(LIBPATH)hyzlib.lib 
+MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)hyzlib.lib 
 
 DLLBASE=0x13300000
 

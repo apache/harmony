@@ -25,13 +25,6 @@ else
 MDLLIBFILES += $(LIBPATH)libjpeg.a
 endif
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += $(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
 DLLNAME=$(DLLPATH)libjpegencoder$(HY_SHLIB_SUFFIX)
 EXPNAME=HYJPEGENCODER_0.1
 

@@ -35,6 +35,12 @@
             value="${global.entry.repository.root} ${svn.revision}">
             <isset property="is.svn"/>
         </condition>
+        <condition property="svn.root" 
+                   value="${global.entry.repository.root}"
+                   else="http://svn.apache.org/repos/asf">
+            <isset property="is.svn"/>
+        </condition>
+        
         <tstamp>
             <format property="svn.info" pattern="'Unknown revision at' dd-MMM-yyyy hh:mm aa"/>
         </tstamp>

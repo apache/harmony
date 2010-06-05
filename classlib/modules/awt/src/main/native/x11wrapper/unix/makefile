@@ -23,13 +23,6 @@ BUILDFILES = \
   org_apache_harmony_awt_nativebridge_linux_X11.o \
   org_apache_harmony_awt_nativebridge_linux_Xft.o
 
-ifneq ($(HY_ZIP_API),true)
-MDLLIBFILES += $(LIBPATH)libhyzip.a $(MDLLIBZLIB)
-endif
-
-MDLLIBFILES += $(LIBPATH)libhypool.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
-
 OSLIBS += $(STDCLIBS) $(XLIBS)
 
 DLLNAME=$(DLLPATH)libX11Wrapper$(HY_SHLIB_SUFFIX)
