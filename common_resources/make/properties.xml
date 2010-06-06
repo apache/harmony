@@ -33,7 +33,7 @@
 
 
     <!-- Root directory of the common dependemcy pool -->
-    <property name="base.dep.dir" location="${common.basedir}/depends"/>
+    <property name="base.dep.dir" location="${hy.target}/depends"/>
 
     <!-- Debug or release version -->
     <property name="hy.cfg" value="debug" />
