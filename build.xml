@@ -687,7 +687,16 @@ Usage:
                  clean-classlib,
                  clean-vm,
                  clean-tests" >
-        <delete dir="${hy.target}" failonerror="false" />
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${hy.target}">
+                <exclude name="depends/**" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="distclean">
+        <delete dir="${hy.target}"
+                includeemptydirs="true" failonerror="false" />
     </target>
 
     <!-- ============================================================== -->
