@@ -273,7 +273,7 @@
     <condition property="make.arg" value="/nologo">
         <isset property="is.windows"/>
     </condition>
-    <property name="make.arg" value="" />
+    <property name="make.arg" value="-r" />
 
     <condition property="make.suffix" value="mak">
         <isset property="is.windows"/>
