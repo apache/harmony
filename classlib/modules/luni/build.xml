@@ -133,8 +133,10 @@
             <fileset dir="${fdlibm.dist}" >
                 <include name="fdlibm.h"/>
                 <include name="s_lib_version.c"/>
-                <include name="configure*"/>
-                <include name="Makefile*"/>
+                <include name="configure"/>
+                <include name="configure.in"/>
+                <include name="Makefile"/>
+                <include name="Makefile.in"/>
             </fileset>
             <mapper type="glob" from="*" to="*.orig" />
         </move>
