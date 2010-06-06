@@ -151,6 +151,8 @@ OpndManager::getOpndTypeFromLdType(Type* ldType) {
         return typeManager.getDoubleType();
     case Type::Float:
         return typeManager.getFloatType();
+    case Type::Vector:
+        return ldType;
         // object types
     case Type::CompressedSystemObject:
     case Type::CompressedUnresolvedObject:

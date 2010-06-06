@@ -385,6 +385,9 @@ public:
             return opnd->getInst();
         return inst;
     }
+    Inst* caseAndNot(Inst* inst) {
+        return inst;
+    }
     Inst* caseNot(Inst* inst) {
         Opnd* opnd = simplifyNot(inst->getDst()->getType(),
                                  inst->getSrc(0));
@@ -873,6 +876,42 @@ public:
                                                    inst->getSrc(1));
         if (opnd != NULL)
             return opnd->getInst();
+        return inst;
+    }
+
+    Inst* caseVecAddSub(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecHadd(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecHsub(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecShuffle(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecExtract(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecPackScalars(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecInterleaveHigh(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecInterleaveLow(Inst* inst) {
+        return inst;
+    }
+
+    Inst* caseVecCmpStr(Inst* inst) {
         return inst;
     }
 

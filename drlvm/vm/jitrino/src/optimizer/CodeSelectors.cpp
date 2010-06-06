@@ -105,6 +105,38 @@ ArithmeticOp::Types _BlockCodeSelector::mapToArithmOpType(Inst* inst) {
             return ArithmeticOp::S;
         case Type::Double:
             return ArithmeticOp::D;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return ArithmeticOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return ArithmeticOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return ArithmeticOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return ArithmeticOp::VI8_2;
+                case Type::Single:
+                  if (dst_type->getLength () == 4)
+                    return ArithmeticOp::VS_4;
+                case Type::Double:
+                  if (dst_type->getLength () == 2)
+                    return ArithmeticOp::VD_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: assert(0);
     }
     assert(0);
@@ -199,6 +231,38 @@ DivOp::Types _BlockCodeSelector::mapToDivOpType(Inst* inst) {
             return DivOp::S;
         case Type::Double:
             return DivOp::D;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return DivOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return DivOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return DivOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return DivOp::VI8_2;
+                case Type::Single:
+                  if (dst_type->getLength () == 4)
+                    return DivOp::VS_4;
+                case Type::Double:
+                  if (dst_type->getLength () == 2)
+                    return DivOp::VD_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: assert(0);
     }
     assert(0);
@@ -238,6 +302,38 @@ NegOp::Types _BlockCodeSelector::mapToNegOpType(Inst* inst) {
             return NegOp::S;
         case Type::Double:
             return NegOp::D;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return NegOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return NegOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return NegOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return NegOp::VI8_2;
+                case Type::Single:
+                  if (dst_type->getLength () == 4)
+                    return NegOp::VS_4;
+                case Type::Double:
+                  if (dst_type->getLength () == 2)
+                    return NegOp::VD_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: assert(0);
     }
     assert(0);
@@ -257,6 +353,32 @@ IntegerOp::Types _BlockCodeSelector::mapToIntegerOpType(Inst* inst) {
         case Type::IntPtr:
         case Type::UIntPtr:
             return IntegerOp::I;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return IntegerOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return IntegerOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return IntegerOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return IntegerOp::VI8_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: assert(0);
     }
     assert(0);
@@ -282,6 +404,38 @@ CompareOp::Types _BlockCodeSelector::mapToCompareOpType(Inst* inst) {
             return CompareOp::S;
         case Type::Double:
             return CompareOp::D;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return CompareOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return CompareOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return CompareOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return CompareOp::VI8_2;
+                case Type::Single:
+                  if (dst_type->getLength () == 4)
+                    return CompareOp::VS_4;
+                case Type::Double:
+                  if (dst_type->getLength () == 2)
+                    return CompareOp::VD_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: 
 
             assert(Type::isReference(type));
@@ -301,6 +455,38 @@ CompareZeroOp::Types _BlockCodeSelector::mapToCompareZeroOpType(Inst *inst) {
             return CompareZeroOp::I8;
         case Type::IntPtr:
             return CompareZeroOp::I;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return CompareZeroOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return CompareZeroOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return CompareZeroOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return CompareZeroOp::VI8_2;
+                case Type::Single:
+                  if (dst_type->getLength () == 4)
+                    return CompareZeroOp::VS_4;
+                case Type::Double:
+                  if (dst_type->getLength () == 2)
+                    return CompareZeroOp::VD_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default:
             assert(Type::isReference(type));
             return CompareZeroOp::Ref;
@@ -337,6 +523,26 @@ ConvertToFpOp::Types _BlockCodeSelector::mapToFpConvertOpType(Inst *inst) {
         case Type::Single: return ConvertToFpOp::Single;
         case Type::Double: return ConvertToFpOp::Double;
         case Type::Float:  return ConvertToFpOp::FloatFromUnsigned;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Single:
+                  if (dst_type->getLength () == 4)
+                    return ConvertToFpOp::VS_4;
+                case Type::Double:
+                  if (dst_type->getLength () == 2)
+                    return ConvertToFpOp::VD_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: assert(0);
     }
     assert(0);
@@ -364,6 +570,32 @@ ConvertToIntOp::Types _BlockCodeSelector::mapToIntConvertOpType(Inst *inst) {
         case Type::IntPtr: 
         case Type::UIntPtr: 
             return ConvertToIntOp::I;
+        case Type::Vector:
+            {
+              VectorType *dst_type = inst->getDst()->getType()->asVectorType ();
+              assert (dst_type);
+              NamedType *elem_type = dst_type->getElemType ();
+
+              switch (elem_type->tag)
+                {
+                case Type::Int8:
+                  if (dst_type->getLength () == 16)
+                    return ConvertToIntOp::VI1_16;
+                case Type::Int16:
+                  if (dst_type->getLength () == 8)
+                    return ConvertToIntOp::VI2_8;
+                case Type::Int32:
+                  if (dst_type->getLength () == 4)
+                    return ConvertToIntOp::VI4_4;
+                case Type::Int64:
+                  if (dst_type->getLength () == 2)
+                    return ConvertToIntOp::VI8_2;
+                default:
+                  ;
+                }
+
+              assert (0);
+            }
         default: assert(0);
     }
     assert(0);
@@ -588,6 +820,14 @@ void _BlockCodeSelector::genInstCode(InstructionCallback& instructionCallback, I
                     getCGInst(inst->getSrc(1)));
             }
             break;
+        case Op_AndNot:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                cgInst = instructionCallback.andnot_(mapToIntegerOpType(inst),
+                    getCGInst(inst->getSrc(0)),
+                    getCGInst(inst->getSrc(1)));
+            }
+            break;
         case Op_Not:
             {
                 assert(inst->getNumSrcOperands() == 1);
@@ -618,6 +858,11 @@ void _BlockCodeSelector::genInstCode(InstructionCallback& instructionCallback, I
                     cgInst = instructionCallback.convUPtrToObject(dstType->asObjectType(), getCGInst(inst->getSrc(0)));
                 } else if (dstType->isUnmanagedPtr()) {
                     cgInst = instructionCallback.convToUPtr(dstType->asPtrType(), getCGInst(inst->getSrc(0)));
+                } else if (dstType->isVector()) {
+                    cgInst = instructionCallback.convToVector
+                      (dstType->asVectorType (),
+                       getCGInst (inst->getSrc (0)),
+                       inst->getOpcode() == Op_ConvZE);
                 } else {
                     bool isSigned = Type::isSignedInteger(inst->getType());
                     bool isZeroExtend = inst->getOpcode() == Op_ConvZE;
@@ -1784,6 +2029,83 @@ void _BlockCodeSelector::genInstCode(InstructionCallback& instructionCallback, I
                 assert(inst->getNumSrcOperands() == 1);
                 Opnd* addr= inst->getSrc(0);
                 instructionCallback.prefetch(getCGInst(addr));
+            }
+            break;
+        case Op_VecAddSub:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                cgInst = instructionCallback.vecAddSub (inst->getDst()->getType (),
+                                                        getCGInst (inst->getSrc (0)),
+                                                        getCGInst (inst->getSrc (1)));
+            }
+            break;
+        case Op_VecHadd:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                cgInst = instructionCallback.vecHadd (inst->getDst()->getType (),
+                                                      getCGInst (inst->getSrc (0)),
+                                                      getCGInst (inst->getSrc (1)));
+            }
+            break;
+        case Op_VecHsub:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                cgInst = instructionCallback.vecHsub (inst->getDst()->getType (),
+                                                      getCGInst (inst->getSrc (0)),
+                                                      getCGInst (inst->getSrc (1)));
+            }
+            break;
+        case Op_VecShuffle:
+            {
+                assert(inst->getNumSrcOperands() == 3);
+                cgInst = instructionCallback.vecShuffle (inst->getDst()->getType (),
+                                                         getCGInst (inst->getSrc (0)),
+                                                         getCGInst (inst->getSrc (1)),
+                                                         getCGInst (inst->getSrc (2)));
+            }
+            break;
+        case Op_VecExtract:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                Type *dst_type = inst->getDst()->getType ();
+                Opnd *vector = inst->getSrc(0);
+                Opnd *index = inst->getSrc(1);
+                cgInst = instructionCallback.vecExtract(dst_type, getCGInst(vector),
+                                                        getCGInst (index));
+            }
+            break;
+        case Op_VecPackScalars:
+            {
+                Type *dst_type = inst->getDst()->getType ();
+                U_32 numSrcs = inst->getNumSrcOperands();
+                CG_OpndHandle **srcs = genCallArgs(inst, 0);
+                cgInst = instructionCallback.vecPackScalars(dst_type, numSrcs, srcs);
+            }
+            break;
+        case Op_VecInterleaveHigh:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                cgInst = instructionCallback.vecInterleave
+                  (true, inst->getDst()->getType (),
+                   getCGInst (inst->getSrc (0)),
+                   getCGInst (inst->getSrc (1)));
+            }
+            break;
+        case Op_VecInterleaveLow:
+            {
+                assert(inst->getNumSrcOperands() == 2);
+                cgInst = instructionCallback.vecInterleave
+                  (false, inst->getDst()->getType (),
+                   getCGInst (inst->getSrc (0)),
+                   getCGInst (inst->getSrc (1)));
+            }
+            break;
+        case Op_VecCmpStr:
+            {
+                Type *dst_type = inst->getDst()->getType ();
+                U_32 numSrcs = inst->getNumSrcOperands();
+                CG_OpndHandle **srcs = genCallArgs(inst, 0);
+                cgInst = instructionCallback.vecCmpStr(dst_type, numSrcs, srcs);
             }
             break;
         case Op_TauPoint:

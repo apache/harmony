@@ -49,7 +49,9 @@ public:
         I4, I4_Ovf, U4_Ovf,
         I8, I8_Ovf, U8_Ovf,
         I,  I_Ovf,  U_Ovf,
-        F,  S,        D
+        F,  S,        D,
+        VI1_16, VI2_8, VI4_4, VI8_2,
+        VS_4, VD_2
     };
 };
 
@@ -65,7 +67,8 @@ public:
     enum Types {
         I4,
         I8,
-        I
+        I,
+        VI1_16, VI2_8, VI4_4, VI8_2
     };
 };
 
@@ -75,7 +78,9 @@ public:
         I4,    U4,
         I8,    U8,
         I,     U,
-        F,  S,  D
+        F,  S,  D,
+        VI1_16, VI2_8, VI4_4, VI8_2,
+        VS_4, VD_2
     };
 };
 
@@ -92,7 +97,9 @@ public:
         I4,
         I8,
         I,
-        F, S, D
+        F, S, D,
+        VI1_16, VI2_8, VI4_4, VI8_2,
+        VS_4, VD_2
     };
 };
 
@@ -103,6 +110,8 @@ public:
         I8,
         I,
         F, S, D,
+        VI1_16, VI2_8, VI4_4, VI8_2,
+        VS_4, VD_2,
         Ref,
         CompRef
     };
@@ -125,6 +134,8 @@ public:
         I4,
         I8,
         I,
+        VI1_16, VI2_8, VI4_4, VI8_2,
+        VS_4, VD_2,
         Ref,
         CompRef
     };
@@ -133,7 +144,8 @@ public:
 class ConvertToIntOp {
 public:
     enum Types {
-        I1, I2, I4, I8, I
+        I1, I2, I4, I8, I,
+        VI1_16, VI2_8, VI4_4, VI8_2
     };
     enum OverflowMod {
         NoOvf,
@@ -147,6 +159,7 @@ public:
     enum Types {
         Single,
         Double,
+        VS_4, VD_2,
         FloatFromUnsigned
     };
 };
@@ -201,6 +214,7 @@ public:
     virtual CG_OpndHandle*  and_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2) = 0;
     virtual CG_OpndHandle*  or_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2) = 0;
     virtual CG_OpndHandle*  xor_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2) = 0;
+    virtual CG_OpndHandle*  andnot_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2) = 0;
     virtual CG_OpndHandle*  not_(IntegerOp::Types,CG_OpndHandle* src) = 0;
     virtual CG_OpndHandle*  shladd(IntegerOp::Types,CG_OpndHandle* value,
                                    U_32 shiftamount,
@@ -242,6 +256,7 @@ public:
                                       ConvertToIntOp::OverflowMod,
                                       Type* dstType, CG_OpndHandle* src) = 0;
     virtual CG_OpndHandle*  convToFp(ConvertToFpOp::Types, Type* dstType, CG_OpndHandle* src) = 0;
+    virtual CG_OpndHandle*  convToVector(VectorType* dstType, CG_OpndHandle* src, bool is_zero_extend) = 0;
 
     virtual CG_OpndHandle*  ldFunAddr(Type* dstType, MethodDesc *desc) = 0; 
     virtual CG_OpndHandle*  tau_ldVirtFunAddr(Type* dstType, CG_OpndHandle* vtableAddr, 
@@ -451,6 +466,16 @@ public:
     virtual CG_OpndHandle*  copy(CG_OpndHandle *src) = 0;
     virtual CG_OpndHandle*  catchException(Type * exceptionType) = 0;
     virtual void prefetch(CG_OpndHandle *addr) = 0;
+
+    virtual CG_OpndHandle*  vecAddSub(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2) = 0;
+    virtual CG_OpndHandle*  vecHadd(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2) = 0;
+    virtual CG_OpndHandle*  vecHsub(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2) = 0;
+    virtual CG_OpndHandle*  vecShuffle(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2,
+                                       CG_OpndHandle* pattern) = 0;
+    virtual CG_OpndHandle*  vecExtract(Type *dst_type, CG_OpndHandle* src, CG_OpndHandle* index) = 0;
+    virtual CG_OpndHandle*  vecPackScalars(Type *dst_type, U_32 numSrcs, CG_OpndHandle** srcs) = 0;
+    virtual CG_OpndHandle*  vecInterleave(bool high, Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2) = 0;
+    virtual CG_OpndHandle*  vecCmpStr(Type *dst_type, U_32 numSrcs, CG_OpndHandle** srcs) = 0;
 
     virtual void pseudoInst() = 0;
 

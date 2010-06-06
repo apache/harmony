@@ -131,6 +131,7 @@ Type* TypeManager::toInternalType(Type* t)
     case Type::Single:
     case Type::Double:
     case Type::Float:
+    case Type::Vector:
     case Type::SystemObject:
     case Type::SystemClass:
     case Type::SystemString:
@@ -341,6 +342,7 @@ TypeManager::TypeManager(MemoryManager& mm) :
     userObjectTypes(mm,32), 
     managedPtrTypes(mm,32), 
     unmanagedPtrTypes(mm,32), 
+    vectorTypes(mm,32), 
     arrayTypes(mm,32), 
     methodPtrTypes(mm,32),
     vtablePtrTypes(mm,32),
@@ -428,6 +430,26 @@ TypeManager::init() {
     singleType = initBuiltinType(Type::Single);
     doubleType = initBuiltinType(Type::Double);
     floatType = initBuiltinType(Type::Float);
+}
+
+VectorType*    
+TypeManager::getVectorType(NamedType *elemType, int length)
+{
+    assert (elemType->isBuiltinValue ());
+
+    VectorType *type = vectorTypes.lookup (elemType);
+
+    if (!type) {
+        type = new (memManager) VectorType(elemType, length);
+	vectorTypes.insert(elemType, type);
+    } else {
+        // For now, we only support single length vector types for a
+        // given element type since it's enough for all existing
+        // machines that supports SIMD.
+        assert (type->getLength () == length);
+    }
+
+    return type;
 }
 
 ArrayType*    
@@ -951,6 +973,11 @@ void    EnumType::print(::std::ostream& os) {
 
 extern const char *messageStr(const char *);
 
+void    VectorType::print(::std::ostream& os) {
+    elemType->print(os);
+    os << "<" << length << ">";
+}
+
 void    ObjectType::print(::std::ostream& os) {
     if (isCompressedReference()) {
         os << "clsc:" << getName();
@@ -1055,6 +1082,7 @@ Type::getPrintString(Tag t) {
     case Single:          s = "r4 "; break;
     case Double:          s = "r8 "; break;
     case Float:           s = "r  "; break;
+    case Vector:          s = "<> "; break;
     case TypedReference:  s = "trf"; break;
     case Value:           s = "val"; break;
     case SystemObject:    s = "obj"; break;
