@@ -74,11 +74,10 @@ public class FeatureDescriptor {
      * @return The attribute's value.
      */
     public Object getValue(String attributeName) {
-        Object result = null;
         if (attributeName != null) {
-            result = values.get(attributeName);
+            return values.get(attributeName);
         }
-        return result;
+        return null;
     }
 
     /**

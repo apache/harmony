@@ -24,8 +24,7 @@ public class PropertyEditorManager {
 
     private static String[] path = { "org.apache.harmony.beans.editors" }; //$NON-NLS-1$
 
-    private static final Map<Class<?>, Class<?>> registeredEditors
-               = new HashMap<Class<?>, Class<?>>();
+    private static final Map<Class<?>, Class<?>> registeredEditors = new HashMap<Class<?>, Class<?>>();
 
     public PropertyEditorManager() {
         // expected
@@ -48,31 +47,21 @@ public class PropertyEditorManager {
         }
     }
 
-    private static PropertyEditor loadEditor(Class<?> targetType, String className)
-            throws ClassNotFoundException, IllegalAccessException,
-                   InstantiationException {
+    private static PropertyEditor loadEditor(Class<?> targetType,
+            String className) throws ClassNotFoundException,
+            IllegalAccessException, InstantiationException {
         ClassLoader loader = targetType.getClassLoader();
-        Class<?> editorClass = null;
-
+        if (loader == null) {
+            loader = ClassLoader.getSystemClassLoader();
+        }
         try {
-            if (loader != null) {
-                editorClass = loader.loadClass(className);
-            } else {
-                loader = ClassLoader.getSystemClassLoader();
-
-                if (loader != null) {
-                    editorClass = loader.loadClass(className);
-                }
-            }
+            return (PropertyEditor) loader.loadClass(className).newInstance();
         } catch (ClassNotFoundException e) {
-            // expected
+            // Ignored
         }
 
-        if (editorClass == null) {
-            loader = Thread.currentThread().getContextClassLoader();
-            editorClass = loader.loadClass(className);
-        }
-        return (PropertyEditor) editorClass.newInstance();
+        return (PropertyEditor) Thread.currentThread().getContextClassLoader()
+                .loadClass(className).newInstance();
     }
 
     public static synchronized PropertyEditor findEditor(Class<?> targetType) {
@@ -102,9 +91,12 @@ public class PropertyEditorManager {
                         editorClassName.lastIndexOf('.') + 1));
 
         for (String element : path) {
+            if (element == null) {
+                continue;
+            }
             try {
-                editorClassName = element + '.' + shortEditorClassName;
-                return loadEditor(targetType, editorClassName);
+                return loadEditor(targetType, element + '.'
+                        + shortEditorClassName);
             } catch (Exception e) {
                 // expected
             }

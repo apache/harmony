@@ -52,12 +52,10 @@ public final class IntEditor extends PropertyEditorSupport {
     }
 
     private String getValueAsText() {
-        String result = null;
         Object value = getValue();
         if (value != null) {
-            Integer iValue = (Integer) value;
-            result = iValue.toString();
+            return ((Integer) value).toString();
         }
-        return result;
+        return null;
     }
 }

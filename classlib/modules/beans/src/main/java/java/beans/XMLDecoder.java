@@ -330,7 +330,7 @@ public class XMLDecoder {
                 method = args.size() == 1 ? "get" : "set";
             }
             if (elem.fromField) {
-                Field f = ((Class) elem.target).getField(method);
+                Field f = ((Class<?>) elem.target).getField(method);
                 return (new Expression(f, "get", new Object[] { null }))
                         .getValue();
             }
@@ -342,7 +342,7 @@ public class XMLDecoder {
                 if ("getOwner".equals(method)) {
                     return owner;
                 }
-                Class[] c = new Class[args.size()];
+                Class<?>[] c = new Class[args.size()];
                 for (int i = 0; i < args.size(); i++) {
                     Object arg = args.get(i);
                     c[i] = (arg == null ? null: arg.getClass());
@@ -358,7 +358,7 @@ public class XMLDecoder {
 
                 // Find the specific method matching the parameter
                 Method mostSpecificMethod = findMethod(
-                        owner instanceof Class ? (Class) owner : owner
+                        owner instanceof Class<?> ? (Class<?>) owner : owner
                                 .getClass(), method, c);
 
                 return mostSpecificMethod.invoke(owner, args.toArray());
@@ -369,8 +369,8 @@ public class XMLDecoder {
             return exp.getValue();
         }
 
-        private Method findMethod(Class clazz, String methodName,
-                Class[] clazzes) throws Exception {
+        private Method findMethod(Class<?> clazz, String methodName,
+                Class<?>[] clazzes) throws Exception {
             Method[] methods = clazz.getMethods();
             ArrayList<Method> matchMethods = new ArrayList<Method>();
 
@@ -379,7 +379,7 @@ public class XMLDecoder {
                 if (!methodName.equals(method.getName())) {
                     continue;
                 }
-                Class[] parameterTypes = method.getParameterTypes();
+                Class<?>[] parameterTypes = method.getParameterTypes();
                 if (parameterTypes.length != clazzes.length) {
                     continue;
                 }

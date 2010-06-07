@@ -122,6 +122,11 @@ public class IntrospectorTest extends TestCase {
         }
     }
 
+    public void testBeanDescriptor_Same() throws Exception {
+        BeanInfo beanInfo = Introspector.getBeanInfo(MockJavaBean.class);
+        assertSame(beanInfo.getBeanDescriptor(), beanInfo.getBeanDescriptor());
+    }
+
     /**
      * The test checks the getMethodDescriptor method
      * 

@@ -18,40 +18,49 @@
 package org.apache.harmony.beans;
 
 public class BeansUtils {
-    
-    public static final int getHashCode(Object o) {
-        return o != null ? o.hashCode() : 0;
+
+    public static final int getHashCode(Object obj) {
+        return obj != null ? obj.hashCode() : 0;
     }
-    
-    public static final int getHashCode(boolean b) {
-        return b?1:0;
+
+    public static final int getHashCode(boolean bool) {
+        return bool ? 1 : 0;
     }
-    
-    public static String toASCIILowerCase(String s) {
-        int len = s.length();
-        StringBuilder buffer = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            char c = s.charAt(i);
-            if ('A' <= c && c <= 'Z') {
-                buffer.append((char) (c + ('a' - 'A')));
+
+    public static String toASCIILowerCase(String string) {
+        char[] charArray = string.toCharArray();
+        StringBuilder sb = new StringBuilder(charArray.length);
+        for (int index = 0; index < charArray.length; index++) {
+            if ('A' <= charArray[index] && charArray[index] <= 'Z') {
+                sb.append((char) (charArray[index] + ('a' - 'A')));
             } else {
-                buffer.append(c);
+                sb.append(charArray[index]);
             }
         }
-        return buffer.toString();
+        return sb.toString();
     }
-    
-    public static String toASCIIUpperCase(String s) {
-        int len = s.length();
-        StringBuilder buffer = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            char c = s.charAt(i);
-            if ('a' <= c && c <= 'z') {
-                buffer.append((char) (c - ('a' - 'A')));
+
+    public static String toASCIIUpperCase(String string) {
+        char[] charArray = string.toCharArray();
+        StringBuilder sb = new StringBuilder(charArray.length);
+        for (int index = 0; index < charArray.length; index++) {
+            if ('a' <= charArray[index] && charArray[index] <= 'z') {
+                sb.append((char) (charArray[index] - ('a' - 'A')));
             } else {
-                buffer.append(c);
+                sb.append(charArray[index]);
             }
         }
-        return buffer.toString();
+        return sb.toString();
+    }
+
+    public static boolean isPrimitiveWrapper(Class<?> wrapper, Class<?> base) {
+        return (base == boolean.class) && (wrapper == Boolean.class)
+                || (base == byte.class) && (wrapper == Byte.class)
+                || (base == char.class) && (wrapper == Character.class)
+                || (base == short.class) && (wrapper == Short.class)
+                || (base == int.class) && (wrapper == Integer.class)
+                || (base == long.class) && (wrapper == Long.class)
+                || (base == float.class) && (wrapper == Float.class)
+                || (base == double.class) && (wrapper == Double.class);
     }
 }
