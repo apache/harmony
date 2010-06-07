@@ -10,9 +10,7 @@
 # Modified to make a template file for a multi-binary package with separated
 # build-arch and build-indep targets  by Bill Allombert 2001
 
-# -lib /usr/share/java ensures that ant finds ecj.jar, etc
-ANT_FLAGS = -lib /usr/share/java \
-            -Dhy.local.zlib=true -Dhy.zip.api=false   \
+ANT_FLAGS = -Dhy.local.zlib=true -Dhy.zip.api=false   \
             -Dhy.no.thr=false -Dauto.fetch=true
 VMDIR=$(CURDIR)/debian/harmony-5.0-drlvm
 CLDIR=$(CURDIR)/debian/harmony-5.0-classlib
@@ -28,7 +26,7 @@ export DH_OPTIONS
 
 
 
-CFLAGS = -Wall -g
+CFLAGS = -g
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -103,6 +101,13 @@ install-arch:
 	mkdir -p $(CLDIR)/usr/lib/harmony-5.0/jdk
 	-rm -rf $(CLDIR)/usr/lib/harmony-5.0/jdk/jre
 	mv $(CURDIR)/target/hdk/jdk/jre $(CLDIR)/usr/lib/harmony-5.0/jdk
+
+	# move *-src.jar back out so they end up in the jdk
+	mkdir -p $(CURDIR)/target/hdk/jdk/jre/lib/boot
+	mv $(CLDIR)/usr/lib/harmony-5.0/jdk/jre/lib/boot/*-src.jar \
+	   $(CURDIR)/target/hdk/jdk/jre/lib/boot
+	mv $(CLDIR)/usr/lib/harmony-5.0/jdk/jre/lib/*-src.jar \
+	   $(CURDIR)/target/hdk/jdk/jre/lib
 
 	mkdir -p $(JREDIR)/usr/lib/harmony-5.0/jdk/jre/bin
 	mv $(CLDIR)/usr/lib/harmony-5.0/jdk/jre/bin/java \
