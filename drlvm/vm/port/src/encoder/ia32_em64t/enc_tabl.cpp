@@ -531,7 +531,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTSD2SI, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,     {0xF2, 0x0F, 0x2D, _r},      {r32, xmm_m64}, D_U },
-    {OpcodeInfo::em64t, {0xF2, REX_W, 0x0F, 0x2D, _r}, {r64, xmm_m64}, D_U },
+    {OpcodeInfo::em64t, {REX_W, 0xF2, 0x0F, 0x2D, _r}, {r64, xmm_m64}, D_U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -539,7 +539,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTTSD2SI, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,     {0xF2, 0x0F, 0x2C, _r},      {r32, xmm_m64}, D_U },
-    {OpcodeInfo::em64t, {0xF2, REX_W, 0x0F, 0x2C, _r}, {r64, xmm_m64}, D_U },
+    {OpcodeInfo::em64t, {REX_W, 0xF2, 0x0F, 0x2C, _r}, {r64, xmm_m64}, D_U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -554,7 +554,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTSS2SI, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,     {0xF3, 0x0F, 0x2D, _r},         {r32, xmm_m32}, D_U},
-    {OpcodeInfo::em64t,   {0xF3, REX_W, 0x0F, 0x2D, _r},  {r64, xmm_m32}, D_U},
+    {OpcodeInfo::em64t,   {REX_W, 0xF3, 0x0F, 0x2D, _r},  {r64, xmm_m32}, D_U},
 END_OPCODES()
 END_MNEMONIC()
 
@@ -562,7 +562,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTTSS2SI, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,     {0xF3, 0x0F, 0x2C, _r},         {r32, xmm_m32}, D_U},
-    {OpcodeInfo::em64t,   {0xF3, REX_W, 0x0F, 0x2C, _r},  {r64, xmm_m32}, D_U},
+    {OpcodeInfo::em64t,   {REX_W, 0xF3, 0x0F, 0x2C, _r},  {r64, xmm_m32}, D_U},
 END_OPCODES()
 END_MNEMONIC()
 
@@ -570,7 +570,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTSI2SD, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,     {0xF2, 0x0F, 0x2A, _r},         {xmm64, r_m32}, D_U},
-    {OpcodeInfo::em64t, {0xF2, REX_W, 0x0F, 0x2A, _r},    {xmm64, r_m64}, D_U},
+    {OpcodeInfo::em64t, {REX_W, 0xF2, 0x0F, 0x2A, _r},    {xmm64, r_m64}, D_U},
 END_OPCODES()
 END_MNEMONIC()
 
@@ -578,7 +578,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTSI2SS, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,     {0xF3, 0x0F, 0x2A, _r},         {xmm32, r_m32}, D_U},
-    {OpcodeInfo::em64t,   {0xF3, REX_W, 0x0F, 0x2A, _r},  {xmm32, r_m64}, D_U},
+    {OpcodeInfo::em64t,   {REX_W, 0xF3, 0x0F, 0x2A, _r},  {xmm32, r_m64}, D_U},
 END_OPCODES()
 END_MNEMONIC()
 
@@ -1136,12 +1136,16 @@ END_MNEMONIC()
 
 BEGIN_MNEMONIC(MOVQ, MF_NONE, D_U )
 BEGIN_OPCODES()
+#ifdef _HAVE_MMX_
     {OpcodeInfo::all, {0x0F, 0x6F, _r},   {mm64, mm_m64}, D_U },
     {OpcodeInfo::all, {0x0F, 0x7F, _r},   {mm_m64, mm64}, D_U },
+#endif
     {OpcodeInfo::all, {0xF3, 0x0F, 0x7E },  {xmm64, xmm_m64},       D_U },
     {OpcodeInfo::all, {0x66, 0x0F, 0xD6 },  {xmm_m64, xmm64},       D_U },
-    {OpcodeInfo::em64t, {0x66, REX_W, 0x0F, 0x6E, _r},  {xmm128, r64}, D_U },
-    {OpcodeInfo::em64t, {0x66, REX_W, 0x0F, 0x7E, _r},  {r64, xmm128}, D_U },
+//    {OpcodeInfo::em64t, {REX_W, 0x66, 0x0F, 0x6E, _r},  {xmm64, r_m64}, D_U },
+//    {OpcodeInfo::em64t, {REX_W, 0x66, 0x0F, 0x7E, _r},  {r_m64, xmm64}, D_U },
+    {OpcodeInfo::em64t, {REX_W, 0x66, 0x0F, 0x6E, _r},  {xmm64, r64}, D_U },
+    {OpcodeInfo::em64t, {REX_W, 0x66, 0x0F, 0x7E, _r},  {r64, xmm64}, D_U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -1149,1232 +1153,61 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(MOVD, MF_NONE, D_U )
 BEGIN_OPCODES()
     {OpcodeInfo::all,   {0x66, 0x0F, 0x6E, _r}, {xmm32, r_m32}, D_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x6E, _r}, {xmm128, r_m32}, D_U },
     {OpcodeInfo::all,   {0x66, 0x0F, 0x7E, _r}, {r_m32, xmm32}, D_U },
 END_OPCODES()
 END_MNEMONIC()
 
-
-#ifdef _HAVE_SIMD_
-
-BEGIN_MNEMONIC(ADDPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x58, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ADDSUBPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xD0, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ADDSUBPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0xD0, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ADDPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x58, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ANDPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x54, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ANDNPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x55, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ANDNPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x55, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CLFLUSH, MF_NONE, U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xAE, _7},   {m8}, U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CMPPD, MF_AFFECTS_FLAGS, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xC2, _r, ib},   {xmm128, xmm_m128, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CMPPS, MF_AFFECTS_FLAGS, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xC2, _r, ib},   {xmm128, xmm_m128, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CMPSS, MF_AFFECTS_FLAGS, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0xC2, _r, ib},   {xmm32, xmm_m32, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPD2DQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0xE6},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPD2PI, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x2D, _r},   {mm64, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPD2PS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x5A, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPI2PD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x2A, _r},   {xmm128, mm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPI2PS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x2A, _r},   {xmm64, mm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPS2PQ, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x5B, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPS2PD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x5A, _r},   {xmm128, xmm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPS2PI, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x2D, _r},   {mm64, xmm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTTPD2PI, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x2C, _r},   {mm64, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTTPS2PI, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x2C, _r},   {mm64, xmm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(DIVPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x5E, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(DIVPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x5E, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
+//
+// A bunch of MMX instructions
+//
+#ifdef _HAVE_MMX_
 
 BEGIN_MNEMONIC(EMMS, MF_NONE, N)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x77},   {}, N},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(HADDPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x7C, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(HADDPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0x7C, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(HSUBPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x7D, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(HSUBPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0x7D, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(LDDQU, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0xF0, _r},   {xmm128, m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(LDMXCSR, MF_NONE, U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xAE, _2},   {m32}, U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(LFENCE, MF_NONE, N)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xAE, _5},   {}, N },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MASKMOVDQU, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xF7, _r},   {EDI, xmm128, xmm128}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MASKMOVQ, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xF7, _r},   {EDI, mm64, mm64}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MAXPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x5F, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MAXPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x5F, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MAXSD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0x5F, _r},   {xmm64, xmm_m64}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MAXSS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x5F, _r},   {xmm64, xmm_m32}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MFENCE, MF_NONE, N)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xAE, _6},   {}, N},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MINPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x5D, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MINPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x5D, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MINSD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0x5D, _r},   {xmm64, xmm_m64}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MINSS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x5D, _r},   {xmm64, xmm_m32}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MONITOR, MF_NONE, U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x01, 0xC8},   {DS, EAX}, U_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVAPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x28, _r},   {xmm128, xmm_m128}, D_U },
-    {OpcodeInfo::all,  {0x0F, 0x29, _r},   {xmm_m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVDDUP, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0x12, _r},   {xmm128, xmm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVDQA, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x6F, _r},   {xmm128, xmm_m128}, D_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x7F, _r},   {xmm_m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVDQU, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x6F, _r},   {xmm128, xmm_m128}, D_U },
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x7F, _r},   {xmm_m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVDQ2Q, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0xD6},   {mm64, xmm64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVHLPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x12, _r},   {xmm128, xmm128}, D_U},
-    {OpcodeInfo::all,  {0x0F, 0x12, _r},   {xmm64, xmm128}, D_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVHPD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x16, _r},   {xmm128, mm64}, D_U},
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x17, _r},   {mm64, xmm128}, D_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVHPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x16, _r},   {xmm128, mm64}, D_U},
-    {OpcodeInfo::all,  {0x0F, 0x17, _r},   {mm64, xmm128}, D_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVLHPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x16, _r},   {xmm128, xmm128}, DU_U},
-    {OpcodeInfo::all,  {0x0F, 0x16, _r},   {xmm128, xmm64}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVLPD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x12, _r},   {xmm128, m64}, D_U},
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x13, _r},   {m64, xmm128}, D_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVLPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x12, _r},   {xmm128, mm64}, D_U},
-    {OpcodeInfo::all,  {0x0F, 0x13, _r},   {mm64, xmm128}, D_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVMSKPD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x50, _r},   {r32, xmm128}, D_U },
-    {OpcodeInfo::em64t,  {0x66, 0x0F, 0x50, _r},   {r64, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVMSKPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x50, _r},   {r32, xmm128}, D_U },
-    {OpcodeInfo::em64t,  {0x0F, 0x50, _r},   {r64, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVNTDQ, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xE7, _r},   {m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVNTI, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xC3, _r},   {m32, r32}, D_U },
-    {OpcodeInfo::em64t,  {REX_W, 0x0F, 0xC3, _r},   {m64, r64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVNTPD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x2B, _r},   {m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVNTPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x2B, _r},   {m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVNTQ, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xE7, _r},   {m64, mm64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVSHDUP, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x16, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVSLDUP, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x12, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVQ2DQ, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0xD6, _r},   {xmm128, mm64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVUPD, MF_NONE, D_U) 
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x10, _r},   {xmm128, xmm_m128}, D_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x11, _r},   {xmm_m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MOVUPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x10, _r},   {xmm128, xmm_m128}, D_U },
-    {OpcodeInfo::all,  {0x0F, 0x11, _r},   {xmm_m128, xmm128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MULPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x59, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(MULPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x59, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ORPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x56, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(ORPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x56, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PACKSSWB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x63, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x63, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PACKSSDW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x6B, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x6B, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PACKUSWB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x67, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x67, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xFC, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xFC, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xFD, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xFD, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xFE, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xFE, _r},   {xmm128, xmm_m128}, DU_U },
+BEGIN_OPCODES()
+    {OpcodeInfo::all, {0x0F, 0x77},       {},             N },
 END_OPCODES()
 END_MNEMONIC()
 
 BEGIN_MNEMONIC(PADDQ, MF_NONE, DU_U)
 BEGIN_OPCODES() 
     {OpcodeInfo::all,   {0x0F, 0xD4, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xD4, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDSB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xEC, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xEC, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDSW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xED, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xED, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDUSB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xDC, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xDC, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PADDUSW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xDD, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xDD, _r},   {xmm128, xmm_m128}, DU_U },
 END_OPCODES()
 END_MNEMONIC()
 
 BEGIN_MNEMONIC(PAND, MF_NONE, DU_U)
 BEGIN_OPCODES()
     {OpcodeInfo::all,   {0x0F, 0xDB, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xDB, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PANDN, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0xDF, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xDF, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PAVGB, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0xE0, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE0, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PAVGW, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0xE3, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE3, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPEQB, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0x74, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x74, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPEQW, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0x75, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x75, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPEQD, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0x76, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x76, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPEQQ, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x29, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPGTB, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0x64, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x64, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPGTW, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0x65, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x65, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPGTD, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0x66, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x66, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPGTQ, MF_NONE, DU_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x37, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PEXTRB, MF_NONE, D_U_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x3A, 0x14, _r, ib},   {r_m32, xmm128, imm8}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PEXTRD, MF_NONE, D_U_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x3A, 0x16, _r, ib},   {r_m32, xmm128, imm8}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PEXTRQ, MF_NONE, D_U_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::em64t,   {0x66, REX_W, 0x0F, 0x3A, 0x16, _r, ib},   {r_m64, xmm128, imm8}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PINSRB, MF_NONE, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x3A, 0x20, _r, ib},   {xmm128, r_m32, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PINSRD, MF_NONE, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x3A, 0x22, _r, ib},   {xmm128, r_m32, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PINSRQ, MF_NONE, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::em64t,  {0x66, REX_W, 0x0F, 0x3A, 0x22, _r, ib},   {xmm128, r_m64, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PEXTRW, MF_NONE, D_U_U)
-BEGIN_OPCODES()
-    {OpcodeInfo::all,   {0x0F, 0xC5, _r, ib},   {r32, mm64, imm8}, D_U_U },
-    {OpcodeInfo::em64t, {REX_W, 0x0F, 0xC5, _r, ib},   {r64, mm64, imm8}, D_U_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xC5, _r, ib},   {r32, xmm128, imm8}, D_U_U },
-    {OpcodeInfo::em64t, {0x66, REX_W, 0x0F, 0xC5, _r, ib},   {r64, xmm128, imm8}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PINSRW, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xC4, _r, ib},   {mm64, r32, imm8}, D_U_U },
-    {OpcodeInfo::all,  {0x0F, 0xC4, _r, ib},   {mm64, m16, imm8}, D_U_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xC4, _r, ib},   {xmm128, r32, imm8}, D_U_U },
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xC4, _r, ib},   {xmm128, m16, imm8}, D_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVSXBW, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x20, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVZXBW, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x30, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVSXBD, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x21, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVZXBD, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x31, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVSXBQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x22, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVZXBQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x32, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVSXWD, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x23, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVZXWD, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x33, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVSXWQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x24, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVZXWQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x34, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVSXDQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x25, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVZXDQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x38, 0x35, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMADDWD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF5, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF5, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PABSB, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x1C, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PABSW, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x1D, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PABSD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x1E, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMAXSB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x3C, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMAXSW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xEE, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xEE, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMAXSD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x3D, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMAXUB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xDE, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xDE, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMINSB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x38, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMINSW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xEA, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xEA, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMINSD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x39, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMINUB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xDA, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xDA, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMOVMSKB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xD7, _r},   {r32, mm64}, DU_U },
-    {OpcodeInfo::em64t, {REX_W, 0x0F, 0xD7, _r},   {r64, mm64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD7, _r},   {r32, xmm128}, DU_U },
-    {OpcodeInfo::em64t, {0x66, REX_W, 0x0F, 0xD7, _r},   {r64, xmm128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMULHUW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xE4, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE4, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMULHW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xE5, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE5, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMULLD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x40, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMULLW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xD5, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD5, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMULDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, 0x28, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PMULUDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF4, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF4, _r},   {xmm128, xmm_m128}, DU_U },
 END_OPCODES()
 END_MNEMONIC()
 
 BEGIN_MNEMONIC(POR, MF_NONE, DU_U)
 BEGIN_OPCODES() 
     {OpcodeInfo::all,   {0x0F, 0xEB, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xEB, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSADBW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF6, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF6, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSHUFB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x38, OxOO, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSHUFD, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x70, _r},   {xmm128, xmm_m128, imm8}, D_U_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x70, _r},   {xmm128, xmm32, imm8}, D_U_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x70, _r},   {xmm32, xmm128, imm8}, D_U_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSHUFHW, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0xF3, 0x0F, 0x70, _r},   {xmm128, xmm_m128, imm8}, D_U_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSHUFLW, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0xF2, 0x0F, 0x70, _r},   {xmm128, xmm_m128, imm8}, D_U_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSHUFW, MF_NONE, D_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x70, _r, ib},   {mm64, mm_m64, imm8}, D_U_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSLLDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x73, _7, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSLLW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF1, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF1, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x0F, 0x71, _6, ib},   {mm64, imm8}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x71, _6, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSLLD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF2, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF2, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x0F, 0x72, _6, ib},   {mm64, imm8}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x72, _6, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSLLQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF3, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF3, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x0F, 0x73, _6, ib},   {mm64, imm8}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x73, _6, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSRAW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xE1, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE1, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x0F, 0x71, _4, ib},   {mm64, imm8}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x71, _4, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSRAD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xE2, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE2, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x0F, 0x72, _4, ib},   {mm64, imm8}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x72, _4, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSRLW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD1, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x71, _2, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSRLD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD2, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x72, _2, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSRLQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD3, _r},   {xmm128, xmm_m128}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x73, _2, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSRLDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x73, _3, ib},   {xmm128, imm8}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSUBB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF8, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF8, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSUBW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xF9, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xF9, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSUBD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xFA, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xFA, _r},   {xmm128, xmm_m128}, DU_U},
 END_OPCODES()
 END_MNEMONIC()
 
 BEGIN_MNEMONIC(PSUBQ, MF_NONE, DU_U)
 BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xFB, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xFB, _r},   {xmm128, xmm_m128}, DU_U},
+    {OpcodeInfo::all,   {0x0F, 0xFB, _r},   {mm64, mm_m64}, DU_U },
 END_OPCODES()
 END_MNEMONIC()
 
-BEGIN_MNEMONIC(PSUBSB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xE8, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE8, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSUBSW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xE9, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xE9, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSUBUSB, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xD8, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD8, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PSUBUSW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0xD9, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xD9, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-
-BEGIN_MNEMONIC(PUNPCKHBW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x68, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x68, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKHWD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x69, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x69, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKHDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x6A, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x6A, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKHQDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x6D, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKLBW, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x60, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x60, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKLWD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x61, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x61, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKLDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x0F, 0x62, _r},   {mm64, mm_m64}, DU_U},
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x62, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PUNPCKLQDQ, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x6C, _r},   {xmm128, xmm_m128}, DU_U},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(RCPPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x53, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(RSQRTPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x52, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(RSQRTSS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x52, _r},   {xmm32, xmm_m32}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SHUFPD, MF_NONE, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0xC6, _r, ib},   {xmm128, xmm_m128, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SHUFPS, MF_NONE, DU_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xC6, _r, ib},   {xmm128, xmm_m128, imm8}, DU_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SQRTPD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x51, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SQRTPS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x51, _r},   {xmm128, xmm_m128}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SQRTSD, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0x51, _r},   {xmm64, xmm_m64}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SQRTSS, MF_NONE, D_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0xF3, 0x0F, 0x51, _r},   {xmm32, xmm_m32}, D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(STMXCSR, MF_NONE, D)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0xAE, _3},   {m32}, D},
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SUBPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x5C, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(SUBPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x5C, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(UNPCKHPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x15, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(UNPCKHPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x15, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(UNPCKLPD, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x14, _r},   {xmm128, xmm_m128}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(UNPCKLPS, MF_NONE, DU_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x0F, 0x14, _r},   {xmm128, xmm_m128}, DU_U },
-    {OpcodeInfo::all,  {0x0F, 0x14, _r},   {xmm128, xmm32}, DU_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPESTRI, MF_NONE, D_U_U_U_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x3A, 0x61, _r, ib},   {ECX, EAX, EDX, xmm128, xmm128, imm8}, D_U_U_U_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPESTRM, MF_NONE, D_U_U_U_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x3A, 0x60, _r, ib},   {XMM0, EAX, EDX, xmm128, xmm128, imm8}, D_U_U_U_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPISTRI, MF_NONE, D_U_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x3A, 0x63, _r, ib},   {ECX, xmm128, xmm_m128, imm8}, D_U_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(PCMPISTRM, MF_NONE, D_U_U_U)
-BEGIN_OPCODES() 
-    {OpcodeInfo::all,  {0x66, 0x0F, 0x3A, 0x62, _r, ib},   {XMM0, xmm128, xmm_m128, imm8}, D_U_U_U },
-END_OPCODES()
-END_MNEMONIC()
-
-#endif  //_HAVE_SIMD_
+#endif  // ~_HAVE_MMX_
 
 BEGIN_MNEMONIC(PXOR, MF_NONE, DU_U)
 BEGIN_OPCODES() 
+#ifdef _HAVE_MMX_
     {OpcodeInfo::all,   {0x0F, 0xEF, _r},   {mm64, mm_m64}, DU_U },
-    {OpcodeInfo::all,   {0x66, 0x0F, 0xEF, _r}, {xmm128, xmm_m128},   DU_U },
+#endif
+    {OpcodeInfo::all,   {0x66, 0x0F, 0xEF, _r}, {xmm64, xmm_m64},   DU_U },
 END_OPCODES()
 END_MNEMONIC()
 
 
 BEGIN_MNEMONIC(MOVAPD, MF_NONE, D_U )
 BEGIN_OPCODES()
-    {OpcodeInfo::all, {0x66, 0x0F, 0x28, _r},   {xmm128, xmm_m128},   D_U },
-    {OpcodeInfo::all, {0x66, 0x0F, 0x29, _r},   {xmm_m128, xmm128},   D_U },
-    {OpcodeInfo::all, {0x66, 0x0F, 0x28, _r},   {xmm64, xmm128},   D_U },
-    {OpcodeInfo::all, {0x66, 0x0F, 0x28, _r},   {xmm128, xmm64},   D_U },
-    {OpcodeInfo::all, {0x66, 0x0F, 0x28, _r},   {xmm128, xmm32},   D_U },
+    {OpcodeInfo::all, {0x66, 0x0F, 0x28, _r},   {xmm64, xmm_m64},   D_U },
+    {OpcodeInfo::all, {0x66, 0x0F, 0x29, _r},   {xmm_m64, xmm64},   D_U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -2478,9 +1311,6 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(PREFETCH, MF_NONE, U)
 BEGIN_OPCODES()
 {OpcodeInfo::all,   {0x0F, 0x18, _0},   {m8},         U },
-{OpcodeInfo::all,   {0x0F, 0x18, _1},   {m8},         U },
-{OpcodeInfo::all,   {0x0F, 0x18, _2},   {m8},         U },
-{OpcodeInfo::all,   {0x0F, 0x18, _3},   {m8},         U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -2676,14 +1506,7 @@ END_MNEMONIC()
 BEGIN_MNEMONIC(CVTDQ2PS, MF_NONE, D_U )
 BEGIN_OPCODES()
     //Note: they're actually 128 bits
-    {OpcodeInfo::all,   {0x0F, 0x5B, _r},   {xmm128, xmm_m128},   D_U },
-END_OPCODES()
-END_MNEMONIC()
-
-BEGIN_MNEMONIC(CVTPS2DQ, MF_NONE, D_U )
-BEGIN_OPCODES()
-    //Note: they're actually 128 bits
-    {OpcodeInfo::all,   {0x66, 0x0F, 0x5B, _r},   {xmm128, xmm_m128},   D_U },
+    {OpcodeInfo::all,   {0x0F, 0x5B, _r},   {xmm32, xmm_m32},   D_U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -2787,7 +1610,6 @@ BEGIN_MNEMONIC(CMPSD, MF_AFFECTS_FLAGS, DU_DU_DU)
 BEGIN_OPCODES()
     {OpcodeInfo::ia32,  {0xA7},         {ESI,EDI,ECX},  DU_DU_DU },
     {OpcodeInfo::em64t, {0xA7},         {RSI,RDI,RCX},  DU_DU_DU },
-    {OpcodeInfo::all,  {0xF2, 0x0F, 0xC2, _r, ib},   {xmm64, xmm_m64, imm8}, DU_U_U },
 END_OPCODES()
 END_MNEMONIC()
 
@@ -2908,7 +1730,7 @@ void EncoderBase::buildMnemonicDesc(const MnemonicInfo * minfo)
             unsigned lowByte = (opcod & OpcodeByteKind_OpcodeMask);
             odesc.opcode[odesc.opcode_len++] = (unsigned char)lowByte;
         }
-        assert(odesc.opcode_len<6);
+        assert(odesc.opcode_len<5);
         odesc.aux0 = odesc.aux1 = 0;
         if (oinfo.opcode[j] != 0) {
             odesc.aux0 = oinfo.opcode[j];
@@ -2980,9 +1802,6 @@ void EncoderBase::buildMnemonicDesc(const MnemonicInfo * minfo)
             ++odesc.first_opnd;
             if (odesc.opnds[1].reg != RegName_Null) {
                 ++odesc.first_opnd;
-                if (odesc.opnds[2].reg != RegName_Null) {
-                    ++odesc.first_opnd;
-                }
             }
         }
 

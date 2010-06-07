@@ -752,23 +752,6 @@ void DynamicABCE::findArrayAccesses() {
     }
 }
 
-Inst *DynamicABCE::getLdBaseInst(Inst* checkInst) {
-
-    if (checkInst->getOpcode() == Op_LdArrayBaseAddr) {
-        return checkInst;
-    } else if (checkInst->getOpcode() == Op_LdVar) {
-        return getLdBaseInst(checkInst->getSrc(0)->asSsaOpnd()->getInst()); 
-    } else if (checkInst->getOpcode() == Op_StVar) {
-        return getLdBaseInst(checkInst->getSrc(0)->asSsaOpnd()->getInst());
-    } else if (checkInst->getOpcode() == Op_Phi) {
-        return getLdBaseInst(checkInst->getSrc(0)->asSsaOpnd()->getInst());
-    }
-
-    assert(0);
-
-    return NULL;
-}
-
 void DynamicABCE::fillTemplate(ArrayAccessTemplate* arrayAccess, Inst* checkInst) {
     Inst* ldBaseInst = NULL;
 
@@ -795,7 +778,7 @@ void DynamicABCE::fillTemplate(ArrayAccessTemplate* arrayAccess, Inst* checkInst
         } else if (opcode == Op_AddScaledIndex &&
             arrayAccess->index == inst->getSrc(1) && arrayAccess->array == NULL) {
             assert(ldBaseInst == NULL);
-            ldBaseInst = getLdBaseInst(inst->getSrc(0)->asSsaOpnd()->getInst());
+            ldBaseInst = inst->getSrc(0)->asSsaOpnd()->getInst();
             assert((ldBaseInst->getOpcode() == Op_LdArrayBaseAddr)||(ldBaseInst->getOpcode() == Op_LdVar));
             arrayAccess->array = ldBaseInst->getSrc(0)->asSsaOpnd();
             break;

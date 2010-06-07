@@ -1775,10 +1775,6 @@ Inst* InstFactory::makeXor(Opnd* dst, Opnd* src1, Opnd* src2) {
     return makeInst(Op_Xor, Modifier(), dst->getType()->tag, dst, src1, src2);
 }
 
-Inst* InstFactory::makeAndNot(Opnd* dst, Opnd* src1, Opnd* src2) {
-    return makeInst(Op_AndNot, Modifier(), dst->getType()->tag, dst, src1, src2);
-}
-
 Inst* InstFactory::makeNot(Opnd* dst, Opnd* src) {
     return makeInst(Op_Not, Modifier(), dst->getType()->tag, dst, src);
 }
@@ -2539,55 +2535,6 @@ Inst* InstFactory::makeIncCounter(U_32 val) {
     return makeTokenInst(Op_IncCounter, Modifier(), Type::Void, OpndManager::getNullOpnd(), val, NULL);
 }
 
-Inst*
-InstFactory::makeVecAddSub(Opnd* dst, Opnd* src1, Opnd* src2) {
-    return makeInst(Op_VecAddSub, Modifier(), dst->getType()->tag, dst, src1, src2);
-}
-
-Inst*
-InstFactory::makeVecHadd(Opnd* dst, Opnd* src1, Opnd* src2) {
-    return makeInst(Op_VecHadd, Modifier(), dst->getType()->tag, dst, src1, src2);
-}
-
-Inst*
-InstFactory::makeVecHsub(Opnd* dst, Opnd* src1, Opnd* src2) {
-    return makeInst(Op_VecHsub, Modifier(), dst->getType()->tag, dst, src1, src2);
-}
-
-Inst*
-InstFactory::makeVecShuffle(Opnd* dst, Opnd* src1, Opnd* src2, Opnd* src3) {
-    return makeMultiSrcInst(Op_VecShuffle, Modifier(), dst->getType()->tag, dst, src1, src2, src3);
-}
-
-Inst*
-InstFactory::makeVecExtract(Opnd *dst, Opnd *src, Opnd *index) {
-    return makeInst(Op_VecExtract, Modifier(), dst->getType()->tag, dst, src, index);
-}
-
-Inst*
-InstFactory::makeVecPackScalars(Opnd *dst, U_32 numOpnds, Opnd **opnds) {
-    Opnd** srcs = copyOpnds(opnds, numOpnds);
-    return makeMultiSrcInst(Op_VecPackScalars, Modifier(), dst->getType()->tag,
-                            dst, numOpnds, srcs);
-}
-
-Inst*
-InstFactory::makeVecInterleaveHigh(Opnd* dst, Opnd* src1, Opnd* src2) {
-    return makeInst(Op_VecInterleaveHigh, Modifier(), dst->getType()->tag, dst, src1, src2);
-}
-
-Inst*
-InstFactory::makeVecInterleaveLow(Opnd* dst, Opnd* src1, Opnd* src2) {
-    return makeInst(Op_VecInterleaveLow, Modifier(), dst->getType()->tag, dst, src1, src2);
-}
-
-Inst*
-InstFactory::makeVecCmpStr(Opnd *dst, U_32 numOpnds, Opnd **opnds) {
-    Opnd** srcs = copyOpnds(opnds, numOpnds);
-    return makeMultiSrcInst(Op_VecCmpStr, Modifier(), dst->getType()->tag,
-                            dst, numOpnds, srcs);
-}
-
 Inst* InstFactory::makeTauPoint(Opnd *dst) {
     assert(dst->getType()->tag == Type::Tau);
     return makeInst(Op_TauPoint, Modifier(), Type::Tau, dst);
@@ -2666,7 +2613,6 @@ InstOptimizer::dispatch(Inst* inst) {
     case Op_And:                return caseAnd(inst);
     case Op_Or:                 return caseOr(inst);
     case Op_Xor:                return caseXor(inst);
-    case Op_AndNot:             return caseAndNot(inst);
     case Op_Not:                return caseNot(inst);
     case Op_Select:             return caseSelect(inst);
     case Op_Conv:               return caseConv(inst);
@@ -2770,15 +2716,6 @@ InstOptimizer::dispatch(Inst* inst) {
     case Op_LdArrayLenOffsetPlusHeapbase:  return caseLdArrayLenOffsetPlusHeapbase(inst->asTypeInst());
     case Op_AddOffset:          return caseAddOffset(inst);
     case Op_AddOffsetPlusHeapbase: return caseAddOffsetPlusHeapbase(inst);
-    case Op_VecAddSub:          return caseVecAddSub(inst);
-    case Op_VecHadd:            return caseVecHadd(inst);
-    case Op_VecHsub:            return caseVecHsub(inst);
-    case Op_VecShuffle:         return caseVecShuffle(inst);
-    case Op_VecExtract:         return caseVecExtract(inst);
-    case Op_VecPackScalars:     return caseVecPackScalars(inst);
-    case Op_VecInterleaveHigh:  return caseVecInterleaveHigh(inst);
-    case Op_VecInterleaveLow:   return caseVecInterleaveLow(inst);
-    case Op_VecCmpStr:          return caseVecCmpStr(inst);
     case Op_TauPoint:           return caseTauPoint(inst);
     case Op_TauEdge:            return caseTauEdge(inst);
     case Op_TauAnd:             return caseTauAnd(inst);

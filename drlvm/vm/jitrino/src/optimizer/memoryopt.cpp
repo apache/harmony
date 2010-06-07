@@ -898,7 +898,7 @@ MemoryOptInitWalker::applyToInst(Inst *i)
 
     case Op_Add: case Op_Mul: case Op_Sub: case Op_TauDiv: case Op_TauRem: 
     case Op_Neg: case Op_MulHi: case Op_Min: case Op_Max: case Op_Abs:
-    case Op_And: case Op_Or: case Op_Xor: case Op_AndNot:
+    case Op_And: case Op_Or: case Op_Xor: 
     case Op_Not: case Op_Select: case Op_Conv: case Op_ConvZE: case Op_ConvUnmanaged: case Op_Shladd: case Op_Shl: 
     case Op_Shr: case Op_Cmp: case Op_Cmp3: 
     case Op_Branch: case Op_Jump: case Op_Switch:
@@ -920,15 +920,6 @@ MemoryOptInitWalker::applyToInst(Inst *i)
     case Op_Label:
     case Op_Phi:
     case Op_TauPi:
-    case Op_VecAddSub:
-    case Op_VecHadd:
-    case Op_VecHsub:
-    case Op_VecShuffle:
-    case Op_VecExtract:
-    case Op_VecPackScalars:
-    case Op_VecInterleaveHigh:
-    case Op_VecInterleaveLow:
-    case Op_VecCmpStr:
     case Op_TauPoint:
     case Op_TauEdge:
     case Op_TauAnd:

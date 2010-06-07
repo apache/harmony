@@ -297,7 +297,7 @@ void IRManager::initInitialConstraints()
 Constraint IRManager::createInitialConstraint(Type::Tag t)const
 {
     OpndSize sz=getTypeSize(t);
-    if (t==Type::Single||t==Type::Double||t==Type::Float||t==Type::Vector)
+    if (t==Type::Single||t==Type::Double||t==Type::Float)
         return Constraint(OpndKind_XMMReg, sz)|Constraint(OpndKind_Mem, sz);
     if (sz<=Constraint::getDefaultSize(OpndKind_GPReg))
         return Constraint(OpndKind_GPReg, sz)|Constraint(OpndKind_Mem, sz)|Constraint(OpndKind_Imm, sz);
@@ -408,7 +408,7 @@ Inst * IRManager::newI8PseudoInst(Mnemonic mnemonic, U_32 defCount,
     inst->kind = Inst::Kind_I8PseudoInst;
     U_32 i=0;
     Opnd ** opnds = inst->getOpnds();
-    assert(opnd0->getType()->isInteger() ||opnd0->getType()->isPtr() || opnd0->getType()->isVector());
+    assert(opnd0->getType()->isInteger() ||opnd0->getType()->isPtr());
     if (opnd0!=NULL){       opnds[i] = opnd0; i++;
     if (opnd1!=NULL){       opnds[i] = opnd1; i++;
     if (opnd2!=NULL){       opnds[i] = opnd2; i++;
@@ -1053,8 +1053,8 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
     OpndKind targetKind=(OpndKind)targetConstraint.getKind();
     OpndKind sourceKind=(OpndKind)sourceConstraint.getKind();
 
-    OpndSize targetSize=targetConstraint.getSize();
 #if defined(_DEBUG) || !defined(_EM64T_)
+    OpndSize targetSize=targetConstraint.getSize();
     assert(targetSize<=sourceSize); // only same size or truncating conversions are allowed
 #endif
 
@@ -1152,11 +1152,13 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
         if (sourceByteSize==4){
             return newInst(Mnemonic_MOVSS,targetOpnd, sourceOpnd);
         }else if (sourceByteSize==8){
-            return newInst(Mnemonic_MOVSD, targetOpnd, sourceOpnd);
-        }else if (sourceByteSize==16) {
-            return newInst(Mnemonic_MOVAPD, targetOpnd, sourceOpnd);
+            bool regsOnly = targetKind==OpndKind_XMMReg && sourceKind==OpndKind_XMMReg;
+            if (regsOnly && CPUID::isSSE2Supported()) {
+                return newInst(Mnemonic_MOVAPD, targetOpnd, sourceOpnd);
+            } else  {
+                return newInst(Mnemonic_MOVSD, targetOpnd, sourceOpnd);
+            }
         }
-        assert(0);
     }else if (targetKind==OpndKind_FPReg && sourceKind==OpndKind_Mem){
         sourceOpnd->setMemOpndAlignment(Opnd::MemOpndAlignment_16);
         return newInst(Mnemonic_FLD, targetOpnd, sourceOpnd);
@@ -1182,14 +1184,6 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
         appendToInstList(instList, newCopySequence(targetOpnd, tmp, regUsageMask));
         return instList;
     }
-
-    if (targetOpnd->isPlacedIn(OpndKind_XMMReg)
-        && sourceOpnd->isPlacedIn(OpndKind_Mem)){
-      if (targetSize == OpndSize_128 && sourceSize == OpndSize_64) {
-        return newInst(Mnemonic_MOVLPD, targetOpnd, sourceOpnd);
-      }
-    }
-
     assert(0);
     return NULL;
 }
@@ -1422,9 +1416,6 @@ OpndSize IRManager::getTypeSize(Type::Tag tag)
             break;
         case Type::Float:
             size = OpndSize_80;
-            break;
-        case Type::Vector:
-            size = OpndSize_128;
             break;
         default:
 #ifdef _EM64T_

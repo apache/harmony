@@ -94,8 +94,6 @@ private:
 
     Inst* caseXor(Inst* inst) {return caseDefault(inst);}
 
-    Inst* caseAndNot(Inst* inst) {return caseDefault(inst);}
-
     Inst* caseNot(Inst* inst) {return caseDefault(inst);}
 
     // selection
@@ -305,24 +303,6 @@ private:
     Inst* caseAddOffset(Inst* inst) {return caseDefault(inst);}
 
     Inst* caseAddOffsetPlusHeapbase(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecAddSub(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecHadd(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecHsub(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecShuffle(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecExtract(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecPackScalars(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecInterleaveHigh(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecInterleaveLow(Inst* inst) {return caseDefault(inst);}
-
-    Inst* caseVecCmpStr(Inst* inst) {return caseDefault(inst);}
 
     // new tau methods
     Inst* caseTauPoint(Inst* inst) {return caseDefault(inst);}

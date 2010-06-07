@@ -46,7 +46,6 @@
 #include "PlatformDependant.h"
 
 #include "VMMagic.h"
-#include "SIMD.h"
 
 namespace Jitrino {
 
@@ -888,7 +887,6 @@ CompilationInterface::getTypeFromDrlVMTypeHandle(Type_Info_Handle typeHandle) {
             const char* kname = type_info_get_type_name(typeHandle);
             assert(kname!=NULL);
             bool forceResolve = VMMagicUtils::isVMMagicClass(kname);
-            forceResolve = forceResolve || SIMDUtils::isSIMDClass(kname);
             if (!forceResolve) {
                 return typeManager.getUnresolvedObjectType();
             }
@@ -1200,7 +1198,6 @@ NamedType* CompilationInterface::getNamedType(Class_Handle enclClass, U_32 cpInd
     if (typeManager.isLazyResolutionMode() && !class_cp_is_entry_resolved(enclClass, cpIndex)) {
         const char* className = class_cp_get_class_name(enclClass, cpIndex);
         bool forceResolve = VMMagicUtils::isVMMagicClass(className);
-        forceResolve = forceResolve || SIMDUtils::isSIMDClass(className);
         if (!forceResolve) {
             return getUnresolvedType(typeManager, enclClass, cpIndex);
         }

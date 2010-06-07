@@ -42,7 +42,7 @@ const U_32 EmptyUint32=((U_32)-1);
 const U_32 UnknownId=EmptyUint32;
 
 const U_32 IRMaxExtendedOpnds=8;
-const U_32 IRMaxNativeOpnds=6;
+const U_32 IRMaxNativeOpnds=4;
 const U_32 IRMaxInstOpnds=512;
 
 const U_32 IRMaxOperandByteSize = 16;

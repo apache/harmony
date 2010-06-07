@@ -171,7 +171,7 @@ bool Encoder::matches(const OpcodeGroup* og, const FindInfo& fi,
         }
     }
     for (U_32 i = 0, n = fi.opndCount; i < n; i++) {
-        U_32 idx = i;
+        U_32 idx = fi.isExtended ? og->extendedToNativeMap[i] : i;
         Constraint co=fi.opndConstraints[idx];
         if (any) {
             co = Constraint(OpndKind_Any, co.getSize());

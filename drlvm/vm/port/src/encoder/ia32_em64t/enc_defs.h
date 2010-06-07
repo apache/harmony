@@ -19,9 +19,6 @@
  */
 #ifndef _ENCODER_DEFS_H_
 #define _ENCODER_DEFS_H_
-#define _HAVE_SIMD_
-#define _HAVE_SIMD_4_2_
-#define _HAVE_MMX_
 
 
 // Used to isolate experimental or being tuned encoder into a separate 
@@ -311,14 +308,14 @@ enum RegName {
     RegName_XMM7=REGNAME(OpndKind_XMMReg,OpndSize_128,7),
 
 #ifdef _EM64T_
-    RegName_XMM8  = REGNAME(OpndKind_XMMReg,OpndSize_128,8), 
-    RegName_XMM9  = REGNAME(OpndKind_XMMReg,OpndSize_128,9),
-    RegName_XMM10 = REGNAME(OpndKind_XMMReg,OpndSize_128,10),
-    RegName_XMM11 = REGNAME(OpndKind_XMMReg,OpndSize_128,11),
-    RegName_XMM12 = REGNAME(OpndKind_XMMReg,OpndSize_128,12),
-    RegName_XMM13 = REGNAME(OpndKind_XMMReg,OpndSize_128,13),
-    RegName_XMM14 = REGNAME(OpndKind_XMMReg,OpndSize_128,14),
-    RegName_XMM15 = REGNAME(OpndKind_XMMReg,OpndSize_128,15),
+    RegName_XMM8  = REGNAME(OpndKind_XMMReg,OpndSize_128,0), 
+    RegName_XMM9  = REGNAME(OpndKind_XMMReg,OpndSize_128,1),
+    RegName_XMM10 = REGNAME(OpndKind_XMMReg,OpndSize_128,2),
+    RegName_XMM11 = REGNAME(OpndKind_XMMReg,OpndSize_128,3),
+    RegName_XMM12 = REGNAME(OpndKind_XMMReg,OpndSize_128,4),
+    RegName_XMM13 = REGNAME(OpndKind_XMMReg,OpndSize_128,5),
+    RegName_XMM14 = REGNAME(OpndKind_XMMReg,OpndSize_128,6),
+    RegName_XMM15 = REGNAME(OpndKind_XMMReg,OpndSize_128,7),
 #endif //~_EM64T_
 
 #endif  // ~TESTING_ENCODER
@@ -441,52 +438,36 @@ Mnemonic_CMPXCHG,                       // Compare and exchange
 Mnemonic_CMPXCHG8B,                     // Compare and Exchange 8 Bytes
 Mnemonic_CMPSB,                         // Compare Two Bytes at DS:ESI and ES:EDI
 Mnemonic_CMPSW,                         // Compare Two Words at DS:ESI and ES:EDI
-#ifndef _HAVE_SIMD_
 Mnemonic_CMPSD,                         // Compare Two Doublewords at DS:ESI and ES:EDI
 //
 // double -> float
 Mnemonic_CVTSD2SS,                      // Convert Scalar Double-Precision Floating-Point Value to Scalar Single-Precision Floating-Point Value
-#endif
 // double -> I_32
-#ifndef _HAVE_SIMD_
 Mnemonic_CVTSD2SI,                      // Convert Scalar Double-Precision Floating-Point Value to Doubleword Integer
-#endif
 // double [truncated] -> I_32
 Mnemonic_CVTTSD2SI,                     // Convert with Truncation Scalar Double-Precision Floating-Point Value to Signed Doubleword Integer
 //
 // float -> double
-#ifndef _HAVE_SIMD_
 Mnemonic_CVTSS2SD,                      // Convert Scalar Single-Precision Floating-Point Value to Scalar Double-Precision Floating-Point Value
 // float -> I_32
 Mnemonic_CVTSS2SI,                      // Convert Scalar Single-Precision Floating-Point Value to Doubleword Integer
 // float [truncated] -> I_32
 Mnemonic_CVTTSS2SI,                     // Convert with Truncation Scalar Single-Precision Floating-Point Value to Doubleword Integer
-#endif
 //
 // I_32 -> double
-#ifndef _HAVE_SIMD_
 Mnemonic_CVTSI2SD,                      // Convert Doubleword Integer to Scalar Double-Precision Floating-Point Value
-#endif
 // I_32 -> float
-#ifndef _HAVE_SIMD_
 Mnemonic_CVTSI2SS,                      // Convert Doubleword Integer to Scalar Single-Precision Floating-Point Value
-#endif
 
-#ifndef _HAVE_SIMD_
 Mnemonic_COMISD,                        // Compare Scalar Ordered Double-Precision Floating-Point Values and Set EFLAGS
 Mnemonic_COMISS,                        // Compare Scalar Ordered Single-Precision Floating-Point Values and Set EFLAGS
-#endif
 Mnemonic_DEC,                           // Decrement by 1
 //Mnemonic_DIV,                         // Unsigned Divide
-#ifndef _HAVE_SIMD_
 Mnemonic_DIVSD,                         // Divide Scalar Double-Precision Floating-Point Values
 Mnemonic_DIVSS,                         // Divide Scalar Single-Precision Floating-Point Values
-#endif
 
 #ifdef _HAVE_MMX_
-#ifndef _HAVE_SIMD_
 Mnemonic_EMMS,                          // Empty MMX Technology State
-#endif
 #endif
 
 Mnemonic_ENTER,                         // ENTER-Make Stack Frame for Procedure Parameters
@@ -569,25 +550,20 @@ Mnemonic_LOOPE,                          // Loop according to ECX counter
 Mnemonic_LOOPNE, Mnemonic_LOOPNZ = Mnemonic_LOOPNE, // Loop according to ECX 
 Mnemonic_LAHF,                          // Load Flags into AH
 Mnemonic_MOV,                           // Move
-
-#ifndef _HAVE_SIMD_
 Mnemonic_MOVD,                          // Move Double word
 Mnemonic_MOVQ,                          // Move Quadword
-#endif
-
 /*Mnemonic_MOVS,                        // Move Data from String to String*/
 // MOVS is a special case: see encoding table for more details,
 Mnemonic_MOVS8, Mnemonic_MOVS16, Mnemonic_MOVS32, Mnemonic_MOVS64,
 //
+Mnemonic_MOVAPD,                         // Move Scalar Double-Precision Floating-Point Value
 Mnemonic_MOVSD,                         // Move Scalar Double-Precision Floating-Point Value
 Mnemonic_MOVSS,                         // Move Scalar Single-Precision Floating-Point Values
 Mnemonic_MOVSX,                         // Move with Sign-Extension
 Mnemonic_MOVZX,                         // Move with Zero-Extend
 //Mnemonic_MUL,                         // Unsigned Multiply
-#ifndef _HAVE_SIMD_
 Mnemonic_MULSD,                         // Multiply Scalar Double-Precision Floating-Point Values
 Mnemonic_MULSS,                         // Multiply Scalar Single-Precision Floating-Point Values
-#endif
 Mnemonic_NEG,                           // Two's Complement Negation
 Mnemonic_NOP,                           // No Operation
 Mnemonic_NOT,                           // One's Complement Negation
@@ -595,234 +571,13 @@ Mnemonic_OR,                            // Logical Inclusive OR
 Mnemonic_PREFETCH,                      // prefetch
 
 #ifdef _HAVE_MMX_
-#ifndef _HAVE_SIMD_
     Mnemonic_PADDQ,                     // Add Packed Quadword Integers
     Mnemonic_PAND,                      // Logical AND
     Mnemonic_POR,                       // Bitwise Logical OR
     Mnemonic_PSUBQ,                     // Subtract Packed Quadword Integers
 #endif
-#endif
 
-#ifdef _HAVE_SIMD_
-    Mnemonic_ADDPD,
-    Mnemonic_ADDSUBPD,
-    Mnemonic_ADDSUBPS,
-    Mnemonic_ADDPS,
-    Mnemonic_ANDPD,
-    Mnemonic_ANDNPD,
-    Mnemonic_ANDNPS,
-    Mnemonic_CLFLUSH,
-    Mnemonic_CMPPD,
-    Mnemonic_CMPPS,
-    Mnemonic_CMPSD,
-    Mnemonic_CMPSS,
-    Mnemonic_COMISD,
-    Mnemonic_COMISS,
-    Mnemonic_CVTDQ2PD,
-    Mnemonic_CVTDQ2PS,
-    Mnemonic_CVTPS2DQ,
-    Mnemonic_CVTPD2DQ,
-    Mnemonic_CVTPD2PI,
-    Mnemonic_CVTPD2PS,
-    Mnemonic_CVTPI2PD,
-    Mnemonic_CVTPI2PS,
-    Mnemonic_CVTPS2PQ,
-    Mnemonic_CVTPS2PD,
-    Mnemonic_CVTPS2PI,
-    Mnemonic_CVTSD2SI,
-    Mnemonic_CVTSD2SS,
-    Mnemonic_CVTSI2SD,
-    Mnemonic_CVTSI2SS,
-    Mnemonic_CVTSS2SD,
-    Mnemonic_CVTSS2SI,
-    Mnemonic_CVTTPD2PI,
-    Mnemonic_CVTTPD2DQ,
-    Mnemonic_CVTTPS2DQ,
-    Mnemonic_CVTTPS2PI,
-    Mnemonic_CVTTSS2SI,
-    Mnemonic_DIVPD,
-    Mnemonic_DIVPS,
-    Mnemonic_DIVSD,
-    Mnemonic_DIVSS,
-    Mnemonic_EMMS,
-    Mnemonic_HADDPD,
-    Mnemonic_HADDPS,
-    Mnemonic_HSUBPD,
-    Mnemonic_HSUBPS,
-    Mnemonic_LDDQU,
-    Mnemonic_LDMXCSR,
-    Mnemonic_LFENCE,
-    Mnemonic_MASKMOVDQU,
-    Mnemonic_MASKMOVQ,
-    Mnemonic_MAXPD,
-    Mnemonic_MAXPS,
-    Mnemonic_MAXSD,
-    Mnemonic_MAXSS,
-    Mnemonic_MFENCE,
-    Mnemonic_MINPD,
-    Mnemonic_MINPS,
-    Mnemonic_MINSD,
-    Mnemonic_MINSS,
-    Mnemonic_MONITOR,
-
-    Mnemonic_MOVAPD,
-    Mnemonic_MOVAPS,
-    Mnemonic_MOVD,
-    Mnemonic_MOVDDUP,
-    Mnemonic_MOVDQA,
-    Mnemonic_MOVDQU,
-    Mnemonic_MOVDQ2Q,
-    Mnemonic_MOVHLPS,
-    Mnemonic_MOVHPD,
-    Mnemonic_MOVHPS,
-    Mnemonic_MOVLHPS,
-    Mnemonic_MOVLPD,
-    Mnemonic_MOVLPS,
-    Mnemonic_MOVMSKPD,
-    Mnemonic_MOVMSKPS,
-    Mnemonic_MOVNTDQ,
-    Mnemonic_MOVNTI,
-    Mnemonic_MOVNTPD,
-    Mnemonic_MOVNTPS,
-    Mnemonic_MOVNTQ,
-    Mnemonic_MOVSHDUP,
-    Mnemonic_MOVSLDUP,
-    Mnemonic_MOVQ,
-    Mnemonic_MOVQ2DQ,
-    Mnemonic_MOVUPD,
-    Mnemonic_MOVUPS,
-    Mnemonic_MULPD,
-    Mnemonic_MULPS,
-    Mnemonic_MULSD,
-    Mnemonic_MULSS,
-    Mnemonic_WAIT,
-    Mnemonic_ORPD,
-    Mnemonic_ORPS,
-    Mnemonic_PACKSSWB,
-    Mnemonic_PACKSSDW,
-    Mnemonic_PACKUSWB,
-    Mnemonic_PADDB,
-    Mnemonic_PADDW,
-    Mnemonic_PADDD,
-    Mnemonic_PADDQ,
-    Mnemonic_PADDSB,
-    Mnemonic_PADDSW,
-    Mnemonic_PADDUSB,
-    Mnemonic_PADDUSW,
-    Mnemonic_PAND,
-    Mnemonic_PANDN,
-    Mnemonic_PAVGB,
-    Mnemonic_PAVGW,
-    Mnemonic_PCMPEQB,
-    Mnemonic_PCMPEQW,
-    Mnemonic_PCMPEQD,
-    Mnemonic_PCMPEQQ,
-    Mnemonic_PCMPGTB,
-    Mnemonic_PCMPGTW,
-    Mnemonic_PCMPGTD,
-    Mnemonic_PCMPGTQ,
-    Mnemonic_PEXTRB,
-    Mnemonic_PEXTRD,
-    Mnemonic_PEXTRQ,
-    Mnemonic_PINSRB,
-    Mnemonic_PINSRD,
-    Mnemonic_PINSRQ,
-    Mnemonic_PEXTRW,
-    Mnemonic_PINSRW,
-    Mnemonic_PMOVSXBW,
-    Mnemonic_PMOVZXBW,
-    Mnemonic_PMOVSXBD,
-    Mnemonic_PMOVZXBD,
-    Mnemonic_PMOVSXBQ,
-    Mnemonic_PMOVZXBQ,
-    Mnemonic_PMOVSXWD,
-    Mnemonic_PMOVZXWD,
-    Mnemonic_PMOVSXWQ,
-    Mnemonic_PMOVZXWQ,
-    Mnemonic_PMOVSXDQ,
-    Mnemonic_PMOVZXDQ,
-    Mnemonic_PMADDWD,
-    Mnemonic_PABSB,
-    Mnemonic_PABSW,
-    Mnemonic_PABSD,
-    Mnemonic_PMAXSB,
-    Mnemonic_PMAXSW,
-    Mnemonic_PMAXSD,
-    Mnemonic_PMAXUB,
-    Mnemonic_PMINSB,
-    Mnemonic_PMINSW,
-    Mnemonic_PMINSD,
-    Mnemonic_PMINUB,
-    Mnemonic_PMOVMSKB,
-    Mnemonic_PMULHUW,
-    Mnemonic_PMULHW,
-    Mnemonic_PMULLD,
-    Mnemonic_PMULLW,
-    Mnemonic_PMULDQ,
-    Mnemonic_PMULUDQ,
-    Mnemonic_POR,
-    Mnemonic_PSADBW,
-    Mnemonic_PSHUFB,
-    Mnemonic_PSHUFD,
-    Mnemonic_PSHUFHW,
-    Mnemonic_PSHUFLW,
-    Mnemonic_PSHUFW,
-    Mnemonic_PSLLDQ,
-    Mnemonic_PSLLW,
-    Mnemonic_PSLLD,
-    Mnemonic_PSLLQ,
-    Mnemonic_PSRAW,
-    Mnemonic_PSRAD,
-    Mnemonic_PSRLW,
-    Mnemonic_PSRLD,
-    Mnemonic_PSRLQ,
-    Mnemonic_PSRLDQ,
-    Mnemonic_PSUBB,
-    Mnemonic_PSUBW,
-    Mnemonic_PSUBD,
-    Mnemonic_PSUBQ,
-    Mnemonic_PSUBSB,
-    Mnemonic_PSUBSW,
-    Mnemonic_PSUBUSB,
-    Mnemonic_PSUBUSW,
-    Mnemonic_PUNPCKHBW,
-    Mnemonic_PUNPCKHWD,
-    Mnemonic_PUNPCKHDQ,
-    Mnemonic_PUNPCKHQDQ,
-    Mnemonic_PUNPCKLBW,
-    Mnemonic_PUNPCKLWD,
-    Mnemonic_PUNPCKLDQ,
-    Mnemonic_PUNPCKLQDQ,
-    Mnemonic_PXOR,
-    Mnemonic_RCPPS,
-    Mnemonic_RSQRTPS,
-    Mnemonic_RSQRTSS,
-    Mnemonic_SHUFPD,
-    Mnemonic_SHUFPS,
-    Mnemonic_SQRTPD,
-    Mnemonic_SQRTPS,
-    Mnemonic_SQRTSD,
-    Mnemonic_SQRTSS,
-    Mnemonic_STMXCSR,
-    Mnemonic_SUBPD,
-    Mnemonic_SUBPS,
-    Mnemonic_SUBSD,
-    Mnemonic_SUBSS,
-    Mnemonic_UNPCKHPD,
-    Mnemonic_UNPCKHPS,
-    Mnemonic_UNPCKLPD,
-    Mnemonic_UNPCKLPS,
-    Mnemonic_XORPD,
-    Mnemonic_XORPS,
-    Mnemonic_PCMPESTRI,
-    Mnemonic_PCMPESTRM,
-    Mnemonic_PCMPISTRI,
-    Mnemonic_PCMPISTRM,
-#endif
-
-#ifndef _HAVE_SIMD_
 Mnemonic_PXOR,                          // Logical Exclusive OR
-#endif
 Mnemonic_POP,                           // Pop a Value from the Stack
 Mnemonic_POPFD,                         // Pop a Value of EFLAGS register from the Stack
 Mnemonic_PUSH,                          // Push Word or Doubleword Onto the Stack
@@ -859,10 +614,8 @@ Mnemonic_SHLD,                          // Double Precision Shift Left
 
 Mnemonic_SBB,                           // Integer Subtraction with Borrow
 Mnemonic_SUB,                           // Subtract
-#ifndef _HAVE_SIMD_
 Mnemonic_SUBSD,                         // Subtract Scalar Double-Precision Floating-Point Values
 Mnemonic_SUBSS,                         // Subtract Scalar Single-Precision Floating-Point Values
-#endif
 
 Mnemonic_TEST,                          // Logical Compare
 
@@ -873,18 +626,14 @@ Mnemonic_XOR,                           // Logical Exclusive OR
 //
 // packed things,
 //
-#ifndef _HAVE_SIMD_
 Mnemonic_XORPD,                         // Bitwise Logical XOR for Double-Precision Floating-Point Values
 Mnemonic_XORPS,                         // Bitwise Logical XOR for Single-Precision Floating-Point Values
 
 Mnemonic_CVTDQ2PD,                      // Convert Packed Doubleword Integers to Packed Double-Precision Floating-Point Values
 Mnemonic_CVTTPD2DQ,                     // Convert with Truncation Packed Double-Precision Floating-Point Values to Packed Doubleword Integers
-#endif
 
-#ifndef _HAVE_SIMD_
 Mnemonic_CVTDQ2PS,                      // Convert Packed Doubleword Integers to Packed Single-Precision Floating-Point Values
 Mnemonic_CVTTPS2DQ,                     // Convert with Truncation Packed Single-Precision Floating-Point Values to Packed Doubleword Integers
-#endif
 //
 // String operations
 //
@@ -894,9 +643,7 @@ Mnemonic_SCAS,                          // Scan string
 Mnemonic_STOS,                          // Store string
 
 //
-#ifndef _HAVE_SIMD_
 Mnemonic_WAIT,                          // Check pending pending unmasked floating-point exception
-#endif
 //
 Mnemonic_Count
 };

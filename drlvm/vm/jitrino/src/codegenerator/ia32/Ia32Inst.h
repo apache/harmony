@@ -750,7 +750,6 @@ public:
            m==Mnemonic_MOVS16 ||
            m==Mnemonic_MOVS32 ||
            m==Mnemonic_MOVS64 ||
-           m==Mnemonic_PINSRD ||
            m==Mnemonic_STOS   ||
            m==Mnemonic_STD    ||
            m==Mnemonic_CLD    ||

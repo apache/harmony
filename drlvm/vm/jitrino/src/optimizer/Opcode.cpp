@@ -88,7 +88,6 @@ static OpcodeInfo opcodeTable[] = {
     { Op_And,                   false, MB::Movable,       MK::None,                                  "and   ",        "and       %s -) %l",           },
     { Op_Or,                    false, MB::Movable,       MK::None,                                  "or    ",        "or        %s -) %l",           },
     { Op_Xor,                   false, MB::Movable,       MK::None,                                  "xor   ",        "xor       %s -) %l",           },
-    { Op_AndNot,                false, MB::Movable,       MK::None,                                  "andnot",        "andnot    %s -) %l",           },
     { Op_Not,                   false, MB::Movable,       MK::None,                                  "not   ",        "not       %s -) %l",           },
     { Op_Select,                false, MB::Movable,       MK::None,                                  "select",        "select %s -) %l",              }, // (src1 ? src2 : src3)
     { Op_Conv,                  false, MB::Movable,       MK::Overflow_and_Exception_and_Strict,     "conv  ",        "conv%t%m %s -) %l",            }, 
@@ -205,15 +204,6 @@ static OpcodeInfo opcodeTable[] = {
     { Op_AddOffset,             false, MB::Movable,       MK::None,                                  "addoffset",              "addoff %s -) %l",      },
     { Op_AddOffsetPlusHeapbase, false, MB::Movable,       MK::None,                                  "addoffphb",              "addoffphb %s -) %l",      },
 
-    { Op_VecAddSub,             false, MB::Movable,       MK::None,                                  "addsub",           "addsub       %s -) %l",           },
-    { Op_VecHadd,               false, MB::Movable,       MK::None,                                  "hadd",             "hadd         %s -) %l",           },
-    { Op_VecHsub,               false, MB::Movable,       MK::None,                                  "hsub",             "hsub         %s -) %l",           },
-    { Op_VecShuffle,            false, MB::Movable,       MK::None,                                  "shuffle",          "shuffle      %s -) %l",           },
-    { Op_VecExtract,            false, MB::Movable,       MK::None,                                  "vecextr",          "vecextr      %s -) %l",           },
-    { Op_VecPackScalars,        false, MB::Movable,       MK::None,                                  "vecpack",          "vecpack      %s -) %l",           },
-    { Op_VecInterleaveHigh,     false, MB::Movable,       MK::None,                                  "unpackh",          "unpackh      %s -) %l",           },
-    { Op_VecInterleaveLow,      false, MB::Movable,       MK::None,                                  "unpackl",          "unpackl      %s -) %l",           },
-    { Op_VecCmpStr,             false, MB::Movable,       MK::None,                                  "cmpstr",           "cmpstr       %s -) %l",           },
     { Op_TauPoint,              false, MB::None,          MK::None,                                  "taupoint ",        "taupoint() -) %l",           }, // mark
     { Op_TauEdge,              false, MB::None,          MK::None,                                   "tauedge ",        "tauedge() -) %l",           }, // mark
     { Op_TauAnd,                false, MB::Movable,       MK::None,                                  "tauand ",        "tauand       %s -) %l",        },

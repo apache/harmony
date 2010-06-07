@@ -1661,12 +1661,6 @@ Simplifier::simplifyTauRem(Type* dstType,
                 //
                 return genLdConstant((I_32)0)->getDst();
             }
-            else if (denom > 0 && ((denom & (denom - 1)) == 0)) {
-                // convert rem by powers of 2 into bitwise "and" --njt--
-                // src1 % src2 -> src1 & (src2 - 1)
-                return genAnd(dstType, src1,
-                              genLdConstant(denom - 1)->getDst ())->getDst ();
-            }
         } else if (ConstantFolder::isConstant(src2inst, cv.i8)) {
             int64 denom = cv.i8;
             if ((denom == -1) || (denom == 1)) {

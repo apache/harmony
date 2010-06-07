@@ -296,7 +296,6 @@ enum Opcode {
     Op_Min,   Op_Max,   Op_Abs,     // no modifiers
     // Bitwise
     Op_And,    Op_Or,    Op_Xor,
-    Op_AndNot,
     Op_Not,
     // Selection
     Op_Select,                      // (src1 ? src2 : src3)
@@ -438,17 +437,6 @@ enum Opcode {
 
     Op_AddOffset,                   // add uncompref+offset
     Op_AddOffsetPlusHeapbase,       // add compref+offsetPlusHeapbase (uncompressing)
-
-    // Vector operations:
-    Op_VecAddSub,                   // add odd elements and sub even elements
-    Op_VecHadd,                     // horizontal add pairs of elements
-    Op_VecHsub,                     // horizontal sub pairs of elements
-    Op_VecShuffle,                  // shuffle elements of a vector according to a given pattern
-    Op_VecExtract,                  // extract a scalar value from a vector
-    Op_VecPackScalars,              // pack multiple scalar values into a vector
-    Op_VecInterleaveHigh,           // interleave high parts of two vectors
-    Op_VecInterleaveLow,            // interleave low parts of two vectors
-    Op_VecCmpStr,                   // compare strings, return index
 
     // ADDED FOR TAU:
 

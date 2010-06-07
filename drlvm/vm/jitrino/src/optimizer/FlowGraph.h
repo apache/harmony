@@ -71,10 +71,6 @@ public:
     static Node* duplicateRegion(IRManager& irm, Node* entry, StlBitVector& nodesInRegion, DefUseBuilder& defUses, NodeRenameTable& nodeRenameTable, OpndRenameTable& opndRenameTable, double newEntryFreq = 0.0);
     
 
-    static Node* duplicateSingleNode(IRManager& irm, Node* node, StlBitVector& nodesInRegion, DefUseBuilder& defUses, OpndRenameTable& opndRenameTable, double newNodeFreq=0.0);
-    static Node* duplicateSingleNode(IRManager& irm, Node* node, StlBitVector& nodesInRegion, DefUseBuilder& defUses, double newNodeFreq=0.0);
-
-
     static void  renameOperandsInNode(Node *node, OpndRenameTable *renameTable);
 
     static void doTranslatorCleanupPhase(IRManager& irm);

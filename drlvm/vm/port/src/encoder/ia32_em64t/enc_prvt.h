@@ -102,9 +102,6 @@ enum OpcodeByteKind {
 #define DU_DU_U     {3, 2, 3, (((OpndRole_Def|OpndRole_Use)<<4) | ((OpndRole_Def|OpndRole_Use)<<2) | OpndRole_Use) }
 #define D_DU_U      {3, 2, 2, (((OpndRole_Def)<<4) | ((OpndRole_Def|OpndRole_Use)<<2) | OpndRole_Use) }
 #define D_U_U       {3, 1, 2, (((OpndRole_Def)<<4) | ((OpndRole_Use)<<2) | OpndRole_Use) }
-#define DU_U_U      {3, 1, 3, (((OpndRole_Def|OpndRole_Use)<<4) | ((OpndRole_Use)<<2) | OpndRole_Use) }
-#define D_U_U_U_U_U {6, 1, 5, (((OpndRole_Def)<<10)| ((OpndRole_Use)<<8) | ((OpndRole_Use)<<6) | ((OpndRole_Use)<<4) | ((OpndRole_Use)<<2) | OpndRole_Use) }
-#define D_U_U_U     {4, 1, 3, (((OpndRole_Def)<<6) | ((OpndRole_Use)<<4) | ((OpndRole_Use)<<2) | OpndRole_Use) }
 
 // Special encoding of 0x00 opcode byte. Note: it's all O-s, not zeros.
 #define OxOO        OpcodeByteKind_ZeroOpcodeByte
@@ -142,7 +139,6 @@ enum OpcodeByteKind {
 #define AH          {OpndKind_GPReg, OpndSize_8, RegName_AH}
 #define AX          {OpndKind_GPReg, OpndSize_16, RegName_AX}
 #define EAX         {OpndKind_GPReg, OpndSize_32, RegName_EAX}
-#define DS	    {OpndKind_SReg, OpndSize_16, RegName_EAX}
 #ifdef _EM64T_
     #define RAX     {OpndKind_GPReg, OpndSize_64, RegName_RAX }
 #endif
@@ -169,8 +165,6 @@ enum OpcodeByteKind {
     #define RDI     { OpndKind_GPReg, OpndSize_64, RegName_RDI }
 #endif
 
-#define XMM0        {OpndKind_XMMReg, OpndSize_128, RegName_XMM0}
-
 #define r8          {OpndKind_GPReg, OpndSize_8, RegName_Null}
 #define r16         {OpndKind_GPReg, OpndSize_16, RegName_Null}
 #define r32         {OpndKind_GPReg, OpndSize_32, RegName_Null}
@@ -189,7 +183,6 @@ enum OpcodeByteKind {
 #define m16         {OpndKind_Mem, OpndSize_16, RegName_Null}
 #define m32         {OpndKind_Mem, OpndSize_32, RegName_Null}
 #define m64         {OpndKind_Mem, OpndSize_64, RegName_Null}
-#define m128         {OpndKind_Mem, OpndSize_128, RegName_Null}
 #ifdef _EM64T_
     #define r_m64   { (OpndKind)(OpndKind_GPReg|OpndKind_Mem),      OpndSize_64, RegName_Null }
 #endif
@@ -217,8 +210,6 @@ enum OpcodeByteKind {
 
 #define mm64        {OpndKind_MMXReg, OpndSize_64, RegName_Null}
 #define mm_m64      {(OpndKind)(OpndKind_MMXReg|OpndKind_Mem), OpndSize_64, RegName_Null} 
-#define xmm128       {OpndKind_XMMReg, OpndSize_128, RegName_Null}
-#define xmm_m128     {(OpndKind)(OpndKind_XMMReg|OpndKind_Mem), OpndSize_128, RegName_Null} 
 
 #define xmm64       {OpndKind_XMMReg, OpndSize_64, RegName_Null}
 #define xmm_m64     {(OpndKind)(OpndKind_XMMReg|OpndKind_Mem), OpndSize_64, RegName_Null} 
@@ -295,8 +286,8 @@ struct OpcodeInfo {
         decoder64,
     };
     platform                        platf;
-    unsigned                        opcode[5+1+1];
-    EncoderBase::OpndDesc           opnds[6];
+    unsigned                        opcode[4+1+1];
+    EncoderBase::OpndDesc           opnds[3];
     EncoderBase::OpndRolesDesc      roles;
 };
 

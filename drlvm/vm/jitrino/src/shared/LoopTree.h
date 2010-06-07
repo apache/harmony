@@ -105,10 +105,6 @@ public:
     bool isNormalized() const { return normalized;}
 
     U_32 getMaxLoopDepth() const {return getHeight()-1;}
-
-    // Return common ancestor of LOOP1 and LOOP2.
-    LoopNode* findCommonLoop (LoopNode *loop1, LoopNode *loop2) const;
-
 private:
 
     void findLoopHeaders(Nodes& headers);

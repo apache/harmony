@@ -1056,7 +1056,6 @@ public:
     Inst*    makeAnd(Opnd* dst, Opnd* src1, Opnd* src2);
     Inst*    makeOr(Opnd* dst, Opnd* src1, Opnd* src2);
     Inst*    makeXor(Opnd* dst, Opnd* src1, Opnd* src2);
-    Inst*    makeAndNot(Opnd* dst, Opnd* src1, Opnd* src2);
     Inst*    makeNot(Opnd* dst, Opnd* src);
     // Selection
     Inst*    makeSelect(Opnd* dst, Opnd* src1, Opnd* src2, Opnd* src3);
@@ -1232,20 +1231,6 @@ public:
     Inst*    makeLdArrayLenOffsetPlusHeapbase(Opnd* dst, Type *elemType);
     Inst*    makeAddOffset(Opnd* dst, Opnd* ref, Opnd* offset);
     Inst*    makeAddOffsetPlusHeapbase(Opnd* dst, Opnd* ref, Opnd* offset);
-
-    // Vector operations
-    Inst*    makeVecAddSub (Opnd* dst, Opnd* src1, Opnd* src2);
-    Inst*    makeVecHadd (Opnd* dst, Opnd* src1, Opnd* src2);
-    Inst*    makeVecHsub (Opnd* dst, Opnd* src1, Opnd* src2);
-    Inst*    makeVecShuffle (Opnd* dst, Opnd* src1, Opnd* src2, Opnd* src3);
-    // Make an instruction that extract the INDEX-th element from the
-    // vector SRC to DST.
-    Inst*    makeVecExtract (Opnd *dst, Opnd *src, Opnd *index);
-    // Pack OPNDS[0..n] into the vector DST.
-    Inst*    makeVecPackScalars (Opnd *dst, U_32 numOpnds, Opnd **opnds);
-    Inst*    makeVecInterleaveHigh (Opnd* dst, Opnd* src1, Opnd* src2);
-    Inst*    makeVecInterleaveLow (Opnd* dst, Opnd* src1, Opnd* src2);
-    Inst*    makeVecCmpStr (Opnd *dst, U_32 numOpnds, Opnd **opnds);
 
     // new tau methods
     Inst*    makeTauPoint(Opnd *dst);
@@ -1545,9 +1530,6 @@ public:
 
     virtual Inst*
     caseXor(Inst* inst)=0;//                 {return caseDefault(inst);}
-
-    virtual Inst*
-    caseAndNot(Inst* inst)=0;//              {return caseDefault(inst);}
 
     virtual Inst*
     caseNot(Inst* inst)=0;//                 {return caseDefault(inst);}
@@ -1896,33 +1878,6 @@ public:
 
     virtual Inst*
     caseAddOffsetPlusHeapbase(Inst* inst)=0;// {return caseDefault(inst);}
-
-    virtual Inst*
-    caseVecAddSub(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecHadd(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecHsub(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecShuffle(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecExtract(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecPackScalars(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecInterleaveHigh(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecInterleaveLow(Inst* inst)=0;
-
-    virtual Inst*
-    caseVecCmpStr(Inst* inst)=0;
 
     // new tau methods
     virtual Inst*

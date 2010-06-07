@@ -32,7 +32,6 @@
 #include "EMInterface.h"
 #include "inliner.h"
 #include "VMMagic.h"
-#include "SIMD.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -172,8 +171,6 @@ JavaByteCodeTranslator::JavaByteCodeTranslator(CompilationInterface& ci,
             } 
             if (VMMagicUtils::isVMMagicClass(type->getName())) {
                 type = convertVMMagicType2HIR(typeManager, type);
-            } else if (SIMDUtils::isSIMDClass(type->getName())) {
-                type = SIMDUtils::convertSIMDType2HIR(typeManager, type);
             }
             arg = irBuilder.genArgDef(DefArgNoModifier,type);
         }
@@ -727,8 +724,6 @@ JavaByteCodeTranslator::getstatic(U_32 constPoolIndex) {
         bool fieldIsMagic = VMMagicUtils::isVMMagicClass(fieldType->getName());
         if (fieldIsMagic) {
             fieldType = convertVMMagicType2HIR(typeManager, fieldType);
-        } else if (SIMDUtils::isSIMDClass(fieldType->getName())) {
-            fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldType);
         }
         if (field->isInitOnly() && !field->getParentType()->needsInitialization()) {
             //the final static field of the initialized class
@@ -764,20 +759,15 @@ JavaByteCodeTranslator::getstatic(U_32 constPoolIndex) {
             pushOpnd(irBuilder.genLdStatic(fieldType, field));
         }
     } else {
-        Type* fieldType;
         //field is not resolved or not static
         if (!typeManager.isLazyResolutionMode()) {
             // generate helper call for throwing respective exception
             linkingException(constPoolIndex, OPCODE_GETSTATIC);
         }
         const char* fieldTypeName = CompilationInterface::getFieldSignature(methodToCompile.getParentHandle(), constPoolIndex);
-        if (VMMagicUtils::isVMMagicClass(fieldTypeName)) {
-             fieldType = convertVMMagicType2HIR(typeManager, fieldTypeName);
-        } else if (SIMDUtils::isSIMDClass(fieldTypeName)) {
-             fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldTypeName);
-        } else {
-             fieldType = compilationInterface.getFieldType(methodToCompile.getParentHandle(), constPoolIndex);
-        }
+        bool fieldIsMagic = VMMagicUtils::isVMMagicClass(fieldTypeName);
+        Type* fieldType = fieldIsMagic ? convertVMMagicType2HIR(typeManager, fieldTypeName) 
+                                       : compilationInterface.getFieldType(methodToCompile.getParentHandle(), constPoolIndex);
         Opnd* res = irBuilder.genLdStaticWithResolve(fieldType, methodToCompile.getParentType()->asObjectType(), constPoolIndex);
         pushOpnd(res);
     }
@@ -792,25 +782,18 @@ JavaByteCodeTranslator::putstatic(U_32 constPoolIndex) {
         bool fieldIsMagic = VMMagicUtils::isVMMagicClass(fieldType->getName());
         if (fieldIsMagic) {
             fieldType = convertVMMagicType2HIR(typeManager, fieldType);
-        } else if (SIMDUtils::isSIMDClass(fieldType->getName())) {
-           fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldType);
         }
         irBuilder.genStStatic(fieldType,field,popOpnd());
     } else {
-        Type* fieldType;
         //field is not resolved or not static
         if (!typeManager.isLazyResolutionMode()) {
             // generate helper call for throwing respective exception
             linkingException(constPoolIndex, OPCODE_PUTSTATIC);
         }
         const char* fieldTypeName = CompilationInterface::getFieldSignature(methodToCompile.getParentHandle(), constPoolIndex);
-        if (VMMagicUtils::isVMMagicClass(fieldTypeName)) {
-             fieldType = convertVMMagicType2HIR(typeManager, fieldTypeName);
-        } else if (SIMDUtils::isSIMDClass(fieldTypeName)) {
-             fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldTypeName);
-        } else {
-             fieldType = compilationInterface.getFieldType(methodToCompile.getParentHandle(), constPoolIndex);
-        }
+        bool fieldIsMagic = VMMagicUtils::isVMMagicClass(fieldTypeName);
+        Type* fieldType = fieldIsMagic ? convertVMMagicType2HIR(typeManager, fieldTypeName) 
+                                       : compilationInterface.getFieldType(methodToCompile.getParentHandle(), constPoolIndex);
         Opnd* value = popOpnd();
         irBuilder.genStStaticWithResolve(fieldType, methodToCompile.getParentType()->asObjectType(), constPoolIndex, value);
     }
@@ -823,8 +806,6 @@ JavaByteCodeTranslator::getfield(U_32 constPoolIndex) {
         Type* fieldType = getFieldType(field, constPoolIndex);
         if (VMMagicUtils::isVMMagicClass(fieldType->getName())) {
             fieldType = convertVMMagicType2HIR(typeManager, fieldType);
-        } else if (SIMDUtils::isSIMDClass(fieldType->getName())) {
-            fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldType);
         }
         pushOpnd(irBuilder.genLdField(fieldType,popOpnd(),field));
     } else {
@@ -835,8 +816,6 @@ JavaByteCodeTranslator::getfield(U_32 constPoolIndex) {
         Type* fieldType = compilationInterface.getFieldType(methodToCompile.getParentHandle(), constPoolIndex);
         if (VMMagicUtils::isVMMagicClass(fieldType->getName())) {
             fieldType = convertVMMagicType2HIR(typeManager, fieldType);
-        } else if (SIMDUtils::isSIMDClass(fieldType->getName())) {
-            fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldType);
         }
         Opnd* base = popOpnd();
         Opnd* res = irBuilder.genLdFieldWithResolve(fieldType, base, methodToCompile.getParentType()->asObjectType(), constPoolIndex);
@@ -852,8 +831,6 @@ JavaByteCodeTranslator::putfield(U_32 constPoolIndex) {
         assert(fieldType);
         if (VMMagicUtils::isVMMagicClass(fieldType->getName())) {
             fieldType = convertVMMagicType2HIR(typeManager, fieldType);
-        } else if (SIMDUtils::isSIMDClass(fieldType->getName())) {
-            fieldType = SIMDUtils::convertSIMDType2HIR(typeManager, fieldType);
         }
 
         Opnd* value = popOpnd();
@@ -1537,10 +1514,6 @@ void JavaByteCodeTranslator::genCallWithResolve(JavaByteCodes bc, unsigned cpInd
             if (res) { //method is not a registered vmhelper name
                 return;
             }
-        } else if (SIMDUtils::isSIMDClass(kname)) {
-            UNUSED bool res = genSIMDHelper(mname, numArgs, args, returnType);
-            assert(res);
-            return;
         }
     }
 
@@ -1572,10 +1545,6 @@ JavaByteCodeTranslator::invokevirtual(U_32 constPoolIndex) {
     const char* className = methodDesc->getParentType()->getName();
     if (VMMagicUtils::isVMMagicClass(className)) {
         UNUSED bool res = genVMMagic(methodDesc->getName(), numArgs, srcOpnds, returnType);
-        assert(res);
-        return;
-    } else if (SIMDUtils::isSIMDClass(className)) {
-        UNUSED bool res = genSIMDHelper(methodDesc->getName(), numArgs, srcOpnds, returnType);    
         assert(res);
         return;
     }
@@ -1948,8 +1917,6 @@ JavaByteCodeTranslator::genLdVar(U_32 varIndex,JavaLabelPrepass::JavaVarType jav
     Opnd *var = getVarOpndLdVar(javaType,varIndex);
     if (VMMagicUtils::isVMMagicClass(var->getType()->getName())) {
         var->setType(convertVMMagicType2HIR(typeManager, var->getType()));
-    } else if (SIMDUtils::isSIMDClass(var->getType()->getName())) {
-        var->setType(SIMDUtils::convertSIMDType2HIR(typeManager, var->getType()));
     }
     Opnd *opnd;
     if (var->isVarOpnd()) {
@@ -2365,17 +2332,11 @@ JavaByteCodeTranslator::genInvokeStatic(MethodDesc * methodDesc,
         if (res) {
             return;
         }
-    } else if (SIMDUtils::isSIMDClass(kname)) {
-        UNUSED bool res = genSIMDHelper(mname, numArgs, srcOpnds, returnType);
-        assert(res);
-        return;
     }
     Opnd *tauNullChecked = irBuilder.genTauSafe(); // always safe, is a static method call
     Type* resType = returnType;
     if (VMMagicUtils::isVMMagicClass(resType->getName())) {
         resType = convertVMMagicType2HIR(typeManager, resType);
-    } else if (SIMDUtils::isSIMDClass(resType->getName())) {
-        resType= SIMDUtils::convertSIMDType2HIR(typeManager, resType);
     }
     dst = irBuilder.genDirectCall(methodDesc, 
                         resType,
@@ -3180,190 +3141,6 @@ bool JavaByteCodeTranslator::genVMHelper(const char* mname, U_32 numArgs, Opnd *
     }
     
     return false;
-}
-
-bool
-JavaByteCodeTranslator::genSIMDHelper (const char* mname,
-				       U_32 numArgs,
-				       Opnd **args,
-				       Type *returnType)
-{
-  Type *resType = (SIMDUtils::isSIMDClass(returnType->getName ())
-		   ? SIMDUtils::convertSIMDType2HIR (typeManager, returnType)
-		   : returnType);
-  Modifier mod = Modifier(Overflow_None) | Modifier(Exception_Never) | Modifier(Strict_No);
-  Modifier shMod (ShiftMask_Masked);
-
-  if (!strcmp (mname, "make"))
-    {
-      if (numArgs == 1)
-	pushOpnd (irBuilder.genConv (resType, resType->tag, mod, args[0]));
-      else
-	pushOpnd (irBuilder.genVecPackScalars (resType, mod, numArgs, args));
-    }
-  else if (!strcmp (mname, "load"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genLdElem (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "add"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genAdd (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "sub"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genSub (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "mul"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genMul (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "div"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genDiv (resType, Modifier (SignedOp) | Modifier (Strict_No),
-				  args[0], args[1]));
-    }
-  else if (!strcmp (mname, "addsub"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genVecAddSub (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "hadd"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genVecHadd (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "hsub"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genVecHsub (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "max"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genMaxVec (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "min"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genMinVec (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "abs"))
-    {
-      assert (numArgs == 1);
-      pushOpnd (irBuilder.genAbsVec (resType, args[0]));
-    }
-  else if (!strcmp (mname, "and"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genAnd (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "or"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genOr (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "xor"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genXor (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "andnot"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genAndNot (resType, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "sll"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genShl (resType, shMod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "srl"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genShr (resType, shMod | UnsignedOp,
-				  args[0], args[1]));
-    }
-  else if (!strcmp (mname, "sra"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genShr (resType, shMod | SignedOp,
-				  args[0], args[1]));
-    }
-  else if (!strcmp (mname, "cmpeq"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genCmp (resType, args[0]->getType()->tag,
-				  Cmp_EQ, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "cmpne"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genCmp (resType, args[0]->getType()->tag,
-				  Cmp_NE_Un, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "cmple"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genCmp (resType, args[0]->getType()->tag,
-				  Cmp_GTE, args[1], args[0]));
-    }
-  else if (!strcmp (mname, "cmpge"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genCmp (resType, args[0]->getType()->tag,
-				  Cmp_GTE, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "cmplt"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genCmp (resType, args[0]->getType()->tag,
-				  Cmp_GT, args[1], args[0]));
-    }
-  else if (!strcmp (mname, "cmpgt"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genCmp (resType, args[0]->getType()->tag,
-				  Cmp_GT, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "select"))
-    {
-      assert (numArgs == 3);
-      pushOpnd (irBuilder.genSelect (resType, args[0], args[1], args[2]));
-    }
-  else if (!strcmp (mname, "shuffle"))
-    {
-      assert (numArgs == 3);
-      pushOpnd (irBuilder.genVecShuffle (resType, mod, args[0], args[1], args[2]));
-    }
-  else if (!strcmp (mname, "unpack_high"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genVecInterleaveHigh (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "unpack_low"))
-    {
-      assert (numArgs == 2);
-      pushOpnd (irBuilder.genVecInterleaveLow (resType, mod, args[0], args[1]));
-    }
-  else if (!strcmp (mname, "store"))
-    {
-      assert (numArgs == 3);
-      irBuilder.genStElem (args[0]->getType (), args[1], args[2], args[0]);
-    }
-  else if (!strcmp (mname, "cmpstri") || !strcmp (mname, "cmpstrm"))
-    {
-      assert (numArgs == 3 || numArgs == 5);
-      pushOpnd (irBuilder.genVecCmpStr (resType, numArgs, args));
-    }
-  else
-    assert (0);
-
-  return true;
 }
 
 } //namespace Jitrino 

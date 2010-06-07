@@ -271,7 +271,6 @@ private:
     void    genInvokeStatic(MethodDesc * methodDesc,U_32 numArgs,Opnd ** srcOpnds,Type * returnType);
     bool    genVMMagic(const char* mname, U_32 numArgs,Opnd ** srcOpnds,Type * returnType);
     bool    genVMHelper(const char* mname, U_32 numArgs,Opnd ** srcOpnds,Type * returnType);
-    bool    genSIMDHelper(const char* mname, U_32 numArgs,Opnd ** srcOpnds,Type * returnType);
     
     bool    genMinMax(MethodDesc * methodDesc,U_32 numArgs,Opnd ** srcOpnds, Type * returnType);
     void    newFallthroughBlock();

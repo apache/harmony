@@ -159,7 +159,6 @@ public:
     Inst* caseAnd(Inst* inst)               { return hashInst(inst); }
     Inst* caseOr(Inst* inst)                { return hashInst(inst); }
     Inst* caseXor(Inst* inst)               { return hashInst(inst); }
-    Inst* caseAndNot(Inst* inst)            { return hashInst(inst); }
     Inst* caseNot(Inst* inst)               { return hashInst(inst); }
     
     // selection
@@ -899,33 +898,6 @@ public:
 
     virtual Inst*
     caseAddOffsetPlusHeapbase(Inst* inst) { return hashInst(inst); }
-
-    virtual Inst*
-    caseVecAddSub(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecHadd(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecHsub(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecShuffle(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecExtract(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecPackScalars(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecInterleaveHigh(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecInterleaveLow(Inst* inst) { return caseDefault(inst); }
-
-    virtual Inst*
-    caseVecCmpStr(Inst* inst) { return caseDefault(inst); }
 
     // new tau methods
     virtual Inst*

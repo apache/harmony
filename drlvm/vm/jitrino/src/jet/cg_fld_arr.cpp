@@ -31,7 +31,6 @@
 
 #include "trace.h"
 #include "VMMagic.h"
-#include "SIMD.h"
 
 namespace Jitrino {
 namespace Jet {
@@ -271,8 +270,6 @@ void CodeGen::do_field_op(const FieldOpInfo& fieldOp)
     
     const char* fieldDescName = class_cp_get_entry_descriptor(fieldOp.enclClass, fieldOp.cpIndex);
     bool fieldIsMagic = VMMagicUtils::isVMMagicClass(fieldDescName);
-    fieldIsMagic = fieldIsMagic || SIMDUtils::isSIMDClass(fieldDescName);
-    
     if (fieldIsMagic) {
         jt = iplatf;
     }

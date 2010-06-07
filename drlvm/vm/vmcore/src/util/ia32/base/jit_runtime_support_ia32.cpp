@@ -299,9 +299,9 @@ static void *getaddress__vm_initialize_class_naked()
 // Object allocation
 //////////////////////////////////////////////////////////////////////
 
-static void *generate_object_allocation_stub_with_thread_pointer(const char *fast_obj_alloc_proc,
-                                                                 const char *slow_obj_alloc_proc,
-                                                                 const char *stub_name)
+static void *generate_object_allocation_stub_with_thread_pointer(char *fast_obj_alloc_proc,
+                                                                 char *slow_obj_alloc_proc,
+                                                                 char *stub_name)
 {
     const int stub_size = 52+26;
     char *stub = (char *)malloc_fixed_code_for_jit(stub_size, DEFAULT_CODE_ALIGNMENT, CODE_BLOCK_HEAT_MAX/2, CAA_Allocate);

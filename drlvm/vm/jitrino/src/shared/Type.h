@@ -40,7 +40,6 @@ class SsaOpnd;
 class PtrType;
 class FunctionPtrType;
 class NamedType;
-class VectorType;
 class ArrayType;
 class MethodPtrType;
 class UnresolvedMethodPtrType;
@@ -76,7 +75,6 @@ public:
         Single,
         Double,
         Float, // machine-specific float
-	Vector, // vector types
         TypedReference, // typed reference
         
         //     (1.2) User-defined un-boxed value type
@@ -175,7 +173,6 @@ public:
     bool    isSingle()         {return (tag == Type::Single);      }
     bool    isDouble()         {return (tag == Type::Double);      }
     bool    isFloat()          {return (tag == Type::Float);       }
-    bool    isVector()         {return (tag == Type::Vector);       }
     bool    isOffset()         {return (tag == Type::Offset);       }
     bool    isOffsetPlusHeapbase()         {return (tag == Type::OffsetPlusHeapbase);       }
     bool    isSystemObject()   {return isSystemObject(tag); }
@@ -212,7 +209,6 @@ public:
     bool    isArrayLength()    {return (tag == Type::ArrayLength);  }
     bool    isArrayElement()   {return (tag == Type::ArrayElementType);  }
     virtual void print(::std::ostream& os);
-    virtual VectorType*       asVectorType()         {return NULL;}
     virtual ObjectType*       asObjectType()         {return NULL;}
     virtual PtrType*          asPtrType()            {return NULL;}
     virtual FunctionPtrType*  asFunctionPtrType()    {return NULL;}
@@ -544,24 +540,6 @@ public:
     virtual ~ValueType() {}
 };
 
-class VectorType : public ValueType {
-public:
-    VectorType (NamedType *t, int l)
-      : ValueType (Vector), elemType (t), length (l) {}
-
-    VectorType* asVectorType () { return this; }
-
-    NamedType* getElemType () {return elemType;}
-
-    int getLength () { return length; }
-
-    void print (::std::ostream& os);
-
-private:
-    NamedType *elemType;
-    int length;
-};
-
 class UserValueType : public NamedType {
 public:
     UserValueType(void* td,TypeManager& tm) : NamedType(Value,td,tm) {}
@@ -755,7 +733,6 @@ public:
 
     NamedType*    getValueType(void* vmTypeHandle);
     ObjectType*   getObjectType(void* vmTypeHandle, bool isCompressed=false);
-    VectorType*   getVectorType(NamedType *elemType, int length);
     ArrayType*    getArrayType(Type* elemType, bool isCompressed=false, void* arrayVMTypeHandle=NULL);
     void          initArrayType(Type* elemType, bool isCompressed, void* arrayVMTypeHandle);
     Type*         getCommonType(Type* type1, Type *type2);
@@ -851,7 +828,6 @@ private:
     PtrHashTable<ObjectType>       userObjectTypes;
     PtrHashTable<PtrType>          managedPtrTypes;
     PtrHashTable<PtrType>          unmanagedPtrTypes;
-    PtrHashTable<VectorType>       vectorTypes;
     PtrHashTable<ArrayType>        arrayTypes;
     PtrHashTable<MethodPtrType>    methodPtrTypes;
     PtrHashTable<VTablePtrType>    vtablePtrTypes;

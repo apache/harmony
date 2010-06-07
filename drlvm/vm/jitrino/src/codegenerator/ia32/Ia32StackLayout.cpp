@@ -350,7 +350,7 @@ void StackLayouter::createProlog()
     offset &= ~(stackSizeAlignment - 1);
     
     if (cConvention->getStackAlignment() == STACK_ALIGN_HALF16 &&
-        (offset & (STACK_ALIGN16 - 1)) == 0) {
+        (offset & ~(STACK_ALIGN16 - 1)) == 0) {
         // Need to align size of callee save area on half of 16-bytes
         // thus resulting stack pointer will be 16-bytes aligned.
         offset -= STACK_ALIGN_HALF16; 

@@ -77,8 +77,6 @@ CompareOp::Types getCompareOpTypesFromCompareZeroOpTypes(CompareZeroOp::Types t)
         case CompareZeroOp::I:          return CompareOp::I;
         case CompareZeroOp::Ref:        return CompareOp::Ref;
         case CompareZeroOp::CompRef:    return CompareOp::CompRef;
-        default:
-          ;
     }
     assert(0);
     return CompareOp::I4;
@@ -567,7 +565,6 @@ Opnd * InstCodeSelector::convert(CG_OpndHandle * oph, Type * dstType, Opnd * dst
             dstOpnd=convertFpToFp(srcOpnd, dstType, dstOpnd);
             converted=true;
         }   
-    } else if (srcType->tag == Type::Vector) {
     } else if (srcType->isUnmanagedPtr() && !dstType->isUnmanagedPtr()) {
         dstOpnd = convertUnmanagedPtr(srcOpnd, dstType, dstOpnd);
         converted = true;
@@ -633,162 +630,6 @@ CG_OpndHandle*  InstCodeSelector::convToFp(ConvertToFpOp::Types opType,
                                                 CG_OpndHandle*        src) 
 {
     return convert(src, dstType);
-}
-
-//_______________________________________________________________________________________________________________
-//  Convert to vectors
-
-Opnd*  InstCodeSelector::vectorExtension (VectorType* dst_type,
-                                          CG_OpndHandle* src,
-                                          Type::Tag src_elem_tag,
-                                          bool is_zero_extend)
-{
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Type *dst_elem_type = dst_type->getElemType ();
-  Opnd *elem = (Opnd*)src;
-  Mnemonic mn;
-
-  switch (src_elem_tag)
-    {
-    case Type::Int8:
-    case Type::UInt8:
-      switch (dst_elem_type->tag)
-        {
-        case Type::Int16:
-        case Type::UInt16:
-          mn = Mnemonic_PMOVSXBW;
-          break;
-        case Type::Int32:
-        case Type::UInt32:
-          mn = Mnemonic_PMOVSXBD;
-          break;
-        case Type::Int64:
-        case Type::UInt64:
-          mn = Mnemonic_PMOVSXBQ;
-          break;
-        default:
-          assert (0);
-        }
-      break;
-    case Type::Int16:
-    case Type::UInt16:
-      switch (dst_elem_type->tag)
-        {
-        case Type::Int32:
-        case Type::UInt32:
-          mn = Mnemonic_PMOVSXWD;
-          break;
-        case Type::Int64:
-        case Type::UInt64:
-          mn = Mnemonic_PMOVSXWQ;
-          break;
-        default:
-          assert (0);
-        }
-      break;
-    case Type::Int32:
-    case Type::UInt32:
-      switch (dst_elem_type->tag)
-        {
-        case Type::Int64:
-        case Type::UInt64:
-          mn = Mnemonic_PMOVSXDQ;
-          break;
-        default:
-          assert (0);
-        }
-      break;
-
-    default:
-      assert (0);
-    }
-
-  appendInsts (irManager.newInstEx ((Mnemonic)(mn + is_zero_extend),
-                                    1, dst, elem));
-
-  return dst;
-}
-
-CG_OpndHandle*  InstCodeSelector::convToVector (VectorType* dst_type,
-                                                CG_OpndHandle* src,
-                                                bool is_zero_extend)
-{
-  Opnd *elem = (Opnd*)src;
-  Type *dst_elem_type = dst_type->getElemType ();
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Opnd *all_zero;
-
-  if (VectorType *vec_type = elem->getType()->asVectorType ())
-    {
-      Type *src_elem_type = vec_type->getElemType ();
-      if (dst_elem_type->tag == Type::Int32
-	  && src_elem_type->tag == Type::Single)
-	appendInsts (irManager.newInstEx (Mnemonic_CVTPS2DQ, 1, dst, elem));
-      else if (dst_elem_type->tag == Type::Single
-	       && src_elem_type->tag == Type::Int32)
-	appendInsts (irManager.newInstEx (Mnemonic_CVTDQ2PS, 1, dst, elem));
-      else
-	assert (0);
-
-      // // Sign/zero extend an integer vector.
-      // return vectorExtension (dst_type, src,
-      // 			      vec_type->getElemType()->tag,
-      // 			      is_zero_extend);
-    }
-
-  // Duplicate a scalar to a vector
-  switch (dst_elem_type->tag)
-    {
-    case Type::Int8:
-    case Type::UInt8:
-      elem = (Opnd*)convert (src, typeManager.getInt32Type ());
-      appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, dst, elem));
-      all_zero = irManager.newOpnd (dst_type);
-      appendInsts (irManager.newInstEx (Mnemonic_PCMPGTB, 1, all_zero,
-                                        dst, dst));
-      appendInsts (irManager.newInstEx (Mnemonic_PSHUFB, 1, dst, dst, all_zero));
-      break;
-
-    case Type::Int16:
-    case Type::UInt16:
-      elem = (Opnd*)convert (src, typeManager.getInt32Type ());
-      appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, dst, elem));
-      appendInsts (irManager.newInstEx (Mnemonic_PSHUFLW, 1, dst, dst,
-                                        irManager.newImmOpnd (typeManager.getInt8Type (), 0)));
-      appendInsts (irManager.newInstEx (Mnemonic_MOVDDUP, 1, dst, dst));
-      break;
-
-    case Type::Int32:
-    case Type::UInt32:
-      appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, dst, elem));
-      appendInsts (irManager.newInstEx (Mnemonic_PSHUFD, 1, dst, dst,
-                                        irManager.newImmOpnd (typeManager.getInt8Type (), 0)));
-      break;
-
-    case Type::Single:
-      appendInsts (irManager.newInstEx (Mnemonic_PSHUFD, 1, dst, elem,
-                                        irManager.newImmOpnd (typeManager.getInt8Type (), 0)));
-      break;
-
-    case Type::Int64:
-    case Type::UInt64:
-#ifndef _EM64T_
-      appendInsts (irManager.newI8PseudoInst (Mnemonic_MOVDDUP, 1, dst, elem));
-#else
-      appendInsts (irManager.newInstEx (Mnemonic_MOVQ, 1, dst, elem));
-      appendInsts (irManager.newInstEx (Mnemonic_MOVDDUP, 1, dst, dst));
-#endif
-      break;
-
-    case Type::Double:
-      appendInsts (irManager.newInstEx (Mnemonic_MOVDDUP, 1, dst, elem));
-      break;
- 
-    default:
-      assert (0);
-    }
-
-  return dst;
 }
 
 //_______________________________________________________________________________________________________________
@@ -865,19 +706,6 @@ Opnd * InstCodeSelector::simpleOp_I4(Mnemonic mn, Type * dstType, Opnd * src1, O
 }
 
 //_______________________________________________________________________________________________________________
-Opnd * InstCodeSelector::vecBinaryOp(Mnemonic mn, Opnd * src1, Opnd * src2)
-{
-    Type *type = src1->getType ();
-    Opnd *dst = irManager.newOpnd (type);
-    Opnd *srcOpnd1 = (Opnd*)convert (src1, type);
-    Opnd *srcOpnd2 = (Opnd*)convert (src2, type);
-
-    appendInsts (irManager.newInstEx(mn, 1, dst, srcOpnd1, srcOpnd2));
-
-    return dst;
-}
-
-//_______________________________________________________________________________________________________________
 //  Add numeric values
 
 CG_OpndHandle* InstCodeSelector::add(ArithmeticOp::Types opType, 
@@ -897,18 +725,6 @@ CG_OpndHandle* InstCodeSelector::add(ArithmeticOp::Types opType,
             return fpOp(Mnemonic_ADDSD, irManager.getTypeFromTag(Type::Double), (Opnd*)src1, (Opnd*)src2);
         case ArithmeticOp::S:
             return fpOp(Mnemonic_ADDSS, irManager.getTypeFromTag(Type::Single), (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI1_16:
-            return vecBinaryOp (Mnemonic_PADDB, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI2_8:
-            return vecBinaryOp (Mnemonic_PADDW, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI4_4:
-            return vecBinaryOp (Mnemonic_PADDD, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI8_2:
-            return vecBinaryOp (Mnemonic_PADDQ, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VS_4:
-            return vecBinaryOp (Mnemonic_ADDPS, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VD_2:
-            return vecBinaryOp (Mnemonic_ADDPD, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -935,18 +751,6 @@ CG_OpndHandle* InstCodeSelector::sub(ArithmeticOp::Types opType,
             return fpOp(Mnemonic_SUBSD, irManager.getTypeFromTag(Type::Double), (Opnd*)src1, (Opnd*)src2);
         case ArithmeticOp::S:
             return fpOp(Mnemonic_SUBSS, irManager.getTypeFromTag(Type::Single), (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI1_16:
-            return vecBinaryOp (Mnemonic_PSUBB, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI2_8:
-            return vecBinaryOp (Mnemonic_PSUBW, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI4_4:
-            return vecBinaryOp (Mnemonic_PSUBD, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI8_2:
-            return vecBinaryOp (Mnemonic_PSUBQ, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VS_4:
-            return vecBinaryOp (Mnemonic_SUBPS, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VD_2:
-            return vecBinaryOp (Mnemonic_SUBPD, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -1023,20 +827,6 @@ CG_OpndHandle* InstCodeSelector::mul(ArithmeticOp::Types opType,
             return fpOp(Mnemonic_MULSD, irManager.getTypeFromTag(Type::Double), (Opnd*)src1, (Opnd*)src2);
         case ArithmeticOp::S:
             return fpOp(Mnemonic_MULSS, irManager.getTypeFromTag(Type::Single), (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VI2_8:
-            return vecBinaryOp (Mnemonic_PMULLW, (Opnd*)src1, (Opnd*)src2);
-         case ArithmeticOp::VI4_4:
-            return vecBinaryOp (Mnemonic_PMULLD, (Opnd*)src1, (Opnd*)src2);;
-        case ArithmeticOp::VI8_2:
-            // FIXME: SSE doesn't support 64-bit multiplication.  The
-            // PMULUDQ only multiplies the low 32-bit of each part, so
-            // the middle end must ensure that the high 32-bits of
-            // each part are all zero.
-            return vecBinaryOp (Mnemonic_PMULUDQ, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VS_4:
-            return vecBinaryOp (Mnemonic_MULPS, (Opnd*)src1, (Opnd*)src2);
-        case ArithmeticOp::VD_2:
-            return vecBinaryOp (Mnemonic_MULPD, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -1132,10 +922,6 @@ Opnd * InstCodeSelector::divOp(DivOp::Types   opType, bool rem, Opnd * src1, Opn
                 return fpOp(Mnemonic_DIVSS, irManager.getTypeFromTag(Type::Single), src1, src2);
             }
             break;
-        case DivOp::VS_4:
-            return vecBinaryOp (Mnemonic_DIVPS, (Opnd*)src1, (Opnd*)src2);
-        case DivOp::VD_2:
-            return vecBinaryOp (Mnemonic_DIVPD, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -1236,41 +1022,6 @@ Opnd * InstCodeSelector::minMaxOp(NegOp::Types   opType, bool max, Opnd * src1, 
         case NegOp::F:
         case NegOp::S:
             ICS_ASSERT(0);      
-        case NegOp::VI1_16:
-        {
-            dst = irManager.newOpnd (src1->getType ());
-            appendInsts (irManager.newInstEx (max ? Mnemonic_PMAXSB : Mnemonic_PMINSB,
-                                              1, dst, src1, src2));
-            break;
-        }
-        case NegOp::VI2_8:
-        {
-            dst = irManager.newOpnd (src1->getType ());
-            appendInsts (irManager.newInstEx (max ? Mnemonic_PMAXSW : Mnemonic_PMINSW,
-                                              1, dst, src1, src2));
-            break;
-        }
-        case NegOp::VI4_4:
-        {
-            dst = irManager.newOpnd (src1->getType ());
-            appendInsts (irManager.newInstEx (max ? Mnemonic_PMAXSD : Mnemonic_PMINSD,
-                                              1, dst, src1, src2));
-            break;
-        }
-        case NegOp::VS_4:
-        {
-            dst = irManager.newOpnd (src1->getType ());
-            appendInsts (irManager.newInstEx (max ? Mnemonic_MAXPS : Mnemonic_MINPS,
-                                              1, dst, src1, src2));
-            break;
-        }
-        case NegOp::VD_2:
-        {
-            dst = irManager.newOpnd (src1->getType ());
-            appendInsts (irManager.newInstEx (max ? Mnemonic_MAXPD : Mnemonic_MINPD,
-                                              1, dst, src1, src2));
-            break;
-        }
         default:
             ICS_ASSERT(0);
     }
@@ -1321,24 +1072,6 @@ CG_OpndHandle* InstCodeSelector::abs_op(NegOp::Types   opType,
         case NegOp::F:
         case NegOp::S:
             ICS_ASSERT(0);      
-        case NegOp::VI1_16:
-        {
-            dst = irManager.newOpnd (((Opnd*)src)->getType ());
-            appendInsts (irManager.newInstEx (Mnemonic_PABSB, 1, dst, (Opnd*)src));
-            break;
-        }
-        case NegOp::VI2_8:
-        {
-            dst = irManager.newOpnd (((Opnd*)src)->getType ());
-            appendInsts (irManager.newInstEx (Mnemonic_PABSW, 1, dst, (Opnd*)src));
-            break;
-        }
-        case NegOp::VI4_4:
-        {
-            dst = irManager.newOpnd (((Opnd*)src)->getType ());
-            appendInsts (irManager.newInstEx (Mnemonic_PABSD, 1, dst, (Opnd*)src));
-            break;
-        }
         default:
             ICS_ASSERT(0);
     }
@@ -1369,11 +1102,6 @@ CG_OpndHandle* InstCodeSelector::and_(IntegerOp::Types opType,
         }
         case IntegerOp::I8:
             return simpleOp_I8(Mnemonic_AND, irManager.getTypeFromTag(Type::Int64), (Opnd*)src1, (Opnd*)src2);
-        case IntegerOp::VI1_16:
-        case IntegerOp::VI2_8:
-        case IntegerOp::VI4_4:
-        case IntegerOp::VI8_2:
-            return vecBinaryOp (Mnemonic_PAND, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -1395,11 +1123,6 @@ CG_OpndHandle* InstCodeSelector::or_(IntegerOp::Types opType,
         }
         case IntegerOp::I8:
             return simpleOp_I8(Mnemonic_OR, irManager.getTypeFromTag(Type::Int64), (Opnd*)src1, (Opnd*)src2);
-        case IntegerOp::VI1_16:
-        case IntegerOp::VI2_8:
-        case IntegerOp::VI4_4:
-        case IntegerOp::VI8_2:
-            return vecBinaryOp (Mnemonic_POR, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -1421,30 +1144,6 @@ CG_OpndHandle*    InstCodeSelector::xor_(IntegerOp::Types opType,
         }
         case IntegerOp::I8:
             return simpleOp_I8(Mnemonic_XOR, irManager.getTypeFromTag(Type::Int64), (Opnd*)src1, (Opnd*)src2);
-        case IntegerOp::VI1_16:
-        case IntegerOp::VI2_8:
-        case IntegerOp::VI4_4:
-        case IntegerOp::VI8_2:
-            return vecBinaryOp (Mnemonic_PXOR, (Opnd*)src1, (Opnd*)src2);
-        default:
-            ICS_ASSERT(0);
-    }
-    return NULL;
-}
-
-//_______________________________________________________________________________________________________________
-//  Logical andnot
-
-CG_OpndHandle* InstCodeSelector::andnot_(IntegerOp::Types opType,
-                                         CG_OpndHandle*   src1,
-                                         CG_OpndHandle*   src2) 
-{
-    switch(opType){
-        case IntegerOp::VI1_16:
-        case IntegerOp::VI2_8:
-        case IntegerOp::VI4_4:
-        case IntegerOp::VI8_2:
-            return vecBinaryOp (Mnemonic_PANDN, (Opnd*)src1, (Opnd*)src2);
         default:
             ICS_ASSERT(0);
     }
@@ -1494,26 +1193,6 @@ Opnd * InstCodeSelector::shiftOp(IntegerOp::Types opType, Mnemonic mn, Opnd * va
             appendInsts(irManager.newInstEx(mn,1,dst,(Opnd*)convert(value, dstType),(Opnd*)convert(shiftAmount, typeManager.getInt32Type())));
 #endif
             return dst;
-        case IntegerOp::VI2_8:
-        case IntegerOp::VI4_4:
-        case IntegerOp::VI8_2:
-        {
-            dst = irManager.newOpnd (value->getType ());
-            Opnd *shift_num;
-            if (shiftAmount->isPlacedIn (OpndKind_Imm))
-              shift_num = irManager.newImmOpnd (typeManager.getInt8Type(),
-						shiftAmount->getImmValue ());
-            else if (shiftAmount->getType()->tag == Type::Vector)
-              shift_num = shiftAmount;
-            else
-              {
-                shift_num = irManager.newOpnd (value->getType ());
-                appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, shift_num,
-                                                  (Opnd*)convert (shiftAmount, typeManager.getInt32Type())));
-              }
-            appendInsts (irManager.newInstEx (mn, 1, dst, value, shift_num));
-            break;
-        }
         default:
             ICS_ASSERT(0);
     }
@@ -1566,24 +1245,7 @@ CG_OpndHandle*    InstCodeSelector::shl(IntegerOp::Types opType,
                                              CG_OpndHandle*   value,
                                              CG_OpndHandle*   shiftAmount) 
 {
-  Mnemonic mn;
-
-  switch (opType)
-    {
-    case IntegerOp::VI2_8:
-      mn = Mnemonic_PSLLW;
-      break;
-    case IntegerOp::VI4_4:
-      mn = Mnemonic_PSLLD;
-      break;
-    case IntegerOp::VI8_2:
-      mn = Mnemonic_PSLLQ;
-      break;
-    default:
-      mn = Mnemonic_SHL;
-    }
-
-  return shiftOp (opType, mn, (Opnd*)value, (Opnd*)shiftAmount);
+    return shiftOp(opType, Mnemonic_SHL, (Opnd*)value, (Opnd*)shiftAmount);
 }
 
 //_______________________________________________________________________________________________________________
@@ -1593,24 +1255,7 @@ CG_OpndHandle* InstCodeSelector::shr(IntegerOp::Types opType,
                                         CG_OpndHandle*   value,
                                         CG_OpndHandle*   shiftAmount) 
 {
-  Mnemonic mn;
-
-  switch (opType)
-    {
-    case IntegerOp::VI2_8:
-      mn = Mnemonic_PSRAW;
-      break;
-    case IntegerOp::VI4_4:
-      mn = Mnemonic_PSRAD;
-      break;
-    case IntegerOp::VI8_2:
-      assert (0);
-      break;
-    default:
-      mn = Mnemonic_SAR;
-    }
-
-  return shiftOp (opType, mn, (Opnd*)value, (Opnd*)shiftAmount);
+    return shiftOp(opType, Mnemonic_SAR, (Opnd*)value, (Opnd*)shiftAmount);
 }
 
 //_______________________________________________________________________________________________________________
@@ -1620,24 +1265,7 @@ CG_OpndHandle*    InstCodeSelector::shru(IntegerOp::Types opType,
                                             CG_OpndHandle* value,
                                             CG_OpndHandle* shiftAmount) 
 {
-  Mnemonic mn;
-
-  switch (opType)
-    {
-    case IntegerOp::VI2_8:
-      mn = Mnemonic_PSRLW;
-      break;
-    case IntegerOp::VI4_4:
-      mn = Mnemonic_PSRLD;
-      break;
-    case IntegerOp::VI8_2:
-      mn = Mnemonic_PSRLQ;
-      break;
-    default:
-      mn = Mnemonic_SHR;
-    }
-
-  return shiftOp (opType, mn, (Opnd*)value, (Opnd*)shiftAmount);
+    return shiftOp(opType, Mnemonic_SHR, (Opnd*)value, (Opnd*)shiftAmount);
 }
 
 //_______________________________________________________________________________________________________________
@@ -1648,20 +1276,6 @@ CG_OpndHandle*  InstCodeSelector::select(CompareOp::Types     opType,
                                             CG_OpndHandle*       src2,
                                             CG_OpndHandle*       src3) 
 {
-  Type *src_type = ((Opnd*)src1)->getType ();
-
-  if (src_type->tag == Type::Vector)
-    {
-      Opnd *dst = irManager.newOpnd (src_type);
-      Opnd *masked_src2 = irManager.newOpnd (src_type);
-      Opnd *masked_src3 = irManager.newOpnd (src_type);
-      appendInsts (irManager.newInstEx (Mnemonic_PAND, 1, masked_src2, (Opnd*)src1, (Opnd*)src2));
-      appendInsts (irManager.newInstEx (Mnemonic_PANDN, 1, masked_src3, (Opnd*)src1, (Opnd*)src3));
-      appendInsts (irManager.newInstEx (Mnemonic_POR, 1, dst, masked_src2, masked_src3));
-
-      return dst;
-    }
-
     ICS_ASSERT(0);
     return 0;
 }
@@ -1674,93 +1288,6 @@ CG_OpndHandle*  InstCodeSelector::cmp(CompareOp::Operators cmpOp,
                                          CG_OpndHandle*       src1,
                                          CG_OpndHandle*       src2, int ifNaNResult) 
 {
-  Type *src_type = ((Opnd*)src1)->getType ();
-
-  if (src_type->tag == Type::Vector)
-    {
-      Opnd *dst = irManager.newOpnd (src_type);
-      Mnemonic mn;
-
-      switch (opType)
-        {
-        case CompareOp::VI1_16:
-        case CompareOp::VI2_8:
-        case CompareOp::VI4_4:
-        case CompareOp::VI8_2:
-          {
-            int cmp_offset = opType - CompareOp::VI1_16;
-            bool need_reverse = false;
-
-            switch (cmpOp)
-              {
-              case CompareOp::Eq:
-                mn = (Mnemonic)(Mnemonic_PCMPEQB + cmp_offset);
-                break;
-              case CompareOp::Ne:
-                mn = (Mnemonic)(Mnemonic_PCMPEQB + cmp_offset);
-                need_reverse = true;
-                break;
-              case CompareOp::Gt:
-                mn = (Mnemonic)(Mnemonic_PCMPGTB + cmp_offset);
-                break;
-              case CompareOp::Ge:
-                mn = (Mnemonic)(Mnemonic_PCMPGTB + cmp_offset);
-                need_reverse = true;
-                break;
-              default:
-                assert (0);
-              }
-
-            if (need_reverse)
-              {
-                Opnd *tmp = irManager.newOpnd (src_type);
-                appendInsts (irManager.newInstEx (mn, 1, tmp, (Opnd*)src2, (Opnd*)src1));
-                Opnd *all_one = irManager.newOpnd (src_type);
-                appendInsts (irManager.newInstEx (Mnemonic_PCMPEQB, 1, all_one,
-                                                  (Opnd*)src1, (Opnd*)src1));
-                appendInsts (irManager.newInstEx (Mnemonic_PANDN, 1, dst, tmp, all_one));
-              }
-            else
-              appendInsts (irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2));
-
-            return dst;
-          }
-
-        case CompareOp::VS_4:
-        case CompareOp::VD_2:
-          {
-            int op_imm;
-
-            switch (cmpOp)
-              {
-              case CompareOp::Eq:
-                op_imm = 0;
-                break;
-              case CompareOp::Ne:
-                op_imm = 4;
-                break;
-              case CompareOp::Gt:
-                op_imm = 6;
-                break;
-              case CompareOp::Ge:
-                op_imm = 5;
-                break;
-              default:
-                assert (0);
-              }
-
-            mn = opType == CompareOp::VS_4 ? Mnemonic_CMPPS : Mnemonic_CMPPD;
-            Opnd *imm = irManager.newImmOpnd (typeManager.getInt8Type (), op_imm);
-            appendInsts (irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2, imm));
-
-            return dst;
-          }
-
-        default:
-          ;
-        }
-    }
-
     Opnd * dst=irManager.newOpnd(typeManager.getInt32Type());
     bool swapped=cmpToEflags(cmpOp, opType, (Opnd*)src1, (Opnd*)src2);
     ConditionMnemonic cm=getConditionMnemonicFromCompareOperator(cmpOp, opType);
@@ -2628,7 +2155,7 @@ void InstCodeSelector::simpleStInd(Opnd * addr,
     if(irManager.refsAreCompressed() && memType > Type::Float && !src->getType()->isUnmanagedPtr()) {
         Type * unmanagedPtrType = typeManager.getUnmanagedPtrType(typeManager.getInt8Type());
         Opnd * heap_base = heapBaseOpnd(unmanagedPtrType, (POINTER_SIZE_INT)VMInterface::getHeapBase());
-        Opnd * compressed_src = irManager.newOpnd(src->getType());
+        Opnd * compressed_src = irManager.newOpnd(typeManager.compressType(src->getType()));
         Opnd * opnd = irManager.newMemOpndAutoKind(typeManager.compressType(src->getType()), addr);
         appendInsts(irManager.newInstEx(Mnemonic_SUB, 1, compressed_src, src, heap_base));
         appendInsts(irManager.newCopyPseudoInst(Mnemonic_MOV, opnd, compressed_src));
@@ -2639,39 +2166,6 @@ void InstCodeSelector::simpleStInd(Opnd * addr,
         Opnd * dst = irManager.newMemOpndAutoKind(irManager.getTypeFromTag(memType), addr);
         copyOpnd(dst, src);
     }
-} 
-
-//_______________________________________________________________________________________________________________
-//  Vector load indirect -- load primitive value
-
-CG_OpndHandle* InstCodeSelector::vectorLdInd (Type *dstType, Opnd *addr)
-{
-    PtrType *ptr_type = addr->getType()->asPtrType ();
-    VectorType *dst_vec_type = dstType->asVectorType ();
-    assert (ptr_type && dst_vec_type);
-    Type *pointed_to_type = ptr_type->getPointedToType ();
-    Opnd *opnd = irManager.newMemOpndAutoKind (dstType, addr);
-    Opnd *dst;
-
-    if (pointed_to_type->tag == dst_vec_type->getElemType()->tag)
-      {
-        dst = irManager.newOpnd (dstType);
-        appendInsts (irManager.newInstEx (Mnemonic_MOVUPD, 1, dst, opnd));
-      }
-    else
-      dst = vectorExtension (dst_vec_type, opnd, pointed_to_type->tag, false);
-
-    return dst;
-}
-
-//_______________________________________________________________________________________________________________
-//  Vector store indirect -- store primitive value
-
-void InstCodeSelector::vectorStInd (Opnd *addr, Opnd *src)
-{
-    Opnd *dst = irManager.newMemOpndAutoKind (src->getType (), addr);
-
-    appendInsts (irManager.newInstEx (Mnemonic_MOVUPD, 1, dst, src));
 } 
 
 //_______________________________________________________________________________________________________________
@@ -2767,10 +2261,7 @@ CG_OpndHandle* InstCodeSelector::tau_ldInd(Type* dstType, CG_OpndHandle* ptr,
                                           CG_OpndHandle* tauBaseNonNull,
                                           CG_OpndHandle* tauAddressInRange) 
 {
-    if (memType == Type::Vector)
-        return vectorLdInd (dstType, (Opnd*)ptr);
-    else
-        return simpleLdInd (dstType, (Opnd*)ptr, memType, (Opnd*)tauBaseNonNull, (Opnd*)tauAddressInRange);
+    return simpleLdInd(dstType, (Opnd*)ptr, memType, (Opnd*)tauBaseNonNull, (Opnd*)tauAddressInRange);
 }
 
 //_______________________________________________________________________________________________________________
@@ -2784,10 +2275,7 @@ void InstCodeSelector::tau_stInd(CG_OpndHandle* src,
                                     CG_OpndHandle* tauAddressInRange, 
                                     CG_OpndHandle* tauElemTypeChecked) 
 {
-    if (memType == Type::Vector)
-        return vectorStInd ((Opnd*)ptr, (Opnd*)src);
-    else
-        return simpleStInd ((Opnd*)ptr, (Opnd*)src, memType, autoCompressRef, (Opnd*)tauBaseNonNull, (Opnd*)tauElemTypeChecked);
+    return simpleStInd((Opnd*)ptr, (Opnd*)src, memType, autoCompressRef, (Opnd*)tauBaseNonNull, (Opnd*)tauElemTypeChecked);
 }
 
 void InstCodeSelector::tau_stRef(CG_OpndHandle* src,
@@ -3789,298 +3277,6 @@ void InstCodeSelector::prefetch(CG_OpndHandle *addr)
     Opnd *mem = irManager.newMemOpnd(typeManager.getInt8Type(), (Opnd*) addr, 0, 0, 0);
     Inst* inst = irManager.newInst(Mnemonic_PREFETCH, mem);
     appendInsts(inst);
-}
-
-//_______________________________________________________________________________________________________________
-//  Special vector operations
-
-CG_OpndHandle* InstCodeSelector::vecAddSub(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2)
-{
-  VectorType *vec_type = dst_type->asVectorType ();
-  assert (vec_type);
-
-  Type::Tag elem_tag = vec_type->getElemType()->tag;
-  assert (elem_tag == Type::Double || elem_tag == Type::Single);
-
-  Mnemonic mn = elem_tag == Type::Double ? Mnemonic_ADDSUBPD : Mnemonic_ADDSUBPS;
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Inst *inst = irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2);
-
-  appendInsts (inst);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecHadd(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2)
-{
-  VectorType *vec_type = dst_type->asVectorType ();
-  assert (vec_type);
-
-  Type::Tag elem_tag = vec_type->getElemType()->tag;
-  assert (elem_tag == Type::Double || elem_tag == Type::Single);
-
-  Mnemonic mn = elem_tag == Type::Double ? Mnemonic_HADDPD : Mnemonic_HADDPS;
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Inst *inst = irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2);
-
-  appendInsts (inst);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecHsub(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2)
-{
-  VectorType *vec_type = dst_type->asVectorType ();
-  assert (vec_type);
-
-  Type::Tag elem_tag = vec_type->getElemType()->tag;
-  assert (elem_tag == Type::Double || elem_tag == Type::Single);
-
-  Mnemonic mn = elem_tag == Type::Double ? Mnemonic_HSUBPD : Mnemonic_HSUBPS;
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Inst *inst = irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2);
-
-  appendInsts (inst);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecInterleave(bool high, Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2)
-{
-  VectorType *vec_type = dst_type->asVectorType ();
-  assert (vec_type);
-
-  Mnemonic mn;
-
-  switch (vec_type->getLength ())
-    {
-    case 2:
-      mn = high ? Mnemonic_PUNPCKHQDQ : Mnemonic_PUNPCKLQDQ;
-      break;
-
-    case 4:
-      mn = high ? Mnemonic_PUNPCKHDQ : Mnemonic_PUNPCKLDQ;
-      break;
-
-    case 8:
-      mn = high ? Mnemonic_PUNPCKHWD : Mnemonic_PUNPCKLWD;
-      break;
-
-    case 16:
-      mn = high ? Mnemonic_PUNPCKHBW : Mnemonic_PUNPCKLBW;
-      break;
-
-    default:
-      assert (0);
-    }
-
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Inst *inst = irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2);
-
-  appendInsts (inst);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecShuffle(Type *dst_type, CG_OpndHandle* src1,
-                                            CG_OpndHandle* src2, CG_OpndHandle* pattern)
-{
-  VectorType *vec_type = dst_type->asVectorType ();
-  assert (vec_type);
-
-  int elem_num = vec_type->getLength ();
-  assert (elem_num == 2 || elem_num == 4);
-
-  Mnemonic mn = elem_num == 2 ? Mnemonic_SHUFPD : Mnemonic_SHUFPS;
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Inst *inst = irManager.newInstEx (mn, 1, dst, (Opnd*)src1, (Opnd*)src2,
-                                    (Opnd*)pattern, NULL, NULL, NULL, NULL);
-
-  appendInsts (inst);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecExtract(Type *dst_type, CG_OpndHandle* src, CG_OpndHandle* index)
-{
-  //  VectorType *src_type = ((Opnd*)src)->getType()->asVectorType ();
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Inst *inst = NULL;
-  int idx = ((Opnd*)index)->getImmValue ();
-
-  switch (dst_type->tag)
-    {
-    case Type::Single:
-      inst = irManager.newInstEx (Mnemonic_PSHUFD, 1, dst, (Opnd*)src,
-                                  irManager.newImmOpnd (typeManager.getInt8Type (), idx));
-      break;
-
-    case Type::Double:
-      {
-//      if (idx == 0)
-//        inst = irManager.newCopyPseudoInst (Mnemonic_MOV, dst, (Opnd*)src);
-//      else
-          {
-            Mnemonic mn = idx == 0 ? Mnemonic_MOVAPD : Mnemonic_MOVHLPS;
-            inst = irManager.newInstEx (mn, 1, dst, (Opnd*)src);
-          }
-        break;
-      }
-
-    case Type::UInt32:
-    case Type::Int32:
-      inst = irManager.newInstEx (Mnemonic_PEXTRD, 1, dst, (Opnd*)src, (Opnd*)index);
-      break;
-
-    case Type::UInt64:
-    case Type::Int64:
-#ifndef _EM64T_
-      inst = irManager.newI8PseudoInst (Mnemonic_PEXTRQ, 1, dst, (Opnd*)src, (Opnd*)index);
-#else
-      inst = irManager.newInstEx (Mnemonic_PEXTRQ, 1, dst, (Opnd*)src, (Opnd*)index);
-#endif
-      break;
-
-    case Type::Vector:
-      {
-        VectorType *vec_type = dst_type->asVectorType ();
-        Type::Tag elem_tag = vec_type->getElemType()->tag;
-
-        if (elem_tag == Type::Int64 || elem_tag == Type::UInt64)
-          // FIXME: The 64-bit values must be andded with 0xffffffff
-          // before they are used.
-          {
-            assert (idx == 0 || idx == 2);
-            Opnd *select = irManager.newImmOpnd (typeManager.getInt8Type(),
-                                                 idx | ((idx + 1) << 4));
-            inst = irManager.newInstEx (Mnemonic_PSHUFD, 1, dst, (Opnd*)src, select);
-          }
-
-        break;
-      }
-
-    default:
-      assert (0);
-    }
-
-  assert (inst);
-  appendInsts (inst);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecPackScalars(Type *dst_type, U_32 numSrcs, CG_OpndHandle** srcs)
-{
-  Opnd *dst = irManager.newOpnd (dst_type);
-  Type *src_type = ((Opnd*)srcs[0])->getType ();
-
-  if (src_type->isDouble ())
-    {
-      assert (numSrcs == 2);
-      // TODO: it should be implemented by UNPCKLPD, but it seems
-      // impossible in current backend design.
-      appendInsts (irManager.newInstEx (Mnemonic_MOVAPD, 1, dst, (Opnd*)srcs[0]));
-      appendInsts (irManager.newInstEx (Mnemonic_MOVLHPS, 1, dst, dst, (Opnd*)srcs[1]));
-    }
-  else if (src_type->isSingle ())
-    {
-      Opnd *tmp = irManager.newOpnd (dst_type);
-      appendInsts (irManager.newInstEx (Mnemonic_MOVAPD, 1, tmp, (Opnd*)srcs[2]));
-      appendInsts (irManager.newInstEx (Mnemonic_UNPCKLPS, 1, tmp, tmp, (Opnd*)srcs[3]));
-      appendInsts (irManager.newInstEx (Mnemonic_MOVAPD, 1, dst, (Opnd*)srcs[0]));
-      appendInsts (irManager.newInstEx (Mnemonic_UNPCKLPS, 1, dst, dst, (Opnd*)srcs[1]));
-      appendInsts (irManager.newInstEx (Mnemonic_MOVLHPS, 1, dst, dst, tmp));
-    }
-#ifndef _EM64T_
-  else if (src_type->isInt8 () || src_type->isUInt8 ())
-    {
-      appendInsts (irManager.newI8PseudoInst (Mnemonic_UNPCKLPD, 1, dst, (Opnd*)srcs[0], (Opnd*)srcs[1]));
-    }
-#endif
-  else if (src_type->isInteger ())
-    {
-      if (src_type->isInt8 () || src_type->isUInt8 ())
-        appendInsts (irManager.newInstEx (Mnemonic_MOVQ, 1, dst, (Opnd*)srcs[0]));
-      else
-        appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, dst, (Opnd*)srcs[0]));
-
-      Mnemonic insr_mn;
-
-      switch (numSrcs)
-        {
-	case 2:
-          insr_mn = Mnemonic_PINSRQ;
-          break;
-        case 4:
-          insr_mn = Mnemonic_PINSRD;
-          break;
-        case 8:
-          insr_mn = Mnemonic_PINSRW;
-          break;
-        case 16:
-          insr_mn = Mnemonic_PINSRB;
-          break;
-        default:
-          assert (0);
-        }
-
-#ifdef _HAVE_SIMD_4_2_
-      // Generates SSE4 instructions
-      for (unsigned i = 1; i < numSrcs; i++)
-        {
-          Opnd *cnt = irManager.newImmOpnd (irManager.getTypeManager().getInt8Type(), i);
-          appendInsts (irManager.newInstEx (insr_mn, 1, dst, dst, (Opnd*)srcs[i], cnt));
-        }
-#else
-      // For processors that don't support SSE4
-      Opnd *temp = irManager.newOpnd (dst_type);
-      Opnd *cnt1 = irManager.newImmOpnd (irManager.getTypeManager().getInt8Type(), 4);
-      appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, temp, (Opnd*)srcs[1]));
-      appendInsts (irManager.newInstEx (Mnemonic_PSLLDQ, 1, temp, temp, cnt1));
-      appendInsts (irManager.newInstEx (Mnemonic_POR, 1, dst, dst, temp));
-      Opnd *cnt2 = irManager.newImmOpnd (irManager.getTypeManager().getInt8Type(), 8);
-      appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, temp, (Opnd*)srcs[2]));
-      appendInsts (irManager.newInstEx (Mnemonic_PSLLDQ, 1, temp, temp, cnt2));
-      appendInsts (irManager.newInstEx (Mnemonic_POR, 1, dst, dst, temp));
-      Opnd *cnt3 = irManager.newImmOpnd (irManager.getTypeManager().getInt8Type(), 12);
-      appendInsts (irManager.newInstEx (Mnemonic_MOVD, 1, temp, (Opnd*)srcs[3]));
-      appendInsts (irManager.newInstEx (Mnemonic_PSLLDQ, 1, temp, temp, cnt3));
-      appendInsts (irManager.newInstEx (Mnemonic_POR, 1, dst, dst, temp));
-#endif
-    }
-  else
-    assert (0);
-
-  return dst;
-}
-
-CG_OpndHandle* InstCodeSelector::vecCmpStr(Type *dst_type, U_32 numSrcs, CG_OpndHandle** srcs)
-{
-  Opnd *dst = irManager.newOpnd (dst_type);
-
-  switch (numSrcs)
-    {
-    case 3:
-      // Implicit string length
-      appendInsts (irManager.newInstEx ((dst_type->tag == Type::Vector
-                                         ? Mnemonic_PCMPISTRM : Mnemonic_PCMPISTRI),
-                                        1, dst, (Opnd*)srcs[0], (Opnd*)srcs[1],
-                                        (Opnd*)srcs[2]));
-      break;
-
-    case 5:
-      // Explicit string length
-      appendInsts (irManager.newInstEx ((dst_type->tag == Type::Vector
-                                         ? Mnemonic_PCMPESTRM : Mnemonic_PCMPESTRI),
-                                        1, dst, (Opnd*)srcs[1], (Opnd*)srcs[3],
-                                        (Opnd*)srcs[0], (Opnd*)srcs[2], (Opnd*)srcs[4]));
-      break;
-
-    default:
-      assert (0);
-    }
-
-  return dst;
 }
 
 //_______________________________________________________________________________________________________________

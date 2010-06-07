@@ -540,7 +540,7 @@ void Inst::makeNative(IRManager * irManager)
     U_32 * opndRoles = getOpndRoles();
     Constraint * constraints = getConstraints();
 
-    I_32 defs[IRMaxNativeOpnds]={ -1, -1, -1, -1, -1, -1 };
+    I_32 defs[IRMaxNativeOpnds]={ -1, -1, -1, -1 };
     for (U_32 i=0; i<opndCount; i++){
         U_32 r = opndRoles[i];
         if ((r & OpndRole_Explicit) == 0) continue;

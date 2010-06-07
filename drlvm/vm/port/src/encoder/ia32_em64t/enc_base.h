@@ -228,7 +228,7 @@ public:
            * The [3] mostly comes from IDIV/IMUL which both may have up to 3
            * operands.
            */
-           OpndDesc        opnds[6];
+           OpndDesc        opnds[3];
            unsigned        first_opnd;
            /**
            * @brief Info about operands - total number, number of uses/defs,
@@ -280,7 +280,7 @@ public:
      * The value was increased from '5155' to '8192' to make it aligned
      * for faster access in EncoderBase::lookup().
      */
-    static const unsigned int               HASH_MAX = 53573; //8192; //5155;
+    static const unsigned int               HASH_MAX = 8192; //5155;
     /**
      * @brief Empty value, used in hash-to-opcode map to show an empty slot.
      */
@@ -288,7 +288,7 @@ public:
     /**
      * @brief The name says it all.
      */
-    static const unsigned char              HASH_BITS_PER_OPERAND = 6;
+    static const unsigned char              HASH_BITS_PER_OPERAND = 5;
 
     /**
      * @brief Contains info about a single instructions's operand - its 
@@ -666,7 +666,7 @@ public:
      * A change must be strictly balanced with hash-related functions and data 
      * in enc_base.h/.cpp.
      */ 
-    static const unsigned char size_hash[OpndSize_128+1];
+    static const unsigned char size_hash[OpndSize_64+1];
     /**
      * @brief A table used for the fast computation of hash value.
      *

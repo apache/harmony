@@ -34,7 +34,6 @@
                 <include name="optimizer" />
                 <include name="optimizer/ssa" />
                 <include name="optimizer/abcd" />
-                <include name="optimizer/autovect" />
                 <include name="translator" />
                 <include name="translator/java" />
                 <include name="vm" />
@@ -70,7 +69,6 @@
                     <include name="optimizer/*.cpp" />
                     <include name="optimizer/ssa/*.cpp" />
                     <include name="optimizer/abcd/*.cpp" />
-                    <include name="optimizer/autovect/*.cpp" />
                     <include name="translator/*.cpp" />
                     <include name="translator/java/*.cpp" />
                     <include name="vm/*.cpp" />

@@ -446,33 +446,6 @@ Node* FlowGraph::duplicateRegion(IRManager& irm, Node* entry, StlBitVector& node
     return duplicateRegion(irm, entry, nodesInRegion, defUses, *nodeRenameTable, *opndRenameTable, newEntryFreq);
 }
 
-
-Node* FlowGraph::duplicateSingleNode(IRManager& irm, Node* node,
-                                     StlBitVector& nodesInRegion,
-                                     DefUseBuilder& defUses,
-                                     OpndRenameTable& opndRenameTable,
-                                     double newNodeFreq) {
-    NodeRenameTable* reverseNodeRenameTable = new (irm.getMemoryManager()) 
-        NodeRenameTable(irm.getMemoryManager(), nodesInRegion.size());     
-    Node* newNode = duplicateNode(irm, node, &nodesInRegion, &defUses, &opndRenameTable, reverseNodeRenameTable);
-    if(newNodeFreq == 0) {
-        return newNode;
-    }
-    double scale = newNodeFreq / node->getExecCount();
-    assert(scale >=0 && scale <= 1);
-    newNode->setExecCount(node->getExecCount()*scale);
-    node->setExecCount(node->getExecCount()*(1-scale));
-    return newNode;
-}
-
-Node* FlowGraph::duplicateSingleNode(IRManager& irm, Node* node, StlBitVector& nodesInRegion, DefUseBuilder& defUses, double newNodeFreq) {
-    MemoryManager dupMemManager("FlowGraph::duplicateRegion.dupMemManager");
-    // prepare the hashtable for the operand rename translation
-    OpndRenameTable *opndRenameTable = new (dupMemManager) OpndRenameTable(dupMemManager, nodesInRegion.size());
-    return duplicateSingleNode(irm, node, nodesInRegion, defUses, *opndRenameTable, newNodeFreq);
-}
-
-
 void FlowGraph::renameOperandsInNode(Node *node, OpndRenameTable *renameTable) {
     Inst *first = (Inst*)node->getFirstInst();
     for (Inst *inst = first->getNextInst(); inst != NULL; inst = inst->getNextInst()) {

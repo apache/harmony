@@ -89,7 +89,6 @@ public:
     CG_OpndHandle* and_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2);
     CG_OpndHandle* or_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2);
     CG_OpndHandle* xor_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2);
-    CG_OpndHandle* andnot_(IntegerOp::Types,CG_OpndHandle* src1,CG_OpndHandle* src2);
     CG_OpndHandle* not_(IntegerOp::Types,CG_OpndHandle* src);
     CG_OpndHandle* shladd(IntegerOp::Types,CG_OpndHandle* value,
                           U_32 shiftAmount, CG_OpndHandle* addto);
@@ -112,9 +111,6 @@ public:
     CG_OpndHandle* convToInt(ConvertToIntOp::Types,bool isSigned, bool isZeroExtend,
                               ConvertToIntOp::OverflowMod,Type* dstType, CG_OpndHandle* src);
     CG_OpndHandle* convToFp(ConvertToFpOp::Types, Type* dstType, CG_OpndHandle* src);
-    Opnd*          vectorExtension (VectorType* dst_type, CG_OpndHandle* src,
-                                    Type::Tag src_elem_tag, bool is_zero_extend);
-    CG_OpndHandle* convToVector(VectorType* dstType, CG_OpndHandle* src, bool is_zero_extend);
 
     /// convert unmanaged pointer to object. Boxing
     CG_OpndHandle*  convUPtrToObject(ObjectType * dstType, CG_OpndHandle* val);
@@ -261,16 +257,6 @@ public:
     CG_OpndHandle* copy(CG_OpndHandle *src);
     void prefetch(CG_OpndHandle *addr);
 
-    CG_OpndHandle*  vecAddSub(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2);
-    CG_OpndHandle*  vecHadd(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2);
-    CG_OpndHandle*  vecHsub(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2);
-    CG_OpndHandle*  vecShuffle(Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2,
-                               CG_OpndHandle* pattern);
-    CG_OpndHandle*  vecExtract(Type *dst_type, CG_OpndHandle* src, CG_OpndHandle* index);
-    CG_OpndHandle*  vecPackScalars(Type *dst_type, U_32 numSrcs, CG_OpndHandle** srcs);
-    CG_OpndHandle*  vecInterleave(bool high, Type *dst_type, CG_OpndHandle* src1, CG_OpndHandle* src2);
-    CG_OpndHandle*  vecCmpStr(Type *dst_type, U_32 numSrcs, CG_OpndHandle** srcs);
-
     void pseudoInst();
 
     void methodEntry(MethodDesc* mDesc);
@@ -341,8 +327,6 @@ private:
     
     Opnd * fpOp(Mnemonic mn, Type * dstType, Opnd * src1, Opnd * src2); 
 
-    Opnd * vecBinaryOp(Mnemonic mn, Opnd * src1, Opnd * src2);
-
     Opnd * createResultOpnd(Type * dstType);
 
     Opnd * divOp(DivOp::Types   op, bool rem, Opnd * src1, Opnd * src2);
@@ -399,8 +383,6 @@ private:
                                     Opnd *baseTau, Opnd *offsetTau);
     void                simpleStInd(Opnd *addr, Opnd *src, Type::Tag memType, 
                                     bool autoCompressRef, Opnd *baseTau, Opnd *offsetAndTypeTau);
-    CG_OpndHandle*      vectorLdInd(Type *dstType, Opnd *addr);
-    void                vectorStInd(Opnd *addr, Opnd *src);
     Type *              getFieldRefType(Type *dstType, Type::Tag memType);
     void                simplifyTypeTag(Type::Tag& tag,Type *ptr);
     Opnd **         createReturnArray(Type * retType, U_32& numRegRet);

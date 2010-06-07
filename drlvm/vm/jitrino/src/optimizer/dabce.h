@@ -109,7 +109,6 @@ private:
                             InvariantOpndLoopInfo* stride,
                             SsaOpnd* arrayLength,
                             bool canReachBound);
-    Inst *getLdBaseInst(Inst* checkInst);
     void fillTemplate(ArrayAccessTemplate* arrayAccesses, Inst* checkInst);    
     Edge* findUnconditionalInEdge(Node* targetNode);
     Node* getClonedLoop();

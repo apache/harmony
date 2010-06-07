@@ -313,33 +313,6 @@ bool LoopTree::isBackEdge(const Edge* edge) const {
     return fg->getDominatorTree()->dominates(edge->getTargetNode(), edge->getSourceNode());
 }
 
-LoopNode*
-LoopTree::findCommonLoop (LoopNode *loop1, LoopNode *loop2) const
-{
-  int depth1 = loop1->getDepth ();
-  int depth2 = loop2->getDepth ();
-
-  while (depth1 < depth2)
-    {
-      loop2 = loop2->getParent ();
-      depth2--;
-    }
-
-  while (depth2 < depth1)
-    {
-      loop1 = loop1->getParent ();
-      depth1--;
-    }
-
-  while (loop1 != loop2)
-    {
-      loop1 = loop1->getParent ();
-      loop2 = loop2->getParent ();
-    }
-
-  return loop1;
-}
-
 
 bool LoopNode::inLoop(const Node* node) const  {
     assert(this!=loopTree->getRoot());

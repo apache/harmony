@@ -181,7 +181,7 @@ public:
 
     Inst * newInstEx(Mnemonic mnemonic, U_32 defCount, 
         Opnd * opnd0, Opnd * opnd1, Opnd * opnd2, Opnd * opnd3, 
-        Opnd * opnd4=0, Opnd * opnd5=0, Opnd * opnd6=0, Opnd * opnd7=0
+        Opnd * opnd4, Opnd * opnd5=0, Opnd * opnd6=0, Opnd * opnd7=0
         );
 
     /** Creates a new branch instruction

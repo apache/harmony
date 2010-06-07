@@ -44,16 +44,14 @@ ENCODER_NAMESPACE_START
 
 int EncoderBase::dummy = EncoderBase::buildTable();
 
-const unsigned char EncoderBase::size_hash[OpndSize_128+1] = {
+const unsigned char EncoderBase::size_hash[OpndSize_64+1] = {
     //
     0xFF,   // OpndSize_Null        = 0,
-    5,              // OpndSize_8           = 0x1,
-    4,              // OpndSize_16          = 0x2,
+    3,              // OpndSize_8           = 0x1,
+    2,              // OpndSize_16          = 0x2,
     0xFF,   // 0x3
-    3,              // OpndSize_32          = 0x4,
-    2,              // OpndSize_64          = 0x8,
-    1,              // OpndSize_80          = 0x16,
-    0,              // OpndSize_128         = 0x20,
+    1,              // OpndSize_32          = 0x4,
+    0,              // OpndSize_64          = 0x8,
     //
 };
 
@@ -68,19 +66,19 @@ const unsigned char EncoderBase::kind_hash[OpndKind_Mem+1] = {
     //mmx reg               -> 110 = 6
     //
     0xFF,                          // 0    OpndKind_Null=0,
-    0<<3,                          // 1    OpndKind_GPReg = 
+    0<<2,                          // 1    OpndKind_GPReg = 
                                    //           OpndKind_MinRegKind=0x1,
-    4<<3,                          // 2    OpndKind_SReg=0x2,
+    4<<2,                          // 2    OpndKind_SReg=0x2,
 
 #ifdef _HAVE_MMX_
-    6<<3,                          // 3
+    6<<2,                          // 3
 #else
     0xFF,                          // 3
 #endif
 
-    5<<3,                          // 4    OpndKind_FPReg=0x4,
+    5<<2,                          // 4    OpndKind_FPReg=0x4,
     0xFF, 0xFF, 0xFF,              // 5, 6, 7
-    3<<3,                                   //      OpndKind_XMMReg=0x8,
+    3<<2,                                   //      OpndKind_XMMReg=0x8,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 9, 0xA, 0xB, 0xC, 0xD, 
                                               // 0xE, 0xF
     0xFF,                          // OpndKind_MaxRegKind = 
@@ -88,12 +86,12 @@ const unsigned char EncoderBase::kind_hash[OpndKind_Mem+1] = {
                                    // OpndKind_OtherReg=0x10,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x11-0x18
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,               // 0x19-0x1F
-    2<<3,                                   // OpndKind_Immediate=0x20,
+    2<<2,                                   // OpndKind_Immediate=0x20,
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x21-0x28
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x29-0x30
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 0x31-0x38
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,               // 0x39-0x3F
-    1<<3,                                   // OpndKind_Memory=0x40
+    1<<2,                                   // OpndKind_Memory=0x40
 };
 
 char* EncoderBase::encode_aux(char* stream, unsigned aux,
@@ -314,14 +312,12 @@ char * EncoderBase::encode(char * stream, Mnemonic mn, const Operands& opnds)
         ++stream;
         //
         prex = (Rex*)stream;
-        if (odesc->opcode[1] != 0x48) {
-            prex->dummy = 4;
-            prex->w = 0;
-            prex->b = 0;
-            prex->x = 0;
-            prex->r = 0;
-            ++stream;
-        }
+        prex->dummy = 4;
+        prex->w = 0;
+        prex->b = 0;
+        prex->x = 0;
+        prex->r = 0;
+        ++stream;
         //
         memcpy(stream, &odesc->opcode[1], odesc->opcode_len-1);
         stream += odesc->opcode_len-1;
@@ -350,10 +346,6 @@ char * EncoderBase::encode(char * stream, Mnemonic mn, const Operands& opnds)
         }
         else if (odesc->opcode_len==4) {
         *(unsigned*)stream = *(unsigned*)&odesc->opcode;
-        }
-        else if (odesc->opcode_len==5) {
-        *(unsigned*)stream = *(unsigned*)&odesc->opcode;
-        *(unsigned char*)(stream+4) = odesc->opcode[4];
         }
         stream += odesc->opcode_len;
     }
@@ -714,9 +706,7 @@ const EncoderBase::OpcodeDesc *
 EncoderBase::lookup(Mnemonic mn, const Operands& opnds)
 {
     const unsigned hash = opnds.hash();
-    unsigned opcodeIndex = (hash < HASH_MAX ?
-                            opcodesHashMap[mn][hash]
-                            : NOHASH);
+    unsigned opcodeIndex = opcodesHashMap[mn][hash];
 #ifdef ENCODER_USE_SUBHASH
     if (opcodeIndex == NOHASH) {
         opcodeIndex = find(mn, hash);

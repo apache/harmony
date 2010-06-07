@@ -101,7 +101,6 @@ public:
     Opnd* genAnd(Type* dstType, Opnd* src1, Opnd* src2); // TR //SI
     Opnd* genOr(Type* dstType, Opnd* src1, Opnd* src2);//TR //SI
     Opnd* genXor(Type* dstType, Opnd* src1, Opnd* src2);//TR //SI
-    Opnd* genAndNot(Type* dstType, Opnd* src1, Opnd* src2); // TR //SI
     Opnd* genNot(Type* dstType, Opnd* src);//TR //SI
     // Conversion
     Opnd* genConv(Type* dstType, Type::Tag toType, Modifier ovfMod, Opnd* src); //TR //SI
@@ -369,19 +368,6 @@ public:
     void       genMonitorEnterFence(Opnd *src);
     void       genMonitorExitFence(Opnd *src);
     
-    Opnd*      genMinVec (Type* dstType, Opnd* src1, Opnd* src2); //SI
-    Opnd*      genMaxVec (Type* dstType, Opnd* src1, Opnd* src2); //SI
-    Opnd*      genAbsVec (Type* dstType, Opnd* src1); //SI
-    Opnd*      genVecAddSub (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2);
-    Opnd*      genVecHadd (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2);
-    Opnd*      genVecHsub (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2);
-    Opnd*      genVecShuffle (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2, Opnd* src3);
-    Opnd*      genVecExtract (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2);
-    Opnd*      genVecPackScalars (Type* dstType, Modifier mod, U_32 numOpnds, Opnd **opnds);
-    Opnd*      genVecInterleaveHigh (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2);
-    Opnd*      genVecInterleaveLow (Type* dstType, Modifier mod, Opnd* src1, Opnd* src2);
-    Opnd*      genVecCmpStr (Type* dstType, U_32 numOpnds, Opnd **opnds);
-
 private:
 
     void readFlagsFromCommandLine(SessionAction* argSource, const char* argPrefix);
