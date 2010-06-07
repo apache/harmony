@@ -602,12 +602,16 @@ hysock_bind (struct HyPortLibrary * portLibrary, hysocket_t sock,
     {
       length = ((OSSOCKADDR_IN6 *) & addr->addr)->sin6_len;
     }
+#if defined(FREEBSD)
+  else {
+    length = ((OSSOCKADDR *) & addr->addr)->sin_len;
+  }
+#endif
 #endif
 #endif
 
   if (bind
-      (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr,
-       sizeof (addr->addr)) < 0)
+      (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr, length) < 0)
     {
       rc = errno;
       HYSOCKDEBUG ("<bind failed, err=%d>\n", rc);
@@ -678,10 +682,15 @@ hysock_connect (struct HyPortLibrary * portLibrary, hysocket_t sock,
                 hysockaddr_t addr)
 {
   I_32 rc = 0;
+  I_32 length =
+#if !defined(FREEBSD)
+           sizeof (addr->addr);
+#else
+           ((OSSOCKADDR *) & addr->addr)->sin_len;
+#endif
 
   if (connect
-      (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr,
-       sizeof (addr->addr)) < 0)
+      (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr, length) < 0)
     {
       rc = errno;
       HYSOCKDEBUG ("<connect failed, err=%d>\n", rc);
@@ -3465,6 +3474,9 @@ hysock_sockaddr_init (struct HyPortLibrary * portLibrary, hysockaddr_t handle,
   sockaddr->sin_family = family;
   sockaddr->sin_addr.s_addr = nipAddr;
   sockaddr->sin_port = nPort;
+#if defined(FREEBSD)
+  sockaddr->sin_len = sizeof(OSSOCKADDR);
+#endif
 
   return 0;
 }
@@ -3530,6 +3542,9 @@ hysock_sockaddr_init6 (struct HyPortLibrary * portLibrary,
           sockaddr_6->sin6_family = OS_AF_INET6;
           sockaddr_6->sin6_scope_id = scope_id;
           sockaddr_6->sin6_flowinfo = htonl (flowinfo);
+#if defined(FREEBSD)
+          sockaddr_6->sin6_len = sizeof(OSSOCKADDR_IN6);
+#endif
         }
       else
         {
@@ -3540,6 +3555,10 @@ hysock_sockaddr_init6 (struct HyPortLibrary * portLibrary,
           memcpy (&sockaddr->sin_addr.s_addr, addr, addrlength);
           sockaddr->sin_port = nPort;
           sockaddr->sin_family = OS_AF_INET4;
+#if defined(FREEBSD)
+          sockaddr->sin_len = sizeof(OSSOCKADDR);
+#endif
+
 #if defined(IPv6_FUNCTION_SUPPORT)
         }
 #endif
@@ -3555,7 +3574,7 @@ hysock_sockaddr_init6 (struct HyPortLibrary * portLibrary,
       sockaddr_6->sin6_scope_id = scope_id;
       sockaddr_6->sin6_flowinfo = htonl (flowinfo);
 #if defined(SIN6_LEN)
-      sockaddr_6->sin6_len = sizeof (struct sockaddr_in6);
+      sockaddr_6->sin6_len = sizeof(OSSOCKADDR_IN6);
       if (((OSSOCKADDR_IN6 *) & handle->addr)->sin6_len != 0)
         {
           sockaddr_6->sin6_len =
@@ -3571,6 +3590,9 @@ hysock_sockaddr_init6 (struct HyPortLibrary * portLibrary,
       memcpy (&sockaddr->sin_addr.s_addr, addr, HYSOCK_INADDR_LEN);
       sockaddr->sin_port = nPort;
       sockaddr->sin_family = map_addr_family_Hy_to_OS (family);
+#if defined(FREEBSD)
+          sockaddr->sin_len = sizeof(OSSOCKADDR);
+#endif
     }
 
   return 0;
