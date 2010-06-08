@@ -41,6 +41,8 @@ public final class URI implements Comparable<URI>, Serializable {
 
     static final String someLegal = unreserved + punct;
 
+    static final String queryLegal =  unreserved + reserved + "\\";
+    
     static final String allLegal = unreserved + reserved;
 
     private String string;
@@ -453,7 +455,7 @@ public final class URI implements Comparable<URI>, Serializable {
         private void validateQuery(String uri, String query, int index)
                 throws URISyntaxException {
             try {
-                URIEncoderDecoder.validate(query, allLegal);
+                URIEncoderDecoder.validate(query, queryLegal);
             } catch (URISyntaxException e) {
                 throw new URISyntaxException(uri, Messages.getString("luni.89", e //$NON-NLS-1$
                         .getReason()), index + e.getIndex());

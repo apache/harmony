@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -68,6 +69,35 @@ public class URLTest extends TestCase {
     boolean caught = false;
 
     static boolean isSelectCalled;
+    
+    
+    /**
+     * Check when the argument in url consists of windows path character back-slach
+     * @tests java.net.URL#openConnection(Proxy)
+     * @throws Exception
+     */
+    public void test_openConnection_windows_path_character() throws Exception {
+        int port = 0;
+        HttpURLConnection con = null;
+        try {
+            port = Support_Jetty.startDefaultHttpServer();
+        } catch (Exception e) {
+            fail("Exception during setup jetty : " + e.getMessage());
+        }
+        try {
+            URL url = new URL("http://0.0.0.0:" + port + "/servlet?ResourceName=C:\\temp\\test.txt");
+            con = (HttpURLConnection)url.openConnection();
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.setUseCaches(false);
+            con.setRequestMethod("GET");
+            InputStream is = con.getInputStream();
+         } catch (Exception e) {
+             fail("Unexpected exception : " + e.getMessage());
+         } finally {
+            con.disconnect();
+         }
+    }
 
     /**
      * @tests java.net.URL#URL(java.lang.String)
