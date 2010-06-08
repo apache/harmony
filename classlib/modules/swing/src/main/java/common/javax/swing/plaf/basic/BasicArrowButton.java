@@ -35,19 +35,23 @@ import org.apache.harmony.x.swing.Utilities;
 public class BasicArrowButton extends JButton implements SwingConstants {
     protected int direction;
 
-    private static Color shadow = UIManager.getColor("ScrollBar.shadow");
-    private static Color darkShadow = UIManager.getColor("ScrollBar.darkShadow");
+    private Color shadow;
+    private Color darkShadow;
 
     public BasicArrowButton(final int direction) {
         this.direction = direction;
+        shadow = UIManager.getColor("ScrollBar.shadow");
+        darkShadow = UIManager.getColor("ScrollBar.darkShadow");
     }
 
-    public BasicArrowButton(final int direction, final Color background, final Color shadow,
-                            final Color darkShadow, final Color highlight) {
-        BasicArrowButton.shadow = shadow;
-        BasicArrowButton.darkShadow = darkShadow;
+    public BasicArrowButton(final int direction, final Color background,
+                            final Color shadow, final Color darkShadow,
+                            final Color highlight) {
+        this.shadow = shadow;
+        this.darkShadow = darkShadow;
         this.direction = direction;
         setBackground(background);
+        // TOFIX: highlight is ignored
     }
 
     public int getDirection() {
@@ -82,7 +86,10 @@ public class BasicArrowButton extends JButton implements SwingConstants {
         return false;
     }
 
-    public void paintTriangle(final Graphics g, final int x, final int y, final int size, final int direction, final boolean isEnabled) {
-        Utilities.fillArrow(g, x, y, direction, size, false, isEnabled ? darkShadow : shadow);
+    public void paintTriangle(final Graphics g, final int x, final int y,
+                              final int size, final int direction,
+                              final boolean isEnabled) {
+        Utilities.fillArrow(g, x, y, direction, size, false,
+                            isEnabled ? darkShadow : shadow);
     }
 }

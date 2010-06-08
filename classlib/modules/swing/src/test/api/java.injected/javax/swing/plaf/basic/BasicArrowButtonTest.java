@@ -75,9 +75,6 @@ public class BasicArrowButtonTest extends SwingTestCase {
     public void testGetBackground() {
         final Color c = Color.red;
         BasicArrowButton b = new BasicArrowButton(240, c, c, c, c);
-
-        System.out.println("parameter background == " + c);
-        System.out.println("getBackground()==" + b.getBackground());
         assertSame(c, b.getBackground());
     } 
 }
