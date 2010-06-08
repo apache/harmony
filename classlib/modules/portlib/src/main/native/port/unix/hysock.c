@@ -131,6 +131,8 @@ I_32 map_sockettype_Hy_to_OS (I_32 socket_type);
 
 static I_32 findHostError (int herr);
 
+static socklen_t getAddrLength(hysockaddr_t addr);
+
 #undef CDEV_CURRENT_FUNCTION
 
 #if NO_R
@@ -593,22 +595,7 @@ hysock_bind (struct HyPortLibrary * portLibrary, hysocket_t sock,
              hysockaddr_t addr)
 {
   I_32 rc = 0;
-  I_32 length = sizeof (addr->addr);
-
-#if defined(SIN6_LEN)
-  length = sizeof (struct sockaddr_storage);
-#if defined(IPv6_FUNCTION_SUPPORT)
-  if (((OSSOCKADDR *) & addr->addr)->sin_family == OS_AF_INET6)
-    {
-      length = ((OSSOCKADDR_IN6 *) & addr->addr)->sin6_len;
-    }
-#if defined(FREEBSD)
-  else {
-    length = ((OSSOCKADDR *) & addr->addr)->sin_len;
-  }
-#endif
-#endif
-#endif
+  I_32 length = getAddrLength(addr);
 
   if (bind
       (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr, length) < 0)
@@ -682,12 +669,7 @@ hysock_connect (struct HyPortLibrary * portLibrary, hysocket_t sock,
                 hysockaddr_t addr)
 {
   I_32 rc = 0;
-  I_32 length =
-#if !defined(FREEBSD)
-           sizeof (addr->addr);
-#else
-           ((OSSOCKADDR *) & addr->addr)->sin_len;
-#endif
+  I_32 length = getAddrLength(addr);
 
   if (connect
       (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr, length) < 0)
@@ -2067,7 +2049,7 @@ I_32 VMCALL
 hysock_getpeername (struct HyPortLibrary * portLibrary, hysocket_t handle,
                     hysockaddr_t addrHandle)
 {
-  socklen_t addrlen = sizeof (addrHandle->addr);
+  socklen_t addrlen = getAddrLength(addrHandle);
 
   if (getpeername
       (SOCKET_CAST (handle), (struct sockaddr *) &addrHandle->addr,
@@ -2559,7 +2541,7 @@ hysock_readfrom (struct HyPortLibrary * portLibrary, hysocket_t sock,
 
   if (NULL == addrHandle)
     {
-      addrlen = sizeof (*addrHandle);
+      addrlen = sizeof (*addrHandle); /* TOFIX: This is not used? */
       bytesRec =
         recvfrom (SOCKET_CAST (sock), buf, nbyte, flags, NULL, &addrlen);
     }
@@ -2569,6 +2551,7 @@ hysock_readfrom (struct HyPortLibrary * portLibrary, hysocket_t sock,
       bytesRec =
         recvfrom (SOCKET_CAST (sock), buf, nbyte, flags,
                   (struct sockaddr *) &addrHandle->addr, &addrlen);
+      /* TOFIX: should check if addrlen > sizeof(addrlen) ? */
     }
   if (bytesRec == -1)
     {
@@ -3575,11 +3558,6 @@ hysock_sockaddr_init6 (struct HyPortLibrary * portLibrary,
       sockaddr_6->sin6_flowinfo = htonl (flowinfo);
 #if defined(SIN6_LEN)
       sockaddr_6->sin6_len = sizeof(OSSOCKADDR_IN6);
-      if (((OSSOCKADDR_IN6 *) & handle->addr)->sin6_len != 0)
-        {
-          sockaddr_6->sin6_len =
-            ((OSSOCKADDR_IN6 *) & handle->addr)->sin6_len;
-        }
 #endif
     }
 #endif
@@ -3591,7 +3569,7 @@ hysock_sockaddr_init6 (struct HyPortLibrary * portLibrary,
       sockaddr->sin_port = nPort;
       sockaddr->sin_family = map_addr_family_Hy_to_OS (family);
 #if defined(FREEBSD)
-          sockaddr->sin_len = sizeof(OSSOCKADDR);
+      sockaddr->sin_len = sizeof(OSSOCKADDR);
 #endif
     }
 
@@ -3867,7 +3845,7 @@ hysock_writeto (struct HyPortLibrary * portLibrary, hysocket_t sock,
   bytesSent =
     sendto (SOCKET_CAST (sock), buf, nbyte, flags,
             (struct sockaddr *) &(addrHandle->addr),
-            sizeof (addrHandle->addr));
+            getAddrLength(addrHandle));
 
   if (bytesSent == -1)
     {
@@ -5188,7 +5166,7 @@ hysock_connect_with_timeout (struct HyPortLibrary * portLibrary,
 
       rc = connect
           (SOCKET_CAST (sock), (struct sockaddr *) &addr->addr,
-           sizeof (addr->addr));
+           getAddrLength(addr));
       if (rc < 0)
         {
           rc = errno;
@@ -5296,6 +5274,15 @@ hysock_connect_with_timeout (struct HyPortLibrary * portLibrary,
 
 #undef CDEV_CURRENT_FUNCTION
 
-#define CDEV_CURRENT_FUNCTION
+#define CDEV_CURRENT_FUNCTION getAddrLength
 
+static socklen_t getAddrLength(hysockaddr_t addr)
+{
+  return
+#if defined(IPv6_FUNCTION_SUPPORT)
+    ((OSSOCKADDR *) & addr->addr)->sin_family == OS_AF_INET6 ?
+    sizeof(OSSOCKADDR_IN6) :
+#endif
+    sizeof(OSSOCKADDR);
+}
 #undef CDEV_CURRENT_FUNCTION
