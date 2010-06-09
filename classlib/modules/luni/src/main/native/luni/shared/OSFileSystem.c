@@ -164,7 +164,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_seekI
       return -1;
     }
 
-  return (jlong) hyfile_seek ((IDATA) fd, (IDATA) offset, hywhence);
+  return (jlong) hyfile_seek ((IDATA) fd, (I_64) offset, hywhence);
 }
 
 /**
