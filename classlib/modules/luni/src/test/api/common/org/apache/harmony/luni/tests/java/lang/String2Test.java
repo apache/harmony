@@ -697,6 +697,12 @@ public class String2Test extends junit.framework.TestCase {
                 "a", "ccc"));
         assertEquals("Failed replace by smaller seq", "$bba^", "$aaaaa^"
                 .replace(new StringBuilder("aa"), "b"));
+        assertEquals("Failed to replace empty string", "%%a%%b%%c%%",
+                "abc".replace("", "%%"));
+        assertEquals("Failed to replace with empty string", "aacc",
+                "aabbcc".replace("b", ""));
+        assertEquals("Failed to replace in empty string", "abc",
+                "".replace("", "abc"));
     }
 
     /**
