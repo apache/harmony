@@ -26,17 +26,40 @@
 
     <property file="${user.home}/.harmony.properties" />
     <dirname property="common.basedir"
-             file="${ant.file.Common property definitions}/.."/>
+             file="${ant.file.Common property definitions}"/>
 
-    <import file="${common.basedir}/make/platform.xml"/>
-    <import file="${common.basedir}/make/svn.xml"/>
+    <import file="${common.basedir}/platform.xml"/>
+    <import file="${common.basedir}/svn.xml"/>
 
+    <fail message="Property 'hy.target' is not defined">
+        <condition>
+            <not><isset property="hy.target" /></not>
+        </condition>
+    </fail>
+    <fail message="Property 'hy.component' is not defined">
+        <condition>
+            <not><isset property="hy.component" /></not>
+        </condition>
+    </fail>
+    <fail message="Property 'hy.module' is not defined">
+        <condition>
+            <not><isset property="hy.module" /></not>
+        </condition>
+    </fail>
+    <property name="hy.hdk" location="${hy.target}/hdk" />
+    <property name="hy.jdk" location="${hy.hdk}/jdk" />
+    <property name="hy.jre" location="${hy.jdk}/jre" />
+    <property name="hy.build.root" location="${hy.target}/build" />
+    <property name="hy.build" location="${hy.build.root}/${hy.component}" />
+    <property name="hy.build.top" location="${hy.build}/toplevel" />
+    <property name="hy.build.mod" location="${hy.build}/${hy.module}" />
 
-    <!-- Root directory of the common dependemcy pool -->
-    <property name="base.dep.dir" location="${hy.target}/depends"/>
+    <!-- Root directory of the common dependency pool -->
+    <property name="depends.dir" location="${hy.target}/depends" />
 
     <!-- Debug or release version -->
     <property name="hy.cfg" value="debug" />
+    <property name="hy.specification.version" value="1.5" />
 
     <!-- Javac properties -->
     <!-- Explicitly set to ECJ as the default compiler. -->
@@ -45,18 +68,20 @@
     <property name="hy.javac.source" value="1.5" />
     <property name="hy.javac.target" value="1.5" />
     <property name="hy.javac.maxmem" value="384M" />
+    <property name="build.compilerarg" value="-nowarn" />
 
     <!-- Temporarily always include class file debug info -->
     <condition property="hy.javac.debug" value="on" else="on">
         <equals arg1="${hy.cfg}" arg2="debug" />
     </condition>
 
-    <!-- Local variable tables should be available in debug, and
-         omitted in release modes. -->
-    <condition property="build.compilerarg" value="-nowarn -g"
-               else="-nowarn -g:lines,source">
+    <!-- Include only stack trace information into release build -->
+    <condition property="hy.javac.debuglevel" value="lines,vars,source"
+               else="lines,source">
         <equals arg1="${hy.cfg}" arg2="debug" />
     </condition>
+    <property name="hy.jar.compress" value="true" />
+
 
     <!-- During packaging, these files must be copied into the meta-inf dir -->
     <fileset id="hy.required.metainf-files" dir="${hy.hdk}">
@@ -68,6 +93,79 @@
     <property name="hy.test.forkmode" value="once" />
     <property name="hy.test.timeout" value="900000" />
     <property name="hy.test.vmargs" value="" />
+    <property name="hy.test.impl" value="true" />
+
+    <condition property="png.home" value="/usr/local">
+        <isset property="is.freebsd"/>
+    </condition>
+    <condition property="png.home" value="/opt/local">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="png.home" value="/usr" />
+
+    <condition property="lcms.home" value="/usr/local">
+        <isset property="is.freebsd"/>
+    </condition>
+    <condition property="lcms.home" value="/opt/local">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="lcms.home" value="/usr" />
+
+    <condition property="jpeg.home" value="/usr/local">
+        <isset property="is.freebsd"/>
+    </condition>
+    <condition property="jpeg.home" value="/opt/local">
+        <isset property="is.macosx"/>
+    </condition>
+    <property name="jpeg.home" value="/usr" />
+    
+    <condition property="is.select" value="true">
+        <istrue value="${hy.select}" />
+    </condition>
+    <condition property="is.not.select" value="true">
+        <not><istrue value="${hy.select}" /></not>
+    </condition>
+
+    <!-- default property for poll-modules macro - i.e. all modules -->
+    <property name="build.module" value="*" />
+    <condition property="exclude.module"
+            value="accessibility,applet,awt,imageio,orb,print,rmi,sound,swing">
+        <istrue value="${hy.select}" />
+    </condition>
+    <property name="exclude.module" value="nothing" />
+    <property name="build.java" value="true" />
+    <property name="build.native" value="true" />
+    <property name="build.test" value="true" />
+    <condition property="skip.java.build" value="true">
+        <equals arg1="${build.java}" arg2="false" />
+    </condition>
+    <condition property="skip.native.build" value="true">
+        <equals arg1="${build.native}" arg2="false" />
+    </condition>
+    <condition property="skip.test.build" value="true">
+        <equals arg1="${build.test}" arg2="false" />
+    </condition>
+
+    <!-- flags -->
+    <property name="hy.no.thr" value="false" />
+    <condition property="hy.skip.thr" value="true">
+        <istrue value="${hy.no.thr}" />
+    </condition>
+
+    <property name="hy.thr.no.deploy" value="false" />
+    <condition property="hy.thr.deploy" value="true">
+        <equals arg1="${hy.thr.no.deploy}" arg2="false" />
+    </condition>
+
+    <property name="hy.local.zlib" value="false" />
+    <condition property="hy.skip.zlib" value="true">
+        <istrue value="${hy.local.zlib}" />
+    </condition>
+
+    <property name="hy.zip.api" value="false" />
+    <condition property="hy.skip.zip.api" value="true">
+        <isfalse value="${hy.zip.api}" />
+     </condition>
 
     <condition property="hy.platform.suffix" value=".libstdc++5">
         <isset property="use.libstdc++5"/>
@@ -92,63 +190,39 @@
     <property name="hy.platform.variant"
               value="${hy.platform}${hy.platform.suffix}" />
 
-    <condition property="png.home" value="/usr/local">
-        <isset property="is.freebsd"/>
-    </condition>
-    <condition property="png.home" value="/sw">
-        <isset property="is.macosx"/>
-    </condition>
-    <property name="png.home" value="/usr" />
+    <!-- fileset to represent classes built by a module. -->
+    <fileset id="classes" dir="${hy.build.top}/java">
+        <includesfile name="${hy.hdk}/build/ant/patternsets/${hy.module}.txt" />
+    </fileset>
 
-    <condition property="lcms.home" value="/usr/local">
-        <isset property="is.freebsd"/>
-    </condition>
-    <condition property="lcms.home" value="/sw">
-        <isset property="is.macosx"/>
-    </condition>
-    <property name="lcms.home" value="/usr" />
+    <!-- fileset for resources of a module. -->
+    <fileset id="resources" dir="src/main/java">
+        <exclude name="**/*.java" />
+    </fileset>
 
-    <condition property="jpeg.home" value="/usr/local">
-        <isset property="is.freebsd"/>
-    </condition>
-    <condition property="jpeg.home" value="/sw">
-        <isset property="is.macosx"/>
-    </condition>
-    <property name="jpeg.home" value="/usr" />
-    
-    <!-- default property for call-modules macro - i.e. all modules -->
-    <property name="build.module" value="*" />
-    <property name="exclude.module" value="nothing" />
+    <!-- fileset for resources of a module with platform-dependent code. -->
+    <fileset id="common.resources" dir="src/main/java/common">
+        <exclude name="**/*.java" />
+    </fileset>
 
-    <!-- names of exclude lists, used by prepare-exclude-list macro -->
-    <property name="common.exclude.file" value="exclude.common" />
-    <property name="common.exclude.interm" value="exclude.interm" />
-    <property name="platform.exclude.file"
-              value="exclude.${hy.platform}.${hy.test.vm.name}" />
-    <property name="platform.exclude.interm"
-              value="exclude.${hy.platform}.${hy.test.vm.name}.interm" />
+    <!-- test properties -->
+    <property name="tests.output" location="../../build/test_report" />
+    <property name="tests.hdk.dir" value="${hy.hdk}/build/test/${hy.module}" />
+    <property name="tests.excludes.hdk.dir" value="${tests.hdk.dir}/excludes" />
+    <property name="tests.resources.hdk.dir"
+              value="${tests.hdk.dir}/resources" />
 
-    <!-- flags -->
-    <property name="hy.no.thr" value="false" />
-    <condition property="hy.skip.thr" value="true">
-        <not>
-            <equals arg1="${hy.no.thr}" arg2="false" />
-        </not>
-    </condition>
+    <property name="findBugs.report" location="../../build/findbugs_report" />
 
-    <property name="hy.local.zlib" value="false" />
-    <condition property="hy.skip.zlib" value="true">
-        <not>
-            <equals arg1="${hy.local.zlib}" arg2="false" />
-        </not>
-    </condition>
-
-    <property name="hy.zip.api" value="false" />
-    <condition property="hy.skip.zip.api" value="true">
-        <not>
-            <equals arg1="${hy.zip.api}" arg2="true" />
-        </not>
-     </condition>
+    <propertyset id="module.props">
+        <propertyref name="hy.component" />
+        <propertyref name="hy.cfg" />
+        <propertyref name="hy.test.vm.name" />
+        <propertyref name="svn.revision" />
+        <propertyref name="svn.info" />
+        <propertyref name="hy.no.thr" />
+        <propertyref name="hy.zip.api" />
+    </propertyset>
 
     <target name="echo" depends="-svn-info, test-jre-vm-info"
             description="Display the properties defined by this ant file" >
@@ -172,6 +246,7 @@ Harmony test properties:
     hy.test.timeout = ${hy.test.timeout}
     hy.test.vm.name = ${hy.test.vm.name}
     hy.test.vmargs = ${hy.test.vmargs}
+    findbugs.available = ${findbugs.available}
 
 Harmony platform properties:
 
@@ -205,7 +280,8 @@ Harmony platform properties:
   make.command = ${make.command}
 
   hy.hdk = ${hy.hdk}
-
+  hy.jdk = ${hy.jdk}
+  hy.jre = ${hy.jre}
 
 The following properties are only set if the "-svn-info" target has been
 called:
@@ -232,14 +308,14 @@ properties in preference to these:
         </condition>
         <!-- FIXME current behavior relies on the fact that J9 VM doesn't
              support -version parameter -->
-        <condition property="hy.test.vm.name" value="drl" else="ibm" >
-            <contains string="${test.vm.info.tmp}" substring="harmony" />
+        <condition property="hy.test.vm.name" value="ibm" else="drl" >
+            <contains string="${test.vm.info.tmp}" substring="IBM" casesensitive="false" />
         </condition>
         <echo level="info" message="hy.test.vm.name = ${hy.test.vm.name}" />
     </target>
 
     <target name="-get-test-vm-output">
-        <condition property="test.jre.home" value="${hy.jdk}/jre">
+        <condition property="test.jre.home" value="${hy.jre}">
             <not><isset property="test.jre.home" /></not>
         </condition>
         <exec executable="${test.jre.home}/bin/java" failifexecutionfails="false">
@@ -248,24 +324,57 @@ properties in preference to these:
         </exec>
     </target>
 
-    <macrodef name="call-modules">
+    <macrodef name="poll-modules" 
+        description="directory-based macros for polling sub-builds">
         <attribute name="target" />
+        <attribute name="dir" default="modules" />
+        <attribute name="includes" default="${build.module}"/>
+        <attribute name="excludes" default="${exclude.module}"/>
+        <attribute name="antfile" default="*.xml"/>
         <sequential>
-            <subant target="@{target}">
-                <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
-                <dirset dir="modules"
-                        includes="${build.module}"
-                        excludes="${exclude.module}">
-                    <exclude name=".*" />
-                </dirset>
-            </subant>
+            <!-- convert dirset pattern to fileset pattern-->
+            <property name="@{dir}.loc" location="@{dir}"/>
+            <pathconvert property="list.@{dir}.@{target}" 
+                pathsep="${file.separator}@{antfile}," setonempty="no">
+                <path>
+                    <dirset dir="@{dir}"
+                            includes="@{includes}"
+                            excludes="@{excludes}">
+                        <exclude name=".*" />
+                    </dirset>
+                </path>
+                <map from="${@{dir}.loc}${file.separator}" to=""/>
+            </pathconvert>
+            <!-- append antfile suffix to last item in the list, if any -->
+            <condition property="poll.@{dir}.@{target}"
+                value="${list.@{dir}.@{target}}${file.separator}@{antfile}" 
+                else="">
+                <isset property="list.@{dir}.@{target}"/>
+            </condition>
+            <poll-build target="@{target}" dir="@{dir}" 
+                includes="${poll.@{dir}.@{target}}"/>
         </sequential>
     </macrodef>
 
-    <condition property="make.arg" value="/nologo">
-        <isset property="is.windows"/>
-    </condition>
-    <property name="make.arg" value="" />
+    <macrodef name="poll-build"
+        description="plain-filter macros for polling sub-builds">
+        <attribute name="target" />
+        <attribute name="dir" />
+        <attribute name="includes" default="**/*.xml"/>
+        <attribute name="excludes" default=""/>
+        <sequential>
+            <echo message="polling @{includes}"/>
+            <subant target="@{target}">
+                <!-- TODO: modules probably need to work these properties
+                     out for themselves in order to reduce coupling -->
+                <property name="hy.target" location="${hy.target}"/>
+                <propertyset refid="module.props" />
+                <fileset dir="@{dir}" includes="@{includes}" excludes="@{excludes}">
+                    <containsregexp expression="&lt;target[^&gt;]*name=&quot;@{target}&quot;"/>
+                </fileset>
+            </subant>
+        </sequential>
+    </macrodef>
 
     <macrodef name="make">
         <attribute name="dir" />
@@ -273,10 +382,24 @@ properties in preference to these:
         <element name="make-elements" optional="true" />
         <sequential>
             <echo>Making "@{target}" in @{dir}</echo>
+            <echo file="${hy.hdk}/build/make/properties.${make.suffix}">
+HY_ZIP_API=${hy.zip.api}
+HY_PORTLIB_STUBS=${hy.portlib.stubs}
+HY_CFG=${hy.cfg}
+HY_ARCH=${hy.arch}
+HY_OS=${hy.os}
+HY_PLATFORM=${hy.platform}
+HY_NO_THR=${hy.no.thr}
+HY_THR_NO_DEPLOY=${hy.thr.no.deploy}
+HY_LOCAL_ZLIB=${hy.local.zlib}
+HY_SHLIB_SUFFIX=${shlib.suffix}
+HY_LINKLIB_SUFFIX=${linklib.suffix}
+            </echo>                
             <exec failonerror="true"
                   executable="${make.command}"
                   dir="@{dir}">
                 <env key="HY_HDK" value="${hy.hdk}" />
+                <env key="HY_TARGET" value="${hy.target}" />
                 <arg line="${make.arg}" />
                 <arg line="@{target}" />
                 <make-elements />
@@ -305,6 +428,14 @@ properties in preference to these:
     </macrodef>
     <convert-test from="test.case" to="converted.tc" />
     
+    <!-- names of exclude lists, used by prepare-exclude-list macro -->
+    <property name="common.exclude.file" value="exclude.common" />
+    <property name="common.exclude.interm" value="exclude.interm" />
+    <property name="platform.exclude.file"
+              value="exclude.${hy.platform}.${hy.test.vm.name}" />
+    <property name="platform.exclude.interm"
+              value="exclude.${hy.platform}.${hy.test.vm.name}.interm" />
+
     <!-- Concatenate several exclude lists into single list -->
     <macrodef name="prepare-exclude-list">
        <attribute name="moduleName"/>
@@ -396,9 +527,383 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <attribute name="Implementation-URL"
                            value="http://harmony.apache.org"/>
                 <attribute name="Implementation-Version" value="${svn.info}"/> 
+                <attribute name="Specification-Vendor"
+                           value="Sun Microsystems, Inc." />
+                <attribute name="Specification-Title"
+                           value="Java Platform API Specification" />
+                <attribute name="Specification-Version"
+                           value="${hy.specification.version}" />
             </manifest>
             <metainf refid="hy.required.metainf-files"/>
         </jar>
     </presetdef>
+   
+    <macrodef name="compile-classes">
+        <attribute name="description" default="" />
+        <attribute name="destdir" default="${hy.build.top}/java" />
+        <element name="javac-elements" />
+        <sequential>
+            <echo message="Compiling @{description}" />
+            
+            <mkdir dir="@{destdir}" />
+
+            <hy.javac sourcepath="" destdir="@{destdir}">
+                <javac-elements />
+                <compilerarg line="${build.compilerarg}" />
+                <bootclasspath>
+                    <fileset dir="${hy.jre}/lib/boot">
+                        <include name="**/*.jar" />
+                    </fileset>
+                </bootclasspath>
+            </hy.javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="compile-tests">
+        <attribute name="description" default="" />
+        <attribute name="destdir" default="${hy.build.mod}/test/api" />
+        <element name="javac-elements" />
+        <sequential>
+            <echo message="Compiling @{description}" />
+            
+            <mkdir dir="@{destdir}" />
+
+            <mkdir dir="${hy.hdk}/build/test" />
+            <copy file="${junit.jar}"
+                  tofile="${hy.hdk}/build/test/junit.jar" />
+            <copy file="${hamcrest-library.jar}"
+                  tofile="${hy.hdk}/build/test/hamcrest-library.jar" />
+            
+            <hy.javac destdir="@{destdir}">
+
+                <javac-elements />
+
+                <compilerarg line="${build.compilerarg}" />
+
+                <bootclasspath>
+                    <fileset dir="${hy.jre}/lib/boot">
+                        <include name="**/*.jar" />
+                    </fileset>
+                </bootclasspath>
+
+                <classpath location="${hy.build.top}/java" />
+                <classpath location="${hy.hdk}/build/test/junit.jar" />
+                <classpath
+                     location="${hy.hdk}/build/test/hamcrest-library.jar" />
+                <classpath location="${hy.hdk}/build/test/support.jar" />
+            </hy.javac>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="run-hdk-tests">
+        <attribute name="module" />
+        <attribute name="jar" />
+        <element name="junit-elements" optional="true"/>
+        <element name="excludeorinclude" optional="true"/>
+        <sequential>
+            <echo message="Running @{module} Unit Test from @{jar}" />
+            <echo message="Tested jre: ${test.jre.home}/bin/java" />
+            <property name="test.module.dir" value="${target.dir}/@{module}" />
+            <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
+            <property name="test.resources.dir" value="${test.module.dir}/resources" />
+            <property name="module.work.dir" location="${work.dir}/@{module}" />
+            <property name="test.exclude.file" value="${module.work.dir}/test.exclude" />
+
+            <property name="module.temp.dir"
+                      location="${work.dir}/@{module}/temp" />
+            <property name="junit.tempdir"
+                      location="${module.temp.dir}/ant" />
+            <property name="junit.java.io.tmpdir"
+                      location="${module.temp.dir}/tmpdir" />
+            <property name="junit.user.home"
+                      location="${module.temp.dir}/user" />
+            
+            <mkdir dir="${tests.output}" /> 
+            <mkdir dir="${junit.tempdir}" />
+            <mkdir dir="${junit.java.io.tmpdir}" />
+            <mkdir dir="${junit.user.home}" />
+
+            <prepare-exclude-list moduleName="@{module}" dir="${test.excludes.dir}" result="${test.exclude.file}" />
+            <junit fork="yes" 
+                   forkmode="${hy.test.forkmode}" 
+                   timeout="${hy.test.timeout}" 
+                   printsummary="withOutAndErr" 
+                   errorproperty="test.errors" 
+                   failureproperty="test.failures" 
+                   showoutput="on" 
+                   dir="${work.dir}/@{module}" 
+                   tempdir="${junit.tempdir}"
+                   jvm="${test.jre.home}/bin/java">
+
+                <jvmarg line="-Djava.io.tmpdir=${junit.java.io.tmpdir}" />
+                <jvmarg line="-Duser.home=${junit.user.home}" />
+
+                <classpath>
+                    <fileset dir="${target.dir}">
+                        <include name="*.jar" />
+                    </fileset>
+                    <pathelement path="${test.resources.dir}/" />
+                    <pathelement path="${test.module.dir}/" />
+                    <pathelement location="${test.module.dir}/@{jar}" />
+                </classpath>
+
+                <junit-elements />
+
+                <batchtest todir="${tests.output}" haltonfailure="no">
+                    <zipfileset src="${test.module.dir}/@{jar}" encoding="UTF-8">
+                        <exclude name="Test.class" />
+                        <exclude name="**/*$*" />
+
+                        <!-- if ${test.case}     -->
+                        <include name="${converted.tc.class}" if="test.case" />
+                        <!-- unless ${test.case} -->
+                        <include name="**/*Test.class" unless="test.case" />
+                        <excludesfile name="${test.exclude.file}" unless="test.case"/>
+                        <excludeorinclude/>
+                    </zipfileset>
+                </batchtest>
+
+                <assertions enableSystemAssertions="true">
+                    <enable />
+                </assertions>
+
+                <jvmarg line="${hy.test.vmargs}" />
+                <!-- Used by Support_Exec.execJava() -->
+                <jvmarg value="-Dhy.test.vmargs=${hy.test.vmargs}" />
+
+                <formatter type="xml" />
+            </junit>
+
+            <delete dir="${module.temp.dir}"
+                    includeemptydirs="true" failonerror="false" />
+
+            <antcall target="touch-failures-file">
+                <param name="module" value="@{module}" />
+            </antcall>
+            <antcall target="touch-errors-file">
+                <param name="module" value="@{module}" />
+            </antcall>
+
+        </sequential>
+    </macrodef>
+
+    <!-- TOFIX: Can't seem to override the line:
+             <include name="**/*Test.class" unless="test.case" />
+         so this is just run-hdk-tests without that line -->
+    <macrodef name="run-selected-hdk-tests">
+        <attribute name="module" />
+        <attribute name="jar" />
+        <element name="junit-elements" optional="true"/>
+        <element name="excludeorinclude" optional="true"/>
+        <sequential>
+            <echo message="Running @{module} Unit Test from @{jar}" />
+            <echo message="Tested jre: ${test.jre.home}/bin/java" />
+            <property name="test.module.dir" value="${target.dir}/@{module}" />
+            <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
+            <property name="test.resources.dir" value="${test.module.dir}/resources" />
+            <property name="module.work.dir" location="${work.dir}/@{module}" />
+            <property name="test.exclude.file" value="${module.work.dir}/test.exclude" />
+
+            <property name="module.temp.dir"
+                      location="${work.dir}/@{module}/temp" />
+            <property name="junit.tempdir"
+                      location="${module.temp.dir}/ant" />
+            <property name="junit.java.io.tmpdir"
+                      location="${module.temp.dir}/tmpdir" />
+            <property name="junit.user.home"
+                      location="${module.temp.dir}/user" />
+            
+            <mkdir dir="${tests.output}" /> 
+            <mkdir dir="${junit.tempdir}" />
+            <mkdir dir="${junit.java.io.tmpdir}" />
+            <mkdir dir="${junit.user.home}" />
+
+            <prepare-exclude-list moduleName="@{module}" dir="${test.excludes.dir}" result="${test.exclude.file}" />
+            <junit fork="yes" 
+                   forkmode="${hy.test.forkmode}" 
+                   timeout="${hy.test.timeout}" 
+                   printsummary="withOutAndErr" 
+                   errorproperty="test.errors" 
+                   failureproperty="test.failures" 
+                   showoutput="on" 
+                   dir="${work.dir}/@{module}" 
+                   tempdir="${junit.tempdir}"
+                   jvm="${test.jre.home}/bin/java">
+
+                <jvmarg line="-Djava.io.tmpdir=${junit.java.io.tmpdir}" />
+                <jvmarg line="-Duser.home=${junit.user.home}" />
+
+                <classpath>
+                    <fileset dir="${target.dir}">
+                        <include name="*.jar" />
+                    </fileset>
+                    <pathelement path="${test.resources.dir}/" />
+                    <pathelement path="${test.module.dir}/" />
+                    <pathelement location="${test.module.dir}/@{jar}" />
+                </classpath>
+
+                <junit-elements />
+
+                <batchtest todir="${tests.output}" haltonfailure="no">
+                    <zipfileset src="${test.module.dir}/@{jar}" encoding="UTF-8">
+                        <exclude name="Test.class" />
+                        <exclude name="**/*$*" />
+
+                        <!-- if ${test.case}     -->
+                        <include name="${converted.tc.class}" if="test.case" />
+                        <!-- unless ${test.case} -->
+                        <excludesfile name="${test.exclude.file}" unless="test.case"/>
+                        <excludeorinclude/>
+                    </zipfileset>
+                </batchtest>
+
+                <assertions enableSystemAssertions="true">
+                    <enable />
+                </assertions>
+
+                <jvmarg line="${hy.test.vmargs}" />
+                <!-- Used by Support_Exec.execJava() -->
+                <jvmarg value="-Dhy.test.vmargs=${hy.test.vmargs}" />
+
+                <formatter type="xml" />
+            </junit>
+
+            <delete dir="${module.temp.dir}"
+                    includeemptydirs="true" failonerror="false" />
+
+            <antcall target="touch-failures-file">
+                <param name="module" value="@{module}" />
+            </antcall>
+            <antcall target="touch-errors-file">
+                <param name="module" value="@{module}" />
+            </antcall>
+
+        </sequential>
+    </macrodef>
+
+    <target name="touch-failures-file" if="test.failures">
+        <echo file="${tests.output}/test.failures"
+            append="true">${module}${line.separator}</echo>
+    </target>
+
+    <target name="touch-errors-file" if="test.errors">
+        <echo file="${tests.output}/test.errors"
+            append="true">${module}${line.separator}</echo>
+    </target>
+
+    <!-- To use with -Dtest.case=... option                   -->
+    <!-- if ${test.case} is provided in package+class form    -->
+    <!-- it is converted to dir+filename form                 -->
+    <macrodef name="convert-test-as-class">
+        <attribute name="from" />
+        <attribute name="to" />
+        <sequential>
+            <pathconvert property="@{to}" setonempty="no">
+                <path path="${@{from}}" />
+                <chainedmapper>
+                    <filtermapper>
+                        <replaceregex pattern="\.java$$" />
+                    </filtermapper>
+                    <unpackagemapper from="${basedir}${file.separator}*" to="*.class" />
+                </chainedmapper>
+            </pathconvert>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="make-patternset">
+        <attribute name="source" default="src/main" />
+        <attribute name="module" />
+        <attribute name="file"
+                   default="${hy.hdk}/build/ant/patternsets/@{module}.txt" />
+        <sequential>
+            <dirname file="@{file}" property="@{file}.dir" />
+            <mkdir dir="${@{file}.dir}" />
+            <property name="@{source}.loc" location="@{source}"/>
+
+            <pathconvert targetos="unix" property="@{file}.content"
+                         pathsep="${line.separator}">
+                <fileset dir="${@{source}.loc}" includes="java*/**/*.java" />
+                <map from="${@{source}.loc}/java/unix/" to="" />
+                <map from="${@{source}.loc}/java/windows/" to="" />
+                <map from="${@{source}.loc}/java/common/" to="" />
+                <map from="${@{source}.loc}/java5/" to="" />
+                <map from="${@{source}.loc}/java/" to="" />
+                <compositemapper>
+                    <mapper type="regexp" from="^(.*)\.java$$" to="\1.*"/>
+                    <mapper type="regexp" from="^(.*)\.java$$" to="\1$*.*"/>
+                </compositemapper>
+            </pathconvert>
+            <echo message="${@{file}.content}${line.separator}"
+                  file="@{file}" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="delete-patternset">
+        <attribute name="module" />
+        <sequential>
+            <delete file="${hy.hdk}/build/ant/patternsets/@{module}.txt" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="run-findBugs">
+       <attribute name="outputFile"/>
+       <attribute name="excludeFilter"/>
+       <attribute name="jarFile"/>
+       <sequential>
+           <!-- Find and define findbugs task -->
+           <property name="findbugs.home" location="${basedir}/../../depends/oss/findbugs-1.3.9"/>
+           <available
+               classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+               classpath="${findbugs.home}/lib/findbugs-ant.jar"
+               property="findbugs.available"/>
+           <taskdef
+               name="findbugs"
+               classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+               classpath="${findbugs.home}/lib/findbugs-ant.jar"
+               onerror="ignore"/>
+          <fail message="FindBugs is unavailable" unless="findbugs.available"/>
+
+          <!-- Run findbugs using the attributes given -->
+          <dirname file="@{outputFile}" property="@{outputFile}.dir" />
+          <mkdir dir="${@{outputFile}.dir}" />
+          <findbugs home="${findbugs.home}"
+            output="xml"
+            outputFile="@{outputFile}"
+            excludeFilter="@{excludeFilter}"
+            jvmargs="-Xmx512M"
+            workhard="true">
+            <auxClasspath>
+                <fileset dir="${hy.jdk}/jre/lib/boot">
+                    <include name="**/*.jar" />
+                </fileset>
+            </auxClasspath>
+            <sourcePath path="src/main/java" />
+            <sourcePath path="src/main/java5" />
+            <sourcePath path="src/main/java/common" />
+            <sourcePath path="src/main/java/${hy.os.family}" />
+            <class location="@{jarFile}" />
+        </findbugs>
+       </sequential>
+    </macrodef>
+
+    <macrodef name="init-hdk">
+        <sequential>
+            <mkdir dir="${hy.hdk}/build/ant" />
+            <copy file="${common.resources}/make/depends.xml"
+                  tofile="${hy.hdk}/build/ant/depends.xml"
+                  outputencoding="UTF-8" />
+            <copy file="${common.resources}/make/depends.properties"
+                  tofile="${hy.hdk}/build/ant/depends.properties"
+                  outputencoding="UTF-8" />
+
+	    <mkdir dir="${hy.hdk}/build/make" />
+	    <copy todir="${hy.hdk}/build/make" overwrite="yes">
+                <fileset dir="${common.resources}/depends/build">
+                    <include name="**" />
+                </fileset>
+            </copy>
+
+        </sequential>
+    </macrodef>
 
 </project>

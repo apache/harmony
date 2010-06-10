@@ -18,7 +18,8 @@
 
 <project name="em" default="build" basedir="../..">
     
-    <property name="component" value="em"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="em"/>
     <import file="common-vm.xml"/>
     
     <target name="build" depends="-common-vm">        

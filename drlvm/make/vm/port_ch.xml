@@ -18,7 +18,8 @@
 
 <project name="port_ch" default="build" basedir="../..">
 
-    <property name="component" value="port_ch"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="port_ch"/>
 
     <import file="common-vm.xml"/>
 

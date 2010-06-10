@@ -18,7 +18,8 @@
 
 <project name="vmi" default="build" basedir="../..">
     
-    <property name="component" value="vmi"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="vmi"/>
     <import file="common-vm.xml"/>
     
     <target name="build" depends="-common-vm">        

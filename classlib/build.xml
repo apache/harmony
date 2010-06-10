@@ -76,8 +76,20 @@ module:
     <property name="hy.component" value="classlib" />
     <property name="hy.module" value="toplevel" />
 
+    <fail message="Property 'common.resources' is not defined">
+        <condition>
+            <not><isset property="common.resources" /></not>
+        </condition>
+    </fail>
+
+    <mkdir dir="${hy.target}/hdk/build/ant" />
+    <copy todir="${hy.target}/hdk/build/ant" preservelastmodified="true">
+        <fileset dir="${common.resources}/make" includes="*.xml"/>
+    </copy>
+
     <!-- import properties for snapshot targets -->
-    <import file="make/properties.xml" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
+    <init-hdk/>
 
     <property name="build.output" location="${hy.build.top}/java" />
     <property name="tests.output" location="${hy.target}/test_report" />
@@ -86,7 +98,7 @@ module:
     <property name="depends.files" location="depends/files"/>
     <property name="depends.manifests" location="depends/manifests"/>
 
-    <import file="make/depends.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
     <property file="make/depends.properties" />
 
     <condition property="needs.vme.v3.hack" value="true">
@@ -470,7 +482,7 @@ Generating HTML using Doxygen...
     <!-- ================================= 
           target: -properties
          ================================= -->
-    <target name="-properties" depends="-svn-prop">
+    <target name="-properties" depends="-svn-info">
         <property name="deploy.file.prefix"
                   value="harmony-classlib-r${svn.revision}" />
         <property name="deploy.tar"
@@ -659,48 +671,6 @@ Generating snapshot zip
                       algorithm="@{type}" />
             <echo file="@{file}.@{type}"
                   message="${@{file}.@{type}}  @{file}${line.separator}" />
-        </sequential>
-    </macrodef>
-
-    <macrodef name="init-hdk">
-        <sequential>
-            <mkdir dir="${hy.hdk}/build/ant" />
-            <copy file="make/properties.xml"
-                  tofile="${hy.hdk}/build/ant/properties.xml"
-                  outputencoding="UTF-8" >
-                <filterchain>
-                    <tokenfilter>
-                        <replacestring from="Top-Level property definitions"
-                                       to="Classlib property definitions" />
-                    </tokenfilter>
-                </filterchain>
-            </copy>
-            <copy file="make/make.xml"
-                  tofile="${hy.hdk}/build/ant/make.xml"
-                  outputencoding="UTF-8" >
-            </copy>
-            <copy file="make/depends-common.xml"
-                  tofile="${hy.hdk}/build/ant/depends.xml"
-                  outputencoding="UTF-8" >
-                <filterchain>
-                    <tokenfilter>
-                        <replacestring from="Common dependency definitions"
-                                       to="Classlib dependency definitions" />
-                    </tokenfilter>
-                </filterchain>
-            </copy>
-            <copy file="make/depends.properties"
-                  tofile="${hy.hdk}/build/ant/depends.properties"
-                  outputencoding="UTF-8" >
-            </copy>
-
-	    <mkdir dir="${hy.hdk}/build/make" />
-	    <copy todir="${hy.hdk}/build/make" overwrite="yes">
-                <fileset dir="depends/build">
-                    <include name="**" />
-                </fileset>
-            </copy>
-
         </sequential>
     </macrodef>
 

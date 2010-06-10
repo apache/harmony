@@ -18,7 +18,8 @@
 
 <project name="encoder" default="build" basedir="../..">
     
-    <property name="component" value="encoder"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="encoder"/>
     <import file="common-vm.xml"/>
     
     <target name="build" depends="-common-vm">        

@@ -24,6 +24,11 @@
     <property name="hy.target" location="${basedir}/../../target" />
     <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
+    <echo>
+hy.os=${hy.os}
+hy.arch=${hy.arch}
+    </echo>
+
     <property file="../../make/depends.properties" />
 
     <available property="hythr.available"

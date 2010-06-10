@@ -46,21 +46,8 @@
     </condition>
     <property name="hy.cpp.compiler" value="gcc"/>
         
-    
-    <!-- set the path root for the external resources  -->
-    <property name="common.resources.loc" value="${drlvm.base.dir}/../common_resources" />
-    <property name="common.resources" location="${common.resources.loc}" />
-    <fail>
-        <condition>
-            <not><available file="${common.resources}/make/properties.xml"/></not>
-        </condition>
-        Primary dependency is missing: common_resources.
-        You need to check it out from SVN repository or specify it's location:
-        ant -Dcommon.resources.loc=path
-    </fail>
-    
-    <import file="${common.resources}/make/properties.xml"/>
-    <import file="${common.resources}/make/depends.xml"/>
+    <import file="${hy.target}/hdk/build/ant/properties.xml"/>
+    <import file="${hy.target}/hdk/build/ant/depends.xml"/>
 
     <!-- define drlvm-specific resources -->
     <loadproperties srcfile="${prop.imported.basedir}/depends.properties">
@@ -87,7 +74,7 @@
     </condition>
 
     <property name="vm.home" location="${drlvm.base.dir}/vm" />        
-    <property name="drlvm.build.dir" location="${drlvm.base.dir}/build/${hy.os}_${hy.arch}_${hy.cpp.compiler}_${hy.cfg}" />
+    <property name="drlvm.build.dir" location="${hy.target}/build/drlvm/all" />
     <property name="drlvm.deploy.dir" location="${drlvm.build.dir}/deploy" />
     <property name="drlvm.semi.dir" location="${drlvm.build.dir}/semis" />
     <property name="drlvm.bin.dir" location="${drlvm.deploy.dir}/jdk/jre/bin/default"/>

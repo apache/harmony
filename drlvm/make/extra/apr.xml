@@ -18,7 +18,8 @@
 
 <project name="apr-dep" default="build">
     
-    <property name="component" value="apr"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="apr"/>
     <import file="../build-native.xml"/>
 
     <target name="fetch-depends">

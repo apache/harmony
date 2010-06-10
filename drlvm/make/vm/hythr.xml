@@ -18,7 +18,8 @@
 
 <project name="hythr" default="build" basedir="../..">
     
-    <property name="component" value="hythr"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="hythr"/>
     <import file="common-vm.xml"/>
     
     <condition property="hy.thr.ver" value="_0.1">

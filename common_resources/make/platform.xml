@@ -254,8 +254,19 @@
         <or>
             <isset property="is.aix"/>
             <isset property="is.freebsd"/>
+            <isset property="is.zos"/>
         </or>
     </condition>
     <property name="make.command" value="make" />
+
+    <condition property="make.arg" value="/nologo">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="make.arg" value="-r" />
+
+    <condition property="make.suffix" value="mak">
+        <isset property="is.windows"/>
+    </condition>
+    <property name="make.suffix" value="mk" />
 
 </project>

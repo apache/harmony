@@ -46,62 +46,6 @@
         </tstamp>
     </target>
     
-    <target name="fetch-svn">
-        <setup-svn dep="${dependency}"/>
-        <antcall target="svn-co" inheritAll="false">
-            <propertyset>
-                <propertyref prefix="${dependency}."/>
-                <mapper type="glob" from="${dependency}.*" to="dep.*"/>
-            </propertyset>
-        </antcall>
-    </target>
-
-    <target name="svn-co" unless="dep.svn.dir.uptodate">
-        <exec executable="svn" failonerror="true">
-            <arg line="co -r ${dep.svn.revision} ${dep.svn.url} ${dep.svn.dir}" />
-        </exec>
-    </target>
-
-    <target name="check-svn">
-        <check-svn dep="${dependency}"/>
-    </target>
-    
-    <macrodef name="check-svn">
-        <attribute name="dep" />
-        <sequential>
-            <setup-svn dep="@{dep}"/>
-            <echo message="Checking @{dep} SVN workspace at ${@{dep}.svn.dir}"/>
-            <fail unless="@{dep}.svn.dir.uptodate">
-                ...
-Dependency is not available or out of date: ${dependency}.
-It should be checked out
-    from SVN repository: ${@{dep}.svn.url} 
-    revision: ${@{dep}.svn.revision}
-    to: ${@{dep}.svn.dir}
-    
-Run "ant fetch-depends" to automatically fetch dependencies.
-Note: Some of Harmony's dependencies are licensed under terms other
-than the Apache License v2.                
-            </fail>
-        </sequential>
-    </macrodef>
-
-    <macrodef name="setup-svn">
-        <attribute name="dep" />
-        <sequential>
-            <property name="@{dep}.svn.dir" value="${depends.oss}/@{dep}"/>
-            <property name="@{dep}.svn.revision" value="HEAD"/>
-            <svn-info dir="${@{dep}.svn.dir}" prefix="@{dep}"/>
-
-            <condition property="@{dep}.svn.dir.uptodate">
-                <and>
-                    <equals arg1="${@{dep}.svn.revision}" arg2="${@{dep}.entry.revision}"/>
-                    <equals arg1="${@{dep}.svn.url}" arg2="${@{dep}.entry.url}"/>
-                </and>
-            </condition>
-        </sequential>
-    </macrodef>
-    
     <macrodef name="svn-info">
         <attribute name="dir" />
         <attribute name="prefix" default=""/>

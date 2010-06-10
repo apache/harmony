@@ -21,6 +21,16 @@
     	Build contributed source and lay out results in the required format 
     </description>
     
+    <property name="hy.target" location="target" />
+    <property name="hy.component" value="drlvm" />
+    <property name="hy.module" value="toplevel" />
+
+    <fail message="Property 'common.resources' is not defined">
+        <condition>
+            <not><isset property="common.resources" /></not>
+        </condition>
+    </fail>
+
     <import file="make/properties.xml"/>
 
     <target name="help">
@@ -111,63 +121,96 @@ Usage:
 
     <target name="build-extra" depends=""
         description="Compiles external dependencies">
-        <ant antfile="make/extra/apr.xml"/>
+        <ant antfile="make/extra/apr.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="encoder">
-        <ant antfile="make/vm/encoder.xml"/>
+        <ant antfile="make/vm/encoder.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="port" depends="build-extra">
-        <ant antfile="make/vm/port.xml"/>
+        <ant antfile="make/vm/port.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="port_ch" depends="port">
-        <ant antfile="make/vm/port_ch.xml"/>
+        <ant antfile="make/vm/port_ch.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="hythr" depends="port">
-        <ant antfile="make/vm/hythr.xml"/>
+        <ant antfile="make/vm/hythr.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="verifier">
-        <ant antfile="make/vm/verifier.xml"/>
+        <ant antfile="make/vm/verifier.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
-    <target name="verifier-ext" description="Build a verifier extentions library">
-        <ant antfile="make/vm/verifier-ext.xml"/>
+    <target name="verifier-ext"
+            description="Build a verifier extentions library">
+        <ant antfile="make/vm/verifier-ext.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
-    <target name="clean-verifier-ext" description="Clean a verifier extentions library">
-        <ant antfile="make/vm/verifier-ext.xml" target="clean"/>
+    <target name="clean-verifier-ext"
+            description="Clean a verifier extentions library">
+        <ant antfile="make/vm/verifier-ext.xml" target="clean"
+             inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="vmcore" depends="encoder, port, port_ch, hythr, verifier">
-        <ant antfile="make/vm/vmcore.xml"/>
+        <ant antfile="make/vm/vmcore.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="em" depends="vmcore">
-        <ant antfile="make/vm/em.xml"/>
+        <ant antfile="make/vm/em.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="interpreter" depends="vmcore">
-        <ant antfile="make/vm/interpreter.xml"/>
+        <ant antfile="make/vm/interpreter.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="kernel">
-        <ant antfile="make/vm/kernel.xml"/>
+        <ant antfile="make/vm/kernel.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="vmi" depends="vmcore">
-        <ant antfile="make/vm/vmi.xml"/>
+        <ant antfile="make/vm/vmi.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="jitrino" depends="vmcore">
-        <ant antfile="make/vm/jitrino.xml"/>
+        <ant antfile="make/vm/jitrino.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
     <target name="gc_gen" depends="vmcore,kernel">
-        <ant antfile="make/vm/gc_gen.xml"/>
+        <ant antfile="make/vm/gc_gen.xml" inheritall="false">
+            <propertyset refid="module.props" />
+        </ant>
     </target>
 
 
