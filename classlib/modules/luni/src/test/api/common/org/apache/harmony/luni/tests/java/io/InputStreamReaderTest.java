@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -211,7 +212,7 @@ public class InputStreamReaderTest extends TestCase {
             is = new InputStreamReader(fis, "Bogus");
             fail("Failed to throw Unsupported Encoding exception");
         } catch (UnsupportedEncodingException e) {
-            // Expected
+            assertNotNull(e.getMessage());
         }
 
         try {
