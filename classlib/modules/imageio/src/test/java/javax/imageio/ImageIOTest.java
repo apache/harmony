@@ -18,8 +18,13 @@
 package javax.imageio;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -45,4 +50,80 @@ public class ImageIOTest extends TestCase {
 
         return img;
     }
+
+    private void testFormat(String format) {
+        ImageReader reader = ImageIO.getImageReadersByFormatName(format).next();
+        ImageWriter writer = ImageIO.getImageWritersByFormatName(format).next();
+
+        assertEquals("getImageReader() returns an incorrect reader for " + format,
+            ImageIO.getImageReader(writer).getClass(), reader.getClass());
+        assertEquals("getImageWriter() returns an incorrect writer for " + format,
+            ImageIO.getImageWriter(reader).getClass(), writer.getClass());
+    }
+    
+    // assume we have exactly one reader/writer pair
+    public void testGetJpegReaderWriter() throws Exception {
+        testFormat("jpeg");
+    }
+
+    // assume we have exactly one reader/writer pair
+    public void testGetPngReaderWriter() throws Exception {
+        testFormat("png");
+    }
+ 	
+    // GIF has no writer
+    // public void testGetGifReaderWriter() throws Exception {
+    //     testFormat("gif");
+    // }
+
+    public void testGetNullReaderWriter() throws Exception {
+    	try {
+            ImageIO.getImageWriter(null);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException expected) {
+            // Ok
+        }
+
+        try {
+            ImageIO.getImageReader(null);
+            fail("Expected IllegalArgumentException");
+        }
+        catch (IllegalArgumentException expected) {
+            // Ok
+        }
+    }
+        
+    public void testGetReaderMIMETypes() {
+        Set<String> expectedMIMETypes = new HashSet<String>(Arrays.asList(new String[] {
+            "image/gif", "image/x-png", "image/png", "image/jpeg" } ));
+        
+        Set<String> actualMIMETypes = new HashSet<String>(Arrays.asList(ImageIO.getReaderMIMETypes()));
+        assertTrue(actualMIMETypes.containsAll(expectedMIMETypes));
+    }
+    
+    public void testGetWriterMIMETypes() {
+        Set<String> expectedMIMETypes = new HashSet<String>(Arrays.asList(new String[] {
+            "image/x-png", "image/png", "image/jpeg" } ));
+        
+        Set<String> actualMIMETypes = new HashSet<String>(Arrays.asList(ImageIO.getWriterMIMETypes()));
+        assertTrue(actualMIMETypes.containsAll(expectedMIMETypes));
+    }
+    
+    public void testGetReaderFormatNames() {
+        Set<String> expectedFormatNames = new HashSet<String>(Arrays.asList(new String[] {
+            "JPG", "jpg", "GIF", "gif", "JPEG", "jpeg", "PNG", "png" } ));
+        
+        Set<String> actualFormatNames = new HashSet<String>(Arrays.asList(ImageIO.getReaderFormatNames()));
+        assertTrue(actualFormatNames.containsAll(expectedFormatNames));
+    }
+    
+    public void testGetWriterFormatNames() {
+        Set<String> expectedFormatNames = new HashSet<String>(Arrays.asList(new String[] {
+            "JPG", "jpg", "JPEG", "jpeg", "PNG", "png" } ));
+        
+        Set<String> actualFormatNames = new HashSet<String>(Arrays.asList(ImageIO.getWriterFormatNames()));
+        assertTrue(actualFormatNames.containsAll(expectedFormatNames));
+    }
+
 }
