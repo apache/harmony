@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.List;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.net.URL;
@@ -104,7 +105,7 @@ public final class ImageIO {
     }
 
     public static String[] getReaderFormatNames() {
-        ArrayList<String> FormatNames = new ArrayList<String>();
+        List<String> FormatNames = new ArrayList<String>();
 
         Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
         while (it.hasNext()) {
@@ -116,7 +117,7 @@ public final class ImageIO {
     }
 
     public static String[] getReaderMIMETypes() {
-        ArrayList<String> MIMETypes = new ArrayList<String>();
+        List<String> MIMETypes = new ArrayList<String>();
 
         Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
         while (it.hasNext()) {

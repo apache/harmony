@@ -74,14 +74,14 @@ public class ServiceRegistry {
         throw new NotImplementedException();
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     public <T> Iterator<T> getServiceProviders(Class<T> category, Filter filter, boolean useOrdering) {
-        return new FilteredIterator<T>(filter, (Iterator<T>)categories.getProviders(category, useOrdering));
+        return new FilteredIterator<T>(filter, (Iterator<T>) categories.getProviders(category, useOrdering));
     }
 
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     public <T> Iterator<T> getServiceProviders(Class<T> category, boolean useOrdering) {
-        return (Iterator<T>)categories.getProviders(category, useOrdering);
+        return (Iterator<T>) categories.getProviders(category, useOrdering);
     }
 
     public <T> T getServiceProviderByClass(Class<T> providerClass) throws NotImplementedException {
@@ -89,14 +89,12 @@ public class ServiceRegistry {
         throw new NotImplementedException();
     }
 
-    public <T> boolean setOrdering(Class<T> category, T firstProvider, T secondProvider) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public <T> boolean setOrdering(Class<T> category, T firstProvider, T secondProvider) {
+        return categories.setOrdering(category, firstProvider, secondProvider);
     }
 
-    public <T> boolean unsetOrdering(Class<T> category, T firstProvider, T secondProvider) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public <T> boolean unsetOrdering(Class<T> category, T firstProvider, T secondProvider) {
+        return categories.unsetOrdering(category, firstProvider, secondProvider);
     }
 
     public void deregisterAll(Class<?> category) throws NotImplementedException {
@@ -137,6 +135,26 @@ public class ServiceRegistry {
             this.registry = registry;
         }
 
+        <T> boolean setOrdering(Class<T> category, T firstProvider, T secondProvider) {
+            ProvidersMap providers = categories.get(category);
+            
+            if (providers == null) {
+                throw new IllegalArgumentException(Messages.getString("imageio.92", category));
+            }
+            
+            return providers.setOrdering(firstProvider, secondProvider);
+        }
+        
+        <T> boolean unsetOrdering(Class<T> category, T firstProvider, T secondProvider) {
+            ProvidersMap providers = categories.get(category);
+            
+            if (providers == null) {
+                throw new IllegalArgumentException(Messages.getString("imageio.92", category));
+            }
+            
+            return providers.unsetOrdering(firstProvider, secondProvider);
+        }
+        
         //-- TODO: useOrdering
         Iterator<?> getProviders(Class<?> category, boolean useOrdering) {
             ProvidersMap providers = categories.get(category);
@@ -182,6 +200,9 @@ public class ServiceRegistry {
         }
 
         private boolean addToNamed(Object provider, Class<?> category) {
+            if (!category.isAssignableFrom(provider.getClass())) {
+                throw new ClassCastException();
+            }
             Object obj = categories.get(category);
 
             if (null == obj) {
@@ -221,12 +242,21 @@ public class ServiceRegistry {
     }
 
     private static class ProvidersMap {
-        //-- TODO: providers ordering support
 
         Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
+        Map<Object, ProviderNode> nodeMap = new HashMap<Object, ProviderNode>();
 
         boolean addProvider(Object provider) {
-            return providers.put(provider.getClass(), provider) == null;
+            ProviderNode node =  new ProviderNode(provider);
+            nodeMap.put(provider, node);
+            Object obj = providers.put(provider.getClass(), provider);
+            
+            if (obj !=  null) {
+                nodeMap.remove(obj);
+                return false;
+            }
+            
+            return true;
         }
 
         boolean removeProvider(Object provider,
@@ -249,9 +279,62 @@ public class ServiceRegistry {
             return providers.keySet().iterator();
         }
 
-        //-- TODO ordering
-        Iterator<?> getProviders(boolean userOrdering) {
+        Iterator<?> getProviders(boolean useOrdering) {
+            if (useOrdering) {
+                return new OrderedProviderIterator(nodeMap.values().iterator());              
+            }
+            
             return providers.values().iterator();
+        }
+        
+        public <T> boolean setOrdering(T firstProvider, T secondProvider) {
+            if (firstProvider == secondProvider) {
+                throw new IllegalArgumentException(Messages.getString("imageio.98"));
+            }
+            
+            if ((firstProvider == null) || (secondProvider == null)) {
+                throw new IllegalArgumentException(Messages.getString("imageio.5E"));
+            }
+           
+            ProviderNode firstNode = nodeMap.get(firstProvider);
+            ProviderNode secondNode = nodeMap.get(secondProvider);
+                    
+            // if the ordering is already set, return false
+            if ((firstNode == null) || (firstNode.contains(secondNode))) {
+                return false;
+            }
+            
+            // put secondProvider into firstProvider's outgoing nodes list
+            firstNode.addOutEdge(secondNode);
+            // increase secondNode's incoming edge by 1
+            secondNode.addInEdge();         
+            
+            return true;
+        }
+        
+        public <T> boolean unsetOrdering(T firstProvider, T secondProvider) {
+            if (firstProvider == secondProvider) {
+                throw new IllegalArgumentException(Messages.getString("imageio.98"));
+            }
+            
+            if ((firstProvider == null) || (secondProvider == null)) {
+                throw new IllegalArgumentException(Messages.getString("imageio.5E"));
+            }
+            
+            ProviderNode firstNode = nodeMap.get(firstProvider);
+            ProviderNode secondNode = nodeMap.get(secondProvider); 
+                    
+            // if the ordering is not set, return false
+            if ((firstNode == null) || (!firstNode.contains(secondNode))) {
+                return false;
+            }
+                    
+            // remove secondProvider from firstProvider's outgoing nodes list
+            firstNode.removeOutEdge(secondNode);
+            // decrease secondNode's incoming edge by 1
+            secondNode.removeInEdge();
+                    
+            return true;            
         }
     }
 
@@ -296,6 +379,118 @@ public class ServiceRegistry {
                     return;
                 }
             }
+        }
+    }
+    
+    private static class ProviderNode {
+        // number of incoming edges
+        private int incomingEdges;  
+        // all outgoing nodes
+        private Set<Object> outgoingNodes; 
+        private Object provider;
+                
+        public ProviderNode(Object provider) {
+            incomingEdges = 0;
+            outgoingNodes = new HashSet<Object>();
+            this.provider = provider;
+        }
+            
+        public Object getProvider() {
+            return provider;
+        }
+        
+        public Iterator<Object> getOutgoingNodes() {
+            return outgoingNodes.iterator();
+        }
+        
+        public boolean addOutEdge(Object secondProvider) {
+            return outgoingNodes.add(secondProvider);
+        }
+        
+        public <T> boolean removeOutEdge(Object provider) {
+            return outgoingNodes.remove(provider);
+        }
+        
+        public void addInEdge() {
+            incomingEdges++;
+        }
+        
+        public void removeInEdge() {
+            incomingEdges--;
+        }
+        
+        public int getIncomingEdges() {
+            return incomingEdges;
+        }
+        
+        public boolean contains(Object provider) {
+            return outgoingNodes.contains(provider);
+        }
+    }
+
+    /**
+     * The iterator implements Kahn topological sorting algorithm.
+     * @see <a href="http://en.wikipedia.org/wiki/Topological_sorting">Wikipedia</a>
+     * for further reference.
+     */
+    private static class OrderedProviderIterator implements Iterator {
+
+        // the stack contains nodes which has no lesser nodes
+        // except those already returned by the iterator
+        private Stack<ProviderNode> firstNodes = new Stack<ProviderNode>();
+
+        // a dynamic counter of incoming nodes
+        // when a node is returned by iterator, the counters for connected
+        // nodes decrement
+        private Map<ProviderNode, Integer> incomingEdges = new HashMap<ProviderNode, Integer>();
+        
+        public OrderedProviderIterator(Iterator it) {
+            // find all the nodes that with no incoming edges and
+            // add them to firstNodes
+            while (it.hasNext()) {
+                ProviderNode node = (ProviderNode) it.next();
+                incomingEdges.put(node, new Integer(node.getIncomingEdges()));
+                if (node.getIncomingEdges() == 0) {
+                    firstNodes.push(node);
+                }
+            }
+        }
+            
+        public boolean hasNext() {
+            return !firstNodes.empty();
+        }
+
+        public Object next() {
+            if (firstNodes.empty()) {
+               throw new NoSuchElementException();
+            }
+                            
+            // get a node from firstNodes
+            ProviderNode node = firstNodes.pop();
+                            
+            // find all the outgoing nodes
+            Iterator it = node.getOutgoingNodes();
+            while (it.hasNext()) {
+                ProviderNode outNode = (ProviderNode) it.next();
+                
+                // remove the incoming edge from the node.
+                int edges = incomingEdges.get(outNode);
+                edges--;
+                incomingEdges.put(outNode, new Integer(edges));
+                
+                // add to the firstNodes if this node's incoming edge is equal to 0
+                if (edges == 0) {
+                    firstNodes.push(outNode);
+                }
+            }
+            
+            incomingEdges.remove(node);
+                            
+            return node.getProvider();
+        }
+        
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -18,16 +18,97 @@
 package javax.imageio.spi;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Locale;
 
 import junit.framework.TestCase;
 
 import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
+import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
 
 public class ServiceRegistryTest extends TestCase {
     
+    public void testGetServiceProviders() {
+        Class[] CATEGORIES = new Class[] {
+                ImageReaderSpi.class };
+        
+        ServiceRegistry registry = new ServiceRegistry(Arrays.<Class<?>> asList(CATEGORIES).iterator());
+        
+        ImageReaderSpi reader = new SampleImageReaderSpi();
+        ImageReaderSpi reader1 = new Reader1Spi();
+        ImageReaderSpi reader2 = new Reader2Spi();
+        
+        // Add 3 different providers to the registry
+        registry.registerServiceProvider(reader, CATEGORIES[0]);
+        registry.registerServiceProvider(reader1, CATEGORIES[0]);
+        registry.registerServiceProvider(reader2, CATEGORIES[0]);
+        
+        // Add a different type of provider to the category
+        ImageWriterSpi writer = new SampleImageWriterSpi();
+        try {
+            registry.registerServiceProvider(writer, CATEGORIES[0]);
+            fail("ClassCastException expected");
+        }
+        catch (ClassCastException expected) {
+            // Ok
+        }
+        
+        // Set ordering between these providers
+        // reader2 > reader1 >  reader
+        assertTrue("Failed to set ordering: reader2 > reader1",
+            registry.setOrdering(CATEGORIES[0], reader2, reader1));
+        assertTrue("Failed to set ordering: reader1 > reader",
+            registry.setOrdering(CATEGORIES[0], reader1, reader));
+        
+        // Return false if this ordering has already been set
+        assertFalse("Failed to check if the ordering reader1 > reader has been set",
+            registry.setOrdering(CATEGORIES[0], reader1, reader));
+        
+        // If two providers are the same
+        try {
+        	registry.setOrdering(CATEGORIES[0], reader, reader);
+        	fail("IllegalArgumentException expected");
+        }
+        catch (IllegalArgumentException expected) {
+            // Ok
+        }
+        
+        // If either provider is null
+        try {
+        	registry.setOrdering(CATEGORIES[0], null, reader);
+        	fail("IllegalArgumentException expected");
+        }
+        catch (IllegalArgumentException expected) {
+            // Ok
+        }
+        
+        // Get the iterator of sorted providers
+        Iterator it = registry.getServiceProviders(CATEGORIES[0], true);
+        
+        // Verify the order
+        assertEquals("Failed to return reader2", it.next(), reader2);
+        assertEquals("Failed to return reader1", it.next(), reader1);
+        assertEquals("Failed to return reader", it.next(), reader);
+        
+        // The iterator should be able to run more than once
+        it = registry.getServiceProviders(CATEGORIES[0], true);
+        
+        // Verify the order
+        assertEquals("Failed to return reader2", it.next(), reader2);
+        assertEquals("Failed to return reader1", it.next(), reader1);
+        assertEquals("Failed to return reader", it.next(), reader);
+
+        // Unset orderings
+        assertTrue("Failed to unset ordering: reader2 > reader1", registry.unsetOrdering(CATEGORIES[0], reader2, reader1));
+        assertTrue("Failed to unset ordering: reader1 > reader", registry.unsetOrdering(CATEGORIES[0], reader1, reader));
+        
+        // Return false if this ordering is not set
+        assertFalse("Failed to check if the ordering is not set", registry.unsetOrdering(CATEGORIES[0], reader2, reader));
+    }
+
     public void testRegistryServiceProvider() throws Exception {
         Class[] CATEGORIES = new Class[] {
                 ImageWriterSpi.class, ImageReaderSpi.class
@@ -76,6 +157,33 @@ class SampleImageReaderSpi extends ImageReaderSpi {
     }
 
     public ImageReader createReaderInstance(Object extension) {
+        return null;
+    }
+
+    public String getDescription(Locale locale) {
+        return null;
+    }
+}
+
+class Reader1Spi extends SampleImageReaderSpi {
+}
+
+class Reader2Spi extends SampleImageReaderSpi {
+}
+
+class SampleImageWriterSpi extends ImageWriterSpi {
+    SampleImageWriterSpi() {
+        super("sample vendor", "1.0", new String[] { "sample" },
+            null, null, SampleImageReaderSpi.class.getName(),
+            STANDARD_OUTPUT_TYPE, null, false, null, null,
+            null, null, false, null, null, null, null);
+    }
+
+    public boolean canEncodeImage(ImageTypeSpecifier type) {
+        return false;
+    }
+
+    public ImageWriter createWriterInstance(Object extension) {
         return null;
     }
 
