@@ -49,9 +49,8 @@ public abstract class IIOServiceProvider implements RegisterableService {
         // the default impl. does nothing
     }
 
-    public void onDeregistration(ServiceRegistry registry, Class<?> category) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public void onDeregistration(ServiceRegistry registry, Class<?> category) {
+        // the default impl. does nothing
     }
 
     public String getVendorName() {

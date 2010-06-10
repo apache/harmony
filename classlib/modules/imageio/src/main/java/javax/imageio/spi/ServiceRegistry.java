@@ -65,9 +65,8 @@ public class ServiceRegistry {
         categories.addProvider(provider, null);
     }
 
-    public <T> boolean deregisterServiceProvider(T provider, Class<T> category) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public <T> boolean deregisterServiceProvider(T provider, Class<T> category) {
+        return categories.removeProvider(provider, category);
     }
 
     public void deregisterServiceProvider(Object provider) throws NotImplementedException {
@@ -201,6 +200,24 @@ public class ServiceRegistry {
             }
             return rt;
         }
+        
+        boolean removeProvider(Object provider, Class<?> category) {
+            if (provider == null) {
+                throw new IllegalArgumentException(Messages.getString("imageio.5E"));
+            }
+            
+            if (!category.isAssignableFrom(provider.getClass())) {
+                throw new ClassCastException();
+            }
+            
+            Object obj = categories.get(category);
+            
+            if (null == obj) {
+                throw new IllegalArgumentException(Messages.getString("imageio.92", category));
+            }
+            
+            return ((ProvidersMap) obj).removeProvider(provider, registry, category);
+        }
     }
 
     private static class ProvidersMap {
@@ -210,6 +227,22 @@ public class ServiceRegistry {
 
         boolean addProvider(Object provider) {
             return providers.put(provider.getClass(), provider) == null;
+        }
+
+        boolean removeProvider(Object provider,
+                ServiceRegistry registry, Class<?> category) {
+            
+            //TODO remove provider from nodeMap after task HARMONY-6507 has been resolved
+            Object obj = providers.remove(provider.getClass());
+            if ((obj == null) || (obj != provider)) {
+                return false;
+            }
+            
+            if (provider instanceof RegisterableService) {
+                ((RegisterableService) provider).onDeregistration(registry, category);
+            }            
+            
+            return (obj == null ? false : true);
         }
 
         Iterator<Class<?>> getProviderClasses() {

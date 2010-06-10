@@ -43,6 +43,24 @@ public class ServiceRegistryTest extends TestCase {
         assertFalse("registerServiceProvider() returns incorrect value if a provider of the same class was previously registered",
             registry.registerServiceProvider(spiB, CATEGORIES[1]));
     }
+    
+    @SuppressWarnings("unchecked")
+    public void testDeregisterServiceProvider() {
+        Class[] CATEGORIES = new Class[] {
+                javax.imageio.spi.ImageReaderSpi.class};
+
+        ServiceRegistry registry = new ServiceRegistry(Arrays.<Class<?>> asList(CATEGORIES).iterator());
+
+        SampleImageReaderSpi spi = new SampleImageReaderSpi();
+        
+        registry.registerServiceProvider(spi, CATEGORIES[0]);
+        
+        assertTrue("deregisterServiceProvider() returns incorrect value for a registered provider ",
+                registry.deregisterServiceProvider(spi, CATEGORIES[0]));
+        
+        assertFalse("deregisterServiceProvider() returns incorrect value for a unregistered provider",
+                registry.deregisterServiceProvider(spi, CATEGORIES[0]));
+    }
 }
 
 class SampleImageReaderSpi extends ImageReaderSpi {
