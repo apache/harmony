@@ -636,6 +636,10 @@ public class DecimalFormat extends NumberFormat {
      */
     public void applyLocalizedPattern(String pattern) {
         dform.applyLocalizedPattern(pattern);
+        super.setMaximumFractionDigits(dform.getMaximumFractionDigits());
+        super.setMaximumIntegerDigits(dform.getMaximumIntegerDigits());
+        super.setMinimumFractionDigits(dform.getMinimumFractionDigits());
+        super.setMinimumIntegerDigits(dform.getMinimumIntegerDigits());
     }
 
     /**
@@ -650,6 +654,10 @@ public class DecimalFormat extends NumberFormat {
     public void applyPattern(String pattern) {
 
         dform.applyPattern(pattern);
+        super.setMaximumFractionDigits(dform.getMaximumFractionDigits());
+        super.setMaximumIntegerDigits(dform.getMaximumIntegerDigits());
+        super.setMinimumFractionDigits(dform.getMinimumFractionDigits());
+        super.setMinimumIntegerDigits(dform.getMinimumIntegerDigits());
     }
 
     /**
