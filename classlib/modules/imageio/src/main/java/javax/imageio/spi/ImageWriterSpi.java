@@ -90,9 +90,12 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
 
     public abstract ImageWriter createWriterInstance(Object extension) throws IOException;
 
-    public boolean isOwnWriter(ImageWriter writer) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public boolean isOwnWriter(ImageWriter writer) {
+        if (writer == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.96"));
+        }
+        
+        return writer.getClass().getName().equals(pluginClassName);
     }
 
     public String[] getImageReaderSpiNames() {
