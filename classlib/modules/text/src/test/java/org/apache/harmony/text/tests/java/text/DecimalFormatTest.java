@@ -752,6 +752,16 @@ public class DecimalFormatTest extends TestCase {
         assertEquals("Wrong pattern 3", "#", format.toPattern());
         format = new DecimalFormat(".#");
         assertEquals("Wrong pattern 4", "#.0", format.toPattern());
+        // Regression for HARMONY-6485
+        format = new DecimalFormat();
+        format.setMinimumIntegerDigits(0);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(0);
+        format.applyPattern("00.0#");
+        assertEquals("Minimum integer digits not set", 2, format.getMinimumIntegerDigits());
+        assertEquals("Minimum fraction digits not set", 1, format.getMinimumFractionDigits());
+        assertEquals("Maximum fraction digits not set", 2, format.getMaximumFractionDigits());
+
     }
 
     /**
@@ -2063,5 +2073,112 @@ public class DecimalFormatTest extends TestCase {
 				"Incorrect RoundingMode behavior: RoundingMode.UNNECESSARY",
 				"-1", result);
 
+		// Regression for HARMONY-6485
+		// Test with applyPattern call after setRoundingMode
+
+		// set RoundingMode.HALF_UP of this DecimalFormat and test its
+		// behavior
+		decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+		decimalFormat.applyPattern(".##");
+		result = decimalFormat.format(0.125);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".13", result);
+		result = decimalFormat.format(0.255);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".26", result);
+		result = decimalFormat.format(0.732);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".73", result);
+		result = decimalFormat.format(0.467);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".47", result);
+
+		// set RoundingMode.HALF_DOWN of this DecimalFormat and test its
+		// behavior
+		decimalFormat.setRoundingMode(RoundingMode.HALF_DOWN);
+		decimalFormat.applyPattern(".##");
+		result = decimalFormat.format(0.125);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".12", result);
+		result = decimalFormat.format(0.255);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".25", result);
+		result = decimalFormat.format(0.732);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".73", result);
+		result = decimalFormat.format(0.467);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".47", result);
+
+		// set RoundingMode.UP of this DecimalFormat and test its
+		// behavior
+		decimalFormat.setRoundingMode(RoundingMode.UP);
+		decimalFormat.applyPattern(".##");
+		result = decimalFormat.format(0.125);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".13", result);
+		result = decimalFormat.format(0.255);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".26", result);
+		result = decimalFormat.format(0.732);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".74", result);
+		result = decimalFormat.format(0.467);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".47", result);
+
+		// set RoundingMode.DOWN of this DecimalFormat and test its
+		// behavior
+		decimalFormat.setRoundingMode(RoundingMode.DOWN);
+		decimalFormat.applyPattern(".##");
+		result = decimalFormat.format(0.125);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".12", result);
+		result = decimalFormat.format(0.255);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".25", result);
+		result = decimalFormat.format(0.732);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".73", result);
+		result = decimalFormat.format(0.467);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".46", result);
+
+		// set RoundingMode.HALF_EVEN of this DecimalFormat and test its
+		// behavior
+		decimalFormat.setRoundingMode(RoundingMode.HALF_EVEN);
+		decimalFormat.applyPattern(".##");
+		result = decimalFormat.format(0.125);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".12", result);
+		result = decimalFormat.format(0.255);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".26", result);
+		result = decimalFormat.format(0.732);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".73", result);
+		result = decimalFormat.format(0.467);
+		assertEquals(
+			"Incorrect RoundingMode behavior after applyPattern",
+			".47", result);
 	}
 }
