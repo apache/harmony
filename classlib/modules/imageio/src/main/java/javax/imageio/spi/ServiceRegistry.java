@@ -209,7 +209,7 @@ public class ServiceRegistry {
         Map<Class<?>, Object> providers = new HashMap<Class<?>, Object>();
 
         boolean addProvider(Object provider) {
-            return providers.put(provider.getClass(), provider) != null;
+            return providers.put(provider.getClass(), provider) == null;
         }
 
         Iterator<Class<?>> getProviderClasses() {
