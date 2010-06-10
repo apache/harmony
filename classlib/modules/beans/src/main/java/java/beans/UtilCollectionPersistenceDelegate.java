@@ -27,7 +27,8 @@ class UtilCollectionPersistenceDelegate extends
     protected void initialize(Class<?> type, Object oldInstance,
             Object newInstance, Encoder enc) {
 
-        Collection<?> oldList = (Collection) oldInstance, newList = (Collection)newInstance;
+        Collection<?> oldList = (Collection<?>) oldInstance;
+        Collection<?> newList = (Collection<?>) newInstance;
         Iterator<?> oldIterator = oldList.iterator(), newIterator = newList.iterator();
         for (; oldIterator.hasNext();) {
             Expression getterExp = new Expression(oldIterator, "next", null);

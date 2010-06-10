@@ -36,7 +36,7 @@ public final class ByteEditor extends PropertyEditorSupport {
 
     @Override
     public String getJavaInitializationString() {
-        return new StringBuilder("((byte)").append(getValue()).append(")").toString();
+        return new StringBuilder("((byte)").append(getValue()).append(")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override

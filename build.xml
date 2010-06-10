@@ -104,7 +104,6 @@ Usage:
         depends="properties,
                  build-classlib,
                  build-vm,
-                 build-commonresources,
                  build-jdktools,
                  assemble-artifacts"/>
     
@@ -154,14 +153,12 @@ Usage:
         description="Fetches dependencies. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2."
         depends="fetch-classlib-libs,
                  fetch-vm-libs,
-                 fetch-commonresources,
                  fetch-jdktools-libs"/>
 
     <target name="check-depends"
         description="Checks dependencies."
         depends="check-classlib-libs,
                  check-vm-libs,
-                 check-commonresources,
                  check-jdktools-libs"/>
 
     <target name="bundle-hdk-tgz" depends="init" if="is.unix">
@@ -344,6 +341,7 @@ Usage:
                 <exclude name="bin/pack200"/>
                 <exclude name="bin/policytool"/>
                 <exclude name="bin/unpack200"/>
+                <exclude name="**/*-src.jar"/>
             </tarfileset>
         </tar>
 
@@ -373,6 +371,7 @@ Usage:
                 <exclude name="bin/pack200.exe"/>
                 <exclude name="bin/policytool.exe"/>
                 <exclude name="bin/unpack200.exe"/>
+                <exclude name="**/*-src.jar"/>
             </zipfileset>
         </zip>
         <chksum dir="${target.dir}" file="${deploy.jre.zip}" />
@@ -561,38 +560,6 @@ Usage:
             <property name="deploy.canonical.flag" value="false"/>
             <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
             <property name="import.hdk" value="false"/>
-        </ant>
-    </target>
-
-    <!-- ============================================================== -->
-    <!-- fetches the common resources                                   -->
-    <!-- ============================================================== -->
-    <target name="build-commonresources"
-            depends="init,auto-fetch-commonresources"/>
-
-    <target name="auto-fetch-commonresources" if="auto.fetch">
-        <ant target="fetch-commonresources">
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-        </ant>
-    </target>
-
-    <target name="fetch-commonresources">
-        <ant antfile="common_resources/build.xml" target="fetch-depends"
-             inheritall="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
-        </ant>
-    </target>
-
-    <target name="check-commonresources">
-        <ant antfile="common_resources/build.xml" target="check-depends"
-             inheritall="false" >
-            <propertyset refid="required.props" />
-            <property name="svn.info" value="${harmony.long.version}"/>
-            <property name="svn.revision" value="${harmony.version}"/>
         </ant>
     </target>
 

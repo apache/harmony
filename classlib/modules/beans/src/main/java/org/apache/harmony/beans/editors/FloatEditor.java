@@ -36,7 +36,7 @@ public final class FloatEditor extends PropertyEditorSupport {
 
     @Override
     public String getJavaInitializationString() {
-        return getValue()+"F";
+        return getValue() + "F"; //$NON-NLS-1$
     }
 
     @Override

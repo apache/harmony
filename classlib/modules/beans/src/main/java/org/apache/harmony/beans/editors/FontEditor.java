@@ -58,14 +58,16 @@ public class FontEditor extends Panel implements PropertyEditor {
     }
 
     public String getJavaInitializationString() {
-        String result = null;
-        if (value!= null) {
-            String name = value.getName();
-            int style = value.getStyle();
-            int size = value.getSize();
-            result = "new Font(" + name + "," + style + "," + size + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        if (value != null) {
+            StringBuilder sb = new StringBuilder("new Font("); //$NON-NLS-1$
+            sb.append(value.getName());
+            sb.append(',');
+            sb.append(value.getStyle());
+            sb.append(',');
+            sb.append(value.getSize() + ")"); //$NON-NLS-1$
+            return sb.toString();
         }
-        return result;
+        return null;
     }
 
     public String[] getTags() {
@@ -77,8 +79,8 @@ public class FontEditor extends Panel implements PropertyEditor {
         value = (Font)newValue;
         PropertyChangeEvent changeAllEvent = new PropertyChangeEvent(this,
                 "value", oldValue, value); //$NON-NLS-1$
-        PropertyChangeListener[] copy = new PropertyChangeListener[listeners.size()];
-        listeners.toArray(copy);
+        PropertyChangeListener[] copy = listeners
+                .toArray(new PropertyChangeListener[0]);
         for (PropertyChangeListener listener : copy) {
             listener.propertyChange(changeAllEvent);
         }

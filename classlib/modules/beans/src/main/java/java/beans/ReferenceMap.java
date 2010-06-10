@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-
 package java.beans;
 
 /**
  * A simple map.
- * Keys are equal iff they are the same object (reference equals).
+ * Keys are equal if they are the same object (reference equals).
  * The put() do not check key duplication, so always do a get() before put().
  * Noop if either key or value is null.
  * 

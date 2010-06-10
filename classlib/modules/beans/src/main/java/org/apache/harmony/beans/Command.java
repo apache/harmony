@@ -495,7 +495,7 @@ public class Command {
 
                     if (isField()) {
                         String fieldName = getAttr("field"); //$NON-NLS-1$
-                        target = ((Class) target).getField(fieldName);
+                        target = ((Class<?>) target).getField(fieldName);
                     }
                 } else {
                     throw new Exception(Messages.getString(

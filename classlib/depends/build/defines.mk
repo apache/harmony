@@ -58,7 +58,7 @@ endif
 
 include $(HY_HDK)/build/make/platform/$(HY_PLATFORM).mk
 
-DEFINES += -D_REENTRANT
+DEFINES += -D_REENTRANT -D_FILE_OFFSET_BITS=64
 
 ifeq ($(HY_CFG),release)
 OPT += $(HYRELEASECFLAGS)

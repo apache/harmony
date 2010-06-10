@@ -67,7 +67,7 @@ import javax.swing.ToolTipManager;
 @SuppressWarnings("unchecked")
 public class Encoder {
 
-    private static final Hashtable delegates = new Hashtable();
+    private static final Hashtable<Class<?>, PersistenceDelegate> delegates = new Hashtable<Class<?>, PersistenceDelegate>();
 
     private static final DefaultPersistenceDelegate defaultPD = new DefaultPersistenceDelegate();
 
@@ -201,12 +201,11 @@ public class Encoder {
 		}
         
         // registered delegate
-		PersistenceDelegate registeredPD = (PersistenceDelegate) delegates
-				.get(type);
-		if (registeredPD != null) {
-			return registeredPD;
-		}
-		
+        PersistenceDelegate registeredPD = delegates.get(type);
+        if (registeredPD != null) {
+            return registeredPD;
+        }
+
         if (java.util.List.class.isAssignableFrom(type)) {
             return new UtilListPersistenceDelegate();
         }
@@ -222,22 +221,23 @@ public class Encoder {
         if (type.isArray()) {
             return arrayPD;
         }
+
         if (Proxy.isProxyClass(type)) {
             return proxyPD;
         }
 
         // check "persistenceDelegate" property
         try {
-            BeanInfo binfo = Introspector.getBeanInfo(type);
-            if (binfo != null) {
-                PersistenceDelegate pd = (PersistenceDelegate) binfo
+            BeanInfo beanInfo = Introspector.getBeanInfo(type);
+            if (beanInfo != null) {
+                PersistenceDelegate pd = (PersistenceDelegate) beanInfo
                         .getBeanDescriptor().getValue("persistenceDelegate"); //$NON-NLS-1$
                 if (pd != null) {
                     return pd;
                 }
             }
         } catch (Exception e) {
-            // ignore
+            // Ignored
         }
 
         // default persistence delegate
@@ -307,11 +307,7 @@ public class Encoder {
      *            the exception listener to set
      */
     public void setExceptionListener(ExceptionListener listener) {
-        if (listener == null) {
-            this.listener = defaultExListener;
-            return;
-        }
-        this.listener = listener;
+        this.listener = listener == null ? defaultExListener : listener;
     }
 
     /**
@@ -340,7 +336,7 @@ public class Encoder {
         return get(old);
     }
 
-    private Object[] forceNewArray(Object oldArray[]) {
+    private Object[] forceNewArray(Object[] oldArray) {
         if (oldArray == null) {
             return null;
         }

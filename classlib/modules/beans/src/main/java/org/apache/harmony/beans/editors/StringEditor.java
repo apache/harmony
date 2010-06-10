@@ -37,7 +37,7 @@ public final class StringEditor extends PropertyEditorSupport {
 
     @Override
     public String getJavaInitializationString() {
-        Object value = getValue(); 
-        return value==null?"\"null\"":"\""+value+"\"";
+        Object value = getValue();
+        return value == null ? "\"null\"" : "\"" + value + "\"";
     }
 }

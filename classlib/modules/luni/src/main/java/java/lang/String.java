@@ -1430,7 +1430,20 @@ public final class String implements Serializable, Comparable<String>,
             return this;
 
         String rs = replacement.toString();
-        StringBuilder buffer = new StringBuilder(count);
+
+        // special case if the string to match is empty then
+        // match at the start, inbetween each character and at the end
+        if ("".equals(ts)) {
+            StringBuilder buffer = new StringBuilder(count + (rs.length() * (count + 1)));
+            buffer.append(rs);
+            for(int i=0; i<count; i++) {
+                buffer.append(value[offset + i]);
+                buffer.append(rs);
+            }
+            return buffer.toString();
+        }
+
+        StringBuilder buffer = new StringBuilder(count + rs.length());
         int tl = target.length();
         int tail = 0;
         do {

@@ -42,17 +42,15 @@ public class EventSetDescriptor extends FeatureDescriptor {
     public EventSetDescriptor(Class<?> sourceClass, String eventSetName,
             Class<?> listenerType, String listenerMethodName)
             throws IntrospectionException {
-        Method m;
-
         checkNotNull(sourceClass, eventSetName, listenerType,
                 listenerMethodName);
-
         setName(eventSetName);
         this.listenerType = listenerType;
-        m = findListenerMethodByName(listenerMethodName);
-        checkEventType(eventSetName, m);
+
+        Method method = findListenerMethodByName(listenerMethodName);
+        checkEventType(eventSetName, method);
         listenerMethodDescriptors = new ArrayList<MethodDescriptor>();
-        listenerMethodDescriptors.add(new MethodDescriptor(m));
+        listenerMethodDescriptors.add(new MethodDescriptor(method));
         addListenerMethod = findMethodByPrefix(sourceClass, "add", ""); //$NON-NLS-1$ //$NON-NLS-2$
         removeListenerMethod = findMethodByPrefix(sourceClass, "remove", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -109,24 +107,24 @@ public class EventSetDescriptor extends FeatureDescriptor {
 
     private Method findListenerMethodByName(String listenerMethodName)
             throws IntrospectionException {
-        Method method = null;
+        Method result = null;
         Method[] methods = listenerType.getMethods();
-        for (Method m : methods) {
-            if (listenerMethodName.equals(m.getName())) {
-                Class[] paramTypes = m.getParameterTypes();
+        for (Method method : methods) {
+            if (listenerMethodName.equals(method.getName())) {
+                Class<?>[] paramTypes = method.getParameterTypes();
                 if (paramTypes.length == 1
                         && paramTypes[0].getName().endsWith("Event")) { //$NON-NLS-1$
-                    method = m;
+                    result = method;
                     break;
                 }
 
             }
         }
-        if (null == method) {
+        if (null == result) {
             throw new IntrospectionException(Messages.getString("beans.31", //$NON-NLS-1$
                     listenerMethodName, listenerType.getName()));
         }
-        return method;
+        return result;
     }
 
     public EventSetDescriptor(String eventSetName, Class<?> listenerType,
@@ -234,7 +232,6 @@ public class EventSetDescriptor extends FeatureDescriptor {
      */
     private static String extractShortClassName(String fullClassName) {
         int k = fullClassName.lastIndexOf('$');
-        
         k = (k == -1 ? fullClassName.lastIndexOf('.') : k);
         return fullClassName.substring(k + 1);
     }
@@ -255,28 +252,24 @@ public class EventSetDescriptor extends FeatureDescriptor {
     }
 
     public Method[] getListenerMethods() {
-        int i = 0;
-
         if (listenerMethods != null) {
             return listenerMethods;
         }
 
         if (listenerMethodDescriptors != null) {
             listenerMethods = new Method[listenerMethodDescriptors.size()];
+            int index = 0;
             for (MethodDescriptor md : listenerMethodDescriptors) {
-                listenerMethods[i++] = md.getMethod();
+                listenerMethods[index++] = md.getMethod();
             }
             return listenerMethods;
         }
-
         return null;
     }
 
     public MethodDescriptor[] getListenerMethodDescriptors() {
         return listenerMethodDescriptors == null ? null
-                : listenerMethodDescriptors
-                        .toArray(new MethodDescriptor[listenerMethodDescriptors
-                                .size()]);
+                : listenerMethodDescriptors.toArray(new MethodDescriptor[0]);
     }
 
     public Method getRemoveListenerMethod() {
@@ -339,22 +332,22 @@ public class EventSetDescriptor extends FeatureDescriptor {
     private Method findAddRemoveListnerMethodWithLessCheck(
             Class<?> sourceClass, String methodName)
             throws IntrospectionException {
-        Method method = null;
         Method[] methods = sourceClass.getMethods();
-        for (Method m : methods) {
-            if (m.getName().equals(methodName)) {
-                Class[] paramTypes = m.getParameterTypes();
+        Method result = null;
+        for (Method method : methods) {
+            if (method.getName().equals(methodName)) {
+                Class<?>[] paramTypes = method.getParameterTypes();
                 if (paramTypes.length == 1) {
-                    method = m;
+                    result = method;
                     break;
                 }
             }
         }
-        if (null == method) {
+        if (null == result) {
             throw new IntrospectionException(Messages.getString("beans.31", //$NON-NLS-1$
                     methodName, listenerType.getName()));
         }
-        return method;
+        return result;
     }
 
     /**
@@ -383,18 +376,18 @@ public class EventSetDescriptor extends FeatureDescriptor {
         }
         String methodName = prefix + shortName + postfix;
         try {
-            if (prefix.equals("get")) { //$NON-NLS-1$
+            if ("get".equals(prefix)) { //$NON-NLS-1$
                 return sourceClass.getMethod(methodName);
             }
         } catch (NoSuchMethodException nsme) {
             return null;
         }
-        Method[] m = sourceClass.getMethods();
-        for (int i = 0; i < m.length; i++) {
-            if (m[i].getName().equals(methodName)) {
-                Class[] paramTypes = m[i].getParameterTypes();
+        Method[] methods = sourceClass.getMethods();
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals(methodName)) {
+                Class<?>[] paramTypes = methods[i].getParameterTypes();
                 if (paramTypes.length == 1) {
-                    return m[i];
+                    return methods[i];
                 }
             }
         }

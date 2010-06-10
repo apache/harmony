@@ -1,2 +1,2 @@
-org/apache/harmony/luni/tests/java/net/InetAddressTest.java
+org/apache/harmony/luni/tests/java/net/InetAddressThreadTest.java
 org/apache/harmony/luni/tests/java/net/MulticastSocketTest.java

@@ -34,9 +34,9 @@ public final class BooleanEditor extends PropertyEditorSupport {
         if(text == null){
             throw new NullPointerException();
         }
-        if(text.equalsIgnoreCase("true") || text.equalsIgnoreCase("false")){
-            setValue(Boolean.valueOf(text));
-        }else{
+        if ("true".equalsIgnoreCase(text) || "false".equalsIgnoreCase(text)) { //$NON-NLS-1$ //$NON-NLS-2$
+            setValue(new Boolean(text));
+        } else {
             throw new IllegalArgumentException(text);
         }
     }
@@ -68,12 +68,10 @@ public final class BooleanEditor extends PropertyEditorSupport {
     }
 
     private String getValueAsString() {
-        String result = null;
         Object value = getValue();
         if (value != null) {
-            Boolean bValue = (Boolean) value;
-            result = bValue.toString();
+            return ((Boolean) value).toString();
         }
-        return result;
+        return null;
     }
 }

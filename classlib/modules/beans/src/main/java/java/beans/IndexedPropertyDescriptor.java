@@ -346,7 +346,7 @@ public class IndexedPropertyDescriptor extends PropertyDescriptor {
         }
 
         // Validate the indexed write method.
-        Class[] indexedSetterArgs = indexSetter.getParameterTypes();
+        Class<?>[] indexedSetterArgs = indexSetter.getParameterTypes();
         if (indexedSetterArgs.length != 2) {
             // beans.5F=Indexed write method must take two arguments
             throw new IntrospectionException(Messages.getString("beans.5F")); //$NON-NLS-1$

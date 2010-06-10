@@ -57,40 +57,36 @@ public class Beans {
 
     @SuppressWarnings("unchecked")
     private static Object internalInstantiate(ClassLoader cls, String beanName,
-            BeanContext context, Object initializer)
-            throws IOException, ClassNotFoundException {
-        Object result = null;
-
-        boolean deserialized = true;
-
-        ClassLoader loader = null;
-
+            BeanContext context, Object initializer) throws IOException,
+            ClassNotFoundException {
         // First try to load it from a serialization file.
         String beanResourceName = getBeanResourceName(beanName);
-
         InputStream is = (cls == null) ? ClassLoader
                 .getSystemResourceAsStream(beanResourceName) : cls
                 .getResourceAsStream(beanResourceName);
 
         IOException serializationException = null;
+        Object result = null;
         if (is != null) {
-            try{
-                ObjectInputStream ois = (cls == null) ? new ObjectInputStream(is)
-                        : new CustomizedObjectInputStream(is, cls);
+            try {
+                ObjectInputStream ois = (cls == null) ? new ObjectInputStream(
+                        is) : new CustomizedObjectInputStream(is, cls);
                 result = ois.readObject();
-            }catch(IOException exception){
-                //Not loadable - remember this as we may throw it later.
-                serializationException = exception;
+            } catch (IOException e) {
+                // Not loadable - remember this as we may throw it later.
+                serializationException = e;
             }
         }
 
-        //If that did not work, try to instantiate it from the given classloader.
+        // If it didn't work, try to instantiate it from the given classloader
+        boolean deserialized = true;
+        ClassLoader classLoader = cls == null ? ClassLoader
+                .getSystemClassLoader() : cls;
         if (result == null) {
             deserialized = false;
             try {
-                loader = cls == null ? ClassLoader.getSystemClassLoader() : cls;
-                Class<?> c = Class.forName(beanName, true, loader);
-                result = c.newInstance();
+                result = Class.forName(beanName, true, classLoader)
+                        .newInstance();
             } catch (Exception e) {
                 if (serializationException != null) {
                     throw serializationException;
@@ -108,10 +104,10 @@ public class Beans {
             } catch (Throwable t) {
                 // Ignored - leave isApplet as false.
             }
-            
+
             if (isApplet) {
-                appletLoaded((Applet) result, loader, beanName, context,
-                        (AppletInitializer)initializer, deserialized);
+                appletLoaded((Applet) result, classLoader, beanName, context,
+                        (AppletInitializer) initializer, deserialized);
             }
             if (null != context) {
                 context.add(result);
@@ -216,7 +212,6 @@ public class Beans {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings("unchecked")
 	public static Object instantiate(ClassLoader cls, String beanName,
 			BeanContext context, AppletInitializer initializer)
 			throws IOException, ClassNotFoundException {
@@ -237,7 +232,6 @@ public class Beans {
      *            the specified view type.
      * @return a type view of the given bean.
      */
-    @SuppressWarnings("unused")
     public static Object getInstanceOf(Object bean, Class<?> targetType) {
         return bean;
     }
@@ -355,8 +349,9 @@ public class Beans {
         URL objectUrl = AccessController
                 .doPrivileged(new PrivilegedAction<URL>() {
                     public URL run() {
-                        if (loader == null)
+                        if (loader == null) {
                             return ClassLoader.getSystemResource(resourceName);
+                        }
                         return loader.getResource(resourceName);
                     }
                 });

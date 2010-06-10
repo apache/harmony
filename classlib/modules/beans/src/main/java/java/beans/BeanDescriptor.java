@@ -39,7 +39,6 @@ public class BeanDescriptor extends FeatureDescriptor {
      *            The bean's customizer Class.
      */
     public BeanDescriptor(Class<?> beanClass, Class<?> customizerClass) {
-        super();
         if (beanClass == null) {
             throw new NullPointerException();
         }
@@ -59,13 +58,7 @@ public class BeanDescriptor extends FeatureDescriptor {
      *            The bean's Class.
      */
     public BeanDescriptor(Class<?> beanClass) {
-        super();
-
-        if (beanClass == null) {
-            throw new NullPointerException();
-        }
-        setName(getShortClassName(beanClass));
-        this.beanClass = beanClass;
+        this(beanClass, null);
     }
 
     /**
@@ -100,17 +93,12 @@ public class BeanDescriptor extends FeatureDescriptor {
      * @return A String instance or <code>null</code>.
      */
     private String getShortClassName(Class<?> leguminaClass) {
-        String result = null;
-
-        if (leguminaClass != null) {
-            String beanClassName = leguminaClass.getName();
-            int idx = beanClassName.lastIndexOf('.');
-
-            result = (idx == -1) ? beanClassName : beanClassName
-                    .substring(idx + 1);
+        if(leguminaClass == null) {
+            return null;
         }
-
-        return result;
+        String beanClassName = leguminaClass.getName();
+        int lastIndex = beanClassName.lastIndexOf("."); //$NON-NLS-1$
+        return (lastIndex == -1) ? beanClassName : beanClassName.substring(lastIndex + 1);
     }
 
 }

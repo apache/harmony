@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 class ClassPersistenceDelegate extends PersistenceDelegate {
     @Override
     protected Expression instantiate(Object oldInstance, Encoder out) {
-        Class<?> value = (Class) oldInstance;
+        Class<?> value = (Class<?>) oldInstance;
         Field fld = null;
         final String TYPE = "TYPE"; //$NON-NLS-1$
         Expression result;
@@ -79,9 +79,9 @@ class ClassPersistenceDelegate extends PersistenceDelegate {
 
     @Override
     protected boolean mutatesTo(Object oldInstance, Object newInstance) {
-        if (oldInstance instanceof Class && newInstance instanceof Class) {
-            Class<?> c1 = (Class) oldInstance;
-            Class<?> c2 = (Class) newInstance;
+        if (oldInstance instanceof Class<?> && newInstance instanceof Class<?>) {
+            Class<?> c1 = (Class<?>) oldInstance;
+            Class<?> c2 = (Class<?>) newInstance;
             if (c1.getName().equals(c2.getName())) {
                 return true;
             }

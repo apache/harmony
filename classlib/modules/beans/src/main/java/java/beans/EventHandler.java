@@ -26,6 +26,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.StringTokenizer;
 
+import org.apache.harmony.beans.BeansUtils;
 import org.apache.harmony.beans.internal.nls.Messages;
 
 public class EventHandler implements InvocationHandler {
@@ -61,16 +62,9 @@ public class EventHandler implements InvocationHandler {
     }
 
     private Object invokeImpl(Object proxy, Method method, Object[] arguments) {
-        Class<?> proxyClass;
+        Class<?> proxyClass = proxy.getClass();
+        Object[] theArguments = arguments == null ? new Object[0] : arguments;
         Object result = null;
-
-        Object[] theArguments = arguments;
-        // XXX
-        if (arguments == null) {
-            theArguments = new Object[0];
-        }
-
-        proxyClass = proxy.getClass();
 
         // if a proxy
         if (Proxy.isProxyClass(proxyClass)) {
@@ -79,18 +73,20 @@ public class EventHandler implements InvocationHandler {
             // if a valid object
             if (handler instanceof EventHandler) {
                 // if the method from the Object class is called
-                if (method.getDeclaringClass().equals(Object.class)) {
-                    if (method.getName().equals("hashCode") && //$NON-NLS-1$
-                            theArguments.length == 0) {
-                        result = Integer.valueOf(hashCode());
-                    } else if (method.getName().equals("equals") && //$NON-NLS-1$
-                            theArguments.length == 1 && theArguments[0] != null) {
+                String methodName = method.getName();
+                if (method.getDeclaringClass() == Object.class) {
+                    if (theArguments.length == 0) {
+                        if ("hashCode".equals(methodName)) { //$NON-NLS-1$
+                            result = Integer.valueOf(hashCode());
+                        } else if ("toString".equals(methodName)) { //$NON-NLS-1$
+                            result = proxy.getClass().getSimpleName()
+                                    + toString().substring(
+                                            getClass().getName().length());
+                        }
+                    } else if (theArguments.length == 1
+                            && theArguments[0] != null
+                            && "equals".equals(methodName)) { //$NON-NLS-1$
                         result = Boolean.valueOf(proxy == theArguments[0]);
-                    } else if (method.getName().equals("toString") && //$NON-NLS-1$
-                            theArguments.length == 0) {
-                        result = proxy.getClass().getSimpleName()
-                                + toString().substring(
-                                        getClass().getName().length());
                     }
                 } else if (isValidInvocation(method, theArguments)) {
                     // if listener method
@@ -109,7 +105,7 @@ public class EventHandler implements InvocationHandler {
                     }
                 } else {
                     // in order to be compatible with RI
-                    if (listenerMethodName.equals(method.getName())) {
+                    if (listenerMethodName.equals(methodName)) {
                         throw new IllegalArgumentException(Messages
                                 .getString("beans.4D")); //$NON-NLS-1$
                     }
@@ -121,7 +117,6 @@ public class EventHandler implements InvocationHandler {
                 throw new NullPointerException(Messages.getString("beans.55")); //$NON-NLS-1$
             }
         }
-
         return result;
     }
 
@@ -152,48 +147,42 @@ public class EventHandler implements InvocationHandler {
                         action, eventPropertyName, listenerMethodName));
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> listenerInterface, Object target,
             String action, String eventPropertyName) {
         return create(listenerInterface, target, action, eventPropertyName,
                 null);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> listenerInterface, Object target,
             String action) {
         return create(listenerInterface, target, action, null, null);
     }
 
     private boolean isValidInvocation(Method method, Object[] arguments) {
-        boolean result = false;
+        // all listener methods are valid
+        if (listenerMethodName == null) {
+            return true;
+        }
 
-        if (listenerMethodName == null) { // all listener methods are valid
-            result = true;
-        } else if (listenerMethodName.equals(method.getName())) {
-            // method's name matches
+        // method's name matches
+        if (listenerMethodName.equals(method.getName())) {
             // no arguments in call are valid
             if (eventPropertyName == null
                     && (arguments == null || arguments.length == 0)) {
-                result = true;
-                // one-argument call is also valid
-            } else if (arguments != null && arguments.length == 1) {
-                result = true;
-            } else {
-                result = false;
+                return true;
             }
-        } else {
-            result = false;
+            // one-argument call is also valid
+            if (arguments != null && arguments.length == 1) {
+                return true;
+            }
         }
-
-        return result;
+        return false;
     }
 
     private Object[] getArgs(Object[] arguments) throws Exception {
         if (eventPropertyName == null) {
-            return new Object[] {};
+            return new Object[0];
         } else if ((arguments == null) || (arguments.length == 0)) {
-            // || (arguments[0] == null)) {
             return arguments;
         } else {
             Object arg = arguments[0];
@@ -204,21 +193,21 @@ public class EventHandler implements InvocationHandler {
                 PropertyDescriptor pd = findPropertyDescriptor(arg.getClass(),
                         propertyName);
 
+                Method getMethod = null;
                 if (pd != null) {
-                    Method getter = pd.getReadMethod();
+                    getMethod = pd.getReadMethod();
 
-                    if (getter != null) {
-                        arg = getter.invoke(arg, new Object[] {});
+                    if (getMethod != null) {
+                        arg = getMethod.invoke(arg, new Object[] {});
                     } else {
                         throw new IntrospectionException(Messages.getString(
                                 "beans.11", propertyName)); //$NON-NLS-1$
                     }
                 } else {
-                    Method method = findStaticGetter(arg.getClass(),
-                            propertyName);
+                    getMethod = findStaticGetter(arg.getClass(), propertyName);
 
-                    if (method != null) {
-                        arg = method.invoke(null, new Object[] {});
+                    if (getMethod != null) {
+                        arg = getMethod.invoke(null, new Object[] {});
                     } else {
                         // cannot access property getter
                         // RI throws NPE here so we should do the same
@@ -233,19 +222,14 @@ public class EventHandler implements InvocationHandler {
 
     private Method getMethod(Object proxy, Method method, Object[] arguments,
             Object[] args) throws Exception {
-        Method result = null;
-
         // filtering - examine if the 'method' could be applied to proxy
-
         boolean found = false;
 
-        // can be invoke with any listener method
         if (listenerMethodName == null) {
+            // can be invoke with any listener method
             Class<?>[] proxyInterfaces = proxy.getClass().getInterfaces();
-
             for (Class<?> proxyInstance : proxyInterfaces) {
                 Method[] interfaceMethods = proxyInstance.getMethods();
-
                 for (Method listenerMethod : interfaceMethods) {
                     if (equalNames(listenerMethod, method)
                             && canInvokeWithArguments(listenerMethod, arguments)) {
@@ -258,9 +242,8 @@ public class EventHandler implements InvocationHandler {
                     break;
                 }
             }
-
+        } else if (listenerMethodName.equals(method.getName())) {
             // can be invoked with a specified listener method
-        } else if (method.getName().equals(listenerMethodName)) {
             found = true;
         }
 
@@ -270,7 +253,7 @@ public class EventHandler implements InvocationHandler {
 
         // 'Method' can be applied to proxy - filtering succeeded
         try {
-            result = findMethod(target.getClass(), args);
+            Method result = findMethod(target.getClass(), args);
             if (result == null) {
                 PropertyDescriptor pd = findPropertyDescriptor(target
                         .getClass(), action);
@@ -286,40 +269,33 @@ public class EventHandler implements InvocationHandler {
                     throw new IndexOutOfBoundsException(Messages
                             .getString("beans.14")); //$NON-NLS-1$
                 }
-            } else {
-                return result;
             }
+            return result;
         } catch (IntrospectionException ie) {
             throw new IndexOutOfBoundsException(Messages.getString("beans.14")); //$NON-NLS-1$
         }
-
-        return result;
     }
 
     private PropertyDescriptor findPropertyDescriptor(Class<?> theClass,
             String propertyName) throws IntrospectionException {
-        PropertyDescriptor result = null;
         BeanInfo beanInfo = Introspector.getBeanInfo(theClass);
         PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
 
-        for (PropertyDescriptor element : pds) {
-            if (element.getName().equals(propertyName)) {
-                result = element;
-                break;
+        for (PropertyDescriptor pd : pds) {
+            if (pd.getName().equals(propertyName)) {
+                return pd;
             }
         }
-        return result;
+        return null;
     }
 
     private Method findStaticGetter(Class<?> theClass, String propertyName) {
-        Method result = null;
         Method[] methods = theClass.getMethods();
-
-        for (Method element : methods) {
-            int modifiers = element.getModifiers();
+        for (Method method : methods) {
+            int modifiers = method.getModifiers();
 
             if (Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers)) {
-                String methodName = element.getName();
+                String methodName = method.getName();
                 String postfix = null;
 
                 if (methodName.startsWith("get")) { //$NON-NLS-1$
@@ -330,67 +306,51 @@ public class EventHandler implements InvocationHandler {
                     continue;
                 }
 
-                if ((element.getParameterTypes().length != 0)
-                        || (element.getReturnType() == void.class)) {
+                if ((method.getParameterTypes().length != 0)
+                        || (method.getReturnType() == void.class)) {
                     continue;
                 }
 
                 postfix = Introspector.decapitalize(postfix);
                 if (postfix.equals(propertyName)) {
-                    result = element;
-                    break;
+                    return method;
                 }
             }
         }
-
-        return result;
+        return null;
     }
 
     private Method findMethod(Class<?> type, Object[] args) {
         Method[] methods = type.getMethods();
-
-        for (Method element : methods) {
-            if (action.equals(element.getName())
-                    && canInvokeWithArguments(element, args)) {
-                return element;
+        for (Method method : methods) {
+            if (action.equals(method.getName())
+                    && canInvokeWithArguments(method, args)) {
+                return method;
             }
         }
-
         return null;
     }
 
-    private static boolean isPrimitiveWrapper(Class<?> wrapper, Class<?> base) {
-        return (base == boolean.class) && (wrapper == Boolean.class)
-                || (base == byte.class) && (wrapper == Byte.class)
-                || (base == char.class) && (wrapper == Character.class)
-                || (base == short.class) && (wrapper == Short.class)
-                || (base == int.class) && (wrapper == Integer.class)
-                || (base == long.class) && (wrapper == Long.class)
-                || (base == float.class) && (wrapper == Float.class)
-                || (base == double.class) && (wrapper == Double.class);
-    }
-
-    private static boolean canInvokeWithArguments(Method m, Object[] arguments) {
-        Class<?>[] parameterTypes = m.getParameterTypes();
-
-        if (parameterTypes.length == arguments.length) {
-            for (int i = 0; i < arguments.length; ++i) {
-                Class<?> argumentType = (arguments[i] == null) ? null
-                        : arguments[i].getClass();
-
-                if ((argumentType == null)
-                        || isPrimitiveWrapper(argumentType, parameterTypes[i])) {
-                    // ... nothing to do - just not to break the cycle
-                } else if (!argumentType.isAssignableFrom(parameterTypes[i])) {
-                    return false;
-                }
-            }
-        } else {
+    private static boolean canInvokeWithArguments(Method method,
+            Object[] arguments) {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes.length != arguments.length) {
             return false;
         }
 
+        for (int index = 0; index < arguments.length; index++) {
+            Class<?> argumentType = (arguments[index] == null) ? null
+                    : arguments[index].getClass();
+            if (argumentType == null
+                    || BeansUtils.isPrimitiveWrapper(argumentType,
+                            parameterTypes[index])) {
+                continue;
+            }
+            if (!argumentType.isAssignableFrom(parameterTypes[index])) {
+                return false;
+            }
+        }
         return true;
-
     }
 
     private static boolean equalNames(Method m1, Method m2) {
