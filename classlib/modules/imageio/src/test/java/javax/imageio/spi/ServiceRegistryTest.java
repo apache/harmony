@@ -126,21 +126,34 @@ public class ServiceRegistryTest extends TestCase {
     }
     
     @SuppressWarnings("unchecked")
-    public void testDeregisterServiceProvider() {
+    public void testDeregisterServiceProvider() throws Exception {
         Class[] CATEGORIES = new Class[] {
-                javax.imageio.spi.ImageReaderSpi.class};
+                javax.imageio.spi.ImageReaderSpi.class,
+                javax.imageio.spi.SampleImageReaderSpi.class};
 
         ServiceRegistry registry = new ServiceRegistry(Arrays.<Class<?>> asList(CATEGORIES).iterator());
 
         SampleImageReaderSpi spi = new SampleImageReaderSpi();
         
+        // Test deregisterServiceProvider(Object, Class)
         registry.registerServiceProvider(spi, CATEGORIES[0]);
         
-        assertTrue("deregisterServiceProvider() returns incorrect value for a registered provider ",
+        assertTrue("deregisterServiceProvider(Object, Class) returns incorrect value for a registered provider ",
                 registry.deregisterServiceProvider(spi, CATEGORIES[0]));
         
-        assertFalse("deregisterServiceProvider() returns incorrect value for a unregistered provider",
+        assertFalse("deregisterServiceProvider(Object, Class) returns incorrect value for a unregistered provider",
                 registry.deregisterServiceProvider(spi, CATEGORIES[0]));
+        
+        // Test deregisterServiceProvider(Object)
+        registry.registerServiceProvider(spi, CATEGORIES[0]);
+        registry.registerServiceProvider(spi, CATEGORIES[1]);
+
+        registry.deregisterServiceProvider(spi);
+        
+        assertFalse("deregisterServiceProvider(Object) failed to remove all providers",
+                registry.deregisterServiceProvider(spi, CATEGORIES[0]));
+        assertFalse("deregisterServiceProvider(Object) failed to remove all providers",
+                registry.deregisterServiceProvider(spi, CATEGORIES[1]));
     }
 }
 

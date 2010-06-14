@@ -69,9 +69,8 @@ public class ServiceRegistry {
         return categories.removeProvider(provider, category);
     }
 
-    public void deregisterServiceProvider(Object provider) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public void deregisterServiceProvider(Object provider) {
+        categories.removeProvider(provider);
     }
 
 //    @SuppressWarnings("unchecked")
@@ -233,11 +232,22 @@ public class ServiceRegistry {
             
             Object obj = categories.get(category);
             
-            if (null == obj) {
+            if (obj == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
             
             return ((ProvidersMap) obj).removeProvider(provider, registry, category);
+        }
+        
+        void removeProvider(Object provider) {
+            if (provider == null) {
+                throw new IllegalArgumentException(Messages.getString("imageio.5E"));
+            }
+            
+            for (Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
+                ProvidersMap providers = e.getValue();
+                providers.removeProvider(provider, registry, e.getKey());
+            }
         }
     }
 
@@ -262,17 +272,19 @@ public class ServiceRegistry {
         boolean removeProvider(Object provider,
                 ServiceRegistry registry, Class<?> category) {
             
-            //TODO remove provider from nodeMap after task HARMONY-6507 has been resolved
-            Object obj = providers.remove(provider.getClass());
+            Object obj = providers.get(provider.getClass());
             if ((obj == null) || (obj != provider)) {
                 return false;
             }
+            
+            providers.remove(provider.getClass());
+            nodeMap.remove(provider);
             
             if (provider instanceof RegisterableService) {
                 ((RegisterableService) provider).onDeregistration(registry, category);
             }            
             
-            return (obj == null ? false : true);
+            return true;
         }
 
         Iterator<Class<?>> getProviderClasses() {
