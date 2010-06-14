@@ -828,6 +828,45 @@ public class DefaultPersistenceDelegateTest extends TestCase {
         pd.writeObject(ia, enc);
     }
 
+    class MockDefaultPersistenceDelegate extends DefaultPersistenceDelegate {
+        public MockDefaultPersistenceDelegate(String[] args) {
+            super(args);
+        }
+
+        public boolean mockMutatesTo(Object obj1, Object obj2) {
+            return mutatesTo(obj1, obj2);
+        }
+    }
+
+    public void test_MutatesTo_scenario1() throws Exception {
+        MockDefaultPersistenceDelegate mockDPD = new MockDefaultPersistenceDelegate(
+                new String[1]);
+        try {
+            mockDPD.mockMutatesTo((Object) null, (Object) null);
+            fail("should throw NPE");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+
+        try {
+            mockDPD.mockMutatesTo((Object) null, (Object) "");
+            fail("should throw NPE");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+
+        assertFalse(mockDPD.mockMutatesTo((Object) "", (Object) null));
+    }
+
+    public void test_MutatesTo_scenario2() throws Exception {
+        MockDefaultPersistenceDelegate mockDPD = new MockDefaultPersistenceDelegate(
+                new String[0]);
+        assertFalse(mockDPD.mockMutatesTo((Object) null, (Object) null));
+        assertFalse(mockDPD.mockMutatesTo((Object) null, (Object) ""));
+        assertFalse(mockDPD.mockMutatesTo((Object) "", (Object) null));
+        assertTrue(mockDPD.mockMutatesTo((Object) "", (Object) ""));
+    }
+
     /*
      * BeanInfo for the MockBean below.
      */
