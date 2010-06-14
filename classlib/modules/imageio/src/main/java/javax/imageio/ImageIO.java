@@ -39,7 +39,8 @@ import org.apache.harmony.x.imageio.internal.nls.Messages;
 public final class ImageIO {
 
     private static final IIORegistry registry = IIORegistry.getDefaultInstance();
-
+    private static final Cache cacheInfo =  new Cache();
+    
     private ImageIO() {}
     
 
@@ -48,24 +49,20 @@ public final class ImageIO {
         throw new NotImplementedException();
     }
 
-    public static void setUseCache(boolean useCache) throws NotImplementedException {
-        // TODO: implement
+    public static void setUseCache(boolean useCache) {
+        cacheInfo.setUseCache(useCache);
     }
 
-    public static boolean getUseCache()  throws NotImplementedException {
-        // TODO: implement
-        return false;
+    public static boolean getUseCache() {
+        return cacheInfo.getUseCache();
     }
 
-    public static void setCacheDirectory(File cacheDirectory) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static void setCacheDirectory(File cacheDirectory) {
+        cacheInfo.setCacheDirectory(cacheDirectory);
     }
 
-    public static File getCacheDirectory() throws NotImplementedException {
-        // TODO: implement
-        //-- null indicates system-dep default temporary directory
-        return null;
+    public static File getCacheDirectory() {
+        return cacheInfo.getCacheDirectory();
     }
 
     public static ImageInputStream createImageInputStream(Object input)
@@ -414,6 +411,46 @@ public final class ImageIO {
         return rt;
     }
 
+    private static class Cache {
+        private boolean useCache = true;
+        private File cacheDirectory = null;
+        
+        public Cache() {
+        }
+    	
+        public File getCacheDirectory() {
+            return cacheDirectory;
+        }
+    	
+        public void setCacheDirectory(File cacheDirectory) {
+            if ((cacheDirectory != null) && (!cacheDirectory.isDirectory())) {
+                throw new IllegalArgumentException(Messages.getString("imageio.0B"));
+            }
+            
+            SecurityManager security = System.getSecurityManager();
+            if (security != null) {
+                String filepath;
+                
+                if (cacheDirectory == null) {
+                    filepath = System.getProperty("java.io.tmpdir");
+                } else {
+                    filepath = cacheDirectory.getPath();
+                }
+                
+                security.checkWrite(filepath);
+            }
+            
+            this.cacheDirectory = cacheDirectory;
+        }
+        
+        public boolean getUseCache() {
+            return useCache;
+        }
+        
+        public void setUseCache(boolean useCache) {
+            this.useCache = useCache;
+        }
+    }
 
     /**
      * Filter to match spi by format name

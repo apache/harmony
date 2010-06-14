@@ -17,6 +17,7 @@
 
 package javax.imageio;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,6 +50,24 @@ public class ImageIOTest extends TestCase {
         img.add(c.getResource(imgPath + "png")); //$NON-NLS-1$
 
         return img;
+    }
+    
+    public void testCache() throws Exception {
+        ImageIO.setUseCache(true);
+        assertTrue("Failed to enable cache", ImageIO.getUseCache());
+        ImageIO.setUseCache(false);
+        assertFalse("Failed to disable cache", ImageIO.getUseCache());
+        
+        ImageIO.setCacheDirectory(null);
+        assertNull("Failed to set cache directory", ImageIO.getCacheDirectory());
+        
+        try {
+            ImageIO.setCacheDirectory(new File(""));
+            fail("IllegalArgumentException expected");
+        } 
+        catch (IllegalArgumentException expected) {
+            //OK
+        }
     }
 
     private void testFormat(String format) {
