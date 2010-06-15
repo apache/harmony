@@ -112,9 +112,12 @@ public class ServiceRegistry {
         //deregisterAll();
     }
 
-    public boolean contains(Object provider) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public boolean contains(Object provider) {
+        if (provider == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.5E"));
+        }
+        
+        return categories.contains(provider);
     }
 
     public Iterator<Class<?>> getCategories() {
@@ -132,6 +135,17 @@ public class ServiceRegistry {
 
         public CategoriesMap(ServiceRegistry registry) {
             this.registry = registry;
+        }
+
+        boolean contains(Object provider) {
+            for (Map.Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
+                ProvidersMap providers = e.getValue();
+                if (providers.contains(provider)) {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         <T> boolean setOrdering(Class<T> category, T firstProvider, T secondProvider) {
@@ -267,6 +281,10 @@ public class ServiceRegistry {
             }
             
             return true;
+        }
+
+        boolean contains(Object provider) {
+            return providers.containsValue(provider);
         }
 
         boolean removeProvider(Object provider,

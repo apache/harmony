@@ -31,6 +31,21 @@ import javax.imageio.spi.ImageWriterSpi;
 
 public class ServiceRegistryTest extends TestCase {
     
+	public void testContains() {
+		Class[] CATEGORIES = new Class[] {
+                ImageReaderSpi.class };
+        
+        ServiceRegistry registry = new ServiceRegistry(Arrays.<Class<?>> asList(CATEGORIES).iterator());
+        
+        ImageReaderSpi reader1 = new SampleImageReaderSpi();
+        ImageReaderSpi reader2 = new SampleImageReaderSpi();
+        
+        registry.registerServiceProvider(reader1, CATEGORIES[0]);
+        
+        assertTrue("Failed to check if reader1 registered", registry.contains(reader1));
+        assertFalse("Failed to check if reader2 registered", registry.contains(reader2));        
+	}
+	
     public void testGetServiceProviders() {
         Class[] CATEGORIES = new Class[] {
                 ImageReaderSpi.class };
