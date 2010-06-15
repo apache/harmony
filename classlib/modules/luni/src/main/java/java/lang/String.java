@@ -1418,12 +1418,15 @@ public final class String implements Serializable, Comparable<String>,
         if (start == 0 && end == count) {
             return this;
         }
-        // NOTE last character not copied!
-        // Fast range check.
-        if (0 <= start && start <= end && end <= count) {
-            return new String(offset + start, end - start, value);
+        if (start < 0) {
+            throw new StringIndexOutOfBoundsException(start);
+        } else if (start > end) {
+            throw new StringIndexOutOfBoundsException(end - start);
+        } else if (end > count) {
+            throw new StringIndexOutOfBoundsException(end);
         }
-        throw new StringIndexOutOfBoundsException();
+        // NOTE last character not copied!
+        return new String(offset + start, end - start, value);
     }
 
     /**

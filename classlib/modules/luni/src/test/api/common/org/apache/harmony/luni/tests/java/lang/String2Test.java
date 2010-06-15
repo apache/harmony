@@ -743,6 +743,33 @@ public class String2Test extends junit.framework.TestCase {
                 && (hw1.substring(5, 10).equals("World")));
         assertTrue("not identical", hw1.substring(0, hw1.length()) == hw1);
     }
+    
+	/**
+	 * @tests java.lang.String#substring(int, int)
+	 */
+	public void test_substringErrorMessage() {
+		try {
+			hw1.substring(-1, 1);
+		} catch (StringIndexOutOfBoundsException ex) {
+			String msg = ex.getMessage();
+			assertTrue("Expected message to contain -1: " + msg, msg
+			        .indexOf("-1") != -1);
+		}
+		try {
+			hw1.substring(4, 1);
+		} catch (StringIndexOutOfBoundsException ex) {
+			String msg = ex.getMessage();
+			assertTrue("Expected message to contain -3: " + msg, msg
+			        .indexOf("-3") != -1);
+		}
+		try {
+			hw1.substring(0, 100);
+		} catch (StringIndexOutOfBoundsException ex) {
+			String msg = ex.getMessage();
+			assertTrue("Expected message to contain 100: " + msg, msg
+			        .indexOf("100") != -1);
+		}
+	}
 
     /**
      * @tests java.lang.String#toCharArray()
