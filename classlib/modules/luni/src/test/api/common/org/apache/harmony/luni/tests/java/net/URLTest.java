@@ -1382,6 +1382,49 @@ public class URLTest extends TestCase {
         } catch (SecurityException e) {
             // expected;
         }
+        
+        // Regression tests for HARMONY-6499
+        try {
+            handler.parse(url, "any", 10, Integer.MIN_VALUE);
+            fail("Should throw StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // expected;
+        }
+        
+        try {
+            handler.parse(url, "any", 10, Integer.MIN_VALUE+1);
+            fail("Should throw StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // expected;
+        }
+        
+        try {
+            handler.parse(url, "any", Integer.MIN_VALUE, Integer.MIN_VALUE);
+            fail("Should throw StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // expected;
+        }
+        
+        try {
+            handler.parse(url, "any", Integer.MIN_VALUE, 2);
+            fail("Should throw StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // expected;
+        }
+        
+        try {
+            handler.parse(url, "any", -1, 2);
+            fail("Should throw StringIndexOutOfBoundsException");
+        } catch (StringIndexOutOfBoundsException e) {
+            // expected;
+        }
+        
+        try {
+            handler.parse(url, "any", -1, -1);
+            fail("Should throw SecurityException");
+        } catch (SecurityException e) {
+            // expected;
+        }
     }
 
     /**
