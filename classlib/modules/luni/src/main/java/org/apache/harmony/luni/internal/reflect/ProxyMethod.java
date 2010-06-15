@@ -89,8 +89,8 @@ class ProxyMethod {
                 throw new IllegalArgumentException(Messages.getString("luni.19",
                         method.getName()));
             }
-        }        
-        
+        }
+
         if (commonExceptions.length != 0) {
             Class[] otherExceptions = otherMethod.getExceptionTypes();
             if (otherExceptions.length == 0) {
