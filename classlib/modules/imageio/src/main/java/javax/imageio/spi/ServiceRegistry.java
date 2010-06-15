@@ -96,14 +96,12 @@ public class ServiceRegistry {
         return categories.unsetOrdering(category, firstProvider, secondProvider);
     }
 
-    public void deregisterAll(Class<?> category) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public void deregisterAll(Class<?> category) {
+        categories.removeAll(category);
     }
 
-    public void deregisterAll() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public void deregisterAll() {
+        categories.removeAll();
     }
 
     @Override
@@ -263,6 +261,22 @@ public class ServiceRegistry {
                 providers.removeProvider(provider, registry, e.getKey());
             }
         }
+        
+        void removeAll(Class<?> category) {
+            Object obj = categories.get(category);
+            
+            if (obj == null) {
+                throw new IllegalArgumentException(Messages.getString("imageio.92", category));
+            }
+            
+            ((ProvidersMap) obj).clear(registry);         
+        }
+        
+        void removeAll() {
+            for ( Map.Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
+                removeAll(e.getKey());                
+            }
+        }
     }
 
     private static class ProvidersMap {
@@ -303,6 +317,19 @@ public class ServiceRegistry {
             }            
             
             return true;
+        }
+        
+        void clear(ServiceRegistry registry) {
+            for (Map.Entry<Class<?>, Object> e : providers.entrySet()) {
+                Object provider = e.getValue();
+                
+                if (provider instanceof RegisterableService) {
+                    ((RegisterableService) provider).onDeregistration(registry, e.getKey());
+                }
+            }
+            
+            providers.clear();
+            nodeMap.clear();
         }
 
         Iterator<Class<?>> getProviderClasses() {

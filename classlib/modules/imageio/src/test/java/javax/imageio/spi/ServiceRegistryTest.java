@@ -30,6 +30,32 @@ import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.spi.ImageWriterSpi;
 
 public class ServiceRegistryTest extends TestCase {
+
+    public void testDeregisterAll() {
+        Class[] CATEGORIES = new Class[] {
+                ImageReaderSpi.class };
+        
+        ServiceRegistry registry = new ServiceRegistry(Arrays.<Class<?>> asList(CATEGORIES).iterator());
+        
+        ImageReaderSpi reader1 = new Reader1Spi();
+        ImageReaderSpi reader2 = new Reader2Spi();
+        
+        // Register two providers
+        registry.registerServiceProvider(reader1, CATEGORIES[0]);
+        registry.registerServiceProvider(reader2, CATEGORIES[0]);
+        
+        registry.deregisterAll(ImageReaderSpi.class);
+        assertFalse("Reader1 is still regitered, deregisterAll(Class) failed",registry.contains(reader1));
+        assertFalse("Reader2 is still regitered, deregisterAll(Class) failed",registry.contains(reader2));
+        
+        // Re-register two providers
+        registry.registerServiceProvider(reader1, CATEGORIES[0]);
+        registry.registerServiceProvider(reader2, CATEGORIES[0]);
+        
+        registry.deregisterAll();
+        assertFalse("Reader1 is still regitered, deregisterAll() failed",registry.contains(reader1));
+        assertFalse("Reader2 is still regitered, deregisterAll() failed",registry.contains(reader2));
+    }
     
 	public void testContains() {
 		Class[] CATEGORIES = new Class[] {
