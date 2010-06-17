@@ -27,17 +27,34 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_nio_AddressUtil_getFDAddress
 	jclass descriptorCLS;
 	jfieldID descriptorFID;
 	hysocket_t hysocketP;
+
 	//TODO add to cache
 	descriptorCLS = (*env)->FindClass (env, "java/io/FileDescriptor");
 	if (NULL == descriptorCLS){
 		return 0;
 	}
+
 	descriptorFID = (*env)->GetFieldID (env, descriptorCLS, "descriptor", "J");
 	if (NULL == descriptorFID){
 		return 0;
 	}
+
 	hysocketP = (hysocket_t) ((IDATA)((*env)->GetLongField (env, fd, descriptorFID)));
-	return SOCKET_CAST(hysocketP);
+    if (NULL == hysocketP) {
+        return 0;
+    }
+
+#if defined(WIN32) || defined(WIN64)
+    if (hysocketP->flags & SOCKET_IPV4_OPEN_MASK) {
+        return (jlong)(hysocketP->ipv4);
+    } else if (hysocketP->flags & SOCKET_IPV6_OPEN_MASK) {
+        return (jlong)(hysocketP->ipv6);
+    } else {
+        return 0;
+    }
+#else 
+    return (jlong)(hysocketP->sock);
+#endif
 }
 
 
