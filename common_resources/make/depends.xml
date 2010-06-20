@@ -22,8 +22,6 @@
 <project name="external-deps">
     
     <dirname property="ed.basedir" file="${ant.file.external-deps}"/>
-    <echo>ed.basedir=${ed.basedir}</echo>
-    <echo>basedir=${basedir}</echo>
     <import file="${ed.basedir}/properties.xml"/>
     
     <loadproperties srcfile="${ed.basedir}/depends.properties">
