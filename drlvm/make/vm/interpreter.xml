@@ -23,70 +23,8 @@
     <import file="common-vm.xml"/>
         
     <target name="build" depends="-common-vm">        
-        <init-native/>
-        
-        <compile-asm>
-            <fileset id="int.asm" dir="${vm.home}/interpreter/src">
-                <include name="invokeJNI_ia32.asm" if="is.unix.x86"/>
-                <include name="invokeJNI_em64t.asm" if="is.unix.x86_64"/>
-                <include name="invokeJNI_ipf.asm" if="is.unix.ia64"/>
-    
-                <exclude name="*" if="is.windows.x86"/>
-                <include name="invokeJNI_Windows_ipf.asm" if="is.windows.ia64"/>
-                <include name="invokeJNI_Windows_em64t.asm" if="is.windows.x86_64"/>
-            </fileset>
-        </compile-asm>
-        
-        <path id="int.includes">
-            <dirset dir="${vm.home}">
-                <include name="include" />
-                <include name="vmcore/include" />
-                <include name="port/include" />
-
-                <include name="vmcore/src/util/win/include" if="is.windows"/>
-                <include name="vmcore/src/util/linux/include" if="is.unix"/>
-
-                <include name="vmcore/src/util/ipf/include" if="is.ia64"/>
-                <include name="vmcore/src/util/ipf/base_natives" if="is.ia64"/>
-                <include name="vmcore/src/lil/ipf/include" if="is.ia64"/>
-
-                <include name="vmcore/src/util/ia32/base_natives" if="is.x86"/>
-                <include name="port/src/encoder/ia32_em64t" if="is.x86"/>
-                <include name="vmcore/src/lil/ia32/include" if="is.x86"/>
-
-                <include name="vmcore/src/util/em64t/base_natives" if="is.x86_64"/>
-                <include name="port/src/encoder/ia32_em64t" if="is.x86_64"/>
-                <include name="vmcore/src/lil/em64t/include" if="is.x86_64"/>
-            </dirset>
-            <pathelement location="${drlvm.include.dir}" />
-        </path>
-        <depend-includes paths="int.includes"/>
-        <depend-selector rebuild-flag="int.includes.uptodate" id="int.depends"/>
-
-        <compile-cc>
-        <compiler id="cpp.compiler" extends="common.cpp.compiler">
-            <includepath><path refid="int.includes"/></includepath>
-            <fileset dir="${vm.home}/interpreter/src">
-                <selector refid="int.depends"/>
-                <include name="*.cpp" />
-                <exclude name="interp_native_ia32.cpp" unless="is.x86"/>
-                <exclude name="interp_native_ipf.cpp" unless="is.ia64"/>
-                <exclude name="interp_native_em64t.cpp" unless="is.x86_64"/>
-            </fileset>
-
-            <compilerarg value="/Op" if="is.windows" unless="is.cfg.debug"/>
-            <compilerarg value="-Qwd1572" if="is.icl"/>
-        </compiler>
-        </compile-cc>
-
-        <link-lib name="interpreter" type="shared">
-            <linker id="linker" extends="common.linker">
-                <linkerarg value="--version-script=${vm.home}/interpreter/build/interpreter.exp" if="is.unix"/>
-                <libset libs="harmonyvm,hythr" dir="${drlvm.shlib.dir}" />
-            </linker>
-        </link-lib>
-
-        <copy todir="${drlvm.bin.dir}" file="${vm.home}/interpreter/interpreter.emconf" />
+        <copy todir="${drlvm.bin.dir}"
+              file="${vm.home}/interpreter/interpreter.emconf" />
     </target>
     
     <target name="clean" >

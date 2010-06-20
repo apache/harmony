@@ -127,33 +127,23 @@ Usage:
     </target>
 
     <target name="encoder">
-        <ant antfile="make/vm/encoder.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/encoder/${hy.os.family}" />
     </target>
 
     <target name="port" depends="build-extra">
-        <ant antfile="make/vm/port.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/port/${hy.os.family}" />
     </target>
 
     <target name="port_ch" depends="port">
-        <ant antfile="make/vm/port_ch.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/port_ch/${hy.os.family}" />
     </target>
 
     <target name="hythr" depends="port">
-        <ant antfile="make/vm/hythr.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/hythr/${hy.os.family}" />
     </target>
 
     <target name="verifier">
-        <ant antfile="make/vm/verifier.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/verifier/${hy.os.family}" />
     </target>
 
     <target name="verifier-ext"
@@ -175,18 +165,18 @@ Usage:
         <ant antfile="make/vm/vmcore.xml" inheritall="false">
             <propertyset refid="module.props" />
         </ant>
+        <make dir="modules/vm/src/main/native/vmcore/${hy.os.family}" />
     </target>
 
     <target name="em" depends="vmcore">
-        <ant antfile="make/vm/em.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/em/${hy.os.family}" />
     </target>
 
     <target name="interpreter" depends="vmcore">
         <ant antfile="make/vm/interpreter.xml" inheritall="false">
             <propertyset refid="module.props" />
         </ant>
+        <make dir="modules/vm/src/main/native/interpreter/${hy.os.family}" />
     </target>
 
     <target name="kernel">
@@ -196,9 +186,7 @@ Usage:
     </target>
 
     <target name="vmi" depends="vmcore">
-        <ant antfile="make/vm/vmi.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/vmi/${hy.os.family}" />
     </target>
 
     <target name="jitrino" depends="vmcore">
