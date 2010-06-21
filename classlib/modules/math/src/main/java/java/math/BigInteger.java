@@ -1344,8 +1344,8 @@ public class BigInteger extends Number implements Comparable<BigInteger>,
         if (m.isOne() | (exponent.sign > 0 & base.sign == 0)) {
             return BigInteger.ZERO;
         }
-        if (base.sign == 0 && exponent.sign == 0) {
-            return BigInteger.ONE;
+        if (exponent.sign == 0) {
+            return BigInteger.ONE.mod(m);
         }
         if (exponent.sign < 0) {
             base = modInverse(m);

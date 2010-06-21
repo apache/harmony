@@ -47,6 +47,13 @@ public class BigIntegerModPowTest extends TestCase {
 		} catch (ArithmeticException e) {
 			assertEquals("Improper exception message", "BigInteger: modulus not positive", e.getMessage());
 		}
+
+        try {
+            BigInteger.ZERO.modPow(new BigInteger("-1"), new BigInteger("10"));
+            fail("ArithmeticException has not been caught");
+        } catch (ArithmeticException e) {
+            // expected
+        }
 	}
 
 	/**
@@ -94,6 +101,29 @@ public class BigIntegerModPowTest extends TestCase {
 		}
 		assertEquals("incorrect sign", 1, result.signum());
 	}
+
+    public void testModPowZeroExp() {
+        BigInteger exp = new BigInteger("0");
+        BigInteger[] base = new BigInteger[] {new BigInteger("-1"), new BigInteger("0"), new BigInteger("1")};
+        BigInteger[] mod = new BigInteger[] {new BigInteger("2"), new BigInteger("10"), new BigInteger("2147483648")};
+
+        for (int i = 0; i < base.length; ++i) {
+            for (int j = 0; j < mod.length; ++j) {
+                assertEquals(base[i] + " modePow(" + exp + ", " + mod[j]
+                        + ") should be " + BigInteger.ONE, BigInteger.ONE,
+                        base[i].modPow(exp, mod[j]));
+            }
+        }
+
+        mod = new BigInteger[] {new BigInteger("1")};
+        for (int i = 0; i < base.length; ++i) {
+            for (int j = 0; j < mod.length; ++j) {
+                assertEquals(base[i] + " modePow(" + exp + ", " + mod[j]
+                        + ") should be " + BigInteger.ZERO, BigInteger.ZERO,
+                        base[i].modPow(exp, mod[j]));
+            }
+        }
+    }
 
 	/**
 	 * modInverse: non-positive modulus
