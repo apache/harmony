@@ -197,9 +197,7 @@ Usage:
     </target>
 
     <target name="gc_gen" depends="vmcore,kernel">
-        <ant antfile="make/vm/gc_gen.xml" inheritall="false">
-            <propertyset refid="module.props" />
-        </ant>
+        <make dir="modules/vm/src/main/native/gc_gen/${hy.os.family}" />
     </target>
 
 
