@@ -48,10 +48,13 @@ DLLNAME = $(TOOLSDLLPATH)libjdwp.so
 include $(HY_HDK)/build/make/rules.mk
 
 $(HY_BIN)%.o: core/%.cpp
+	@mkdir -p ${@D}
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 $(HY_BIN)%.o: $(CMNAGENT)core/%.cpp
+	@mkdir -p ${@D}
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 $(HY_BIN)%.o: $(CMNAGENT)commands/%.cpp
+	@mkdir -p ${@D}
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

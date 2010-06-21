@@ -14,40 +14,31 @@
 #  limitations under the License.
 
 #
-# Makefile for module jdwp - transport
-#
-# export HY_HDK=/home/geir/dev/apache/harmony/enhanced/trunk/classlib/deploy/
-# export HY_DRLVM=/home/geir/dev/apache/harmony/enhanced/trunk/drlvm/build/deploy/
-
+# Makefile for module 'interpreter'
 #
 
-HY_BIN=$(HY_TARGET)/build/jdktools/jpda/native/dt_socket/
+HY_BIN=$(HY_TARGET)/build/drlvm/vm/native/interpreter/
 include $(HY_TARGET)/hdk/build/make/defines.mk
+VM_HOME=../../../../../../../vm/
 
-COMMON=../../../common/
-CMNTRANS=$(COMMON)transport/
+DEFINES += \
+  -DREFS_USE_UNCOMPRESSED -D_IA32_ -DPLATFORM_POSIX \
+  -D__SMP__ -DLINUX_TLS_OPT -D_LARGEFILE64_SOURCE
 
-CFLAGS += -fpic
-CXXFLAGS += -fpic
+OPT += -fexceptions
+CXXFLAGS += -Wno-deprecated
 
-INCLUDES += -I$(CMNTRANS)common -I$(CMNTRANS)dt_socket \
-            -I$(COMMON)generic -I. \
-            -I../common
+INCLUDES := -I$(VM_HOME)include -I$(VM_HOME)port/include \
+            -I$(VM_HOME)vmcore/include $(INCLUDES)
 
-LDFLAGS += $(STDCLIBS)
+BUILDFILES := \
+  interp_exports.o interp_native.o interp_stack_trace.o interp_vm_helpers.o \
+  interpreter.o interpreter_ti.o invokeJNI.o
 
-BUILDFILES = LastTransportError.o SocketTransport.o
+DLLNAME = $(DLLPATH)default/libinterpreter$(HY_SHLIB_SUFFIX)
+EXPNAME = INTERPRETER_0.1
 
-MDLLIBFILES = 
-
-DLLNAME = $(TOOLSDLLPATH)libdt_socket.so
+AS := $(CXX)
+ASFLAGS := -Wa,--fatal-warnings -c -x assembler-with-cpp -g
 
 include $(HY_HDK)/build/make/rules.mk
-
-$(HY_BIN)%.o: $(CMNTRANS)common/%.cpp
-	@mkdir -p ${@D}
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
-
-$(HY_BIN)%.o: $(CMNTRANS)dt_socket/%.cpp
-	@mkdir -p ${@D}
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

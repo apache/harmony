@@ -1,0 +1,2 @@
+VMI_GetVMIFromJavaVM
+VMI_GetVMIFromJNIEnv

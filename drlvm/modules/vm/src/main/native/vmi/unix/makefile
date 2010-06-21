@@ -14,40 +14,25 @@
 #  limitations under the License.
 
 #
-# Makefile for module jdwp - transport
-#
-# export HY_HDK=/home/geir/dev/apache/harmony/enhanced/trunk/classlib/deploy/
-# export HY_DRLVM=/home/geir/dev/apache/harmony/enhanced/trunk/drlvm/build/deploy/
-
+# Makefile for module 'vmi'
 #
 
-HY_BIN=$(HY_TARGET)/build/jdktools/jpda/native/dt_socket/
+HY_BIN=$(HY_TARGET)/build/drlvm/vm/native/vmi/
 include $(HY_TARGET)/hdk/build/make/defines.mk
+VM_HOME=../../../../../../../vm/
 
-COMMON=../../../common/
-CMNTRANS=$(COMMON)transport/
+DEFINES += \
+  -DREFS_USE_UNCOMPRESSED -D_IA32_ -DPLATFORM_POSIX \
+  -D__SMP__ -DLINUX_TLS_OPT -D_LARGEFILE64_SOURCE
 
-CFLAGS += -fpic
-CXXFLAGS += -fpic
+OPT += -fexceptions
+CXXFLAGS += -Wno-deprecated
 
-INCLUDES += -I$(CMNTRANS)common -I$(CMNTRANS)dt_socket \
-            -I$(COMMON)generic -I. \
-            -I../common
+INCLUDES := -I$(VM_HOME)include -I$(VM_HOME)port/include \
+            -I$(VM_HOME)vmcore/include $(INCLUDES)
 
-LDFLAGS += $(STDCLIBS)
-
-BUILDFILES = LastTransportError.o SocketTransport.o
-
-MDLLIBFILES = 
-
-DLLNAME = $(TOOLSDLLPATH)libdt_socket.so
+BUILDFILES := j9vmls.o vmi.o
+DLLNAME = $(DLLPATH)default/libvmi$(HY_SHLIB_SUFFIX)
+EXPNAME = VMI_0.1
 
 include $(HY_HDK)/build/make/rules.mk
-
-$(HY_BIN)%.o: $(CMNTRANS)common/%.cpp
-	@mkdir -p ${@D}
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
-
-$(HY_BIN)%.o: $(CMNTRANS)dt_socket/%.cpp
-	@mkdir -p ${@D}
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
