@@ -20,7 +20,7 @@
 
 
 #include <stdlib.h>
-#include "Ia32CodeGenerator.h"
+#include "CodeGenerator_arch.h"
 #include "Ia32CodeSelector.h"
 #include "Ia32CFG.h"
 #include "Ia32InstCodeSelector.h"

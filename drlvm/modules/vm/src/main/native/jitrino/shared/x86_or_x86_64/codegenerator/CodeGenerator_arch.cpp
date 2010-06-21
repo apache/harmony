@@ -22,7 +22,7 @@
 
 #include <fstream>
 #include "Stl.h"
-#include "Ia32CodeGenerator.h"
+#include "CodeGenerator_arch.h"
 #include "Ia32CodeSelector.h"
 #include "Log.h"
 #include "Ia32IRManager.h"

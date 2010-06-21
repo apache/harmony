@@ -24,7 +24,7 @@
 #include "Log.h"
 #include "EMInterface.h"
 #include "Ia32Printer.h"
-#include "Ia32CodeGenerator.h"
+#include "CodeGenerator_arch.h"
 #include "Dominator.h"
 #include <math.h>
 

@@ -193,6 +193,7 @@ Usage:
         <ant antfile="make/vm/jitrino.xml" inheritall="false">
             <propertyset refid="module.props" />
         </ant>
+        <make dir="modules/vm/src/main/native/jitrino/${hy.os.family}" />
     </target>
 
     <target name="gc_gen" depends="vmcore,kernel">

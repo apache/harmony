@@ -21,7 +21,7 @@
 #include "Ia32IRManager.h"
 #include "Stl.h"
 #include "Ia32StackInfo.h"
-#include "Ia32RuntimeInterface.h"
+#include "RuntimeInterface_arch.h"
 #include "Ia32InternalTrace.h"
 #include <math.h>
 

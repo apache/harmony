@@ -22,7 +22,7 @@
 
 #include "Jitrino.h"
 #include "CodeSelectors.h"
-#include "IpfCodeGenerator.h"
+#include "CodeGenerator_arch.h"
 #include "IpfCodeSelector.h"
 #include "IpfCodeLayouter.h"
 #include "IpfLiveAnalyzer.h"

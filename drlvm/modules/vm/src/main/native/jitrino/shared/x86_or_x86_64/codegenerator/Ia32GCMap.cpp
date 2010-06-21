@@ -20,7 +20,7 @@
 
 #include "Ia32GCMap.h"
 #include "Ia32Inst.h"
-#include "Ia32RuntimeInterface.h"
+#include "RuntimeInterface_arch.h"
 #include "Ia32StackInfo.h"
 #include "Ia32GCSafePoints.h"
 #include "XTimer.h"

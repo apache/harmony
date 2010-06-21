@@ -25,7 +25,7 @@
 
 #include "IpfCfg.h"
 #include "IpfOpndManager.h"
-#include "IpfRuntimeInterface.h"
+#include "RuntimeInterface_arch.h"
 
 namespace Jitrino {
 namespace IPF {

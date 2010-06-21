@@ -19,7 +19,7 @@
  */
 
 
-#include "Ia32CodeGenerator.h"
+#include "CodeGenerator_arch.h"
 #include "Ia32CFG.h"
 #include "Ia32IRManager.h"
 #include "Ia32Inst.h"

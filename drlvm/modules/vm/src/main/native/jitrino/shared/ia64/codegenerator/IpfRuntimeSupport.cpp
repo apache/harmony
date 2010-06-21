@@ -75,7 +75,7 @@ RuntimeSupport::RuntimeSupport(Cfg &cfg, CompilationInterface &compilationInterf
 //   Root Set info
 //
 // Stack info structure
-//   see struct StackInfo in IpfRuntimeInterface.h
+//   see struct StackInfo in RuntimeInterface_arch.h
 //
 // Root set info structure
 //                +---------------+

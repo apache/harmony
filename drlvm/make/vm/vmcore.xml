@@ -69,7 +69,10 @@
     <target name="build" depends="setup,stamp-version,-common-vm">
         <echo message="Copying files for internationalization..."/>
         <copy todir="${drlvm.bin.dir}" flatten="true" >
-            <fileset dir="${vm.home}/vmcore/src/init">
+            <!--
+                 TOFIX: move to more appropriate directory or copy in makefile?
+              -->
+            <fileset dir="modules/vm/src/main/native/vmcore/shared/init">
                 <include name="harmony*.properties" />
             </fileset>
         </copy>

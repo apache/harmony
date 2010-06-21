@@ -29,4 +29,5 @@ MDLLIBFILES =
 include $(HY_HDK)/build/make/rules.mk
 
 $(HY_BIN)%.o: ../%.c
+	@mkdir -p ${@D}
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

@@ -20,7 +20,7 @@
  *
  */
 
-#include "IpfRuntimeInterface.h"
+#include "RuntimeInterface_arch.h"
 #include "IpfEncoder.h"
 #include "IpfType.h"
 #include "IpfOpndManager.h"

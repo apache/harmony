@@ -19,7 +19,7 @@
  */
 
 #include "Ia32IRManager.h"
-#include "Ia32CodeGenerator.h"
+#include "CodeGenerator_arch.h"
 
 namespace Jitrino
 {

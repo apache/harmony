@@ -19,7 +19,7 @@
  */
 
 #include "Ia32IRManager.h"
-#include "Ia32RuntimeInterface.h"
+#include "RuntimeInterface_arch.h"
 #include "Ia32StackInfo.h"
 #include "Ia32GCMap.h"
 #include "Ia32BCMap.h"

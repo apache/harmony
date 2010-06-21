@@ -20,7 +20,7 @@
 
 #include "Log.h"
 #include "Ia32InstCodeSelector.h"
-#include "Ia32CodeGenerator.h"
+#include "CodeGenerator_arch.h"
 #include "Ia32Printer.h"
 #include "EMInterface.h"
 #include "VMInterface.h"

@@ -48,7 +48,7 @@ else
 EXPNAME = HYTHR_0.2
 endif
 
-OSLIBS += -lpthread
+OSLIBS += -lpthread -lrt
 MDLLIBFILES += $(LIBPATH)libapr-1.a $(LIBPATH)libport.a
 LDFLAGS += -Wl,-init -Wl,hythread_library_init
 

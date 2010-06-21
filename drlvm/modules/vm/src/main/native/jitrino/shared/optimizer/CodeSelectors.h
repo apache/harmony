@@ -22,12 +22,7 @@
 #ifndef CODESELECTORS_H_
 #define CODESELECTORS_H_
 
-
-#if defined(_IPF_)
-    #include "IpfCodeGenerator.h"
-#else
-    #include "ia32/Ia32CodeGenerator.h"
-#endif
+#include "CodeGenerator_arch.h"
 
 #include "irmanager.h"
 

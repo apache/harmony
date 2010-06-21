@@ -43,11 +43,7 @@
 #include "PMF.h"
 #include "PMFAction.h"
 
-#if defined(_IPF_)
-    #include "IpfRuntimeInterface.h"
-#else
-    #include "ia32/Ia32RuntimeInterface.h"
-#endif
+#include "RuntimeInterface_arch.h"
 
 #include <ostream>
 

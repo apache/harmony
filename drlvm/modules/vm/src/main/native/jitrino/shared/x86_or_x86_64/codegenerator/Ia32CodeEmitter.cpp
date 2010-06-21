@@ -20,7 +20,7 @@
 
 #include "Ia32IRManager.h"
 #include "Log.h"
-#include "Ia32RuntimeInterface.h"
+#include "RuntimeInterface_arch.h"
 #include "Ia32Printer.h"
 #include "Ia32RegAllocCheck.h"
 #include "Ia32GCMap.h"
