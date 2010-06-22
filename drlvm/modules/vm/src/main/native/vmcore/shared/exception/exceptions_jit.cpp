@@ -776,7 +776,7 @@ NativeCodePtr exn_get_rth_throw()
 
 static void rth_throw_lazy(Method * exn_constr)
 {
-#if defined(_IPF_) || defined(_EM64T_)
+#if defined(_IPF_) || defined(HYX86_64)
     LDIE(61, "Lazy exceptions are not supported on this platform");
 #else
     U_8 *args = (U_8 *) (m2n_get_args(m2n_get_last_frame()) + 1);   // +1 to skip constructor

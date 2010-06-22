@@ -177,7 +177,7 @@ void cleanup(void)
 
 bool supports_compresed_refs(void)
 {
-#if defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86_64) || defined(_IPF_)
     return true;
 #else
     return false;

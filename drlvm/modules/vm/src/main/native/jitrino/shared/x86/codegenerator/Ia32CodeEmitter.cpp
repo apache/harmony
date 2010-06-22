@@ -197,7 +197,7 @@ void CodeEmitter::ConstantAreaLayout::collectItems()
         Opnd::RuntimeInfo * ri=NULL;
         if (opnd->isPlacedIn(OpndKind_Mem)&&opnd->getMemOpndKind()==MemOpndKind_ConstantArea){
             Opnd * addrOpnd=opnd->getMemOpndSubOpnd(MemOpndSubOpndKind_Displacement);
-#ifndef _EM64T_
+#ifndef HYX86_64
             ri=addrOpnd->getRuntimeInfo();
             assert(ri->getKind()==Opnd::RuntimeInfo::Kind_ConstantAreaItem);
 #else
@@ -512,7 +512,7 @@ void CodeEmitter::emitCode( void ) {
                     // the last two
                     ip = (U_8*)EncoderBase::nops((char*)ip,2);
                 }
-#ifdef _EM64T_
+#ifdef HYX86_64
                     // these nops are required for call transformation from immediate into register form
                     // nops for MOV r11, callTarget (when !fit32(call_offset) ) <opcode + 8 byte address>
                     ip = (U_8*)EncoderBase::nops((char*)ip, 10);
@@ -641,7 +641,7 @@ void CodeEmitter::postPass()
                 } else 
                     continue;
                 int64 offset=targetCodeStartAddr-instCodeEndAddr;
-#ifdef _EM64T_
+#ifdef HYX86_64
                 if ( !fit32(offset) ) { // offset is not a signed value that fits into 32 bits
                     // this is for direct calls only
                     assert(inst->hasKind(Inst::Kind_CallInst));
@@ -721,7 +721,7 @@ bool RuntimeInterface::recompiledMethodEvent(MethodDesc *recompiledMethodDesc,
     // we can not guarantee the (callAddr+1) aligned
     // self-jump is a kind of lock for the time of call patching
     U_32 movSize =
-#ifdef _EM64T_
+#ifdef HYX86_64
                      10;
 #else
                      0; // no additional MOV on ia32
@@ -750,7 +750,7 @@ bool RuntimeInterface::recompiledMethodEvent(MethodDesc *recompiledMethodDesc,
 
     // The patching itself
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     bool registerCallIsBeingPatched = ( 0xB8 == (0xF8 &(*(movAddr+1))) ); // test opcode (&0xF8 - to skip rd bits)
 
     EncoderBase::Operands args;

@@ -30,7 +30,7 @@ namespace Ia32{
 
 void RuntimeInterface::unwindStack(MethodDesc* methodDesc, JitFrameContext* context, bool isFirst) {
     StackInfo stackInfo;
-#ifdef _EM64T_
+#ifdef HYX86_64
     stackInfo.read(methodDesc, *context->p_rip, isFirst);
 #else
     stackInfo.read(methodDesc, *context->p_eip, isFirst);
@@ -39,7 +39,7 @@ void RuntimeInterface::unwindStack(MethodDesc* methodDesc, JitFrameContext* cont
 }
 
 bool RuntimeInterface::isSOEArea(MethodDesc* methodDesc, const ::JitFrameContext* context, bool isFirst) {
-#ifdef _EM64T_
+#ifdef HYX86_64
     POINTER_SIZE_INT eip = *context->p_rip;
 #else
     POINTER_SIZE_INT eip = *context->p_eip;
@@ -60,7 +60,7 @@ void* RuntimeInterface::getAddressOfThis(MethodDesc * methodDesc, const JitFrame
     }
     assert(context);
     StackInfo stackInfo;
-#ifdef _EM64T_
+#ifdef HYX86_64
     stackInfo.read(methodDesc, *context->p_rip, isFirst);
     assert(isFirst || (POINTER_SIZE_INT)context->p_rip+8 == context->rsp);
     return (void *)(context->rsp + stackInfo.getStackDepth() + (int)stackInfo.getOffsetOfThis());
@@ -75,7 +75,7 @@ void* RuntimeInterface::getAddressOfThis(MethodDesc * methodDesc, const JitFrame
 void  RuntimeInterface::fixHandlerContext(MethodDesc* methodDesc, JitFrameContext* context, bool isFirst)
 {
     StackInfo stackInfo;
-#ifdef _EM64T_
+#ifdef HYX86_64
     stackInfo.read(methodDesc, *context->p_rip, isFirst);
 #else
     stackInfo.read(methodDesc, *context->p_eip, isFirst);

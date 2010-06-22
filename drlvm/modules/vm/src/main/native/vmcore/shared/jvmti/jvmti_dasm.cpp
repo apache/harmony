@@ -24,7 +24,7 @@
 
 // FIXME: Highly platform specific, should be renamed to jvmti_dasm_x86.cpp
 //        or go to arch specific directory.
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
 
 #include "jvmti_dasm.h"
 #include "dec_base.h"
@@ -32,7 +32,7 @@
 static InstructionDisassembler::Register convertRegName2Register(RegName reg)
 {
     switch(reg) {
-#ifdef _IA32_
+#ifdef HYX86
     case RegName_Null:  return InstructionDisassembler::DISASM_REG_NONE;
     case RegName_EAX:   return InstructionDisassembler::DISASM_REG_EAX;
     case RegName_EBX:   return InstructionDisassembler::DISASM_REG_EBX;
@@ -42,7 +42,7 @@ static InstructionDisassembler::Register convertRegName2Register(RegName reg)
     case RegName_EDI:   return InstructionDisassembler::DISASM_REG_EDI;
     case RegName_EBP:   return InstructionDisassembler::DISASM_REG_EBP;
     case RegName_ESP:   return InstructionDisassembler::DISASM_REG_ESP;
-#elif defined(_EM64T_)
+#elif defined(HYX86_64)
     case RegName_Null:  return InstructionDisassembler::DISASM_REG_NONE;
     case RegName_RAX:   return InstructionDisassembler::DISASM_REG_RAX;
     case RegName_RBX:   return InstructionDisassembler::DISASM_REG_RBX;
@@ -100,7 +100,7 @@ const char* InstructionDisassembler::get_reg_value(
     return NULL;
 }
 
-#elif defined _EM64T_
+#elif defined HYX86_64
 
 const char* InstructionDisassembler::get_reg_value(
     Register reg,
@@ -129,7 +129,7 @@ const char* InstructionDisassembler::get_reg_value(
     return NULL;
 }
 
-#else // _IA32_
+#else // HYX86
 
 const char* InstructionDisassembler::get_reg_value(
     Register reg,
@@ -150,7 +150,7 @@ const char* InstructionDisassembler::get_reg_value(
     return NULL;
 }
 
-#endif // _IA32_
+#endif // HYX86
 
 void InstructionDisassembler::disasm(const NativeCodePtr addr, 
                                      InstructionDisassembler * pidi)
@@ -235,14 +235,14 @@ InstructionDisassembler::get_target_address_from_context(const Registers* pconte
         // can't happen for INDIRECT_xxx.
         assert(false);
         return NULL;
-#ifdef _IA32_
+#ifdef HYX86
     case RET:
         {
         const char* sp_value = get_reg_value(DISASM_REG_ESP, pcontext);
         const char* retAddr = *(char**)sp_value;
         return (NativeCodePtr)retAddr;
         }
-#endif // _IA32_
+#endif // HYX86
     default:
         // This method should not be called for non-branch instructions.
         assert(false);

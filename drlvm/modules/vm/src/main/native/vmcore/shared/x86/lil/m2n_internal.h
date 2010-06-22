@@ -19,8 +19,8 @@
  */  
 
 
-#ifndef _M2N_IA32_INTERNAL_H_
-#define _M2N_IA32_INTERNAL_H_
+#ifndef _M2NHYX86INTERNAL_H_
+#define _M2NHYX86INTERNAL_H_
 
 // This file describes the internal IPF interface of m2n frames.
 // It can be used by stubs to generate code to push and pop m2n frames, to update object handles fields, and 
@@ -85,7 +85,7 @@ char* m2n_gen_pop_m2n(char* buf, bool handles, unsigned num_callee_saves, unsign
 //   p_lm2nf==1
 //   regs is present
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 #error Wrong header file.
 #endif
 
@@ -104,4 +104,4 @@ struct M2nFrame {
     Registers*           regs; // This is only for M2nFrames for suspended managed code (as against ones that call stubs and prepare jvmtiPopFrame)
 };
 
-#endif //!_M2N_IA32_INTERNAL_H_
+#endif //!_M2NHYX86INTERNAL_H_

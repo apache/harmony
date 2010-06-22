@@ -86,7 +86,7 @@
 #else
     // stdcall has no meaning on platforms other than Lin32
     #undef stdcall__
-    #if defined(_IA32_) && !defined(stdcall__)
+    #if defined(HYX86) && !defined(stdcall__)
         #define stdcall__    __attribute__ ((__stdcall__))
     #else
     #define stdcall__
@@ -96,19 +96,19 @@
 #endif
 //
 // gcc def on EM64T
-#if defined(__x86_64__) && !defined(_EM64T_)
-    #define _EM64T_  1
-    #undef  _IA32_
+#if defined(__x86_64__) && !defined(HYX86_64)
+    #define HYX86_64  1
+    #undef  HYX86
 #endif
 
-#if defined(__i386__) && !defined(_IA32_)
-    #undef  _EM64T_
-    #define _IA32_ 1
+#if defined(__i386__) && !defined(HYX86)
+    #undef  HYX86_64
+    #define HYX86 1
 #endif
 
-#if !defined(_EM64T_) && !defined(_IPF_) && !defined(_IA32_)
+#if !defined(HYX86_64) && !defined(_IPF_) && !defined(HYX86)
     // presuming we're working on ia-32
-    #define _IA32_ 1
+    #define HYX86 1
 #endif
 
 
@@ -553,7 +553,7 @@ enum jtype {
     jtypes_count, 
     /// max number of types
     num_jtypes = jtypes_count,
-#ifdef _EM64T_
+#ifdef HYX86_64
     iplatf=i64,
 #else
     /// platform-native size for integer (fits into general-purpose register)

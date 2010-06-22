@@ -58,7 +58,7 @@ static const unsigned bp_bytes = word_no(bp_idx)*WORD_SIZE/CHAR_BIT;
 static const unsigned bp_mask  = 1<<bit_no(bp_idx);
 static const int bp_spill_off = ((StackFrame*)NULL)->spill(bp);
 
-#ifdef _IA32_
+#ifdef HYX86
 //
 static AR ebx = virt(RegName_EBX);
 static const unsigned ebx_idx = ar_idx(ebx);
@@ -78,7 +78,7 @@ static const unsigned edi_bytes = word_no(edi_idx)*WORD_SIZE/CHAR_BIT;
 static const unsigned edi_mask  = 1<<bit_no(edi_idx);
 static const int      edi_spill_off = ((StackFrame*)NULL)->spill(edi);
 //
-#endif // _IA32_
+#endif // HYX86
 
 
 /**
@@ -178,7 +178,7 @@ void rt_unwind(JIT_Handle jit, Method_Handle method,
     UNSAFE_REGION_END
 #endif
 
-#if defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86_64) || defined(_IPF_)
     // Common version for all platforms but IA32
     for (unsigned i=0; i<gr_num; i++) {
         AR ar = _gr(i);
@@ -564,7 +564,7 @@ void rt_native2bc(JIT_Handle jit, Method_Handle method, const void * ip,
         if (!tst(map, var_num)) {
             return EXE_ERROR_TYPE_MISMATCH;
         }
-#ifdef _EM64T_
+#ifdef HYX86_64
     case VM_DATA_TYPE_STRING:
         var_ptr_to_64 = (uint64*)value_ptr;
         *var_ptr_to_64 = *(uint64*)(ebp + frame.local(var_num));
@@ -601,7 +601,7 @@ void rt_native2bc(JIT_Handle jit, Method_Handle method, const void * ip,
     case VM_DATA_TYPE_INT64:
     case VM_DATA_TYPE_UINT64:
     case VM_DATA_TYPE_F8:
-#ifdef _EM64T_
+#ifdef HYX86_64
     case VM_DATA_TYPE_ARRAY:
     case VM_DATA_TYPE_CLASS:
     case VM_DATA_TYPE_STRING:

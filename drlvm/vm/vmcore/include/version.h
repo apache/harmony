@@ -49,7 +49,7 @@
 
 #if defined(_IPF_)
 #define VERSION_ARCH "ipf"
-#elif defined(_EM64T_)
+#elif defined(HYX86_64)
 #define VERSION_ARCH "em64t"
 #else
 #define VERSION_ARCH "ia32"

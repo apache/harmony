@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_CODE_SELECTOR_H_
-#define _IA32_CODE_SELECTOR_H_
+#ifndef HYX86CODE_SELECTOR_H_
+#define HYX86CODE_SELECTOR_H_
 
 #include "Stl.h"
 #include "CodeGenIntfc.h"
@@ -233,4 +233,4 @@ private:
 }; //namespace Ia32
 }
 
-#endif // _IA32_CODE_SELECTOR_H_
+#endif // HYX86CODE_SELECTOR_H_

@@ -131,7 +131,7 @@ static void checkManaged2UnmanagedConv(IRManager& irm, Opnd* opnd) {
                 bool res = isUnmanagedFieldPtr(managedOpnd);
                 if (!res) {
                     Log::out()<<"GCMap::checkManaged2UnmanagedConv failure, managedOpnd="<<managedOpnd->getFirstId()<<std::endl;
-#ifdef _IA32_
+#ifdef HYX86
                     // FIXME em64t
 // TODO: Fails with genIdentityHashCode=true
 //                    assert(0);
@@ -188,13 +188,13 @@ void  GCMap::registerGCSafePoint(IRManager& irm, const BitSet& ls, Inst* inst) {
         MPtrPair* pair = GCSafePointsInfo::findPairByMPtrOpnd(pairs, opnd);
         I_32 offset = pair == NULL ? 0 : pair->getOffset();
         bool isObject = offset == 0;
-#ifdef _EM64T_
+#ifdef HYX86_64
         bool isCompressed = (opnd->getType()->tag <= Type::CompressedVTablePtr && opnd->getType()->tag >= Type::CompressedSystemObject);
 #endif
         GCSafePointOpnd* gcOpnd;
         RegName reg = opnd->getRegName();
         if (reg != RegName_Null) {
-#ifdef _EM64T_
+#ifdef HYX86_64
             gcOpnd = new (mm) GCSafePointOpnd(isObject, TRUE, U_32(reg), offset, isCompressed);
 #else
             gcOpnd = new (mm) GCSafePointOpnd(isObject, TRUE, U_32(reg), offset);
@@ -460,7 +460,7 @@ void GCSafePoint::enumerate(GCInterface* gcInterface, const JitFrameContext* con
 #ifdef ENABLE_GC_RT_CHECKS
             GCMap::checkObject(tm, *(void**)valPtrAddr);
 #endif
-#ifdef _EM64T_
+#ifdef HYX86_64
             if(gcOpnd->isCompressed())
                 gcInterface->enumerateCompressedRootReference((U_32*)valPtrAddr);
             else
@@ -487,7 +487,7 @@ POINTER_SIZE_INT GCSafePoint::getOpndSaveAddr(const JitFrameContext* ctx,const S
         addr = (POINTER_SIZE_INT)stackPtr;
     } else { 
         assert(gcOpnd->isOnStack());
-#ifdef _EM64T_
+#ifdef HYX86_64
         addr = ctx->rsp + (POINTER_SIZE_INT)gcOpnd->getDistFromInstESP();
 #else
         addr = ctx->esp + gcOpnd->getDistFromInstESP();
@@ -527,7 +527,7 @@ void RuntimeInterface::getGCRootSet(MethodDesc* methodDesc, GCInterface* gcInter
     U_32 stackInfoSize = (U_32)StackInfo::getByteSize(methodDesc);
     U_8* infoBlock = methodDesc->getInfoBlock();
     U_8* gcBlock = infoBlock + stackInfoSize;
-#ifdef _EM64T_
+#ifdef HYX86_64
     const POINTER_SIZE_INT* gcPointImage = GCMap::findGCSafePointStart((POINTER_SIZE_INT*)gcBlock, *context->p_rip);
 #else
     const POINTER_SIZE_INT* gcPointImage = GCMap::findGCSafePointStart((POINTER_SIZE_INT*)gcBlock, *context->p_eip);
@@ -539,7 +539,7 @@ void RuntimeInterface::getGCRootSet(MethodDesc* methodDesc, GCInterface* gcInter
             //this is a performance filter for empty points 
             // and debug filter for hardware exception point that have no stack info assigned.
             StackInfo stackInfo(mm);
-#ifdef _EM64T_
+#ifdef HYX86_64
             stackInfo.read(methodDesc, *context->p_rip, false);
 #else
             stackInfo.read(methodDesc, *context->p_eip, false);

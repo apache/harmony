@@ -19,8 +19,8 @@
  */
 
 
-#ifndef _IA32_GC_SAFE_POINTS_H_
-#define _IA32_GC_SAFE_POINTS_H_
+#ifndef HYX86GC_SAFE_POINTS_H_
+#define HYX86GC_SAFE_POINTS_H_
 
 #include "Ia32IRManager.h"
 namespace Jitrino

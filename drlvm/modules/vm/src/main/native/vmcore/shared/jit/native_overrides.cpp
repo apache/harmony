@@ -191,7 +191,7 @@ LilCodeStub* nso_array_copy(LilCodeStub* cs, Method_Handle)
 
 // The following override is only for IA32
 
-#ifdef _IA32_
+#ifdef HYX86
 
 #include "encoder.h"
 
@@ -391,7 +391,7 @@ typedef struct
 // Local NSO table for filling up env-local lookup table
 NSOLocalItem local_NSO_table[] = 
 {
-#ifdef _IA32_
+#ifdef HYX86
     {nso_char_array_copy,
 #else
     {nso_array_copy,

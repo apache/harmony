@@ -209,7 +209,7 @@ static bool hasSOEHandlers(IRManager& irm) {
 #define MAX_STACK_FOR_SOE_HANDLERS 0x2000
 
 static void insertSOECheck(IRManager& irm, U_32 maxStackUsedByMethod) {
-#ifdef _EM64T_
+#ifdef HYX86_64
     //SOE checking is not finished on EM64T
     //TODO: work on stack alignment & SOE checkers
     if (true) return; 
@@ -327,7 +327,7 @@ void StackLayouter::createProlog()
     Inst * lastPush = NULL;
     
     // Push callee-save registers onto stack.
-#ifdef _EM64T_
+#ifdef HYX86_64
     for (U_32 reg = RegName_R15; reg >= RegName_RAX; reg--) {
 #else
     for (U_32 reg = RegName_EDI; reg >= RegName_EAX; reg--) {
@@ -421,7 +421,7 @@ void StackLayouter::createEpilog()
                 Inst* newIns = irManager->newInst(Mnemonic_ADD, irManager->getRegOpnd(STACK_REG), irManager->newImmOpnd(irManager->getTypeManager().getInt32Type(), localEnd - localBase));
                 newIns->insertBefore(retInst);
             }
-#ifdef _EM64T_
+#ifdef HYX86_64
             for (U_32 reg = RegName_R15; reg >= RegName_RAX ; reg--) {//pop callee-save registers
 #else
             for (U_32 reg = RegName_EDI; reg >= RegName_EAX ; reg--) {//pop callee-save registers

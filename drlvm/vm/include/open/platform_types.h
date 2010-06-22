@@ -164,7 +164,7 @@ struct Registers {
 
 #else  // !_IPF_
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 
 struct Registers {
     uint64 rsp;
@@ -198,7 +198,7 @@ struct Registers {
 #endif
 }; //Registers
 
-#else // ! _EM64T_
+#else // ! HYX86_64
 
 struct Registers {
     U_32 eax;
@@ -221,7 +221,7 @@ struct Registers {
 #endif
 }; //Registers
 
-#endif // _EM64T_
+#endif // HYX86_64
 
 #endif //!_IPF_
 

@@ -185,7 +185,7 @@ ComplexAddrFormLoader::walkThroughOpnds(SubOpndsTable& table) {
             return;
         } else if(src2->isPlacedIn(OpndKind_Imm)) {
             irManager->resolveRuntimeInfo(src2);
-#ifdef _EM64T_
+#ifdef HYX86_64
             if((src2->getImmValue() > (int64)0x7FFFFFFF) || (src2->getImmValue() < -((int64)0x10000000))) {
                 table.baseOp = table.suspOp;
                 return;

@@ -172,7 +172,7 @@ typedef struct OpenMethodExecutionParams {
         uint64 ar_lc;
     } JitFrameContext; //JitFrameContext
 
-#elif defined _EM64T_
+#elif defined HYX86_64
 
     typedef
     struct JitFrameContext {
@@ -204,7 +204,7 @@ typedef struct OpenMethodExecutionParams {
         Boolean is_ip_past;
     } JitFrameContext;
 
-#else // "_IA32_"
+#else // "HYX86"
 
     typedef
     struct JitFrameContext {
@@ -228,7 +228,7 @@ typedef struct OpenMethodExecutionParams {
         Boolean is_ip_past;
     } JitFrameContext;
 
-#endif // "_IA32_"
+#endif // "HYX86"
 
     // end Frame Contexts for JITs
     ///////////////////////////////////////////////////////

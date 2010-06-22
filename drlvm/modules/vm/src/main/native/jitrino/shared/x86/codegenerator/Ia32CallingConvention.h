@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_CALLING_CONVENTION_H_
-#define _IA32_CALLING_CONVENTION_H_
+#ifndef HYX86CALLING_CONVENTION_H_
+#define HYX86CALLING_CONVENTION_H_
 
 #include "open/types.h"
 #include "Type.h"
@@ -43,7 +43,7 @@
 #define STACK_ALIGN16         (0x00000010)
 
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define STACK_REG RegName_RSP
     #define STACK_ALIGNMENT STACK_ALIGN_HALF16  
 #else
@@ -223,7 +223,7 @@ public:
     virtual void    getOpndInfo(ArgKind kind, U_32 argCount, OpndInfo * infos) const;
 };
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 typedef STDCALLCallingConventionEM64T       STDCALLCallingConvention;
 typedef CDECLCallingConventionEM64T         CDECLCallingConvention;
 typedef ManagedCallingConventionEM64T       ManagedCallingConvention;

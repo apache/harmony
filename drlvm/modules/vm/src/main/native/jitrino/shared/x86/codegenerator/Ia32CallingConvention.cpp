@@ -55,7 +55,7 @@ MultiArrayCallingConvention     CallingConvention_MultiArray;
 // STDCALLCallingConvention
 //========================================================================================
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 #ifdef _WIN64
 const RegName fastCallGPRegs[4] = {RegName_RCX, RegName_RDX, RegName_R8, RegName_R9} ;
 const RegName fastCallFPRegs[4] = {RegName_XMM0,RegName_XMM1,RegName_XMM2,RegName_XMM3};
@@ -65,7 +65,7 @@ const RegName fastCallFPRegs[8] = {RegName_XMM0,RegName_XMM1,RegName_XMM2,RegNam
 #endif
 #endif
 
-#ifdef _IA32_
+#ifdef HYX86
 //______________________________________________________________________________________
 void STDCALLCallingConventionIA32::getOpndInfo(ArgKind kind, U_32 count, OpndInfo * infos) const
 {
@@ -180,7 +180,7 @@ void STDCALLCallingConventionEM64T::getOpndInfo(ArgKind kind, U_32 count, OpndIn
 }
 #endif
 
-#ifdef _IA32_
+#ifdef HYX86
 //______________________________________________________________________________________
 Constraint STDCALLCallingConventionIA32::getCalleeSavedRegs(OpndKind regKind) const
 {
@@ -210,7 +210,7 @@ Constraint STDCALLCallingConventionEM64T::getCalleeSavedRegs(OpndKind regKind) c
 
 
 //______________________________________________________________________________________
-#ifdef _IA32_
+#ifdef HYX86
 void ManagedCallingConventionIA32::getOpndInfo(ArgKind kind, U_32 count, OpndInfo * infos) const
 {
     if (kind == ArgKind_RetArg) {
@@ -235,7 +235,7 @@ void ManagedCallingConventionIA32::getOpndInfo(ArgKind kind, U_32 count, OpndInf
 #else
 #endif
 
-#ifdef _IA32_
+#ifdef HYX86
 #else
 void MultiArrayCallingConventionEM64T::getOpndInfo(ArgKind kind, U_32 count, OpndInfo * infos) const
 {

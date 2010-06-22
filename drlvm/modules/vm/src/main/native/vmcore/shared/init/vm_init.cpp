@@ -369,7 +369,7 @@ static jint populate_jni_nio() {
     }
     
     apr_dso_handle_sym_t gdba, gdbc, ndb;
-#if defined WIN32 && !defined _EM64T_
+#if defined WIN32 && !defined HYX86_64
 #define GET_DIRECT_BUFFER_ADDRESS "_GetDirectBufferAddress@8"
 #define GET_DIRECT_BUFFER_CAPACITY "_GetDirectBufferCapacity@8"
 #define NEW_DIRECT_BYTE_BUFFER "_NewDirectByteBuffer@16"

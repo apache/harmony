@@ -52,7 +52,7 @@ void __stdcall methodEntry(const char * methodName, U_32 argInfoCount, CallingCo
 {
 
     JitFrameContext context;
-#ifdef _EM64T_
+#ifdef HYX86_64
     context.rsp=(POINTER_SIZE_INT)(&methodName+sizeof(POINTER_SIZE_INT)); // must point to the beginning of incoming stack args
 #else
     context.esp=(POINTER_SIZE_INT)(&methodName+sizeof(POINTER_SIZE_INT)); // must point to the beginning of incoming stack args
@@ -72,7 +72,7 @@ void __stdcall methodEntry(const char * methodName, U_32 argInfoCount, CallingCo
         U_8 arg[4*sizeof(U_32)]; 
         for (U_32 j=0; j<info.slotCount; j++){
             if (!info.isReg){
-#ifdef _EM64T_
+#ifdef HYX86_64
                 *(POINTER_SIZE_INT*)(arg+cb)=((POINTER_SIZE_INT*)context.rsp)[info.slots[j]];
 #else
                 *(U_32*)(arg+cb)=((U_32*)context.esp)[info.slots[j]];

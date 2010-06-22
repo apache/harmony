@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_IRMANAGER_H_
-#define _IA32_IRMANAGER_H_
+#ifndef HYX86IRMANAGER_H_
+#define HYX86IRMANAGER_H_
 
 #include "open/types.h"
 #include "Stl.h"

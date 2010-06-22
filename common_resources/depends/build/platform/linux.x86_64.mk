@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 DEFINES += -DLINUX -DLINUX_X86_64 -DHYX86_64 -DIPv6_FUNCTION_SUPPORT
+PLATFORM := -DPOINTER64 -fPIC # TOFIX drlvm hack
 XLIBS = -L/usr/X11R6/lib64 -lX11 -lXft -lXext -lXtst
 OSLIBS += -ldl
 HY_CAN_LINK_DEBUG = yes

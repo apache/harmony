@@ -33,7 +33,7 @@
 
 #include "nogc.h"
 #include "m2n.h"
-#include "../m2n_em64t_internal.h"
+#include "m2n_internal.h"
 #include "exceptions.h"
 #include "exceptions_jit.h"
 

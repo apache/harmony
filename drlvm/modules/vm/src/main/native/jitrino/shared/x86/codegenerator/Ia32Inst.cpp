@@ -905,7 +905,7 @@ void CallingConventionClient::layoutAuxilaryOpnds(Inst::OpndRole role, OpndKind 
 //   class EntryPointPseudoInst
 //=========================================================================================================
 EntryPointPseudoInst::EntryPointPseudoInst(IRManager * irm, int id, const CallingConvention * cc)
-#ifdef _EM64T_
+#ifdef HYX86_64
     : Inst(Mnemonic_NULL, id, Inst::Form_Extended), thisOpnd(0), callingConventionClient(irm->getMemoryManager(), cc)
 #else
     : Inst(Mnemonic_NULL, id, Inst::Form_Extended), callingConventionClient(irm->getMemoryManager(), cc)

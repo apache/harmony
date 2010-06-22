@@ -266,7 +266,7 @@ Val& CodeGen::vstack(unsigned depth, bool toReg)
     //}
     
     if (s.jt() == jobj) {
-#ifdef _EM64T_
+#ifdef HYX86_64
         //TODO: it may be not always necessary to upload to register.
         toReg = true;
 #endif    

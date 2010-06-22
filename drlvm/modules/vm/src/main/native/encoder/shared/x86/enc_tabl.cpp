@@ -28,9 +28,9 @@
 
 
 // need to use EM64T-specifics - new registers, defines from enc_prvt, etc...
-#if !defined(_EM64T_)
+#if !defined(HYX86_64)
     #define UNDEF_EM64T
-    #define _EM64T_
+    #define HYX86_64
 #endif
 
 #define USE_ENCODER_DEFINES
@@ -38,7 +38,7 @@
 #include "enc_defs.h"
 
 #ifdef UNDEF_EM64T
-    #undef _EM64T_
+    #undef HYX86_64
 #endif
 
 #if !defined(_HAVE_MMX_)
@@ -942,7 +942,7 @@ END_MNEMONIC()
 
 BEGIN_MNEMONIC(IDIV, MF_AFFECTS_FLAGS, DU_DU_U)
 BEGIN_OPCODES()
-#if !defined(_EM64T_)
+#if !defined(HYX86_64)
     {OpcodeInfo::all,   {0xF6, _7},         {AH, AL, r_m8},     DU_DU_U },
     {OpcodeInfo::all,   {Size16, 0xF7, _7}, {DX, AX, r_m16},    DU_DU_U },
 #endif
@@ -1698,7 +1698,7 @@ void EncoderBase::buildMnemonicDesc(const MnemonicInfo * minfo)
             break;
         }
         odesc.last = 0;
-#ifdef _EM64T_
+#ifdef HYX86_64
         if (oinfo.platf == OpcodeInfo::ia32) { continue; }
         if (oinfo.platf == OpcodeInfo::decoder32) { continue; }
 #else

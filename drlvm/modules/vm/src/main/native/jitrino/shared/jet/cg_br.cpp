@@ -221,7 +221,7 @@ void Compiler::gen_switch(const JInst & jinst)
     
     AR gr_tabl = valloc(jobj);
     movp(gr_tabl, DATA_SWITCH_TABLE | m_curr_inst->pc, m_bbinfo->start);
-#ifdef _EM64T_
+#ifdef HYX86_64
     // On EM64T, we operate with I_32 value in a register, but the 
     // register will be used as 64 bit in address form - have to extend
     sx(Opnd(i64, val.reg()), Opnd(i32, val.reg()));

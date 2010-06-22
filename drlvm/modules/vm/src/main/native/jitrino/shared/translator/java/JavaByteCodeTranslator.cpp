@@ -67,7 +67,7 @@ static Type* convertVMMagicType2HIR(TypeManager& tm, const char* name) {
         || matchType(name, "org/vmmagic/unboxed/AddressArray") 
         || matchType(name, "org/vmmagic/unboxed/ObjectReferenceArray")) 
     {
-#ifdef _EM64T_
+#ifdef HYX86_64
         return tm.getArrayType(tm.getInt64Type(), false);
 #else 
         return tm.getArrayType(tm.getInt32Type(), false);
@@ -740,7 +740,7 @@ JavaByteCodeTranslator::getstatic(U_32 constPoolIndex) {
                     case Type::Double:  constVal=irBuilder.genLdConstant(*(double*)fieldAddr);break;
                     case Type::Boolean: constVal=irBuilder.genLdConstant(*(bool*)fieldAddr);break;
                     case Type::UnmanagedPtr:  assert(fieldIsMagic); 
-#ifdef _IA32_
+#ifdef HYX86
                             constVal=irBuilder.genLdConstant(*(I_32*)fieldAddr);
 #else
                             assert(sizeof(void*)==8);
@@ -2757,7 +2757,7 @@ bool JavaByteCodeTranslator::genVMMagic(const char* mname, U_32 numArgs, Opnd **
     else if (!strcmp(mname, "nullReference")) { loadConst = true; theConst =  0;}
     if (loadConst) {
         ConstInst::ConstValue v;
-#ifdef _EM64T_
+#ifdef HYX86_64
         v.i8 = theConst;
 #else
         v.i4 = theConst;        

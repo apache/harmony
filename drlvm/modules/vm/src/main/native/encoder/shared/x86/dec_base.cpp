@@ -172,7 +172,7 @@ unsigned DecoderBase::decode(const void * addr, Inst * pinst)
     return tmp.size;
 }
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 #define EXTEND_REG(reg, flag)                        \
     ((NULL == rex || 0 == rex->flag) ? reg : (reg + 8))
 #else
@@ -301,7 +301,7 @@ bool DecoderBase::decode_aux(const EncoderBase::OpcodeDesc& odesc, unsigned aux,
         *pbuf += 4;
         }        
         return true;
-#ifdef _EM64T_
+#ifdef HYX86_64
     case OpcodeByteKind_io:
         {
         long long int ival = *(long long int*)*pbuf;
@@ -338,12 +338,12 @@ bool DecoderBase::try_mn(Mnemonic mn, const unsigned char ** pbuf, Inst * pinst)
         char *opcode_ptr = const_cast<char *>(odesc.opcode);
         int opcode_len = odesc.opcode_len;
         Rex *prex = NULL;
-#ifdef _EM64T_
+#ifdef HYX86_64
         Rex rex;
 #endif
 
         *pbuf = save_pbuf;
-#ifdef _EM64T_
+#ifdef HYX86_64
         // Match REX prefixes
         unsigned char rex_byte = (*pbuf)[0];
         if ((rex_byte & 0xf0) == 0x40)

@@ -169,7 +169,7 @@ void Compiler::gen_prolog(void) {
         push(idx);
     }
     //
-#ifdef _EM64T_
+#ifdef HYX86_64
     mov(fill, (uint_ptr)0xDEADBEEFDEADBEEF);
 #else
     mov(fill, 0xDEADBEEF);
@@ -694,7 +694,7 @@ void Compiler::gen_return(const CallSig& cs)
         }
     }
     else if (is_big(retType)) {
-#ifdef _IA32_
+#ifdef HYX86
         vswap(0);
         vswap(1);
         AR out_reg1 = cs.ret_reg(1); 
@@ -949,7 +949,7 @@ void CodeGen::gen_invoke(JavaByteCodes opcod, Method_Handle meth, unsigned short
             gen_check_null(*thiz, false);
 
         void * paddr = method_get_indirect_address(meth);
-#ifdef _IA32_
+#ifdef HYX86
         Opnd ptr(jobj, ar_x, paddr);
 #else
         AR gr = valloc(jobj);
@@ -1020,7 +1020,7 @@ void CodeGen::gen_save_ret(const CallSig& cs)
         zx2(Opnd(i32, ar), Opnd(jt,ar));
         jt = i32;
     }
-#ifdef _IA32_
+#ifdef HYX86
     if(ar == fp0) {
         // Cant use vstack_off right here, as the item is not yet pushed.
         unsigned slot = m_jframe->size();

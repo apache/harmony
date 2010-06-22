@@ -36,7 +36,7 @@ extern "C"
 #endif /* __cplusplus */
 fast_tls_func* get_tls_helper(hythread_tls_key_t key);
 
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
 
 #include "encoder.h"
 
@@ -53,6 +53,6 @@ char* gen_monitorexit_slow_path_helper(char *ss, const R_Opnd & input_param1);
 }
 #endif
 
-#endif /* (defined _IA32_) || (defined _EM64T_) */
+#endif /* (defined HYX86) || (defined HYX86_64) */
 
 #endif  /* OPEN_THREAD_NATIVE_H */

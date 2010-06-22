@@ -114,7 +114,7 @@ ENCODER_DECLARE_EXPORT char * push(char * stream, const RM_Opnd & rm, Opnd_Size 
 
 ENCODER_DECLARE_EXPORT char * push(char * stream, const Imm_Opnd & imm) {
     EncoderBase::Operands args;
-#ifdef _EM64T_
+#ifdef HYX86_64
     add_imm(args, imm);
 #else
     // we need this workaround to be compatible with the former ia32 encoder implementation
@@ -289,7 +289,7 @@ ENCODER_DECLARE_EXPORT char * imul(char * stream, const R_Opnd & r, const RM_Opn
 // divide instructions: div, idiv
 ENCODER_DECLARE_EXPORT char * idiv(char * stream, const RM_Opnd & rm, Opnd_Size sz) {
     EncoderBase::Operands args;
-#ifdef _EM64T_
+#ifdef HYX86_64
     add_r(args, rdx_opnd, sz);
     add_r(args, rax_opnd, sz);
 #else
@@ -602,7 +602,7 @@ ENCODER_DECLARE_EXPORT char * jump(char * stream, const RM_Opnd & rm, Opnd_Size 
  *       destroyed).
  */
 ENCODER_DECLARE_EXPORT char * jump(char * stream, char * target) {
-#ifdef _EM64T_
+#ifdef HYX86_64
     int64 offset = target - stream;
     // sub 2 bytes for the short version
     offset -= 2;
@@ -698,7 +698,7 @@ ENCODER_DECLARE_EXPORT char * call(char * stream, const RM_Opnd & rm,
 */
 ENCODER_DECLARE_EXPORT char * call(char * stream, const char * target)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     int64 offset = target - stream;
     if (fit32(offset)) {
         offset -= 5; // sub 5 bytes for this instruction

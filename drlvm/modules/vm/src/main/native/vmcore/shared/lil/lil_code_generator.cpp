@@ -26,9 +26,9 @@
 
 LilCodeGenerator* LilCodeGenerator::get_platform()
 {
-#ifdef _IA32_
+#ifdef HYX86
     static LilCodeGeneratorIa32 cg;
-#elif _EM64T_
+#elif HYX86_64
     static LilCodeGeneratorEM64T cg;
 #elif _IPF_
     static LilCodeGeneratorIpf cg;

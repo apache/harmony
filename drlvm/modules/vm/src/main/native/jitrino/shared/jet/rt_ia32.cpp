@@ -31,7 +31,7 @@ namespace Jet {
 
 void *** devirt(AR gr, const JitFrameContext * jfc)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     if (gr==gr_x)   return (void***)&jfc->p_rip;
     if (gr == sp)   return (void***)&jfc->rsp;
     if (gr == bp)   return (void***)&jfc->p_rbp;

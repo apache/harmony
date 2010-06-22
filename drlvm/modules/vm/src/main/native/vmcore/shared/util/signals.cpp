@@ -29,9 +29,9 @@
 
 #ifdef PLATFORM_POSIX
 
-#if defined(_EM64T_)
+#if defined(HYX86_64)
 #define RESTORE_STACK_SIZE 0x0400
-#elif defined (_IA32_)
+#elif defined (HYX86)
 #define RESTORE_STACK_SIZE 0x0100
 #else // IPF
 #define RESTORE_STACK_SIZE 0x0200

@@ -337,7 +337,7 @@ void RegAlloc2::runImpl()
     assert(parameters);
     if (strcmp(parameters, "ALL_GP") == 0)
 
-#ifdef _EM64T_
+#ifdef HYX86_64
         constrs = Constraint(RegName_R8)
                  |Constraint(RegName_RAX)
                  |Constraint(RegName_RDX)

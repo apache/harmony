@@ -113,7 +113,7 @@ DECLARE_HELPER_INLINER(Float_intBitsToFloat_x_I_x_F);
 void APIMagicsHandlerSession::runImpl() {
     CompilationContext* cc = getCompilationContext();
     MemoryManager tmpMM("Inline API methods");
-#ifndef _EM64T_
+#ifndef HYX86_64
     bool mathAsMagic = getBoolArg("magic_math", true);
 #endif
     //finding all api magic calls
@@ -137,7 +137,7 @@ void APIMagicsHandlerSession::runImpl() {
                         continue; 
                     };
                     if( ri->getKind() == Opnd::RuntimeInfo::Kind_MethodDirectAddr ){
-#ifndef _EM64T_
+#ifndef HYX86_64
                         MethodDesc * md = (MethodDesc*)ri->getValue(0);
                         const char* className = md->getParentType()->getName();
                         const char* methodName = md->getName();
@@ -362,7 +362,7 @@ void Integer_numberOfTrailingZeros_Handler_x_I_x_I::run() {
 }
 
 void Long_numberOfLeadingZeros_Handler_x_J_x_I::run() {
-#ifdef _EM64T_
+#ifdef HYX86_64
     return;
 #else
 //  bsr r1,hi
@@ -419,7 +419,7 @@ void Long_numberOfLeadingZeros_Handler_x_J_x_I::run() {
 }
 
 void Long_numberOfTrailingZeros_Handler_x_J_x_I::run() {
-#ifdef _EM64T_
+#ifdef HYX86_64
     return;
 #else
 
@@ -495,7 +495,7 @@ void System_arraycopyDirect_Handler::run()
 
     callInst->unlink();
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName counterRegName = RegName_RCX;
     RegName srcAddrRegName = RegName_RSI;
     RegName dstAddrRegName = RegName_RDI;
@@ -587,7 +587,7 @@ void String_compareTo_Handler_x_String_x_I::run() {
     Opnd* valForCounter = getCallSrc(callInst, 6);
     Opnd* res = getCallDst(callInst);
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName counterRegName = RegName_RCX;
     RegName thisAddrRegName = RegName_RSI;
     RegName trgtAddrRegName = RegName_RDI;
@@ -681,7 +681,7 @@ void String_regionMatches_Handler_x_I_x_String_x_I_x_I_x_Z::run() {
     Opnd* valForCounter = getCallSrc(callInst, 4);
     Opnd* res = getCallDst(callInst);
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName counterRegName = RegName_RCX;
     RegName thisAddrRegName = RegName_RSI;
     RegName trgtAddrRegName = RegName_RDI;
@@ -752,7 +752,7 @@ void String_indexOf_Handler_x_String_x_I_x_I::run() {
     Opnd* start = getCallSrc(callInst, 6);
     Opnd* res = getCallDst(callInst);
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     Type*   counterType = irm->getTypeManager().getInt64Type();
     Constraint regConstr(OpndKind_GPReg, OpndSize_64);
 #else
@@ -938,7 +938,7 @@ void  APIMagicHandler::convertIntToInt(Opnd* dst, Opnd* src, Node* node)
                                   dstType == irm->getTypeManager().getIntPtrType()));
 
     if(srcType != dstType) {
-#ifdef _EM64T_
+#ifdef HYX86_64
         node->appendInst(irm->newInstEx(Mnemonic_MOVZX, 1, dst, src));
 #else
         node->appendInst(irm->newCopyPseudoInst(Mnemonic_MOV, dst, src));
@@ -966,7 +966,7 @@ Opnd*  APIMagicHandler::addElemIndexWithLEA(Opnd* array, Opnd* index, RegName ds
     }
 
 //    TypeManager& typeManager = typeManager;
-#ifdef _EM64T_
+#ifdef HYX86_64
     Type * offType = typeManager.getInt64Type();
 #else
     Type * offType = typeManager.getInt32Type();

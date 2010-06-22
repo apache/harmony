@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_CONSTRAINT_H_
-#define _IA32_CONSTRAINT_H_
+#ifndef HYX86CONSTRAINT_H_
+#define HYX86CONSTRAINT_H_
 
 #include "open/types.h"
 #include "Ia32IRConstants.h"

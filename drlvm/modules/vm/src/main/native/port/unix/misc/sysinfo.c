@@ -50,7 +50,7 @@ APR_DECLARE(apr_status_t) port_OS_name_version(char** os_name, char** os_ver,
 APR_DECLARE(const char *) port_CPU_architecture(void){
 #if defined(_IPF_)
 	return "ia64";
-#elif defined (_EM64T_)
+#elif defined (HYX86_64)
     return "x86_64";
 #else
     return "x86";

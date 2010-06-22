@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_CODE_GENERATOR_
-#define _IA32_CODE_GENERATOR_
+#ifndef HYX86CODE_GENERATOR_
+#define HYX86CODE_GENERATOR_
 
 #include "CodeGenIntfc.h"
 #include "Ia32IRManager.h"
@@ -55,4 +55,4 @@ public:
 
 
 }} // namespace Ia32
-#endif // _IA32_CODE_GENERATOR
+#endif // HYX86CODE_GENERATOR

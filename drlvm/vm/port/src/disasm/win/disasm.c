@@ -30,7 +30,7 @@
 #include "port_disasm.h"
 
 // this is mostly imperical data 
-#if defined(_IA32_)
+#if defined(HYX86)
     #define ADDR_SIZE       16
     #define MNEMONIC_SIZE   15
     #define BYTES_PER_LINE  2
@@ -60,7 +60,7 @@ struct port_disassembler_t {
     apr_size_t num_bytes_used;
 };
 
-#if defined(_IA32_)
+#if defined(HYX86)
 
 /*    General printing routines    */
 
@@ -148,12 +148,12 @@ static void disasm_print(port_disassembler_t * disassembler,
 #endif
     }
 }
-#endif // defined(_IA32_)
+#endif // defined(HYX86)
 
 /*    Public Interface    */
 
 APR_DECLARE(apr_status_t) port_disasm_initialize() {
-#if defined(_IA32_)
+#if defined(HYX86)
     return APR_SUCCESS;
 #else
     return APR_ENOTIMPL;
@@ -162,7 +162,7 @@ APR_DECLARE(apr_status_t) port_disasm_initialize() {
 
 APR_DECLARE(apr_status_t) port_disassembler_create(port_disassembler_t ** disassembler,
                                                    apr_pool_t * pool) {
-#if defined(_IA32_)
+#if defined(HYX86)
     apr_status_t status;
     port_disasm_info_t info = {1, 0, 1};
     
@@ -193,7 +193,7 @@ APR_DECLARE(apr_status_t) port_disassembler_create(port_disassembler_t ** disass
 APR_DECLARE(apr_status_t) port_disasm_set_info(port_disassembler_t * disassembler,
                                                const port_disasm_info_t new_info,
                                                port_disasm_info_t * old_info) {
-#if defined(_IA32_)
+#if defined(HYX86)
     if (old_info != NULL) {
         *old_info = disassembler->port_info;
     }
@@ -218,7 +218,7 @@ APR_DECLARE(apr_status_t) port_disasm(port_disassembler_t * disassembler,
                                       const char * code, 
                                       unsigned int len,
                                       char ** disasm_code) {
-#if defined(_IA32_)    
+#if defined(HYX86)    
     // check if nothing should be printed
     if (disassembler->line_size == 0) {
         *disasm_code = NULL;
@@ -255,7 +255,7 @@ APR_DECLARE(apr_status_t) port_disasm_to_file(port_disassembler_t * disassembler
                                               const char * code,
                                               unsigned int len,
                                               apr_file_t * thefile) {
-#if defined(_IA32_)
+#if defined(HYX86)
     // check if nothing should be printed
     if (disassembler->line_size == 0) {
         return APR_SUCCESS;

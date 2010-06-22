@@ -854,7 +854,7 @@ Opcode_LDIV(StackFrame& frame) {
     arg1 = frame.stack.getLong(2);
     frame.stack.pop(2);
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     if (arg1.i64 == -arg1.i64) {
         if (arg0.i64 == -1) {
             res.i64 = arg1.i64;
@@ -878,7 +878,7 @@ Opcode_LREM(StackFrame& frame) {
     }
     arg1 = frame.stack.getLong(2);
     frame.stack.pop(2);
-#ifdef _EM64T_
+#ifdef HYX86_64
     if (arg1.i64 == -arg1.i64) {
         if (arg0.i64 == -1) {
             res.i64 = 0l;

@@ -19,8 +19,8 @@
 * @author Intel, Vitaly N. Chaiko
 */
 
-#ifndef _IA32_BC_MAP_H_
-#define _IA32_BC_MAP_H_
+#ifndef HYX86BC_MAP_H_
+#define HYX86BC_MAP_H_
 
 #include "Stl.h"
 #include "MemoryManager.h"
@@ -105,4 +105,4 @@ private:
 
 }} //namespace
 
-#endif /* _IA32_BC_MAP_H_ */
+#endif /* HYX86BC_MAP_H_ */

@@ -42,7 +42,7 @@ enum OpcodeByteKind {
     OpcodeByteKind_ib                       = 0x0400,
     OpcodeByteKind_iw                       = 0x0500,
     OpcodeByteKind_id                       = 0x0600,
-#ifdef _EM64T_
+#ifdef HYX86_64
     OpcodeByteKind_io                       = 0x0700,
 #endif
     OpcodeByteKind_cb                       = 0x0800,
@@ -55,7 +55,7 @@ enum OpcodeByteKind {
     OpcodeByteKind_rb                       = 0x0E00,
     OpcodeByteKind_rw                       = 0x0F00,
     OpcodeByteKind_rd                       = 0x1000,
-#ifdef _EM64T_
+#ifdef HYX86_64
     OpcodeByteKind_ro                       = 0x1100,
     //OpcodeByteKind_REX                    = 0x1200,
     OpcodeByteKind_REX_W                    = 0x1300,
@@ -139,36 +139,36 @@ enum OpcodeByteKind {
 #define AH          {OpndKind_GPReg, OpndSize_8, RegName_AH}
 #define AX          {OpndKind_GPReg, OpndSize_16, RegName_AX}
 #define EAX         {OpndKind_GPReg, OpndSize_32, RegName_EAX}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define RAX     {OpndKind_GPReg, OpndSize_64, RegName_RAX }
 #endif
 
 #define CL          {OpndKind_GPReg, OpndSize_8, RegName_CL}
 #define ECX         {OpndKind_GPReg, OpndSize_32, RegName_ECX}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define RCX         {OpndKind_GPReg, OpndSize_64, RegName_RCX}
 #endif
 
 #define DX          {OpndKind_GPReg, OpndSize_16, RegName_DX}
 #define EDX         {OpndKind_GPReg, OpndSize_32, RegName_EDX}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define RDX     { OpndKind_GPReg, OpndSize_64, RegName_RDX }
 #endif
 
 #define ESI         {OpndKind_GPReg, OpndSize_32, RegName_ESI}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define RSI     { OpndKind_GPReg, OpndSize_64, RegName_RSI }
 #endif
 
 #define EDI         {OpndKind_GPReg, OpndSize_32, RegName_EDI}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define RDI     { OpndKind_GPReg, OpndSize_64, RegName_RDI }
 #endif
 
 #define r8          {OpndKind_GPReg, OpndSize_8, RegName_Null}
 #define r16         {OpndKind_GPReg, OpndSize_16, RegName_Null}
 #define r32         {OpndKind_GPReg, OpndSize_32, RegName_Null}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define r64     { OpndKind_GPReg, OpndSize_64, RegName_Null }
 #endif
 
@@ -183,14 +183,14 @@ enum OpcodeByteKind {
 #define m16         {OpndKind_Mem, OpndSize_16, RegName_Null}
 #define m32         {OpndKind_Mem, OpndSize_32, RegName_Null}
 #define m64         {OpndKind_Mem, OpndSize_64, RegName_Null}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define r_m64   { (OpndKind)(OpndKind_GPReg|OpndKind_Mem),      OpndSize_64, RegName_Null }
 #endif
 
 #define imm8        {OpndKind_Imm, OpndSize_8, RegName_Null}
 #define imm16       {OpndKind_Imm, OpndSize_16, RegName_Null}
 #define imm32       {OpndKind_Imm, OpndSize_32, RegName_Null}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define imm64   {OpndKind_Imm, OpndSize_64, RegName_Null }
 #endif
 
@@ -199,7 +199,7 @@ enum OpcodeByteKind {
 #define moff8        {OpndKind_Imm, OpndSize_32, RegName_Null}
 #define moff16       {OpndKind_Imm, OpndSize_32, RegName_Null}
 #define moff32       {OpndKind_Imm, OpndSize_32, RegName_Null}
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define moff64       {OpndKind_Imm, OpndSize_64, RegName_Null}
 #endif
 
@@ -224,7 +224,7 @@ enum OpcodeByteKind {
 #define fp32        {OpndKind_FPReg, OpndSize_32, RegName_Null}
 #define fp64        {OpndKind_FPReg, OpndSize_64, RegName_Null}
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define io      OpcodeByteKind_io
     #define REX_W   OpcodeByteKind_REX_W
 

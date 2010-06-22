@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_INTERNAL_TRACE_H_
-#define _IA32_INTERNAL_TRACE_H_
+#ifndef HYX86INTERNAL_TRACE_H_
+#define HYX86INTERNAL_TRACE_H_
 
 #include "Ia32IRManager.h"
 namespace Jitrino

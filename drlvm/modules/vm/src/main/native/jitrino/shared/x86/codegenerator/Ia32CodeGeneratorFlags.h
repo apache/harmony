@@ -18,8 +18,8 @@
 * @author Vyacheslav P. Shakin
 */
 
-#ifndef _IA32_CODE_GENERATORFLAGS_
-#define _IA32_CODE_GENERATORFLAGS_
+#ifndef HYX86CODE_GENERATORFLAGS_
+#define HYX86CODE_GENERATORFLAGS_
 
 namespace Jitrino
 {

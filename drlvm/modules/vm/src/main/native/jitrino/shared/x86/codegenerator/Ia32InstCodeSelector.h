@@ -18,8 +18,8 @@
  * @author Intel, Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_INST_SELECTOR_H
-#define _IA32_INST_SELECTOR_H
+#ifndef HYX86INST_SELECTOR_H
+#define HYX86INST_SELECTOR_H
 
 #include "CodeGenIntfc.h"
 #include "Ia32CodeSelector.h"
@@ -454,4 +454,4 @@ private:
 
 }}; // namespace Ia32
 
-#endif // _IA32_INST_SELECTOR_h
+#endif // HYX86INST_SELECTOR_h

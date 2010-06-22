@@ -55,7 +55,7 @@
 #endif
     
     #define cdecl_       __attribute__ ((__cdecl__))
-#ifdef _EM64T_
+#ifdef HYX86_64
    #define stdcall__
 #else
     #define stdcall__    __attribute__ ((__stdcall__))

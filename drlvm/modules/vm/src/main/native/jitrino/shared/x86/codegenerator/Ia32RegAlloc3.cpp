@@ -375,7 +375,7 @@ void RegAlloc3::Registers::parse (const char* params)
 {
     if (params == 0 || strcmp(params, "ALL") == 0)
     {
-#ifdef _EM64T_
+#ifdef HYX86_64
         push_back(Constraint(RegName_RAX)
                  |Constraint(RegName_RCX)
                  |Constraint(RegName_RDX)
@@ -1234,7 +1234,7 @@ bool RegAlloc3::assignRegs ()
 }
 
 RegAlloc3::RegMask RegAlloc3::occupiedReg (OpndSize tgtSize, OpndSize adjSize, RegAlloc3::RegMask adjMask) {
-#if !defined(_EM64T_)    
+#if !defined(HYX86_64)    
     if (!((tgtSize != adjSize) && ((tgtSize == OpndSize_8) || (adjSize == OpndSize_8))))
 #endif
         return adjMask;

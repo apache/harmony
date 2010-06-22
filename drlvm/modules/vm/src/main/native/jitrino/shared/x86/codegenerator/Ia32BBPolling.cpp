@@ -261,7 +261,7 @@ BBPolling::getOrCreateTLSBaseReg(Edge* e)
 
     Type* tlsBaseType = irManager.getTypeManager().getUnmanagedPtrType(irManager.getTypeManager().getIntPtrType());
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     tlsBaseReg = irManager.newOpnd(tlsBaseType, Constraint(OpndKind_GPReg));
 #else
     tlsBaseReg = irManager.newOpnd(tlsBaseType, Constraint(RegName_EAX)|

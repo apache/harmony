@@ -22,7 +22,7 @@
  * @brief Simple interface for generating processor instructions.
  *
  * The interface works for both IA32 and EM64T. By default, only IA32 
- * capabilities are presented. To enable EM64T feature, the _EM64T_ macro 
+ * capabilities are presented. To enable EM64T feature, the HYX86_64 macro 
  * must be defined (and, of course, a proper library version to be used).
  * 
  * The interface is based on the original ia32.h encoder interface,
@@ -40,7 +40,7 @@
 #include "enc_base.h"
 #include "open/types.h"
 
-#ifdef _EM64T_ 
+#ifdef HYX86_64 
 // size of general-purpose value on the stack in bytes
 #define GR_STACK_SIZE 8
 // size of floating-point value on the stack in bytes
@@ -75,7 +75,7 @@ const int MAX_FR = 0;
 #endif
 
 enum Reg_No {
-#ifdef _EM64T_
+#ifdef HYX86_64
     rax_reg = 0,rbx_reg,    rcx_reg,    rdx_reg,
     rdi_reg,    rsi_reg,    rsp_reg,    rbp_reg,
     r8_reg,     r9_reg,     r10_reg,    r11_reg,
@@ -85,7 +85,7 @@ enum Reg_No {
     xmm8_reg,   xmm9_reg,   xmm10_reg,  xmm11_reg,
     xmm12_reg,  xmm13_reg,  xmm14_reg,  xmm15_reg,
 
-#else   // !defined(_EM64T_)
+#else   // !defined(HYX86_64)
 
     eax_reg = 0,ebx_reg,    ecx_reg,    edx_reg,
     edi_reg,    esi_reg,    esp_reg,    ebp_reg,        
@@ -105,7 +105,7 @@ enum Opnd_Size {
     size_32,
     size_64,
     n_size,
-#ifdef _EM64T_
+#ifdef HYX86_64
     size_platf = size_64
 #else
     size_platf = size_32
@@ -217,7 +217,7 @@ class Imm_Opnd: public Opnd {
 
 protected:
     union {
-#ifdef _EM64T_
+#ifdef HYX86_64
         int64           value;
         unsigned char   bytes[8];
 #else
@@ -238,7 +238,7 @@ public:
     }
     Imm_Opnd(const Imm_Opnd& that): Opnd(Imm), value(that.value), size(that.size) {};
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     Imm_Opnd(Opnd_Size sz, int64 val): Opnd(Imm), value(val), size(sz) {
 #ifndef NDEBUG
         switch (size) {
@@ -392,7 +392,7 @@ private:
 //
 // operand structures for ia32 registers
 //
-#ifdef _EM64T_
+#ifdef HYX86_64
 
 extern R_Opnd rax_opnd;
 extern R_Opnd rcx_opnd;
@@ -431,7 +431,7 @@ extern R_Opnd ebp_opnd;
 extern R_Opnd esi_opnd;
 extern R_Opnd edi_opnd;
 
-#endif // _EM64T_
+#endif // HYX86_64
 
 extern XMM_Opnd xmm0_opnd;
 extern XMM_Opnd xmm1_opnd;

@@ -27,7 +27,7 @@
 #include "jit_intf_cpp.h"
 #include "encoder.h"
 #include "m2n.h"
-#include "m2n_em64t_internal.h"
+#include "m2n_internal.h"
 #include "nogc.h"
 #include "interpreter.h" // for ASSERT_NO_INTERPRETER
 #include "cci.h"

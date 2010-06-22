@@ -19,8 +19,8 @@
  * @author Evgueni Brevnov
  */  
 
-#ifndef _M2N_EM64T_INTERNAL_H_
-#define _M2N_EM64T_INTERNAL_H_
+#ifndef _M2NHYX86_64INTERNAL_H_
+#define _M2NHYX86_64INTERNAL_H_
 
 // This file describes the internal EM64T interface of m2n frames.
 // It can be used by stubs to generate code to push and pop m2n frames, to update object handles fields, and 
@@ -129,4 +129,4 @@ unsigned m2n_pop_m2n_size(bool handles, unsigned num_callee_saves, unsigned pres
 // returns top of the specified frame on the stack (it should point to return ip)
 void * m2n_get_frame_base(M2nFrame *);
 
-#endif // _M2N_EM64T_INTERNAL_H_
+#endif // _M2NHYX86_64INTERNAL_H_

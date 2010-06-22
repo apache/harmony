@@ -18,8 +18,8 @@
  * @author Intel, Mikhail Y. Fursov
  */
 
-#ifndef _IA32_CODE_LAYOUT
-#define _IA32_CODE_LAYOUT
+#ifndef HYX86CODE_LAYOUT
+#define HYX86CODE_LAYOUT
 
 
 #include "Ia32IRManager.h"

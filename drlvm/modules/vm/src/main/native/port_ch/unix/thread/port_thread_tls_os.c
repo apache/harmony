@@ -34,11 +34,11 @@ static pthread_mutex_t g_shared_data_mutex = PTHREAD_MUTEX_INITIALIZER;
 static port_shared_data_t* g_port_shared_data = NULL;
 static port_shared_data_t g_port_shared_data_struct;
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 #define MEM_PROTECT_SIZE 0x400
 #elif defined (_IPF_)
 #define MEM_PROTECT_SIZE 0
-#else /* _IA32_ */
+#else /* HYX86 */
 #define MEM_PROTECT_SIZE 0x100
 #endif
 

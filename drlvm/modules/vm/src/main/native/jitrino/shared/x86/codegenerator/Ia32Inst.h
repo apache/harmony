@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_INST_H_
-#define _IA32_INST_H_
+#ifndef HYX86INST_H_
+#define HYX86INST_H_
 
 #include "open/types.h"
 #include "Stl.h"
@@ -1306,7 +1306,7 @@ public:
 
     virtual bool hasSideEffect()const { return true; }
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     Opnd * thisOpnd;
 #endif
     //--------------------------------------------------------------------

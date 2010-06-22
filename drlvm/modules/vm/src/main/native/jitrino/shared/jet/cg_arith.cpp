@@ -247,7 +247,7 @@ bool CodeGen::gen_a_generic(JavaByteCodes op, jtype jt)
     const Val& v2 = m_jframe->dip(0);
 /*    if (false )v2.
         
-#ifdef _IA32_
+#ifdef HYX86
         // on IA32 can use address in a displacement
         alu(to_alu(op), v1, ar_x, (int)v2.addr());
 #else

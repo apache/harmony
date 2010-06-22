@@ -19,8 +19,8 @@
  */  
 
 
-#ifndef _LIL_CODE_GENERATOR_IA32_
-#define _LIL_CODE_GENERATOR_IA32_
+#ifndef _LIL_CODE_GENERATORHYX86
+#define _LIL_CODE_GENERATORHYX86
 
 #include "lil.h"
 #include "lil_code_generator.h"
@@ -34,4 +34,4 @@ class LilCodeGeneratorIa32 : public LilCodeGenerator {
     NativeCodePtr compile_main(LilCodeStub* , size_t*, PoolManager*);
 };
 
-#endif // _LIL_CODE_GENERATOR_IA32_
+#endif // _LIL_CODE_GENERATORHYX86

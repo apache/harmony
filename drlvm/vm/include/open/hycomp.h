@@ -78,7 +78,7 @@
  * </ul>
  */
 #if defined(LINUX) || defined(FREEBSD)
-#if defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86_64) || defined(_IPF_)
 typedef long int I_64;
 typedef unsigned long int U_64;
 #else

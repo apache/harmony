@@ -26,7 +26,7 @@
 #include "enc_ia32.h"
 #include "trace.h"
 
-#ifdef _IA32_
+#ifdef HYX86
 #include "enc_prvt.h"
 #endif
 
@@ -59,10 +59,10 @@ static OpndSize to_size(jtype jt)
 static const RegName reg_map[] = {
     RegName_EAX, RegName_EBX, RegName_ECX, RegName_EDX, 
     RegName_ESI, RegName_EDI, 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_R8D, RegName_R9D, RegName_R10D, RegName_R11D, 
     RegName_R12D, RegName_R13D, RegName_R14D, RegName_R15D, 
-#endif //_EM64T_
+#endif //HYX86_64
     RegName_EBP,  RegName_ESP
 };
 
@@ -83,7 +83,7 @@ RegName devirt(AR ar, jtype jt)
             assert(idx<COUNTOF(reg_map));
             reg = reg_map[idx];
         
-#if !defined(_EM64T_) && defined(_DEBUG)
+#if !defined(HYX86_64) && defined(_DEBUG)
             // On IA32 can not encode the lower 8 bits of the following regs
             if (equals(reg, RegName_EBP) || equals(reg, RegName_ESI) ||
                 equals(reg, RegName_EDI) || equals(reg, RegName_ESP)) {
@@ -92,7 +92,7 @@ RegName devirt(AR ar, jtype jt)
 #endif
             OpndSize sz;
             if (jt == jvoid) {
-#ifdef _EM64T_
+#ifdef HYX86_64
                 sz = OpndSize_64;
 #else
                 sz = OpndSize_32;
@@ -199,7 +199,7 @@ static void add_args_same_size(EncoderBase::Operands& args,
 }
 
 AR get_cconv_fr(unsigned i, unsigned pos_in_args) {
-#ifdef _EM64T_
+#ifdef HYX86_64
 #ifdef _WIN64
     bool compact = false;
 #else
@@ -223,7 +223,7 @@ AR get_cconv_fr(unsigned i, unsigned pos_in_args) {
 }
 
 AR get_cconv_gr(unsigned i, unsigned pos_in_args) {
-#ifdef _EM64T_
+#ifdef HYX86_64
 #ifdef _WIN64
     bool compact = false;
 	static const AR grs[] = {
@@ -305,7 +305,7 @@ static bool is_callee_save(RegName reg)
     assert(getRegKind(reg)==OpndKind_GPReg);
     if (equals(reg, RegName_EBX))   return true;
     if (equals(reg, RegName_EBP))   return true;
-#ifdef _EM64T_
+#ifdef HYX86_64
 #ifdef _WIN64
     if (equals(reg, RegName_RDI))   return true;
     if (equals(reg, RegName_RSI))   return true;
@@ -369,7 +369,7 @@ OpndSize to_sz(jtype jt)
     if (jt == i32 || jt == flt32) return OpndSize_32;
     if (jt == i16 || jt == u16) return OpndSize_16;
     if (jt == i8) return OpndSize_8;
-#ifdef _IA32_
+#ifdef HYX86
     if (jt == jobj) return OpndSize_32;
 #else
     if (jt == jobj) return OpndSize_64;
@@ -382,7 +382,7 @@ static void emu_fix_opnds(Encoder * enc,
                           Opnd& op0, Opnd& op1, 
                           const Opnd& _op0, const Opnd& _op1)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     // no op.
     op0 = _op0;
     op1 = _op1;
@@ -440,7 +440,7 @@ static void emu_unfix_opnds(Encoder * enc,
                           const Opnd& op0, const Opnd& op1, 
                           const Opnd& _op0, const Opnd& _op1)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     // no op.
     if (true) return;
 #endif
@@ -472,7 +472,7 @@ string Encoder::to_str_impl(AR ar)
     return getRegNameString(reg);
 }
 
-#if defined(_IA32_)
+#if defined(HYX86)
 static int get_reg_idx(AR ar)
 {
     assert(is_gr(ar) && ar != ar_x);
@@ -541,11 +541,11 @@ static void do_reg(char* buf, const Opnd& op)
     ((ModRM*)buf)->reg = getRegIndex(reg);
 }
 
-#endif // ifdef _IA32_
+#endif // ifdef HYX86
 
 void Encoder::mov_impl(const Opnd& _op0, const Opnd& _op1)
 {
-#if defined(_IA32_)
+#if defined(HYX86)
     //
     // mov_impl() and its calls to add_arg() are the hottest methods on 
     // client startups, especially with the massive ones like Eclipse.
@@ -605,7 +605,7 @@ void Encoder::mov_impl(const Opnd& _op0, const Opnd& _op1)
     assert(_op0.reg() != fp0 && _op1.reg() != fp0);
     assert(is_f(_op0.jt()) == is_f(_op1.jt()));
     
-#ifdef _EM64T_
+#ifdef HYX86_64
     // A special case on EM64T - emulation of 'mov mem64, imm64'
     if (_op0.is_mem() && _op1.is_imm() && 
         (_op1.jt() == i64 || _op1.jt() == jobj)) {
@@ -833,7 +833,7 @@ void Encoder::movp_impl(AR op0, const void *op1)
 {
     EncoderBase::Operands args;
     args.add(devirt(op0));
-#ifdef _EM64T_
+#ifdef HYX86_64
     args.add(EncoderBase::Operand(OpndSize_64, (int_ptr)op1));
 #else
     args.add(EncoderBase::Operand(OpndSize_32, (int_ptr)op1));

@@ -40,7 +40,7 @@
     #define COUNTOF(a)      (sizeof(a)/sizeof(a[0]))
 #endif
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     /**
      * A stack pointer of default platform's size.
      */
@@ -166,7 +166,7 @@ enum RegName {
 
     RegName_Null = 0, 
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     /*
     An index part of the RegName-s for RAX-RDI, EAX-ESI, AX-SI and AL-BH is 
     the same as the index used during instructions encoding. The same rule 
@@ -191,7 +191,7 @@ enum RegName {
     RegName_R13 = REGNAME(OpndKind_GPReg,OpndSize_64,13),
     RegName_R14 = REGNAME(OpndKind_GPReg,OpndSize_64,14),
     RegName_R15 = REGNAME(OpndKind_GPReg,OpndSize_64,15),
-#endif //~_EM64T_
+#endif //~HYX86_64
 
     RegName_EAX=REGNAME(OpndKind_GPReg,OpndSize_32,0),
     RegName_ECX=REGNAME(OpndKind_GPReg,OpndSize_32,1),
@@ -202,7 +202,7 @@ enum RegName {
     RegName_ESI=REGNAME(OpndKind_GPReg,OpndSize_32,6),
     RegName_EDI=REGNAME(OpndKind_GPReg,OpndSize_32,7),
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_R8D  = REGNAME(OpndKind_GPReg,OpndSize_32,8),
     RegName_R9D  = REGNAME(OpndKind_GPReg,OpndSize_32,9),
     RegName_R10D = REGNAME(OpndKind_GPReg,OpndSize_32,10),
@@ -211,7 +211,7 @@ enum RegName {
     RegName_R13D = REGNAME(OpndKind_GPReg,OpndSize_32,13),
     RegName_R14D = REGNAME(OpndKind_GPReg,OpndSize_32,14),
     RegName_R15D = REGNAME(OpndKind_GPReg,OpndSize_32,15),
-#endif //~_EM64T_
+#endif //~HYX86_64
 
     RegName_AX=REGNAME(OpndKind_GPReg,OpndSize_16,0),
     RegName_CX=REGNAME(OpndKind_GPReg,OpndSize_16,1),
@@ -222,7 +222,7 @@ enum RegName {
     RegName_SI=REGNAME(OpndKind_GPReg,OpndSize_16,6),
     RegName_DI=REGNAME(OpndKind_GPReg,OpndSize_16,7),
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_R8S  = REGNAME(OpndKind_GPReg,OpndSize_16,8),
     RegName_R9S  = REGNAME(OpndKind_GPReg,OpndSize_16,9),
     RegName_R10S = REGNAME(OpndKind_GPReg,OpndSize_16,10),
@@ -231,7 +231,7 @@ enum RegName {
     RegName_R13S = REGNAME(OpndKind_GPReg,OpndSize_16,13),
     RegName_R14S = REGNAME(OpndKind_GPReg,OpndSize_16,14),
     RegName_R15S = REGNAME(OpndKind_GPReg,OpndSize_16,15),
-#endif //~_EM64T_
+#endif //~HYX86_64
     
     RegName_AL=REGNAME(OpndKind_GPReg,OpndSize_8,0),
     RegName_CL=REGNAME(OpndKind_GPReg,OpndSize_8,1),
@@ -241,7 +241,7 @@ enum RegName {
     // AH is not accessible on EM64T, instead encoded register is SPL, so decoded
     // register will return incorrect enum
     RegName_AH=REGNAME(OpndKind_GPReg,OpndSize_8,4),
-#if !defined(_EM64T_)    
+#if !defined(HYX86_64)    
     RegName_CH=REGNAME(OpndKind_GPReg,OpndSize_8,5),
     RegName_DH=REGNAME(OpndKind_GPReg,OpndSize_8,6),
     RegName_BH=REGNAME(OpndKind_GPReg,OpndSize_8,7),
@@ -307,7 +307,7 @@ enum RegName {
     RegName_XMM6=REGNAME(OpndKind_XMMReg,OpndSize_128,6),
     RegName_XMM7=REGNAME(OpndKind_XMMReg,OpndSize_128,7),
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_XMM8  = REGNAME(OpndKind_XMMReg,OpndSize_128,0), 
     RegName_XMM9  = REGNAME(OpndKind_XMMReg,OpndSize_128,1),
     RegName_XMM10 = REGNAME(OpndKind_XMMReg,OpndSize_128,2),
@@ -316,7 +316,7 @@ enum RegName {
     RegName_XMM13 = REGNAME(OpndKind_XMMReg,OpndSize_128,5),
     RegName_XMM14 = REGNAME(OpndKind_XMMReg,OpndSize_128,6),
     RegName_XMM15 = REGNAME(OpndKind_XMMReg,OpndSize_128,7),
-#endif //~_EM64T_
+#endif //~HYX86_64
 
 #endif  // ~TESTING_ENCODER
 
@@ -328,7 +328,7 @@ enum RegName {
     RegName_XMM5S=REGNAME(OpndKind_XMMReg,OpndSize_32,5),
     RegName_XMM6S=REGNAME(OpndKind_XMMReg,OpndSize_32,6),
     RegName_XMM7S=REGNAME(OpndKind_XMMReg,OpndSize_32,7),
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_XMM8S=REGNAME(OpndKind_XMMReg,OpndSize_32,8), 
     RegName_XMM9S=REGNAME(OpndKind_XMMReg,OpndSize_32,9),
     RegName_XMM10S=REGNAME(OpndKind_XMMReg,OpndSize_32,10),
@@ -337,7 +337,7 @@ enum RegName {
     RegName_XMM13S=REGNAME(OpndKind_XMMReg,OpndSize_32,13),
     RegName_XMM14S=REGNAME(OpndKind_XMMReg,OpndSize_32,14),
     RegName_XMM15S=REGNAME(OpndKind_XMMReg,OpndSize_32,15),
-#endif // ifdef _EM64T_
+#endif // ifdef HYX86_64
     RegName_XMM0D=REGNAME(OpndKind_XMMReg,OpndSize_64,0), 
     RegName_XMM1D=REGNAME(OpndKind_XMMReg,OpndSize_64,1),
     RegName_XMM2D=REGNAME(OpndKind_XMMReg,OpndSize_64,2),
@@ -346,7 +346,7 @@ enum RegName {
     RegName_XMM5D=REGNAME(OpndKind_XMMReg,OpndSize_64,5),
     RegName_XMM6D=REGNAME(OpndKind_XMMReg,OpndSize_64,6),
     RegName_XMM7D=REGNAME(OpndKind_XMMReg,OpndSize_64,7),
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_XMM8D=REGNAME(OpndKind_XMMReg,OpndSize_64,8), 
     RegName_XMM9D=REGNAME(OpndKind_XMMReg,OpndSize_64,9),
     RegName_XMM10D=REGNAME(OpndKind_XMMReg,OpndSize_64,10),
@@ -355,7 +355,7 @@ enum RegName {
     RegName_XMM13D=REGNAME(OpndKind_XMMReg,OpndSize_64,13),
     RegName_XMM14D=REGNAME(OpndKind_XMMReg,OpndSize_64,14),
     RegName_XMM15D=REGNAME(OpndKind_XMMReg,OpndSize_64,15),
-#endif // ifdef _EM64T_
+#endif // ifdef HYX86_64
 #ifdef _HAVE_MMX_
     RegName_MMX0=REGNAME(OpndKind_MMXReg,OpndSize_64,0),
     RegName_MMX1=REGNAME(OpndKind_MMXReg,OpndSize_64,1),

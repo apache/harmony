@@ -479,7 +479,7 @@ typedef struct HyThread_public {
 
 #if defined (_WIN32)
 #   define HYTHREAD_FAST_TLS_ATTRIBUTE
-#   if defined(_IA32_)
+#   if defined(HYX86)
 #       define HYTHREAD_FAST_TLS (1)
         // FIXME suggested to drop FS14_TLS_USE in favor of common HYTHREAD_FAST_TLS
 #       define FS14_TLS_USE
@@ -489,7 +489,7 @@ typedef struct HyThread_public {
 #elif defined(__linux__)
     // some kind of nix - the threads internals are known for IA32/Intel64
     // kernels, will use slow way on other HWs (TODO: add IPF support)
-#   if defined(_IA32_) || defined(_EM64T_)
+#   if defined(HYX86) || defined(HYX86_64)
 #       define HYTHREAD_FAST_TLS (1)
 #       define HYTHREAD_FAST_TLS_ATTRIBUTE __attribute__((tls_model("initial-exec")))
 #   endif

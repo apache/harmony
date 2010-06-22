@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_PRINTER_H_
-#define _IA32_PRINTER_H_
+#ifndef HYX86PRINTER_H_
+#define HYX86PRINTER_H_
 
 #include "open/types.h"
 #include "Stl.h"

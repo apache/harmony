@@ -94,7 +94,7 @@ static void native_fill_frame_info(Registers* UNREF regs, native_frame_t* UNREF 
 
 #if defined(_IPF_)
     // Nothing
-#elif defined(_EM64T_)
+#elif defined(HYX86_64)
     frame->ip = (void*)regs->rip;
     frame->frame = (void*)regs->rbp;
     frame->stack = (void*)regs->rsp;
@@ -109,7 +109,7 @@ static void native_get_regs_from_jit_context(JitFrameContext* jfc, Registers* re
 {
 #if defined(_IPF_)
     // Nothing
-#elif defined(_EM64T_)
+#elif defined(HYX86_64)
     regs->rsp = jfc->rsp;
     regs->rip = *jfc->p_rip;
     regs->rbp = (jfc->p_rbp) ? *jfc->p_rbp : regs->rbp;

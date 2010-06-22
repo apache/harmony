@@ -22,11 +22,11 @@ include $(HY_TARGET)/hdk/build/make/defines.mk
 VM_HOME=../../../../../../../vm/
 
 DEFINES += \
-  -DREFS_USE_UNCOMPRESSED -D_IA32_ -DPLATFORM_POSIX \
+  -DREFS_USE_UNCOMPRESSED -DPLATFORM_POSIX \
   -D__SMP__ -DLINUX_TLS_OPT -D_LARGEFILE64_SOURCE
 
 INCLUDES := -I$(VM_HOME)port/include -I$(VM_HOME)include $(INCLUDES)
-PLATFORM = 
+
 OPT += -fno-exceptions -Wno-deprecated -g -O2
 
 HDKINCLUDES = $(HY_HDK)/include/dec_base.h $(HY_HDK)/include/enc_base.h \

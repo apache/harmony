@@ -48,8 +48,8 @@
  *    r10-r11 are used for lil standard places (sp0-sp1)
  */
 
-#ifndef _LIL_CODE_GENERATOR_EM64T_
-#define _LIL_CODE_GENERATOR_EM64T_
+#ifndef _LIL_CODE_GENERATORHYX86_64
+#define _LIL_CODE_GENERATORHYX86_64
 
 #include "lil.h"
 #include "lil_code_generator.h"
@@ -738,4 +738,4 @@ class LilCodeGeneratorEM64T : public LilCodeGenerator {
     NativeCodePtr compile_main(LilCodeStub* , size_t*, PoolManager*);
 };
 
-#endif // _LIL_CODE_GENERATOR_EM64T_
+#endif // _LIL_CODE_GENERATORHYX86_64

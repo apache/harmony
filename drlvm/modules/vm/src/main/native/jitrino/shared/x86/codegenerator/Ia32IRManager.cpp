@@ -167,7 +167,7 @@ Opnd * IRManager::newFPConstantMemOpnd(float f, Opnd * baseOpnd, BasicBlock* bb)
 {
     ConstantAreaItem * item=newConstantAreaItem(f);
     Opnd * addr=newImmOpnd(typeManager.getUnmanagedPtrType(typeManager.getSingleType()), Opnd::RuntimeInfo::Kind_ConstantAreaItem, item);
-#ifdef _EM64T_
+#ifdef HYX86_64
     bb->appendInst(newCopyPseudoInst(Mnemonic_MOV, baseOpnd, addr));
     return newMemOpndAutoKind(typeManager.getSingleType(), MemOpndKind_ConstantArea, baseOpnd);
 #else
@@ -180,7 +180,7 @@ Opnd * IRManager::newFPConstantMemOpnd(double d, Opnd * baseOpnd, BasicBlock* bb
 {
     ConstantAreaItem * item=newConstantAreaItem(d);
     Opnd * addr=newImmOpnd(typeManager.getUnmanagedPtrType(typeManager.getDoubleType()), Opnd::RuntimeInfo::Kind_ConstantAreaItem, item);
-#ifdef _EM64T_
+#ifdef HYX86_64
     bb->appendInst(newCopyPseudoInst(Mnemonic_MOV, baseOpnd, addr));
     return newMemOpndAutoKind(typeManager.getDoubleType(), MemOpndKind_ConstantArea, baseOpnd);
 #else
@@ -213,7 +213,7 @@ SwitchInst * IRManager::newSwitchInst(U_32 numTargets, Opnd * index)
     // so it allows to replace an Opnd (used in SpillGen) and keep the table 
     // itself intact.
     Opnd * tableAddr=newImmOpnd(typeManager.getIntPtrType(), Opnd::RuntimeInfo::Kind_ConstantAreaItem, item);
-#ifndef _EM64T_
+#ifndef HYX86_64
     Opnd * targetOpnd = newMemOpnd(typeManager.getIntPtrType(), 
         MemOpndKind_ConstantArea, 0, index, newImmOpnd(typeManager.getInt32Type(), sizeof(POINTER_SIZE_INT)), tableAddr);
 #else
@@ -983,7 +983,7 @@ Inst * IRManager::newMemMovSequence(Opnd * targetOpnd, Opnd * sourceOpnd, U_32 r
     RegName tmpRegName=RegName_Null, unusedTmpRegName=RegName_Null;
     bool registerSetNotLocked = !isRegisterSetLocked(OpndKind_GPReg);
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     for (U_32 reg = RegName_RAX; reg<=RegName_R15/*(U_32)(targetOpnd->getSize()<OpndSize_64?RegName_RBX:RegName_RDI)*/; reg++) {
 #else
     for (U_32 reg = RegName_EAX; reg<=(U_32)(targetOpnd->getSize()<OpndSize_32?RegName_EBX:RegName_EDI); reg++) {
@@ -1053,7 +1053,7 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
     OpndKind targetKind=(OpndKind)targetConstraint.getKind();
     OpndKind sourceKind=(OpndKind)sourceConstraint.getKind();
 
-#if defined(_DEBUG) || !defined(_EM64T_)
+#if defined(_DEBUG) || !defined(HYX86_64)
     OpndSize targetSize=targetConstraint.getSize();
     assert(targetSize<=sourceSize); // only same size or truncating conversions are allowed
 #endif
@@ -1064,7 +1064,7 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
             return newInst(Mnemonic_XOR,targetOpnd, targetOpnd);
         }
         else if (targetKind==OpndKind_XMMReg && sourceOpnd->getMemOpndKind()==MemOpndKind_ConstantArea) {
-#ifdef _EM64T_
+#ifdef HYX86_64
             Opnd * addr = NULL;
             Opnd * base = sourceOpnd->getMemOpndSubOpnd(MemOpndSubOpndKind_Base);
             if(base) {
@@ -1109,7 +1109,7 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
     ){
         if (sourceKind==OpndKind_Mem && targetKind==OpndKind_Mem){
             Inst * instList=NULL;
-#ifndef _EM64T_
+#ifndef HYX86_64
             U_32 targetByteSize=getByteSize(targetSize);
             if (sourceByteSize<=4){
                 instList=newMemMovSequence(targetOpnd, sourceOpnd, regUsageMask);
@@ -1134,7 +1134,7 @@ Inst * IRManager::newCopySequence(Opnd * targetBOpnd, Opnd * sourceBOpnd, U_32 r
             assert(instList!=NULL);
             return instList;
         }else{
-#ifdef _EM64T_
+#ifdef HYX86_64
             if((targetOpnd->getMemOpndKind() == MemOpndKind_StackAutoLayout) && (sourceKind==OpndKind_Imm) && (sourceOpnd->getSize() == OpndSize_64)) 
                 return newMemMovSequence(targetOpnd, sourceOpnd, regUsageMask, false);
             else 
@@ -1205,7 +1205,7 @@ Inst * IRManager::newPushPopSequence(Mnemonic mn, Opnd * opnd, U_32 regUsageMask
 
     Inst * instList=NULL;
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     if ( ((kind==OpndKind_GPReg ||kind==OpndKind_Mem)&& size!=OpndSize_32)||(kind==OpndKind_Imm && size<OpndSize_32)){
             return newInst(mn, opnd);
 #else
@@ -1233,7 +1233,7 @@ Inst * IRManager::newPushPopSequence(Mnemonic mn, Opnd * opnd, U_32 regUsageMask
     }
     Opnd * espOpnd=getRegOpnd(STACK_REG);
     Opnd * tmp=newMemOpnd(opnd->getType(), MemOpndKind_StackManualLayout, espOpnd, 0); 
-#ifdef _EM64T_
+#ifdef HYX86_64
     Opnd * sizeOpnd=newImmOpnd(typeManager.getInt32Type(), sizeof(POINTER_SIZE_INT));
     if(kind==OpndKind_Imm) {
         assert(mn==Mnemonic_PUSH);
@@ -1309,7 +1309,7 @@ Opnd * IRManager::getRegOpnd(RegName regName)
     assert(getRegSize(regName)==Constraint::getDefaultSize(getRegKind(regName))); // are we going to change this?
     U_32 idx=( (getRegKind(regName) & 0x1f) << 4 ) | ( getRegIndex(regName)&0xf );
     if (!regOpnds[idx]){
-#ifdef _EM64T_
+#ifdef HYX86_64
         Type * t = (getRegSize(regName) == OpndSize_64 ? typeManager.getUInt64Type() : typeManager.getUInt32Type());
         regOpnds[idx]=newRegOpnd(t, regName);
 #else
@@ -1326,7 +1326,7 @@ void IRManager::calculateTotalRegUsage(OpndKind regKind) {
         if (opnd->isPlacedIn(regKind)) {
             RegName reg = opnd->getRegName();
             unsigned mask = getRegMask(reg);
-#if !defined(_EM64T_)
+#if !defined(HYX86_64)
             if ((reg == RegName_AH) || (reg == RegName_CH) || (reg == RegName_DH) || (reg == RegName_BH))
                 mask >>= 4;
 #endif
@@ -1392,7 +1392,7 @@ OpndSize IRManager::getTypeSize(Type::Tag tag)
         case Type::Char:
             size = OpndSize_16;
             break;
-#ifndef _EM64T_
+#ifndef HYX86_64
         case Type::IntPtr:   
         case Type::UIntPtr:   
 #endif
@@ -1400,7 +1400,7 @@ OpndSize IRManager::getTypeSize(Type::Tag tag)
         case Type::UInt32:
             size = OpndSize_32;
             break;
-#ifdef _EM64T_
+#ifdef HYX86_64
         case Type::IntPtr:   
         case Type::UIntPtr:   
 #endif
@@ -1418,7 +1418,7 @@ OpndSize IRManager::getTypeSize(Type::Tag tag)
             size = OpndSize_80;
             break;
         default:
-#ifdef _EM64T_
+#ifdef HYX86_64
             size = (tag>=Type::CompressedSystemObject && tag<=Type::CompressedVTablePtr)?OpndSize_32:OpndSize_64;
 #else
             size = OpndSize_32;
@@ -1559,7 +1559,7 @@ void IRManager::calculateLivenessInfo()
                 {
                     BitSet * exitLs  = node->getLiveAtEntry();
                     EntryPointPseudoInst * entryPointInst = getEntryPointInst();
-#ifdef _EM64T_
+#ifdef HYX86_64
                     Opnd * thisOpnd  = entryPointInst->thisOpnd;
                     //on EM64T 'this' opnd is spilled to stack only after finalizeCallSites call (copy expansion pass)
                     //TODO: do it after code selector and tune early propagation and regalloc to skip this opnd from optimizations.
@@ -1708,7 +1708,7 @@ void IRManager::resetOpndConstraints()
 
 void IRManager::finalizeCallSites()
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     MethodDesc& md = getMethodDesc();
     if (!md.isStatic() 
             && (md.isSynchronized() || md.isParentClassIsLikelyExceptionType())) {
@@ -1911,7 +1911,7 @@ void IRManager::expandSystemExceptions(U_32 reservedForFlags)
                     assert(dispatchEdge!=NULL);
                     Node* dispatchNode= dispatchEdge->getTargetNode();
                     if ((dispatchNode!=fg->getUnwindNode()) ||(checkOpnds[opnd] == (POINTER_SIZE_INT)-1
-#ifdef _EM64T_
+#ifdef HYX86_64
                             ||!Type::isCompressedReference(opnd->getType()->tag)
 #endif
                             )){
@@ -1966,7 +1966,7 @@ void IRManager::throwException(ObjectType* excType, uint16 bcOffset, Node* basic
 
     assert(excType);
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     bool lazy = false;
 #else
     bool lazy = true;
@@ -2302,7 +2302,7 @@ bool IRManager::verifyHeapAddressTypes()
                 if (subOpnd!=NULL){
                     Type * type=subOpnd->getType();
                     if (type->isManagedPtr() || type->isObject() || type->isMethodPtr() || type->isVTablePtr() || type->isUnmanagedPtr()
-#ifdef _EM64T_
+#ifdef HYX86_64
                         || subOpnd->getRegName() == RegName_RSP/*SOE handler*/
 #else
                         || subOpnd->getRegName() == RegName_ESP/*SOE handler*/

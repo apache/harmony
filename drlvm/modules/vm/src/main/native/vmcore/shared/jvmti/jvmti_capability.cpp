@@ -67,7 +67,7 @@ static const jvmtiCapabilities jvmti_supported_interpreter_capabilities =
     1  // can_generate_object_free_events
 };
 
-#if (defined _EM64T_) || (defined _IPF_)
+#if (defined HYX86_64) || (defined _IPF_)
 
 static const jvmtiCapabilities jvmti_supported_jit_capabilities =
 {

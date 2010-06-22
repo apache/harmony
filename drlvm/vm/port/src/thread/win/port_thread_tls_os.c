@@ -30,7 +30,7 @@ static port_shared_data_t g_port_shared_data_struct;
 
 #define MEM_PROTECT_SIZE 0x100
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 #define GUARD_STACK_SIZE (64*1024)
 #else /* IA-32 */
 #define GUARD_STACK_SIZE (find_guard_page_size())

@@ -122,7 +122,7 @@ char* EncoderBase::encode_aux(char* stream, unsigned aux,
         else {
             modrm.mod = 3; // 11
             modrm.rm = getHWRegIndex(opnds[memidx].reg());
-#ifdef _EM64T_
+#ifdef HYX86_64
             if (opnds[memidx].need_rex() && needs_rex_r(opnds[memidx].reg())) {
                 prex->b = 1;
             }
@@ -130,7 +130,7 @@ char* EncoderBase::encode_aux(char* stream, unsigned aux,
             ++stream;
         }
         modrm.reg = getHWRegIndex(opnds[regidx].reg());
-#ifdef _EM64T_
+#ifdef HYX86_64
         if (opnds[regidx].need_rex() && needs_rex_r(opnds[regidx].reg())) {
             prex->r = 1;
         }
@@ -156,7 +156,7 @@ char* EncoderBase::encode_aux(char* stream, unsigned aux,
         else {
             modrm.mod = 3; // 11
             modrm.rm = getHWRegIndex(opnds[idx].reg());
-#ifdef _EM64T_
+#ifdef HYX86_64
             if (opnds[idx].need_rex() && needs_rex_r(opnds[idx].reg())) {
                 prex->b = 1;
             }
@@ -184,9 +184,9 @@ char* EncoderBase::encode_aux(char* stream, unsigned aux,
     case OpcodeByteKind_ib>>8:
     case OpcodeByteKind_iw>>8:
     case OpcodeByteKind_id>>8:
-#ifdef _EM64T_
+#ifdef HYX86_64
     case OpcodeByteKind_io>>8:
-#endif //_EM64T_
+#endif //HYX86_64
         //  ib, iw, id - A 1-byte (ib), 2-byte (iw), or 4-byte (id) 
         //  immediate operand to the instruction that follows the 
         //  opcode, ModR/M bytes or scale-indexing bytes. The opcode 
@@ -208,7 +208,7 @@ char* EncoderBase::encode_aux(char* stream, unsigned aux,
                 *(unsigned*)stream = (unsigned)opnds[idx].imm();
                 stream += 4;
             }
-#ifdef _EM64T_
+#ifdef HYX86_64
             else {
                 assert(kind == OpcodeByteKind_io);
                 *(long long*)stream = (long long)opnds[idx].imm();
@@ -254,7 +254,7 @@ char* EncoderBase::encode_aux(char* stream, unsigned aux,
         const unsigned lowByte = (byte & OpcodeByteKind_OpcodeMask);
         *(unsigned char*)stream = (unsigned char)lowByte + 
                                    getHWRegIndex(opnds[*pargsCount].reg());
-#ifdef _EM64T_
+#ifdef HYX86_64
         if (opnds[*pargsCount].need_rex() && needs_rex_r(opnds[*pargsCount].reg())) {
         prex->b = 1;
         }
@@ -288,7 +288,7 @@ char * EncoderBase::encode(char * stream, Mnemonic mn, const Operands& opnds)
 #endif
 
     const OpcodeDesc * odesc = lookup(mn, opnds);
-#if !defined(_EM64T_)
+#if !defined(HYX86_64)
     bool copy_opcode = true;
     Rex *prex = NULL;
 #else
@@ -460,7 +460,7 @@ char* EncoderBase::encodeModRM(char* stream, const Operands& opnds,
         // ... yes - only have disp
         // On EM64T, the simply [disp] addressing means 'RIP-based' one - 
         // must have to use SIB to encode 'DS: based'
-#ifdef _EM64T_
+#ifdef HYX86_64
         modrm.mod = 0;  // 00 - ..
         modrm.rm = 4;   // 100 - have SIB
         
@@ -562,12 +562,12 @@ char* EncoderBase::encodeModRM(char* stream, const Operands& opnds,
         // the only reason we're here without index, is that we have {E|R}SP 
         // or R12 as a base. Another possible reason - EBP without a disp - 
         // is handled above by adding a fake disp8
-#ifdef _EM64T_
+#ifdef HYX86_64
         assert(op.base() != RegName_Null && (equals(op.base(), REG_STACK) || 
                                              equals(op.base(), RegName_R12)));
-#else  // _EM64T_
+#else  // HYX86_64
         assert(op.base() != RegName_Null && equals(op.base(), REG_STACK));
-#endif //_EM64T_
+#endif //HYX86_64
         sib.scale = 0;  // SS = 00
         sib.index = 4;  // SS + index=100 means 'no index'
     }
@@ -757,7 +757,7 @@ EncoderBase::lookup(Mnemonic mn, const Operands& opnds)
     assert(!odesc->last);
     assert(odesc->roles.count == opnds.count());
     assert(odesc->platf != OpcodeInfo::decoder);
-#if !defined(_EM64T_)
+#if !defined(HYX86_64)
     // tuning was done for IA32 only, so no size restriction on EM64T
     //assert(sizeof(OpcodeDesc)==128);
 #endif
@@ -885,7 +885,7 @@ static const struct {
 }
 
 registers[] = {
-#ifdef _EM64T_
+#ifdef HYX86_64
     {"RAX",         RegName_RAX},
     {"RBX",         RegName_RBX},
     {"RCX",         RegName_RCX},
@@ -912,7 +912,7 @@ registers[] = {
     {"EBP",         RegName_EBP},
     {"ESI",         RegName_ESI},
     {"EDI",         RegName_EDI},
-#ifdef _EM64T_
+#ifdef HYX86_64
     {"R8D",         RegName_R8D},
     {"R9D",         RegName_R9D},
     {"R10D",        RegName_R10D},
@@ -936,7 +936,7 @@ registers[] = {
     {"CL",          RegName_CL},
     {"DL",          RegName_DL},
     {"BL",          RegName_BL},
-#if !defined(_EM64T_)
+#if !defined(HYX86_64)
     {"AH",          RegName_AH},
     {"CH",          RegName_CH},
     {"DH",          RegName_DH},
@@ -998,7 +998,7 @@ registers[] = {
     {"XMM5",        RegName_XMM5},
     {"XMM6",        RegName_XMM6},
     {"XMM7",        RegName_XMM7},
-#ifdef _EM64T_
+#ifdef HYX86_64
     {"XMM8",       RegName_XMM8},
     {"XMM9",       RegName_XMM9},
     {"XMM10",      RegName_XMM10},
@@ -1018,7 +1018,7 @@ registers[] = {
     {"XMM5S",       RegName_XMM5S},
     {"XMM6S",       RegName_XMM6S},
     {"XMM7S",       RegName_XMM7S},
-#ifdef _EM64T_
+#ifdef HYX86_64
     {"XMM8S",       RegName_XMM8S},
     {"XMM9S",       RegName_XMM9S},
     {"XMM10S",      RegName_XMM10S},
@@ -1037,7 +1037,7 @@ registers[] = {
     {"XMM5D",       RegName_XMM5D},
     {"XMM6D",       RegName_XMM6D},
     {"XMM7D",       RegName_XMM7D},
-#ifdef _EM64T_
+#ifdef HYX86_64
     {"XMM8D",       RegName_XMM8D},
     {"XMM9D",       RegName_XMM9D},
     {"XMM10D",      RegName_XMM10D},

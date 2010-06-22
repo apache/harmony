@@ -51,7 +51,7 @@ UDATA VMCALL hythread_uses_fast_tls(void) {
 }
 
 #if !defined(_WIN32) && defined(HYTHREAD_FAST_TLS)
-    #if defined(_EM64T_)
+    #if defined(HYX86_64)
         #define HYTHREAD_TLS_GET_VAR_OFFSET(var,offset) \
         { \
             void* tmp1 = &var; \
@@ -62,7 +62,7 @@ UDATA VMCALL hythread_uses_fast_tls(void) {
         //TODO: GCC-specific, need to add ICL
         //#define HYTHREAD_TLS_GET_VAR_OFFSET(var,offset) \
         //    { void* tmp;  __asm ("movq " #var "@GOTTPOFF(%%rip), %0" : "=r" (tmp)); offset = tmp; }
-    #elif defined(_IA32_)
+    #elif defined(HYX86)
         #define HYTHREAD_TLS_GET_VAR_OFFSET(var,offset) \
         { \
             void* tmp1 = &var; \

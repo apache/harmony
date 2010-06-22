@@ -30,8 +30,8 @@
 
 #include "m2n.h"
 #include "encoder.h"
-#include "m2n_em64t_internal.h"
-#include "lil_code_generator_em64t.h"
+#include "m2n_internal.h"
+#include "lil_code_generator_arch.h"
 
 /*    Generic Interface    */
 

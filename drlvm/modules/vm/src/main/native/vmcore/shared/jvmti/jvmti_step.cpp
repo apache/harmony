@@ -59,7 +59,7 @@ jvmti_GetWordValue( const unsigned char *bytecode,
 NativeCodePtr static get_ip_for_invoke_call_ip(VM_thread* thread,
     unsigned location, unsigned next_location)
 {
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
     ASSERT_NO_INTERPRETER;
 
     // create stack iterator from native
@@ -497,7 +497,7 @@ jvmti_set_single_step_breakpoints_for_method(DebugUtilsTI *ti,
 static void jvmti_start_single_step_in_virtual_method(DebugUtilsTI *ti, const VMBreakPoint* bp,
     const POINTER_SIZE_INT data, const unsigned char bytecode)
 {
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
     VM_thread *vm_thread = p_TLS_vmthread;
     assert(vm_thread);
     jvmti_thread_t jvmti_thread = &vm_thread->jvmti_thread;
@@ -795,7 +795,7 @@ jvmtiError jvmti_get_next_bytecodes_from_native(VM_thread *thread,
     unsigned *count,
     bool invoked_frame)
 {
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
     ASSERT_NO_INTERPRETER;
     VMBreakPoints *vm_brpt = VM_Global_State::loader_env->TI->vm_brpt;
 

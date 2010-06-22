@@ -18,8 +18,8 @@
  * @author Intel, Nikolay A. Sidelnikov
  */
 
-#ifndef _IA32_STACK_INFO_H_
-#define _IA32_STACK_INFO_H_
+#ifndef HYX86STACK_INFO_H_
+#define HYX86STACK_INFO_H_
 
 #include "CodeGenIntfc.h"
 #include "MemoryManager.h"
@@ -214,4 +214,4 @@ private:
 };
 
 }}//namespace
-#endif /* _IA32_STACK_INFO_H_ */
+#endif /* HYX86STACK_INFO_H_ */

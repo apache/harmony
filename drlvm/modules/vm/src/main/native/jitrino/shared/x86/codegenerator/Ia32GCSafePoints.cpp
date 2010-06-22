@@ -328,7 +328,7 @@ static inline int adjustOffsets(I_32 offsetBefore, I_32 dOffset) {
 
 static bool isHeapBase(Opnd* immOpnd) {
     assert(immOpnd->isPlacedIn(OpndKind_Imm));
-#ifndef _EM64T_
+#ifndef HYX86_64
     return false;
 #else 
     int64 heapBase = (int64)VMInterface::getHeapBase();

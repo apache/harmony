@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_ENCODER_H_
-#define _IA32_ENCODER_H_
+#ifndef HYX86ENCODER_H_
+#define HYX86ENCODER_H_
 
 #include "open/types.h"
 #include "Stl.h"

@@ -1642,9 +1642,9 @@ static NativeCodePtr rth_get_lil_instanceof_withresolve(int * dyn_count) {
 
 //end of lazy resolution helpers
 //////////////////////////////////////////////////////////////////////////
-#if (defined PLATFORM_POSIX) && (defined _IA32_)
+#if (defined PLATFORM_POSIX) && (defined HYX86)
 ManagedObject* __attribute__ ((__stdcall__)) rth_struct_Class_to_java_lang_Class(Class *clss) {
-#elif defined _IA32_
+#elif defined HYX86
 ManagedObject* __stdcall rth_struct_Class_to_java_lang_Class(Class *clss) {
 #else
 ManagedObject* rth_struct_Class_to_java_lang_Class(Class *clss) {

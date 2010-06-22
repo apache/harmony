@@ -43,7 +43,7 @@ void CodeGen::gen_prof_be(void)
         return;
     }
 
-#ifdef _IA32_
+#ifdef HYX86
     AR addr = ar_x;
     int off = (int)m_p_backedge_counter;
 #else
@@ -126,7 +126,7 @@ void CodeGen::gen_modification_watchpoint(JavaByteCodes opcode, jtype jt, Field_
     //JVMTI helper takes field handle, method handle, byte code location, pointer
     //to reference for fields or NULL for statics, pointer to field value
 
-#ifndef _EM64T_
+#ifndef HYX86_64
     // Workaround since do_mov do not put jlong on stack in gen_args on ia32
     SYNC_FIRST(static const CallSig cs_ti_fmodif(CCONV_HELPERS, jvoid, jobj, jobj, i32, i32, jobj, jobj));
     Val vlocation((jlong)m_pc);
@@ -164,7 +164,7 @@ void CodeGen::gen_modification_watchpoint(JavaByteCodes opcode, jtype jt, Field_
     if (field_op) {
         vobject = vstack(ref_depth);
     }
-#ifndef _EM64T_
+#ifndef HYX86_64
     // Workaround since do_mov do not put jlong on stack in gen_args on ia32
     gen_args(cs_ti_fmodif, 0, &vfield, &vmeth, &vlocationHi, &vlocation, &vobject, &fieldValPtr);
 #else
@@ -223,7 +223,7 @@ void CodeGen::gen_access_watchpoint(JavaByteCodes opcode, jtype jt, Field_Handle
     //JVMTI helper takes field handle, method handle, byte code location, pointer
     //to reference for fields or NULL for statics
 
-#ifndef _EM64T_
+#ifndef HYX86_64
     // Workaround since do_mov do not put jlong on stack in gen_args on ia32
     SYNC_FIRST(static const CallSig cs_ti_faccess(CCONV_HELPERS, jvoid, jobj, jobj, i32, i32, jobj));
     Val vlocation((jlong)m_pc);
@@ -243,7 +243,7 @@ void CodeGen::gen_access_watchpoint(JavaByteCodes opcode, jtype jt, Field_Handle
         vobject = vstack(0);
     }
     
-#ifndef _EM64T_
+#ifndef HYX86_64
     // Workaround since do_mov do not put jlong on stack in gen_args on ia32
     gen_args(cs_ti_faccess, 0, &vfield, &vmeth, &vlocationHi, &vlocation, &vobject);
 #else

@@ -35,7 +35,7 @@
 
 
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 
 R_Opnd rax_opnd(rax_reg);
 R_Opnd rcx_opnd(rcx_reg);
@@ -75,7 +75,7 @@ R_Opnd ebp_opnd(ebp_reg);
 R_Opnd esi_opnd(esi_reg);
 R_Opnd edi_opnd(edi_reg);
 
-#endif //_EM64T_
+#endif //HYX86_64
 
 XMM_Opnd xmm0_opnd(xmm0_reg);
 XMM_Opnd xmm1_opnd(xmm1_reg);
@@ -95,7 +95,7 @@ extern const Mnemonic map_of_alu_opcode_2_mnemonic[];
 extern const Mnemonic map_of_shift_opcode_2_mnemonic[];
 
 const RegName map_of_regno_2_regname [] = {
-#ifdef _EM64T_
+#ifdef HYX86_64
     RegName_RAX,    RegName_RBX,    RegName_RCX,    RegName_RDX,
     RegName_RDI,    RegName_RSI,    RegName_RSP,    RegName_RBP,
     RegName_R8,     RegName_R9,     RegName_R10,    RegName_R11,
@@ -111,7 +111,7 @@ const RegName map_of_regno_2_regname [] = {
     RegName_XMM0,   RegName_XMM1,   RegName_XMM2,   RegName_XMM3,
     RegName_XMM4,   RegName_XMM5,   RegName_XMM6,   RegName_XMM7,
     RegName_FS,
-#endif  // _EM64T_
+#endif  // HYX86_64
 
     RegName_Null,
 };

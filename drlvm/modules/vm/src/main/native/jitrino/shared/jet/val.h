@@ -131,7 +131,7 @@ public:
         m_base = base; m_index = index;
         m_scale = scale; m_disp = disp;
     }
-#ifdef _IA32_
+#ifdef HYX86
     /**
      * Special-purpose ctor, only exists on IA-32.
      * 

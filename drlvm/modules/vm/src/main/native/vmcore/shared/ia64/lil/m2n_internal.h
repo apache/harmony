@@ -153,7 +153,7 @@ NativeCodePtr m2n_gen_flush_and_call();
 
 #define M2N_EXTRA_SAVES_SPACE 400
 
-#ifdef _EM64T_
+#ifdef HYX86_64
 #error Should not be included!
 #endif
 

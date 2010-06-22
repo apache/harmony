@@ -214,7 +214,7 @@ private:
  */
 inline bool is_big(jtype jt)
 {
-#if defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86_64) || defined(_IPF_)
     return false;
 #else
     return jt==i64;
@@ -241,7 +241,7 @@ inline jtype jtmov(jtype jt)
  */
 inline bool is_ia32(void)
 {
-#if defined(_IA32_)
+#if defined(HYX86)
     return true;
 #else
     return false;
@@ -264,7 +264,7 @@ inline bool fits32(jlong val)
  */
 inline bool fits32(const void* addr)
 {
-#ifdef _IA32_
+#ifdef HYX86
     return true;
 #else
     return fits32((jlong)(int_ptr)addr);
@@ -295,7 +295,7 @@ enum AR {
     //
     // EAX, EBX, ECX, EDX, ESI, EDI, 
     gr0, gr1, gr2, gr3, gr4, gr5, 
-#ifdef _EM64T_
+#ifdef HYX86_64
     // R8, R9, R10, R11, R12, R13, R14, R15
     gr6, gr7, gr8, gr9, gr10, gr11, gr12, gr13, 
 #endif
@@ -304,7 +304,7 @@ enum AR {
     // Float-point registers
     //
     fr0, fr1, fr2, fr3, fr4, fr5, fr6, fr7, 
-#ifdef _EM64T_
+#ifdef HYX86_64
     fr8, fr9, fr10, fr11, fr12, fr13, fr14, fr15, 
 #endif
     //
@@ -312,7 +312,7 @@ enum AR {
     //
     fp0, // top FPU stacked register
     //
-#ifdef _EM64T_
+#ifdef HYX86_64
     gr_num=15,      /// not including sp
     gr_total = 16,  /// including sp
     fr_num=16,
@@ -604,7 +604,7 @@ public:
         m_base = base; m_index = index;
         m_scale = scale; m_disp = disp;
     }
-#ifdef _IA32_
+#ifdef HYX86
     /**
      * @brief Constructs memory operand, the given pointer is stored as 
      *        displacement.

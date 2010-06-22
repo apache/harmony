@@ -40,7 +40,7 @@
 #include "port_crash_handler.h"
 #include "open/vm_class_info.h"
 
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
 
 #include "encoder.h"
 // Forward declarations
@@ -549,9 +549,9 @@ VMBreakPoints::remove_thread_local_break(VMLocalBreak *local)
 
 static char *gen_push(char *code_addr, POINTER_SIZE_INT value)
 {
-#ifdef _IA32_
+#ifdef HYX86
     return push(code_addr, Imm_Opnd(size_32, value));
-#elif defined _EM64T_
+#elif defined HYX86_64
     I_32 high = (I_32)((U_32)(value >> 32));
     I_32 low = (I_32)((U_32)value);
     code_addr = alu(code_addr, sub_opc, rsp_opnd, Imm_Opnd(size_8, 8));
@@ -565,9 +565,9 @@ static char *gen_push(char *code_addr, POINTER_SIZE_INT value)
 
 static char *gen_jump(char *code_addr, char *target_addr)
 {
-#ifdef _IA32_
+#ifdef HYX86
     return jump(code_addr, target_addr);
-#elif defined _EM64T_
+#elif defined HYX86_64
     code_addr = gen_push(code_addr, (POINTER_SIZE_INT)target_addr);
     return ret(code_addr);
 #else
@@ -594,7 +594,7 @@ VMBreakPoints::find_thread_local_break(VM_thread* vmthread)
 void
 VMBreakPoints::process_native_breakpoint(Registers* regs)
 {
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
     // When we get here we know already that breakpoint occurred in JITted code,
     // JVMTI handles it, and registers context is saved for us in TLS
     VM_thread *vm_thread = p_TLS_vmthread;
@@ -1221,7 +1221,7 @@ VMBreakInterface::find_reference(VMBreakPoint* brpt)
 //////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
 static inline ConditionCode
 get_condition_code(InstructionDisassembler::CondJumpType jump_type)
 {
@@ -1270,7 +1270,7 @@ static bool set_jit_mode_breakpoint(VMBreakPoint* bp)
 
 static bool set_native_breakpoint(VMBreakPoint* bp)
 {
-#if (defined _IA32_) || (defined _EM64T_)
+#if (defined HYX86) || (defined HYX86_64)
     assert(bp);
     assert(bp->addr);
 

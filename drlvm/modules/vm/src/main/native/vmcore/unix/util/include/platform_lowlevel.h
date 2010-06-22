@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 #define __fastcall
-#if defined(_IPF_) || defined(_EM64T_)
+#if defined(_IPF_) || defined(HYX86_64)
 #define __stdcall
 #else
 #define __stdcall  __attribute__ ((__stdcall__))

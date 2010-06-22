@@ -146,7 +146,7 @@ PORT_INLINE void * port_atomic_casptr(volatile void ** data, void * value, const
     return InterlockedCompareExchangePointer((volatile PVOID *) data, value, (PVOID) comp);
 }
 
-#elif defined(_EM64T_) && defined (_WIN64)
+#elif defined(HYX86_64) && defined (_WIN64)
 
 #pragma intrinsic(_InterlockedCompareExchange16)
 #pragma intrinsic(_InterlockedCompareExchange64)
@@ -173,7 +173,7 @@ PORT_INLINE void * port_atomic_casptr(volatile void ** data, void * value, const
 #elif defined (PLATFORM_POSIX)  
 
 PORT_INLINE U_8 port_atomic_cas8(volatile U_8 * data , U_8 value, U_8 comp) {
-#if defined(_IA32_) || defined(_EM64T_)
+#if defined(HYX86) || defined(HYX86_64)
     __asm__ __volatile__(
         "lock cmpxchgb %1, (%2)"
         :"=a"(comp)
@@ -187,7 +187,7 @@ PORT_INLINE U_8 port_atomic_cas8(volatile U_8 * data , U_8 value, U_8 comp) {
 
 PORT_INLINE uint16 port_atomic_cas16(volatile uint16 * data , uint16 value, uint16 comp) {
     uint16 ret;
-#if defined(_IA32_) || defined(_EM64T_)
+#if defined(HYX86) || defined(HYX86_64)
     __asm__ __volatile__(
         "lock cmpxchgw %w1, %2"
         :"=a"(ret)
@@ -201,7 +201,7 @@ PORT_INLINE uint16 port_atomic_cas16(volatile uint16 * data , uint16 value, uint
 }
 
 PORT_INLINE uint64 port_atomic_cas64(volatile uint64 * data , uint64 value, uint64 comp) {
-#if defined(_IA32_)
+#if defined(HYX86)
     __asm__ __volatile__(
         "push %%ebx;\n\t"
         "lea %0, %%esi;\n\t"
@@ -221,7 +221,7 @@ PORT_INLINE uint64 port_atomic_cas64(volatile uint64 * data , uint64 value, uint
         :"%eax", "%ecx", "%edx", "%esi", "memory" /* clobbers */
     );
     return comp;
-#elif defined(_EM64T_) // defined(_IA32_)
+#elif defined(HYX86_64) // defined(HYX86)
     __asm__ __volatile__(
         "lock cmpxchgq %1, (%2)"
         :"=a"(comp) /* outputs */
@@ -234,7 +234,7 @@ PORT_INLINE uint64 port_atomic_cas64(volatile uint64 * data , uint64 value, uint
 }
 
 PORT_INLINE void * port_atomic_casptr(volatile void ** data, void * value, const void * comp) {
-#if defined(_IA32_)
+#if defined(HYX86)
     U_32 Exchange = (U_32)value;
     U_32 Comperand = (U_32)comp;
     __asm__ __volatile__(
@@ -244,7 +244,7 @@ PORT_INLINE void * port_atomic_casptr(volatile void ** data, void * value, const
         );
     return (void*)Comperand;
 
-#elif defined(_EM64T_) // defined(_IA32_)
+#elif defined(HYX86_64) // defined(HYX86)
     uint64 Exchange = (uint64)value;
     uint64 Comperand = (uint64)comp;
     __asm__(
@@ -254,7 +254,7 @@ PORT_INLINE void * port_atomic_casptr(volatile void ** data, void * value, const
         );
     return (void *)Comperand;
 
-#else // defined(_EM64T_)
+#else // defined(HYX86_64)
     ABORT("Not supported");
 #endif
 }

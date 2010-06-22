@@ -45,7 +45,7 @@
 #define STACK_ALIGN16         (0x00000010)
 
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     #define MANAGED_STACK_ALIGNMENT STACK_ALIGN_HALF16
 #else
     // Use 16-byte stack pointer alignment to avoid perf penalty on SSE usage in JITted code. 

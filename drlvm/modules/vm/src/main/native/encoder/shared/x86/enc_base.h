@@ -400,7 +400,7 @@ public:
          */
         unsigned hash(void) const { return m_hash; }
         //
-#ifdef _EM64T_
+#ifdef HYX86_64
         bool need_rex(void) const { return m_need_rex; }
 #else
         bool need_rex(void) const { return false; }
@@ -475,7 +475,7 @@ public:
         void hash_it(void)
         {
             m_hash = size_hash[m_size] | kind_hash[m_kind];
-#ifdef _EM64T_
+#ifdef HYX86_64
             m_need_rex = false;
             if (is_reg() && is_em64t_extra_reg(m_reg)) {
                 m_need_rex = true;
@@ -544,7 +544,7 @@ public:
             m_operands[m_count++] = op;
             m_need_rex = m_need_rex || op.m_need_rex;
         }
-#ifdef _EM64T_
+#ifdef HYX86_64
         bool need_rex(void) const { return m_need_rex; }
 #else
         bool need_rex(void) const { return false; }
@@ -584,7 +584,7 @@ private:
     static char* encode_aux(char* stream, unsigned aux, 
                             const Operands& opnds, const OpcodeDesc * odesc,
                             unsigned * pargsCount, Rex* prex);
-#ifdef _EM64T_
+#ifdef HYX86_64
     /**
      * @brief Returns true if the 'reg' argument represents one of the new 
      *        EM64T registers - R8(D)-R15(D).

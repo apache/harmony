@@ -411,7 +411,7 @@ void CopyExpansion::runImpl()
                             if (toOpnd->getRegName()==fromOpnd->getRegName())
                                 continue;
                         }else{
-#ifdef _EM64T_
+#ifdef HYX86_64
                             if (!calculatingRegUsage && ((toOpnd->isPlacedIn(OpndKind_Mem) && fromOpnd->isPlacedIn(OpndKind_Mem))||fromOpnd->isPlacedIn(OpndKind_Imm))){
 #else
                             if (!calculatingRegUsage && ((toOpnd->isPlacedIn(OpndKind_Mem) && fromOpnd->isPlacedIn(OpndKind_Mem))||(toOpnd->isPlacedIn(OpndKind_Reg) && fromOpnd->isPlacedIn(OpndKind_Imm)))){
@@ -422,7 +422,7 @@ void CopyExpansion::runImpl()
                         }
                         copySequence = irManager->newCopySequence(Mnemonic_MOV, toOpnd, fromOpnd, gpRegUsageMask, flagsRegUsageMask);
                     }else if (mn==Mnemonic_PUSH||mn==Mnemonic_POP){
-#ifdef _EM64T_
+#ifdef HYX86_64
                         if (!calculatingRegUsage && (inst->getOpnd(0)->isPlacedIn(OpndKind_Mem)||inst->getOpnd(0)->isPlacedIn(OpndKind_Imm))){
 #else
                         if (!calculatingRegUsage && inst->getOpnd(0)->isPlacedIn(OpndKind_Mem)){

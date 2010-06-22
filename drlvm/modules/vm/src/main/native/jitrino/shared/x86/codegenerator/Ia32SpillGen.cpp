@@ -358,7 +358,7 @@ void SpillGen::Registers::parse (const char* params)
     if (params == 0 || strcmp(params, "ALL") == 0)
     {
 
-#ifdef _EM64T_
+#ifdef HYX86_64
         push_back(Constraint(RegName_R8)
                  |Constraint(RegName_RAX)
                  |Constraint(RegName_RCX)

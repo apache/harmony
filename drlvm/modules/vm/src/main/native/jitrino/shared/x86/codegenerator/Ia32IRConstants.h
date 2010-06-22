@@ -18,8 +18,8 @@
  * @author Vyacheslav P. Shakin
  */
 
-#ifndef _IA32_IR_CONSTANTS_H_
-#define _IA32_IR_CONSTANTS_H_
+#ifndef HYX86IR_CONSTANTS_H_
+#define HYX86IR_CONSTANTS_H_
 
 #include "open/types.h"
 #include "Stl.h"

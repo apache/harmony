@@ -119,7 +119,7 @@ FastArrayFilling::runImpl()
         //insert filling instructions 
         Opnd * memOp1 = irManager->newMemOpndAutoKind(value->getType(), index);
         loopNode->appendInst(irManager->newCopyPseudoInst(Mnemonic_MOV, memOp1, value));
-#ifndef _EM64T_
+#ifndef HYX86_64
         Opnd * memOp2 = irManager->newMemOpndAutoKind(value->getType(), index,irManager->newImmOpnd(int32Type,4));
         loopNode->appendInst(irManager->newCopyPseudoInst(Mnemonic_MOV, memOp2, value));
 #endif

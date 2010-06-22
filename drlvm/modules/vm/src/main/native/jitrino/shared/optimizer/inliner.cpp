@@ -112,7 +112,7 @@ Inliner::Inliner(SessionAction* argSource, MemoryManager& mm, IRManager& irm,
     _inlineMaxNodeThreshold = irm.getOptimizerFlags().hir_node_threshold * irm.getOptimizerFlags().inline_node_quota / 100;
 
     _inlineSkipExceptionPath = argSource->getBoolArg("skip_exception_path", INLINE_SKIP_EXCEPTION_PATH);
-#if defined  (_EM64T_) || defined (_IPF_)
+#if defined  (HYX86_64) || defined (_IPF_)
     _inlineSkipApiMagicMethods  = false;
 #else
     _inlineSkipApiMagicMethods = argSource->getBoolArg("skip_api_magics", true);
@@ -128,7 +128,7 @@ Inliner::Inliner(SessionAction* argSource, MemoryManager& mm, IRManager& irm,
 #else
             //is_accepted will return 'true' for these methods by skip table-> no inlining will be done
             Method_Table::Decision des = Method_Table::mt_accepted; 
-#ifndef  _EM64T_ // not tested
+#ifndef  HYX86_64 // not tested
             _inlineSkipMethodTable->add_method_record("java/lang/Integer", "numberOfLeadingZeros", "(I)I", des, false);
             _inlineSkipMethodTable->add_method_record("java/lang/Integer", "numberOfTrailingZeros", "(I)I", des, false);
             _inlineSkipMethodTable->add_method_record("java/lang/Long", "numberOfLeadingZeros", "(J)I", des, false);

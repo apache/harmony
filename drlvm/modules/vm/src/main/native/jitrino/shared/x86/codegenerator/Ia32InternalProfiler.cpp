@@ -651,7 +651,7 @@ void InternalProfiler::addCounters(MethodDesc& methodDesc) {
             ms->bbStats[node->getId()].bbExecCount= new(mm) int64[1];
             *(ms->bbStats[node->getId()].bbExecCount)   = 0;
             node->prependInst(irManager->newInst(Mnemonic_POPFD));
-#ifndef _EM64T_
+#ifndef HYX86_64
             node->prependInst(irManager->newInst(Mnemonic_ADC, irManager->newMemOpnd(irManager->getTypeFromTag(Type::Int32), MemOpndKind_Heap, NULL, int((U_8*)(ms->bbStats[node->getId()].bbExecCount) + 4)), irManager->newImmOpnd(irManager->getTypeFromTag(Type::Int32),0)));
 
             node->prependInst(irManager->newInst(Mnemonic_ADD, irManager->newMemOpnd(irManager->getTypeFromTag(Type::Int32), MemOpndKind_Heap, NULL, int(ms->bbStats[node->getId()].bbExecCount)), irManager->newImmOpnd(irManager->getTypeFromTag(Type::Int32),1)));
@@ -659,7 +659,7 @@ void InternalProfiler::addCounters(MethodDesc& methodDesc) {
             node->prependInst(irManager->newInst(Mnemonic_PUSHFD));
         }
     }
-#ifndef _EM64T_
+#ifndef HYX86_64
     ((BasicBlock *)irManager->getFlowGraph()->getEntryNode())->prependInst(irManager->newInst(Mnemonic_ADD, irManager->newMemOpnd(irManager->getTypeFromTag(Type::Int32), MemOpndKind_Heap, NULL, int(ms->bbStats[-1].bbExecCount)), irManager->newImmOpnd(irManager->getTypeFromTag(Type::Int32),1)));
 #endif
 

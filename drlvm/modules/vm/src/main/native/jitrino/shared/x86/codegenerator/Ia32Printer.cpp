@@ -1413,7 +1413,7 @@ void printRuntimeArgs(::std::ostream& os, U_32 opndCount, CallingConvention::Opn
         U_8 arg[4*sizeof(U_32)]; 
         for (U_32 j=0; j<info.slotCount; j++){
             if (!info.isReg){
-#ifdef _EM64T_
+#ifdef HYX86_64
                 *(POINTER_SIZE_INT*)(arg+cb)=((POINTER_SIZE_INT*)context->rsp)[info.slots[j]];
 #else
                 *(U_32*)(arg+cb)=((U_32*)context->esp)[info.slots[j]];

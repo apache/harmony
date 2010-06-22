@@ -193,11 +193,11 @@ unsigned Runtime::init_num_cpus(void)
 #endif    
 }
 
-#if defined(_EM64T_)
+#if defined(HYX86_64)
 bool CPUID::isSSE2Supported() {
     return true;
 }
-#elif defined(_IA32_) //older IA-32
+#elif defined(HYX86) //older IA-32
 bool CPUID::isSSE2Supported() {
     /*
      * cpuid instruction: 

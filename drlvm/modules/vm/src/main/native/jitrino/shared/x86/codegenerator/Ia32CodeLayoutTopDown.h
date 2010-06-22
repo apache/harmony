@@ -18,8 +18,8 @@
  * @author Intel, Mikhail Y. Fursov
  */
 
-#ifndef _IA32_CODE_LAYOUT_TOP_DOWN
-#define _IA32_CODE_LAYOUT_TOP_DOWN
+#ifndef HYX86CODE_LAYOUT_TOP_DOWN
+#define HYX86CODE_LAYOUT_TOP_DOWN
 
 #include "Ia32CodeLayout.h"
 namespace Jitrino

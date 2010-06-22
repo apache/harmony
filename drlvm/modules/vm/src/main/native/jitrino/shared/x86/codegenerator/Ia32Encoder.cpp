@@ -28,7 +28,7 @@
 namespace Jitrino {
 namespace Ia32 {
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     //FIXME64: for adapter needs
     static bool is_ptr_type(const Type* typ) {
         switch(typ->tag) {
@@ -51,7 +51,7 @@ namespace Ia32 {
         }
         return false;
     }
-#endif  // _EM64T_
+#endif  // HYX86_64
 
 static InstPrefix getInstPrefixFromSReg(RegName reg) {
     if (reg == RegName_Null) {
@@ -246,7 +246,7 @@ U_8* Encoder::emit(U_8* stream, const Inst * inst)
                 }
                 RegName baseReg = pbase == NULL ? RegName_Null : pbase->getRegName();
                 RegName indexReg = pindex == NULL ? RegName_Null : pindex->getRegName();
-#ifdef _EM64T_
+#ifdef HYX86_64
                 // FIXME64 adapter: all PTR types go as 64 bits
                 // this is a porting quick workaround, should be fixed
                 assert(pdisp == NULL || fit32(disp));

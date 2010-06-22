@@ -24,8 +24,8 @@
   */
 
 
-#ifndef _IA32_TLS_H_
-#define _IA32_TLS_H_
+#ifndef HYX86TLS_H_
+#define HYX86TLS_H_
 
 #include "Ia32IRManager.h"
 
@@ -54,5 +54,5 @@ Opnd* createTlsBaseLoadSequence(IRManager& irManager, Node* ctrlNode);
 
 }}; // ~Jitrino::Ia32
 
-#endif  // ifdef _IA32_TLS_H_
+#endif  // ifdef HYX86TLS_H_
 

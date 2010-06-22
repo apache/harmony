@@ -729,7 +729,7 @@ void CodeGen::gen_call_vm_restore(bool exc, const CallSig& cs,
 
 void CodeGen::gen_throw(Class_Handle exnClass, bool restore)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     bool lazy = false;
 #else
     bool lazy = true;
@@ -737,7 +737,7 @@ void CodeGen::gen_throw(Class_Handle exnClass, bool restore)
     BBState saveBB;
 
     //TODO: Workaround for x86-64 stack should be aligned to half of 16
-#ifdef _EM64T_
+#ifdef HYX86_64
     alu(alu_sub, sp, (unsigned)STACK_SLOT_SIZE);
     alu(alu_and, sp, ~((unsigned)STACK_SLOT_SIZE));
     alu(alu_add, sp, (unsigned)STACK_SLOT_SIZE);

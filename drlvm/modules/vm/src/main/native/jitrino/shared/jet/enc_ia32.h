@@ -23,8 +23,8 @@
  * @brief Encoder definitions specific for IA-32 and Intel 64 platforms.
  */
  
-#if !defined(__ENC_IA32_H_INCLUDED__)
-#define __ENC_IA32_H_INCLUDED__
+#if !defined(__ENCHYX86H_INCLUDED__)
+#define __ENCHYX86H_INCLUDED__
 
 #include "enc.h"
 
@@ -55,4 +55,4 @@ extern const Opnd edx;
 }
 }; // ~namespace Jitrino::Jet
 
-#endif  // __ENC_IA32_H_INCLUDED__
+#endif  // __ENCHYX86H_INCLUDED__

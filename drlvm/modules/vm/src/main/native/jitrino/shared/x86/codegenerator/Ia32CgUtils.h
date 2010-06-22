@@ -18,8 +18,8 @@
  * @author Alexander Astapchuk
  */
 
-#if !defined(__IA32_CGUTILS_INCLUDED__)
-#define __IA32_CGUTILS_INCLUDED__
+#if !defined(_HYX86CGUTILS_INCLUDED__)
+#define _HYX86CGUTILS_INCLUDED__
 
 #include "Ia32IRManager.h"
 
@@ -295,4 +295,4 @@ private:
 
 }}; // ~namespace Jitrino::Ia32
 
-#endif  // ~ifndef __IA32_CGUTILS_INCLUDED__
+#endif  // ~ifndef _HYX86CGUTILS_INCLUDED__

@@ -33,7 +33,7 @@
 #include "lil_code_generator.h"
 #include "jit_runtime_support.h"
 #include "m2n.h"
-#include "../m2n_em64t_internal.h"
+#include "m2n_internal.h"
 
 #include "vm_stats.h"
 #include "dump.h"

@@ -141,7 +141,7 @@ void jvmti_jit_do_pop_frame(){
     assert(0);
 }
 
-#else // _IA32_ & _EM64T_
+#else // HYX86 & HYX86_64
 
 // requires stack iterator and buffer to save intermediate information
 static void jvmti_jit_prepare_pop_frame(StackIterator* si, U_32* buf) {
@@ -319,7 +319,7 @@ void jvmti_jit_do_pop_frame() {
     CTRACE(("PopFrame transfer control to: %p",  (void*)si_get_ip(si) ));
     si_transfer_control(si);
 }
-#endif // _IA32_
+#endif // HYX86
 
 void jvmti_safe_point()
 {

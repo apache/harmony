@@ -279,7 +279,7 @@ FastArrayFillPass::_run(IRManager& irManager)
         inEdge = startNode->getInEdges().front();
 
         //get a new constant
-#ifdef _EM64T_
+#ifdef HYX86_64
         int64 val = (int64)((ConstInst*)constValue->getInst())->getValue().i8;
 #else
         I_32 val = (I_32)((ConstInst*)constValue->getInst())->getValue().i4;
@@ -290,7 +290,7 @@ FastArrayFillPass::_run(IRManager& irManager)
             case Type::UInt8:
                 val |= (val << 8);
                 val |= (val << 16);
-#ifdef _EM64T_
+#ifdef HYX86_64
                 val |= (val << 32);
 #endif
                 break;
@@ -298,19 +298,19 @@ FastArrayFillPass::_run(IRManager& irManager)
             case Type::UInt16:
             case Type::Char:
                 val |= (val << 16);
-#ifdef _EM64T_
+#ifdef HYX86_64
                 val |= (val << 32);
 #endif
                 break;
             case Type::Int32:
             case Type::UInt32:
-#ifdef _EM64T_
+#ifdef HYX86_64
                 val |= (val << 32);
                 break;
 #endif
             case Type::UIntPtr:
             case Type::IntPtr:
-#ifdef _EM64T_
+#ifdef HYX86_64
             case Type::UInt64:
             case Type::Int64:
 #endif

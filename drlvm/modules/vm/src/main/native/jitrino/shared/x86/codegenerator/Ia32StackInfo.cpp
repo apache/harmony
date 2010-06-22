@@ -208,7 +208,7 @@ void StackInfo::unwind(MethodDesc* pMethodDesc, JitFrameContext* context, bool i
    
 
     POINTER_SIZE_INT offset_step = sizeof(POINTER_SIZE_INT);
-#ifdef _EM64T_
+#ifdef HYX86_64
     if (itraceMethodExitString!=NULL){
         Log::cat_rt()->out()<<"__UNWIND__:"
             <<(itraceMethodExitString!=(const char*)1?itraceMethodExitString:"")
@@ -301,7 +301,7 @@ POINTER_SIZE_INT* StackInfo::getRegOffset(const JitFrameContext* context, RegNam
         //return register offset for previous stack frame. 
         //MUST be called before unwind()
         switch(reg) {
-#ifdef _EM64T_
+#ifdef HYX86_64
             case RegName_R15:
                 return context->p_r15;
             case RegName_R14:
@@ -343,7 +343,7 @@ POINTER_SIZE_INT* StackInfo::getRegOffset(const JitFrameContext* context, RegNam
 
 void StackInfo::fixHandlerContext(JitFrameContext* context)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     if (itraceMethodExitString!=NULL){
         Log::cat_rt()->out()<<"__CATCH_HANDLER__:"
             <<(itraceMethodExitString!=(const char*)1?itraceMethodExitString:"")
@@ -366,7 +366,7 @@ void StackInfo::registerInsts(IRManager& irm)
 {
     MethodDesc& md = irm.getMethodDesc();
     if (!md.isStatic()) {
-#ifdef _EM64T_
+#ifdef HYX86_64
         if ((md.isSynchronized() || md.isParentClassIsLikelyExceptionType())) {
             EntryPointPseudoInst * entryPointInst = irm.getEntryPointInst();
             offsetOfThis = (U_32)entryPointInst->thisOpnd->getMemOpndSubOpnd(MemOpndSubOpndKind_Displacement)->getImmValue();

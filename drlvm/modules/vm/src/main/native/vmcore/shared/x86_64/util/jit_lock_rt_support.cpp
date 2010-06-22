@@ -34,7 +34,7 @@
 #include "exceptions_jit.h"
 #include "lil.h"
 #include "lil_code_generator.h"
-#include "../m2n_em64t_internal.h"
+#include "m2n_internal.h"
 #include "object_handles.h"
 #include "Class.h"
 #include "jit_runtime_support.h"

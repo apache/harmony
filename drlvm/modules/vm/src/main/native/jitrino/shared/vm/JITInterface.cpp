@@ -420,7 +420,7 @@ extern "C"
 JITEXPORT Boolean
 JIT_supports_compressed_references(JIT_Handle jit)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
         return true;
 #else
         return false;

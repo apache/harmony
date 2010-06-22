@@ -145,7 +145,7 @@ static int set_guard_page(port_tls_data_t* tlsdata, Boolean set)
         (!set && !tlsdata->guard_page_set))
         return 0; // Already in needed state
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     /* Windows x86_64 protects both guard page and guard stack area
        specified by SetThreadStackGuarantee() with PAGE_GUARD flag */
     guard_addr = tlsdata->guard_stack_addr;
@@ -230,14 +230,14 @@ size_t port_thread_get_effective_stack_size()
 
 static int setup_stack(port_tls_data_t* tlsdata)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     ULONG guard_stack_size_param;
 #endif
 
     if (!port_shared_data)
         return -1;
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     /* this code in future should be used on both platforms x86-32 and x86-64 */
     guard_stack_size_param = (ULONG)PSD->guard_stack_size;
 

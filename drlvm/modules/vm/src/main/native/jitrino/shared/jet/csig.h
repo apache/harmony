@@ -90,7 +90,7 @@ namespace Jet {
  */
 #define CCONV_CDECL_IA32       (CCONV_CALLER_POPS | CCONV_MEM | CCONV_RETURN_FP_THROUGH_FPU)
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     /**
      * @brief EM64T calling convention.
      */
@@ -127,7 +127,7 @@ namespace Jet {
  */
 #define CCONV_MULTIANEWARRAY    CCONV_CDECL_IA32
 
-#ifdef _EM64T_
+#ifdef HYX86_64
     /**
      * @brief On IA-32 it's CCONV_MANAGED_IA32, on EM64T it's CCONV_EM64T.
      */

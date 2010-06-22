@@ -18,8 +18,8 @@
  * @author Intel, Vyacheslav P. Shakin, Mikhail Y. Fursov
  */
 
-#ifndef _IA32_CFG_H_
-#define _IA32_CFG_H_
+#ifndef HYX86CFG_H_
+#define HYX86CFG_H_
 
 #include "ControlFlowGraph.h"
 #include "MemoryManager.h"
@@ -161,4 +161,4 @@ namespace Ia32{
 
 }; //namespace Ia32
 }
-#endif // _IA32_FLOWGRAPH_H
+#endif // HYX86FLOWGRAPH_H

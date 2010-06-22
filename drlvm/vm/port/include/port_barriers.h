@@ -59,7 +59,7 @@ void port_write_barrier(void);
 #if !defined(_IPF_)
 PORT_INLINE void port_rw_barrier(void)
 {
-#if defined(_EM64T_)
+#if defined(HYX86_64)
     asm volatile ("mfence" : : : "memory");
 #else /* General x86 case */
     /*
@@ -113,7 +113,7 @@ PORT_INLINE void port_write_barrier(void)
 
 PORT_INLINE void port_rw_barrier(void)
 {
-#ifdef _EM64T_
+#ifdef HYX86_64
     /* if x86_64/x64/EM64T, then use an mfence to flush memory caches */
     _mm_mfence();
 #else

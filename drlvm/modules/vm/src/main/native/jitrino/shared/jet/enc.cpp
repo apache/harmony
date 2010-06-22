@@ -330,7 +330,7 @@ void Encoder::call(bool check_stack, AR gr, const void * target,
                    const CallSig& cs, unsigned idx, ...)
 {
 //TODO: Add IA-64 check
-#ifdef _EM64T_
+#ifdef HYX86_64
     if (check_stack) {
         alu(alu_test, sp, 0x0F);
         unsigned br_off = br(z, 0, 0, hint_none);
@@ -368,7 +368,7 @@ void Encoder::call_va(bool check_stack, AR ar, const void *target,
                 mov(Opnd(i32, sp, cs.off(i)), val);
             }
             else {
-#ifdef _EM64T_
+#ifdef HYX86_64
                 int_ptr val = va_arg(valist, int_ptr);
                 mov(Opnd(i64, sp, cs.off(i)), val);
 #else
@@ -380,7 +380,7 @@ void Encoder::call_va(bool check_stack, AR ar, const void *target,
             }
         }
         else if (jt==i64) {
-#ifdef _EM64T_
+#ifdef HYX86_64
             int_ptr val = va_arg(valist, int_ptr);
             mov(gr == gr_x ? Opnd(i64, sp, cs.off(i)) : Opnd(i64, gr), val);
 #else

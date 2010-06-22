@@ -48,7 +48,7 @@ Opnd* createTlsBaseLoadSequence(IRManager& irManager, Node* ctrlNode)
 Opnd* createTlsBaseLoadSequence(IRManager& irManager, Node* ctrlNode, Type* tlsBaseType)
 {
     Opnd* tlsBase;
-#if defined(_WIN32) && defined(_EM64T_)
+#if defined(_WIN32) && defined(HYX86_64)
     // Currently do it in a looong way - via the helper, but need to change
     // it to FS:[0x14] - TODO
     tlsBase = createTlsBaseLoadGeneric(irManager, ctrlNode, tlsBaseType);
@@ -104,7 +104,7 @@ Opnd* createTlsBaseLoadLin(IRManager& irManager, Node* ctrlNode, Type* tlsBaseTy
 
     int threadOffset = VMInterface::getTLSBaseOffset();
     Opnd* pTib;
-#if defined(_EM64T_)
+#if defined(HYX86_64)
     pTib = irManager.newMemOpnd(tlsBaseType, MemOpndKind_Any, NULL, 0, RegName_FS);
 #else
     pTib = irManager.newMemOpnd(tlsBaseType, MemOpndKind_Any, NULL, 0, RegName_GS);

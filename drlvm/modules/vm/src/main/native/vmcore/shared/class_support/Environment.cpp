@@ -57,7 +57,7 @@ ready_for_exceptions(false)
 
     hythread_lib_create(&hythread_lib);
 
-#if defined _IPF_ || defined _EM64T_
+#if defined _IPF_ || defined HYX86_64
     compact_fields = true;
     sort_fields = true;
 #else // !_IPF_

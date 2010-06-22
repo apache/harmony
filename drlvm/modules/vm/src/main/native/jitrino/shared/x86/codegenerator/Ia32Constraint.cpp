@@ -85,7 +85,7 @@ OpndSize Constraint::getDefaultSize(U_32 k)
             case OpndKind_SReg:         return OpndSize_16;
             case OpndKind_FPReg:        return OpndSize_80;
             case OpndKind_XMMReg:       return OpndSize_128;
-#ifdef _EM64T_
+#ifdef HYX86_64
             case OpndKind_GPReg:        return OpndSize_64;
 #else
             case OpndKind_GPReg:        return OpndSize_32;
@@ -114,14 +114,14 @@ Constraint Constraint::getAliasConstraint(OpndSize s, U_32 offset)const
     U_32 newKind=kind, newMask=0;
     U_32 newRegKind=newKind & OpndKind_Reg;
     OpndSize maxSubregisterSize =
-#ifdef _EM64T_
+#ifdef HYX86_64
                                     OpndSize_32;
 #else
                                     OpndSize_16;
 #endif
 
     if (newRegKind == OpndKind_GPReg || ( (newRegKind & OpndKind_GPReg) && sz <= maxSubregisterSize) ){
-#ifndef _EM64T_
+#ifndef HYX86_64
         if (sz==OpndSize_8 && (s==OpndSize_16 || s==OpndSize_32))
             newMask=((mask>>4)|mask)&0xf;
         else if (sz==OpndSize_16)
@@ -155,7 +155,7 @@ RegName Constraint::getAliasRegName(RegName regName, OpndSize sz, U_32 offset)
     OpndKind regKind=getRegKind(regName);
 
     if (regKind==OpndKind_GPReg){
-#ifndef _EM64T_
+#ifndef HYX86_64
         if (sz==OpndSize_8 && (s==OpndSize_16 || s==OpndSize_32)){
             U_32 idx=getRegIndex(regName);
             if (idx>4)

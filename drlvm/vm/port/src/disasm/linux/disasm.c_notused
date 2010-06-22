@@ -31,14 +31,14 @@
 #include <apr_portable.h>
 
 // this is mostly imperical data 
-#if defined(_IA32_)
+#if defined(HYX86)
     #define ADDR_SIZE       16
     #define MNEMONIC_SIZE   15
     #define BYTES_PER_LINE  2
     #define BYTES_TOTAL     100
     //BYTES_SIZE = BYTES_PER_LINE * 3
     #define BYTES_SIZE      6
-#elif defined(_EM64T_)
+#elif defined(HYX86_64)
     #define ADDR_SIZE       24
     #define MNEMONIC_SIZE   20
     #define BYTES_PER_LINE  2
@@ -82,7 +82,7 @@ static disassembler_ftype bfd_decoder = NULL;
 static init_disassemble_info_t bfd_init_info = NULL;
 static disassemble_init_for_target_t bfd_init_target = NULL;
 
-#if defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86) || defined(HYX86_64) || defined(_IPF_)
 
 /*    Memory reading routines    */
 
@@ -90,9 +90,9 @@ static int disasm_read_memory(bfd_vma src,
                               bfd_byte * buffer,
                               unsigned int n,
                               struct disassemble_info * info) {
-#if defined(_IA32_)
+#if defined(HYX86)
     memcpy(buffer, (void *)(apr_uint32_t)src, n);
-#elif defined(_EM64T_) || defined(_IPF_)
+#elif defined(HYX86_64) || defined(_IPF_)
     memcpy(buffer, (void *)src, n);
 #endif
     return 0;
@@ -101,9 +101,9 @@ static int disasm_read_memory(bfd_vma src,
 /*    Address printing routines    */
 
 static void disasm_print_adress_default(bfd_vma memaddr, struct disassemble_info * info) {
-#if defined(_IA32_)
+#if defined(HYX86)
     info->fprintf_func(info->stream, "0x%08X", (apr_int32_t)memaddr);
-#elif defined(_EM64T_) || defined(_IPF_)
+#elif defined(HYX86_64) || defined(_IPF_)
     apr_uint64_t addr = (apr_uint64_t)memaddr;
     apr_uint32_t hi = (apr_uint32_t)((addr >> 32) & UINT_MAX);
     apr_uint32_t lo = (apr_uint32_t)(addr & UINT_MAX);
@@ -171,7 +171,7 @@ static void disasm_print(port_disassembler_t * disassembler,
     // iterate over the code buffer
     while (len > 0) {
         int bytes_read = 1;
-#if defined(_IA32_)
+#if defined(HYX86)
         // print instruction address
         if (disassembler->port_info.print_addr) {
             disassembler->bfd_info.print_address_func((bfd_vma)(apr_uint32_t)code,
@@ -182,7 +182,7 @@ static void disasm_print(port_disassembler_t * disassembler,
         if (disassembler->port_info.print_mnemonic) {
             bytes_read = bfd_decoder((bfd_vma)(apr_uint32_t)code, &disassembler->bfd_info);
         }
-#elif defined(_EM64T_) || defined(_IPF_)
+#elif defined(HYX86_64) || defined(_IPF_)
         // print instruction address
         if (disassembler->port_info.print_addr) {
             disassembler->bfd_info.print_address_func((bfd_vma)code,
@@ -215,18 +215,18 @@ static void disasm_print(port_disassembler_t * disassembler,
     }
 }
 
-#endif // defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)
+#endif // defined(HYX86) || defined(HYX86_64) || defined(_IPF_)
 
 /*    Public Interface    */
 
 APR_DECLARE(apr_status_t) port_disasm_initialize() {
-#if defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86) || defined(HYX86_64) || defined(_IPF_)
     static apr_status_t stat = APR_EINIT;
     const char * BFD_LIB_NAME = "libbfd.so";
     const char * OPCODES_LIB_NAME = "libopcodes.so";
     const char * BFD_INIT_INFO_NAME = "init_disassemble_info";
     const char * BFD_INIT_TARGET_NAME = "disassemble_init_for_target";
-#if defined (_IA32_) || defined(_EM64T_)
+#if defined (HYX86) || defined(HYX86_64)
     const char * BFD_PRINT_INSN_NAME = "print_insn_i386_intel";
 #elif defined(_IPF_)
     const char * BFD_PRINT_INSN_NAME = "print_insn_ia64";
@@ -306,7 +306,7 @@ APR_DECLARE(apr_status_t) port_disasm_initialize() {
 
 APR_DECLARE(apr_status_t) port_disassembler_create(port_disassembler_t ** disassembler,
                                                    apr_pool_t * pool) {
-#if defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86) || defined(HYX86_64) || defined(_IPF_)
     apr_status_t status;
     
     if ((status = port_disasm_initialize()) != APR_SUCCESS) {
@@ -326,10 +326,10 @@ APR_DECLARE(apr_status_t) port_disassembler_create(port_disassembler_t ** disass
     (*disassembler)->bfd_info.read_memory_func = disasm_read_memory;
     (*disassembler)->bfd_info.print_address_func = disasm_print_adress_default;
 
-#if defined(_IA32_)
+#if defined(HYX86)
     (*disassembler)->bfd_info.arch = bfd_arch_i386;
     (*disassembler)->bfd_info.mach = bfd_mach_i386_i386_intel_syntax;
-#elif defined(_EM64T_)
+#elif defined(HYX86_64)
     (*disassembler)->bfd_info.arch = bfd_arch_i386;
     (*disassembler)->bfd_info.mach = bfd_mach_x86_64_intel_syntax;
 #elif defined(_IPF_)
@@ -357,7 +357,7 @@ APR_DECLARE(apr_status_t) port_disassembler_create(port_disassembler_t ** disass
 APR_DECLARE(apr_status_t) port_disasm_set_info(port_disassembler_t * disassembler,
                                                const port_disasm_info_t new_info,
                                                port_disasm_info_t * old_info) {
-#if defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86) || defined(HYX86_64) || defined(_IPF_)
     if (old_info != NULL) {
         *old_info = disassembler->port_info;
     }
@@ -382,7 +382,7 @@ APR_DECLARE(apr_status_t) port_disasm(port_disassembler_t * disassembler,
                                       const char * code, 
                                       unsigned int len,
                                       char ** disasm_code) {
-#if defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)    
+#if defined(HYX86) || defined(HYX86_64) || defined(_IPF_)    
     // check if nothing should be printed
     if (disassembler->line_size == 0) {
         *disasm_code = NULL;
@@ -419,7 +419,7 @@ APR_DECLARE(apr_status_t) port_disasm_to_file(port_disassembler_t * disassembler
                                               const char * code,
                                               unsigned int len,
                                               apr_file_t * thefile) {
-#if defined(_IA32_) || defined(_EM64T_) || defined(_IPF_)
+#if defined(HYX86) || defined(HYX86_64) || defined(_IPF_)
     // check if nothing should be printed
     if (disassembler->line_size == 0) {
         return APR_SUCCESS;

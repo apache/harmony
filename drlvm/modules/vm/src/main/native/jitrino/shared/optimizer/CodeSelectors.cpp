@@ -932,7 +932,7 @@ void _BlockCodeSelector::genInstCode(InstructionCallback& instructionCallback, I
                 if (!genConsts) break;
                 ConstInst* constInst = (ConstInst*)inst;
                 switch (inst->getType()) {
-#ifdef _IA32_
+#ifdef HYX86
         case Type::UIntPtr:
         case Type::IntPtr:
         case Type::UnmanagedPtr:
@@ -940,7 +940,7 @@ void _BlockCodeSelector::genInstCode(InstructionCallback& instructionCallback, I
         case Type::Int32:
             cgInst = instructionCallback.ldc_i4(constInst->getValue().i4);
             break;
-#ifdef _EM64T_
+#ifdef HYX86_64
         case Type::UIntPtr:
         case Type::IntPtr:
         case Type::UnmanagedPtr:

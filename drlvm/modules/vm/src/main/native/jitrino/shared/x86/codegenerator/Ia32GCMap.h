@@ -18,8 +18,8 @@
  * @author Intel, Mikhail Y. Fursov
  */
 
-#ifndef _IA32_GC_MAP_H_
-#define _IA32_GC_MAP_H_
+#ifndef HYX86GC_MAP_H_
+#define HYX86GC_MAP_H_
 
 #include "Stl.h"
 #include "MemoryManager.h"
@@ -105,7 +105,7 @@ namespace Ia32 {
         friend class GCSafePoint;
         static const U_32 OBJ_MASK  = 0x1;
         static const U_32 REG_MASK  = 0x2;
-#ifdef _EM64T_
+#ifdef HYX86_64
         static const U_32 COMPRESSED_MASK  = 0x4;
 #endif
 
@@ -119,7 +119,7 @@ namespace Ia32 {
 
     public:
         
-#ifdef _EM64T_
+#ifdef HYX86_64
         GCSafePointOpnd(bool isObject, bool isOnRegister, I_32 _val, I_32 _mptrOffset, bool isCompressed=false) : val(_val), mptrOffset(_mptrOffset) {
             flags = flags | (isCompressed ? COMPRESSED_MASK: 0);
 #else
@@ -138,7 +138,7 @@ namespace Ia32 {
         bool isOnRegister() const { return (flags & REG_MASK)!=0;}
         bool isOnStack() const {return !isOnRegister();}
         
-#ifdef _EM64T_
+#ifdef HYX86_64
         bool isCompressed() const { return (flags & COMPRESSED_MASK)!=0;}
 #endif      
         RegName getRegName() const { assert(isOnRegister()); return RegName(val);}
@@ -178,4 +178,4 @@ namespace Ia32 {
 
 }} //namespace
 
-#endif /* _IA32_GC_MAP_H_ */
+#endif /* HYX86GC_MAP_H_ */
