@@ -33,16 +33,10 @@ endif
 OPT += -fexceptions
 CXXFLAGS += -Wno-deprecated -fmessage-length=0 -Wall -Werror -Wno-uninitialized
 
-ifeq ($(HY_ARCH),ia64)
-JIT_ARCH := ia64
-else
-JIT_ARCH := x86_or_x86_64
-endif
-
 INCLUDES := -I$(VM_HOME)include -I$(VM_HOME)vmcore/include \
   -I$(VM_HOME)port/include \
   -I$(SHAREDSUB)main -I$(SHAREDSUB)shared -I$(SHAREDSUB)vm \
-  -I$(SHAREDSUB)codegenerator -I$(SHAREDSUB)$(JIT_ARCH)/codegenerator \
+  -I$(SHAREDSUB)codegenerator -I$(SHAREDSUB)$(HY_ARCH_FAMILY)/codegenerator \
   -I$(SHAREDSUB)optimizer -I$(SHAREDSUB)dynopt \
   -I$(SHAREDSUB)translator -I$(SHAREDSUB)translator/java \
   $(INCLUDES)
@@ -122,6 +116,6 @@ MDLLIBFILES += $(LIBPATH)libapr-1.a $(LIBPATH)libport.a
 
 include $(HY_HDK)/build/make/rules.mk
 
-$(HY_BIN)%.o: $(SHAREDSUB)$(JIT_ARCH)/%.cpp
+$(HY_BIN)%.o: $(SHAREDSUB)$(HY_ARCH_FAMILY)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
