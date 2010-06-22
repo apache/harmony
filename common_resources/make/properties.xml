@@ -387,6 +387,7 @@ HY_ZIP_API=${hy.zip.api}
 HY_PORTLIB_STUBS=${hy.portlib.stubs}
 HY_CFG=${hy.cfg}
 HY_ARCH=${hy.arch}
+HY_ARCH_FAMILY=${hy.arch.family}
 HY_OS=${hy.os}
 HY_PLATFORM=${hy.platform}
 HY_NO_THR=${hy.no.thr}

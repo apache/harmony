@@ -37,14 +37,14 @@ LIBNAME = $(LIBPATH)libencoder.a
 
 include $(HY_HDK)/build/make/rules.mk
 
-$(HY_BIN)%.o: $(ENCDIR)%.cpp
+$(HY_BIN)%.o: $(SHAREDSUB)$(HY_ARCH_FAMILY)/%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
-$(HY_HDK)/include/%.h: $(SHAREDSUB)$(HY_ARCH)/%.h
+$(HY_HDK)/include/%.h: $(SHAREDSUB)$(HY_ARCH_FAMILY)/%.h
 	mkdir -p $(@D)
 	cp -p $< $@
 
-$(HY_HDK)/include/%.inl: $(SHAREDSUB)$(HY_ARCH)/%.inl
+$(HY_HDK)/include/%.inl: $(SHAREDSUB)$(HY_ARCH_FAMILY)/%.inl
 	mkdir -p $(@D)
 	cp -p $< $@

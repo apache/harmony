@@ -183,7 +183,29 @@
         <isset property="is.ppc32" />
     </condition>
     <property name="hy.arch" value="${os.arch}" />
-    
+
+    <condition property="hy.arch.family" value="x86">
+        <or>
+            <isset property="is.x86" />
+            <isset property="is.x86_64" />
+        </or>
+    </condition>
+    <condition property="hy.arch.family" value="ia64">
+        <isset property="is.ia64" />
+    </condition>
+    <condition property="hy.arch.family" value="ppc">
+        <or>
+            <isset property="is.ppc32" />
+            <isset property="is.ppc64" />
+        </or>
+    </condition>
+    <condition property="hy.arch.family" value="s390">
+        <or>
+            <isset property="is.s390" />
+            <isset property="is.s390x" />
+        </or>
+    </condition>
+
     <!-- Normalized platform name -->
     <property name="hy.platform" value="${hy.os}.${hy.arch}"/>
     <property name="hy.platform.path" value="${hy.os}/${hy.arch}"/>
