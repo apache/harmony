@@ -128,8 +128,12 @@ BUILDFILES := \
   util/crash_dump_os.o util/ini.o util/jarfile_support.o \
   util/jit_lock_rt_support.o util/jit_runtime_support.o \
   util/mem_alloc.o util/natives/java_lang_thread.o util/natives_support.o \
-  util/optimize.o util/os_wrapper.o util/signals.o util/vm_stats.o \
+  util/os_wrapper.o util/signals.o util/vm_stats.o \
   util/vm_strings.o
+
+ifeq ($(HY_ARCH),x86)
+BUILDFILES += util/optimize.o
+endif
 
 MDLLIBFILES += $(LIBPATH)libport.a $(LIBPATH)libencoder.a \
   $(LIBPATH)libapr-1.a $(LIBPATH)libverifier.a \
