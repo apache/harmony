@@ -2017,6 +2017,8 @@ public final class Scanner implements Iterator<String> {
         return negative;
     }
 
+    private int tokenStart = 0;
+    private int tokenEnd = 0;
     /*
      * Find the prefixed delimiter and posefixed delimiter in the input resource
      * and set the start index and end index of Matcher region. If postfixed
@@ -2031,11 +2033,13 @@ public final class Scanner implements Iterator<String> {
         matcher.usePattern(delimiter);
         matcher.region(findStartIndex, bufferLength);
 
-        tokenStartIndex = findPreDelimiter();
-        if (setHeadTokenRegion(tokenStartIndex)) {
+        findPreDelimiter();
+        if (setHeadTokenRegion(tokenStart)) {
             return true;
         }
-        tokenEndIndex = findPostDelimiter();
+        findPostDelimiter();
+        tokenStartIndex = tokenStart;
+        tokenEndIndex = tokenEnd;
         // If the second delimiter is not found
         if (-1 == tokenEndIndex) {
             // Just first Delimiter Exists
@@ -2053,8 +2057,8 @@ public final class Scanner implements Iterator<String> {
     /*
      * Find prefix delimiter
      */
-    private int findPreDelimiter() {
-        int tokenStartIndex;
+    private void findPreDelimiter() {
+    	tokenStart = 0;
         boolean findComplete = false;
         while (!findComplete) {
             if (matcher.find()) {
@@ -2074,13 +2078,14 @@ public final class Scanner implements Iterator<String> {
                     readMore();
                     resetMatcher();
                 } else {
-                    return -1;
+                    tokenStart = -1;
+                    return;
                 }
             }
         }
-        tokenStartIndex = matcher.end();
+
+        tokenStart = matcher.end();
         findStartIndex = matcher.end();
-        return tokenStartIndex;
     }
 
     /*
@@ -2113,8 +2118,8 @@ public final class Scanner implements Iterator<String> {
     /*
      * Find postfix delimiter
      */
-    private int findPostDelimiter() {
-        int tokenEndIndex = 0;
+    private void findPostDelimiter() {
+        tokenEnd = 0;
         boolean findComplete = false;
         while (!findComplete) {
             if (matcher.find()) {
@@ -2128,13 +2133,16 @@ public final class Scanner implements Iterator<String> {
                     readMore();
                     resetMatcher();
                 } else {
-                    return -1;
+                    tokenStart = findStartIndex;
+                    tokenEnd = -1;
+                    return;
                 }
             }
         }
-        tokenEndIndex = matcher.start();
+
+        tokenStart = findStartIndex;
+        tokenEnd = matcher.start();
         findStartIndex = matcher.start();
-        return tokenEndIndex;
     }
 
     /*
@@ -2143,13 +2151,12 @@ public final class Scanner implements Iterator<String> {
      * true, otherwise set to false.
      */
     private void readMore() {
-        int oldPosition = buffer.position();
-        int oldBufferLength = bufferLength;
         // Increase capacity if empty space is not enough
         if (bufferLength >= buffer.capacity()) {
             expandBuffer();
         }
-
+        int oldPosition = buffer.position();
+        int oldBufferLength = bufferLength;
         // Read input resource
         int readCount = 0;
         try {
@@ -2183,14 +2190,66 @@ public final class Scanner implements Iterator<String> {
 
     // Expand the size of internal buffer.
     private void expandBuffer() {
-        int oldPosition = buffer.position();
-        int oldCapacity = buffer.capacity();
+        //inital new indexes values
+        int nFindStartIndex = 0;
+        int nPreStartIndex = 0;
+        int nBufferLength = 0;
+        int nLimit = 0;
+        int nPostion = 0;       
+        int nCachehasNextIndex = 0;
+
+        //store old buffer set
+        int oldLength = bufferLength;
+        int oldPostion = buffer.position();
         int oldLimit = buffer.limit();
-        int newCapacity = oldCapacity * DIPLOID;
-        char[] newBuffer = new char[newCapacity];
-        System.arraycopy(buffer.array(), 0, newBuffer, 0, oldLimit);
-        buffer = CharBuffer.wrap(newBuffer, 0, newCapacity);
-        buffer.position(oldPosition);
-        buffer.limit(oldLimit);
+        int oldCapacity = buffer.capacity();
+        
+        //new start index for new buffer
+        int startIndex = 0;
+        
+        if (preStartIndex == -1) {
+            startIndex = findStartIndex;
+            nPreStartIndex = -1;
+            nFindStartIndex = 0;
+        } else {
+            startIndex = preStartIndex;
+            nPreStartIndex = 0;
+            nFindStartIndex = findStartIndex - startIndex;
+        }
+        
+        int nCapacity = oldCapacity;
+        char[] newBuffer = null;
+        // set nCapacity
+        if (startIndex < oldCapacity / 2) {
+            nCapacity = nCapacity << 1;
+            newBuffer = new char[nCapacity];
+        } else {
+            newBuffer = buffer.array();
+        }
+
+        //new buffer set
+        nBufferLength = oldLength - startIndex;
+        nLimit = oldLimit - startIndex;
+        if (oldPostion < startIndex) {
+            nPostion = 0;
+        } else {
+            nPostion = oldPostion - startIndex;
+        }
+        // new CachedhasNextIndex;
+        if (cachehasNextIndex != -1) {
+            nCachehasNextIndex = cachehasNextIndex - startIndex;
+        } else {
+            nCachehasNextIndex = -1;
+        }
+        System.arraycopy(buffer.array(), startIndex, newBuffer, 0, nLimit);
+
+        buffer = CharBuffer.wrap(newBuffer, 0, nCapacity);
+        buffer.position(nPostion);
+        buffer.limit(nLimit);
+
+        preStartIndex = nPreStartIndex;
+        findStartIndex = nFindStartIndex;
+        bufferLength = nBufferLength;
+        cachehasNextIndex = nCachehasNextIndex;
     }
 }

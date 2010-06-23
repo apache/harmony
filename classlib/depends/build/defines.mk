@@ -55,7 +55,7 @@ INCLUDES += -I$(HY_HDK)/include -I$(HY_HDK)/jdk/include -I. -I$(SHAREDSUB)
 
 include $(HY_HDK)/build/make/platform/$(HY_PLATFORM).mk
 
-DEFINES += -D_REENTRANT
+DEFINES += -D_REENTRANT -D_FILE_OFFSET_BITS=64
 
 ifeq ($(HY_CFG),release)
 OPT += $(HYRELEASECFLAGS)

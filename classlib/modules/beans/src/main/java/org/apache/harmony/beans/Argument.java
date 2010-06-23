@@ -23,7 +23,7 @@ public class Argument {
 
     private Object value;
 
-    private Class[] interfaces;
+    private Class<?>[] interfaces;
 
     public Argument(Object value) {
         this.value = value;
@@ -47,7 +47,7 @@ public class Argument {
         return value;
     }
 
-    public Class[] getInterfaces() {
+    public Class<?>[] getInterfaces() {
         return interfaces;
     }
 
@@ -56,7 +56,7 @@ public class Argument {
         this.interfaces = type.getInterfaces();
     }
 
-    public void setInterfaces(Class[] interfaces) {
+    public void setInterfaces(Class<?>[] interfaces) {
         this.interfaces = interfaces;
     }
 }

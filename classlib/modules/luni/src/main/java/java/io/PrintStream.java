@@ -175,7 +175,7 @@ public class PrintStream extends FilterOutputStream implements Appendable,
             throw new NullPointerException();
         }
         if (!Charset.isSupported(csn)) {
-            throw new UnsupportedEncodingException();
+            throw new UnsupportedEncodingException(csn);
         }
         encoding = csn;
     }

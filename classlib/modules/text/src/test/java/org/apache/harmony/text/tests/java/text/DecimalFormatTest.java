@@ -751,6 +751,15 @@ public class DecimalFormatTest extends TestCase {
         assertEquals("Wrong pattern 3", "#", format.toPattern());
         format = new DecimalFormat(".#");
         assertEquals("Wrong pattern 4", "#.0", format.toPattern());
+        // Regression for HARMONY-6485
+        format = new DecimalFormat();
+        format.setMinimumIntegerDigits(0);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(0);
+        format.applyPattern("00.0#");
+        assertEquals("Minimum integer digits not set", 2, format.getMinimumIntegerDigits());
+        assertEquals("Minimum fraction digits not set", 1, format.getMinimumFractionDigits());
+        assertEquals("Maximum fraction digits not set", 2, format.getMaximumFractionDigits());
     }
 
     /**

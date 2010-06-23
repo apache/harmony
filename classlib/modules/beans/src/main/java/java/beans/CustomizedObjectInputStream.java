@@ -48,14 +48,12 @@ class CustomizedObjectInputStream extends ObjectInputStream {
             int idx = className.lastIndexOf("["); //$NON-NLS-1$
             String prefix = className.substring(0, idx + 1);
             int[] dimensions = new int[prefix.length()];
-            String postfix;
-            Class<?> componentType = null;
-
             for (int i = 0; i < dimensions.length; ++i) {
                 dimensions[i] = 0;
             }
 
-            postfix = className.substring(idx + 1);
+            String postfix = className.substring(idx + 1);
+            Class<?> componentType = null;
             if (postfix.equals("Z")) { //$NON-NLS-1$
                 componentType = boolean.class;
             } else if (postfix.equals("B")) { //$NON-NLS-1$
@@ -81,10 +79,8 @@ class CustomizedObjectInputStream extends ObjectInputStream {
                 throw new IllegalArgumentException(Messages.getString(
                         "beans.1E", className)); //$NON-NLS-1$
             }
-
             return Array.newInstance(componentType, dimensions).getClass();
         }
-        
         return Class.forName(className, true, cls);
     }
 }

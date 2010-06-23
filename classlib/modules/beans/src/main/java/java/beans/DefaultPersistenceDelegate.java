@@ -294,25 +294,21 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
      */
     @Override
     protected boolean mutatesTo(Object o1, Object o2) {
-        if (null == o1 || null == o2) {
-            return false;
-        }
-        Class<? extends Object> c = o1.getClass();
         if (this.propertyNames.length > 0) {
+            Class<?> clazz = o1.getClass();
             // Check the "equals" method has been declared
             Method equalMethod = null;
             try {
-                equalMethod = c.getDeclaredMethod("equals", //$NON-NLS-1$
+                equalMethod = clazz.getDeclaredMethod("equals", //$NON-NLS-1$
                         new Class[] { Object.class });
-            } catch (NoSuchMethodException ex) {
-                // ignore
+            } catch (NoSuchMethodException e) {
+                // Ignored
             }
 
             if (null != equalMethod) {
                 return o1.equals(o2);
             }
         }
-
         return super.mutatesTo(o1, o2);
     }
 }

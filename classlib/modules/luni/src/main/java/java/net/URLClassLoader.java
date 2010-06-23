@@ -664,9 +664,6 @@ public class URLClassLoader extends SecureClassLoader {
      */
     @Override
     public Enumeration<URL> findResources(final String name) throws IOException {
-        if (name == null) {
-            return null;
-        }
         ArrayList<URL> result = AccessController.doPrivileged(
                 new PrivilegedAction<ArrayList<URL>>() {
                     public ArrayList<URL> run() {
@@ -694,6 +691,9 @@ public class URLClassLoader extends SecureClassLoader {
     }
 
     void findResourcesImpl(String name, ArrayList<URL> result) {
+        if (name == null) {
+            return;
+        }
         int n = 0;
         while (true) {
             URLHandler handler = getHandler(n++);

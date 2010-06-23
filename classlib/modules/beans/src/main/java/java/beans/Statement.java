@@ -43,7 +43,7 @@ public class Statement {
     private Object[] arguments;
     
     // cache used methods of specified target class to accelerate method search
-    private static WeakHashMap<Class, Method[]> cache = new WeakHashMap<Class, Method[]>();
+    private static WeakHashMap<Class<?>, Method[]> cache = new WeakHashMap<Class<?>, Method[]>();
     
     // the special method name donating constructors
     static final String CONSTRUCTOR_NAME = "new"; //$NON-NLS-1$
@@ -126,13 +126,13 @@ public class Statement {
                 result = method.invoke(null, args);
             } else if (theMethodName.equals("newInstance") //$NON-NLS-1$
                     && theTarget == Array.class) {
-                Class<?> componentType = (Class) theArguments[0];
+                Class<?> componentType = (Class<?>) theArguments[0];
                 int length = ((Integer) theArguments[1]).intValue();
                 result = Array.newInstance(componentType, length);
             } else if (theMethodName.equals("new") //$NON-NLS-1$
                     || theMethodName.equals("newInstance")) { //$NON-NLS-1$
-                if (theTarget instanceof Class) {
-                    Constructor<?> constructor = findConstructor((Class)theTarget, theArguments);
+                if (theTarget instanceof Class<?>) {
+                    Constructor<?> constructor = findConstructor((Class<?>)theTarget, theArguments);
                     result = constructor.newInstance(theArguments);
                 } else {
                     if ("new".equals(theMethodName)) { //$NON-NLS-1$
@@ -146,7 +146,7 @@ public class Statement {
             } else if (theMethodName.equals("newArray")) {//$NON-NLS-1$
                 // create a new array instance without length attribute
                 int length = theArguments.length;
-                Class clazz = (Class) theTarget;
+                Class<?> clazz = (Class<?>) theTarget;
 
                 // check the element types of array
                 for (int i = 0; i < length; i++) {
@@ -170,7 +170,7 @@ public class Statement {
                     System.arraycopy(theArguments, 0, result, 0, length);
                 }
                 return result;
-            } else if (theTarget instanceof Class) {
+            } else if (theTarget instanceof Class<?>) {
                 Method method = null;
                 boolean found = false;
                 try {
@@ -180,7 +180,7 @@ public class Statement {
                      * differs from Class itself
                      */
                     if (theTarget != Class.class) {
-                        method = findMethod((Class) theTarget, theMethodName, theArguments, true);
+                        method = findMethod((Class<?>) theTarget, theMethodName, theArguments, true);
                         result = method.invoke(null, theArguments);
                         found = true;
                     }
@@ -204,8 +204,8 @@ public class Statement {
                         result = method.invoke(theTarget, theArguments);
                     }
                 }
-            } else if (theTarget instanceof Iterator){
-            	final Iterator<?> iterator = (Iterator) theTarget;
+            } else if (theTarget instanceof Iterator<?>){
+            	final Iterator<?> iterator = (Iterator<?>) theTarget;
 				final Method method = findMethod(theTarget.getClass(), theMethodName,
 						theArguments, false);
 				if (iterator.hasNext()) {
@@ -237,7 +237,7 @@ public class Statement {
         return result;
     }
     
-    private void arrayCopy(Class type, Object[] src, Object dest, int length) {
+    private void arrayCopy(Class<?> type, Object[] src, Object dest, int length) {
         if (type == boolean.class) {
             boolean[] destination = (boolean[]) dest;
             for (int i = 0; i < length; i++) {
@@ -438,11 +438,11 @@ public class Statement {
     static boolean isStaticMethodCall(Statement stmt) {
         Object target = stmt.getTarget();
         String mName = stmt.getMethodName();
-        if (!(target instanceof Class)) {
+        if (!(target instanceof Class<?>)) {
             return false;
         }
         try {
-            Statement.findMethod((Class) target, mName, stmt.getArguments(), true);
+            Statement.findMethod((Class<?>) target, mName, stmt.getArguments(), true);
             return true;
         } catch (NoSuchMethodException e) {
             return false;

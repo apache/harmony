@@ -22,8 +22,6 @@ package javax.imageio.spi;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.ImageReader;
 
-import org.apache.harmony.luni.util.NotImplementedException;
-
 import java.io.IOException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
@@ -34,9 +32,8 @@ public abstract class ImageReaderSpi extends ImageReaderWriterSpi {
     protected Class[] inputTypes;
     protected String[] writerSpiNames;
 
-    protected ImageReaderSpi() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    protected ImageReaderSpi() {
+        // the default impl. does nothing 
     }
 
     public ImageReaderSpi(String vendorName, String version, String[] names, String[] suffixes,
@@ -78,9 +75,12 @@ public abstract class ImageReaderSpi extends ImageReaderWriterSpi {
 
     public abstract ImageReader createReaderInstance(Object extension) throws IOException;
 
-    public boolean isOwnReader(ImageReader reader) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public boolean isOwnReader(ImageReader reader) {
+        if (reader == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.97"));
+        }
+        
+        return reader.getClass().getName().equals(pluginClassName);
     }
 
     public String[] getImageWriterSpiNames() {

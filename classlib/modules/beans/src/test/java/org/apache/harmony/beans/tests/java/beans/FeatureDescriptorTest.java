@@ -251,11 +251,25 @@ public class FeatureDescriptorTest extends TestCase {
         fd.setValue(attributeName, value);
         assertSame(value, fd.getValue(attributeName));
 
-        Object newValue = null;
         try {
-            fd.setValue(attributeName, newValue);
-            fail("Should throw NullPointerException.");
+            fd.setValue(null, value);
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
+            // Expected
+        }
+
+        try {
+            fd.setValue(attributeName, null);
+            fail("Should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+
+        try {
+            fd.setValue(null, null);
+            fail("Should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
         }
     }
 

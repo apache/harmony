@@ -351,6 +351,7 @@ Usage:
                 <exclude name="bin/pack200"/>
                 <exclude name="bin/policytool"/>
                 <exclude name="bin/unpack200"/>
+                <exclude name="**/*-src.jar"/>
             </tarfileset>
         </tar>
 
@@ -380,6 +381,7 @@ Usage:
                 <exclude name="bin/pack200.exe"/>
                 <exclude name="bin/policytool.exe"/>
                 <exclude name="bin/unpack200.exe"/>
+                <exclude name="**/*-src.jar"/>
             </zipfileset>
         </zip>
         <chksum dir="${hy.target}" file="${deploy.jre.zip}" />
@@ -592,7 +594,6 @@ Usage:
             <property name="common.resources" location="common_resources" />
         </ant>
     </target>
-
 
     <!-- ============================================================== -->
     <!-- ensures dependencies are up to date, then builds jdktools      -->

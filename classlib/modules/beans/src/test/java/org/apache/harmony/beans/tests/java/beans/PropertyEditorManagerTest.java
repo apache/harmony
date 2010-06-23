@@ -102,15 +102,14 @@ public class PropertyEditorManagerTest extends TestCase {
     public void testFindEditor_TypeNull() {
         try {
             PropertyEditorManager.findEditor(null);
-            fail("Should throw NullPointerException.");
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
-            // expected
+            // Expected
         }
     }
 
     public void testFindEditor_TypeNoEditor() {
-        PropertyEditor editor = PropertyEditorManager.findEditor(MockFoo.class);
-        assertNull(editor);
+        assertNull(PropertyEditorManager.findEditor(MockFoo.class));
     }
 
     public void testGetEditorSearchPath_default() {
@@ -157,9 +156,9 @@ public class PropertyEditorManagerTest extends TestCase {
     public void testRegisterEditorType_Null() {
         try {
             PropertyEditorManager.registerEditor(null, ButtonEditor.class);
-            fail("Should throw NullPointerException.");
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
-            // expected
+            // Expected
         }
     }
 
@@ -171,6 +170,7 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditorManager.setEditorSearchPath(new String[] { null });
         assertEquals(1, PropertyEditorManager.getEditorSearchPath().length);
         assertNull(PropertyEditorManager.getEditorSearchPath()[0]);
+        assertNull(PropertyEditorManager.findEditor(PropertyEditorManagerTest.class));
         PropertyEditorManager.setEditorSearchPath(original);
     }
 
@@ -204,8 +204,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Boolean.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NPException");
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
+            // Expected
         }
     }
 
@@ -213,13 +214,15 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Boolean.TYPE);
         try {
             editor.setAsText("yes");
-            fail("Should throw a IllegalArgumentException");
+            fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
+            // Expected
         }
         try {
             editor.setAsText("***true***");
-            fail("Should throw a IllegalArgumentException");
+            fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
+            // Expected
         }
     }
 
@@ -269,8 +272,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Byte.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -278,8 +282,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Byte.TYPE);
         try {
             editor.setAsText("invalid");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -287,8 +292,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Byte.TYPE);
         try {
             editor.setAsText("128");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -306,8 +312,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Double.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NullPointerException");
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
+            // Expected
         }
     }
 
@@ -315,8 +322,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Double.TYPE);
         try {
             editor.setAsText("invalid");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -335,8 +343,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Float.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NullPointerException");
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
+            // Expected
         }
     }
 
@@ -344,8 +353,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Float.TYPE);
         try {
             editor.setAsText("invalid");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -364,8 +374,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Long.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -373,8 +384,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Long.TYPE);
         try {
             editor.setAsText("invalid");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -394,8 +406,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Short.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -403,8 +416,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Short.TYPE);
         try {
             editor.setAsText("invalid");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -423,8 +437,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Integer.TYPE);
         try {
             editor.setAsText(null);
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
+            // Expected
         }
     }
 
@@ -432,9 +447,9 @@ public class PropertyEditorManagerTest extends TestCase {
         PropertyEditor editor = PropertyEditorManager.findEditor(Integer.TYPE);
         try {
             editor.setAsText("invalid");
-            fail("Should throw a NumberFormatException");
+            fail("Should throw NumberFormatException");
         } catch (NumberFormatException e) {
-
+            // Expected
         }
     }
 
@@ -775,17 +790,17 @@ public class PropertyEditorManagerTest extends TestCase {
 
         try {
             e2.setValue(null);
-            fail("Should throw an error");
+            fail("Should throw MockError");
         } catch (MockError e) {
-            // expected
+            // Expected
             assertNull(e2.getValue());
         }
         
         try {
             e2.setValue(new Font("Arial", Font.BOLD, 10));
-            fail("Should throw an error");
+            fail("Should throw MockError");
         } catch (MockError e) {
-            // expected
+            // Expected
         }
     }
     
@@ -802,10 +817,11 @@ public class PropertyEditorManagerTest extends TestCase {
         }
 
     }
+
     public void testColorEditor() throws Exception{
         PropertyEditor e2 = PropertyEditorManager.findEditor(Color.class);
         assertNull(e2.getValue());
-        assertEquals("null", e2.getAsText());
+        assertEquals("", e2.getAsText());
         e2.setValue(Color.RED);
         e2.setAsText(e2.getAsText());
         assertNull(e2.getTags());
@@ -828,31 +844,36 @@ public class PropertyEditorManagerTest extends TestCase {
 
         try {
             e2.setValue(Color.yellow);
-            fail("Should throw an error");
+            fail("Should throw MockError");
         } catch (MockError e) {
-            // expected
+            // Expected
         }
 
         assertEquals("255,255,0", e2.getAsText());
 
         try {
             e2.setAsText(null);
-            fail("Should throw NPE");
+            fail("Should throw NullPointerException");
         } catch (NullPointerException e) {
-            // expected
+            // Expected
         }
 
         try {
             e2.setAsText("text");
             fail("Should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            // expected
+            // Expected
         }
 
         e2.removePropertyChangeListener(listener);
         e2.setAsText("255,255,255");
         assertEquals("java.awt.Color[r=255,g=255,b=255]", ((Color) e2
                 .getValue()).toString());
+
+        Color value1 = (Color) e2.getValue();
+        e2.setAsText("255,255,255");
+        Color value2 = (Color) e2.getValue();
+        assertNotSame(value1, value2);
     }
     
     public void testGetSetEditorPath() throws Exception{

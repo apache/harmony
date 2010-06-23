@@ -70,7 +70,7 @@ public class PNGImageWriter extends ImageWriter {
     private native int encode(byte[] input, int bytesInBuffer, int bytePixelSize, Object ios, int imageWidth,
             int imageHeight, int bitDepth, int colorType, int[] palette, int i, boolean b);
 
-    protected PNGImageWriter(ImageWriterSpi iwSpi) {
+    public PNGImageWriter(ImageWriterSpi iwSpi) {
         super(iwSpi);
     }
 

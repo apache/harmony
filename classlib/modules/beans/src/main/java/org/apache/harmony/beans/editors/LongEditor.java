@@ -36,7 +36,7 @@ public final class LongEditor extends PropertyEditorSupport {
 
     @Override
     public String getJavaInitializationString() {
-        return getValue()+"L";
+        return getValue() + "L"; //$NON-NLS-1$
     }
 
     @Override

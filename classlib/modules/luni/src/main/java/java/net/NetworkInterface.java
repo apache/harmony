@@ -166,7 +166,11 @@ public final class NetworkInterface extends Object {
                      * since we don't have a port in this case we pass in
                      * NO_PORT
                      */
-                    security.checkConnect(element.getHostName(),
+                    String hostName = element.getHostName();
+                    if(hostName.contains("::")){
+                        hostName = getFullFormOfCompressedIPV6Address(hostName);
+                    }
+                    security.checkConnect(hostName,
                             CHECK_CONNECT_NO_PORT);
                     accessibleAddresses.add(element);
                 } catch (SecurityException e) {
@@ -181,6 +185,62 @@ public final class NetworkInterface extends Object {
         }
 
         return new Vector<InetAddress>(0).elements();
+    }
+    
+    private String getFullFormOfCompressedIPV6Address(String compressed) {
+        StringBuilder fullForm = new StringBuilder(39);
+        final int NUM_OF_IPV6_FIELDS = 8;
+
+        String[] fields = compressed.split(":");
+        // the number of compressed fields
+        int numOfCompressedFields;
+        
+        if (compressed.startsWith("::")) { // compressed head part
+            compressed = compressed.replace("::", "");
+            fields = compressed.split(":");
+            numOfCompressedFields = NUM_OF_IPV6_FIELDS - fields.length;
+            restoreCompressedFieldsWithZero(fullForm, numOfCompressedFields);
+            appendNonZeroFields(fullForm, fields);
+        } else if (compressed.endsWith("::")) { // compressed tail part
+            compressed = compressed.replace("::", "");
+            fields = compressed.split(":");
+            numOfCompressedFields = NUM_OF_IPV6_FIELDS - fields.length;
+            appendNonZeroFields(fullForm, fields);
+            restoreCompressedFieldsWithZero(fullForm, numOfCompressedFields);
+        } else { // compressed middle part
+            numOfCompressedFields = NUM_OF_IPV6_FIELDS - fields.length + 1;
+            for (String field : fields) {
+                if (field.equals("")) {
+                    // for compressed fields add 0
+                    restoreCompressedFieldsWithZero(fullForm, numOfCompressedFields);
+                } else {
+                    fullForm.append(field);
+                    // add colon
+                    fullForm.append(":");
+                }
+            }
+        }
+        // delete the excess colon
+        fullForm.deleteCharAt(fullForm.length() - 1);
+
+        return fullForm.toString();
+    }
+
+    private void appendNonZeroFields(StringBuilder fullForm,
+            String[] fields) {
+        for (int i = 0; i < fields.length; i++) {
+            fullForm.append(fields[i]);
+            fullForm.append(":");
+        }
+    }
+
+    private void restoreCompressedFieldsWithZero(StringBuilder fullForm,
+            int numOfCompressedFields) {
+        for (int i = 0; i < numOfCompressedFields; i++) {
+            fullForm.append("0");
+            // add colon
+            fullForm.append(":");
+        }
     }
 
     /**

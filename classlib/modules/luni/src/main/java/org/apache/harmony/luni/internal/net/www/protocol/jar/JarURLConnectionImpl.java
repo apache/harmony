@@ -28,6 +28,7 @@ import java.net.ContentHandlerFactory;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.security.AccessController;
 import java.security.Permission;
 import java.security.PrivilegedAction;
@@ -207,12 +208,14 @@ public class JarURLConnectionImpl extends JarURLConnection {
      * URLConnection}.
      */
     private void findJarEntry() throws IOException {
-        if (getEntryName() == null) {
+        String entryName = getEntryName();
+        if (entryName == null) {
             return;
         }
-        jarEntry = jarFile.getJarEntry(getEntryName());
+        String decodedName = URLDecoder.decode(entryName, "UTF-8"); //$NON-NLS-1$
+        jarEntry = jarFile.getJarEntry(decodedName);
         if (jarEntry == null) {
-            throw new FileNotFoundException(getEntryName());
+            throw new FileNotFoundException(entryName);
         }
     }
 

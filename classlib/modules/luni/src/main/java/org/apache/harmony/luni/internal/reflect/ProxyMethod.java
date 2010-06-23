@@ -89,8 +89,8 @@ class ProxyMethod {
                 throw new IllegalArgumentException(Messages.getString("luni.19",
                         method.getName()));
             }
-        }        
-        
+        }
+
         if (commonExceptions.length != 0) {
             Class[] otherExceptions = otherMethod.getExceptionTypes();
             if (otherExceptions.length == 0) {
@@ -109,7 +109,11 @@ class ProxyMethod {
                         }
                         if (cException.isAssignableFrom(oException)) {
                             // oException is a subclass, keep it instead
-                            commonExceptions[c] = cException = oException;
+                            if(!containsClass(commonExceptions, oException)){
+                                //if exceptions in throw list have Parent-Child relationship just ignore it
+                                //otherwise, keep the subclass
+                                commonExceptions[c] = cException = oException;
+                            }
                             continue nextException;
                         }
                     }
@@ -130,7 +134,16 @@ class ProxyMethod {
         }
         return true;
     }
-    
+
+    private boolean containsClass(Class<?>[] classArray, Class<?> clazz) {
+        for (Class<?> c : classArray) {
+            if (c.equals(clazz)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     Class getDeclaringClass() {
     	return declaringClass;
     }

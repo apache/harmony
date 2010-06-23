@@ -77,6 +77,14 @@ public class PrintStreamTest extends junit.framework.TestCase {
     	MockPrintStream os = new MockPrintStream(testFilePath, "utf-8");
     	assertNotNull(os);
     	os.close();
+    	
+    	// Test that a bogus charset is mentioned in the exception
+    	try {
+    	    new PrintStream(testFilePath, "Bogus");
+    	    fail("Exception expected");
+    	} catch (UnsupportedEncodingException e) {
+    	    assertNotNull(e.getMessage());
+    	}
     }
 
     /**

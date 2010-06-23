@@ -148,6 +148,13 @@ public class JTree_DynamicUtilTreeNodeTest extends BasicSwingTestCase {
         assertTrue(node.loadedChildren);
     }
 
+    public void testClone() {
+        Object obj = new Object();
+        DynamicUtilTreeNode t = new DynamicUtilTreeNode(obj, obj);
+        Object cl = t.clone();
+        assertEquals(t.getClass(), cl.getClass());
+    }
+
     public void testChildren() throws Exception {
         DynamicUtilTreeNode node = new DynamicUtilTreeNode("value", new Object[] { "1", "2" });
         assertFalse(node.loadedChildren);

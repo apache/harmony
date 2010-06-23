@@ -85,22 +85,19 @@ public abstract class URLStreamHandler {
      * @see URL
      */
     protected void parseURL(URL u, String str, int start, int end) {
-        // For compatibility, refer to Harmony-2941
-        if (str.startsWith("//", start) //$NON-NLS-1$
-                && str.indexOf('/', start + 2) == -1
-                && end <= Integer.MIN_VALUE + 1) {
-            throw new StringIndexOutOfBoundsException(end - 2 - start);
-        }
-        if (end < start) {
+        if (end < start || end < 0) {
+            // Checks to ensure string index exception ahead of
+            // security exception for compatibility.
+            if (end <= Integer.MIN_VALUE + 1 && (start >= str.length() || start < 0)
+                    || str.startsWith("//", start) && str.indexOf('/', start + 2) == -1) { //$NON-NLS-1$
+                throw new StringIndexOutOfBoundsException(end);
+            }
             if (this != u.strmHandler) {
                 throw new SecurityException();
             }
             return;
         }
-        String parseString = ""; //$NON-NLS-1$
-        if (start < end) {
-            parseString = str.substring(start, end);
-        }
+        String parseString = str.substring(start, end);
         end -= start;
         int fileIdx = 0;
 

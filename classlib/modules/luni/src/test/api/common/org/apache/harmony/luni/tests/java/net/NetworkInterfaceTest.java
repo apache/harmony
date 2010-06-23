@@ -376,12 +376,22 @@ public class NetworkInterfaceTest extends junit.framework.TestCase {
 					networkInterface1.toString());
 			assertFalse("validate that non-zero length string is generated",
 					networkInterface1.toString().equals(""));
+
+            SecurityManager backup = System.getSecurityManager();
+            System.setSecurityManager(new SecurityManager());
+            assertNotNull(networkInterface1.toString());
+            System.setSecurityManager(backup);
 		}
 		if (atLeastTwoInterfaces) {
 			assertFalse(
 					"Validate strings are different for different interfaces",
 					networkInterface1.toString().equals(
 							networkInterface2.toString()));
+            
+            SecurityManager backup = System.getSecurityManager();
+            System.setSecurityManager(new SecurityManager());
+            assertNotNull(networkInterface2.toString());
+            System.setSecurityManager(backup);
 		}
 	}
 

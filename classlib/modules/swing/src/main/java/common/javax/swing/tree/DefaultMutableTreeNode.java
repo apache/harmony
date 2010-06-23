@@ -505,8 +505,17 @@ public class DefaultMutableTreeNode implements Cloneable, MutableTreeNode, Seria
         return getUserObject() != null ? getUserObject().toString() : null;
     }
 
+    @Override
     public Object clone() {
-        return new DefaultMutableTreeNode(getUserObject());
+        try {
+            DefaultMutableTreeNode clone = (DefaultMutableTreeNode) super.clone();
+            // Spec says the new node must have no parent or children
+            clone.parent = null;
+            clone.children = null;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

@@ -199,7 +199,7 @@ public class PreferencesTest extends TestCase {
             prefs = Preferences.userNodeForPackage(PreferencesTest.class);
         } finally {
             try {
-                prefs = Preferences.userRoot().node("tests");
+                prefs = Preferences.userNodeForPackage(PreferencesTest.class);
                 prefs.removeNode();
             } catch (Exception e) {
                 // Ignored

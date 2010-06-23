@@ -106,6 +106,13 @@ public class EventHandlerTest extends TestCase {
 
         assertEquals(invocationObject, handler.getTarget());
         assertEquals(invocationObject.getSomeText(), getText());
+        try {
+            handler.invoke(proxy, null, new Object[] { new ActionEvent(this, 0,
+                    "") });
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
     }
 
     /**

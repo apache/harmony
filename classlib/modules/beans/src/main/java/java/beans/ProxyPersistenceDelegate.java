@@ -24,7 +24,7 @@ class ProxyPersistenceDelegate extends DefaultPersistenceDelegate {
     @Override
     protected Expression instantiate(Object oldInstance, Encoder out) {
         assert oldInstance instanceof Proxy : oldInstance;
-        Class[] interfaces = oldInstance.getClass().getInterfaces();
+        Class<?>[] interfaces = oldInstance.getClass().getInterfaces();
         InvocationHandler handler = Proxy.getInvocationHandler(oldInstance);
         return new Expression(oldInstance, Proxy.class, "newProxyInstance", //$NON-NLS-1$
                 new Object[] { oldInstance.getClass().getClassLoader(), interfaces, handler });

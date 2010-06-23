@@ -58,15 +58,17 @@ public class ColorEditor extends Panel implements PropertyEditor {
     }
 
     public String getJavaInitializationString() {
-        String result = null;
-        Color color = (Color) getValue();
-        if (color != null) {
-            int red = color.getRed();
-            int green = color.getGreen();
-            int blue = color.getBlue();
-            result = "new java.awt.Color(" + red + "," + green + "," + blue + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        Color value = (Color) getValue();
+        if (value != null) {
+            StringBuilder sb = new StringBuilder("new java.awt.Color("); //$NON-NLS-1$
+            sb.append(value.getRed());
+            sb.append(',');
+            sb.append(value.getGreen());
+            sb.append(',');
+            sb.append(value.getBlue() + ")"); //$NON-NLS-1$
+            return sb.toString();
         }
-        return result;
+        return null;
     }
 
     public String[] getTags() {
@@ -81,9 +83,8 @@ public class ColorEditor extends Panel implements PropertyEditor {
         this.value = (Color) value;
         PropertyChangeEvent changeAllEvent = new PropertyChangeEvent(this,
                 "value", oldValue, value); //$NON-NLS-1$
-        PropertyChangeListener[] copy = new PropertyChangeListener[listeners
-                .size()];
-        listeners.toArray(copy);
+        PropertyChangeListener[] copy = listeners
+                .toArray(new PropertyChangeListener[0]);
         for (PropertyChangeListener listener : copy) {
             listener.propertyChange(changeAllEvent);
         }
@@ -91,17 +92,17 @@ public class ColorEditor extends Panel implements PropertyEditor {
 
     @SuppressWarnings("nls")
     public String getAsText() {
-        Color c = (Color) getValue();
-        if (null == c) {
-            return "null";
+        Color value = (Color) getValue();
+        if (value != null) {
+            StringBuilder sb = new StringBuilder(14);
+            sb.append(value.getRed());
+            sb.append(',');
+            sb.append(value.getGreen());
+            sb.append(',');
+            sb.append(value.getBlue());
+            return sb.toString();
         }
-        StringBuilder sb = new StringBuilder(14);
-        sb.append(c.getRed());
-        sb.append(",");
-        sb.append(c.getGreen());
-        sb.append(",");
-        sb.append(c.getBlue());
-        return sb.toString();
+        return ""; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
@@ -109,20 +110,17 @@ public class ColorEditor extends Panel implements PropertyEditor {
         if (null == text) {
             throw new NullPointerException();
         }
-
-        int r = 0;
-        int g = 0;
-        int b = 0;
         String aText = text;
         try {
-            int index = text.indexOf(",");
-            r = Integer.parseInt(text.substring(0, index));
-            aText = text.substring(index + 1);
-            index = aText.indexOf(",");
-            g = Integer.parseInt(aText.substring(0, index));
-            aText = aText.substring(index + 1);
-            b = Integer.parseInt(aText);
-            setValue(new Color(r, g, b));
+            int commaIndex = aText.indexOf(',');
+            int red = Integer.parseInt(aText.substring(0, commaIndex));
+            aText = aText.substring(commaIndex + 1);
+            commaIndex = aText.indexOf(',');
+            int green = Integer.parseInt(aText.substring(0, commaIndex));
+            aText = aText.substring(commaIndex + 1);
+            int blue = Integer.parseInt(aText);
+            
+            setValue(new Color(red, green, blue));
         } catch (Exception e) {
             throw new IllegalArgumentException(aText);
         }

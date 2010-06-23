@@ -1323,7 +1323,20 @@ public final class String implements Serializable, Comparable<String>,
             return this;
 
         String rs = replacement.toString();
-        StringBuilder buffer = new StringBuilder(count);
+
+        // special case if the string to match is empty then
+        // match at the start, inbetween each character and at the end
+        if ("".equals(ts)) {
+            StringBuilder buffer = new StringBuilder(count + (rs.length() * (count + 1)));
+            buffer.append(rs);
+            for(int i=0; i<count; i++) {
+                buffer.append(value[offset + i]);
+                buffer.append(rs);
+            }
+            return buffer.toString();
+        }
+
+        StringBuilder buffer = new StringBuilder(count + rs.length());
         int tl = target.length();
         int tail = 0;
         do {
@@ -1405,12 +1418,15 @@ public final class String implements Serializable, Comparable<String>,
         if (start == 0 && end == count) {
             return this;
         }
-        // NOTE last character not copied!
-        // Fast range check.
-        if (0 <= start && start <= end && end <= count) {
-            return new String(offset + start, end - start, value);
+        if (start < 0) {
+            throw new StringIndexOutOfBoundsException(start);
+        } else if (start > end) {
+            throw new StringIndexOutOfBoundsException(end - start);
+        } else if (end > count) {
+            throw new StringIndexOutOfBoundsException(end);
         }
-        throw new StringIndexOutOfBoundsException();
+        // NOTE last character not copied!
+        return new String(offset + start, end - start, value);
     }
 
     /**
