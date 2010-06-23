@@ -138,6 +138,11 @@ public class URLClassLoaderTest extends TestCase {
                     resValues[i++], sb.toString());
         }
         assertEquals("Incorrect number of resources returned: " + i, 2, i);
+        
+        // Regression for HARMONY-6510
+        res = ucl.findResources(null);
+        assertNotNull(res);
+        assertFalse(res.hasMoreElements());
     }
 
     /**

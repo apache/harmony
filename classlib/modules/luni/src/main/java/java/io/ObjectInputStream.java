@@ -30,13 +30,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.harmony.misc.accessors.ObjectAccessor;
-import org.apache.harmony.misc.accessors.AccessorFactory;
-
 import org.apache.harmony.kernel.vm.VM;
 import org.apache.harmony.luni.internal.nls.Messages;
-import org.apache.harmony.luni.internal.nls.Messages;
 import org.apache.harmony.luni.util.PriviAction;
+import org.apache.harmony.misc.accessors.AccessorFactory;
+import org.apache.harmony.misc.accessors.ObjectAccessor;
 
 /**
  * A specialized {@link InputStream} that is able to read (deserialize) Java

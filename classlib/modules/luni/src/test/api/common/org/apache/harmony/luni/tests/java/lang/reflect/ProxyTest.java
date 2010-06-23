@@ -17,6 +17,7 @@
 
 package org.apache.harmony.luni.tests.java.lang.reflect;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -24,6 +25,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import java.security.AllPermission;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 
 import tests.support.Support_Proxy_I1;
 import tests.support.Support_Proxy_I2;
@@ -251,6 +253,19 @@ public class ProxyTest extends junit.framework.TestCase {
         }
 
     }
+    
+    @SuppressWarnings("unchecked")
+    public void test_ProxyClass_withParentAndSubInThrowList() throws SecurityException, NoSuchMethodException{
+        TestParentIntf myImpl = new MyImplWithParentAndSubInThrowList();
+        Class<?> c = Proxy.getProxyClass(myImpl.getClass().getClassLoader(), myImpl.getClass().getInterfaces());
+        Method m = c.getMethod("test", (Class<?> [])null);
+        Class<?> []exceptions = m.getExceptionTypes();
+        ArrayList<Class> exps = new ArrayList<Class>();
+        for(Class<?> exp : exceptions){
+            exps.add(exp);
+        }
+        assertTrue(exps.contains(Exception.class));
+    }
 
     public static interface ITestReturnObject {
         Object f();
@@ -295,6 +310,11 @@ public class ProxyTest extends junit.framework.TestCase {
         }
     }
 
+    class MyImplWithParentAndSubInThrowList implements TestSubIntf{
+        public void test() throws Exception{
+            throw new Exception();
+        }
+    }
 
 
 	protected void setUp() {
@@ -305,3 +325,10 @@ public class ProxyTest extends junit.framework.TestCase {
 }
 
 interface PkgIntf {}
+
+interface TestParentIntf {
+    //IOException is a subclass of Exception
+    public void test() throws IOException, Exception;
+}
+
+interface TestSubIntf extends TestParentIntf{}

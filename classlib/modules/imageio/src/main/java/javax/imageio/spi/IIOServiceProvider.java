@@ -21,7 +21,6 @@ package javax.imageio.spi;
 
 import java.util.Locale;
 
-import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public abstract class IIOServiceProvider implements RegisterableService {
@@ -40,18 +39,16 @@ public abstract class IIOServiceProvider implements RegisterableService {
         this.version = version;
     }
 
-    public IIOServiceProvider() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public IIOServiceProvider() {
+        // the default impl. does nothing
     }
 
     public void onRegistration(ServiceRegistry registry, Class<?> category) {
         // the default impl. does nothing
     }
 
-    public void onDeregistration(ServiceRegistry registry, Class<?> category) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public void onDeregistration(ServiceRegistry registry, Class<?> category) {
+        // the default impl. does nothing
     }
 
     public String getVendorName() {

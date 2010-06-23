@@ -101,7 +101,7 @@ public class InputStreamReader extends Reader {
                     CodingErrorAction.REPLACE);
         } catch (IllegalArgumentException e) {
             throw (UnsupportedEncodingException)
-                    new UnsupportedEncodingException().initCause(e);
+                    new UnsupportedEncodingException(enc).initCause(e);
         }
         bytes.limit(0);
     }

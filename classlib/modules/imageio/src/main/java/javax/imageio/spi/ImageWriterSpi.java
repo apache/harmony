@@ -23,8 +23,6 @@ import javax.imageio.stream.ImageInputStream;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
 
-import org.apache.harmony.luni.util.NotImplementedException;
-
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
@@ -36,9 +34,8 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
     protected Class[] outputTypes;
     protected String[] readerSpiNames;
 
-    protected ImageWriterSpi() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    protected ImageWriterSpi() {
+        // the default impl. does nothing
     }
 
     public ImageWriterSpi(String vendorName, String version, String[] names,
@@ -90,9 +87,12 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
 
     public abstract ImageWriter createWriterInstance(Object extension) throws IOException;
 
-    public boolean isOwnWriter(ImageWriter writer) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public boolean isOwnWriter(ImageWriter writer) {
+        if (writer == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.96"));
+        }
+        
+        return writer.getClass().getName().equals(pluginClassName);
     }
 
     public String[] getImageReaderSpiNames() {
