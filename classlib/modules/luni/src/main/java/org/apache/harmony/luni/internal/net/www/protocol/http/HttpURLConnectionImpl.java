@@ -493,7 +493,7 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
             }
 
             if (limit >= 0) {
-                if (count > limit) {
+                if (count > limit && fixedMod) {
                     throw new IOException(Messages.getString("luni.26")); //$NON-NLS-1$
                 }
                 limit -= count;
