@@ -348,7 +348,6 @@ public class HttpURLConnectionTest extends junit.framework.TestCase {
      */
     public void test_writeWithFixedLengthDisableMode() throws IOException {
         String bigString = "big String:/modules/luni/src/main/java/org/apache/harmony/luni/internal/net/www/protocol/http/HttpURLConnectionImpl.java b/modules/luni/src/main/java/org/apache/harmony/luni/internal/net/www/protocol/http/HttpURLConnectionImpl.java";
-        System.out.println(bigString.length());
 
         java.net.HttpURLConnection httpURLConnection = (HttpURLConnection) url
                 .openConnection();
