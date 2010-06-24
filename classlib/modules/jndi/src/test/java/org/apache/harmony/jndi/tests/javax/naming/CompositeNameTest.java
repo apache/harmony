@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.naming.CompositeName;
 import javax.naming.CompoundName;
@@ -29,6 +30,7 @@ import javax.naming.InvalidNameException;
 import javax.naming.Name;
 
 import junit.framework.TestCase;
+
 import org.apache.harmony.jndi.tests.javax.naming.util.Log;
 
 /**
@@ -721,11 +723,107 @@ public class CompositeNameTest extends TestCase {
 	}
 
 	// mock class to test protected methods
-	public class MockCompositeName extends CompositeName {
+	public static class MockCompositeName extends CompositeName {
         private static final long serialVersionUID = 1L;
+
+        public MockCompositeName(String name) throws InvalidNameException {
+            super(name);
+        }
 
         public MockCompositeName(Enumeration<String> enumeration) {
 			super(enumeration);
 		}
 	}
+
+    private static MockCompositeName nullName;
+
+    private static MockCompositeName nullName2;
+
+    private static MockCompositeName sampleName;
+
+    static {
+        Vector<String> elems = new Vector<String>();
+        elems.add(null);
+        nullName = new MockCompositeName(elems.elements());
+        elems.add(null);
+        nullName2 = new MockCompositeName(elems.elements());
+        try {
+            sampleName = new MockCompositeName("sample");
+        } catch (InvalidNameException e) {
+            // Ignored
+        }
+    }
+
+    public void testEquals_NPE() throws InvalidNameException {
+        try {
+            nullName.equals(nullName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(nullName.equals(nullName2));
+        assertFalse(nullName2.equals(nullName));
+
+        try {
+            nullName.equals(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(sampleName.equals(nullName));
+    }
+
+    public void testCompareTo_NPE() throws InvalidNameException {
+        assertEquals(0, nullName.compareTo(nullName));
+        try {
+            nullName.compareTo(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        try {
+            sampleName.compareTo(nullName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testToString_NPE() {
+        try {
+            nullName.toString();
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testHashCode_NPE() {
+        try {
+            nullName.hashCode();
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testStartsWith_NPE() {
+        try {
+            nullName.startsWith(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(sampleName.startsWith(nullName));
+    }
+
+    public void testEndsWith_NPE() {
+        try {
+            nullName.endsWith(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(sampleName.endsWith(nullName));
+    }
 }
