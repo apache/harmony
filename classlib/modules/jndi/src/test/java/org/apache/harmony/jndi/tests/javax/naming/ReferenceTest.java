@@ -83,15 +83,35 @@ public class ReferenceTest extends TestCase {
 		assertEquals(1, reference.size());
 	}
 
-	public void testConstructor_ByRefAddrNull() {
-		Reference reference = new Reference(null, null);
+    public void testConstructor_ByRefAddrNull() {
+        Reference reference = new Reference(null, null);
+        assertNull(reference.getClassName());
+        assertNull(reference.getFactoryClassName());
+        assertNull(reference.getFactoryClassLocation());
+        assertNull(reference.get(0));
+        assertEquals(1, reference.size());
 
-		assertNull(reference.getClassName());
-		assertNull(reference.getFactoryClassName());
-		assertNull(reference.getFactoryClassLocation());
-		assertNull(reference.get(0));
-		assertEquals(1, reference.size());
-	}
+        try {
+            reference.get("type");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+
+        try {
+            reference.toString();
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+
+        try {
+            reference.hashCode();
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
 
 	public void testConstructor_ByFactory() {
 		String className = "java.util.Hashtable";
@@ -194,24 +214,25 @@ public class ReferenceTest extends TestCase {
 		assertEquals(refAddr2, ref.get(1));
 	}
 
-	public void testAdd_ByIndexInvalidGreat() {
-		String type = "Binary";
-		BinaryRefAddr refAddr = new BinaryRefAddr(type, buffer);
-		try {
-			ref.add(1, refAddr);
-			fail("This should throw a ArrayIndexOutOfBoundsException");
-		} catch (ArrayIndexOutOfBoundsException e) {
-		}
-	}
+    public void testAdd_ByIndexInvalidGreat() {
+        BinaryRefAddr refAddr = new BinaryRefAddr("Binary", buffer);
+        try {
+            ref.add(1, refAddr);
+            fail("should throw ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Expected
+        }
+    }
 
 	public void testAdd_ByIndexInvalidLess() {
 		String type = "Binary";
 		BinaryRefAddr refAddr = new BinaryRefAddr(type, buffer);
 		try {
 			ref.add(-1, refAddr);
-			fail("This should throw a ArrayIndexOutOfBoundsException");
-		} catch (ArrayIndexOutOfBoundsException e) {
-		}
+			fail("should throw ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Expected
+        }
 	}
 
 	public void testGet_SimpleInvalidGreat() {
@@ -221,9 +242,10 @@ public class ReferenceTest extends TestCase {
 
 		try {
 			ref.get(ref.size());
-			fail("This should throw a ArrayIndexOutOfBoundsException");
-		} catch (ArrayIndexOutOfBoundsException e) {
-		}
+			fail("should throw ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Expected
+        }
 	}
 
 	public void testGet_SimpleInvalidLess() {
@@ -233,9 +255,10 @@ public class ReferenceTest extends TestCase {
 
 		try {
 			ref.get(-1);
-			fail("This should throw a ArrayIndexOutOfBoundsException");
-		} catch (ArrayIndexOutOfBoundsException e) {
-		}
+			fail("should throw ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Expected
+        }
 	}
 
 	public void testGet_ByType() {
@@ -269,8 +292,9 @@ public class ReferenceTest extends TestCase {
 		ref.add(refAddr);
 		try {
 			ref.get(null);
-			fail("Should throw NullPointerException.");
+			fail("Should throw NullPointerException");
 		} catch (NullPointerException e) {
+		    // Expected
 		}
 	}
 
@@ -304,9 +328,10 @@ public class ReferenceTest extends TestCase {
 	public void testRemove_Invalid() {
 		try {
 			ref.remove(0);
-			fail("This should throw a ArrayIndexOutOfBoundsException");
-		} catch (ArrayIndexOutOfBoundsException e) {
-		}
+			fail("should throw ArrayIndexOutOfBoundsException");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // Expected
+        }
 	}
 
 	public void testClear_Simple() {
@@ -425,8 +450,9 @@ public class ReferenceTest extends TestCase {
 
 		try {
 			reference0.equals(reference1);
-			fail("Should throw NullPointerException.");
+			fail("Should throw NullPointerException");
 		} catch (NullPointerException e) {
+		    // Expected
 		}
 	}
 
@@ -437,12 +463,7 @@ public class ReferenceTest extends TestCase {
 
 		Reference reference0 = new Reference(null, classFactory, location);
 		Reference reference2 = new Reference(className, classFactory, location);
-
-		// try {
 		assertFalse(reference0.equals(reference2));
-		// fail("Should throw NullPointerException.");
-		// } catch (NullPointerException e) {
-		// }
 	}
 
 	public void testEquals_NullClassName3() {
@@ -455,8 +476,9 @@ public class ReferenceTest extends TestCase {
 
 		try {
 			reference2.equals(reference0);
-			fail("Should throw NullPointerException.");
+			fail("Should throw NullPointerException");
 		} catch (NullPointerException e) {
+		    // Expected
 		}
 	}
 
