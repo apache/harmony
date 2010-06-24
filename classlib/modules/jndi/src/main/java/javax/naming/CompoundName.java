@@ -21,19 +21,20 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.harmony.jndi.internal.nls.Messages;
 
 /**
- * A <code>CompoundName</code> is a series of string elements, and it
- * represents a name in a naming service within a single namespace. Typically
- * these names have a structure which is hierarchical.
+ * A <code>CompoundName</code> is a series of string elements, and it represents
+ * a name in a naming service within a single namespace. Typically these names
+ * have a structure which is hierarchical.
  * <p>
- * A <code>CompoundName</code> has a sequence of zero or more elements
- * delimited by the char specified in the property "jndi.syntax.separator". This
- * property is required except when the direction of the name is "flat" (see
+ * A <code>CompoundName</code> has a sequence of zero or more elements delimited
+ * by the char specified in the property "jndi.syntax.separator". This property
+ * is required except when the direction of the name is "flat" (see
  * jndi.syntax.direction). The property "jndi.syntax.separator2" allows for the
  * specification of an additional separator. A separator string will be treated
  * as normal characters if it is preceded by the escape string or is within
@@ -44,8 +45,8 @@ import org.apache.harmony.jndi.internal.nls.Messages;
  * name is read. Permitted values are "right_to_left", "left_to_right" and
  * "flat". A flat name does not have a hierarchical structure. If this property
  * is not specified then the default is "flat". If this property is specified
- * with an invalid value then an <code>IllegalArgumentException</code> should
- * be raised.
+ * with an invalid value then an <code>IllegalArgumentException</code> should be
+ * raised.
  * </p>
  * <p>
  * Each element can be accessed using its position. The first element is at
@@ -57,18 +58,18 @@ import org.apache.harmony.jndi.internal.nls.Messages;
  * There are other properties which affect the syntax of a
  * <code>CompoundName</code>. The following properties are all optional:
  * <ul>
- * <li> jndi.syntax.escape - Escape sequence,The escape sequence is used to
+ * <li>jndi.syntax.escape - Escape sequence,The escape sequence is used to
  * escape a quote, separator or escape. When preceded itself by the escape
  * sequence it is treated as ordinary characters. When it is followed by chars
  * which are not quote or separator strings then it is treated as ordinary
  * characters</li>
- * <li> jndi.syntax.beginquote - Used as start of quoted string (Defaults to
+ * <li>jndi.syntax.beginquote - Used as start of quoted string (Defaults to
  * endquote)</li>
- * <li> jndi.syntax.endquote - Used as end of quoted string (Defaults to
+ * <li>jndi.syntax.endquote - Used as end of quoted string (Defaults to
  * beginquote)</li>
- * <li> jndi.syntax.beginquote2 - Additionally used as start of quoted string
+ * <li>jndi.syntax.beginquote2 - Additionally used as start of quoted string
  * (Defaults to endquote2)</li>
- * <li> jndi.syntax.endquote2 - Additionally used as end of quoted string
+ * <li>jndi.syntax.endquote2 - Additionally used as end of quoted string
  * (Defaults to beginquote2)</li>
  * </ul>
  * <p>
@@ -84,9 +85,9 @@ import org.apache.harmony.jndi.internal.nls.Messages;
  * </p>
  * <p>
  * <ul>
- * <li> jndi.syntax.ignorecase - If 'true' then ignore case when name elements
+ * <li>jndi.syntax.ignorecase - If 'true' then ignore case when name elements
  * are compared. If false or not set then case is important.</li>
- * <li> jndi.syntax.trimblanks - If 'true' then ignore leading & trailing blanks
+ * <li>jndi.syntax.trimblanks - If 'true' then ignore leading & trailing blanks
  * when name elements are compared. If false or not set then blanks are
  * important.</li>
  * </ul>
@@ -116,9 +117,9 @@ import org.apache.harmony.jndi.internal.nls.Messages;
  * <p>
  * Consider the string "CN=$Mandy Jennings, O=Apache, C=UK" with
  * <ul>
- * <li> jndi.syntax.direction set to "right_to_left"</li>
- * <li> jndi.syntax.separator set to ","</li>
- * <li> jndi.syntax.separator.typeval set to "="</li>
+ * <li>jndi.syntax.direction set to "right_to_left"</li>
+ * <li>jndi.syntax.separator set to ","</li>
+ * <li>jndi.syntax.separator.typeval set to "="</li>
  * </ul>
  * When no jndi.syntax.beginquote is set then this creates a valid
  * <code>CompoundName</code> with 3 elements.
@@ -132,8 +133,8 @@ import org.apache.harmony.jndi.internal.nls.Messages;
  * quotes round Mandy Jennings now balance.
  * </p>
  * <p>
- * A <code>CompoundName</code> may be empty. An empty
- * <code>CompoundName</code> has no elements. Elements may also be empty.
+ * A <code>CompoundName</code> may be empty. An empty <code>CompoundName</code>
+ * has no elements. Elements may also be empty.
  * </p>
  * 
  * <pre>
@@ -300,7 +301,7 @@ public class CompoundName implements Name {
     private transient boolean flat;
 
     // elements of compound name
-    private transient Vector<String> elem;
+    private transient Vector<String> elems;
 
     // property setting
     protected transient Properties mySyntax;
@@ -328,16 +329,16 @@ public class CompoundName implements Name {
             throw new NullPointerException();
         }
         init(props);
-        this.elem = new Vector<String>();
+        this.elems = new Vector<String>();
         while (elements.hasMoreElements()) {
-            this.elem.add(elements.nextElement());
+            this.elems.add(elements.nextElement());
         }
     }
 
     /**
-     * Constructs a <code>CompoundName</code> with supplied
-     * <code>String</code> and <code>Properties</code>, taking the supplied
-     * <code>s</code> and breaking it down into its elements.
+     * Constructs a <code>CompoundName</code> with supplied <code>String</code>
+     * and <code>Properties</code>, taking the supplied <code>s</code> and
+     * breaking it down into its elements.
      * 
      * @param s
      *            a string containing the full compound name
@@ -427,7 +428,7 @@ public class CompoundName implements Name {
      * parse name from string to elements
      */
     private void parseName(String s) throws InvalidNameException {
-        this.elem = new Vector<String>();
+        this.elems = new Vector<String>();
         if ("".equals(s)) { //$NON-NLS-1$
             // if empty string, return empty vector
             return;
@@ -523,7 +524,7 @@ public class CompoundName implements Name {
             throw new InvalidNameException(Messages.getString("jndi.08", s)); //$NON-NLS-1$
         }
         if (!hasNotNullElement) {
-            elem.remove(elem.size() - 1);
+            elems.remove(elems.size() - 1);
         }
     }
 
@@ -543,9 +544,9 @@ public class CompoundName implements Name {
      */
     private void addElement(StringBuilder element) {
         if (LEFT_TO_RIGHT == direction) {
-            elem.add(element.toString());
+            elems.add(element.toString());
         } else {
-            elem.add(0, element.toString());
+            elems.add(0, element.toString());
         }
         element.setLength(0);
     }
@@ -599,12 +600,12 @@ public class CompoundName implements Name {
     }
 
     public Enumeration<String> getAll() {
-        return this.elem.elements();
+        return this.elems.elements();
     }
 
     public String get(int index) {
         validateIndex(index, false);
-        return elem.elementAt(index);
+        return elems.elementAt(index);
     }
 
     /*
@@ -612,29 +613,29 @@ public class CompoundName implements Name {
      * this.size() is considered as valid, otherwise invalid
      */
     private void validateIndex(int index, boolean isInclude) {
-        if (0 > index || index > elem.size()
-                || (!isInclude && index == elem.size())) {
+        if (0 > index || index > elems.size()
+                || (!isInclude && index == elems.size())) {
             throw new ArrayIndexOutOfBoundsException();
         }
     }
 
     public Name getPrefix(int index) {
         validateIndex(index, true);
-        return new CompoundName(new Vector<String>(elem.subList(0, index))
+        return new CompoundName(new Vector<String>(elems.subList(0, index))
                 .elements(), mySyntax);
     }
 
     public Name getSuffix(int index) {
-        if (index == elem.size()) {
+        if (index == elems.size()) {
             return new CompoundName(new Vector<String>().elements(), mySyntax);
         }
         validateIndex(index, false);
-        return new CompoundName(new Vector<String>(elem.subList(index, elem
+        return new CompoundName(new Vector<String>(elems.subList(index, elems
                 .size())).elements(), mySyntax);
     }
 
     public Name addAll(Name name) throws InvalidNameException {
-        return addAll(elem.size(), name);
+        return addAll(elems.size(), name);
     }
 
     public Name addAll(int index, Name name) throws InvalidNameException {
@@ -654,7 +655,7 @@ public class CompoundName implements Name {
         validateIndex(index, true);
         Enumeration<String> enumeration = name.getAll();
         while (enumeration.hasMoreElements()) {
-            elem.add(index++, enumeration.nextElement());
+            elems.add(index++, enumeration.nextElement());
         }
         return this;
     }
@@ -668,7 +669,7 @@ public class CompoundName implements Name {
             // jndi.0A=A flat name can only have a single component
             throw new InvalidNameException(Messages.getString("jndi.0A")); //$NON-NLS-1$
         }
-        elem.add(element);
+        elems.add(element);
         return this;
     }
 
@@ -697,7 +698,7 @@ public class CompoundName implements Name {
             throw new InvalidNameException(Messages.getString("jndi.0A")); //$NON-NLS-1$
         }
         validateIndex(index, true);
-        elem.add(index, element);
+        elems.add(index, element);
         return this;
     }
 
@@ -716,7 +717,7 @@ public class CompoundName implements Name {
      */
     public Object remove(int index) throws InvalidNameException {
         validateIndex(index, false);
-        return elem.remove(index);
+        return elems.remove(index);
     }
 
     @Override
@@ -725,11 +726,11 @@ public class CompoundName implements Name {
     }
 
     public int size() {
-        return elem.size();
+        return elems.size();
     }
 
     public boolean isEmpty() {
-        return elem.isEmpty();
+        return elems.isEmpty();
     }
 
     public boolean startsWith(Name name) {
@@ -770,9 +771,10 @@ public class CompoundName implements Name {
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
         oos.writeObject(mySyntax);
-        oos.writeInt(elem.size());
-        for (int i = 0; i < elem.size(); i++) {
-            String element = elem.elementAt(i);
+        int elemSize = elems.size();
+        oos.writeInt(elemSize);
+        for (int i = 0; i < elemSize; i++) {
+            String element = elems.elementAt(i);
             oos.writeObject(element);
         }
     }
@@ -795,59 +797,58 @@ public class CompoundName implements Name {
         ois.defaultReadObject();
         init(((Properties) ois.readObject()));
         int size = ois.readInt();
-        elem = new Vector<String>();
+        elems = new Vector<String>();
         for (int i = 0; i < size; i++) {
-            elem.add((String) ois.readObject());
+            elems.add((String) ois.readObject());
         }
     }
 
     /**
-     * Compare this <code>CompoundName</code> with the one supplied as a
-     * param.
+     * Compare this <code>CompoundName</code> with the one supplied as a param.
      * <p>
      * See the definition of the <code>equals()</code> method to see how the
      * direction, ignorecase and trimblanks properties affect the comparison of
-     * a <code>CompoundName</code>. Other than that the comparison is the
-     * same as that for a <code>CompositeName</code>.
+     * a <code>CompoundName</code>. Other than that the comparison is the same
+     * as that for a <code>CompositeName</code>.
      * </p>
      * 
      * @return a negative number means this is less than the supplied Object
-     *         <code>o</code>. a positive number means this is greater than
-     *         the supplied Object <code>o</code>. zero means the two objects
-     *         are equal.
+     *         <code>o</code>. a positive number means this is greater than the
+     *         supplied Object <code>o</code>. zero means the two objects are
+     *         equal.
      * @param o
      *            the object to compare - cannot be null.
      * @throws ClassCastException
      *             when <code>o</code> is not a compatible class that can be
-     *             compared or if the object to compare <code>o</code> is
-     *             null.
+     *             compared or if the object to compare <code>o</code> is null.
      */
     public int compareTo(Object o) {
+        if (o == this) {
+            return 0;
+        }
         if (!(o instanceof CompoundName)) {
             throw new ClassCastException();
         }
-        int result = -1;
-        CompoundName otherName = (CompoundName) o;
-        Enumeration<String> otherEnum = otherName.getAll();
-        String thisElement;
-        String otherElement;
-        int i;
-        for (i = 0; i < size() && otherEnum.hasMoreElements(); i++) {
-            thisElement = preProcess(elem.get(i), ignoreCase, trimBlanks);
-            otherElement = preProcess(otherEnum.nextElement(), ignoreCase,
-                    trimBlanks);
-            result = (null == thisElement ? (null == otherElement ? 0 : -1)
-                    : thisElement.compareTo(otherElement));
-            if (0 != result) {
-                return result;
+
+        Iterator<String> thisIter = elems.iterator();
+        Iterator<String> thatIter = ((CompoundName) o).elems.iterator();
+        int compareResult;
+        String thisString, thatString;
+        while (thisIter.hasNext() && thatIter.hasNext()) {
+            thisString = preProcess(thisIter.next(), ignoreCase, trimBlanks);
+            thatString = preProcess(thatIter.next(), ignoreCase, trimBlanks);
+            compareResult = thisString.compareTo(thatString);
+            if (0 != compareResult) {
+                return compareResult;
             }
         }
-        if (i < size()) {
-            result = 1;
-        } else if (otherEnum.hasMoreElements()) {
-            result = -1;
+        if (thisIter.hasNext()) {
+            return 1;
         }
-        return result;
+        if (thatIter.hasNext()) {
+            return -1;
+        }
+        return 0;
     }
 
     /**
@@ -866,13 +867,13 @@ public class CompoundName implements Name {
      */
     @Override
     public int hashCode() {
-        int result = 0;
-        Enumeration<String> enumeration = elem.elements();
+        int hashCode = 0;
+        Enumeration<String> enumeration = elems.elements();
         while (enumeration.hasMoreElements()) {
-            result += preProcess(enumeration.nextElement(), ignoreCase,
+            hashCode += preProcess(enumeration.nextElement(), ignoreCase,
                     trimBlanks).hashCode();
         }
-        return result;
+        return hashCode;
     }
 
     /**
@@ -896,12 +897,13 @@ public class CompoundName implements Name {
                 : endQuoteString;
         String separator = NULL_STRING.equals(separatorString) ? separatorString2
                 : separatorString;
+        int elemSize = elems.size();
         if (RIGHT_TO_LEFT.equals(direction)) {
-            for (int i = elem.size() - 1; i >= 0; i--) {
+            for (int i = elemSize - 1; i >= 0; i--) {
                 addElement(sb, i, separator, begin, end);
             }
         } else {
-            for (int i = 0; i < elem.size(); i++) {
+            for (int i = 0; i < elemSize; i++) {
                 addElement(sb, i, separator, begin, end);
             }
         }
@@ -914,9 +916,10 @@ public class CompoundName implements Name {
     }
 
     private void addElement(StringBuilder sb, int index, String separator,
-            String begin, String end) {
-        String elemString = elem.get(index);
-        if (0 == elemString.length()) {
+            String begin, final String end) {
+        final String elemString = elems.get(index);
+        final int elemStringLength = elemString.length();
+        if (0 == elemStringLength) {
             // if empty element, append a separator and continue
             sb.append(separator);
             return;
@@ -930,8 +933,9 @@ public class CompoundName implements Name {
             sb.insert(pos, begin);
             pos += begin.length();
             // if quoted, then every endquote char must be escaped
+            int endLenght = end.length();
             for (int i = 0, j = 0; 0 <= (j = elemString.indexOf(end, i)); i = j
-                    + end.length()) {
+                    + endLenght) {
                 sb.insert(pos + j, escapeString);
                 pos += escapeString.length();
             }
@@ -944,7 +948,7 @@ public class CompoundName implements Name {
                 pos += escapeString.length();
             }
             // if not quoted, escape all separator string and all escape string
-            for (int i = 0; i < elemString.length();) {
+            for (int i = 0; i < elemStringLength;) {
                 if (startsWithFromPos(elemString, i, separatorString)) {
                     sb.insert(pos + i, escapeString);
                     pos += escapeString.length();
@@ -969,8 +973,8 @@ public class CompoundName implements Name {
      * Check if the supplied object <code>o</code> is equal to this
      * <code>CompoundName</code>.
      * <p>
-     * The supplied <code>Object o</code> may be null but that will cause
-     * false to be returned.
+     * The supplied <code>Object o</code> may be null but that will cause false
+     * to be returned.
      * </p>
      * <p>
      * The supplied <code>Object o</code> may be something other than a
@@ -979,9 +983,8 @@ public class CompoundName implements Name {
      * <p>
      * To be equal the supplied <code>CompoundName</code> must have the same
      * number of elements and each element must match the corresponding element
-     * of this <code>CompoundName</code>. The properties
-     * jndi.syntax.ignorecase and jndi.syntax.trimblanks need to be considered
-     * if they have been set.
+     * of this <code>CompoundName</code>. The properties jndi.syntax.ignorecase
+     * and jndi.syntax.trimblanks need to be considered if they have been set.
      * </p>
      * <p>
      * The properties associated with the <code>CompoundName</code> must be
@@ -1001,41 +1004,36 @@ public class CompoundName implements Name {
             return false;
         }
 
-        // compare size
         CompoundName otherName = (CompoundName) o;
-        final int size = otherName.size();
-        if (size != this.size()) {
+        int otherSize = otherName.size();
+        if (otherSize != this.size()) {
             return false;
         }
 
         // compare every element
-        return equals(otherName, 0, size);
+        return equals(otherName, 0, otherSize);
     }
 
     /**
      * compare this name to the supplied <code>name</code> from position
-     * <code>start</code> to position <code>start</code>+
-     * <code>length</code>-1
+     * <code>start</code> to position <code>start</code>+ <code>length</code>-1
      */
-    private boolean equals(Name name, int start, int length) {
+    private boolean equals(Name name, int offset, int length) {
         if (length > this.size()) {
             return false;
         }
         CompoundName otherName = (CompoundName) name;
         Enumeration<String> otherEnum = otherName.getAll();
-        String thisElement;
-        String otherElement;
+        String thisElement, otherElement;
         for (int i = 0; i < length; i++) {
-            thisElement = preProcess(elem.get(i + start), ignoreCase,
+            thisElement = preProcess(elems.get(i + offset), ignoreCase,
                     trimBlanks);
             otherElement = preProcess(otherEnum.nextElement(), ignoreCase,
                     trimBlanks);
-            if (!(null == thisElement ? null == otherElement : thisElement
-                    .equals(otherElement))) {
+            if (!thisElement.equals(otherElement)) {
                 return false;
             }
         }
         return true;
     }
-
 }

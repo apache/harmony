@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.naming.CompositeName;
 import javax.naming.CompoundName;
@@ -1814,5 +1815,175 @@ public class CompoundNameTest extends TestCase {
         public Object clone() {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public static class MockCompoundName extends CompoundName {
+
+        private static final long serialVersionUID = -5947330494555498760L;
+
+        public MockCompoundName(String s) throws InvalidNameException {
+            super(s, new Properties());
+        }
+
+        public MockCompoundName(Enumeration<String> elements, Properties props) {
+            super(elements, props);
+        }
+    }
+
+    private static CompoundName nullName;
+
+    private static CompoundName nullName2;
+
+    private static CompoundName sampleName;
+
+    static {
+        Vector<String> elems = new Vector<String>();
+        elems.add(null);
+        nullName = new MockCompoundName(elems.elements(), new Properties());
+        elems.add(null);
+        nullName2 = new MockCompoundName(elems.elements(), new Properties());
+        try {
+            sampleName = new MockCompoundName("sample");
+        } catch (InvalidNameException e) {
+            // Ignored
+        }
+    }
+
+    public void testConstructor_NPE() {
+        try {
+            new MockCompoundName(null, new Properties());
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testEquals_NPE() {
+        try {
+            nullName.equals(nullName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(nullName.equals(nullName2));
+        assertFalse(nullName2.equals(nullName));
+
+        try {
+            nullName.equals(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(sampleName.equals(nullName));
+    }
+
+    public void testCompareTo_NPE() {
+        assertEquals(0, nullName.compareTo(nullName));
+        try {
+            nullName.compareTo(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        try {
+            sampleName.compareTo(nullName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testHashCode_NPE() {
+        try {
+            nullName.hashCode();
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testToString_NPE() {
+        try {
+            nullName.toString();
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+    }
+
+    public void testStartsWith_NPE() {
+        try {
+            nullName.startsWith(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(sampleName.startsWith(nullName));
+    }
+
+    public void testEndsWith_NPE() {
+        try {
+            nullName.endsWith(sampleName);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+        assertFalse(sampleName.endsWith(nullName));
+    }
+
+    public void testIgnoreCase() throws InvalidNameException {
+        String key = "jndi.syntax.ignorecase";
+        Properties properties = new Properties();
+        properties.setProperty(key, "true");
+        // true-true
+        CompoundName cName1 = new CompoundName("cName", properties);
+        CompoundName cName2 = new CompoundName("CName", properties);
+        assertTrue(cName1.equals(cName2));
+        assertTrue(cName2.equals(cName1));
+        assertEquals(0, cName1.compareTo(cName2));
+        assertEquals(0, cName2.compareTo(cName1));
+
+        // true-false
+        properties.setProperty(key, "false");
+        cName2 = new CompoundName("CName", properties);
+        assertTrue(cName1.equals(cName2));
+        assertFalse(cName2.equals(cName1));
+        assertEquals(0, cName1.compareTo(cName2));
+        assertTrue(cName2.compareTo(cName1) < 0);
+
+        // false-false
+        cName1 = new CompoundName("cName", properties);
+        assertFalse(cName1.equals(cName2));
+        assertFalse(cName2.equals(cName1));
+        assertTrue(cName1.compareTo(cName2) > 0);
+        assertTrue(cName2.compareTo(cName1) < 0);
+    }
+
+    public void testTrimBlank() throws InvalidNameException {
+        String key = "jndi.syntax.trimblanks";
+        Properties properties = new Properties();
+        properties.setProperty(key, "true");
+        // true-true
+        CompoundName cName1 = new CompoundName(" cName", properties);
+        CompoundName cName2 = new CompoundName(" cName ", properties);
+        assertTrue(cName1.equals(cName2));
+        assertTrue(cName2.equals(cName1));
+        assertEquals(0, cName1.compareTo(cName2));
+        assertEquals(0, cName2.compareTo(cName1));
+
+        // true-false
+        properties.setProperty(key, "false");
+        cName2 = new CompoundName(" cName ", properties);
+        assertTrue(cName1.equals(cName2));
+        assertFalse(cName2.equals(cName1));
+        assertEquals(0, cName1.compareTo(cName2));
+        assertTrue(cName2.compareTo(cName1) > 0);
+
+        // false-false
+        cName1 = new CompoundName(" cName", properties);
+        assertFalse(cName1.equals(cName2));
+        assertFalse(cName2.equals(cName1));
+        assertTrue(cName1.compareTo(cName2) < 0);
+        assertTrue(cName2.compareTo(cName1) > 0);
     }
 }
