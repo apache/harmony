@@ -225,7 +225,7 @@ module:
             <fileset dir="${depends.jars}">
                 <patternset includes="icu4j_4.2.1/*.jar" />
                 <patternset includes="xalan-j_2.7.0/xalan.jar" />
-                <patternset includes="xerces_2.9.1/*.jar" />
+                <patternset includes="xerces_2.10.0/*.jar" />
             </fileset>
             <fileset dir="${depends.manifests}"/>
         </copy>

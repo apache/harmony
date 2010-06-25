@@ -282,9 +282,9 @@ public class Reference implements Cloneable, Serializable {
     @Override
     public Object clone() {
         try {
-            Reference r = (Reference) super.clone();
-            r.addrs = (Vector<RefAddr>) this.addrs.clone();
-            return r;
+            Reference reference = (Reference) super.clone();
+            reference.addrs = (Vector<RefAddr>) this.addrs.clone();
+            return reference;
         } catch (CloneNotSupportedException e) {
             // jndi.03=Failed to clone object of Reference class.
             throw new AssertionError(Messages.getString("jndi.03")); //$NON-NLS-1$
@@ -305,12 +305,16 @@ public class Reference implements Cloneable, Serializable {
      */
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Reference) {
-            Reference r = (Reference) o;
-            return r.className.equals(this.className)
-                    && r.addrs.equals(this.addrs);
+        if (o == this) {
+            return true;
         }
-        return false;
+        if (!(o instanceof Reference)) {
+            return false;
+        }
+        Reference ref = (Reference) o;
+        return ref.className.equals(this.className)
+                && ref.addrs.size() == this.addrs.size()
+                && ref.addrs.equals(this.addrs);
     }
 
     /**
@@ -322,13 +326,12 @@ public class Reference implements Cloneable, Serializable {
      */
     @Override
     public int hashCode() {
-        int i = this.className.hashCode();
+        int hashCode = this.className.hashCode();
         Enumeration<RefAddr> e = this.addrs.elements();
-
         while (e.hasMoreElements()) {
-            i += e.nextElement().hashCode();
+            hashCode += e.nextElement().hashCode();
         }
-        return i;
+        return hashCode;
     }
 
     /**
@@ -337,18 +340,16 @@ public class Reference implements Cloneable, Serializable {
      * 
      * @return the string representation of this object
      */
-    @SuppressWarnings("nls")
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder("Reference Class Name: ");
-        s.append(className);
-        s.append("\n");
-
-        Enumeration<RefAddr> e = this.addrs.elements();
-        while (e.hasMoreElements()) {
-            s.append(e.nextElement());
+        StringBuilder sb = new StringBuilder("Reference Class Name: "); //$NON-NLS-1$
+        sb.append(this.className).append('\n');
+        if (addrs.size() > 0) {
+            Enumeration<RefAddr> elements = this.addrs.elements();
+            while (elements.hasMoreElements()) {
+                sb.append(elements.nextElement().toString());
+            }
         }
-        return s.toString();
+        return sb.toString();
     }
-
 }

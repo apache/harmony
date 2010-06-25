@@ -337,13 +337,28 @@ public class HttpURLConnectionTest extends junit.framework.TestCase {
 
         OutputStream out = conn.getOutputStream();
         out.write(posted.getBytes());
+        //should not throw IOExeption
+        out.close();
+    }
+    
+    /**
+     * When write bytes to HttpOutputSteam, only if fixed mode is true and the write number of bytes is
+     * greater than the limit of HttpOutputStream, the write method will throw IOException
+     * @throws IOException
+     */
+    public void test_writeWithFixedLengthDisableMode() throws IOException {
+        String bigString = "big String:/modules/luni/src/main/java/org/apache/harmony/luni/internal/net/www/protocol/http/HttpURLConnectionImpl.java b/modules/luni/src/main/java/org/apache/harmony/luni/internal/net/www/protocol/http/HttpURLConnectionImpl.java";
 
-        try {
-            out.close();
-            // expected
-        } catch (IOException e) {
-            fail("should not throw IOException");
-        }
+        java.net.HttpURLConnection httpURLConnection = (HttpURLConnection) url
+                .openConnection();
+
+        httpURLConnection.setDoOutput(true);
+        httpURLConnection.setRequestMethod("POST");
+        httpURLConnection.setRequestProperty("Content-Length", "" + (168));
+
+        OutputStream out = httpURLConnection.getOutputStream();
+        //should not throw IOExeption
+        out.write(bigString.getBytes());
     }
 
     /**

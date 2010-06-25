@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -203,15 +204,14 @@ public class CompositeName implements Name {
      */
     private static Vector<String> parseName(String name)
             throws InvalidNameException {
-
-        Vector<String> l = new Vector<String>();
-
+        Vector<String> result = new Vector<String>();
         // special case: all '/', means same number of empty elements
         if (isAllSlash(name)) {
-            for (int i = 0; i < name.length(); i++) {
-                l.add(""); //$NON-NLS-1$
+            int length = name.length();
+            for (int index = 0; index < length; index++) {
+                result.add(""); //$NON-NLS-1$
             }
-            return l;
+            return result;
         }
 
         // general simple case, without escape and quote
@@ -219,25 +219,25 @@ public class CompositeName implements Name {
                 && name.indexOf('\\') < 0) {
             int i = 0, j = 0;
             while ((j = name.indexOf('/', i)) >= 0) {
-                l.add(name.substring(i, j));
+                result.add(name.substring(i, j));
                 i = j + 1;
             }
-            l.add(name.substring(i));
-            return l;
+            result.add(name.substring(i));
+            return result;
         }
 
         // general complicated case, consider escape and quote
-        char c;
+        char curC, nextC;
         char chars[] = name.toCharArray();
         StringBuilder buf = new StringBuilder();
         int status = OUT_OF_QUOTE;
-        for (int i = 0; i < chars.length; i++) {
-            c = chars[i];
+        for (int index = 0; index < chars.length; index++) {
+            curC = chars[index];
 
             // check end quote violation
             if (status == QUOTE_ENDED) {
-                if (c == '/') {
-                    l.add(buf.toString());
+                if (curC == '/') {
+                    result.add(buf.toString());
                     buf.setLength(0);
                     status = OUT_OF_QUOTE;
                     continue;
@@ -246,15 +246,16 @@ public class CompositeName implements Name {
                 throw new InvalidNameException(Messages.getString("jndi.0C")); //$NON-NLS-1$
             }
 
-            if (c == '\\') {
+            if (curC == '\\') {
                 // escape char
                 try {
-                    char nc = chars[++i];
-                    if (nc == '\\' || nc == '\'' || nc == '"' || nc == '/') {
-                        buf.append(nc);
+                    nextC = chars[++index];
+                    if (nextC == '\\' || nextC == '\'' || nextC == '"'
+                            || nextC == '/') {
+                        buf.append(nextC);
                     } else {
-                        buf.append(c);
-                        buf.append(nc);
+                        buf.append(curC);
+                        buf.append(nextC);
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     // jndi.0D=Escape cannot be at the end of element
@@ -263,41 +264,44 @@ public class CompositeName implements Name {
                 }
                 continue;
             }
-            if (c != '/' && c != '"' && c != '\'') {
+            if (curC != '/' && curC != '"' && curC != '\'') {
                 // normal char
-                buf.append(c);
+                buf.append(curC);
                 continue;
             }
 
             // special char
-            if (status == OUT_OF_QUOTE && c == '/') {
-                l.add(buf.toString());
+            if (status == OUT_OF_QUOTE && curC == '/') {
+                result.add(buf.toString());
                 buf.setLength(0);
-            } else if (status == OUT_OF_QUOTE && c == '\'' && buf.length() == 0) {
+            } else if (status == OUT_OF_QUOTE && curC == '\''
+                    && buf.length() == 0) {
                 status = IN_SINGLE_QUOTE;
-            } else if (status == OUT_OF_QUOTE && c == '"' && buf.length() == 0) {
+            } else if (status == OUT_OF_QUOTE && curC == '"'
+                    && buf.length() == 0) {
                 status = IN_DOUBLE_QUOTE;
-            } else if (status == IN_SINGLE_QUOTE && c == '\'') {
+            } else if (status == IN_SINGLE_QUOTE && curC == '\'') {
                 status = QUOTE_ENDED;
-            } else if (status == IN_DOUBLE_QUOTE && c == '"') {
+            } else if (status == IN_DOUBLE_QUOTE && curC == '"') {
                 status = QUOTE_ENDED;
             } else {
-                buf.append(c);
+                buf.append(curC);
             }
         }
-        l.add(buf.toString());
+        result.add(buf.toString());
 
         // check end status
         if (status != OUT_OF_QUOTE && status != QUOTE_ENDED) {
             // jndi.0E=Wrong quote usage.
             throw new InvalidNameException(Messages.getString("jndi.0E")); //$NON-NLS-1$
         }
-        return l;
+        return result;
     }
 
     private static boolean isAllSlash(String name) {
-        for (int i = 0; i < name.length(); i++) {
-            if (name.charAt(i) != '/') {
+        char[] nameChars = name.toCharArray();
+        for (int index = 0; index < nameChars.length; index++) {
+            if (nameChars[index] != '/') {
                 return false;
             }
         }
@@ -308,39 +312,39 @@ public class CompositeName implements Name {
      * Format name elements to its string representation.
      */
     private static String formatName(Vector<String> elems) {
-        // special case: all empty elements
+        StringBuilder sb = new StringBuilder();
+        int elemSize = elems.size();
         if (isAllEmptyElements(elems)) {
-            StringBuilder buf = new StringBuilder();
-            for (int i = 0; i < elems.size(); i++) {
-                buf.append("/"); //$NON-NLS-1$
+            // special case: all empty elements
+            for (int index = 0; index < elemSize; index++) {
+                sb.append('/');
             }
-            return buf.toString();
+            return sb.toString();
         }
 
         // general case
-        StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < elems.size(); i++) {
-            String elem = elems.get(i);
-            if (i > 0) {
-                buf.append("/"); //$NON-NLS-1$
+        String elem = null;
+        for (int index = 0; index < elemSize; index++) {
+            elem = elems.get(index);
+            if (index > 0) {
+                sb.append('/'); //$NON-NLS-1$
             }
-            
-            // Add quotation while elem contains separater char
-            if (elem.indexOf('/') != -1){
-                buf.append("\"");
-                buf.append(elem);
-                buf.append("\"");
-            }else{
-                buf.append(elem);
+            // Add quotation while elem contains separator char
+            if (elem.indexOf('/') != -1) {
+                sb.append('\"');
+                sb.append(elem);
+                sb.append('\"');
+            } else {
+                sb.append(elem);
             }
         }
-        return buf.toString();
+        return sb.toString();
     }
 
     private static boolean isAllEmptyElements(Vector<String> elems) {
-        for (int i = 0; i < elems.size(); i++) {
-            String elem = elems.get(i);
-            if (elem.length() > 0) {
+        int elemSize = elems.size();
+        for (int index = 0; index < elemSize; index++) {
+            if (elems.get(index).length() > 0) {
                 return false;
             }
         }
@@ -436,19 +440,14 @@ public class CompositeName implements Name {
         if (!(name instanceof CompositeName)) {
             return false;
         }
-
         // check size
         if (name.size() > elems.size()) {
             return false;
         }
-
         // compare 1 by 1
         Enumeration<String> enumeration = name.getAll();
-        String me, he;
-        for (int i = 0; enumeration.hasMoreElements(); i++) {
-            me = elems.get(i);
-            he = enumeration.nextElement();
-            if (!(null == me ? null == he : me.equals(he))) {
+        for (int index = 0; enumeration.hasMoreElements(); index++) {
+            if (!elems.get(index).equals(enumeration.nextElement())) {
                 return false;
             }
         }
@@ -459,7 +458,6 @@ public class CompositeName implements Name {
         if (!(name instanceof CompositeName)) {
             return false;
         }
-
         // check size
         if (name.size() > elems.size()) {
             return false;
@@ -467,11 +465,9 @@ public class CompositeName implements Name {
 
         // compare 1 by 1
         Enumeration<String> enumeration = name.getAll();
-        String me, he;
-        for (int i = elems.size() - name.size(); enumeration.hasMoreElements(); i++) {
-            me = elems.get(i);
-            he = enumeration.nextElement();
-            if (!(null == me ? null == he : me.equals(he))) {
+        for (int index = elems.size() - name.size(); enumeration
+                .hasMoreElements(); index++) {
+            if (!elems.get(index).equals(enumeration.nextElement())) {
                 return false;
             }
         }
@@ -495,24 +491,29 @@ public class CompositeName implements Name {
      *             when <code>o</code> is not a <code>CompositeName</code>.
      */
     public int compareTo(Object o) {
-        if (o instanceof CompositeName) {
-            CompositeName he = (CompositeName) o;
-            int r;
-            for (int i = 0; i < elems.size() && i < he.elems.size(); i++) {
-                r = (elems.get(i)).compareTo(he.elems.get(i));
-                if (r != 0) {
-                    return r;
-                }
-            }
-            if (elems.size() == he.elems.size()) {
-                return 0;
-            } else if (elems.size() < he.elems.size()) {
-                return -1;
-            } else {
-                return 1;
+        if (o == this) {
+            return 0;
+        }
+        if (!(o instanceof CompositeName)) {
+            throw new ClassCastException();
+        }
+
+        Iterator<String> thisIter = elems.iterator();
+        Iterator<String> thatIter = ((CompositeName) o).elems.iterator();
+        int compareResult;
+        while (thisIter.hasNext() && thatIter.hasNext()) {
+            compareResult = thisIter.next().compareTo(thatIter.next());
+            if (0 != compareResult) {
+                return compareResult;
             }
         }
-        throw new ClassCastException();
+        if (thisIter.hasNext()) {
+            return 1;
+        }
+        if (thatIter.hasNext()) {
+            return -1;
+        }
+        return 0;
     }
 
     /**
@@ -553,16 +554,23 @@ public class CompositeName implements Name {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
         // check type
         if (!(o instanceof CompositeName)) {
             return false;
         }
+        CompositeName that = (CompositeName) o;
+        if (this.size() != that.size()) {
+            return false;
+        }
 
-        return this.elems.equals(((CompositeName) o).elems);
+        Iterator<String> thisIter = elems.iterator();
+        Iterator<String> thatIter = that.elems.iterator();
+        while (thisIter.hasNext() && thatIter.hasNext()) {
+            if (!thisIter.next().equals(thatIter.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -573,11 +581,11 @@ public class CompositeName implements Name {
      */
     @Override
     public int hashCode() {
-        int sum = 0;
-        for (int i = 0; i < elems.size(); i++) {
-            sum += elems.get(i).hashCode();
+        int hashCode = 0;
+        for (int index = 0; index < elems.size(); index++) {
+            hashCode += elems.get(index).hashCode();
         }
-        return sum;
+        return hashCode;
     }
 
     /**
@@ -616,5 +624,4 @@ public class CompositeName implements Name {
             elems.add((String) ois.readObject());
         }
     }
-
 }
