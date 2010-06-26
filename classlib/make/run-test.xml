@@ -23,11 +23,13 @@
     <property file="test.properties" />
 
     <!-- These two parameters could be assigned by user -->
-    <property name="target.dir" value="." />
-    <property name="work.dir" value="${target.dir}" />
+    <property name="hy.target" value="." />
+    <property name="hy.component" value="test" />
+    <property name="hy.module" value="toplevel" />
+    <property name="work.dir" value="${hy.target}" />
     <property name="tests.output" value="${work.dir}/report" />
     <property name="report.dir" value="${tests.output}/html" />
-    <property name="junit.jar" value="${target.dir}/junit.jar" />
+    <property name="junit.jar" value="${hy.target}/junit.jar" />
 
     <property name="gen.report" value="true" />
     <condition property="do.full.report" value="true">
@@ -54,7 +56,7 @@
 
     <target name="-test">
         <echo message="Test Work Dir: ${work.dir}" />
-        <echo message="Test Target Dir: ${target.dir}" />
+        <echo message="Test Target Dir: ${hy.target}" />
         <mkdir dir="${work.dir}" /> 
         <delete dir="${tests.output}" quiet="true"/>
         <poll-modules dir="." target="test-module" />
