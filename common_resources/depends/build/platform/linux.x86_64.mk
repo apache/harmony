@@ -18,3 +18,4 @@ PLATFORM := -DPOINTER64 -fPIC # TOFIX drlvm hack
 XLIBS = -L/usr/X11R6/lib64 -lX11 -lXft -lXext -lXtst
 OSLIBS += -ldl
 HY_CAN_LINK_DEBUG = yes
+DEPFLAGS = -MD

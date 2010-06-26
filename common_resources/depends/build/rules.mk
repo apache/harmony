@@ -38,6 +38,10 @@ endif
 
 all: $(DLLNAME) $(EXENAME) $(LIBNAME) $(HDKINCLUDES)
 
+CFLAGS += $(DEPFLAGS)
+CXXFLAGS += $(DEPFLAGS)
+-include $(BUILDFILES:.o=.d)
+
 $(LIBNAME): $(BUILDFILES)
 	@mkdir -p $(@D)
 	$(AR) $(ARFLAGS) $(ARCREATE) $@ $(BUILDFILES)
