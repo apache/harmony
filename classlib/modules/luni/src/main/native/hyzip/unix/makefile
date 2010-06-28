@@ -25,6 +25,6 @@ BUILDFILES = $(SHAREDSUB)hyzip.o $(SHAREDSUB)zcpool.o $(SHAREDSUB)zipalloc.o \
 LIBNAME = $(LIBPATH)libhyzip.a
 
 %.o: $(LIBPATH)libhypool.a(%.o)
-	ar $(ARFLAGS) xo $(LIBPATH)libhypool.a $@
+	ar $(ARFLAGS) $(AREXTRACT) $(LIBPATH)libhypool.a $@
 
 include $(HY_HDK)/build/make/rules.mk
