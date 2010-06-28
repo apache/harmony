@@ -27,22 +27,32 @@ import junit.framework.TestCase;
 public class ImageTypeSpecifierTest extends TestCase {
     public void testCreateGrayscale() {        
         // create a 8-bit grayscale ImageTypeSpecifier
-        ImageTypeSpecifier type = ImageTypeSpecifier.createGrayscale(8, DataBuffer.TYPE_BYTE, true);
+        ImageTypeSpecifier type =
+            ImageTypeSpecifier.createGrayscale(8, DataBuffer.TYPE_BYTE, true);
         
         ColorModel model = type.getColorModel();
-        assertEquals("Failed to return the colorspace type", model.getColorSpace().getType(), ColorSpace.TYPE_GRAY);
-        assertEquals("Failed to return the transparency", model.getTransparency(), Transparency.OPAQUE);
-        assertEquals("Failed to return the transfer type", model.getTransferType(), DataBuffer.TYPE_BYTE);
-        assertEquals("Failed to return the pixel size", model.getPixelSize(), 8);
+        assertEquals("Failed to return the colorspace type",
+                     ColorSpace.TYPE_GRAY, model.getColorSpace().getType());
+        assertEquals("Failed to return the transparency",
+                     Transparency.OPAQUE, model.getTransparency());
+        assertEquals("Failed to return the transfer type",
+                     DataBuffer.TYPE_BYTE, model.getTransferType());
+        assertEquals("Failed to return the pixel size",
+                     8, model.getPixelSize());
         
         // create a 16-bit grayscale AlphaPremultiplied ImageTypeSpecifier
-        type = ImageTypeSpecifier.createGrayscale(16, DataBuffer.TYPE_USHORT, true, false);
+        type = ImageTypeSpecifier.createGrayscale(16, DataBuffer.TYPE_USHORT,
+                                                  true, false);
         
         model = type.getColorModel();
-        assertEquals("Failed to return the colorspace type", model.getColorSpace().getType(), ColorSpace.TYPE_GRAY);
-        assertEquals("Failed to return the transparency", model.getTransparency(), Transparency.TRANSLUCENT);
-        assertEquals("Failed to return the transfer type", model.getTransferType(), DataBuffer.TYPE_USHORT);
-        assertEquals("Failed to return the pixel size", model.getPixelSize(), 32);        
+        assertEquals("Failed to return the colorspace type",
+                     ColorSpace.TYPE_GRAY, model.getColorSpace().getType());
+        assertEquals("Failed to return the transparency",
+                     Transparency.TRANSLUCENT, model.getTransparency());
+        assertEquals("Failed to return the transfer type",
+                     DataBuffer.TYPE_USHORT, model.getTransferType());
+        assertEquals("Failed to return the pixel size",
+                     32, model.getPixelSize());        
     }
     
     public void testCreateIndexed() {
@@ -51,19 +61,32 @@ public class ImageTypeSpecifierTest extends TestCase {
         byte[] blueLUT = new byte[]{3,30};
         byte[] alphaLUT = new byte[]{4,40};
         
-        ImageTypeSpecifier type = ImageTypeSpecifier.createIndexed(redLUT, greenLUT, blueLUT, alphaLUT, 1, DataBuffer.TYPE_BYTE);
+        ImageTypeSpecifier type =
+            ImageTypeSpecifier.createIndexed(redLUT, greenLUT, blueLUT,
+                                             alphaLUT, 1, DataBuffer.TYPE_BYTE);
         ColorModel model = type.getColorModel();
         
-        assertEquals("Failed to return the colorspace", model.getColorSpace().getType(), ColorSpace.TYPE_RGB);
-        assertEquals("Failed to return the transparency", model.getTransparency(), Transparency.TRANSLUCENT);
-        assertEquals("Failed to return the tranfer type", model.getTransferType(), DataBuffer.TYPE_BYTE);
-        assertEquals("Failed to return the red color component", model.getRed(0), 1);
-        assertEquals("Failed to return the red color component", model.getRed(1), 10);
-        assertEquals("Failed to return the green color component", model.getGreen(0), 2);
-        assertEquals("Failed to return the green color component", model.getGreen(1), 20);
-        assertEquals("Failed to return the blue color component", model.getBlue(0), 3);
-        assertEquals("Failed to return the blue color component", model.getBlue(1), 30);
-        assertEquals("Failed to return the alpha color component", model.getAlpha(0), 4);
-        assertEquals("Failed to return the alpha color component", model.getAlpha(1), 40);
+        assertEquals("Failed to return the colorspace",
+                     ColorSpace.TYPE_RGB, model.getColorSpace().getType());
+        assertEquals("Failed to return the transparency",
+                     Transparency.TRANSLUCENT, model.getTransparency());
+        assertEquals("Failed to return the tranfer type",
+                     DataBuffer.TYPE_BYTE, model.getTransferType());
+        assertEquals("Failed to return the red color component",
+                     1, model.getRed(0));
+        assertEquals("Failed to return the red color component",
+                     10, model.getRed(1));
+        assertEquals("Failed to return the green color component",
+                     2, model.getGreen(0));
+        assertEquals("Failed to return the green color component",
+                     20, model.getGreen(1));
+        assertEquals("Failed to return the blue color component",
+                     3, model.getBlue(0));
+        assertEquals("Failed to return the blue color component",
+                     30, model.getBlue(1));
+        assertEquals("Failed to return the alpha color component",
+                     4, model.getAlpha(0));
+        assertEquals("Failed to return the alpha color component",
+                     40, model.getAlpha(1));
     }
 }
