@@ -14,12 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-/**
- * @author Rustem V. Rafikov
- */
+
 package javax.imageio;
 
+import java.awt.Transparency;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.DirectColorModel;
 import java.awt.image.SampleModel;
 import java.awt.image.BufferedImage;
@@ -89,19 +89,42 @@ public class ImageTypeSpecifier {
     }
 
     public static ImageTypeSpecifier createGrayscale(int bits,
-                                                     int dataType,
-                                                     boolean isSigned) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+            int dataType,
+            boolean isSigned) {
+        return createGrayscale(bits, dataType, isSigned, false, false);
     }
 
     public static ImageTypeSpecifier createGrayscale(int bits,
-                                                     int dataType,
-                                                     boolean isSigned,
-                                                     boolean isAlphaPremultiplied) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+            int dataType,
+            boolean isSigned,
+            boolean isAlphaPremultiplied) {
+        return createGrayscale(bits, dataType, isSigned, true, isAlphaPremultiplied);
     }
+
+    private static ImageTypeSpecifier createGrayscale(int bits,
+             int dataType,
+             boolean isSigned,
+             boolean hasAlpha,
+             boolean isAlphaPremultiplied) {
+
+        if ((bits != 1) && (bits != 2) && (bits != 4) && (bits != 8) && (bits != 16)) {
+            throw new IllegalArgumentException();
+        }
+
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+
+        int numComponent = hasAlpha ? 2 : 1;
+        int numBits[] = new int[numComponent];
+        numBits[0] = bits;
+        if (numComponent ==2) {
+            numBits[1] = bits;
+        }
+        int transparency = hasAlpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE;
+        ColorModel model = new ComponentColorModel(colorSpace, numBits, hasAlpha, isAlphaPremultiplied, transparency, dataType);
+
+        return new ImageTypeSpecifier(model, model.createCompatibleSampleModel(1, 1));
+    }
+
 
     public static ImageTypeSpecifier createIndexed(byte[] redLUT,
                                                    byte[] greenLUT,
