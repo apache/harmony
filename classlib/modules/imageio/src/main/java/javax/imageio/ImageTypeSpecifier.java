@@ -18,13 +18,15 @@
 package javax.imageio;
 
 import java.awt.Transparency;
+import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.DirectColorModel;
-import java.awt.image.SampleModel;
-import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
-import java.awt.color.ColorSpace;
+import java.awt.image.SampleModel;
 
 import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
@@ -131,9 +133,40 @@ public class ImageTypeSpecifier {
                                                    byte[] blueLUT,
                                                    byte[] alphaLUT,
                                                    int bits,
-                                                   int dataType) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+                                                   int dataType) {
+       if ((redLUT == null) || (greenLUT == null) || blueLUT == null) {
+           throw new IllegalArgumentException();
+       }
+       
+       if ((bits != 1) && (bits != 2) && (bits != 4) && (bits != 8) && (bits != 16)) {
+           throw new IllegalArgumentException();
+       }
+       
+       int length = 1 << bits;
+       if ((redLUT.length != length) || (greenLUT.length != length) || (blueLUT.length != length) ||
+               (alphaLUT != null && alphaLUT.length != length)) {
+           throw new IllegalArgumentException();
+       }
+       
+       if ((dataType != DataBuffer.TYPE_BYTE) && (dataType != DataBuffer.TYPE_SHORT) &&
+               (dataType != DataBuffer.TYPE_USHORT) && (dataType != DataBuffer.TYPE_INT)) {
+           throw new IllegalArgumentException();
+       }
+       
+       if ((bits > 8 && dataType == DataBuffer.TYPE_BYTE) || 
+               (bits > 16 && dataType == DataBuffer.TYPE_INT)) {
+           throw new IllegalArgumentException();
+       }
+       
+       ColorModel model = null;
+       int size = redLUT.length;
+       if (alphaLUT == null) {
+           model = new IndexColorModel(bits, size, redLUT, greenLUT, blueLUT);
+       } else {
+           model = new IndexColorModel(bits, size, redLUT, greenLUT, blueLUT, alphaLUT);
+       }
+       
+       return new ImageTypeSpecifier(model, model.createCompatibleSampleModel(1, 1));
     }
 
     public static ImageTypeSpecifier createFromBufferedImageType(int bufferedImageType) throws NotImplementedException {
