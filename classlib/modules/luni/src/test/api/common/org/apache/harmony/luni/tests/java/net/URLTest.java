@@ -72,33 +72,53 @@ public class URLTest extends TestCase {
     
     
     /**
-     * Check when the argument in url consists of windows path character back-slach
+     * Check when the argument in url consists of windows path character back-slash
      * @tests java.net.URL#openConnection(Proxy)
      * @throws Exception
      */
     public void test_openConnection_windows_path_character() throws Exception {
-        int port = 0;
+        int port = Support_Jetty.startDefaultHttpServer();
         HttpURLConnection con = null;
         try {
-            port = Support_Jetty.startDefaultHttpServer();
-        } catch (Exception e) {
-            fail("Exception during setup jetty : " + e.getMessage());
-        }
-        try {
             URL url = new URL("http://0.0.0.0:" + port + "/servlet?ResourceName=C:\\temp\\test.txt");
-            con = (HttpURLConnection)url.openConnection();
+            con = (HttpURLConnection) url.openConnection();
             con.setDoInput(true);
             con.setDoOutput(true);
             con.setUseCaches(false);
             con.setRequestMethod("GET");
             InputStream is = con.getInputStream();
-         } catch (Exception e) {
-             fail("Unexpected exception : " + e.getMessage());
-         } finally {
-            con.disconnect();
-         }
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
+        }
     }
 
+   /**
+     * Check when the argument in url consists of quotation marks character
+     * @tests java.net.URL#openConnection(Proxy)
+     * @throws Exception
+     */
+    public void test_openConnection_quotation_marks_character()
+            throws Exception {
+        int port = Support_Jetty.startDefaultHttpServer();
+        HttpURLConnection con = null;
+        try {
+            URL url = new URL("http://0.0.0.0:" + port
+                    + "/servlet?ResourceName=[\"11111\",\"22222\"]");
+            con = (HttpURLConnection) url.openConnection();
+            con.setDoInput(true);
+            con.setDoOutput(true);
+            con.setUseCaches(false);
+            con.setRequestMethod("GET");
+            InputStream is = con.getInputStream();
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
+        }
+    }
+    
     /**
      * @tests java.net.URL#URL(java.lang.String)
      */
