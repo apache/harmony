@@ -17,8 +17,8 @@
 
 package java.util;
 
-import java.io.BufferedReader;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -101,15 +101,16 @@ public class Properties extends Hashtable<Object, Object> {
         defaults = properties;
     }
 
-    private void dumpString(StringBuilder buffer, String string, boolean key) {
-        int i = 0;
-        if (!key && i < string.length() && string.charAt(i) == ' ') {
+    private void dumpString(StringBuilder buffer, String string, boolean isKey,
+            boolean toHexaDecimal) {
+        int index = 0, length = string.length();
+        if (!isKey && index < length && string.charAt(index) == ' ') {
             buffer.append("\\ "); //$NON-NLS-1$
-            i++;
+            index++;
         }
 
-        for (; i < string.length(); i++) {
-            char ch = string.charAt(i);
+        for (; index < length; index++) {
+            char ch = string.charAt(index);
             switch (ch) {
             case '\t':
                 buffer.append("\\t"); //$NON-NLS-1$
@@ -124,21 +125,35 @@ public class Properties extends Hashtable<Object, Object> {
                 buffer.append("\\r"); //$NON-NLS-1$
                 break;
             default:
-                if ("\\#!=:".indexOf(ch) >= 0 || (key && ch == ' ')) {
+                if ("\\#!=:".indexOf(ch) >= 0 || (isKey && ch == ' ')) {
                     buffer.append('\\');
                 }
                 if (ch >= ' ' && ch <= '~') {
                     buffer.append(ch);
                 } else {
-                    String hex = Integer.toHexString(ch);
-                    buffer.append("\\u"); //$NON-NLS-1$
-                    for (int j = 0; j < 4 - hex.length(); j++) {
-                        buffer.append("0"); //$NON-NLS-1$
+                    if (toHexaDecimal) {
+                        buffer.append(toHexaDecimal(ch));
+                    } else {
+                        buffer.append(ch);
                     }
-                    buffer.append(hex);
                 }
             }
         }
+    }
+
+    private char[] toHexaDecimal(final int ch) {
+        char[] hexChars = { '\\', 'u', '0', '0', '0', '0' };
+        int hexChar, index = hexChars.length, copyOfCh = ch;
+        do {
+            hexChar = copyOfCh & 15;
+            if (hexChar > 9) {
+                hexChar = hexChar - 10 + 'A';
+            } else {
+                hexChar += '0';
+            }
+            hexChars[--index] = (char) hexChar;
+        } while ((copyOfCh >>>= 4) != 0);
+        return hexChars;
     }
 
     /**
@@ -446,7 +461,7 @@ public class Properties extends Hashtable<Object, Object> {
                     }
                     break;
                 }
-                if (Character.isWhitespace(nextChar)) {
+                if (nextChar < 256 && Character.isWhitespace(nextChar)) {
                     if (mode == CONTINUE) {
                         mode = IGNORE;
                     }
@@ -581,50 +596,48 @@ public class Properties extends Hashtable<Object, Object> {
 
     private static String lineSeparator;
 
-	/**
-	 * Stores the mappings in this Properties to the specified OutputStream,
-	 * putting the specified comment at the beginning. The output from this
-	 * method is suitable for being read by the load() method.
-	 * 
-	 * @param out
-	 *            the OutputStream
-	 * @param comment
-	 *            the comment
-	 * @throws IOException 
-	 * 
-	 * @exception ClassCastException
-	 *                when the key or value of a mapping is not a String
-	 */
-	public synchronized void store(OutputStream out, String comment)
-			throws IOException {
-		if (lineSeparator == null) {
-			lineSeparator = AccessController
-					.doPrivileged(new PriviAction<String>("line.separator")); //$NON-NLS-1$
+    /**
+     * Stores the mappings in this Properties to the specified OutputStream,
+     * putting the specified comment at the beginning. The output from this
+     * method is suitable for being read by the load() method.
+     * 
+     * @param out
+     *            the OutputStream
+     * @param comments
+     *            the comments
+     * @throws IOException
+     * 
+     * @exception ClassCastException
+     *                when the key or value of a mapping is not a String
+     */
+    public synchronized void store(OutputStream out, String comments)
+            throws IOException {
+        if (lineSeparator == null) {
+            lineSeparator = AccessController
+                    .doPrivileged(new PriviAction<String>("line.separator")); //$NON-NLS-1$
         }
 
-		StringBuilder buffer = new StringBuilder(200);
-		OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1"); //$NON-NLS-1$
-		if (comment != null) {
-            writer.write("#"); //$NON-NLS-1$
-            writer.write(comment);
-			writer.write(lineSeparator); 
+        StringBuilder buffer = new StringBuilder(200);
+        OutputStreamWriter writer = new OutputStreamWriter(out, "ISO8859_1"); //$NON-NLS-1$
+        if (comments != null) {
+            writeComments(writer, comments);
         }
-        writer.write("#"); //$NON-NLS-1$
+        writer.write('#');
         writer.write(new Date().toString());
-        writer.write(lineSeparator); 
+        writer.write(lineSeparator);
 
-		for (Map.Entry<Object, Object> entry : entrySet()) {
-			String key = (String) entry.getKey();
-			dumpString(buffer, key, true);
-			buffer.append('=');
-			dumpString(buffer, (String) entry.getValue(), false);
-			buffer.append(lineSeparator);
-			writer.write(buffer.toString());
-			buffer.setLength(0);
-		}
-		writer.flush();
-	}
-    
+        for (Map.Entry<Object, Object> entry : entrySet()) {
+            String key = (String) entry.getKey();
+            dumpString(buffer, key, true, true);
+            buffer.append('=');
+            dumpString(buffer, (String) entry.getValue(), false, true);
+            buffer.append(lineSeparator);
+            writer.write(buffer.toString());
+            buffer.setLength(0);
+        }
+        writer.flush();
+    }
+
     /**
      * Stores the mappings in this Properties to the specified OutputStream,
      * putting the specified comment at the beginning. The output from this
@@ -632,37 +645,66 @@ public class Properties extends Hashtable<Object, Object> {
      * 
      * @param writer
      *            the writer
-     * @param comment
-     *            the comment
-     * @throws IOException 
-     *            if any I/O exception occurs
-     * @since 1.6 
+     * @param comments
+     *            the comments
+     * @throws IOException
+     *             if any I/O exception occurs
+     * @since 1.6
      */
-    public synchronized void store(Writer writer, String comment) throws IOException {
+    public synchronized void store(Writer writer, String comments)
+            throws IOException {
         if (lineSeparator == null) {
             lineSeparator = AccessController
                     .doPrivileged(new PriviAction<String>("line.separator")); //$NON-NLS-1$
         }
-        StringBuilder buffer = new StringBuilder(200);
-        if (comment != null) {
-            writer.write("#"); //$NON-NLS-1$
-            writer.write(comment);
-            writer.write(lineSeparator); 
+        if (comments != null) {
+            writeComments(writer, comments);
         }
-        writer.write("#"); //$NON-NLS-1$
+        writer.write('#');
         writer.write(new Date().toString());
-        writer.write(lineSeparator); 
+        writer.write(lineSeparator);
 
+        StringBuilder buffer = new StringBuilder(200);
         for (Map.Entry<Object, Object> entry : entrySet()) {
             String key = (String) entry.getKey();
-            dumpString(buffer, key, true);
+            dumpString(buffer, key, true, false);
             buffer.append('=');
-            dumpString(buffer, (String) entry.getValue(), false);
+            dumpString(buffer, (String) entry.getValue(), false, false);
             buffer.append(lineSeparator);
             writer.write(buffer.toString());
             buffer.setLength(0);
         }
         writer.flush();
+    }
+
+    private void writeComments(Writer writer, String comments)
+            throws IOException {
+        writer.write('#');
+        char[] chars = comments.toCharArray();
+        for (int index = 0; index < chars.length; index++) {
+            if (chars[index] < 256) {
+                if (chars[index] == '\r' || chars[index] == '\n') {
+                    int indexPlusOne = index + 1;
+                    if (chars[index] == '\r' && indexPlusOne < chars.length
+                            && chars[indexPlusOne] == '\n') {
+                        // "\r\n"
+                        continue;
+                    }
+                    writer.write(lineSeparator);
+                    if (indexPlusOne < chars.length
+                            && (chars[indexPlusOne] == '#' || chars[indexPlusOne] == '!')) {
+                        // return char with either '#' or '!' afterward
+                        continue;
+                    }
+                    writer.write('#');
+                } else {
+                    writer.write(chars[index]);
+                }
+            } else {
+                writer.write(toHexaDecimal(chars[index]));
+            }
+        }
+        writer.write(lineSeparator);
     }
 
     /**
