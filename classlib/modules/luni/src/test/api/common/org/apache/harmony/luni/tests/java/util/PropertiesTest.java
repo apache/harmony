@@ -17,10 +17,12 @@
 
 package org.apache.harmony.luni.tests.java.util;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
@@ -539,6 +541,131 @@ public class PropertiesTest extends junit.framework.TestCase {
         InputStream sr = new ByteArrayInputStream("hello".getBytes());
         props.load(sr);
         assertEquals(1, props.size());
+    }
+
+    private String comment1 = "comment1";
+
+    private String comment2 = "comment2";
+
+    private void validateOutput(String[] expectStrings, byte[] output)
+            throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(output);
+        BufferedReader br = new BufferedReader(new InputStreamReader(bais,
+                "ISO8859_1"));
+        for (String expectString : expectStrings) {
+            assertEquals(expectString, br.readLine());
+        }
+        br.readLine();
+        assertNull(br.readLine());
+        br.close();
+    }
+
+    public void testStore_scenario0() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\r' + comment2);
+        validateOutput(new String[] { "#comment1", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario1() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\n' + comment2);
+        validateOutput(new String[] { "#comment1", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario2() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\r' + '\n' + comment2);
+        validateOutput(new String[] { "#comment1", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario3() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\n' + '\r' + comment2);
+        validateOutput(new String[] { "#comment1", "#", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario4() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\r' + '#' + comment2);
+        validateOutput(new String[] { "#comment1", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario5() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\r' + '!' + comment2);
+        validateOutput(new String[] { "#comment1", "!comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario6() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\n' + '#' + comment2);
+        validateOutput(new String[] { "#comment1", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario7() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\n' + '!' + comment2);
+        validateOutput(new String[] { "#comment1", "!comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario8() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\r' + '\n' + '#' + comment2);
+        validateOutput(new String[] { "#comment1", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario9() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\n' + '\r' + '#' + comment2);
+        validateOutput(new String[] { "#comment1", "#", "#comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario10() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\r' + '\n' + '!' + comment2);
+        validateOutput(new String[] { "#comment1", "!comment2" },
+                baos.toByteArray());
+        baos.close();
+    }
+
+    public void testStore_scenario11() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Properties props = new Properties();
+        props.store(baos, comment1 + '\n' + '\r' + '!' + comment2);
+        validateOutput(new String[] { "#comment1", "#", "!comment2" },
+                baos.toByteArray());
+        baos.close();
     }
 
     /**
