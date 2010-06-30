@@ -315,6 +315,9 @@
                     <pathelement location="src/test/api/${hy.os.family}" />
                 </src>
                 <include name="**/*.java" />
+                <classpath location="${hy.hdk}/build/test/jetty-6.0.0.jar" />
+                <classpath location="${hy.hdk}/build/test/jetty-util-6.0.0.jar" />
+                <classpath location="${hy.hdk}/build/test/servlet-api-2.5-6.0.0.jar" />
             </javac-elements>
         </compile-tests>
         <compile-tests description="${hy.module} impl tests"
