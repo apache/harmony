@@ -34,6 +34,7 @@ int
 ObjectReference::ReferenceTypeHandler::Execute(JNIEnv *jni) 
 {
     jobject jvmObject = m_cmdParser->command.ReadObjectID(jni);
+    // Can be: InternalErrorException, OutOfMemoryException, JDWP_ERROR_INVALID_OBJECT
     if (NULL == jvmObject) {
         JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "ReferenceType: ReadObjectID() returned NULL"));
         AgentException aex = GetExceptionManager().GetLastException();
@@ -41,7 +42,6 @@ ObjectReference::ReferenceTypeHandler::Execute(JNIEnv *jni)
         JDWP_SET_EXCEPTION(aex);
         return err;
     }
-    // Can be: InternalErrorException, OutOfMemoryException, JDWP_ERROR_INVALID_OBJECT
     jclass jvmClass = jni->GetObjectClass(jvmObject); 
 
 #ifndef NDEBUG
