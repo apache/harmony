@@ -90,15 +90,7 @@ PacketDispatcher::Run(JNIEnv *jni)
                 JDWP_TRACE(LOG_RELEASE, (LOG_ERROR_FL, "Run: Exception in connection: %s", aex.GetExceptionMessage(jni)));
                 /* In server case, attempt to reaccept while the VM is alive */
                 if (AgentBase::GetOptionParser().GetServer()) {
-                    ret = ResetAll(jni);
-                    if (ret != JDWP_ERROR_NONE) {
-                        AgentException aex = GetExceptionManager().GetLastException();
-                        JDWP_TRACE(LOG_RELEASE, (LOG_ERROR_FL, "Error calling ResetAll(): %s", aex.GetExceptionMessage(jni)));
-                        if (!IsDead()) {                                            
-                            ::exit(1);
-                        }
-                        break;
-                    }
+                    // do not need to reset modules, because the session is not created yet
                     continue;
                 }
                 ::exit(1);
