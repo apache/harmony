@@ -2040,7 +2040,7 @@ atoe_execv (const char *path, char *const argv[])
     }
 
     /* Allocate space for the new array and populate */
-    ebcdicArgv = (char**) malloc(size+1);
+    ebcdicArgv = (char**) malloc(sizeof(char*) * (size+1));
     for (i=0; i<size; i++) {
         *(ebcdicArgv+i) = strdup(a2e_string(argv[i]));
     }
@@ -2049,6 +2049,11 @@ atoe_execv (const char *path, char *const argv[])
     *(ebcdicArgv+size) = NULL;
 
     rc = execv(ebcdicPath, ebcdicArgv);
+
+    for (i = 0; i < size; ++i) {
+        free(*(ebcdicArgv + i));
+    }
+    free(ebcdicArgv);
 
     return rc;
 }
@@ -2072,7 +2077,7 @@ atoe_execvp (const char *file, char *const argv[])
     }
 
     /* Allocate space for the new array and populate */
-    ebcdicArgv = (char**) malloc(size+1);
+    ebcdicArgv = (char**) malloc(sizeof(char*) * (size+1));
     for (i=0; i<size; i++) {
         *(ebcdicArgv+i) = strdup(a2e_string(argv[i]));
     }
@@ -2081,6 +2086,11 @@ atoe_execvp (const char *file, char *const argv[])
     *(ebcdicArgv+size) = NULL;
 
     rc = execvp(ebcdicFile, ebcdicArgv);
+
+    for (i = 0; i < size; ++i) {
+        free(*(ebcdicArgv + i));
+    }
+    free(ebcdicArgv);
 
     return rc;
 }
