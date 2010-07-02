@@ -2035,23 +2035,23 @@ atoe_execv (const char *path, char *const argv[])
     int size = 0, i, rc;
 
     /* Calculate the size of argv. argv always ends with a null pointer. */
-    while (*(argv + size)) {
+    while (argv[size]) {
         size++;
     }
 
     /* Allocate space for the new array and populate */
     ebcdicArgv = (char**) malloc(sizeof(char*) * (size + 1));
     for (i = 0; i < size; i++) {
-        *(ebcdicArgv + i) = a2e_string(argv[i]);
+        ebcdicArgv[i] = a2e_string(argv[i]);
     }
 
     /* Null terminate the new array */
-    *(ebcdicArgv + size) = NULL;
+    ebcdicArgv[size] = NULL;
 
     rc = execv(ebcdicPath, ebcdicArgv);
 
     for (i = 0; i < size; ++i) {
-        free(*(ebcdicArgv + i));
+        free(ebcdicArgv[i]);
     }
     free(ebcdicArgv);
     free(ebcdicPath);
@@ -2073,23 +2073,23 @@ atoe_execvp (const char *file, char *const argv[])
     int size = 0, i, rc;
 
     /* Calculate the size of argv. argv always ends with a null pointer. */
-    while (*(argv + size)) {
+    while (argv[size]) {
         size++;
     }
 
     /* Allocate space for the new array and populate */
     ebcdicArgv = (char**) malloc(sizeof(char*) * (size + 1));
     for (i = 0; i < size; i++) {
-        *(ebcdicArgv + i) = a2e_string(argv[i]);
+        ebcdicArgv[i] = a2e_string(argv[i]);
     }
 
     /* Null terminate the new array */
-    *(ebcdicArgv + size) = NULL;
+    ebcdicArgv[size] = NULL;
 
     rc = execvp(ebcdicFile, ebcdicArgv);
 
     for (i = 0; i < size; ++i) {
-        free(*(ebcdicArgv + i));
+        free(ebcdicArgv[i]);
     }
     free(ebcdicArgv);
     free(ebcdicPath);
