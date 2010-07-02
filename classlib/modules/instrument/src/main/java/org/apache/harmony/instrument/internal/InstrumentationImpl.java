@@ -37,8 +37,11 @@ public class InstrumentationImpl implements Instrumentation {
      * ----------------------------------------------------------------------------
      */
 
-    private static final Class[] PREMAIN_SIGNATURE = new Class[] {
+    private static final Class[] PREMAIN_AGENTMAIN_2_ARGS_SIGNATURE = new Class[] {
             String.class, Instrumentation.class };
+
+    private static final Class[] PREMAIN_AGENTMAIN_1_ARG_SIGNATURE = new Class[] {
+            String.class };
 
     /*
      * ----------------------------------------------------------------------------
@@ -209,9 +212,21 @@ public class InstrumentationImpl implements Instrumentation {
         try {
             ClassLoader loader = ClassLoader.getSystemClassLoader();
             Class c = loader.loadClass(utf8BytesToString(className));
-            Method method = c.getMethod("premain", PREMAIN_SIGNATURE); //$NON-NLS-1$
-            method.invoke(null, new Object[] {
-                    null == options ? null : utf8BytesToString(options), this });
+            String optionsStr = null == options ? null : utf8BytesToString(options);
+            Method method;
+            /*
+             * Refer to spec, first attempts to invoke:
+             *     public static void premain(String agentArgs, Instrumentation inst);
+             * If the agent class does not implement this method then the JVM will attempt to invoke:
+             *     public static void premain(String agentArgs);
+             */
+            try {
+                method = c.getMethod("premain", PREMAIN_AGENTMAIN_2_ARGS_SIGNATURE); //$NON-NLS-1$
+                method.invoke(null, new Object[] { optionsStr, this });
+            } catch (NoSuchMethodException e) {
+                method = c.getMethod("premain", PREMAIN_AGENTMAIN_1_ARG_SIGNATURE);
+                method.invoke(null, new Object[] { optionsStr });
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.err
