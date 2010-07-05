@@ -37,25 +37,15 @@ RequestManager::RequestManager()
     : m_requestIdCount(0)
     , m_requestMonitor(0) 
     , m_combinedEventsMonitor(0) 
-{}
-
-RequestManager::~RequestManager() 
-{}
-
-void RequestManager::Init(JNIEnv* jni)
 {
-    JDWP_TRACE_ENTRY(LOG_RELEASE, (LOG_FUNC_FL, "Init(%p)", jni));
-
     m_requestMonitor = new AgentMonitor("_jdwp_RequestManager_requestMonitor");
     m_combinedEventsMonitor = new AgentMonitor("_jdwp_RequestManager_combinedEventsMonitor");
 	m_exceptionMonitor = new AgentMonitor("_jdwp_RequestManager_exceptionMonitor");
     m_requestIdCount = 1;
 }
 
-void RequestManager::Clean(JNIEnv* jni)
+RequestManager::~RequestManager()
 {
-    JDWP_TRACE_ENTRY(LOG_RELEASE, (LOG_FUNC_FL, "Clean(%p)", jni));
-
     if (m_requestMonitor != 0){
         {
             MonitorAutoLock lock(m_requestMonitor JDWP_FILE_LINE);
@@ -80,6 +70,16 @@ void RequestManager::Clean(JNIEnv* jni)
         delete m_exceptionMonitor;
         m_exceptionMonitor = 0;
     }
+}
+
+void RequestManager::Init(JNIEnv* jni)
+{
+    JDWP_TRACE_ENTRY(LOG_RELEASE, (LOG_FUNC_FL, "Init(%p)", jni));
+    }
+
+void RequestManager::Clean(JNIEnv* jni)
+{
+    JDWP_TRACE_ENTRY(LOG_RELEASE, (LOG_FUNC_FL, "Clean(%p)", jni));
 }
 
 void RequestManager::Reset(JNIEnv* jni)
