@@ -716,20 +716,27 @@ public class URLTest extends TestCase {
     /**
      * @tests java.net.URL#equals(java.lang.Object)
      */
-    public void test_equalsLjava_lang_Object() {
-        // Test for method boolean java.net.URL.equals(java.lang.Object)
-        try {
-            u = new URL("http://www.apache.org:8080/dir::23??????????test.html");
-            u1 = new URL(
-                    "http://www.apache.org:8080/dir::23??????????test.html");
-            assertTrue("A) equals returns false for two identical URLs", u
-                    .equals(u1));
-            assertTrue("return true for null comaprison", !u1.equals(null));
-            u = new URL("ftp://www.apache.org:8080/dir::23??????????test.html");
-            assertTrue("Returned true for non-equal URLs", !u.equals(u1));
-        } catch (MalformedURLException e) {
-            fail("MalformedURLException during equals test : " + e.getMessage());
-        }
+    public void test_equalsLjava_lang_Object() throws MalformedURLException {
+        u = new URL("http://www.apache.org:8080/dir::23??????????test.html");
+        u1 = new URL("http://www.apache.org:8080/dir::23??????????test.html");
+        assertTrue("A) equals returns false for two identical URLs", u
+                .equals(u1));
+        assertTrue("return true for null comparison", !u1.equals(null));
+        u = new URL("ftp://www.apache.org:8080/dir::23??????????test.html");
+        assertTrue("Returned true for non-equal URLs", !u.equals(u1));
+
+        // Regression for HARMONY-6556
+        u = new URL("file", null, 0, "/test.txt");
+        u1 = new URL("file", null, 0, "/test.txt");
+        assertEquals(u, u1);
+        
+        u = new URL("file", "first.invalid", 0, "/test.txt");
+        u1 = new URL("file", "second.invalid", 0, "/test.txt");
+        assertFalse(u.equals(u1));
+        
+        u = new URL("file", "harmony.apache.org", 0, "/test.txt");
+        u1 = new URL("file", "www.apache.org", 0, "/test.txt");
+        assertEquals(u, u1);
     }
 
     /**
