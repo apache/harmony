@@ -104,15 +104,15 @@ bool SourceNameMatchModifier::Apply(JNIEnv* jni, EventInfo &eInfo)
 
     // We want to get the 2nd token here, split by '\n'
     char *tok = NULL;
-    tok = strtok(sourceDebugExtension, "\n"); // 1st token
+    tok = strtok(sourceDebugExtension, "\n\r"); // 1st token
     if (tok == NULL) return false;
-    tok = strtok(NULL, "\n");
+    tok = strtok(NULL, "\n\r");
     if (tok == NULL) return false;
     if (MatchPatternSourceName(tok, m_pattern)) return true;
-    while(tok = strtok(NULL, "\n")) {
+    while(tok = strtok(NULL, "\n\r")) {
         if (strlen(tok) >= 2) {
             if (tok[0] == '*' && tok[1] == 'F' && tok[2] == '\0') {
-                tok = strtok(NULL, "\n");
+                tok = strtok(NULL, "\n\r");
                 if (tok == NULL) return false;
                 while (tok[0] != '*') {
                     if (tok[0] == '+') {
@@ -130,7 +130,7 @@ bool SourceNameMatchModifier::Apply(JNIEnv* jni, EventInfo &eInfo)
                         if (MatchPatternSourceName(tok, m_pattern)) {
                             return true;
                         }
-                        tok = strtok(NULL, "\n");
+                        tok = strtok(NULL, "\n\r");
                         if (tok == NULL) return false;
                         if (MatchPatternSourceName(tok, m_pattern)) {
                             return true;
@@ -147,7 +147,7 @@ bool SourceNameMatchModifier::Apply(JNIEnv* jni, EventInfo &eInfo)
                             return true;
                         }
                     }
-                    tok = strtok(NULL, "\n");
+                    tok = strtok(NULL, "\n\r");
                     if (tok == NULL) return false;
                 }
             }

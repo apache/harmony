@@ -185,11 +185,11 @@ jint StepRequest::GetCurrentLine()
 #pragma convlit(suspend)
 #endif /* ZOS */
 
-    char *tok = strtok(sourceDebugExtension, "\n");
+    char *tok = strtok(sourceDebugExtension, "\n\r");
     if (tok == NULL) return -1;
-    tok = strtok(NULL, "\n");
+    tok = strtok(NULL, "\n\r");
     if (tok == NULL) return -1;
-    tok = strtok(NULL, "\n"); /* This is the preferred stratum for this class */
+    tok = strtok(NULL, "\n\r"); /* This is the preferred stratum for this class */
     if (tok == NULL) return -1;
     if ( ( default_stratum == NULL || strlen(default_stratum) == 0 ) &&
          strcmp(tok, "Java") == 0)
@@ -198,14 +198,14 @@ jint StepRequest::GetCurrentLine()
     stratum = ( default_stratum == NULL || strlen(default_stratum) == 0 ) ?
                 tok : default_stratum;
 
-    while( ( tok = strtok(NULL, "\n") ) ) {
+    while( ( tok = strtok(NULL, "\n\r") ) ) {
         if (strlen(tok) >= 2) {
             while (tok[0] == '*' && tok[1] == 'S' && tok[2] == ' ') {
                 tok++; tok++;
                 while (tok[0] == ' ' && tok[0] != 0) tok++; // skip spaces
                 if (strcmp(stratum, tok) == 0) {
                     // this is the stratum that is required
-                    tok = strtok(NULL, "\n");
+                    tok = strtok(NULL, "\n\r");
                     if (tok == NULL) return -1;
                     // parse until we find another stratum section or 
                     // the end token
@@ -215,7 +215,7 @@ jint StepRequest::GetCurrentLine()
                             tok[0] == '*' && tok[1] == 'L' && tok[2] == '\0') {
                             // parse line info section
                             do {
-                                tok = strtok(NULL, "\n");
+                                tok = strtok(NULL, "\n\r");
                                 if (tok == NULL) return -1;
                                 if (tok[0] >= '0' && tok[0] <= '9') {
                                     long int in_start = strtol(tok, &tok, 10);
@@ -251,7 +251,7 @@ jint StepRequest::GetCurrentLine()
                             } while (tok[0] != '*');
                             return -1;
                         }
-                        tok = strtok(NULL, "\n");
+                        tok = strtok(NULL, "\n\r");
                         if (tok == NULL) return -1;
                     }
                 }
