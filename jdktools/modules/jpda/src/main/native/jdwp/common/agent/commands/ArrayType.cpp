@@ -134,7 +134,7 @@ ArrayType::NewInstanceHandler::Execute(JNIEnv *jni)
         return JDWP_ERROR_OUT_OF_MEMORY;
     }
 
-    JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "NewInstance: send: tag=%s, newArray=%p", JDWP_TAG_ARRAY, arr));
+    JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "NewInstance: send: tag=%d, newArray=%p", JDWP_TAG_ARRAY, arr));
     m_cmdParser->reply.WriteByte(JDWP_TAG_ARRAY);
     m_cmdParser->reply.WriteArrayID(jni, arr);
 
