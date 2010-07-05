@@ -17,8 +17,11 @@
 
 package javax.imageio;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.image.BandedSampleModel;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
@@ -26,6 +29,35 @@ import java.awt.image.DataBuffer;
 import junit.framework.TestCase;
 
 public class ImageTypeSpecifierTest extends TestCase {
+    public void testCreateBanded() {
+        int[] bankIndices = new int[]{0, 1, 2};
+        int[] bandOffsets = new int[]{1, 1, 1};
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        int dataType = DataBuffer.TYPE_BYTE;
+        boolean hasAlpha = false;
+        
+        ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createBanded(colorSpace,
+                                                                           bankIndices, 
+                                                                           bandOffsets, 
+                                                                           dataType, 
+                                                                           hasAlpha, 
+                                                                           false);
+        
+        ColorModel colorModel = typeSpecifier.getColorModel();
+        assertEquals("Failed to create with the correct colorspace type",
+                     ColorSpace.TYPE_RGB, colorModel.getColorSpace().getType());
+        assertEquals("Failed to create with the correct transparency",
+                     Transparency.OPAQUE, colorModel.getTransparency());
+        assertEquals("Failed to create with the correcttransfer type",
+                     DataBuffer.TYPE_BYTE, colorModel.getTransferType());
+        
+        BandedSampleModel sampleModel = (BandedSampleModel) typeSpecifier.getSampleModel();
+        assertArrayEquals("Failed to create with the correct bankIndices",
+                          bankIndices, sampleModel.getBankIndices());
+        assertArrayEquals("Failed to create with the correct bankIndices",
+                          bandOffsets, sampleModel.getBandOffsets());  
+    }
+
     public void testCreateBufferedImage() {
         ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createGrayscale(8, 
                                                                               DataBuffer.TYPE_BYTE, 

@@ -20,6 +20,7 @@ package javax.imageio;
 import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.image.BandedSampleModel;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -89,9 +90,61 @@ public class ImageTypeSpecifier {
                                                   int[] bandOffsets,
                                                   int dataType,
                                                   boolean hasAlpha,
-                                                  boolean isAlphaPremultiplied) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+                                                  boolean isAlphaPremultiplied) {
+        if (colorSpace == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (bankIndices == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (bandOffsets == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (bankIndices.length != bandOffsets.length) {
+            throw new IllegalArgumentException();
+        }
+        
+        int numComponents = colorSpace.getNumComponents();
+        if (hasAlpha) {
+            numComponents++;
+        }
+        if (bandOffsets.length != numComponents) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (dataType != DataBuffer.TYPE_BYTE &&
+            dataType != DataBuffer.TYPE_DOUBLE &&
+            dataType != DataBuffer.TYPE_FLOAT &&
+            dataType != DataBuffer.TYPE_INT &&
+            dataType != DataBuffer.TYPE_SHORT &&
+            dataType != DataBuffer.TYPE_USHORT) {
+            throw new IllegalArgumentException();
+        }
+        
+        int[] bits = new int[numComponents];
+        for (int i = 0; i < numComponents; i++) {
+            bits[i] = DataBuffer.getDataTypeSize(dataType);
+        }
+        int transparency = hasAlpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE;
+        
+        ColorModel colorModel = new ComponentColorModel(colorSpace,
+                                                        bits,
+                                                        hasAlpha,
+                                                        isAlphaPremultiplied,
+                                                        transparency,
+                                                        dataType);
+        
+        SampleModel sampleModel = new BandedSampleModel(dataType,
+                                                        1,
+                                                        1,
+                                                        1,
+                                                        bankIndices,
+                                                        bandOffsets);
+        
+        return new ImageTypeSpecifier(colorModel, sampleModel);
     }
 
     public static ImageTypeSpecifier createGrayscale(int bits,
