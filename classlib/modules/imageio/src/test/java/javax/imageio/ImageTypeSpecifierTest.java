@@ -25,6 +25,7 @@ import java.awt.image.BandedSampleModel;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.PixelInterleavedSampleModel;
 
 import junit.framework.TestCase;
 
@@ -85,6 +86,34 @@ public class ImageTypeSpecifierTest extends TestCase {
                      BufferedImage.TYPE_BYTE_GRAY, typeSpecifier.getBufferedImageType());        
     }
     
+    public void testCreateInterleaved() {
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        int[] bandOffsets = new int[] { 1, 2, 3 };
+        int dataType = DataBuffer.TYPE_BYTE;
+
+        ImageTypeSpecifier type = ImageTypeSpecifier.createInterleaved(
+                colorSpace, bandOffsets, dataType, false, false);
+        ColorModel colorModel = type.getColorModel();
+        PixelInterleavedSampleModel sampleModel = (PixelInterleavedSampleModel) type
+                .getSampleModel();
+
+        // validate the colorModel
+        assertEquals("Failed to create with the correct colorspace type",
+                ColorSpace.TYPE_RGB, colorModel.getColorSpace().getType());
+        assertEquals("Failed to create with the correct transparency",
+                Transparency.OPAQUE, colorModel.getTransparency());
+        assertEquals("Failed to create with the correct transfer type",
+                DataBuffer.TYPE_BYTE, colorModel.getTransferType());
+
+        // validate the sampleModel
+        assertTrue("The sampleModel and colorModel are not compatible",
+                colorModel.isCompatibleSampleModel(sampleModel));
+        assertArrayEquals("Failed to create with the correct bandOffsets",
+                bandOffsets, sampleModel.getBandOffsets());
+        assertEquals("Failed to create with the correct pixel stride", 3,
+                sampleModel.getPixelStride());
+    }
+
     public void testCreateGrayscale() {        
         // create a 8-bit grayscale ImageTypeSpecifier
         ImageTypeSpecifier type =

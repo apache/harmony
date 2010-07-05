@@ -27,6 +27,7 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
+import java.awt.image.PixelInterleavedSampleModel;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
@@ -79,9 +80,66 @@ public class ImageTypeSpecifier {
                                                        int[] bandOffsets,
                                                        int dataType,
                                                        boolean hasAlpha,
-                                                       boolean isAlphaPremultiplied) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+                                                       boolean isAlphaPremultiplied) {
+        if (colorSpace == null) {
+            throw new IllegalArgumentException();            
+        }
+        
+        if (bandOffsets == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (dataType != DataBuffer.TYPE_BYTE &&
+            dataType != DataBuffer.TYPE_DOUBLE &&
+            dataType != DataBuffer.TYPE_FLOAT &&
+            dataType != DataBuffer.TYPE_INT &&
+            dataType != DataBuffer.TYPE_SHORT &&
+            dataType != DataBuffer.TYPE_USHORT) {
+            throw new IllegalArgumentException();
+        }
+        
+        int numComponents = colorSpace.getNumComponents();
+        if (hasAlpha) {
+            numComponents++;
+        }
+        if (bandOffsets.length != numComponents) {
+            throw new IllegalArgumentException();
+        }
+        
+        int transparency = hasAlpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE;
+        int[] bits = new int[numComponents];
+        
+        for (int i = 0; i < numComponents; i++) {
+            bits[i] = DataBuffer.getDataTypeSize(dataType);
+        }
+        
+        ColorModel colorModel = new ComponentColorModel(colorSpace, 
+                                                        bits, 
+                                                        hasAlpha, 
+                                                        isAlphaPremultiplied,
+                                                        transparency,
+                                                        dataType);
+        
+        int minBandOffset = bandOffsets[0];
+        int maxBandOffset = bandOffsets[0];
+        for (int i = 0; i < bandOffsets.length; i++) {
+            if (minBandOffset > bandOffsets[i]) {
+                minBandOffset = bandOffsets[i];
+            }
+            if (maxBandOffset < bandOffsets[i]) {
+                maxBandOffset = bandOffsets[i];
+            }
+        }
+        int pixelStride = maxBandOffset - minBandOffset + 1;
+        
+        SampleModel sampleModel = new PixelInterleavedSampleModel(dataType, 
+                                                                  1,
+                                                                  1,
+                                                                  pixelStride, 
+                                                                  pixelStride, 
+                                                                  bandOffsets);
+               
+        return new ImageTypeSpecifier(colorModel, sampleModel);
     }
 
 
