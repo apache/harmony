@@ -17,6 +17,7 @@
 
 package javax.imageio;
 
+import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -25,8 +26,11 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
+import java.util.Hashtable;
 
 import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
@@ -181,9 +185,9 @@ public class ImageTypeSpecifier {
         return new ImageTypeSpecifier(image);
     }
 
-    public int getBufferedImageType() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public int getBufferedImageType() {
+        BufferedImage bufferedImage = createBufferedImage(1, 1);
+        return bufferedImage.getType();
     }
 
     public int getNumComponents() {
@@ -207,7 +211,7 @@ public class ImageTypeSpecifier {
 
     public SampleModel getSampleModel(int width, int height) {
         if ((long)width*height > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException(Messages.getString("imageio.28"));
+            throw new IllegalArgumentException(Messages.getString("imageio.28")); //$NON-NLS-1$
         }
         return sampleModel.createCompatibleSampleModel(width, height);
     }
@@ -216,9 +220,19 @@ public class ImageTypeSpecifier {
         return colorModel;
     }
 
-    public BufferedImage createBufferedImage(int width, int height) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public BufferedImage createBufferedImage(int width, int height) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException();
+        }
+        
+        if ((long)width*height > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException();
+        }
+        
+        SampleModel sm = sampleModel.createCompatibleSampleModel(width, height);
+        WritableRaster writableRaster = Raster.createWritableRaster(sm, new Point(0, 0)); 
+        
+        return new BufferedImage(colorModel, writableRaster, colorModel.isAlphaPremultiplied(), new Hashtable());
     }
 
     @Override

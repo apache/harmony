@@ -19,12 +19,40 @@ package javax.imageio;
 
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
 
 import junit.framework.TestCase;
 
 public class ImageTypeSpecifierTest extends TestCase {
+    public void testCreateBufferedImage() {
+        ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createGrayscale(8, 
+                                                                              DataBuffer.TYPE_BYTE, 
+                                                                              true);
+        
+        int width = 10;
+        int height = 10;
+        BufferedImage image = typeSpecifier.createBufferedImage(width, height);
+        assertEquals("Failed to create with the correct ColorModel",
+                     typeSpecifier.getColorModel(), image.getColorModel());
+        assertEquals("Failed to create with the correct SampleModel",
+                     typeSpecifier.getSampleModel().getClass(), image.getSampleModel().getClass());
+        assertEquals("Failed to create with the correct width",
+                     width, image.getWidth());
+        assertEquals("Failed to create with the correct height",
+                     height, image.getHeight());
+    }
+    
+    public void testGetBufferedImageType() {
+        ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createGrayscale(8, 
+                                                                              DataBuffer.TYPE_BYTE, 
+                                                                              true);
+
+        assertEquals("Failed to return the correct type",
+                     BufferedImage.TYPE_BYTE_GRAY, typeSpecifier.getBufferedImageType());        
+    }
+    
     public void testCreateGrayscale() {        
         // create a 8-bit grayscale ImageTypeSpecifier
         ImageTypeSpecifier type =
