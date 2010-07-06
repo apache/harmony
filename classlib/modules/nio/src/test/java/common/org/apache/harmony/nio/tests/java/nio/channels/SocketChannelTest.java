@@ -426,6 +426,13 @@ public class SocketChannelTest extends TestCase {
         assertTrue(0 != socket.getLocalPort());
     }
 
+    public void testSocket_bind() throws Exception {
+        Socket socket = channel1.socket();
+        socket.bind(new InetSocketAddress("127.0.0.1", 0));
+        assertEquals("127.0.0.1", socket.getLocalAddress().getHostAddress());
+        assertTrue(socket.getLocalPort() != -1);
+    }
+
     private void assertSocketBeforeConnect(Socket s) throws IOException {
         assertFalse(s.isBound());
         assertFalse(s.isClosed());
