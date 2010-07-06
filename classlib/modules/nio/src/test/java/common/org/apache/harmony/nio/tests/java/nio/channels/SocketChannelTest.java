@@ -2782,15 +2782,15 @@ public class SocketChannelTest extends TestCase {
 
         // Write them out, read what we wrote and check it
         client.write(buffers);
+        client.close();
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        worker.read(readBuffer);
+        while (EOF != worker.read(readBuffer)) {};
         readBuffer.flip();
         Buffer expected = ByteBuffer.allocate(1024).put(data).put(data).flip();
         assertEquals(expected, readBuffer);
 
         // Tidy-up
         worker.close();
-        client.close();
         server.close();
     }
 
@@ -2824,14 +2824,14 @@ public class SocketChannelTest extends TestCase {
 
         // Write them out, read what we wrote and check it
         client.write(buffers);
+        client.close();
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        worker.read(readBuffer);
+        while (EOF != worker.read(readBuffer)) {};
         readBuffer.flip();
         assertEquals(ByteBuffer.wrap(data), readBuffer);
 
         // Tidy-up
         worker.close();
-        client.close();
         server.close();
     }
 
@@ -2864,16 +2864,16 @@ public class SocketChannelTest extends TestCase {
         client.write(buffers, 0, 2); // writes "world!"
         assertEquals("Failed to drain buffer 1", 0, buffers[1].remaining());
         client.write(buffers, 0, 3); // write nothing
+        client.close();
 
         // Read what we wrote and check it
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        worker.read(readBuffer);
+        while (EOF != worker.read(readBuffer)) {};
         readBuffer.flip();
         assertEquals(ByteBuffer.wrap(data), readBuffer);
 
         // Tidy-up
         worker.close();
-        client.close();
         server.close();
     }
 
