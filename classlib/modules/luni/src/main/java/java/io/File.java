@@ -79,7 +79,14 @@ public class File implements Serializable, Comparable<File> {
     public static final String pathSeparator;
 
     /* Temp file counter */
-    private static int counter;
+    private static int counter = 0;
+
+    /* identify for differnt VM processes */
+    private static int counterBase = 0;
+
+    private static class TempFileLocker {};
+
+    private static TempFileLocker tempFileLocker = new TempFileLocker();
 
     private static boolean caseSensitive;
 
@@ -1456,13 +1463,20 @@ public class File implements Serializable, Comparable<File> {
     }
 
     private static File genTempFile(String prefix, String suffix, File directory) {
-        if (counter == 0) {
-            int newInt = new SecureRandom().nextInt();
-            counter = ((newInt / 65535) & 0xFFFF) + 0x2710;
+        int identify = 0;
+        synchronized (tempFileLocker) {
+            if (counter == 0) {
+                int newInt = new SecureRandom().nextInt();
+                counter = ((newInt / 65535) & 0xFFFF) + 0x2710;
+                counterBase = counter;
+            }
+            identify = counter++;
         }
+
         StringBuilder newName = new StringBuilder();
         newName.append(prefix);
-        newName.append(counter++);
+        newName.append(counterBase);
+        newName.append(identify);
         newName.append(suffix);
         return new File(directory, newName.toString());
     }
