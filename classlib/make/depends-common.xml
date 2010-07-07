@@ -25,6 +25,9 @@
     where possible.
     </description>
 
+    <property name="maven2.base"
+              value="http://mirrors.ibiblio.org/pub/mirrors/maven2" />
+
     <loadproperties srcfile="${basedir}/make/depends.properties">
       <filterchain>
         <filterreader classname="org.apache.tools.ant.filters.ReplaceTokens">
