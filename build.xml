@@ -20,18 +20,6 @@
 
 <project name="build-harmony" default="build" basedir=".">
 
-    <fail>
-        <condition>
-            <isset property="java6" />
-        </condition>
-The -Djava6=true federated build has been deprecated.  Please checkout
-the java6 federated build from:
-
-  https://svn.apache.org/repos/asf/harmony/enhanced/java/branches/java6
-
-Thanks.
-    </fail>
-
     <!-- name of the target directory to use for building and final assembly -->
     <property name="target.dir" value="target" />
 
