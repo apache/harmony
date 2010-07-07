@@ -24,7 +24,6 @@ import java.security.AccessController;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.harmony.luni.internal.io.FileCanonPathCache;
 import org.apache.harmony.luni.util.DeleteOnExit;
@@ -80,7 +79,14 @@ public class File implements Serializable, Comparable<File> {
     public static final String pathSeparator;
 
     /* Temp file counter */
-    private static AtomicInteger counter = new AtomicInteger(0);
+    private static int counter = 0;
+
+    /* identify for differnt VM processes */
+    private static int counterBase = 0;
+
+    private static class TempFileLocker {};
+
+    private static TempFileLocker tempFileLocker = new TempFileLocker();
 
     private static boolean caseSensitive;
 
@@ -1301,13 +1307,20 @@ public class File implements Serializable, Comparable<File> {
     }
 
     private static File genTempFile(String prefix, String suffix, File directory) {
-        if (counter.get() == 0) {
-            int newInt = new SecureRandom().nextInt();
-            counter.compareAndSet(0, ((newInt / 65535) & 0xFFFF) + 0x2710);
+        int identify = 0;
+        synchronized (tempFileLocker) {
+            if (counter == 0) {
+                int newInt = new SecureRandom().nextInt();
+                counter = ((newInt / 65535) & 0xFFFF) + 0x2710;
+                counterBase = counter;
+            }
+            identify = counter++;
         }
+
         StringBuilder newName = new StringBuilder();
         newName.append(prefix);
-        newName.append(counter.getAndIncrement());
+        newName.append(counterBase);
+        newName.append(identify);
         newName.append(suffix);
         return new File(directory, newName.toString());
     }
