@@ -47,7 +47,6 @@ import org.apache.harmony.luni.platform.FileDescriptorHandler;
 import org.apache.harmony.luni.platform.INetworkSystem;
 import org.apache.harmony.luni.platform.Platform;
 import org.apache.harmony.luni.util.ErrorCodeException;
-import org.apache.harmony.nio.internal.nls.Messages;
 import org.apache.harmony.nio.AddressUtil;
 import org.apache.harmony.nio.internal.nls.Messages;
 
@@ -794,11 +793,9 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
                 throw new ConnectionPendingException();
             }
             super.bind(localAddr);
-            // keep here to see if need next version
-            // channel.Address = getLocalSocketAddress();
-            // channel.localport = getLocalPort();
             channel.isBound = true;
-
+            channel.localAddress = super.getLocalAddress();
+            channel.localPort = super.getLocalPort();
         }
 
         /**

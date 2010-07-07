@@ -295,8 +295,9 @@ static jint check_platform() {
     if((osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0) ||  // NT 4.0
        (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0) ||  // Windows 2000
        (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1) ||  // Windows XP
-       (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||  // Windows.NET            
-       (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0)) {  // Windows Vista            
+       (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 2) ||  // Windows.NET
+       (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0) ||  // Windows Vista
+       (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 1)) {  // Windows 7
             return JNI_OK;
     }
     printf("Windows %d.%d is not supported\n", osvi.dwMajorVersion, osvi.dwMinorVersion);

@@ -1414,8 +1414,7 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
                 // keep asking for username/password until authorized
                 String challenge = resHeader.get("WWW-Authenticate"); //$NON-NLS-1$
                 if (challenge == null) {
-                    // luni.2E=Received authentication challenge is null
-                    throw new IOException(Messages.getString("luni.2E")); //$NON-NLS-1$
+                    break;
                 }
                 // drop everything and reconnect, might not be required for
                 // HTTP/1.1

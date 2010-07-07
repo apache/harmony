@@ -285,7 +285,7 @@ JRE or another JRE supporting the JVMTI interface. To enable this, do:
    for example, the Eclipse* JDT debugger.
 
 The JDWP agent supports all standard options described in JPDA specification,
-except 'onthrow' and 'onuncought' used for starting the debugger on demand.
+except 'onthrow' and 'onuncaught' used for starting the debugger on demand.
 
 To start JVM with the JDWP agent on the command line, use the options shown
 in the usage message:
@@ -372,7 +372,7 @@ The contributed JPDA module has the following known problems:
 
 The following functionality is missing in the current JDWP implementation:
 
-  - Support for agent options onthrow and onuncought to start the debugger
+  - Support for agent options onthrow and onuncaught to start the debugger
     when an exception is thrown in the application.
 
   - Grouping different events for the same location, for example, breakpoint 

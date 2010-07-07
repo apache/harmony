@@ -399,17 +399,20 @@ public abstract class URLStreamHandler {
      *         otherwise.
      */
     protected boolean hostsEqual(URL url1, URL url2) {
-        String host1 = getHost(url1), host2 = getHost(url2);
-        if (host1 != null && host1.equalsIgnoreCase(host2)) {
-            return true;
-        }
-        // Compare host address if the host name is not equal.
+        // Compare by addresses if known.
         InetAddress address1 = getHostAddress(url1);
         InetAddress address2 = getHostAddress(url2);
-        if (address1 != null && address1.equals(address2)) {
+        if (address1 != null && address2 != null) {
+            return address1.equals(address2);
+        }
+
+        // Compare by name.
+        String host1 = getHost(url1);
+        String host2 = getHost(url2);
+        if (host1 == null && host2 == null) {
             return true;
         }
-        return false;
+        return host1 != null && host1.equalsIgnoreCase(host2);
     }
 
     /**
@@ -450,7 +453,7 @@ public abstract class URLStreamHandler {
     }
 
     /*
-     * If the URL host is empty while protocal is file, the host is regarded as
+     * If the URL host is empty while protocol is file, the host is regarded as
      * localhost.
      */
     private static String getHost(URL url) {

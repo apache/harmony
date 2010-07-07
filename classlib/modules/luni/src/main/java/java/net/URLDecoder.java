@@ -23,8 +23,10 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.security.AccessController;
 
 import org.apache.harmony.luni.internal.nls.Messages;
+import org.apache.harmony.luni.util.PriviAction;
 
 /**
  * This class is used to decode a string which is encoded in the {@code
@@ -53,8 +55,11 @@ public class URLDecoder {
 
         if (defaultCharset == null) {
             try {
-                defaultCharset = Charset.forName(
-                        System.getProperty("file.encoding")); //$NON-NLS-1$
+                String encoding = AccessController
+                    .doPrivileged(new PriviAction<String>("file.encoding")); //$NON-NLS-1$
+                if (encoding != null) {
+                    defaultCharset = Charset.forName(encoding);
+                }
             } catch (IllegalCharsetNameException e) {
                 // Ignored
             } catch (UnsupportedCharsetException e) {

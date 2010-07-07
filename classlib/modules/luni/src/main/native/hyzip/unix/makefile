@@ -25,6 +25,6 @@ BUILDFILES = hyzip.o zcpool.o zipalloc.o zipcache.o zipsup.o pool.o pool_cap.o
 LIBNAME = $(LIBPATH)libhyzip.a
 
 $(HY_BIN)%.o: $(LIBPATH)libhypool.a(%.o)
-	( cd $(HY_BIN) && ar $(ARFLAGS) xo $(LIBPATH)libhypool.a $@ )
+	( cd $(HY_BIN) && ar $(ARFLAGS) $(AREXTRACT) $(LIBPATH)libhypool.a $@ )
 
 include $(HY_TARGET)/hdk/build/make/rules.mk

@@ -41,7 +41,7 @@ public final class URI implements Comparable<URI>, Serializable {
 
     static final String someLegal = unreserved + punct;
 
-    static final String queryLegal =  unreserved + reserved + "\\";
+    static final String queryLegal = unreserved + reserved + "\\\""; //$NON-NLS-1$
     
     static final String allLegal = unreserved + reserved;
 

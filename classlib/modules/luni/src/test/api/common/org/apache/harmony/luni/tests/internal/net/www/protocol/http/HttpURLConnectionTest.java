@@ -37,6 +37,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.DefaultHandler;
+
 import tests.support.Support_Jetty;
 
 import junit.framework.TestCase;
@@ -262,6 +271,120 @@ public class HttpURLConnectionTest extends TestCase {
             System.out.println("\n==============================");
             System.out.println("===== Execution: " + getName());
             System.out.println("==============================");
+        }
+    }
+
+    public static class ResponseServer {
+        private Server server = null;
+
+        private int port = -1;
+
+        public class MyRealmHandler extends DefaultHandler {
+            public void handle(String target, HttpServletRequest request,
+                    HttpServletResponse response, int dispatch)
+                    throws IOException, ServletException {
+                boolean auth = request.getHeader("Authorization") != null;
+                String resLoc = request.getPathInfo();
+                boolean noRealm = "/norealm".equals(resLoc);
+
+                Request base_request = (request instanceof Request) ? (Request) request
+                        : HttpConnection.getCurrentConnection().getRequest();
+                base_request.setHandled(true);
+                response.setContentType("text/html");
+                response.addDateHeader("Date", System.currentTimeMillis());
+                if (noRealm) {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().print("<h1>No WWW-Authenticate</h1>");
+                } else {
+                    if (auth) {
+                        response.setStatus(HttpServletResponse.SC_OK);
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.addHeader("WWW-Authenticate",
+                                "Basic realm=\"HelloWorld\"");
+                    }
+                }
+            }
+        }
+
+        public void startServer(DefaultHandler handler) throws Exception {
+            server = new Server(0);
+            server.setHandler(handler);
+            server.start();
+            port = server.getConnectors()[0].getLocalPort();
+        }
+
+        public void stopServer() throws Exception {
+            if (server != null) {
+                server.stop();
+                server = null;
+            }
+        }
+
+        public int getPort() {
+            return port;
+        }
+    }
+
+    /**
+     * Test response code which need authenticate
+     */
+    public void testGetResponseCode() throws Exception {
+        ResponseServer server = new ResponseServer();
+        HttpURLConnection conn = null;
+        try {
+            server.startServer(server.new MyRealmHandler());
+            int port = server.getPort();
+            try {
+                conn = (HttpURLConnection) new URL("http://localhost:" + port
+                        + "/norealm").openConnection();
+                assertEquals(401, conn.getResponseCode());
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.disconnect();
+                    } catch (Exception e) {
+                    }
+                }
+            }
+
+            try {
+                conn = (HttpURLConnection) new URL("http://localhost:" + port
+                        + "/realm").openConnection();
+                assertEquals(401, conn.getResponseCode());
+                assertEquals("Basic realm=\"HelloWorld\"", conn
+                        .getHeaderField("WWW-Authenticate"));
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.disconnect();
+                    } catch (Exception e) {
+                    }
+                }
+            }
+
+            try {
+                Authenticator.setDefault(new Authenticator() {
+                    public PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication("test", "password"
+                                .toCharArray());
+                    }
+                });
+                server.startServer(server.new MyRealmHandler());
+                conn = (HttpURLConnection) new URL("http://localhost:" + port
+                        + "/realm").openConnection();
+                assertEquals(200, conn.getResponseCode());
+                assertNull(conn.getHeaderField("WWW-Authenticate"));
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.disconnect();
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        } finally {
+            server.stopServer();
         }
     }
 
