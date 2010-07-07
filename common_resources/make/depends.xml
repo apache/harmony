@@ -23,6 +23,9 @@
     
     <dirname property="ed.basedir" file="${ant.file.external-deps}"/>
     <import file="${ed.basedir}/properties.xml"/>
+
+    <property name="maven2.base"
+              value="http://mirrors.ibiblio.org/pub/mirrors/maven2" />
     
     <loadproperties srcfile="${ed.basedir}/depends.properties">
       <filterchain>
