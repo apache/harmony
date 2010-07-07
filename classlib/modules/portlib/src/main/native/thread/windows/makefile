@@ -26,7 +26,7 @@ LIBNAME=$(LIBPATH)$(LIBBASE).lib
 BUILDFILES = \
   $(SHAREDSUB)thread_copyright.obj $(HY_PLATFORM)\thrhelp.obj $(HY_PLATFORM)\thrspinlock.obj \
   $(SHAREDSUB)hythread.obj $(SHAREDSUB)hythreadinspect.obj $(SHAREDSUB)rwmutex.obj thrdsup.obj \
-  $(SHAREDSUB)thrprof.obj
+  $(SHAREDSUB)thrprof.obj $(HY_PLATFORM)\locklbl.obj lock386.obj
 
 # TOFIX $(LIBBASE).def should be a dependency on all libs
 VIRTFILES = $(LIBBASE).res
