@@ -181,10 +181,11 @@
             <antcall target="-remove-file-if-bad">
                 <param name="jar" value="@{dest}" />
             </antcall>
-        <fail unless="@{dest}.md5.verified">
+            <property name="@{dest}.fullpath" location="@{dest}" />
+            <fail unless="@{dest}.md5.verified">
 ...
 
-File @{dest} has incorrect md5 checksum.
+File ${@{dest}.fullpath} has incorrect md5 checksum.
     Expected: @{md5} (or @{md5-deprecated})
     Found:    ${@{dest}.md5}
 
