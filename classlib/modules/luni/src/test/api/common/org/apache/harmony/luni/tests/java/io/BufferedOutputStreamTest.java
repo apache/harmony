@@ -329,8 +329,22 @@ public class BufferedOutputStreamTest extends junit.framework.TestCase {
         try {
             bos.write(byteArray, -1, -1);
             fail();
-        } catch (Exception e) {
-            // expected IOException. RI throws IndexOutOfBoundsException
+        } catch (IndexOutOfBoundsException e) {
+            // expected IndexOutOfBoundsException
+        }
+
+        try {
+            bos.write(null, -1, -1);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // expected NullPointerException.
+        }
+
+        try {
+            bos.write(null, 0, 1);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // expected NullPointerException.
         }
     }
 

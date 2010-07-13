@@ -49,7 +49,7 @@
         </run-hdk-tests>
     </target>
 
-    <target name="-test-module-impl" if="hy.test.impl">
+    <target name="-test-module-impl" if="hy.run.impl.tests">
         <run-hdk-tests module="luni" jar="luni_tests_impl.jar">
             <junit-elements>
                 <!-- Required by various tests that set security manager etc -->
