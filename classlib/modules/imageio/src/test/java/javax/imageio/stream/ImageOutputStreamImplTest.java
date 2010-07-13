@@ -17,7 +17,9 @@
 
 package javax.imageio.stream;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
@@ -176,6 +178,19 @@ public class ImageOutputStreamImplTest extends TestCase {
 		in.readFully(dest, 0, 3);
 		assertTrue(Arrays.equals(src, dest));
 	}
+	
+	public void testWriteBits() throws IOException {
+	    final BasicImageOutputStreamImpl out = new BasicImageOutputStreamImpl(8);
+	    final ImageInputStream in = new BasicImageInputStreamImpl(out.buff);
+	    
+	    out.writeBits(0xff, 7);
+	    out.writeBit(0);
+	    out.writeBits(0xabcdef, 24);
+	    assertEquals("writeBits failed", 0xfe, in.read());
+	    assertEquals("writeBits failed", 0xab, in.read());
+	    assertEquals("writeBits failed", 0xcd, in.read());
+	    assertEquals("writeBits failed", 0xef, in.read());
+	}
 
 	// FIXME: it looks like there is a bug in Double.doubleToLongBits
 	public void _testWriteDoubles() throws IOException {
@@ -249,12 +264,22 @@ public class ImageOutputStreamImplTest extends TestCase {
 
 		@Override
 		public int read() throws IOException {
-			throw new RuntimeException("Write only");
+		    bitOffset = 0;
+                    return (streamPos >= buff.length) ? -1
+                            : (buff[(int) streamPos++] & 0xff);
 		}
 
 		@Override
 		public int read(byte[] b, int off, int len) throws IOException {
-			throw new RuntimeException("Write only");
+		    int i = 0;
+                    int curByte = -1;
+
+                    for (; (i < len) && ((curByte = read()) != -1); i++) {
+                        b[off] = (byte) curByte;
+                        off++;
+                    }
+
+                    return (i == 0) && (curByte == -1) ? -1 : i;
 		}
 	}
 }
