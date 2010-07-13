@@ -34,7 +34,6 @@ import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.util.Hashtable;
 
-import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class ImageTypeSpecifier {
@@ -284,9 +283,130 @@ public class ImageTypeSpecifier {
        return new ImageTypeSpecifier(model, model.createCompatibleSampleModel(1, 1));
     }
 
-    public static ImageTypeSpecifier createFromBufferedImageType(int bufferedImageType) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static ImageTypeSpecifier createFromBufferedImageType(int bufferedImageType) {
+        switch (bufferedImageType) {
+        case BufferedImage.TYPE_INT_RGB :
+            return createPacked(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                0x00ff0000,
+                                0x0000ff00,
+                                0x000000ff,
+                                0x0,
+                                DataBuffer.TYPE_INT,
+                                false);
+            
+        case BufferedImage.TYPE_INT_ARGB:
+            return createPacked(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                0x00ff0000,
+                                0x0000ff00,
+                                0x000000ff,
+                                0xff000000,
+                                DataBuffer.TYPE_INT,
+                                false);
+
+        case BufferedImage.TYPE_INT_ARGB_PRE:
+            return createPacked(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                0x00ff0000,
+                                0x0000ff00,
+                                0x000000ff,
+                                0xff000000,
+                                DataBuffer.TYPE_INT,
+                                true);
+            
+        case BufferedImage.TYPE_INT_BGR:
+            return createPacked(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                0x00ff0000,
+                                0x0000ff00,
+                                0x000000ff,
+                                0x0,
+                                DataBuffer.TYPE_INT,
+                                false);
+            
+        case BufferedImage.TYPE_3BYTE_BGR:
+            return createInterleaved(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                     new int[]{2, 1, 0},
+                                     DataBuffer.TYPE_BYTE,
+                                     false,
+                                     false);
+            
+        case BufferedImage.TYPE_4BYTE_ABGR:
+            return createInterleaved(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                     new int[]{3, 2, 1, 0},
+                                     DataBuffer.TYPE_BYTE,
+                                     true,
+                                     false);
+            
+        case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+            return createInterleaved(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                     new int[]{3, 2, 1, 0},
+                                     DataBuffer.TYPE_BYTE,
+                                     true,
+                                     true);
+            
+        case BufferedImage.TYPE_USHORT_565_RGB:
+            return createPacked(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                0xf800,
+                                0x07e0,
+                                0x001f,
+                                0,
+                                DataBuffer.TYPE_USHORT,
+                                false);
+                                
+        case BufferedImage.TYPE_USHORT_555_RGB:
+            return createPacked(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                0x7c00,
+                                0x03e0,
+                                0x001f,
+                                0,
+                                DataBuffer.TYPE_USHORT,
+                                false);
+            
+        case BufferedImage.TYPE_BYTE_GRAY:
+            return createGrayscale(8,
+                                   DataBuffer.TYPE_BYTE,
+                                   false);
+            
+        case BufferedImage.TYPE_USHORT_GRAY:
+            return createGrayscale(16,
+                                   DataBuffer.TYPE_USHORT,
+                                   false);
+            
+        case BufferedImage.TYPE_BYTE_BINARY: {
+            byte[] redLUT = new byte[]{0, (byte)255};
+            byte[] greenLUT = new byte[]{0, (byte)255};
+            byte[] blueLUT = new byte[]{0, (byte)255};
+            
+            return createIndexed(redLUT,
+                                 greenLUT,
+                                 blueLUT,
+                                 null,
+                                 1,
+                                 DataBuffer.TYPE_BYTE);
+        }
+        
+        case BufferedImage.TYPE_BYTE_INDEXED: {
+            BufferedImage bufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_INDEXED);
+            IndexColorModel colorModel = (IndexColorModel) bufferedImage.getColorModel();
+            byte[] redLUT = new byte[256];
+            byte[] greenLUT = new byte[256];
+            byte[] blueLUT = new byte[256];
+            byte[] alphaLUT = new byte[256];
+            
+            colorModel.getReds(redLUT);
+            colorModel.getGreens(greenLUT);
+            colorModel.getBlues(blueLUT);
+            colorModel.getAlphas(alphaLUT);
+            
+            return createIndexed(redLUT,
+                                 greenLUT,
+                                 blueLUT,
+                                 alphaLUT,
+                                 8,
+                                 DataBuffer.TYPE_BYTE);
+        }
+        
+        default:
+            throw new IllegalArgumentException();                                
+        }
     }
 
     public static ImageTypeSpecifier createFromRenderedImage(RenderedImage image) {

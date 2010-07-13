@@ -30,6 +30,21 @@ import java.awt.image.PixelInterleavedSampleModel;
 import junit.framework.TestCase;
 
 public class ImageTypeSpecifierTest extends TestCase {
+    public void testCreateFromBufferedImageType() {
+        for (int i = BufferedImage.TYPE_INT_RGB; i <= BufferedImage.TYPE_BYTE_INDEXED; i ++ ) {
+            BufferedImage bi = new BufferedImage(1, 1, i);
+            ColorModel expected = bi.getColorModel();
+            
+            ImageTypeSpecifier typeSpecifier = ImageTypeSpecifier.createFromBufferedImageType(i);
+            ColorModel actual = typeSpecifier.getColorModel();
+            String msg = "Failed to create correct ImageTypeSpecifier, bufferedImageType = " + Integer.toString(i);
+            assertEquals(msg, expected.getClass(), actual.getClass());
+            assertEquals(msg, expected.getColorSpace(), actual.getColorSpace());
+            assertEquals(msg, expected.getTransferType(), actual.getTransferType());
+            assertEquals(msg, expected.getTransparency(), actual.getTransparency());
+        }
+    }
+    
     public void testCreateBanded() {
         int[] bankIndices = new int[]{0, 1, 2};
         int[] bandOffsets = new int[]{1, 1, 1};
