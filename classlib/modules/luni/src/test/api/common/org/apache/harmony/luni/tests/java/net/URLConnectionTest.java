@@ -38,7 +38,9 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.security.Permission;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -128,6 +130,32 @@ public class URLConnectionTest extends junit.framework.TestCase {
         } catch (NullPointerException e) {
             // expected
         }
+
+        u.addRequestProperty("key", "value");
+        u.addRequestProperty("key", "value2");
+        assertEquals("value2", u.getRequestProperty("key"));
+        ArrayList list = new ArrayList();
+        list.add("value2");
+        list.add("value");
+
+        Map<String,List<String>> propertyMap = u.getRequestProperties();
+        // Check this map is unmodifiable
+        try {
+            propertyMap.put("test", null);
+            fail("Map returned by URLConnection.getRequestProperties() should be unmodifiable");
+        } catch (UnsupportedOperationException e) {
+            // Expected
+        }
+
+        List<String> valuesList = propertyMap.get("key");
+        // Check this list is also unmodifiable
+        try {
+            valuesList.add("test");
+            fail("List entries in the map returned by URLConnection.getRequestProperties() should be unmodifiable");
+        } catch (UnsupportedOperationException e) {
+            // Expected
+        }
+        assertEquals(list, valuesList);
 
         u.connect();
         try {
@@ -1020,7 +1048,7 @@ public class URLConnectionTest extends junit.framework.TestCase {
         URL url = new URL("http", "test", 80, "index.html", new NewHandler());
         URLConnection urlCon = url.openConnection();
         urlCon.setRequestProperty("test", "testProperty");
-        assertNull(urlCon.getRequestProperty("test"));
+        assertEquals("testProperty", urlCon.getRequestProperty("test"));
 
         urlCon.connect();
         try {
@@ -1293,8 +1321,16 @@ public class URLConnectionTest extends junit.framework.TestCase {
      * @tests java.net.URLConnection#setRequestProperty(java.lang.String,
      *        java.lang.String)
      */
-    public void test_setRequestPropertyLjava_lang_StringLjava_lang_String() {
-        assertTrue("Used to test", true);
+    public void test_setRequestPropertyLjava_lang_StringLjava_lang_String() 
+                throws MalformedURLException{
+        MockURLConnection u = new MockURLConnection(new URL(
+                "http://www.apache.org"));
+
+        u.setRequestProperty("", "");
+        assertEquals("", u.getRequestProperty(""));
+
+        u.setRequestProperty("key", "value");
+        assertEquals("value", u.getRequestProperty("key"));
     }
 
     /**

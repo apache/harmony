@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +103,11 @@ public abstract class URLConnection {
      * Cache for storing content handler
      */
     static Hashtable<String, Object> contentHandlers = new Hashtable<String, Object>();
+
+    /**
+     * HashMap for storing request property key-valuelist pairs
+     */
+    private HashMap<String, List<String>> requestProperties = new HashMap<String, List<String>>();
 
     /**
      * A hashtable that maps the filename extension (key) to a MIME-type
@@ -441,7 +448,12 @@ public abstract class URLConnection {
         if (connected) {
             throw new IllegalStateException(Messages.getString("luni.5E")); //$NON-NLS-1$
         }
-        return Collections.emptyMap();
+
+        HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+        for (String key : requestProperties.keySet()) {
+            map.put(key, Collections.unmodifiableList(requestProperties.get(key)));
+        }
+        return Collections.unmodifiableMap(map);
     }
 
     /**
@@ -464,6 +476,15 @@ public abstract class URLConnection {
         }
         if (field == null) {
             throw new NullPointerException(Messages.getString("luni.95")); //$NON-NLS-1$
+        }
+
+        List<String> valuesList = requestProperties.get(field);
+        if (valuesList == null) {
+            valuesList = new ArrayList<String>();
+            valuesList.add(0, newValue);
+            requestProperties.put(field, valuesList);
+        } else {
+            valuesList.add(0, newValue);
         }
     }
 
@@ -607,8 +628,7 @@ public abstract class URLConnection {
 
     /**
      * Gets the value of the request header property specified by {code field}
-     * or {@code null} if there is no field with this name. The current
-     * implementation of this method returns always {@code null}.
+     * or {@code null} if there is no field with this name.
      * 
      * @param field
      *            the name of the request header property.
@@ -620,7 +640,11 @@ public abstract class URLConnection {
         if (connected) {
             throw new IllegalStateException(Messages.getString("luni.5E")); //$NON-NLS-1$
         }
-        return null;
+        List<String> valuesList = requestProperties.get(field);
+        if (valuesList == null) {
+            return null;
+        }
+        return valuesList.get(0);
     }
 
     /**
@@ -955,6 +979,10 @@ public abstract class URLConnection {
         if (field == null) {
             throw new NullPointerException(Messages.getString("luni.95")); //$NON-NLS-1$
         }
+
+        List<String> valuesList = new ArrayList<String>();
+        valuesList.add(newValue);
+        requestProperties.put(field, valuesList);
     }
 
     /**

@@ -347,8 +347,28 @@ public class ZipFile implements ZipConstants {
 
         /*
          * Seek to the first CDE and read all entries.
+         * However, when Z_SYNC_FLUSH is used the offset may not point directly
+         * to the CDE so skip over until we find it. 
+         * At most it will be 6 bytes away (one or two bytes for empty block, 4 bytes for
+         * empty block signature).  
          */
-        rafs = new RAFStream(mRaf, centralDirOffset);
+        scanOffset = centralDirOffset;
+        stopOffset = scanOffset + 6;
+        
+        while (true) {
+            mRaf.seek(scanOffset);
+            if (ZipEntry.readIntLE(mRaf) == CENSIG) {
+                break;
+            }
+
+            scanOffset++;
+            if (scanOffset > stopOffset) {
+                throw new ZipException(Messages.getString("archive.3A"));
+            }
+        }
+        
+        // If CDE is found then go and read all the entries
+        rafs = new RAFStream(mRaf, scanOffset);
         bin = new BufferedInputStream(rafs, 4096);
         for (int i = 0; i < numEntries; i++) {
             ZipEntry newEntry = new ZipEntry(ler, bin);
