@@ -32,8 +32,9 @@ public class InetSocketAddressTest extends TestCase {
         // regression test for Harmony-1042
         InetSocketAddress address = new InetSocketAddress("127.0.0.1", 0);
         assertEquals("/127.0.0.1:0", address.toString());
-        assertEquals("localhost", address.getHostName());
-        assertEquals("localhost/127.0.0.1:0", address.toString());
+        String localhostName = address.getHostName();
+        assertNotNull(localhostName);
+        assertEquals(localhostName+"/127.0.0.1:0", address.toString());
     }
     
     /**
