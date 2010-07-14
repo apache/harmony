@@ -661,4 +661,12 @@ public class JarFileTest extends TestCase {
         res = jarFile.getInputStream(zipEntry).read();
         assertEquals("Wrong length of empty jar entry", -1, res);
     }
+
+    public void testJarWrittenWithFlush() throws IOException {
+        File f = new File(resources, "hyts_flushed.jar");
+        Support_Resources.copyFile(resources, null, "hyts_flushed.jar");
+
+        // Harmony crashes with ZipException: Central Directory Entry not found
+        new JarFile(f);
+    }
 }
