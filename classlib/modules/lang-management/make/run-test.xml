@@ -41,7 +41,7 @@
                        jar="lang-management_tests.jar" />
     </target>
 
-    <target name="-test-module-impl" if="hy.test.impl">
+    <target name="-test-module-impl" if="hy.run.impl.tests">
         <run-hdk-tests module="lang-management"
                        jar="lang-management_impl_tests.jar" />
     </target>

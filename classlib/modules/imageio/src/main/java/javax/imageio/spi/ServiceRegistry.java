@@ -106,8 +106,7 @@ public class ServiceRegistry {
 
     @Override
     public void finalize() throws Throwable {
-        //TODO uncomment when deregisterAll is implemented
-        //deregisterAll();
+        deregisterAll();
     }
 
     public boolean contains(Object provider) {

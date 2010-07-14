@@ -2772,6 +2772,40 @@ public class SocketChannelTest extends TestCase {
     /**
      * @tests java.nio.channels.SocketChannel#write(ByteBuffer[])
      */
+    public void test_writev2() throws Exception {
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+        ssc.configureBlocking(false);
+        ssc.socket().bind(null);
+        SocketChannel sc = SocketChannel.open();
+        sc.configureBlocking(false);
+        boolean connected = sc.connect(ssc.socket().getLocalSocketAddress());
+        SocketChannel sock = ssc.accept();
+        if (!connected) {
+            sc.finishConnect();
+        }
+
+        ByteBuffer buf1 = ByteBuffer.allocate(10);
+        sc.socket().setSendBufferSize(512);
+        int bufSize = sc.socket().getSendBufferSize();
+        ByteBuffer buf2 = ByteBuffer.allocate(bufSize * 10);
+
+        ByteBuffer[] sent = new ByteBuffer[2];
+        sent[0] = buf1;
+        sent[1] = buf2;
+
+        long whole = buf1.remaining() + buf2.remaining();
+
+        long write = sc.write(sent);
+        ssc.close();
+        sc.close();
+        sock.close();
+
+        assertTrue(whole == (write + buf1.remaining() + buf2.remaining()));
+    }
+
+    /**
+     * @tests java.nio.channels.SocketChannel#write(ByteBuffer[])
+     */
     public void test_write$LByteBuffer2() throws IOException {
         // Set-up
         ServerSocketChannel server = ServerSocketChannel.open();

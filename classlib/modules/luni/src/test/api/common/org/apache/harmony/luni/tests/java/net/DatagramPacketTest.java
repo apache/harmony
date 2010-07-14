@@ -134,43 +134,9 @@ public class DatagramPacketTest extends junit.framework.TestCase {
         DatagramSocket socket = new DatagramSocket(0, localhost);
         final int port = socket.getLocalPort();
 
-        final Object lock = new Object();
-
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                DatagramSocket socket = null;
-                try {
-                    socket = new DatagramSocket(0, localhost);
-                    synchronized (lock) {
-                        started = true;
-                        lock.notifyAll();
-                    }
-                    socket.setSoTimeout(3000);
-                    DatagramPacket packet = new DatagramPacket(new byte[256],
-                            256);
-                    socket.receive(packet);
-                    socket.send(packet);
-                    socket.close();
-                } catch (IOException e) {
-                    System.out.println("thread exception: " + e);
-                    if (socket != null)
-                        socket.close();
-                }
-            }
-        });
-        thread.start();
-
         socket.setSoTimeout(3000);
         DatagramPacket packet = new DatagramPacket(new byte[] { 1, 2, 3, 4, 5,
                 6 }, 6, localhost, port);
-        synchronized (lock) {
-            while (!started) {
-                try {
-                    lock.wait();
-                } catch (InterruptedException e) {
-                }
-            }
-        }
         socket.send(packet);
         socket.receive(packet);
         socket.close();

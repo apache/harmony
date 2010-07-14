@@ -34,6 +34,8 @@ public class InetSocketAddress extends SocketAddress {
 
     private int port;
 
+    private transient boolean gotHostname = false;
+
     /**
      * Creates a socket endpoint with the given port number {@code port} and the
      * wildcard address {@code InetAddress.ANY}. The range for valid port numbers
@@ -102,7 +104,6 @@ public class InetSocketAddress extends SocketAddress {
         if (needResolved) {
             try {
                 addr = InetAddress.getByName(hostname);
-                hostname = null;
             } catch (UnknownHostException e) {
                 // Ignored
             }
@@ -153,7 +154,11 @@ public class InetSocketAddress extends SocketAddress {
      * @return the socket endpoint hostname.
      */
     public final String getHostName() {
-        return (null != addr) ? addr.getHostName() : hostname;
+        if (addr != null && !gotHostname) {
+            gotHostname = true;
+            hostname = addr.getHostName();
+        }
+        return  hostname;
     }
 
     /**

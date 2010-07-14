@@ -47,7 +47,7 @@
         </run-hdk-tests>
     </target>
 
-    <target name="-test-module-impl" if="hy.test.impl">
+    <target name="-test-module-impl" if="hy.run.impl.tests">
         <run-hdk-tests module="x-net" jar="x-net_impl_tests.jar">
             <junit-elements>
                 <classpath>

@@ -121,19 +121,16 @@ public class BufferedOutputStream extends FilterOutputStream {
     public synchronized void write(byte[] buffer, int offset, int length)
             throws IOException {
         byte[] internalBuffer = buf;
-        if (internalBuffer == null) {
-            throw new IOException(Messages.getString("luni.24")); //$NON-NLS-1$
+
+        if (internalBuffer != null && length >= internalBuffer.length) {
+            flushInternal();
+            out.write(buffer, offset, length);
+            return;
         }
 
         if (buffer == null) {
             // luni.11=buffer is null
             throw new NullPointerException(Messages.getString("luni.11")); //$NON-NLS-1$
-        }
-        
-        if (length >= internalBuffer.length) {
-            flushInternal();
-            out.write(buffer, offset, length);
-            return;
         }
         
         if (offset < 0 || offset > buffer.length - length) {
@@ -144,6 +141,10 @@ public class BufferedOutputStream extends FilterOutputStream {
         if (length < 0) {
             // luni.18=Length out of bounds \: {0}
             throw new ArrayIndexOutOfBoundsException(Messages.getString("luni.18", length)); //$NON-NLS-1$
+        }
+
+        if (internalBuffer == null) {
+            throw new IOException(Messages.getString("luni.24")); //$NON-NLS-1$
         }
 
         // flush the internal buffer first if we have not enough space left

@@ -111,6 +111,7 @@
 
             <classpath>
                 <pathelement path="${jdt.jdi.jar}"/>
+                <pathelement path="${jdt.jdimodel.jar}"/>
                 <pathelement path="${ecj.jar}" />
                 <pathelement path="${ant.library.dir}/ant.jar" />
                 <pathelement path="${ant.library.dir}/ant-launcher.jar" />

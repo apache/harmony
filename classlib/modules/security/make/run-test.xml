@@ -51,7 +51,7 @@
         </run-hdk-tests>
     </target>
 
-    <target name="-test-module-impl" if="hy.test.impl">
+    <target name="-test-module-impl" if="hy.run.impl.tests">
         <run-hdk-tests module="security" jar="security_tests_impl.jar">
             <junit-elements>
                 <classpath>

@@ -190,22 +190,71 @@ public abstract class ImageOutputStreamImpl extends ImageInputStreamImpl
 		}
 	}
 
-	public void writeBit(int bit) throws IOException, NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+	public void writeBit(int bit) throws IOException {
+	    writeBits((long) bit, 1);
 	}
 
-	public void writeBits(long bits, int numBits) throws IOException, NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+	public void writeBits(long bits, int numBits) throws IOException {
+	    checkClosed();
+	    
+	    if (bitOffset > 0) {
+	        int oldBitOffset = bitOffset;
+	        int currentByte = read();
+	        if (currentByte == -1) {
+	            currentByte = 0;
+	        } else {
+	            seek(getStreamPosition() - 1);
+	        }
+	        
+	        int num = 8 - oldBitOffset;
+	        if (numBits >= num) {
+	            int mask = -1 >>> (32 - num);
+		    currentByte &= ~mask;
+		    numBits -= num;
+		    currentByte |= ((bits >> numBits) & mask);
+		    write(currentByte);
+	        } else {
+	            int offset = oldBitOffset + numBits;
+	            int mask = -1 >>> numBits;
+		    currentByte &= ~(mask << (8 - offset));
+		    currentByte |= ((bits & mask) << (8 - offset));
+		    write(currentByte);
+		    seek(getStreamPosition() - 1);
+		    bitOffset = offset;
+		    numBits = 0;
+	        }
+	    }
+	    
+	    while (numBits > 7) {
+	        int mask = -1 >>> 24;
+	        int currentByte = (int) ((bits >> (numBits - 8)) & mask);
+	        write(currentByte);
+	        numBits -= 8;
+	    }
+	    
+	    if (numBits > 0) {
+	        int mask = -1 >>> 24;
+	        int currentByte = (int) ((bits << (8 - numBits)) & mask);
+	        write(currentByte);
+	        seek(getStreamPosition() - 1);
+	        bitOffset = numBits;
+	    }
 	}
 
-	protected final void flushBits() throws IOException, NotImplementedException {
-		if (bitOffset == 0) {
-			return;
-		}
-
-		// TODO: implement
-        throw new NotImplementedException();
+	protected final void flushBits() throws IOException {
+	    checkClosed();
+	    if (bitOffset == 0) {
+	        return;
+	    }
+	    int offset = bitOffset;
+	    int currentByte = read();
+	    if (currentByte == -1) {
+	        currentByte = 0;
+	        bitOffset = 0;
+	    } else {
+	        seek(getStreamPosition() - 1);
+	        currentByte &= -1 << (8 - offset);
+	    }
+	    write(currentByte);	    
 	}
 }
