@@ -595,7 +595,8 @@ public class String2Test extends junit.framework.TestCase {
         assertEquals("Failed to return correct index", 5, hw1.lastIndexOf('W'));
         assertEquals("Returned index for non-existent char", -1, hw1
                 .lastIndexOf('Z'));
-
+        assertEquals("Failed to return correct index", 1, "a\ud800\udc00"
+                .lastIndexOf(0x10000));
     }
 
     /**
