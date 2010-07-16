@@ -471,7 +471,7 @@ public class DateTest extends junit.framework.TestCase {
         TimeZone.setDefault(TimeZone.getTimeZone("MST"));
         Date d2 = new Date(108, 7, 27);
         assertTrue("Returned incorrect string: " + d2, d2.toString()
-                .startsWith("Wed Aug 27 00:00:00 MST")
+                .startsWith("Wed Aug 27 00:00:00")
                 && d2.toString().endsWith("2008"));
 	}
 
