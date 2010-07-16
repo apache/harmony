@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -37,8 +38,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -5614,7 +5617,6 @@ public class ScannerTest extends TestCase {
      * @tests java.util.Scanner#hasNextLine()
      */
     public void test_hasNextLine() {
-        
         s = new Scanner("");
         s.close();
         try {
@@ -5682,7 +5684,40 @@ public class ScannerTest extends TestCase {
         assertEquals(0, matchResult.start());
         assertEquals(1, matchResult.end());
     }
-    
+
+    public void test_hasNextLine_sequence() throws IOException {
+        final PipedInputStream pis = new PipedInputStream();
+        final PipedOutputStream pos = new PipedOutputStream();
+        final Scanner scanner = new Scanner(pis);
+        pis.connect(pos);
+        final List<String> result = new ArrayList<String>();
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                while (scanner.hasNextLine()) {
+                    result.add(scanner.nextLine());
+                }
+            }
+        });
+        thread.start();
+        for (int index = 0; index < 5; index++) {
+            pos.write(("line" + index + "\n").getBytes());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // Ignored
+            }
+            assertEquals(index + 1, result.size());
+        }
+        pis.close();
+        pos.close();
+        try {
+            thread.join(1000);
+        } catch (InterruptedException e) {
+            // Ignored
+        }
+        assertFalse(scanner.hasNextLine());
+    }
+
     protected void setUp() throws Exception {
         super.setUp();
 

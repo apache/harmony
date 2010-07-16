@@ -466,6 +466,34 @@ public class HttpURLConnectionTest extends TestCase {
     }
 
     /**
+     * @tests the url with space
+     */
+    public void testConnectWithSpaceinURL() throws Exception {
+        String jettyURLwithSpace = "http://localhost:" + jettyPort
+                + "/servlet with space";
+        HttpURLConnection httpURLConnect = (HttpURLConnection) new URL(
+                jettyURLwithSpace).openConnection();
+        httpURLConnect.setDoOutput(true);
+        httpURLConnect.connect();
+        assertEquals(200, httpURLConnect.getResponseCode());
+        assertEquals("OK", httpURLConnect.getResponseMessage());
+    }
+
+    /**
+     * @tests the url with space
+     */
+    public void testConnectWithSpaceinURL1() throws Exception {
+        String jettyURLwithSpace = "http://localhost:" + jettyPort
+                + "/servlet with space?arg1=value>1&arg2=%aval%1Aue&arg3=#";
+        HttpURLConnection httpURLConnect = (HttpURLConnection) new URL(
+                jettyURLwithSpace).openConnection();
+        httpURLConnect.setDoOutput(true);
+        httpURLConnect.connect();
+        assertEquals(200, httpURLConnect.getResponseCode());
+        assertEquals("OK", httpURLConnect.getResponseMessage());
+    }
+
+    /**
      * @tests org.apache.harmony.luni.internal.net.www.http.getOutputStream()
      */
     public void testGetOutputStream() throws Exception {

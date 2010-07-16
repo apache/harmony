@@ -52,6 +52,7 @@ import java.util.TimeZone;
 import org.apache.harmony.luni.util.Base64;
 import org.apache.harmony.luni.internal.nls.Messages;
 import org.apache.harmony.luni.util.PriviAction;
+import org.apache.harmony.luni.util.Util;
 
 /**
  * This subclass extends <code>HttpURLConnection</code> which in turns extends
@@ -615,6 +616,7 @@ public class HttpURLConnectionImpl extends HttpURLConnection {
             return;
         }
         try {
+            url = new URL(Util.encodeURL(url.toString()));
             uri = url.toURI();
         } catch (URISyntaxException e1) {
             // ignore

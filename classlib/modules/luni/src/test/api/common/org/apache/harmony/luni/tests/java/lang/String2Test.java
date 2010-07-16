@@ -544,7 +544,7 @@ public class String2Test extends junit.framework.TestCase {
     public void test_indexOfI() {
         // Test for method int java.lang.String.indexOf(int)
         assertEquals("Invalid index returned", 1, hw1.indexOf('e'));
-
+        assertEquals("Invalid index returned", 1, "a\ud800\udc00".indexOf(0x10000));
     }
 
     /**
@@ -553,7 +553,7 @@ public class String2Test extends junit.framework.TestCase {
     public void test_indexOfII() {
         // Test for method int java.lang.String.indexOf(int, int)
         assertEquals("Invalid character index returned", 5, hw1.indexOf('W', 2));
-
+        assertEquals("Invalid index returned", 2, "ab\ud800\udc00".indexOf(0x10000, 1));
     }
 
     /**
@@ -595,7 +595,8 @@ public class String2Test extends junit.framework.TestCase {
         assertEquals("Failed to return correct index", 5, hw1.lastIndexOf('W'));
         assertEquals("Returned index for non-existent char", -1, hw1
                 .lastIndexOf('Z'));
-
+        assertEquals("Failed to return correct index", 1, "a\ud800\udc00"
+                .lastIndexOf(0x10000));
     }
 
     /**

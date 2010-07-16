@@ -21,27 +21,27 @@ import javax.sql.RowSetReader;
 import javax.sql.RowSetWriter;
 
 public abstract class SyncProvider {
-    public static final int GRADE_NONE = 1;
+    public static int GRADE_NONE = 1;
 
-    public static final int GRADE_CHECK_MODIFIED_AT_COMMIT = 2;
+    public static int GRADE_CHECK_MODIFIED_AT_COMMIT = 2;
 
-    public static final int GRADE_CHECK_ALL_AT_COMMIT = 3;
+    public static int GRADE_CHECK_ALL_AT_COMMIT = 3;
 
-    public static final int GRADE_LOCK_WHEN_MODIFIED = 4;
+    public static int GRADE_LOCK_WHEN_MODIFIED = 4;
 
-    public static final int GRADE_LOCK_WHEN_LOADED = 5;
+    public static int GRADE_LOCK_WHEN_LOADED = 5;
 
-    public static final int DATASOURCE_NO_LOCK = 1;
+    public static int DATASOURCE_NO_LOCK = 1;
 
-    public static final int DATASOURCE_ROW_LOCK = 2;
+    public static int DATASOURCE_ROW_LOCK = 2;
 
-    public static final int DATASOURCE_TABLE_LOCK = 3;
+    public static int DATASOURCE_TABLE_LOCK = 3;
 
-    public static final int DATASOURCE_DB_LOCK = 4;
+    public static int DATASOURCE_DB_LOCK = 4;
 
-    public static final int UPDATABLE_VIEW_SYNC = 5;
+    public static int UPDATABLE_VIEW_SYNC = 5;
 
-    public static final int NONUPDATABLE_VIEW_SYNC = 6;
+    public static int NONUPDATABLE_VIEW_SYNC = 6;
 
     public SyncProvider() {
         super();

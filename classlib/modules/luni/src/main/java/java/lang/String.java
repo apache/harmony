@@ -1083,9 +1083,20 @@ public final class String implements Serializable, Comparable<String>,
             if (start < 0) {
                 start = 0;
             }
-            for (int i = offset + start; i < offset + count; i++) {
-                if (value[i] == c) {
-                    return i - offset;
+            if (c >= 0 && c <= Character.MAX_VALUE) {
+                for (int i = offset + start; i < offset + count; i++) {
+                    if (value[i] == c) {
+                        return i - offset;
+                    }
+                }
+            } else if (c > Character.MAX_VALUE && c <= Character.MAX_CODE_POINT) {
+                for (int i = start; i < count; i++) {
+                    int codePoint = codePointAt(i);
+                    if (codePoint == c) {
+                        return i;
+                    } else if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+                        i++;
+                    }
                 }
             }
         }
@@ -1196,9 +1207,20 @@ public final class String implements Serializable, Comparable<String>,
             if (start >= count) {
                 start = count - 1;
             }
-            for (int i = offset + start; i >= offset; --i) {
-                if (value[i] == c) {
-                    return i - offset;
+            if (c >= 0 && c <= Character.MAX_VALUE) {
+                for (int i = offset + start; i >= offset; --i) {
+                    if (value[i] == c) {
+                        return i - offset;
+                    }
+                }
+            } else if (c > Character.MAX_VALUE && c <= Character.MAX_CODE_POINT) {
+                for (int i = start; i >= 0; --i) {
+                    int codePoint = codePointAt(i);
+                    if (codePoint == c) {
+                        return i;
+                    } else if (codePoint >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+                        --i;
+                    }
                 }
             }
         }

@@ -249,6 +249,19 @@ public class URLTest extends TestCase {
         assertTrue("u10 returns a wrong port " + u10.getPort(),
                 u10.getPort() == -1);
 
+		URL u11 = new URL("file:////file.txt");
+        assertNull("u11 returns a wrong authority " + u11.getAuthority(), u11
+                .getAuthority());
+        assertTrue("u11 returns a wrong file " + u11.getFile(), u11.getFile()
+                .equals("////file.txt"));
+
+        URL u12 = new URL("file:///file.txt");
+        assertTrue("u12 returns a wrong authority", u12.getAuthority().equals(
+                ""));
+        assertTrue("u12 returns a wrong file " + u12.getFile(), u12.getFile()
+                .equals("/file.txt"));
+
+
         // test for error catching
 
         // Bad HTTP format - no "//"
