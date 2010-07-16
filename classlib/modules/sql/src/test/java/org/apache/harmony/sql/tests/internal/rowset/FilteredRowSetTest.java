@@ -889,7 +889,7 @@ class RangeThree implements Predicate {
 class OddRowFilter implements Predicate {
     public boolean evaluate(RowSet rs) {
         try {
-            return rs.getInt(1) % 2 == 1;
+            return (rs.getInt(1) & 1) == 1;
         } catch (SQLException e) {
             // do nothing
         }
