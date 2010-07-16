@@ -19,7 +19,7 @@ AS = cc
 # Use cxx/c++ for c++ compiles on z/OS
 CXX = cxx
 
-DEFINES += -DZOS -DZOS_S390 -DHYS390 -DHY_ATOE
+DEFINES += -DZOS -DZOS_S390 -DHYS390 -DHY_ATOE -DIPv6_FUNCTION_SUPPORT
 PLATFORM = -Wc,xplink,convlit\(ISO8859-1\),FLOAT\(IEEE,FOLD,AFP\) -Wa,goff \
            -Wc,NOANSIALIAS -Wc,DLL,EXPORTALL
 
