@@ -164,7 +164,7 @@ U_32* m2n_get_args(M2nFrame* m2nf)
 
 unsigned m2n_ts_to_register_size()
 {
-    return 22;
+    return 22 + 2;
 }
 
 char* m2n_gen_ts_to_register(char* buf, R_Opnd* reg)
