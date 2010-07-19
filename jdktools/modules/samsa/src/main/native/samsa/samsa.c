@@ -83,6 +83,12 @@
 #define EXE_SUFFIX          ""
 #endif
 
+#if defined(ZOS)
+#if !defined(PATH_MAX)
+#define PATH_MAX 1024
+#endif
+#endif
+
 typedef struct ToolData {
     int numJars; 
     char **jarList;
