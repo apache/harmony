@@ -19,6 +19,7 @@
 
 include $(HY_HDK)/build/make/defines.mk
 
+DLL_LD=$(CXX)
 COMMON=../../common/
 CMNAGENT=$(COMMON)agent/
 
@@ -68,7 +69,7 @@ ifneq ($(HY_OS),zos)
   endif
 else
   # zOS
-  MDLLIBFILES = $(LIBPATH)libvmi.x
+  MDLLIBFILES += $(LIBPATH)libvmi.x
   LDFLAGS += $(STDCLIBS)
 endif
 
