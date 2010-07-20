@@ -29,6 +29,8 @@
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
+    <property name="hy.select" value="true" />
+
     <property name="hy.hdk" location="${hy.target}/hdk" />
 
     <!-- property to identify when components are being built by the 
@@ -438,6 +440,7 @@ Usage:
 
     <propertyset id="required.props">
         <propertyref name="hy.cfg" />
+        <propertyref name="hy.select" />
         <propertyref name="hy.hdk" />
         <propertyref name="hy.local.zlib" />
         <propertyref name="use.libstdc++5" />
