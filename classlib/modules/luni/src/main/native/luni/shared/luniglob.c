@@ -131,7 +131,6 @@ JNI_OnLoad (JavaVM * vm, void *reserved)
        /* set other (not required by api specification) properties */
        (*vmInterface)->GetSystemProperty (vmInterface, "user.language", &propVal);
        if (propVal == NULL) {
-            /* FIXME provide appropriate non-dummy value */
            propRes = (*vmInterface)->SetSystemProperty (vmInterface, "user.language", (char *)hynls_get_language());
            if (VMI_ERROR_NONE != propRes) {
                /* goto fail2; */
@@ -139,7 +138,6 @@ JNI_OnLoad (JavaVM * vm, void *reserved)
        }
        (*vmInterface)->GetSystemProperty (vmInterface, "user.country", &propVal);
        if (propVal == NULL) {
-           /* FIXME provide appropriate non-dummy value */
            propRes = (*vmInterface)->SetSystemProperty (vmInterface, "user.country", (char *)hynls_get_region());
            if (VMI_ERROR_NONE != propRes) {
                /* goto fail2; */

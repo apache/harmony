@@ -45,12 +45,13 @@ public class Date implements Serializable, Cloneable, Comparable<Date> {
 
     private transient long milliseconds;
     
-    private static String[] dayOfWeekNames = { "Sun", "Mon", "Tue", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        "Wed", "Thu", "Fri", "Sat" }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-    
-    private static String[] monthNames = { "Jan", "Feb", "Mar", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        "Apr", "May", "Jun", "Jul", //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-        "Aug", "Sep", "Oct", "Nov", "Dec"};  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+    @SuppressWarnings("nls")
+    private static String[] dayOfWeekNames = { "Sun", "Mon", "Tue", "Wed",
+            "Thu", "Fri", "Sat" };
+
+    @SuppressWarnings("nls")
+    private static String[] monthNames = { "Jan", "Feb", "Mar", "Apr", "May",
+            "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
     /**
      * Initializes this {@code Date} instance to the current date and time.
@@ -708,10 +709,28 @@ public class Date implements Serializable, Cloneable, Comparable<Date> {
     @Override
     public String toString() {
         Calendar cal = new GregorianCalendar(milliseconds);
-        return dayOfWeekNames[cal.get(Calendar.DAY_OF_WEEK) - 1] + " " + monthNames[cal.get(Calendar.MONTH)]//$NON-NLS-1$
-                + " " + toTwoDigits(cal.get(Calendar.DAY_OF_MONTH)) + " " + toTwoDigits(cal.get(Calendar.HOUR_OF_DAY))//$NON-NLS-1$ //$NON-NLS-2$
-                + ":" + toTwoDigits(cal.get(Calendar.MINUTE)) + ":" + toTwoDigits(cal.get(Calendar.SECOND))//$NON-NLS-1$ //$NON-NLS-2$
-                + " " + cal.getTimeZone().getID() + " " + cal.get(Calendar.YEAR);//$NON-NLS-1$ //$NON-NLS-2$
+        TimeZone zone = cal.getTimeZone();
+        String zoneName = zone.getDisplayName(zone.inDaylightTime(this),
+                TimeZone.SHORT, Locale.getDefault());
+
+        StringBuilder sb = new StringBuilder(34);
+        sb.append(dayOfWeekNames[cal.get(Calendar.DAY_OF_WEEK) - 1]);
+        sb.append(' ');
+        sb.append(monthNames[cal.get(Calendar.MONTH)]);
+        sb.append(' ');
+        sb.append(toTwoDigits(cal.get(Calendar.DAY_OF_MONTH)));
+        sb.append(' ');
+        sb.append(toTwoDigits(cal.get(Calendar.HOUR_OF_DAY)));
+        sb.append(':');
+        sb.append(toTwoDigits(cal.get(Calendar.MINUTE)));
+        sb.append(':');
+        sb.append(toTwoDigits(cal.get(Calendar.SECOND)));
+        sb.append(' ');
+        sb.append(zoneName);
+        sb.append(' ');
+        sb.append(cal.get(Calendar.YEAR));
+
+        return sb.toString();
     }
 
     private String toTwoDigits(int digit) {

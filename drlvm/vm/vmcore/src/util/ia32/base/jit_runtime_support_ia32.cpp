@@ -301,7 +301,7 @@ static void *getaddress__vm_initialize_class_naked()
 
 static void *generate_object_allocation_stub_with_thread_pointer(char *fast_obj_alloc_proc,
                                                                  char *slow_obj_alloc_proc,
-                                                                 char *stub_name)
+                                                                 const char *stub_name)
 {
     const int stub_size = 52+26;
     char *stub = (char *)malloc_fixed_code_for_jit(stub_size, DEFAULT_CODE_ALIGNMENT, CODE_BLOCK_HEAT_MAX/2, CAA_Allocate);
@@ -617,7 +617,7 @@ static void *getaddress__vm_aastore()
 
 
 
-static void * gen_new_vector_stub(char *stub_name, char *fast_new_vector_proc, char *slow_new_vector_proc)
+static void * gen_new_vector_stub(const char *stub_name, char *fast_new_vector_proc, char *slow_new_vector_proc)
 {
     const int stub_size = 52;
     char *stub = (char *)malloc_fixed_code_for_jit(stub_size, DEFAULT_CODE_ALIGNMENT, CODE_BLOCK_HEAT_MAX/2, CAA_Allocate);

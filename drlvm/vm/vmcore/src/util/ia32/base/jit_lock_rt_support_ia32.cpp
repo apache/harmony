@@ -169,7 +169,7 @@ void * getaddress__vm_monitor_enter_naked()
         return addr;
     }
 
-    const int stub_size = 226;
+    const int stub_size = 228;
     char *stub = (char *)malloc_fixed_code_for_jit(stub_size, DEFAULT_CODE_ALIGNMENT, CODE_BLOCK_HEAT_MAX/2, CAA_Allocate);
 #ifdef _DEBUG
     memset(stub, 0xcc /*int 3*/, stub_size);
