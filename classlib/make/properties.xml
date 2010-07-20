@@ -576,6 +576,7 @@ properties in preference to these:
                      out for themselves in order to reduce coupling -->
                 <property name="hy.test.vm.name" value="${hy.test.vm.name}"/>
                 <property name="hy.hdk" value="${hy.hdk}"/>
+                <property name="hy.select" value="${hy.select}"/>
                 <property name="svn.revision" value="${svn.revision}"/>
                 <property name="svn.info" value="${svn.info}"/>
                 <property name="hy.no.thr" value="${hy.no.thr}"/>
