@@ -29,7 +29,7 @@
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
-    <property name="hy.select" value="true" />
+    <property name="hy.select" value="false" />
 
     <property name="hy.hdk" location="${hy.target}/hdk" />
 
