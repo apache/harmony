@@ -133,7 +133,18 @@ public class PriorityQueueTest extends TestCase {
         for (int i = 0; i < integerQueue.size(); i++) {
             assertEquals(newArray[i], integerQueue.poll());
         }
+    }
 
+    public void test_iterator_removeEquals() {
+        PriorityQueue<String> integerQueue = new PriorityQueue<String>(10, new MockComparatorStringByLength());
+        String[] array = { "ONE", "TWO", "THREE", "FOUR", "FIVE" };
+        for (int i = 0; i < array.length; i++) {
+            integerQueue.offer(array[i]);
+        }
+        // Try removing an entry that the comparator says is equal
+        assertFalse(integerQueue.remove("123"));
+        assertFalse(integerQueue.remove("one"));
+        assertTrue(integerQueue.remove("THREE"));
     }
 
     /**
@@ -594,7 +605,7 @@ public class PriorityQueueTest extends TestCase {
             queue.offer(array[i]);
         }
         assertFalse(queue.contains("BB"));
-        assertTrue(queue.remove("BB"));
+        assertTrue(queue.remove("AA"));
     }
 
     /**
@@ -607,12 +618,7 @@ public class PriorityQueueTest extends TestCase {
         PriorityQueue<Integer> integerQueue = new PriorityQueue<Integer>(list);
         assertFalse(integerQueue.remove(111));
         assertFalse(integerQueue.remove(null));
-        try {
-            integerQueue.remove("");
-            fail("should throw ClassCastException");
-        } catch (ClassCastException e) {
-            // expected
-        }
+        assertFalse(integerQueue.remove(""));
     }
 
     /**
@@ -634,13 +640,8 @@ public class PriorityQueueTest extends TestCase {
         Integer[] array = { 2, 45, 7, -12, 9, 23, 17, 1118, 10, 16, 39 };
         List<Integer> list = Arrays.asList(array);
         PriorityQueue<Integer> integerQueue = new PriorityQueue<Integer>(list);
-        try {
-            integerQueue.remove(new Float(1.3F));
-            fail("should throw ClassCastException");
-        } catch (ClassCastException e) {
-            // expected
-        }
-
+        assertFalse(integerQueue.remove(new Float(1.3F)));
+ 
         // although argument element type is not compatible with those in queue,
         // but comparator supports it.
         MockComparator<Object> comparator = new MockComparator<Object>();
@@ -652,12 +653,7 @@ public class PriorityQueueTest extends TestCase {
         PriorityQueue<Object> queue = new PriorityQueue<Object>();
         Object o = new Object();
         queue.offer(o);
-        try {
-            queue.remove(o);
-            fail("should throw ClassCastException");
-        } catch (ClassCastException e) {
-            // expected
-        }
+        assertTrue(queue.remove(o));
     }
 
     /**
