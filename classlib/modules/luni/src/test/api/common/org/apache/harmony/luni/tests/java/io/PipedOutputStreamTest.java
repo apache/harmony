@@ -183,6 +183,30 @@ public class PipedOutputStreamTest extends TestCase {
         } catch (NullPointerException e) {
             // expected
         }
+
+        pis = new PipedInputStream();
+        pos = new PipedOutputStream(pis);
+        pos.close();
+        pos.write(new byte[0], 0, 0);
+
+        try {
+            pis = new PipedInputStream();
+            pos = new PipedOutputStream(pis);
+            pos.write(new byte[0], -1, 0);
+            fail("IndexOutOfBoundsException expected");
+        } catch (IndexOutOfBoundsException t) {
+            //expected
+        }
+
+        try {
+            pis = new PipedInputStream();
+            pos = new PipedOutputStream(pis);
+            pos.write(null, -10, 0);
+            fail("should throw NullPointerException.");
+        } catch (NullPointerException e) {
+            // expected
+        }
+
     }
 
     /**
