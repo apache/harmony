@@ -2092,7 +2092,7 @@ atoe_execvp (const char *file, char *const argv[])
         free(ebcdicArgv[i]);
     }
     free(ebcdicArgv);
-    free(ebcdicPath);
+    free(ebcdicFile);
 
     return rc;
 }
