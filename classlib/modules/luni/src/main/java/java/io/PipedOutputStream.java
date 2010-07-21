@@ -145,10 +145,6 @@ public class PipedOutputStream extends OutputStream {
      */
     @Override
     public void write(byte buffer[], int offset, int count) throws IOException {
-        if (dest == null) {
-            // luni.D1=Pipe Not Connected
-            throw new IOException(Messages.getString("luni.D1")); //$NON-NLS-1$
-        }
         super.write(buffer, offset, count);
     }
 
