@@ -448,7 +448,7 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_writev
   jlong result = 0;
   LPWSABUF vect;
   int i;
-  jint sentBytes;
+  jint sentBytes = 0;
   jint rc;
   jclass byteBufferClass;
 
@@ -521,7 +521,9 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_writev
 
   if (SOCKET_ERROR == result) {
     rc = WSAGetLastError ();
-    throwJavaNetSocketException(env, rc);
+    if (rc != WSATRY_AGAIN && rc != WSAEWOULDBLOCK) {
+        throwJavaNetSocketException(env, rc);
+    }
     result = 0;
   }
 

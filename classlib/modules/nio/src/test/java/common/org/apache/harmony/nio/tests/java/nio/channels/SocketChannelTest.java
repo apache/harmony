@@ -2805,6 +2805,46 @@ public class SocketChannelTest extends TestCase {
 
     /**
      * @tests java.nio.channels.SocketChannel#write(ByteBuffer[])
+     * 
+     * In non-blocking mode, the native system call will return EAGAIN/EWOULDBLOCK error
+     * code on Linux/Unix and return WSATRY_AGAIN/WSAEWOULDBLOCK error code on Windows.
+     * These error code means try again but not fatal error, so we should not throw exception.
+     */
+    public void test_write$NonBlockingException() throws Exception {
+        ServerSocketChannel ssc = ServerSocketChannel.open();
+        ssc.configureBlocking(false);
+        ssc.socket().bind(null);
+        SocketChannel sc = SocketChannel.open();
+        sc.configureBlocking(false);
+        boolean connected = sc.connect(ssc.socket().getLocalSocketAddress());
+        SocketChannel sock = ssc.accept();
+        if (!connected) {
+            sc.finishConnect();
+        }
+
+        try {
+            for (int i = 0; i < 100; i++) {
+                ByteBuffer buf1 = ByteBuffer.allocate(10);
+                sc.socket().setSendBufferSize(512);
+                int bufSize = sc.socket().getSendBufferSize();
+                ByteBuffer buf2 = ByteBuffer.allocate(bufSize * 10);
+
+                ByteBuffer[] sent = new ByteBuffer[2];
+                sent[0] = buf1;
+                sent[1] = buf2;
+
+                sc.write(sent);
+            }
+        } finally {
+            ssc.close();
+            sc.close();
+            sock.close();
+        }
+
+    }
+
+    /**
+     * @tests java.nio.channels.SocketChannel#write(ByteBuffer[])
      */
     public void test_write$LByteBuffer2() throws IOException {
         // Set-up
