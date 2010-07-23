@@ -19,6 +19,8 @@ package javax.print.attribute;
 
 import java.io.Serializable;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public abstract class Size2DSyntax implements Cloneable, Serializable {
     private static final long serialVersionUID = 5584439964938660530L;
     
@@ -32,7 +34,8 @@ public abstract class Size2DSyntax implements Cloneable, Serializable {
 
     protected Size2DSyntax(int x, int y, int units) {
         if ((x < 0) || (y < 0) || (units < 1)) {
-            throw new IllegalArgumentException("Valid values are:" + "x>=0, y>=0, units>=1");
+            //print.18= Valid values are x>=0, y>=0, units>=1
+            throw new IllegalArgumentException(Messages.getString("print.18")); //$NON-NLs-1$            
         }
         this.x = x * units;
         this.y = y * units;
@@ -40,7 +43,8 @@ public abstract class Size2DSyntax implements Cloneable, Serializable {
 
     protected Size2DSyntax(float x, float y, int units) {
         if ((x < 0.0f) || (y < 0.0f) || (units < 1)) {
-            throw new IllegalArgumentException("Valid values are:" + "x>=0.0, y>=0.0, units>=1");
+            //print.19= VAlid values are x>=0.0, y>=0.0, units>=1
+            throw new IllegalArgumentException(Messages.getString("print.19")); //$NON-NLs-1$            
         }
         this.x = Math.round(x * units);
         this.y = Math.round(y * units);
@@ -61,14 +65,16 @@ public abstract class Size2DSyntax implements Cloneable, Serializable {
 
     public float getX(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$
         }
         return ((float) x) / units;
     }
 
     public float getY(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$        
         }
         return ((float) y) / units;
     }

@@ -21,6 +21,8 @@ import javax.print.attribute.Attribute;
 import javax.print.attribute.SetOfIntegerSyntax;
 import javax.print.attribute.SupportedValuesAttribute;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class NumberUpSupported extends SetOfIntegerSyntax implements
         SupportedValuesAttribute {
     private static final long serialVersionUID = -1041573395759141805L;
@@ -28,31 +30,37 @@ public final class NumberUpSupported extends SetOfIntegerSyntax implements
     public NumberUpSupported(int value) {
         super(value);
         if (value < 1) {
-            throw new IllegalArgumentException("Value" + value + "is less than 1");
+            //print.1A= Value {0} is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.1A", value)); //NON-NLS-1$        
         }
     }
 
     public NumberUpSupported(int lowerBound, int upperBound) {
         super(lowerBound, upperBound);
         if (lowerBound > upperBound) {
-            throw new IllegalArgumentException("Null range: lowerBound " + "> upperBound");
-        } else if (lowerBound < 1) {
-            throw new IllegalArgumentException("Lower bound " + lowerBound + " is less than 1");
+             //print.1D= Null range: lowerBound > upperBound
+            throw new IllegalArgumentException(Messages.getString("print.1D")); //$NON-NLS-1$        
+        } else if (lowerBound < 1) {             
+            //print.1C= Lower bound {0} is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.1C", lowerBound)); //$NON-NLS-1$            
         }
     }
 
     public NumberUpSupported(int[][] members) {
         super(members);
         if (members == null) {
-            throw new NullPointerException("Null int[][] parameter");
+            //print.22=Null int [][] parameter
+            throw new NullPointerException(Messages.getString("print.22")); //$NON-NLS-1$            
         }
         int[][] canonicalArray = getMembers();
         if (canonicalArray.length == 0) {
-            throw new IllegalArgumentException("Zero-length array");
+            //print.23=Zero-length array
+            throw new IllegalArgumentException(Messages.getString("print.23")); //$NON-NLS-1$            
         }
         for (int i = 0; i < canonicalArray.length; i++) {
             if (canonicalArray[i][0] < 1) {
-                throw new IllegalArgumentException("Valid values are not " + "less than 1");
+                //print.24=Valid values are not less than 1
+                throw new IllegalArgumentException(Messages.getString("print.24")); //$NON-NLs-1$            
             }
         }
     }

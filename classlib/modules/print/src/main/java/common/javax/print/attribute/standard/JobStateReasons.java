@@ -22,6 +22,8 @@ import java.util.HashSet;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.PrintJobAttribute;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class JobStateReasons extends HashSet<JobStateReason> implements PrintJobAttribute {
     private static final long serialVersionUID = 8849088261264331812L;
 
@@ -47,7 +49,8 @@ public final class JobStateReasons extends HashSet<JobStateReason> implements Pr
     @Override
     public boolean add(JobStateReason reason) {
         if (reason == null) {
-            throw new NullPointerException("Null JobStateReason");
+            //print.1F=Null JobStateReason
+            throw new NullPointerException(Messages.getString("print.1F")); //$NON-NLS-1$            
         }
         return super.add(reason);
     }

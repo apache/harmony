@@ -21,6 +21,8 @@ import javax.print.attribute.Attribute;
 import javax.print.attribute.SetOfIntegerSyntax;
 import javax.print.attribute.SupportedValuesAttribute;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class CopiesSupported extends SetOfIntegerSyntax implements
         SupportedValuesAttribute {
     private static final long serialVersionUID = 6927711687034846001L;
@@ -28,16 +30,19 @@ public final class CopiesSupported extends SetOfIntegerSyntax implements
     public CopiesSupported(int value) {
         super(value);
         if (value < 1) {
-            throw new IllegalArgumentException("Value" + value + "is less than 1");
+            //print.1A= Value {0} is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.1A", value)); //NON-NLS-1$        
         }
     }
 
     public CopiesSupported(int lowerBound, int upperBound) {
         super(lowerBound, upperBound);
         if (lowerBound > upperBound) {
-            throw new IllegalArgumentException("Null range");
-        } else if (lowerBound < 1) {
-            throw new IllegalArgumentException("Lower bound" + lowerBound + "is less than 1");
+            //print.1B= Null range
+            throw new IllegalArgumentException(Messages.getString("print.1B")); //$NON-NLS-1$            
+        } else if (lowerBound < 1) {                     
+            //print.1C= Lower bound {0} is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.1C", lowerBound)); //$NON-NLS-1$            
         }
     }
 

@@ -21,6 +21,8 @@ import javax.print.attribute.Attribute;
 import javax.print.attribute.SetOfIntegerSyntax;
 import javax.print.attribute.SupportedValuesAttribute;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class JobMediaSheetsSupported extends SetOfIntegerSyntax implements
         SupportedValuesAttribute {
     private static final long serialVersionUID = 2953685470388672940L;
@@ -28,9 +30,11 @@ public final class JobMediaSheetsSupported extends SetOfIntegerSyntax implements
     public JobMediaSheetsSupported(int lowerBound, int upperBound) {
         super(lowerBound, upperBound);
         if (lowerBound > upperBound) {
-            throw new IllegalArgumentException("Null range: lowerBound " + "> upperBound");
+            //print.1D= Null range: lowerBound > upperBound
+            throw new IllegalArgumentException(Messages.getString("print.1D")); //$NON-NLS-1$        
         } else if (lowerBound < 0) {
-            throw new IllegalArgumentException("Lower bound " + lowerBound + " is less then 0");
+            //print.1E=Lower bound {0} is less than 0
+            throw new IllegalArgumentException(Messages.getString("print.1E", lowerBound)); //$NON-NLs-1$        
         }
     }
 

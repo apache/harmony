@@ -19,6 +19,8 @@ package javax.print.attribute;
 
 import java.io.Serializable;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public abstract class IntegerSyntax implements Cloneable, Serializable {
     private static final long serialVersionUID = 3644574816328081943L;
     
@@ -31,9 +33,9 @@ public abstract class IntegerSyntax implements Cloneable, Serializable {
 
     protected IntegerSyntax(int intValue, int lowerBound, int upperBound) {
         super();
-        if ((intValue < lowerBound) || (intValue > upperBound)) {
-            throw new IllegalArgumentException("Value " + intValue + " not in valid range ("
-                    + lowerBound + "," + upperBound + ")");
+        if ((intValue < lowerBound) || (intValue > upperBound)) {             
+            //print.0E= Value {0} not in valid range ({1})
+            throw new IllegalArgumentException(Messages.getString("print.0E", intValue, lowerBound+","+upperBound)); //$NON-NLS-1$        
         }
         value = intValue;
     }
