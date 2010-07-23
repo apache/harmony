@@ -50,7 +50,7 @@ public class HashAttributeSet implements Serializable, AttributeSet {
 
     protected HashAttributeSet(Class<?> interfaceName) {
         if (interfaceName == null) {             
-            //print.0D= NUll attribute interface
+            //print.0D= Null attribute interface
             throw new NullPointerException(Messages.getString("print.0D")); //$NON-NLS-1$        
         }
         attributeInterfaceName = interfaceName;
@@ -58,7 +58,7 @@ public class HashAttributeSet implements Serializable, AttributeSet {
 
     protected HashAttributeSet(Attribute attribute, Class<?> interfaceName) {
         if (interfaceName == null) {            
-            //print.0D= NUll attribute interface
+            //print.0D= Null attribute interface
             throw new NullPointerException(Messages.getString("print.0D")); //$NON-NLS-1$            
         }
         attributeInterfaceName = interfaceName;
@@ -67,7 +67,7 @@ public class HashAttributeSet implements Serializable, AttributeSet {
 
     protected HashAttributeSet(Attribute[] attributes, Class<?> interfaceName) {
         if (interfaceName == null) {            
-             //print.0D= NUll attribute interface
+             //print.0D= Null attribute interface
             throw new NullPointerException(Messages.getString("print.0D")); //$NON-NLS-1$        
         }
         attributeInterfaceName = interfaceName;

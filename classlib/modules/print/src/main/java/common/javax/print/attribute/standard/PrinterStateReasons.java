@@ -70,7 +70,7 @@ public final class PrinterStateReasons extends HashMap<PrinterStateReason, Sever
         }
         if (severity == null) {
             //print.27=Severity is null
-            throw new NullPointerException(Messages.getString("print.26")); //$NON-NLS-1$        
+            throw new NullPointerException(Messages.getString("print.27")); //$NON-NLS-1$
         }
         return super.put(reason, severity);
     }
@@ -78,7 +78,7 @@ public final class PrinterStateReasons extends HashMap<PrinterStateReason, Sever
     public Set<PrinterStateReason> printerStateReasonSet(Severity severity) {
         if (severity == null) {
             //print.27=Severity is null
-            throw new NullPointerException(Messages.getString("print.26")); //$NON-NLS-1$       
+            throw new NullPointerException(Messages.getString("print.27")); //$NON-NLS-1$       
         }
         Set<PrinterStateReason> set = new HashSet<PrinterStateReason>();
         for (Map.Entry<PrinterStateReason, Severity> mapEntry : entrySet()) {

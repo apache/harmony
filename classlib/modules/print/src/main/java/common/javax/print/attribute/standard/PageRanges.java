@@ -60,7 +60,7 @@ public final class PageRanges extends SetOfIntegerSyntax implements DocAttribute
     public PageRanges(String string) {
         super(string);
         if (string == null) {
-            //print.25= null string parameter
+            //print.25=Null string parameter
             throw new NullPointerException(Messages.getString("print.25")); //$NON-NLs-1$            
         }
         precisionCheck();

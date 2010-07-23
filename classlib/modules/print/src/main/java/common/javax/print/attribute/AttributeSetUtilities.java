@@ -373,7 +373,7 @@ public final class AttributeSetUtilities {
         } else if (interfaceName.isInstance(attribute)) {
             return (Attribute) attribute;
         } else {                  
-            //print.0B= object is not an instance of {0}
+            //print.0B= Object is not an instance of {0}
             throw new ClassCastException(Messages.getString("print.0B", interfaceName.getName())); //$NON-NLS-1$        
         }
     }

@@ -59,7 +59,7 @@ public final class NumberUpSupported extends SetOfIntegerSyntax implements
         }
         for (int i = 0; i < canonicalArray.length; i++) {
             if (canonicalArray[i][0] < 1) {
-                //print.24= valid values are not less than 1
+                //print.24=Valid values are not less than 1
                 throw new IllegalArgumentException(Messages.getString("print.24")); //$NON-NLs-1$            
             }
         }
