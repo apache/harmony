@@ -231,7 +231,7 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
                 attribute.getName(), AttributeAccessType.WRITING);
         if (attribInfo == null) {
             //lm.0A=No such attribute : {0}
-            throw new AttributeNotFoundException(Messages.getString("lm.0A"), attribute); //$NON-NLs-1$
+            throw new AttributeNotFoundException(Messages.getString("lm.0A", attribute)); //$NON-NLs-1$
         }
 
         try {
