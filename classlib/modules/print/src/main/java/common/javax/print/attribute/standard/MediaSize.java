@@ -25,6 +25,8 @@ import java.util.Map;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.Size2DSyntax;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 @SuppressWarnings("unused")
 public class MediaSize extends Size2DSyntax implements Attribute {
     private static final long serialVersionUID = -1967958664615414771L;
@@ -338,8 +340,9 @@ public class MediaSize extends Size2DSyntax implements Attribute {
 
     public MediaSize(int x, int y, int units) {
         super(x, y, units);
-        if (x > y) {
-            throw new IllegalArgumentException("x > y");
+        if (x > y) {            
+            //print.20= x > y
+            throw new IllegalArgumentException(Messages.getString("print.20")); //$NON-NLS-1$            
         }
         synchronized (MediaSize.class) {
             sizesList.add(this);
@@ -348,8 +351,9 @@ public class MediaSize extends Size2DSyntax implements Attribute {
 
     public MediaSize(float x, float y, int units) {
         super(x, y, units);
-        if (x > y) {
-            throw new IllegalArgumentException("x > y");
+        if (x > y) {            
+            //print.20= x > y
+            throw new IllegalArgumentException(Messages.getString("print.20")); //$NON-NLS-1$      
         }
         synchronized (MediaSize.class) {
             sizesList.add(this);
@@ -358,8 +362,9 @@ public class MediaSize extends Size2DSyntax implements Attribute {
 
     public MediaSize(int x, int y, int units, MediaSizeName mediaSizeName) {
         super(x, y, units);
-        if (x > y) {
-            throw new IllegalArgumentException("x > y");
+        if (x > y) {            
+            //print.20= x > y
+            throw new IllegalArgumentException(Messages.getString("print.20")); //$NON-NLS-1$        
         }
         this.mediaSizeName = mediaSizeName;
         synchronized (MediaSize.class) {
@@ -370,8 +375,9 @@ public class MediaSize extends Size2DSyntax implements Attribute {
 
     public MediaSize(float x, float y, int units, MediaSizeName mediaSizeName) {
         super(x, y, units);
-        if (x > y) {
-            throw new IllegalArgumentException("x > y");
+        if (x > y) {           
+            //print.20= x > y
+            throw new IllegalArgumentException(Messages.getString("print.20")); //$NON-NLS-1$       
         }
         this.mediaSizeName = mediaSizeName;
         synchronized (MediaSize.class) {
@@ -389,9 +395,9 @@ public class MediaSize extends Size2DSyntax implements Attribute {
     }
 
     public static MediaSizeName findMedia(float x, float y, int units) {
-        if ((x <= 0.0) || (y <= 0.0) || (units < 1)) {
-            throw new IllegalArgumentException("Valid values are: "
-                    + "x > 0, y > 0, units >= 1");
+        if ((x <= 0.0) || (y <= 0.0) || (units < 1)) {            
+            //print.21=Valid values are: x > 0, y > 0, units >=1
+            throw new IllegalArgumentException(Messages.getString("print.21")); //$NON-NLs-1$            
         }
         synchronized (MediaSize.class) {
             MediaSize hit = null;
