@@ -163,10 +163,10 @@ public class Color implements Paint, Serializable {
 
         frgbvalue = cs.toRGB(fvalue);
 
-        value =  ((int)(frgbvalue[2]*255 + 0.5))    |
-                (((int)(frgbvalue[1]*255 + 0.5)) << 8 )  |
-                (((int)(frgbvalue[0]*255 + 0.5)) << 16 ) |
-                (((int)(falpha*255 + 0.5)) << 24 );
+        value =  ((int)(frgbvalue[2]*255))    |
+                (((int)(frgbvalue[1]*255)) << 8 )  |
+                (((int)(frgbvalue[0]*255)) << 16 ) |
+                (((int)(falpha*255)) << 24 );
     }
 
     public Color(int rgba, boolean hasAlpha) {
