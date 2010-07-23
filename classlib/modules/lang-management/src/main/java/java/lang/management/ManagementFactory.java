@@ -375,9 +375,9 @@ public class ManagementFactory {
         if (multiInstanceBeanNames.contains(mxbeanInterfaceName)) {
             // partial match is good enough
             if (!mxbeanName.startsWith(expectedObjectName)) {
-                // lm.01= is not an instance of interface {0}
+                // lm.02={0} is not an instance of interface {1}
                 throw new IllegalArgumentException(Messages.getString(
-                        "lm.01", mxbeanInterfaceName)); //$NON-NLS-1$                
+                        "lm.02", mxbeanName, mxbeanInterfaceName)); //$NON-NLS-1$                
             }
         } else {
             // exact match required

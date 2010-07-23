@@ -172,8 +172,8 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
         MBeanAttributeInfo attribInfo = getPresentAttribute(attribute,
                 AttributeAccessType.READING);
         if (attribInfo == null) {            
-            //lm.0A=No such attribute :{0}
-            throw new AttributeNotFoundException(Messages.getString("lm.0A")); //$NON-NLs-1$
+            //lm.0A=No such attribute : {0}
+            throw new AttributeNotFoundException(Messages.getString("lm.0A", attribute)); //$NON-NLs-1$
         }
 
         try {
@@ -230,8 +230,8 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
         MBeanAttributeInfo attribInfo = getPresentAttribute(
                 attribute.getName(), AttributeAccessType.WRITING);
         if (attribInfo == null) {
-            //lm.0A=No such attribute :{0}
-            throw new AttributeNotFoundException(Messages.getString("lm.0A")); //$NON-NLs-1$
+            //lm.0A=No such attribute : {0}
+            throw new AttributeNotFoundException(Messages.getString("lm.0A"), attribute); //$NON-NLs-1$
         }
 
         try {

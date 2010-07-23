@@ -580,8 +580,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
     public boolean isThreadCpuTimeEnabled() {
         if (!isThreadCpuTimeSupported()) {
             
-            //lm.1F=Thread CPU timing is not supported on this virtual machine.
-            throw new UnsupportedOperationException(Messages.getString("lm.1F")); //$NON-NLS-1$
+            //lm.01=Thread CPU timing is not supported on this virtual machine.
+            throw new UnsupportedOperationException(Messages.getString("lm.01")); //$NON-NLS-1$
         }
         return this.isThreadCpuTimeEnabledImpl();
     }
@@ -659,8 +659,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public void setThreadCpuTimeEnabled(boolean enable) {
         if (!isThreadCpuTimeSupported()) {
-            //lm.1F=Thread CPU timing is not supported on this virtual machine.
-            throw new UnsupportedOperationException(Messages.getString("lm.1F")); //$NON-NLS-1$          
+            //lm.01=Thread CPU timing is not supported on this virtual machine.
+            throw new UnsupportedOperationException(Messages.getString("lm.01")); //$NON-NLS-1$          
         }
 
         SecurityManager security = System.getSecurityManager();

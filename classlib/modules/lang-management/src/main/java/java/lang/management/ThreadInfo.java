@@ -103,7 +103,7 @@ public class ThreadInfo {
             long threadIdVal = ((Long) attributeVals[0]).longValue();
             String threadNameVal = (String) attributeVals[1];
             if (threadNameVal == null) {
-                //lm.06=Invalid composite data: Attribute threadNAme has null value
+                //lm.06=Invalid composite data: Attribute threadName has null value
                 throw new IllegalArgumentException(Messages.getString("lm.06")); //$NON-NLS-1$                
                 }
             String threadStateStringVal = (String) attributeVals[2];
