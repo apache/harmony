@@ -240,13 +240,12 @@ public class PriorityQueue<E> extends AbstractQueue<E> implements Serializable {
      *         was not in the priority queue.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public boolean remove(Object o) {
-        if (o == null) {
+        if (o == null || size == 0) {
             return false;
         }
         for (int i = 0; i < size; i++) {
-            if (elements[i].equals(o)) {
+            if (o.equals(elements[i])) {
                 removeAt(i);
                 return true;
             }

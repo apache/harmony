@@ -132,7 +132,18 @@ public class PriorityQueueTest extends TestCase {
         for (int i = 0; i < integerQueue.size(); i++) {
             assertEquals(newArray[i], integerQueue.poll());
         }
+    }
 
+    public void test_iterator_removeEquals() {
+        PriorityQueue<String> integerQueue = new PriorityQueue<String>(10, new MockComparatorStringByLength());
+        String[] array = { "ONE", "TWO", "THREE", "FOUR", "FIVE" };
+        for (int i = 0; i < array.length; i++) {
+            integerQueue.offer(array[i]);
+        }
+        // Try removing an entry that the comparator says is equal
+        assertFalse(integerQueue.remove("123"));
+        assertFalse(integerQueue.remove("one"));
+        assertTrue(integerQueue.remove("THREE"));
     }
 
     /**
@@ -593,7 +604,7 @@ public class PriorityQueueTest extends TestCase {
             queue.offer(array[i]);
         }
         assertFalse(queue.contains("BB"));
-        assertFalse(queue.remove("BB"));
+        assertTrue(queue.remove("AA"));
     }
 
     /**
@@ -629,7 +640,7 @@ public class PriorityQueueTest extends TestCase {
         List<Integer> list = Arrays.asList(array);
         PriorityQueue<Integer> integerQueue = new PriorityQueue<Integer>(list);
         assertFalse(integerQueue.remove(new Float(1.3F)));
-
+ 
         // although argument element type is not compatible with those in queue,
         // but comparator supports it.
         MockComparator<Object> comparator = new MockComparator<Object>();
