@@ -830,7 +830,7 @@ hythread_tls_set (hythread_t thread, hythread_tls_key_t key, void *value)
  *				HYTHREAD_PRIORITY_USER_MIN<br>
  *				HYTHREAD_PRIORITY_MIN<br>
  * 
- * @returns 0 on success or negative value on failure (priority wasn't changed)
+ * @return 0 on success or negative value on failure (priority wasn't changed)
  * 
  * 
  */
