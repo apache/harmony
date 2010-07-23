@@ -20,6 +20,7 @@ package java.lang.management;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.harmony.lang.management.ManagementUtils;
+import org.apache.harmony.lang.management.internals.nls.Messages;
 
 
 /**
@@ -102,9 +103,9 @@ public class ThreadInfo {
             long threadIdVal = ((Long) attributeVals[0]).longValue();
             String threadNameVal = (String) attributeVals[1];
             if (threadNameVal == null) {
-                throw new IllegalArgumentException(
-                        "Invalid composite data: Attribute threadName has null value");
-            }
+                //lm.06=Invalid composite data: Attribute threadNAme has null value
+                throw new IllegalArgumentException(Messages.getString("lm.06")); //$NON-NLS-1$                
+                }
             String threadStateStringVal = (String) attributeVals[2];
 
             // Verify that threadStateStringVal contains a string that can be
@@ -113,9 +114,8 @@ public class ThreadInfo {
             try {
                 threadStateVal = Thread.State.valueOf(threadStateStringVal);
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException(
-                        "CompositeData contains an unexpected threadState value.",
-                        e);
+                //lm.07=CompsiteData contains an unexpected threadState value. {0}
+                throw new IllegalArgumentException(Messages.getString("lm.07", e)); //$NON-NLS-1$                
             }
 
             boolean suspendedVal = ((Boolean) attributeVals[3]).booleanValue();
@@ -131,7 +131,8 @@ public class ThreadInfo {
                     : null;
             CompositeData[] stackTraceDataVal = (CompositeData[]) attributeVals[12];
             if (stackTraceDataVal == null) {
-                throw new IllegalArgumentException("StackTraceElement[] is missing");
+                //lm.08=StackTraceElement[] is missing
+                throw new IllegalArgumentException(Messages.getString("lm.08")); //$NON-NLS-1$            
             }
             StackTraceElement[] stackTraceVals = getStackTracesFromCompositeData(stackTraceDataVal);
             result = new ThreadInfo(threadIdVal, threadNameVal, threadStateVal,
