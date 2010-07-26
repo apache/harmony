@@ -25,7 +25,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.LoggingMXBean;
 
-import org.apache.harmony.lang.management.internals.nls.Messages;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 /**
  * Runtime type for {@link java.util.logging.LoggingMXBean}.

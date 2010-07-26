@@ -21,7 +21,7 @@ import java.lang.management.CompilationMXBean;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.harmony.lang.management.internals.nls.Messages;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 /**
  * Runtime type for {@link CompilationMXBean}

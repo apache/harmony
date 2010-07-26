@@ -31,7 +31,7 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ReflectionException;
 
-import org.apache.harmony.lang.management.internals.nls.Messages;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 /**
  * Abstract implementation of the {@link DynamicMBean} interface that provides

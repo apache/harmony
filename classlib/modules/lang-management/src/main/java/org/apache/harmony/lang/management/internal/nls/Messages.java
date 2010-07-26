@@ -21,7 +21,7 @@
  * if this tool runs again. Better make changes in the template file.
  */
 
-package org.apache.harmony.lang.management.internals.nls;
+package org.apache.harmony.lang.management.internal.nls;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
