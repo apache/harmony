@@ -88,15 +88,13 @@ public abstract class CharsetEncoder {
     /*
      * internal status consts
      */
-    private static final int READY = 0;
+    private static final int INIT = 0;
 
     private static final int ONGOING = 1;
 
     private static final int END = 2;
 
     private static final int FLUSH = 3;
-
-    private static final int INIT = 4;
 
     // the Charset which creates this encoder
     private Charset cs;
@@ -112,9 +110,6 @@ public abstract class CharsetEncoder {
 
     // internal status
     private int status;
-
-    // internal status indicates encode(CharBuffer) operation is finished
-    private boolean finished;
 
     // action for malformed input
     private CodingErrorAction malformAction;
@@ -222,10 +217,10 @@ public abstract class CharsetEncoder {
 
     // implementation of canEncode
     private boolean implCanEncode(CharBuffer cb) {
-        if (status == FLUSH || status == INIT) {
-            status = READY;
+        if (status == FLUSH) {
+            status = INIT;
         }
-        if (status != READY) {
+        if (status != INIT) {
             // niochar.0B=Another encoding process is ongoing\!
             throw new IllegalStateException(Messages.getString("niochar.0B")); //$NON-NLS-1$
         }
@@ -352,8 +347,7 @@ public abstract class CharsetEncoder {
             }
             break;
         }
-        status = READY;
-        finished = true;
+        status = FLUSH;
         return output;
     }
 
@@ -444,12 +438,6 @@ public abstract class CharsetEncoder {
      */
     public final CoderResult encode(CharBuffer in, ByteBuffer out,
             boolean endOfInput) {
-        //If the previous step is encode(CharBuffer), then no more input is needed
-        // thus endOfInput should not be false
-        if (status == READY && finished && !endOfInput) {
-            throw new IllegalStateException();
-        }
-
         if ((status == FLUSH) || (!endOfInput && status == END)) {
             throw new IllegalStateException();
         }
@@ -565,7 +553,7 @@ public abstract class CharsetEncoder {
      *             for the last boolean parameter.
      */
     public final CoderResult flush(ByteBuffer out) {
-        if (status != END && status != READY) {
+        if (status != END && status != INIT) {
             throw new IllegalStateException();
         }
         CoderResult result = implFlush(out);
