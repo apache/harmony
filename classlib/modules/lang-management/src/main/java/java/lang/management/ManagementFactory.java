@@ -43,7 +43,7 @@ import javax.management.ObjectName;
 import org.apache.harmony.lang.management.ManagementUtils;
 import org.apache.harmony.lang.management.MemoryManagerMXBeanImpl;
 import org.apache.harmony.lang.management.OpenTypeMappingIHandler;
-import org.apache.harmony.lang.management.internals.nls.Messages;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 
 /**

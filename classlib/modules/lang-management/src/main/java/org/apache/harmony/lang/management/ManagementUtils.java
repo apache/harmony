@@ -61,7 +61,7 @@ import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 import javax.management.openmbean.TabularType;
 
-import org.apache.harmony.lang.management.internals.nls.Messages;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 /**
  * Support methods for org.apache.harmony.lang.management classes.
