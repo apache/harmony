@@ -290,31 +290,20 @@ public class ASCIICharsetEncoderTest extends TestCase {
     public void testInternalState_Flushed() {
         CharsetEncoder newEncoder = cs.newEncoder();
         
-        // init -> flushed
-		{
-			ByteBuffer out = ByteBuffer.allocate(0x10);
-			try {
-				newEncoder.flush(out);
-				fail("Should throw IllegalStateException");
-			} catch (IllegalStateException e) {
-				//expected
-			}
-
-		}
-
-        // reset - > flushed
+        //init -> flushed
+        {
+            ByteBuffer out = ByteBuffer.allocate(0x10);
+            newEncoder.flush(out);
+        }
+        
+        //reset - > flushed
         {
             newEncoder.reset();
             CharBuffer in = CharBuffer.wrap("A");
             ByteBuffer out = ByteBuffer.allocate(0x10);
             newEncoder.encode(in, out, true);
             newEncoder.reset();
-            try {
-                newEncoder.flush(out);
-				fail("Should throw IllegalStateException");
-            } catch (IllegalStateException e) {
-                //expected
-            }
+            newEncoder.flush(out);
         }
         
         //encoding - > flushed
@@ -432,14 +421,23 @@ public class ASCIICharsetEncoderTest extends TestCase {
             CharBuffer in = CharBuffer.wrap("A");
             newEncoder.encode(in);
             ByteBuffer out = ByteBuffer.allocate(0x10);
-            newEncoder.encode(in, out, true);
+            try {
+                newEncoder.encode(in, out, true);
+                fail("Should throw IllegalStateException");
+            } catch (IllegalStateException e) {
+                // expected
+            }
         }
-
         //Encode -> Flushed
         {
             CharBuffer in = CharBuffer.wrap("A");
             ByteBuffer out = newEncoder.encode(in);
-            newEncoder.flush(out);
+            try {
+                newEncoder.flush(out);
+                fail("Should throw IllegalStateException");
+            } catch (IllegalStateException e) {
+                // expected
+            }
         }
         
         //Encode - > encode

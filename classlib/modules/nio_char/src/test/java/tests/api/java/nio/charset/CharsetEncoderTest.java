@@ -296,7 +296,6 @@ public class CharsetEncoderTest extends TestCase {
 			encoder.flush(out);
 			fail("should throw IllegalStateException");
 		} catch (IllegalStateException e) {
-		    // Expected
 		}
 
 		// Illegal state: flush after encode with endOfInput is false
@@ -306,21 +305,7 @@ public class CharsetEncoderTest extends TestCase {
 			encoder.flush(out);
 			fail("should throw IllegalStateException");
 		} catch (IllegalStateException e) {
-		    // Expected
 		}
-	}
-	
-	public void testFlushAfterConstructing() {
-		ByteBuffer out = ByteBuffer.allocate(5);
-		
-		//Illegal state: flush after instance created
-		try {
-			encoder.flush(out);			
-			fail("should throw IllegalStateException");
-		} catch (IllegalStateException e) {
-			// Expected
-		}
-
 	}
 
 	// test illegal states for encode facade
