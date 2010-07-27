@@ -47,6 +47,8 @@ public class OutputStreamWriter extends Writer {
 
     private ByteBuffer bytes = ByteBuffer.allocate(8192);
 
+    private boolean encoderFlush = false;
+
     /**
      * Constructs a new OutputStreamWriter using {@code out} as the target
      * stream to write converted characters to. The default character encoding
@@ -147,7 +149,18 @@ public class OutputStreamWriter extends Writer {
     public void close() throws IOException {
         synchronized (lock) {
             if (encoder != null) {
-                encoder.flush(bytes);
+                if (encoderFlush) {
+                    CoderResult result = encoder.flush(bytes);
+                    while (!result.isUnderflow()) {
+                        if (result.isOverflow()) {
+                            flush();
+                            result = encoder.flush(bytes);
+                        } else {
+                            result.throwException();
+                        }
+                    }
+                }
+
                 flush();
                 out.flush();
                 out.close();
@@ -234,6 +247,7 @@ public class OutputStreamWriter extends Writer {
 
     private void convert(CharBuffer chars) throws IOException {
         CoderResult result = encoder.encode(chars, bytes, true);
+        encoderFlush = true;
         while (true) {
             if (result.isError()) {
                 throw new IOException(result.toString());

@@ -290,20 +290,31 @@ public class ASCIICharsetEncoderTest extends TestCase {
     public void testInternalState_Flushed() {
         CharsetEncoder newEncoder = cs.newEncoder();
         
-        //init -> flushed
-        {
-            ByteBuffer out = ByteBuffer.allocate(0x10);
-            newEncoder.flush(out);
-        }
-        
-        //reset - > flushed
+        // init -> flushed
+		{
+			ByteBuffer out = ByteBuffer.allocate(0x10);
+			try {
+				newEncoder.flush(out);
+				fail("Should throw IllegalStateException");
+			} catch (IllegalStateException e) {
+				//expected
+			}
+
+		}
+
+        // reset - > flushed
         {
             newEncoder.reset();
             CharBuffer in = CharBuffer.wrap("A");
             ByteBuffer out = ByteBuffer.allocate(0x10);
             newEncoder.encode(in, out, true);
             newEncoder.reset();
-            newEncoder.flush(out);
+            try {
+                newEncoder.flush(out);
+				fail("Should throw IllegalStateException");
+            } catch (IllegalStateException e) {
+                //expected
+            }
         }
         
         //encoding - > flushed
@@ -421,23 +432,14 @@ public class ASCIICharsetEncoderTest extends TestCase {
             CharBuffer in = CharBuffer.wrap("A");
             newEncoder.encode(in);
             ByteBuffer out = ByteBuffer.allocate(0x10);
-            try {
-                newEncoder.encode(in, out, true);
-                fail("Should throw IllegalStateException");
-            } catch (IllegalStateException e) {
-                // expected
-            }
+            newEncoder.encode(in, out, true);
         }
+
         //Encode -> Flushed
         {
             CharBuffer in = CharBuffer.wrap("A");
             ByteBuffer out = newEncoder.encode(in);
-            try {
-                newEncoder.flush(out);
-                fail("Should throw IllegalStateException");
-            } catch (IllegalStateException e) {
-                // expected
-            }
+            newEncoder.flush(out);
         }
         
         //Encode - > encode
