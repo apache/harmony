@@ -33,7 +33,13 @@ ifeq ($(HY_LOCAL_ZLIB),true)
 DEFINES += -DHY_LOCAL_ZLIB
 OSLIBS += -lz
 else
+
+ifeq ($(HY_OS),zos)
+MDLLIBZLIB += $(LIBPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
+else
 MDLLIBZLIB += $(DLLPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
+endif
+
 endif
 
 MDLLIBFILES += \
