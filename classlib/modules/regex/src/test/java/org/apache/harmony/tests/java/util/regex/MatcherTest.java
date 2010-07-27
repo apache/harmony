@@ -735,6 +735,16 @@ public class MatcherTest extends TestCase {
                 "----1 fish 2 fish red fish 5----", false);
     }
 
+    /*
+     * Test if Matcher's toString conatain pattern information
+     */
+    public void testToString() {
+        String result = Pattern.compile("(\\d{1,3})").matcher(
+                "aaaa123456789045").toString();
+        assertTrue("The result doesn't contain pattern info", result
+                .contains("(\\d{1,3})"));
+    }
+
     private void hitEndTest(boolean callFind, String testNo, String regex,
             String input, boolean hit) {
         Pattern pattern = Pattern.compile(regex);

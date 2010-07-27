@@ -687,4 +687,16 @@ public final class Matcher implements MatchResult {
         matchResult = new MatchResultImpl(cs, leftBound, rightBound, pat
                 .groupCount(), pat.compCount(), pat.consCount());
     }
+
+    @Override
+    public String toString() {
+        String lastMatch = "";
+        try {
+            lastMatch = Integer.toString(start());
+        } catch (IllegalStateException e) {
+        }
+        return getClass().getCanonicalName() + "[pattern=" + pat + " region="
+                + matchResult.getLeftBound() + ","
+                + matchResult.getRightBound() + " lastmatch=" + lastMatch + "]";
+    }
 }
