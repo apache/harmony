@@ -27,6 +27,9 @@
 
 #if defined(ZOS)
 #define _XOPEN_SOURCE  500
+#if defined(IPv6_FUNCTION_SUPPORT)
+#define _OPEN_SYS_SOCK_IPV6
+#endif
 #include <unistd.h>
 #endif
 
