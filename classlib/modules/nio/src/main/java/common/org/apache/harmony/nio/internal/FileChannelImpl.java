@@ -603,8 +603,8 @@ public abstract class FileChannelImpl extends FileChannel {
         for (int i = offset; i < length + offset; i++) {
             if (bytesRemaining > sources[i].remaining()) {
                 int pos = sources[i].limit();
-                sources[i].position(pos);
                 bytesRemaining -= sources[i].remaining();
+                sources[i].position(pos);
             } else {
                 int pos = sources[i].position() + (int) bytesRemaining;
                 sources[i].position(pos);
