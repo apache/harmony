@@ -689,13 +689,13 @@ public class InflaterTest extends junit.framework.TestCase {
     protected void setUp() {
 		try {
 			java.io.InputStream infile = Support_Resources
-					.getStream("hyts_compressD.txt");
+					.getStream("hyts_compressD.bin");
 			BufferedInputStream inflatIP = new BufferedInputStream(infile);
 			inflatIP.read(outPutBuff1, 0, outPutBuff1.length);
 			inflatIP.close();
 
 			java.io.InputStream infile2 = Support_Resources
-					.getStream("hyts_compDiction.txt");
+					.getStream("hyts_compDiction.bin");
 			BufferedInputStream inflatIP2 = new BufferedInputStream(infile2);
 			inflatIP2.read(outPutDiction, 0, outPutDiction.length);
 			inflatIP2.close();

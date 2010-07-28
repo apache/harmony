@@ -63,7 +63,7 @@ public class InflaterInputStreamTest extends TestCase {
 		int result = 0;
 		int buffer[] = new int[500];
 		InputStream infile = Support_Resources
-				.getStream("hyts_constru(O).txt");
+				.getStream("hyts_constru(O).bin");
 
 		InflaterInputStream inflatIP = new InflaterInputStream(infile);
 
@@ -82,7 +82,7 @@ public class InflaterInputStreamTest extends TestCase {
 	 */
 	public void test_ConstructorLjava_io_InputStreamLjava_util_zip_Inflater() throws IOException {
 		byte byteArray[] = new byte[100];
-		InputStream infile = Support_Resources.getStream("hyts_constru(OD).txt");
+		InputStream infile = Support_Resources.getStream("hyts_constru(OD).bin");
 		Inflater inflate = new Inflater();
 		InflaterInputStream inflatIP = new InflaterInputStream(infile,
 				inflate);
@@ -98,7 +98,7 @@ public class InflaterInputStreamTest extends TestCase {
 	public void test_ConstructorLjava_io_InputStreamLjava_util_zip_InflaterI() throws IOException {
 		int result = 0;
 		int buffer[] = new int[500];
-		InputStream infile = Support_Resources.getStream("hyts_constru(ODI).txt");
+		InputStream infile = Support_Resources.getStream("hyts_constru(ODI).bin");
 		Inflater inflate = new Inflater();
 		InflaterInputStream inflatIP = new InflaterInputStream(infile,
 				inflate, 1);
@@ -141,7 +141,7 @@ public class InflaterInputStreamTest extends TestCase {
 		int buffer[] = new int[500];
 		byte orgBuffer[] = { 1, 3, 4, 7, 8 };
 		InputStream infile = Support_Resources
-				.getStream("hyts_constru(OD).txt");
+				.getStream("hyts_constru(OD).bin");
 		Inflater inflate = new Inflater();
 		InflaterInputStream inflatIP = new InflaterInputStream(infile,
 				inflate);
@@ -326,7 +326,7 @@ public class InflaterInputStreamTest extends TestCase {
 
         // testing for negative input to skip
 		InputStream infile = Support_Resources
-				.getStream("hyts_constru(OD).txt");
+				.getStream("hyts_constru(OD).bin");
 		Inflater inflate = new Inflater();
 		InflaterInputStream inflatIP = new InflaterInputStream(infile,
 				inflate, 10);
@@ -341,7 +341,7 @@ public class InflaterInputStreamTest extends TestCase {
 
 		// testing for number of bytes greater than input.
 		InputStream infile2 = Support_Resources
-				.getStream("hyts_constru(OD).txt");
+				.getStream("hyts_constru(OD).bin");
 		InflaterInputStream inflatIP2 = new InflaterInputStream(infile2);
 
 		// looked at how many bytes the skip skipped. It is
@@ -354,7 +354,7 @@ public class InflaterInputStreamTest extends TestCase {
 
 		// test for skipping of 2 bytes
 		InputStream infile3 = Support_Resources
-				.getStream("hyts_constru(OD).txt");
+				.getStream("hyts_constru(OD).bin");
 		InflaterInputStream inflatIP3 = new InflaterInputStream(infile3);
 		skip = inflatIP3.skip(2);
 		assertEquals("the number of bytes returned by skip did not correspond with its input parameters",
