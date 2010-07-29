@@ -115,7 +115,7 @@ typedef unsigned long long U_64;
 #define HY_LITTLE_ENDIAN
 #endif
 
-#if defined(HYPPC32)
+#if defined(HYPPC32) && defined(LINUX)
 #define VA_PTR(valist) (&valist[0])
 #endif
 
