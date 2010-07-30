@@ -35,13 +35,8 @@ ObjectReference::ReferenceTypeHandler::Execute(JNIEnv *jni)
 {
     jobject jvmObject = m_cmdParser->command.ReadObjectID(jni);
     // Can be: InternalErrorException, OutOfMemoryException, JDWP_ERROR_INVALID_OBJECT
-    if (NULL == jvmObject) {
-        JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "ReferenceType: ReadObjectID() returned NULL"));
-        AgentException aex = GetExceptionManager().GetLastException();
-        jdwpError err = aex.ErrCode();
-        JDWP_SET_EXCEPTION(aex);
-        return err;
-    }
+    JDWP_CHECK_NOT_NULL(jvmObject);
+
     jclass jvmClass = jni->GetObjectClass(jvmObject); 
 
 #ifndef NDEBUG
@@ -50,7 +45,7 @@ ObjectReference::ReferenceTypeHandler::Execute(JNIEnv *jni)
         char* signature = 0;
         JVMTI_TRACE(LOG_DEBUG, err, GetJvmtiEnv()->GetClassSignature(jvmClass, &signature, 0));
         JvmtiAutoFree afs(signature);
-        JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "ReferenceType: received: objectID=%p, classSignature=%s", jvmObject, JDWP_CHECK_NULL(signature)));
+        JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "ObjectReference: received: objectID=%p, classSignature=%s", jvmObject, JDWP_CHECK_NULL(signature)));
     }
 #endif
 
@@ -72,7 +67,7 @@ ObjectReference::ReferenceTypeHandler::Execute(JNIEnv *jni)
 
     m_cmdParser->reply.WriteByte(refTypeTag);
     m_cmdParser->reply.WriteReferenceTypeID(jni, jvmClass);
-    JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "ReferenceType: send: refTypeTag=%d, refTypeID=%p", refTypeTag, jvmClass));
+    JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "ObjectReference: send: refTypeTag=%d, refTypeID=%p", refTypeTag, jvmClass));
 
     return JDWP_ERROR_NONE;
 } // ReferenceTypeHandler::Execute()
@@ -85,6 +80,8 @@ ObjectReference::GetValuesHandler::Execute(JNIEnv *jni)
 {
     jdwpError jdwpErr;
     jobject jvmObject = m_cmdParser->command.ReadObjectID(jni);
+    JDWP_CHECK_NOT_NULL(jvmObject);
+
     // Can be: InternalErrorException, OutOfMemoryException, JDWP_ERROR_INVALID_OBJECT
     JDWP_CHECK_ERROR_CODE(jdwpErr);
 
@@ -521,6 +518,8 @@ ObjectReference::MonitorInfoHandler::Execute(JNIEnv *jni)
     jobject jvmObject = m_cmdParser->command.ReadObjectID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmObject);
+
     JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "MonitorInfo: received: objectID=%p", jvmObject));
 
     jvmtiMonitorUsage monitorInfo;
@@ -649,8 +648,14 @@ int
 ObjectReference::InvokeMethodHandler::Execute(JNIEnv *jni) 
 {
     m_object = m_cmdParser->command.ReadObjectID(jni);
+    JDWP_CHECK_NOT_NULL(m_object);
+
     m_thread = m_cmdParser->command.ReadThreadID(jni);
+    JDWP_CHECK_NOT_NULL(m_thread);
+
     m_clazz = m_cmdParser->command.ReadReferenceTypeID(jni);
+    JDWP_CHECK_NOT_NULL(m_clazz);
+
     m_methodID = m_cmdParser->command.ReadMethodID(jni);
     int arguments = m_cmdParser->command.ReadInt();
 
@@ -893,6 +898,7 @@ ObjectReference::ReferringObjectsHandler::Execute(JNIEnv *jni)
     // Get objectID
     jobject jvmObject = m_cmdParser->command.ReadObjectID(jni);
     // Can be: InternalErrorException, OutOfMemoryException, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmObject);
 
     // Get maximum number of referring objects to return.
     int maxReferrers = m_cmdParser->command.ReadInt();

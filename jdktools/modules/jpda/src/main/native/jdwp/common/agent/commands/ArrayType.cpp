@@ -31,6 +31,7 @@ ArrayType::NewInstanceHandler::Execute(JNIEnv *jni)
 {
     jclass cls = m_cmdParser->command.ReadReferenceTypeID(jni);
     jint length = m_cmdParser->command.ReadInt();
+    JDWP_CHECK_NOT_NULL(cls);
 
     JDWP_ASSERT(cls != 0);
     char* signature = 0;

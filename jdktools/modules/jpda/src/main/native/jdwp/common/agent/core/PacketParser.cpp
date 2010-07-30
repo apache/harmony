@@ -255,6 +255,8 @@ jobject InputPacketParser::ReadObjectIDOrNull(JNIEnv *jni) {
     // read raw ObjectID and check for null
     ObjectID oid = ReadRawObjectID();
     if (oid == 0) {
+        AgentException ex(JDWP_ERROR_INVALID_OBJECT);
+        JDWP_SET_EXCEPTION(ex);
         return 0;
     }
 
@@ -315,6 +317,12 @@ jclass InputPacketParser::ReadReferenceTypeIDOrNull(JNIEnv *jni) {
         // For a ObjectID, we should convert it to ReferenceTypeID 
         // if it is a ClassObjectID
         jobject obj = GetObjectManager().MapFromObjectID(jni, rtid);
+        if (NULL == obj) {
+            JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "MapFromObjectID returned NULL"));
+            AgentException ex(JDWP_ERROR_INVALID_OBJECT);
+            JDWP_SET_EXCEPTION(ex);
+            return 0;
+        }
         if (obj) {
           obj = jni->NewLocalRef(obj);
           if (!obj) {

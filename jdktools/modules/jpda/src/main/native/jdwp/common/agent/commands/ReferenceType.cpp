@@ -85,6 +85,9 @@ ReferenceType::ClassLoaderHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -126,6 +129,8 @@ ReferenceType::ModifiersHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -162,6 +167,8 @@ ReferenceType::FieldsHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -280,6 +287,8 @@ ReferenceType::MethodsHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -393,6 +402,7 @@ ReferenceType::GetValuesHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
 
     jint fieldsNumber = m_cmdParser->command.ReadInt();
     // Can be: InternalErrorException
@@ -536,6 +546,8 @@ ReferenceType::SourceFileHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -587,6 +599,8 @@ ReferenceType::NestedTypesHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -738,6 +752,8 @@ ReferenceType::StatusHandler::Execute(JNIEnv *jni)
     jclass klass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(klass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -780,6 +796,8 @@ ReferenceType::InterfacesHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -833,6 +851,8 @@ ReferenceType::ClassObjectHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -857,6 +877,8 @@ ReferenceType::SourceDebugExtensionHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -897,6 +919,8 @@ ReferenceType::InstancesHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -1005,6 +1029,8 @@ ReferenceType::ClassFileVersionHandler::Execute(JNIEnv *jni)
      jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;
@@ -1046,6 +1072,8 @@ ReferenceType::ConstantPoolHandler::Execute(JNIEnv *jni)
     jclass jvmClass = m_cmdParser->command.ReadReferenceTypeID(jni);
     // Can be: InternalErrorException, OutOfMemoryException,
     // JDWP_ERROR_INVALID_CLASS, JDWP_ERROR_INVALID_OBJECT
+    JDWP_CHECK_NOT_NULL(jvmClass);
+
 #ifndef NDEBUG
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
         jvmtiError err;

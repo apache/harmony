@@ -30,12 +30,8 @@ int
 ArrayReference::LengthHandler::Execute(JNIEnv *jni) 
 {
     jarray arrayObject = (jarray)m_cmdParser->command.ReadArrayID(jni);
-    if (arrayObject == 0) {
-        JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "Length: null array: arrayID=%p", arrayObject));
-        AgentException e(JDWP_ERROR_INVALID_OBJECT);
-		JDWP_SET_EXCEPTION(e);
-        return JDWP_ERROR_INVALID_OBJECT;
-    }
+    JDWP_CHECK_NOT_NULL(arrayObject);
+
     jclass arrObjClass = jni->GetObjectClass(arrayObject);
 #ifndef NDEBUG 
     if (JDWP_TRACE_ENABLED(LOG_KIND_DATA)) {
@@ -310,13 +306,10 @@ ArrayReference::SetValuesHandler::Execute(JNIEnv *jni)
     jint firstIndex = m_cmdParser->command.ReadInt();
     jint values = m_cmdParser->command.ReadInt();
 
+    JDWP_CHECK_NOT_NULL(arrayObject);
+
     JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "GetValues: received: arrayID=%p, firstIndex=%d, values=%d", arrayObject, firstIndex, values));
 
-    if (arrayObject == 0) {
-        AgentException e(JDWP_ERROR_INVALID_OBJECT);
-		JDWP_SET_EXCEPTION(e);
-        return JDWP_ERROR_INVALID_OBJECT;
-    }
     if ((firstIndex < 0) || (values < 0)) {
         AgentException e(JDWP_ERROR_ILLEGAL_ARGUMENT);
 		JDWP_SET_EXCEPTION(e);
