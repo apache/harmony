@@ -24,6 +24,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.spi.SelectorProvider;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 
 import org.apache.harmony.luni.platform.FileDescriptorHandler;
 
@@ -42,21 +46,30 @@ final class PipeImpl extends Pipe {
 
     public PipeImpl() throws IOException {
         super();
+        sink = new SinkChannelImpl(SelectorProvider.provider());
+        source = new SourceChannelImpl(SelectorProvider.provider());
         try {
-            sink = new SinkChannelImpl(SelectorProvider.provider());
-            source = new SourceChannelImpl(SelectorProvider.provider());
-            sink.finishConnect();
-            source.accept();
-            source.closeServer();
-        } catch(IOException ioe){
+            AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
+                public Void run() throws Exception {
+                    sink.finishConnect();
+                    source.accept();
+                    source.closeServer();
+                    return null;
+                }
+            });
+        } catch (PrivilegedActionException e) {
             reset();
-            throw ioe;
-        } catch(RuntimeException e){
-            reset();
-            throw e;
+            Exception ex = e.getException();
+            if (ex instanceof IOException) {
+                throw (IOException) ex;
+            }
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException) ex;
+            }
+            throw new RuntimeException(ex);
         }
     }
-    
+
     private void reset(){
         if(sink != null){
             try {
