@@ -22,6 +22,7 @@ import org.apache.harmony.xnet.provider.jsse.SSLSocketOutputStream;
 import org.apache.harmony.xnet.provider.jsse.SSLStreamedInput;
 import org.apache.harmony.xnet.provider.jsse.SSLSessionImpl;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -77,6 +78,9 @@ public class SSLSocketImpl extends SSLSocket {
     private ArrayList<HandshakeCompletedListener> listeners;
     // logger
     private Logger.Stream logger = Logger.getStream("socket");
+
+    // Pointer to the OpenSSL SSL struct used for this connection
+    private long SSL;
 
     // ----------------- Constructors and initializers --------------------
 
@@ -404,6 +408,9 @@ public class SSLSocketImpl extends SSLSocket {
         }
     }
 
+    private native long sslConnectImpl(long sslContextAddress, FileDescriptor fd);
+    private native long sslAcceptImpl(long sslContextAddress, FileDescriptor fd);
+
     /**
      * Performs the handshake process over the SSL/TLS connection
      * as described in rfc 2246, TLS v1 specification
@@ -428,27 +435,32 @@ public class SSLSocketImpl extends SSLSocket {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: CLIENT");
                 }
-                handshakeProtocol = new ClientHandshakeImpl(this);
+
+                SSL = sslConnectImpl(sslParameters.getSSLContextAddress(), impl.getFileDescriptor());
+
+                //handshakeProtocol = new ClientHandshakeImpl(this);
             } else {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: SERVER");
                 }
-                handshakeProtocol = new ServerHandshakeImpl(this);
+                SSL = sslAcceptImpl(sslParameters.getSSLContextAddress(), impl.getFileDescriptor());
+
+                //handshakeProtocol = new ServerHandshakeImpl(this);
             }
 
             alertProtocol = new AlertProtocol();
-            recordProtocol = new SSLRecordProtocol(handshakeProtocol,
+            /*recordProtocol = new SSLRecordProtocol(handshakeProtocol,
                     alertProtocol, new SSLStreamedInput(input),
-                    appDataIS.dataPoint);
+                    appDataIS.dataPoint);*/
         }
 
         if (logger != null) {
             logger.println("SSLSocketImpl.startHandshake");
         }
 
-        handshakeProtocol.start();
+        //handshakeProtocol.start();
 
-        doHandshake();
+        //doHandshake();
 
         if (logger != null) {
             logger.println("SSLSocketImpl.startHandshake: END");
@@ -591,13 +603,16 @@ public class SSLSocketImpl extends SSLSocket {
         socket_was_closed = true;
     }
 
+
+    private native byte needAppDataImpl(long ssl);
+
     /**
      * This method is called by SSLSocketInputStream class
      * when client application tryes to read application data from
      * the stream, but there is no data in its underlying buffer.
      * @throws  IOException
      */
-    protected void needAppData() throws IOException {
+    protected byte needAppData() throws IOException {
         if (!handshake_started) {
             startHandshake();
         }
@@ -605,7 +620,13 @@ public class SSLSocketImpl extends SSLSocket {
         if (logger != null) {
             logger.println("SSLSocket.needAppData..");
         }
-        try {
+
+        byte data = needAppDataImpl(SSL);
+        if (data == -1) {
+            appDataIS.setEnd();
+        }
+        return data;
+        /*try {
             while(appDataIS.available() == 0) {
                 // read and unwrap the record contained in the transport
                 // input stream (SSLStreamedInput), pass it
@@ -661,9 +682,11 @@ public class SSLSocketImpl extends SSLSocket {
         if (logger != null) {
             logger.println("SSLSocket.needAppData: app data len: "
                     + appDataIS.available());
-        }
+        }*/
     }
 
+
+    private native void writeAppDataImpl(long SSL, byte[] data, int offset, int len);
     /**
      * This method is called by SSLSocketOutputStream when client application
      * tryes to send the data over ssl protocol.
@@ -678,7 +701,9 @@ public class SSLSocketImpl extends SSLSocket {
                     len + " " + SSLRecordProtocol.MAX_DATA_LENGTH);
             //logger.println(new String(data, offset, len));
         }
-        try {
+
+        writeAppDataImpl(SSL, data, offset, len);
+        /*try {
             if (len < SSLRecordProtocol.MAX_DATA_LENGTH) {
                 output.write(recordProtocol.wrap(ContentType.APPLICATION_DATA,
                             data, offset, len));
@@ -699,7 +724,7 @@ public class SSLSocketImpl extends SSLSocket {
         } catch (AlertException e) {
             // will throw exception
             reportFatalAlert(e.getDescriptionCode(), e.getReason());
-        }
+        }*/
     }
 
     /*

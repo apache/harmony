@@ -34,7 +34,7 @@ import org.apache.harmony.luni.util.PriviAction;
  */
 public class Socket {
 
-    SocketImpl impl;
+    protected SocketImpl impl;
 
     static SocketImplFactory factory;
 

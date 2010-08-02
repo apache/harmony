@@ -159,7 +159,7 @@ public abstract class SocketImpl implements SocketOptions {
      * 
      * @return the file descriptor of this socket.
      */
-    protected FileDescriptor getFileDescriptor() {
+    public FileDescriptor getFileDescriptor() {
         return fd;
     }
 

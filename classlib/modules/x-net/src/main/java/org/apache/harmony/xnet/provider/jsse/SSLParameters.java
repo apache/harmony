@@ -23,8 +23,11 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
@@ -81,6 +84,15 @@ public class SSLParameters {
     // if the peer with this parameters allowed to cteate new SSL session
     private boolean enable_session_creation = true;
 
+    // Native address of the OpenSSL SSL_CTX struct
+    private static long SSL_CTX = 0;
+
+    static {
+        System.loadLibrary("hyjsse");
+    }
+
+    private static native long initialiseContext(byte[][] trustCerts, byte[] keyCert, byte[] privateKey);
+
     /**
      * Creates an instance of SSLParameters.
      */
@@ -113,7 +125,7 @@ public class SSLParameters {
                 if (defaultKeyManager == null) {
                     KeyManagerFactory kmf = KeyManagerFactory.getInstance(
                             KeyManagerFactory.getDefaultAlgorithm());
-                    kmf.init(null, null);            	
+                    kmf.init(null, null);
                     kms = kmf.getKeyManagers();
                     // tell that we are trying to initialize defaultKeyManager
                     initialize_default = true;
@@ -170,7 +182,7 @@ public class SSLParameters {
         } catch (KeyStoreException e) {
             throw new KeyManagementException(e);
         } catch (UnrecoverableKeyException e) {
-            throw new KeyManagementException(e);        	
+            throw new KeyManagementException(e);
         }
         // initialize secure random
         if (sr == null) {
@@ -181,6 +193,43 @@ public class SSLParameters {
         } else {
             secureRandom = sr;
         }
+
+        // Now setup our OpenSSL SSL_CTX with the various certificates
+        // First iterate through the trust certs storing their ASN1 form
+        X509Certificate[] acceptedIssuers = trustManager.getAcceptedIssuers();
+        int size = acceptedIssuers.length;
+        byte[][] tempCertsDER = new byte[size][];
+        for (int i=0; i<size; i++) {
+            try {
+                tempCertsDER[i] = acceptedIssuers[i].getEncoded();
+            } catch (CertificateEncodingException e) {
+                //TODO how to handle exceptions?
+                System.out.println("threw exception");
+            }
+        }
+
+        String alias = keyManager.chooseClientAlias(new String[] {"RSA", "DSA"}, null, null);
+        byte[] keyCertDER = null;
+        byte[] privateKeyDER = null;
+
+        if (alias != null) {
+            X509Certificate[] certs = keyManager.getCertificateChain(alias);
+            if (certs.length != 0) {
+                try {
+                    keyCertDER = certs[0].getEncoded();
+                } catch (CertificateEncodingException e) {
+                    //TODO how to handle exceptions?
+                    System.out.println("threw exception");
+                }
+            }
+    
+            PrivateKey privateKey = keyManager.getPrivateKey(alias);
+            if (privateKey != null) {
+                 privateKeyDER = keyManager.getPrivateKey(alias).getEncoded();
+            }
+        }
+
+        SSL_CTX = initialiseContext(tempCertsDER, keyCertDER, privateKeyDER);
     }
 
     protected static SSLParameters getDefault() throws KeyManagementException {
@@ -349,6 +398,10 @@ public class SSLParameters {
      */
     protected boolean getEnableSessionCreation() {
         return enable_session_creation;
+    }
+
+    protected long getSSLContextAddress() {
+        return SSL_CTX;
     }
 
     /**

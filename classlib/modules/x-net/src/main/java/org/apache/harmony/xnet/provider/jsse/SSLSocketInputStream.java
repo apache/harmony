@@ -113,9 +113,9 @@ public final class SSLSocketInputStream
             // If there is no data in the buffer
             // - will block untill the data will be provided by
             // record layer
-            owner.needAppData();
+            buffer[end++] = owner.needAppData();
         }
-        return buffer[pos++] & 0xFF;
+        return buffer[pos++];
     }
 
     /**
