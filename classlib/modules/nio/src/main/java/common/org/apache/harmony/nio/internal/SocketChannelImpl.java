@@ -746,7 +746,7 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
          */
         @Override
         public boolean isConnected() {
-            return channel.isConnected();
+            return super.isConnected() || channel.isConnected();
         }
 
         /**
