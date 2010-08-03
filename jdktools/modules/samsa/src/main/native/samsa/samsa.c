@@ -15,10 +15,6 @@
  *  limitations under the License.
  */
 
-#if defined(FREEBSD)
-#include <sys/param.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -95,8 +91,8 @@ typedef struct ToolData {
 } TOOLDATA;
 
 char     *cleanToolName(const char *);
-char     *getExeDir(const char*);
-char     *getRoot(const char*);
+char     *getExeDir();
+char     *getRoot();
 TOOLDATA *getToolData(const char *, const char *, int toolType);
 int getToolType(const char*, const char*);
 char* jarFile(const char*, const char*);
@@ -145,7 +141,7 @@ int main (int argc, char **argv, char **envp)
      *  and the full paths to jars.  This way, we can be called 
      *  from anywhere
      */    
-    root = getRoot(argv[0]);
+    root = getRoot();
 
 //    printf("root = %s\n", root);
     
@@ -437,14 +433,14 @@ char *cleanToolName(const char *name)
 }
 
 /******************************************************************
- *  getRoot(const char* argv0)
+ *  getRoot()
  * 
  *  returns the root (JDK or JRE) where this executable is located
  *  if it can figure it out or NULL if it can't
  */
-char *getRoot(const char* argv0) { 
+char *getRoot() { 
     
-    char *exeDir = getExeDir(argv0);
+    char *exeDir = getExeDir();
 
     char *last = strrchr(exeDir, PATH_SEPARATOR_CHAR);
     
@@ -457,27 +453,36 @@ char *getRoot(const char* argv0) {
 }
 
 /*****************************************************************
- * getExeDir(const char* argv0)
+ * getExeDir()
  * 
  *  returns directory of running exe
  */
-char *getExeDir(const char* argv0) {
+char *getExeDir() {
 
     char *last = NULL;
     
-#if defined(WIN32)
+#if defined(LINUX)
+    char buffer[PATH_MAX + 1];
+    
+    int size = readlink ("/proc/self/exe", buffer, sizeof(buffer)-2);
+    
+    buffer[size+1] = '\0';
+#elif defined(FREEBSD)
+    Dl_info info;
+    char buffer[PATH_MAX + 1];
+    if (dladdr( (const void*)&main, &info) == 0) {
+        return NULL;
+    }
+    strncpy(buffer, info.dli_fname, PATH_MAX);
+    buffer[PATH_MAX] = '\0';
+
+#elif defined(WIN32)
     char buffer[512];
     DWORD dwRet = GetModuleFileName(NULL, buffer, 512);
         
     // FIXME - handle this right - it could be that 512 isn't enough
 #else
-    char buffer[PATH_MAX + 1];
-
-    char *rc = realpath(argv0, buffer);
-    if (!rc) {
-      return NULL;
-    }
-    buffer[PATH_MAX] = '\0';
+#error Need to implement executable name code
 #endif
 
     last = strrchr(buffer, PATH_SEPARATOR_CHAR);
