@@ -80,8 +80,9 @@
 #endif
 
 #if defined(ZOS)
+/* zOS does not define PATH_MAX, so just set it to be _POSIX_PATH_MAX */
 #if !defined(PATH_MAX)
-#define PATH_MAX 1024
+#define PATH_MAX _POSIX_PATH_MAX
 #endif
 #endif
 
