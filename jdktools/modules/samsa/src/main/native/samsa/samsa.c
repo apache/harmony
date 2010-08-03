@@ -92,11 +92,14 @@ typedef struct ToolData {
 } TOOLDATA;
 
 char     *cleanToolName(const char *);
-char     *getExeDir();
-char     *getRoot();
+char     *getExeDir(const char*);
+char     *getRoot(const char*);
 TOOLDATA *getToolData(const char *, const char *, int toolType);
 int getToolType(const char*, const char*);
 char* jarFile(const char*, const char*);
+#if !defined(LINUX) && !defined(FREEBSD) && !defined(WIN32)
+char* findInPath(const char* basename);
+#endif
 
 /**
  *  main
@@ -142,7 +145,7 @@ int main (int argc, char **argv, char **envp)
      *  and the full paths to jars.  This way, we can be called 
      *  from anywhere
      */    
-    root = getRoot();
+    root = getRoot(argv[0]);
 
 //    printf("root = %s\n", root);
     
@@ -434,14 +437,14 @@ char *cleanToolName(const char *name)
 }
 
 /******************************************************************
- *  getRoot()
+ *  getRoot(const char* argv0)
  * 
  *  returns the root (JDK or JRE) where this executable is located
  *  if it can figure it out or NULL if it can't
  */
-char *getRoot() { 
+char *getRoot(const char* argv0) { 
     
-    char *exeDir = getExeDir();
+    char *exeDir = getExeDir(argv0);
 
     char *last = strrchr(exeDir, PATH_SEPARATOR_CHAR);
     
@@ -454,11 +457,11 @@ char *getRoot() {
 }
 
 /*****************************************************************
- * getExeDir()
+ * getExeDir(const char* argv0)
  * 
  *  returns directory of running exe
  */
-char *getExeDir() {
+char *getExeDir(const char* argv0) {
 
     char *last = NULL;
     
@@ -483,7 +486,27 @@ char *getExeDir() {
         
     // FIXME - handle this right - it could be that 512 isn't enough
 #else
-#error Need to implement executable name code
+    char buffer[PATH_MAX+1];
+    char *rc;
+    const char *exename;
+    rc = strchr(argv0, '/');
+    if (rc) {
+        /* is an absolute or relative path so just use that */
+        exename = argv0;
+    } else {
+        /* search in path */
+       exename = findInPath(argv0);
+       if (!exename) {
+           return NULL;
+       }
+    }
+    rc = realpath(exename, buffer);
+    if (exename != argv0) {
+        free((void*)exename);
+    }
+    if (!rc) {
+        return NULL;
+    }
 #endif
 
     last = strrchr(buffer, PATH_SEPARATOR_CHAR);
@@ -689,3 +712,52 @@ char* jarFile(const char* path, const char* jarName) {
     strcat(jarPath, jarName);
     return jarPath;
 }
+
+#if !defined(LINUX) && !defined(FREEBSD) && !defined(WIN32)
+char* findInPath(const char* basename)
+{
+  char filename[PATH_MAX+1];
+  char *path;
+  char *path_to_free;
+  char *path_end;
+
+  path = getenv("PATH");
+  if (!path) {
+    return NULL;
+  }
+  path_to_free = path = strdup(path);
+  if (!path) {
+    return NULL;
+  }
+  path_end = path + strlen(path);
+  while (path < path_end) {
+    int rc;
+    char *path_next;
+    char *sep = strchr(path, ':');
+    if (sep) {
+      *sep = '\0';
+      path_next = sep + 1;
+    } else {
+      path_next = path_end;
+    }
+    if (PATH_MAX < strlen(path) + strlen(basename) + 1) {
+      path = path_next;
+      continue;
+    }
+    strcpy(filename, path);
+    filename[strlen(path)] = '/';
+    filename[strlen(path)+1] = '\0';
+    strcat(filename, basename);
+    rc = access(filename, X_OK);
+    if (rc == 0) {
+      char *ret = strdup(filename);
+      free((void*)path_to_free);
+      return ret;
+    }
+    path = path_next;
+  }
+
+  free((void*)path_to_free);
+  return NULL;
+}
+#endif
