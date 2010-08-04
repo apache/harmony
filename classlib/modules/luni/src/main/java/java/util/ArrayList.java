@@ -78,6 +78,10 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         firstIndex = 0;
         Object[] objects = collection.toArray();
         int size = objects.length;
+
+        // REVIEW: Created 2 array copies of the original collection here
+        //         Could be better to use the collection iterator and
+        //         copy once?
         array = newElementArray(size + (size / 10));
         System.arraycopy(objects, 0, array, 0, size);
         lastIndex = size;
@@ -113,11 +117,15 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                             Integer.valueOf(size)));
         }
         if (location == 0) {
+            // REVIEW: Does growAtFront() check the end to see if
+            //         shifting the array is possible? Same for
+            //         growAtEnd().
             if (firstIndex == 0) {
                 growAtFront(1);
             }
             array[--firstIndex] = object;
         } else if (location == size) {
+            // REVIEW: Why not just call add()? Matching RI behaviour?
             if (lastIndex == array.length) {
                 growAtEnd(1);
             }
@@ -127,6 +135,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 growForInsert(location, 1);
             } else if ((location < size / 2 && firstIndex > 0)
                     || lastIndex == array.length) {
+                // REVIEW: Why not evaluate (lastIndex==array.length)
+                //         first to save the divide?
                 System.arraycopy(array, firstIndex, array, --firstIndex,
                         location);
             } else {
@@ -175,6 +185,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     @Override
     public boolean addAll(int location, Collection<? extends E> collection) {
         int size = lastIndex - firstIndex;
+        // REVIEW: Inconsistent exception case with
+        //         add(location,object) method
         if (location < 0 || location > size) {
             throw new IndexOutOfBoundsException(
                     // luni.0A=Index: {0}, Size: {1}
@@ -182,29 +194,40 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                             Integer.valueOf(location),
                             Integer.valueOf(size)));
         }
-        if (this == collection) {
-            collection = (ArrayList)clone();
-        }
+
         Object[] dumparray = collection.toArray();
         int growSize = dumparray.length;
+        // REVIEW: Why do this check here rather than check
+        //         collection.size() earlier? RI behaviour?
         if (growSize == 0) {
             return false;
         }
 
+        // REVIEW: we use array.length - growSize in 3 places -
+        //         precalculate it?
         if (location == 0) {
             growAtFront(growSize);
             firstIndex -= growSize;
         } else if (location == size) {
+            // REVIEW: Don't need the above check as it can be no
+            //         other case. Make it just an else.
             if (lastIndex > array.length - growSize) {
                 growAtEnd(growSize);
             }
             lastIndex += growSize;
         } else { // must be case: (0 < location && location < size)
             if (array.length - size < growSize) {
+                // REVIEW: why grow growSize? Does growForInsert()
+                //         check we don't allocate too much?
                 growForInsert(location, growSize);
             } else if ((location < size / 2 && firstIndex > 0)
                     || lastIndex > array.length - growSize) {
+                // REVIEW: If condition above could be switched so
+                //         divide is done 2nd, same as add()
                 int newFirst = firstIndex - growSize;
+                // REVIEW: Have we optimised for the case where there
+                //         is enough space at the end for growSize
+                //         rather than doing 2 array copies?
                 if (newFirst < 0) {
                     int index = location + firstIndex;
                     System.arraycopy(array, index, array, index - newFirst,
@@ -260,7 +283,12 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     @Override
     public void clear() {
         if (firstIndex != lastIndex) {
+            // REVIEW: Should we use Arrays.fill() instead of just
+            //         allocating a new array?  Should we use the same
+            //         sized array?
             Arrays.fill(array, firstIndex, lastIndex, null);
+            // REVIEW: Should the indexes point into the middle of the
+            //         array rather than 0?
             firstIndex = lastIndex = 0;
             modCount++;
         }
@@ -320,6 +348,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     public void ensureCapacity(int minimumCapacity) {
         if (array.length < minimumCapacity) {
+            // REVIEW: Why do we check the firstIndex first? Growing
+            //         the end makes more sense
             if (firstIndex > 0) {
                 growAtFront(minimumCapacity - array.length);
             } else {
@@ -344,7 +374,11 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     private void growAtEnd(int required) {
         int size = lastIndex - firstIndex;
         if (firstIndex >= required - (array.length - lastIndex)) {
+            // REVIEW: Should use size! We don't seem to need newLast
+            //         - just use size calculated above
             int newLast = lastIndex - firstIndex;
+            // REVIEW: Why not just a !=0 check here? And size cannot
+            //         be 0 unless required is 0, which does not happen
             if (size > 0) {
                 System.arraycopy(array, firstIndex, array, 0, size);
                 int start = newLast < firstIndex ? firstIndex : newLast;
@@ -353,6 +387,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             firstIndex = 0;
             lastIndex = newLast;
         } else {
+            // REVIEW: If size is 0?
+            //         Does size/2 seems a little high!
             int increment = size / 2;
             if (required > increment) {
                 increment = required;
@@ -361,6 +397,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 increment = 12;
             }
             E[] newArray = newElementArray(size + increment);
+            // REVIEW: Just check size !=0? same as earlier check -
+            //         can be pulled out to earlier in the method?
             if (size > 0) {
                 System.arraycopy(array, firstIndex, newArray, 0, size);
                 firstIndex = 0;
@@ -372,10 +410,15 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     private void growAtFront(int required) {
         int size = lastIndex - firstIndex;
+        // REVIEW: replace lastIndex - firstIndex with size ... in all
+        //         methods that have it
         if (array.length - lastIndex + firstIndex >= required) {
             int newFirst = array.length - size;
+            // REVIEW: as growAtEnd, why not move size == 0 out as
+            //         special case
             if (size > 0) {
                 System.arraycopy(array, firstIndex, array, newFirst, size);
+                // REVIEW: firstIndex + size == lastIndex ??
                 int length = firstIndex + size > newFirst ? newFirst
                         : firstIndex + size;
                 Arrays.fill(array, firstIndex, length, null);
@@ -402,6 +445,9 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     }
 
     private void growForInsert(int location, int required) {
+        // REVIEW: we grow too quickly because we are called with the
+        //         size of the new collection to add without taking in
+        //         to account the free space we already have
         int size = lastIndex - firstIndex;
         int increment = size / 2;
         if (required > increment) {
@@ -411,6 +457,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             increment = 12;
         }
         E[] newArray = newElementArray(size + increment);
+        // REVIEW: biased towards leaving space at the beginning?
+        //         perhaps newFirst should be (increment-required)/2?
         int newFirst = increment - required;
         // Copy elements after location to the new array skipping inserted
         // elements
@@ -426,6 +474,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     @Override
     public int indexOf(Object object) {
+        // REVIEW: should contains call this method?
         if (object != null) {
             for (int i = firstIndex; i < lastIndex; i++) {
                 if (object.equals(array[i])) {
@@ -489,6 +538,9 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             result = array[--lastIndex];
             array[lastIndex] = null;
         } else if (location == 0) {
+            // REVIEW: this if test is simpler why isn't it first?
+            //         (this moved up one place during the exception
+            //         change but it still probably should move up one more)
             result = array[firstIndex];
             array[firstIndex++] = null;
         } else {
@@ -504,6 +556,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 array[--lastIndex] = null;
             }
         }
+        // REVIEW: we can move this to the first if case since it
+        //         can only occur when size==1
         if (firstIndex == lastIndex) {
             firstIndex = lastIndex = 0;
         }
@@ -535,13 +589,16 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     protected void removeRange(int start, int end) {
+        // REVIEW: does RI call this from remove(location)
         int size = lastIndex - firstIndex;
         if (start < 0) {
+            // REVIEW: message should indicate which index is out of range
             throw new IndexOutOfBoundsException(
                     // luni.0B=Array index out of range: {0}
                     Messages.getString("luni.0B", //$NON-NLS-1$
                                        Integer.valueOf(start)));
         } else if (end > size) {
+            // REVIEW: message should indicate which index is out of range
             throw new IndexOutOfBoundsException(
                     // luni.0A=Index: {0}, Size: {1}
                     Messages.getString("luni.0A", //$NON-NLS-1$
@@ -563,6 +620,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             Arrays.fill(array, firstIndex, firstIndex + end, null);
             firstIndex += end;
         } else {
+            // REVIEW: should this optimize to do the smallest copy?
             System.arraycopy(array, firstIndex + end, array, firstIndex
                              + start, size - end);
             int newLast = lastIndex + start - end;
@@ -606,6 +664,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public int size() {
+        // REVIEW: We should track firstIndex and size rather than lastIndex
         return lastIndex - firstIndex;
     }
 
@@ -648,6 +707,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         }
         System.arraycopy(array, firstIndex, contents, 0, size);
         if (size < contents.length) {
+            // REVIEW: do we use this incorrectly - i.e. do we null
+            //         the rest out?
             contents[size] = null;
         }
         return contents;
