@@ -103,7 +103,7 @@ public final class Main {
         sb.append(File.pathSeparator);
         sb.append(System.getProperty("sun.boot.class.path", ".")); //$NON-NLS-1$ //$NON-NLS-2$
         sb.append(File.pathSeparator);
-        sb.append("."); //$NON-NLS-1$
+        sb.append('.');
         result[args.length + 1] = sb.toString();
         result[args.length + 2] = "-1.5"; //$NON-NLS-1$
         return result;
