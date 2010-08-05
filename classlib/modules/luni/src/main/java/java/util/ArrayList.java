@@ -373,6 +373,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     private void growAtEnd(int required) {
         int lastIndex = firstIndex + size;
+        // REVIEW: Isn't this next condition just:
+        //         required < array.length - size ?
         if (firstIndex >= required - (array.length - lastIndex)) {
             // REVIEW: Should use size! We don't seem to need newLast
             //         - just use size calculated above
@@ -382,6 +384,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             if (size > 0) {
                 System.arraycopy(array, firstIndex, array, 0, size);
                 int start = newLast < firstIndex ? firstIndex : newLast;
+                // REVIEW: I think we null too much
+                //         array.length should be lastIndex ?
                 Arrays.fill(array, start, array.length, null);
             }
             firstIndex = 0;
