@@ -73,9 +73,6 @@
         <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/pack200${exe.suffix}" />
         <chmod file="${hy.jdk}/bin/pack200${exe.suffix}" perm="ugo+x" />
 
-        <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/policytool${exe.suffix}" />
-        <chmod file="${hy.jdk}/bin/policytool${exe.suffix}" perm="ugo+x" />
-
         <copy file="${hy.samsa.exe}" tofile="${hy.jdk}/bin/jar${exe.suffix}" />
         <chmod file="${hy.jdk}/bin/jar${exe.suffix}" perm="ugo+x" />
 
@@ -116,6 +113,10 @@
     	<copy file="${hy.samsa.exe}"
               tofile="${hy.jre}/bin/policytool${exe.suffix}" />
         <chmod file="${hy.jre}/bin/policytool${exe.suffix}" perm="ugo+x" />
+
+        <copy file="${hy.samsa.exe}"
+              tofile="${hy.jdk}/bin/policytool${exe.suffix}" />
+        <chmod file="${hy.jdk}/bin/policytool${exe.suffix}" perm="ugo+x" />
 
     </target>
 
