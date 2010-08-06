@@ -69,7 +69,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     /**
      * Constructs a new instance of {@code ArrayList} containing the elements of
      * the specified collection. The initial size of the {@code ArrayList} will
-     * be 10% higher than the size of the specified collection.
+     * be 10% larger than the size of the specified collection.
      * 
      * @param collection
      *            the collection of elements to add.
