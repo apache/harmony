@@ -416,6 +416,7 @@ class DatagramChannelImpl extends DatagramChannel implements
                 }
             }
             source.position(oldposition + sendCount);
+            isBound = true;
             return sendCount;
         } finally {
             end(sendCount >= 0);
