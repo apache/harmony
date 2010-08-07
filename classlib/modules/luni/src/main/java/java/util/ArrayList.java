@@ -105,7 +105,24 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     @Override
     public void add(int location, E object) {
         int size = lastIndex - firstIndex;
-        if (0 < location && location < size) {
+        if (location < 0 || location > size) {
+            throw new IndexOutOfBoundsException(
+                    // luni.0A=Index: {0}, Size: {1}
+                    Messages.getString("luni.0A", //$NON-NLS-1$
+                            Integer.valueOf(location),
+                            Integer.valueOf(size)));
+        }
+        if (location == 0) {
+            if (firstIndex == 0) {
+                growAtFront(1);
+            }
+            array[--firstIndex] = object;
+        } else if (location == size) {
+            if (lastIndex == array.length) {
+                growAtEnd(1);
+            }
+            array[lastIndex++] = object;
+        } else { // must be case: (0 < location && location < size)
             if (firstIndex == 0 && lastIndex == array.length) {
                 growForInsert(location, 1);
             } else if ((location < size / 2 && firstIndex > 0)
@@ -119,22 +136,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 lastIndex++;
             }
             array[location + firstIndex] = object;
-        } else if (location == 0) {
-            if (firstIndex == 0) {
-                growAtFront(1);
-            }
-            array[--firstIndex] = object;
-        } else if (location == size) {
-            if (lastIndex == array.length) {
-                growAtEnd(1);
-            }
-            array[lastIndex++] = object;
-        } else {
-            throw new IndexOutOfBoundsException(
-                    // luni.0A=Index: {0}, Size: {1}
-                    Messages.getString("luni.0A", //$NON-NLS-1$
-                            Integer.valueOf(location),
-                            Integer.valueOf(lastIndex - firstIndex)));
         }
 
         modCount++;
@@ -179,7 +180,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                     // luni.0A=Index: {0}, Size: {1}
                     Messages.getString("luni.0A", //$NON-NLS-1$
                             Integer.valueOf(location),
-                            Integer.valueOf(lastIndex - firstIndex)));
+                            Integer.valueOf(size)));
         }
         if (this == collection) {
             collection = (ArrayList)clone();
@@ -190,7 +191,15 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             return false;
         }
 
-        if (0 < location && location < size) {
+        if (location == 0) {
+            growAtFront(growSize);
+            firstIndex -= growSize;
+        } else if (location == size) {
+            if (lastIndex > array.length - growSize) {
+                growAtEnd(growSize);
+            }
+            lastIndex += growSize;
+        } else { // must be case: (0 < location && location < size)
             if (array.length - size < growSize) {
                 growForInsert(location, growSize);
             } else if ((location < size / 2 && firstIndex > 0)
@@ -211,14 +220,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                         - location);
                 lastIndex += growSize;
             }
-        } else if (location == 0) {
-            growAtFront(growSize);
-            firstIndex -= growSize;
-        } else if (location == size) {
-            if (lastIndex > array.length - growSize) {
-                growAtEnd(growSize);
-            }
-            lastIndex += growSize;
         }
 
         System.arraycopy(dumparray, 0, this.array, location + firstIndex,
@@ -329,14 +330,15 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     @Override
     public E get(int location) {
-        if (0 <= location && location < (lastIndex - firstIndex)) {
-            return array[firstIndex + location];
-        }
-        throw new IndexOutOfBoundsException(
+        int size = lastIndex - firstIndex;
+        if (location < 0 || location >= size) {
+            throw new IndexOutOfBoundsException(
                 // luni.0A=Index: {0}, Size: {1}
                 Messages.getString("luni.0A", //$NON-NLS-1$
                         Integer.valueOf(location),
-                        Integer.valueOf(lastIndex - firstIndex)));
+                        Integer.valueOf(size)));
+        }
+        return array[firstIndex + location];
     }
 
     private void growAtEnd(int required) {
@@ -476,35 +478,34 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     public E remove(int location) {
         E result;
         int size = lastIndex - firstIndex;
-        if (0 <= location && location < size) {
-            if (location == size - 1) {
-                result = array[--lastIndex];
-                array[lastIndex] = null;
-            } else if (location == 0) {
-                result = array[firstIndex];
-                array[firstIndex++] = null;
-            } else {
-                int elementIndex = firstIndex + location;
-                result = array[elementIndex];
-                if (location < size / 2) {
-                    System.arraycopy(array, firstIndex, array, firstIndex + 1,
-                            location);
-                    array[firstIndex++] = null;
-                } else {
-                    System.arraycopy(array, elementIndex + 1, array,
-                            elementIndex, size - location - 1);
-                    array[--lastIndex] = null;
-                }
-            }
-            if (firstIndex == lastIndex) {
-                firstIndex = lastIndex = 0;
-            }
-        } else {
+        if (location < 0 || location >= size) {
             throw new IndexOutOfBoundsException(
                     // luni.0A=Index: {0}, Size: {1}
                     Messages.getString("luni.0A", //$NON-NLS-1$
                             Integer.valueOf(location),
-                            Integer.valueOf(lastIndex - firstIndex)));
+                            Integer.valueOf(size)));
+        }
+        if (location == size - 1) {
+            result = array[--lastIndex];
+            array[lastIndex] = null;
+        } else if (location == 0) {
+            result = array[firstIndex];
+            array[firstIndex++] = null;
+        } else {
+            int elementIndex = firstIndex + location;
+            result = array[elementIndex];
+            if (location < size / 2) {
+                System.arraycopy(array, firstIndex, array, firstIndex + 1,
+                                 location);
+                array[firstIndex++] = null;
+            } else {
+                System.arraycopy(array, elementIndex + 1, array,
+                                 elementIndex, size - location - 1);
+                array[--lastIndex] = null;
+            }
+        }
+        if (firstIndex == lastIndex) {
+            firstIndex = lastIndex = 0;
         }
 
         modCount++;
@@ -534,31 +535,41 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     protected void removeRange(int start, int end) {
-        if (start >= 0 && start <= end && end <= (lastIndex - firstIndex)) {
-            if (start == end) {
-                return;
-            }
-            int size = lastIndex - firstIndex;
-            if (end == size) {
-                Arrays.fill(array, firstIndex + start, lastIndex, null);
-                lastIndex = firstIndex + start;
-            } else if (start == 0) {
-                Arrays.fill(array, firstIndex, firstIndex + end, null);
-                firstIndex += end;
-            } else {
-                System.arraycopy(array, firstIndex + end, array, firstIndex
-                        + start, size - end);
-                int newLast = lastIndex + start - end;
-                Arrays.fill(array, newLast, lastIndex, null);
-                lastIndex = newLast;
-            }
-            modCount++;
-        } else {
+        int size = lastIndex - firstIndex;
+        if (start < 0) {
             throw new IndexOutOfBoundsException(
                     // luni.0B=Array index out of range: {0}
                     Messages.getString("luni.0B", //$NON-NLS-1$
-                            lastIndex - firstIndex - end));
+                                       Integer.valueOf(start)));
+        } else if (end > size) {
+            throw new IndexOutOfBoundsException(
+                    // luni.0A=Index: {0}, Size: {1}
+                    Messages.getString("luni.0A", //$NON-NLS-1$
+                               Integer.valueOf(end), Integer.valueOf(size)));
+        } else if (start > end) {
+            throw new IndexOutOfBoundsException(
+                    // luni.35=Start index ({0}) is greater than end index ({1})
+                    Messages.getString("luni.35", //$NON-NLS-1$
+                               Integer.valueOf(start), Integer.valueOf(end)));
         }
+
+        if (start == end) {
+            return;
+        }
+        if (end == size) {
+            Arrays.fill(array, firstIndex + start, lastIndex, null);
+            lastIndex = firstIndex + start;
+        } else if (start == 0) {
+            Arrays.fill(array, firstIndex, firstIndex + end, null);
+            firstIndex += end;
+        } else {
+            System.arraycopy(array, firstIndex + end, array, firstIndex
+                             + start, size - end);
+            int newLast = lastIndex + start - end;
+            Arrays.fill(array, newLast, lastIndex, null);
+            lastIndex = newLast;
+        }
+        modCount++;
     }
 
     /**
@@ -575,16 +586,17 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public E set(int location, E object) {
-        if (0 <= location && location < (lastIndex - firstIndex)) {
-            E result = array[firstIndex + location];
-            array[firstIndex + location] = object;
-            return result;
+        int size = lastIndex - firstIndex;
+        if (location < 0 || location >= size) {
+            throw new IndexOutOfBoundsException(
+                    // luni.0A=Index: {0}, Size: {1}
+                    Messages.getString("luni.0A", //$NON-NLS-1$
+                            Integer.valueOf(location),
+                            Integer.valueOf(size)));
         }
-        throw new IndexOutOfBoundsException(
-                // luni.0A=Index: {0}, Size: {1}
-                Messages.getString("luni.0A", //$NON-NLS-1$
-                        Integer.valueOf(location),
-                        Integer.valueOf(lastIndex - firstIndex)));
+        E result = array[firstIndex + location];
+        array[firstIndex + location] = object;
+        return result;
     }
 
     /**
