@@ -40,7 +40,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     private transient int firstIndex;
 
-    private transient int lastIndex;
+    private transient int size;
 
     private transient E[] array;
 
@@ -62,7 +62,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         if (capacity < 0) {
             throw new IllegalArgumentException();
         }
-        firstIndex = lastIndex = 0;
+        firstIndex = size = 0;
         array = newElementArray(capacity);
     }
 
@@ -77,14 +77,13 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     public ArrayList(Collection<? extends E> collection) {
         firstIndex = 0;
         Object[] objects = collection.toArray();
-        int size = objects.length;
+        size = objects.length;
 
         // REVIEW: Created 2 array copies of the original collection here
         //         Could be better to use the collection iterator and
         //         copy once?
         array = newElementArray(size + (size / 10));
         System.arraycopy(objects, 0, array, 0, size);
-        lastIndex = size;
         modCount = 1;
     }
 
@@ -108,7 +107,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public void add(int location, E object) {
-        int size = lastIndex - firstIndex;
         if (location < 0 || location > size) {
             throw new IndexOutOfBoundsException(
                     // luni.0A=Index: {0}, Size: {1}
@@ -126,15 +124,15 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             array[--firstIndex] = object;
         } else if (location == size) {
             // REVIEW: Why not just call add()? Matching RI behaviour?
-            if (lastIndex == array.length) {
+            if (firstIndex + size == array.length) {
                 growAtEnd(1);
             }
-            array[lastIndex++] = object;
+            array[firstIndex + size] = object;
         } else { // must be case: (0 < location && location < size)
-            if (firstIndex == 0 && lastIndex == array.length) {
+            if (firstIndex == 0 && size == array.length) {
                 growForInsert(location, 1);
             } else if ((location < size / 2 && firstIndex > 0)
-                    || lastIndex == array.length) {
+                    || firstIndex + size == array.length) {
                 // REVIEW: Why not evaluate (lastIndex==array.length)
                 //         first to save the divide?
                 System.arraycopy(array, firstIndex, array, --firstIndex,
@@ -143,11 +141,11 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 int index = location + firstIndex;
                 System.arraycopy(array, index, array, index + 1, size
                         - location);
-                lastIndex++;
             }
             array[location + firstIndex] = object;
         }
 
+        size++;
         modCount++;
     }
 
@@ -160,10 +158,11 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public boolean add(E object) {
-        if (lastIndex == array.length) {
+        if (firstIndex + size == array.length) {
             growAtEnd(1);
         }
-        array[lastIndex++] = object;
+        array[firstIndex + size] = object;
+        size++;
         modCount++;
         return true;
     }
@@ -184,7 +183,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public boolean addAll(int location, Collection<? extends E> collection) {
-        int size = lastIndex - firstIndex;
         // REVIEW: Inconsistent exception case with
         //         add(location,object) method
         if (location < 0 || location > size) {
@@ -211,17 +209,16 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         } else if (location == size) {
             // REVIEW: Don't need the above check as it can be no
             //         other case. Make it just an else.
-            if (lastIndex > array.length - growSize) {
+            if (firstIndex + size > array.length - growSize) {
                 growAtEnd(growSize);
             }
-            lastIndex += growSize;
         } else { // must be case: (0 < location && location < size)
             if (array.length - size < growSize) {
                 // REVIEW: why grow growSize? Does growForInsert()
                 //         check we don't allocate too much?
                 growForInsert(location, growSize);
             } else if ((location < size / 2 && firstIndex > 0)
-                    || lastIndex > array.length - growSize) {
+                    || firstIndex + size > array.length - growSize) {
                 // REVIEW: If condition above could be switched so
                 //         divide is done 2nd, same as add()
                 int newFirst = firstIndex - growSize;
@@ -232,7 +229,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                     int index = location + firstIndex;
                     System.arraycopy(array, index, array, index - newFirst,
                             size - location);
-                    lastIndex -= newFirst;
                     newFirst = 0;
                 }
                 System.arraycopy(array, firstIndex, array, newFirst, location);
@@ -241,12 +237,12 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 int index = location + firstIndex;
                 System.arraycopy(array, index, array, index + growSize, size
                         - location);
-                lastIndex += growSize;
             }
         }
 
         System.arraycopy(dumparray, 0, this.array, location + firstIndex,
                 growSize);
+        size += growSize;
         modCount++;
         return true;
     }
@@ -265,11 +261,14 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         if (dumpArray.length == 0) {
             return false;
         }
-        if (dumpArray.length > array.length - lastIndex) {
+        if (dumpArray.length > array.length - (firstIndex + size)) {
+            // REVIEW: why grow dumpArray.length rather than
+            //         dumpArray.length - free space?
             growAtEnd(dumpArray.length);
         }
-        System.arraycopy(dumpArray, 0, this.array, lastIndex, dumpArray.length);
-        lastIndex += dumpArray.length;
+        System.arraycopy(dumpArray, 0, this.array, firstIndex + size,
+                         dumpArray.length);
+        size += dumpArray.length;
         modCount++;
         return true;
     }
@@ -282,14 +281,14 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public void clear() {
-        if (firstIndex != lastIndex) {
+        if (size != 0) {
             // REVIEW: Should we use Arrays.fill() instead of just
             //         allocating a new array?  Should we use the same
             //         sized array?
-            Arrays.fill(array, firstIndex, lastIndex, null);
+            Arrays.fill(array, firstIndex, firstIndex + size, null);
             // REVIEW: Should the indexes point into the middle of the
             //         array rather than 0?
-            firstIndex = lastIndex = 0;
+            firstIndex = size = 0;
             modCount++;
         }
     }
@@ -323,6 +322,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public boolean contains(Object object) {
+        int lastIndex = firstIndex + size;
         if (object != null) {
             for (int i = firstIndex; i < lastIndex; i++) {
                 if (object.equals(array[i])) {
@@ -347,20 +347,20 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      *            the minimum capacity asked for.
      */
     public void ensureCapacity(int minimumCapacity) {
-        if (array.length < minimumCapacity) {
+        int required = minimumCapacity - array.length;
+        if (required > 0) {
             // REVIEW: Why do we check the firstIndex first? Growing
             //         the end makes more sense
             if (firstIndex > 0) {
-                growAtFront(minimumCapacity - array.length);
+                growAtFront(required);
             } else {
-                growAtEnd(minimumCapacity - array.length);
+                growAtEnd(required);
             }
         }
     }
 
     @Override
     public E get(int location) {
-        int size = lastIndex - firstIndex;
         if (location < 0 || location >= size) {
             throw new IndexOutOfBoundsException(
                 // luni.0A=Index: {0}, Size: {1}
@@ -372,7 +372,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     }
 
     private void growAtEnd(int required) {
-        int size = lastIndex - firstIndex;
+        int lastIndex = firstIndex + size;
         if (firstIndex >= required - (array.length - lastIndex)) {
             // REVIEW: Should use size! We don't seem to need newLast
             //         - just use size calculated above
@@ -385,7 +385,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                 Arrays.fill(array, start, array.length, null);
             }
             firstIndex = 0;
-            lastIndex = newLast;
         } else {
             // REVIEW: If size is 0?
             //         Does size/2 seems a little high!
@@ -402,29 +401,23 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             if (size > 0) {
                 System.arraycopy(array, firstIndex, newArray, 0, size);
                 firstIndex = 0;
-                lastIndex = size;
             }
             array = newArray;
         }
     }
 
     private void growAtFront(int required) {
-        int size = lastIndex - firstIndex;
-        // REVIEW: replace lastIndex - firstIndex with size ... in all
-        //         methods that have it
-        if (array.length - lastIndex + firstIndex >= required) {
+        if (array.length - size >= required) {
             int newFirst = array.length - size;
             // REVIEW: as growAtEnd, why not move size == 0 out as
             //         special case
             if (size > 0) {
                 System.arraycopy(array, firstIndex, array, newFirst, size);
-                // REVIEW: firstIndex + size == lastIndex ??
                 int length = firstIndex + size > newFirst ? newFirst
                         : firstIndex + size;
                 Arrays.fill(array, firstIndex, length, null);
             }
             firstIndex = newFirst;
-            lastIndex = array.length;
         } else {
             int increment = size / 2;
             if (required > increment) {
@@ -439,7 +432,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                         - size, size);
             }
             firstIndex = newArray.length - size;
-            lastIndex = newArray.length;
             array = newArray;
         }
     }
@@ -448,7 +440,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         // REVIEW: we grow too quickly because we are called with the
         //         size of the new collection to add without taking in
         //         to account the free space we already have
-        int size = lastIndex - firstIndex;
         int increment = size / 2;
         if (required > increment) {
             increment = required;
@@ -467,14 +458,13 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         // Copy elements before location to the new array from firstIndex
         System.arraycopy(array, firstIndex, newArray, newFirst, location);
         firstIndex = newFirst;
-        lastIndex = size + increment;
-
         array = newArray;
     }
 
     @Override
     public int indexOf(Object object) {
         // REVIEW: should contains call this method?
+        int lastIndex = firstIndex + size;
         if (object != null) {
             for (int i = firstIndex; i < lastIndex; i++) {
                 if (object.equals(array[i])) {
@@ -493,11 +483,12 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     @Override
     public boolean isEmpty() {
-        return lastIndex == firstIndex;
+        return size == 0;
     }
 
     @Override
     public int lastIndexOf(Object object) {
+        int lastIndex = firstIndex + size;
         if (object != null) {
             for (int i = lastIndex - 1; i >= firstIndex; i--) {
                 if (object.equals(array[i])) {
@@ -526,7 +517,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     @Override
     public E remove(int location) {
         E result;
-        int size = lastIndex - firstIndex;
         if (location < 0 || location >= size) {
             throw new IndexOutOfBoundsException(
                     // luni.0A=Index: {0}, Size: {1}
@@ -535,7 +525,8 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                             Integer.valueOf(size)));
         }
         if (location == size - 1) {
-            result = array[--lastIndex];
+            int lastIndex = firstIndex + size - 1;
+            result = array[lastIndex];
             array[lastIndex] = null;
         } else if (location == 0) {
             // REVIEW: this if test is simpler why isn't it first?
@@ -553,13 +544,15 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             } else {
                 System.arraycopy(array, elementIndex + 1, array,
                                  elementIndex, size - location - 1);
-                array[--lastIndex] = null;
+                array[firstIndex+size-1] = null;
             }
         }
         // REVIEW: we can move this to the first if case since it
         //         can only occur when size==1
-        if (firstIndex == lastIndex) {
-            firstIndex = lastIndex = 0;
+        size--;
+
+        if (size == 0) {
+            firstIndex = 0;
         }
 
         modCount++;
@@ -590,7 +583,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     @Override
     protected void removeRange(int start, int end) {
         // REVIEW: does RI call this from remove(location)
-        int size = lastIndex - firstIndex;
         if (start < 0) {
             // REVIEW: message should indicate which index is out of range
             throw new IndexOutOfBoundsException(
@@ -614,8 +606,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             return;
         }
         if (end == size) {
-            Arrays.fill(array, firstIndex + start, lastIndex, null);
-            lastIndex = firstIndex + start;
+            Arrays.fill(array, firstIndex + start, firstIndex + size, null);
         } else if (start == 0) {
             Arrays.fill(array, firstIndex, firstIndex + end, null);
             firstIndex += end;
@@ -623,10 +614,11 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             // REVIEW: should this optimize to do the smallest copy?
             System.arraycopy(array, firstIndex + end, array, firstIndex
                              + start, size - end);
+            int lastIndex = firstIndex + size;
             int newLast = lastIndex + start - end;
             Arrays.fill(array, newLast, lastIndex, null);
-            lastIndex = newLast;
         }
+        size -= end - start;
         modCount++;
     }
 
@@ -644,7 +636,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public E set(int location, E object) {
-        int size = lastIndex - firstIndex;
         if (location < 0 || location >= size) {
             throw new IndexOutOfBoundsException(
                     // luni.0A=Index: {0}, Size: {1}
@@ -664,8 +655,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public int size() {
-        // REVIEW: We should track firstIndex and size rather than lastIndex
-        return lastIndex - firstIndex;
+        return size;
     }
 
     /**
@@ -676,7 +666,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      */
     @Override
     public Object[] toArray() {
-        int size = lastIndex - firstIndex;
         Object[] result = new Object[size];
         System.arraycopy(array, firstIndex, result, 0, size);
         return result;
@@ -700,7 +689,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     @Override
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] contents) {
-        int size = lastIndex - firstIndex;
         if (size > contents.length) {
             Class<?> ct = contents.getClass().getComponentType();
             contents = (T[]) Array.newInstance(ct, size);
@@ -721,12 +709,11 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      * @see #size
      */
     public void trimToSize() {
-        int size = lastIndex - firstIndex;
         E[] newArray = newElementArray(size);
         System.arraycopy(array, firstIndex, newArray, 0, size);
         array = newArray;
         firstIndex = 0;
-        lastIndex = array.length;
+        size = array.length;
         modCount = 0;
     }
 
@@ -735,7 +722,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
         ObjectOutputStream.PutField fields = stream.putFields();
-        fields.put("size", lastIndex - firstIndex); //$NON-NLS-1$
+        fields.put("size", size); //$NON-NLS-1$
         stream.writeFields();
         stream.writeInt(array.length);
         Iterator<?> it = iterator();
@@ -748,9 +735,9 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
     private void readObject(ObjectInputStream stream) throws IOException,
             ClassNotFoundException {
         ObjectInputStream.GetField fields = stream.readFields();
-        lastIndex = fields.get("size", 0); //$NON-NLS-1$
+        size = fields.get("size", 0); //$NON-NLS-1$
         array = newElementArray(stream.readInt());
-        for (int i = 0; i < lastIndex; i++) {
+        for (int i = 0; i < size; i++) {
             array[i] = (E) stream.readObject();
         }
     }
