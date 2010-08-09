@@ -14,28 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-#include <jni.h>
 
-#ifndef _SERVERSOCKET_H
-#define _SERVERSOCKET_H
+#include "openssl/rand.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef _RAND_H
+#define _RAND_H
 
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_initImpl
-  (JNIEnv *, jclass, jlong);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
-  (JNIEnv *, jclass, jlong, jobject);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
-  (JNIEnv *, jclass, jlong, jobject);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_writeAppDataImpl
-  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint);
-JNIEXPORT jbyte JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_needAppDataImpl
-  (JNIEnv *, jclass, jlong);
-
-#ifdef __cplusplus
-}
-#endif
+RAND_METHOD *getRandMethod();
 
 #endif

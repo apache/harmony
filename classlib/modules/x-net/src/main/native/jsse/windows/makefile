@@ -28,7 +28,8 @@ HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB) /I$(OPENSSL_DIST)include
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-  $(SHAREDSUB)jsse_copyright.obj $(SHAREDSUB)sslParameters.obj $(SHAREDSUB)sslSocket.obj
+  $(SHAREDSUB)jsse_copyright.obj $(SHAREDSUB)sslParameters.obj $(SHAREDSUB)sslSocket.obj \
+  $(SHAREDSUB)jsse_rand.obj
 
 VIRTFILES = hyjsse.res
 

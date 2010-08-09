@@ -58,16 +58,18 @@ jlong getFD(JNIEnv * env, jobject fd) {
 #endif
 }
 
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_initImpl
+  (JNIEnv *env, jclass clazz, jlong context) {
+    return (jlong)SSL_new((SSL_CTX*)context);
+}
 
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
-  (JNIEnv *env, jclass clazz, jlong context, jobject fd) {
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
+  (JNIEnv *env, jclass clazz, jlong jssl, jobject fd) {
     jlong socket = getFD(env, fd);
-    SSL *ssl;
+    SSL *ssl = (SSL*)jssl;
     BIO *bio;
     int ret;
-    SSL_CTX *ctx = (SSL_CTX*)context;
  
-    ssl = SSL_new(ctx);
     bio = BIO_new_socket((int)socket, BIO_NOCLOSE);
     SSL_set_bio(ssl, bio, bio);
 
@@ -82,19 +84,15 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl
         jclass exception = (*env)->FindClass(env, "javax/net/ssl/SSLHandshakeException");
         (*env)->ThrowNew(env, exception, ERR_reason_error_string(ERR_get_error())); 
     }
-
-    return (jlong)ssl;
 }
 
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
-  (JNIEnv *env, jclass clazz, jlong context, jobject fd) {
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
+  (JNIEnv *env, jclass clazz, jlong jssl, jobject fd) {
     jlong socket = getFD(env, fd);
-    SSL *ssl;
+    SSL *ssl = (SSL*)jssl;
     BIO *bio;
     int ret;
-    SSL_CTX *ctx = (SSL_CTX*)context;
 
-    ssl = SSL_new(ctx);
     bio = BIO_new_socket((int)socket, BIO_NOCLOSE);
     SSL_set_bio(ssl, bio, bio);
     
@@ -109,8 +107,6 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl
         jclass exception = (*env)->FindClass(env, "javax/net/ssl/SSLHandshakeException");
         (*env)->ThrowNew(env, exception, ERR_reason_error_string(ERR_get_error()));
     }
-
-    return (jlong)ssl;
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_writeAppDataImpl

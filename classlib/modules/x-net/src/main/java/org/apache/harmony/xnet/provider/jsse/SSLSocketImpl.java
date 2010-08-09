@@ -171,6 +171,8 @@ public class SSLSocketImpl extends SSLSocket {
         init();
     }
 
+
+    private native long initImpl(long context);
     /**
      * Initialize the SSL socket.
      */
@@ -182,6 +184,8 @@ public class SSLSocketImpl extends SSLSocket {
         initTransportLayer();
         appDataIS = new SSLSocketInputStream(this);
         appDataOS = new SSLSocketOutputStream(this);
+
+        SSL = initImpl(sslParameters.getSSLContextAddress());
     }
 
     /**
@@ -242,7 +246,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public String[] getSupportedProtocols() {
-        return ProtocolVersion.supportedProtocols.clone();
+        return sslParameters.getSupportedProtocols();
     }
 
     /**
@@ -408,8 +412,8 @@ public class SSLSocketImpl extends SSLSocket {
         }
     }
 
-    private native long sslConnectImpl(long sslContextAddress, FileDescriptor fd);
-    private native long sslAcceptImpl(long sslContextAddress, FileDescriptor fd);
+    private native void sslConnectImpl(long sslContextAddress, FileDescriptor fd);
+    private native void sslAcceptImpl(long sslContextAddress, FileDescriptor fd);
 
     /**
      * Performs the handshake process over the SSL/TLS connection
@@ -436,14 +440,16 @@ public class SSLSocketImpl extends SSLSocket {
                     logger.println("SSLSocketImpl: CLIENT");
                 }
 
-                SSL = sslConnectImpl(sslParameters.getSSLContextAddress(), impl.getFileDescriptor());
+                sslConnectImpl(SSL, impl.getFileDescriptor());
+                
 
                 //handshakeProtocol = new ClientHandshakeImpl(this);
             } else {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: SERVER");
                 }
-                SSL = sslAcceptImpl(sslParameters.getSSLContextAddress(), impl.getFileDescriptor());
+                sslAcceptImpl(SSL, impl.getFileDescriptor());
+                
 
                 //handshakeProtocol = new ServerHandshakeImpl(this);
             }

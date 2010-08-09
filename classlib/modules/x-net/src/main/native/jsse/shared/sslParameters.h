@@ -17,16 +17,22 @@
 
 #include <jni.h>
 
-#ifndef _CONTEXT_H
-#define _CONTEXT_H
+#ifndef _SSLPARAMETERS_H
+#define _SSLPARAMETERS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// Protocol flags - these correspond to the flags used in SSLParameters.java
+#define PROTOCOL_SSLv2 1
+#define PROTOCOL_SSLv3 2
+#define PROTOCOL_TLSv1 4
+
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
   (JNIEnv *, jclass, jobjectArray, jbyteArray, jbyteArray);
-
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledProtocolsImpl
+  (JNIEnv *, jclass, jlong, jint);
 
 #ifdef __cplusplus
 }

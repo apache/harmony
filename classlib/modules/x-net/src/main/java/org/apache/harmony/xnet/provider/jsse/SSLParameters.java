@@ -72,8 +72,13 @@ public class SSLParameters {
     // string representations of available cipher suites
     private String[] enabledCipherSuiteNames = null;
 
-    // protocols available for SSL connection
-    private String[] enabledProtocols = ProtocolVersion.supportedProtocols;
+    // protocols suported and those enabled for SSL connection
+    private static String[] supportedProtocols = new String[] { "SSLv2", "SSLv3", "TLSv1" };
+    private static int[] protocolFlags = new int[] { 1, 2, 4 }; // These correspond to the flags used in the natives
+
+    // Enable all protocols by default
+    private String[] enabledProtocols = supportedProtocols;
+    private int enabledProtocolsFlags = 7; // TLSv1 & SSLv3 & SSLv2
     
     // if the peer with this parameters tuned to work in client mode
     private boolean client_mode = true;
@@ -84,8 +89,9 @@ public class SSLParameters {
     // if the peer with this parameters allowed to cteate new SSL session
     private boolean enable_session_creation = true;
 
+    
     // Native address of the OpenSSL SSL_CTX struct
-    private static long SSL_CTX = 0;
+    private long SSL_CTX = 0;
 
     static {
         System.loadLibrary("hyjsse");
@@ -312,9 +318,18 @@ public class SSLParameters {
     /**
      * @return the set of enabled protocols
      */
+    protected String[] getSupportedProtocols() {
+        return supportedProtocols.clone();
+    }
+
+    /**
+     * @return the set of enabled protocols
+     */
     protected String[] getEnabledProtocols() {
         return enabledProtocols.clone();
     }
+
+    private static native void setEnabledProtocolsImpl(long context, int flags);
 
     /**
      * Sets the set of available protocols for use in SSL connection.
@@ -324,13 +339,26 @@ public class SSLParameters {
         if (protocols == null) {
             throw new IllegalArgumentException("Provided parameter is null");
         }
+
+        int flags = 0;
+        protocolsLoop:
         for (int i=0; i<protocols.length; i++) {
-            if (!ProtocolVersion.isSupported(protocols[i])) {
-                throw new IllegalArgumentException("Protocol " + protocols[i] +
-                        " is not supported.");
+            for (int j=0; j<supportedProtocols.length; j++) {
+                if ((protocols[i] != null) && (protocols[i].equals(supportedProtocols[j]))) {
+                    flags |= protocolFlags[j];
+                    continue protocolsLoop;
+                }
             }
+            throw new IllegalArgumentException("Protocol " + protocols[i] +
+                    " is not supported.");
         }
-        enabledProtocols = protocols;
+
+        // Only change values and call to the natives if we're actually changing the set of enabled protocols
+        if (flags != enabledProtocolsFlags) {
+            enabledProtocols = protocols;
+            enabledProtocolsFlags = flags;
+            setEnabledProtocolsImpl(SSL_CTX, flags);
+        }
     }
 
     /**
@@ -425,6 +453,10 @@ public class SSLParameters {
         parameters.need_client_auth = need_client_auth;
         parameters.want_client_auth = want_client_auth;
         parameters.enable_session_creation = enable_session_creation;
+
+        parameters.SSL_CTX = SSL_CTX;
+        parameters.enabledProtocols = enabledProtocols;
+        parameters.enabledProtocolsFlags = enabledProtocolsFlags;
 
         return parameters;
     }

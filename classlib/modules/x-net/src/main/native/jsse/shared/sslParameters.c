@@ -22,6 +22,7 @@
 #include "openssl/bio.h"
 #include "openssl/ssl.h"
 #include "openssl/err.h"
+#include "jsse_rand.h"
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
   (JNIEnv *env, jclass clazz, jbyteArray jtrustCerts, jbyteArray jkeyCert, jbyteArray jprivateKey)
@@ -33,6 +34,8 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
     X509 *x509cert;
     unsigned char *temp;
     int ret;
+    RAND_METHOD *randMethod;
+    JavaVM *jvm;
 
     SSL_library_init();
     SSL_load_error_strings();
@@ -111,6 +114,33 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
         }
         free(certBuffer);
     }
+
+    // TODO: Check for error return here
+    (*env)->GetJavaVM(env, &jvm);
+    randMethod = getRandMethod(jvm);
+    RAND_set_rand_method(randMethod);
     
     return (jlong)context;
+}
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledProtocolsImpl
+  (JNIEnv *env, jclass clazz, jlong context, jint flags) 
+{
+    SSL_CTX *ctx = (SSL_CTX*)context;
+    long options = 0;
+    long mask = SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3 | SSL_OP_NO_SSLv2;
+
+    if (flags & PROTOCOL_TLSv1) {
+        options |= SSL_OP_NO_TLSv1;
+    }
+    if (flags & PROTOCOL_SSLv3) {
+        options |= SSL_OP_NO_SSLv3;
+    }
+    if (flags & PROTOCOL_SSLv2) {
+        options |= SSL_OP_NO_SSLv2;
+    }
+
+    // Clearing the options enables the protocol, setting disables
+    SSL_CTX_clear_options(ctx, options);
+    SSL_CTX_set_options(ctx, options ^ mask);
 }
