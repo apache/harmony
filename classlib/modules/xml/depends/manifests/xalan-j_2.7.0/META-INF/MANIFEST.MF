@@ -6,4 +6,4 @@ Bundle-Version: 2.7.0
 Bundle-ClassPath: xalan.jar
 Eclipse-JREBundle: true
 Export-Package: org.apache.xpath,
- org.apache.xpath.objects
+ org.apache.xpath.objects, java_cup.runtime
