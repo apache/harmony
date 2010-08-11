@@ -120,6 +120,13 @@ public class JarOutputStreamTest extends junit.framework.TestCase {
         } catch (IOException ee) {
             // expected
         }
+        
+        try {
+            new JarOutputStream(fos, null);
+            fail("NullPointerException expected");
+        } catch (NullPointerException ee) {
+            // expected
+        }
     }
 
     public void test_JarOutputStreamLjava_io_OutputStream() throws IOException {

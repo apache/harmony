@@ -44,6 +44,8 @@ public class ManifestTest extends TestCase {
     private final String MANIFEST_NAME = "manifest/hyts_MANIFEST.MF";
 
     private static final String MANIFEST_CONTENTS = "Manifest-Version: 1.0\nBundle-Name: ClientSupport\nBundle-Description: Provides SessionService, AuthenticationService. Extends RegistryService.\nBundle-Activator: com.ibm.ive.eccomm.client.support.ClientSupportActivator\nImport-Package: com.ibm.ive.eccomm.client.services.log,\n com.ibm.ive.eccomm.client.services.registry,\n com.ibm.ive.eccomm.service.registry; specification-version=1.0.0,\n com.ibm.ive.eccomm.service.session; specification-version=1.0.0,\n com.ibm.ive.eccomm.service.framework; specification-version=1.2.0,\n org.osgi.framework; specification-version=1.0.0,\n org.osgi.service.log; specification-version=1.0.0,\n com.ibm.ive.eccomm.flash; specification-version=1.2.0,\n com.ibm.ive.eccomm.client.xml,\n com.ibm.ive.eccomm.client.http.common,\n com.ibm.ive.eccomm.client.http.client\nImport-Service: org.osgi.service.log.LogReaderService\n org.osgi.service.log.LogService,\n com.ibm.ive.eccomm.service.registry.RegistryService\nExport-Package: com.ibm.ive.eccomm.client.services.authentication; specification-version=1.0.0,\n com.ibm.ive.eccomm.service.authentication; specification-version=1.0.0,\n com.ibm.ive.eccomm.common; specification-version=1.0.0,\n com.ibm.ive.eccomm.client.services.registry.store; specification-version=1.0.0\nExport-Service: com.ibm.ive.eccomm.service.authentication.AuthenticationService,\n com.ibm.ive.eccomm.service.session.SessionService\nBundle-Vendor: IBM\nBundle-Version: 1.2.0\n";
+    
+    private static final String MANIFEST_CONTENTS_1 = "Manifest-Version: 2.0\nBundle-Name: ClientSupport\nBundle-Description: Provides SessionService, AuthenticationService. Extends RegistryService.\nBundle-Activator: com.ibm.ive.eccomm.client.support.ClientSupportActivator\nImport-Package: com.ibm.ive.eccomm.client.services.log,\n com.ibm.ive.eccomm.client.services.registry,\n com.ibm.ive.eccomm.service.registry; specification-version=2.0.0,\n com.ibm.ive.eccomm.service.session; specification-version=2.0.0,\n com.ibm.ive.eccomm.service.framework; specification-version=2.1.0,\n org.osgi.framework; specification-version=2.0.0,\n org.osgi.service.log; specification-version=2.0.0,\n com.ibm.ive.eccomm.flash; specification-version=2.2.0,\n com.ibm.ive.eccomm.client.xml,\n com.ibm.ive.eccomm.client.http.common,\n com.ibm.ive.eccomm.client.http.client\nImport-Service: org.osgi.service.log.LogReaderService\n org.osgi.service.log.LogService,\n com.ibm.ive.eccomm.service.registry.RegistryService\nExport-Package: com.ibm.ive.eccomm.client.services.authentication; specification-version=1.0.0,\n com.ibm.ive.eccomm.service.authentication; specification-version=1.0.0,\n com.ibm.ive.eccomm.common; specification-version=1.0.0,\n com.ibm.ive.eccomm.client.services.registry.store; specification-version=1.0.0\nExport-Service: com.ibm.ive.eccomm.service.authentication.AuthenticationService,\n com.ibm.ive.eccomm.service.session.SessionService\nBundle-Vendor: IBM\nBundle-Version: 1.2.0\n";
 
     private File resources;
 
@@ -182,6 +184,14 @@ public class ManifestTest extends TestCase {
                 MANIFEST_CONTENTS.getBytes("ISO-8859-1")));
 
         assertEquals(firstManifest, secondManifest);
+
+        Manifest thirdManifest = new Manifest(new ByteArrayInputStream(
+                MANIFEST_CONTENTS_1.getBytes("ISO-8859-1")));
+        assertNotSame(firstManifest, thirdManifest);
+        
+        firstManifest=null;
+        assertFalse(secondManifest.equals(firstManifest));
+        assertFalse(secondManifest.equals(new String("abc"))); //non Manifest Object
     }
 
     /**

@@ -239,6 +239,9 @@ public class AttributesTest extends TestCase {
         a2.putValue("One", "1");
         a2.putValue("TWO", "2");
         assertEquals(a1, a2);
+        assertEquals(a1, a1);
+        a2=null;
+        assertFalse(a1.equals(a2));
     }
 
     /**

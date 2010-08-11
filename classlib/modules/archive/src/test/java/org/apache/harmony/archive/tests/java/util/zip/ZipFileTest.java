@@ -49,11 +49,16 @@ public class ZipFileTest extends junit.framework.TestCase {
 	private ZipFile zfile;
 
 	/**
+     * @throws IOException 
 	 * @tests java.util.zip.ZipFile#ZipFile(java.io.File)
 	 */
-	public void test_ConstructorLjava_io_File() {
+	public void test_ConstructorLjava_io_File() throws IOException {
 		// Test for method java.util.zip.ZipFile(java.io.File)
-		assertTrue("Used to test", true);
+        zfile.close(); // about to reopen the same temp file
+        File file = new File(tempFileName);
+        ZipFile zip = new ZipFile(file);
+        assertTrue("Zip should exist", file.exists());
+        zip.close();        
 	}
 
 	/**
@@ -66,6 +71,14 @@ public class ZipFileTest extends junit.framework.TestCase {
                                           | ZipFile.OPEN_READ);
                 zip.close();
                 assertTrue("Zip should not exist", !file.exists());
+
+                file = new File(tempFileName);
+                try{
+                    zip = new ZipFile(file, 3);  //passing unkown argument
+                    fail("Should throw IllegalArgumentException");
+                }catch(IllegalArgumentException iae ){
+                    //expected
+                }
 	}
 
 	/**

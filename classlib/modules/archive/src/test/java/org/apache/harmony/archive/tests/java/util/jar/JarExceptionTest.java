@@ -19,6 +19,7 @@ package org.apache.harmony.archive.tests.java.util.jar;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.jar.JarException;
 import java.util.jar.Manifest;
 import junit.framework.TestCase;
 
@@ -34,5 +35,19 @@ public class JarExceptionTest extends TestCase {
         } catch (IOException e) {
             // correct
         }
+    }
+    
+    /**
+     * @tests java.util.jar.JarException#JarException(java.lang.String)
+     */
+    public void test_ConstructorLjava_lang_String1() throws Exception {
+         assertEquals("Jar Exception", new JarException("Jar Exception").getMessage());
+    }
+
+    /**
+     * @tests java.util.jar.JarException#JarException()
+     */
+    public void test_Constructor_void() throws Exception {
+        new JarException();
     }
 }
