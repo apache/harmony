@@ -363,6 +363,7 @@ public class InflaterTest extends junit.framework.TestCase {
 		try {
 			while (!(inflate.finished())) {
 				if (inflate.needsInput()) {
+				    assertEquals(0, inflate.inflate(outPutInf, 0, 1));
 					inflate.setInput(outPutBuff1);
 				}
 				y += inflate.inflate(outPutInf, y, outPutInf.length - y);
@@ -395,6 +396,21 @@ public class InflaterTest extends junit.framework.TestCase {
 			r = 1;
 		}
 		assertEquals("out of bounds error did not get caught", 1, r);
+
+        try {
+            assertEquals(0, inflate.inflate(outPutInf, offSet, 0));
+        } catch (DataFormatException e) {
+            fail("Invalid input to be decompressed");
+        }
+        inflate.end();
+        try {
+            inflate.inflate(outPutInf, offSet, 1);
+            fail("IllegalStateException expected");
+        } catch (DataFormatException e) {
+            fail("Invalid input to be decompressed");
+        } catch (IllegalStateException e) {
+            //expected
+        }
 	}
 
     public void test_inflate$BII1() {
@@ -517,6 +533,7 @@ public class InflaterTest extends junit.framework.TestCase {
         assertEquals(0,inf.getTotalOut());
         assertEquals(0,inf.getBytesRead());
         assertEquals(0,inf.getBytesWritten());
+        assertEquals(1, inf.getAdler());
 	}
 
 	/**
@@ -924,6 +941,12 @@ public class InflaterTest extends junit.framework.TestCase {
             // expected.
         }
         infl1.end();
+        try{
+            infl1.setDictionary(dictionary2.getBytes());
+            fail("IllegalStateException expected");
+        }catch(IllegalStateException ise){
+            //expected
+        }
     }
 
     public void testSetDictionary$BII() throws Exception {
@@ -992,6 +1015,7 @@ public class InflaterTest extends junit.framework.TestCase {
         Inflater infl1 = new Inflater();
         Inflater infl2 = new Inflater();
         Inflater infl3 = new Inflater();
+        Inflater infl4 = new Inflater();
 
         byte[] result = new byte[100];
         int decLen;
@@ -1026,6 +1050,62 @@ public class InflaterTest extends junit.framework.TestCase {
         infl3.end();
         assertEquals(inputString, new String(result, 0, decLen));
 
+        //exception test
+        infl4.setInput(output3, 0, dataLen3);
+        decLen = infl4.inflate(result);
+        assertTrue(infl4.needsDictionary());
+
+        try{
+            infl4.setDictionary(dictionary1.getBytes(), 4, 4);
+            fail("ArrayIndexOutOfBoundsException expected");
+        }catch(ArrayIndexOutOfBoundsException aiob){
+            //expected
+        }
     }
 
+    public void testExceptions() throws Exception {
+        byte byteArray[] = { 5, 2, 3, 7, 8 };
+
+        int r = 0;
+        Inflater inflate = new Inflater();
+        inflate.setInput(byteArray);
+        inflate.end();
+        
+        try{
+            inflate.getAdler();
+            fail("IllegalStateException expected");
+        }catch(IllegalStateException ise){
+            //expected
+        }
+
+        try{
+            inflate.getBytesRead();
+            fail("NullPointerException expected");
+        }catch(NullPointerException ise){
+            //expected
+        }
+        
+        try{
+            inflate.getBytesWritten();
+            fail("NullPointerException expected");
+        }catch(NullPointerException ise){
+            //expected
+        }
+         
+        
+        try{
+            inflate.getTotalIn();
+            fail("IllegalStateException expected");
+        }catch(IllegalStateException ise){
+            //expected
+        }
+        
+        try{
+            inflate.getTotalOut();
+            fail("IllegalStateException expected");
+        }catch(IllegalStateException ise){
+            //expected
+        }
+         
+    }
 }

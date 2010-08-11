@@ -886,6 +886,18 @@ public class DeflaterTest extends TestCase {
 			fail("IllegalArgumentException not thrown when setting level to a number > 9.");
 		} catch (IllegalArgumentException e) {
 		}
+		
+        try {
+            Deflater boundDefl = new Deflater(-2, true);
+            fail("IllegalArgumentException not thrown when passing level to a number < 0.");
+        } catch (IllegalArgumentException e) {
+        }
+
+        try {
+            Deflater boundDefl = new Deflater(10, true);
+            fail("IllegalArgumentException not thrown when passing level to a number > 9.");
+        } catch (IllegalArgumentException e) {
+        }
 	}
 
 	/**
@@ -1007,6 +1019,22 @@ public class DeflaterTest extends TestCase {
 		} catch (NullPointerException e) {
 		}
 
+        // Methods where we expect NullPointerException to be thrown
+        try {
+            defl.getBytesRead();
+            fail("defl.reset() can still be used after " + desc
+                    + " is called in test_" + desc);
+        } catch (NullPointerException e) {
+        }
+        
+        // Methods where we expect NullPointerException to be thrown
+        try {
+            defl.getBytesWritten();
+            fail("defl.getBytesWritten() can still be used after " + desc
+                    + " is called in test_" + desc);
+        } catch (NullPointerException e) {
+        }        
+        
 		// Methods that should be allowed to be called after end() is called
 		defl.needsInput();
 		defl.setStrategy(1);

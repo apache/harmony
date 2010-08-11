@@ -92,6 +92,25 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
 			assertEquals("the CRC value of the inputStream is not zero", 0, inGZIP
 					.getChecksum().getValue());
 			inGZIP.close();
+
+            try{
+                TestGZIPInputStream inGZIP1 = new TestGZIPInputStream(gInput
+                        .openConnection().getInputStream(), 0);   
+                fail("IllegalArgumentException expected");
+            }catch(IllegalArgumentException ioe){
+                //expected
+            }
+            
+            Support_Resources.copyFile(resources, null, "hyts_checkInput.txt");
+            final URL jarInput = new File(resources.toString()+ "/hyts_checkInput.txt").toURL();
+            try{
+                TestGZIPInputStream inGZIP1 = new TestGZIPInputStream(jarInput
+                        .openConnection().getInputStream(), 200);
+                fail("IOException expected");
+            }catch(IOException ex){
+                //expected
+            }
+            
 		} catch (IOException e) {
 			fail(
 					"an IO error occured while trying to open the input file");

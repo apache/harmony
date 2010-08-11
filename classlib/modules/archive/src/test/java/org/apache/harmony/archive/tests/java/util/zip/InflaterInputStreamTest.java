@@ -112,6 +112,36 @@ public class InflaterInputStreamTest extends TestCase {
 	}
 
     /**
+     * @tests java.util.zip.InflaterInputStream#InflaterInputStream(java.io.InputStream,
+     *        java.util.zip.Inflater, int)
+     */
+    public void test_ConstructorLjava_io_InputStreamLjava_util_zip_InflaterI_1() throws IOException {
+        InputStream infile = Support_Resources.getStream("hyts_constru(ODI).bin");
+        Inflater inflate = new Inflater();
+        InflaterInputStream inflatIP = null;
+        try{
+            inflatIP = new InflaterInputStream(infile, null, 1);
+            fail("NullPointerException expected");
+        }catch(NullPointerException NPE){
+            //expected
+        }  
+
+        try{
+            inflatIP = new InflaterInputStream(null, inflate, 1);
+            fail("NullPointerException expected");
+        }catch(NullPointerException NPE){
+            //expected
+        }  
+        
+        try{
+            inflatIP = new InflaterInputStream(infile, inflate, -1);
+            fail("IllegalArgumentException expected");
+        }catch(IllegalArgumentException iae){
+            //expected
+        }        
+    }
+
+    /**
      * @tests java.util.zip.InflaterInputStream#mark(int)
      */
     public void test_markI() {
@@ -159,6 +189,41 @@ public class InflaterInputStreamTest extends TestCase {
 				buffer[j] == orgBuffer[j]);
 		}
 	}
+
+    /**
+     * @tests java.util.zip.InflaterInputStream#read(byte [], int, int)
+     */
+    public void test_read_LBII() throws IOException {
+        int result = 0;
+        InputStream infile = Support_Resources.getStream("hyts_constru(OD).bin");
+        Inflater inflate = new Inflater();
+        InflaterInputStream inflatIP = new InflaterInputStream(infile, inflate);
+        
+        byte[] b = new byte[3];
+        try{
+            result = inflatIP.read(null, 0, 1);
+            fail("NullPointerException expected");
+        }catch(NullPointerException npe){
+            //expected
+        }
+        
+        assertEquals(0, inflatIP.read(b, 0, 0));
+        
+        try{
+            result = inflatIP.read(b, 5, 2); //offset higher
+            fail("IndexOutOfBoundsException expected");
+        }catch(IndexOutOfBoundsException iobe){
+            //expected
+        }
+        
+            inflatIP.close();
+        try {
+            inflatIP.read(b, 0, 1); //read after close
+            fail("IOException expected");
+        }catch(IOException ioe){
+            //expected
+        }
+    }
 
     public void testAvailableNonEmptySource() throws Exception {
         // this byte[] is a deflation of these bytes: { 1, 3, 4, 6 }

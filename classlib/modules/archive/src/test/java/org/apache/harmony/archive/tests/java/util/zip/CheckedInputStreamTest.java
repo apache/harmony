@@ -104,6 +104,7 @@ public class CheckedInputStreamTest extends TestCase {
         // System.out.print(checkIn.getChecksum().getValue());
         assertEquals("checkSum value is not correct", 2235765342L, checkIn.getChecksum()
                 .getValue());
+        assertEquals(0, checkIn.skip(0));
         checkInput.close();
     }
 
