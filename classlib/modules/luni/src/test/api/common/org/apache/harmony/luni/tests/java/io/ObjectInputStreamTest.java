@@ -1215,7 +1215,8 @@ class Test implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	Class classes[] = new Class[] { byte.class, short.class, int.class,
-			long.class, boolean.class, char.class, float.class, double.class };
+			long.class, boolean.class, char.class, float.class,
+                        double.class, void.class };
 
 	@Override
     public boolean equals(Object o) {
