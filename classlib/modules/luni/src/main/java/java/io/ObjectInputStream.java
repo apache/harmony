@@ -117,6 +117,7 @@ public class ObjectInputStream extends InputStream implements ObjectInput,
         PRIMITIVE_CLASSES.put("char", char.class); //$NON-NLS-1$
         PRIMITIVE_CLASSES.put("float", float.class); //$NON-NLS-1$
         PRIMITIVE_CLASSES.put("double", double.class); //$NON-NLS-1$
+        PRIMITIVE_CLASSES.put("void", void.class); //$NON-NLS-1$
     }
 
     private ObjectAccessor accessor = AccessorFactory.getObjectAccessor();
