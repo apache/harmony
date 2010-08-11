@@ -169,6 +169,11 @@
         <mkdir dir="${tests.hdk.dir}" />
 
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
+        
+        <copy todir= "${tests.hdk.dir}/resources">
+           <fileset dir = "src/test/resources" />
+        </copy>
+       
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
             <fileset dir="bin/test" />

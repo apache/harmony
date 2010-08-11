@@ -20,6 +20,7 @@ package org.apache.harmony.archive.tests.java.util.zip;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterInputStream;
 
@@ -304,6 +305,13 @@ public class DeflaterInputStreamTest extends TestCase {
         }
     }
 
+    /**
+     * @tests DataFormatException#DataFormatException()
+     */
+    public void testDataFormatException() {
+        new DataFormatException();
+    }
+    
     /**
      * @tests DeflaterInputStream#DeflaterInputStream(InputStream,Deflater)
      */
