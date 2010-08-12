@@ -86,7 +86,6 @@ void JNICALL Java_java_lang_Runtime_00024SubProcess_createProcess0 (JNIEnv *env,
      int lenargv = 0;
      lenargv = env->GetArrayLength(cmdarray);
      char *argv[lenargv+1];
-     char *newArgv[lenargv+2];
      for ( i = 0; i < lenargv; i++ ) {
          jo = env->GetObjectArrayElement((jobjectArray)((jobject)cmdarray), (jsize) i);
          strChain = env->GetStringUTFChars((jstring) jo, 0);
