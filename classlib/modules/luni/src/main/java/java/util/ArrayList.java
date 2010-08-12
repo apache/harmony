@@ -403,8 +403,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             }
             E[] newArray = newElementArray(size + increment);
             if (size != 0) {
-                System.arraycopy(array, firstIndex, newArray, newArray.length
-                        - size, size);
+                System.arraycopy(array, firstIndex, newArray, increment, size);
             }
             firstIndex = newArray.length - size;
             array = newArray;
