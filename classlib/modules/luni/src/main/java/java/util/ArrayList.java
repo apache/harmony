@@ -115,9 +115,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
                             Integer.valueOf(size)));
         }
         if (location == 0) {
-            // REVIEW: Does growAtFront() check the end to see if
-            //         shifting the array is possible? Same for
-            //         growAtEnd().
             if (firstIndex == 0) {
                 growAtFront(1);
             }
@@ -129,7 +126,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
             }
             array[firstIndex + size] = object;
         } else { // must be case: (0 < location && location < size)
-            if (firstIndex == 0 && size == array.length) {
+            if (size == array.length) {
                 growForInsert(location, 1);
             } else if ((location < size / 2 && firstIndex > 0)
                     || firstIndex + size == array.length) {
