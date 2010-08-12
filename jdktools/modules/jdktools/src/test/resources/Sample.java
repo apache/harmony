@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.resources;
+package resources;
 
-import tests.resources.jdktools.Dependency;
+import jdktools.Dependency;
 
 public class Sample {
 
