@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.resources.jdktools;
+package resources;
 
 public class Simple
 {
 	static public void main(String[] args)
 	{
-		// Do Nothing
+		System.out.println("Hello World !!! ");
 	}
 
 }
