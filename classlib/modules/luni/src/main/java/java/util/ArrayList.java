@@ -684,7 +684,6 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
         System.arraycopy(array, firstIndex, newArray, 0, size);
         array = newArray;
         firstIndex = 0;
-        size = array.length;
         modCount = 0;
     }
 
