@@ -434,7 +434,7 @@ DecodeAddress(jdwpTransportEnv* env, const char *address, hysockaddr_t sa, bool 
     memcpy(finalAddress, address, strlen(address)+1);
 
 #ifdef ZOS
-    __atoe(finalAddress);
+    __a2e_s(finalAddress);
 #endif
 
 #ifdef ZOS
