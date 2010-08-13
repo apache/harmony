@@ -37,9 +37,9 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
   (JNIEnv *, jclass, jobjectArray, jbyteArray, jbyteArray);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledProtocolsImpl
-  (JNIEnv *, jclass, jlong, jint);
+  (JNIEnv *, jclass, jlong, jlong, jint);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setClientAuthImpl
-  (JNIEnv *, jclass, jlong, jshort);
+  (JNIEnv *, jclass, jlong, jlong, jshort);
 
 #ifdef __cplusplus
 }

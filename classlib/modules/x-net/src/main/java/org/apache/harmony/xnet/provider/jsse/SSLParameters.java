@@ -67,10 +67,9 @@ public class SSLParameters {
     // source of random numbers
     private SecureRandom secureRandom;
 
-    // cipher suites available for SSL connection
-    protected CipherSuite[] enabledCipherSuites;
     // string representations of available cipher suites
-    private String[] enabledCipherSuiteNames = null;
+    private String[] supportedCipherSuites = null;
+    private String[] enabledCipherSuites = null;
 
     // protocols suported and those enabled for SSL connection
     private static String[] supportedProtocols = new String[] { "SSLv2", "SSLv3", "TLSv1" };
@@ -108,7 +107,6 @@ public class SSLParameters {
      * Creates an instance of SSLParameters.
      */
     private SSLParameters() {
-        this.enabledCipherSuites = CipherSuite.defaultCipherSuites;
     }
 
     /**
@@ -286,38 +284,58 @@ public class SSLParameters {
         return secureRandom;
     }
 
+
+    // TODO: implement the natives for get/set cipher suites
+    private native String[] getSupportedCipherSuitesImpl(long SSL);
+
+    protected String[] getSupportedCipherSuites(long SSL) {
+        if (supportedCipherSuites == null) {
+            supportedCipherSuites = getSupportedCipherSuitesImpl(SSL);
+        }
+        return supportedCipherSuites.clone();
+    }
+
     /**
      * @return the names of enabled cipher suites
      */
-    protected String[] getEnabledCipherSuites() {
-        if (enabledCipherSuiteNames == null) {
-            enabledCipherSuiteNames = new String[enabledCipherSuites.length];
-            for (int i = 0; i< enabledCipherSuites.length; i++) {
-                enabledCipherSuiteNames[i] = enabledCipherSuites[i].getName();
-            }
+    protected String[] getEnabledCipherSuites(long SSL) {
+        if (enabledCipherSuites == null) {
+            enabledCipherSuites = getSupportedCipherSuites(SSL);
         }
-        return enabledCipherSuiteNames.clone();
+        return enabledCipherSuites.clone();
     }
+
+
+    private native void setEnabledCipherSuitesImpl(long context, long SSL,  String[] enabledCiphers);
 
     /**
      * Sets the set of available cipher suites for use in SSL connection.
      * @param   suites: String[]
      * @return
      */
-    protected void setEnabledCipherSuites(String[] suites) {
+    protected void setEnabledCipherSuites(long SSL, String[] suites) {
         if (suites == null) {
             throw new IllegalArgumentException("Provided parameter is null");
         }
-        CipherSuite[] cipherSuites = new CipherSuite[suites.length];
+
+        if (supportedCipherSuites == null) {
+            supportedCipherSuites = getSupportedCipherSuitesImpl(SSL);
+        }
+
         for (int i=0; i<suites.length; i++) {
-            cipherSuites[i] = CipherSuite.getByName(suites[i]);
-            if (cipherSuites[i] == null || !cipherSuites[i].supported) {
-                throw new IllegalArgumentException(suites[i] +
-                        " is not supported.");
+            boolean found = false;
+            for (int j=0; j<supportedCipherSuites.length; j++) {
+                if (suites[i].equals(supportedCipherSuites[j])) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw new IllegalArgumentException(suites[i] + " is not supported.");
             }
         }
-        enabledCipherSuites = cipherSuites;
-        enabledCipherSuiteNames = suites;
+        enabledCipherSuites = suites;        
+        setEnabledCipherSuitesImpl(SSL_CTX, SSL, suites);
     }
 
     /**
@@ -334,13 +352,13 @@ public class SSLParameters {
         return enabledProtocols.clone();
     }
 
-    private static native void setEnabledProtocolsImpl(long context, int flags);
+    private static native void setEnabledProtocolsImpl(long context, long SSL,  int flags);
 
     /**
      * Sets the set of available protocols for use in SSL connection.
      * @param   suites: String[]
      */
-    protected void setEnabledProtocols(String[] protocols) {
+    protected void setEnabledProtocols(long SSL, String[] protocols) {
         if (protocols == null) {
             throw new IllegalArgumentException("Provided parameter is null");
         }
@@ -362,7 +380,7 @@ public class SSLParameters {
         if (flags != enabledProtocolsFlags) {
             enabledProtocols = protocols;
             enabledProtocolsFlags = flags;
-            setEnabledProtocolsImpl(SSL_CTX, flags);
+            setEnabledProtocolsImpl(SSL_CTX, SSL, flags);
         }
     }
 
@@ -382,16 +400,16 @@ public class SSLParameters {
         return client_mode;
     }
 
-    private static native void setClientAuthImpl(long context, short flag);
+    private static native void setClientAuthImpl(long context, long SSL, short flag);
 
     /**
      * Tunes the peer holding this parameters to require client authentication
      */
-    protected void setNeedClientAuth(boolean need) {
+    protected void setNeedClientAuth(long SSL, boolean need) {
         if (need) {
-            setClientAuthImpl(SSL_CTX, REQUIRE_CLIENT_AUTH);
+            setClientAuthImpl(SSL_CTX, SSL, REQUIRE_CLIENT_AUTH);
         } else {
-            setClientAuthImpl(SSL_CTX, NO_CLIENT_AUTH);
+            setClientAuthImpl(SSL_CTX, SSL, NO_CLIENT_AUTH);
         }
         need_client_auth = need;     
         // reset the want_client_auth setting
@@ -409,11 +427,11 @@ public class SSLParameters {
     /**
      * Tunes the peer holding this parameters to request client authentication
      */
-    protected void setWantClientAuth(boolean want) {
+    protected void setWantClientAuth(long SSL, boolean want) {
         if (want) {
-            setClientAuthImpl(SSL_CTX, REQUEST_CLIENT_AUTH);
+            setClientAuthImpl(SSL_CTX, SSL, REQUEST_CLIENT_AUTH);
         } else {
-            setClientAuthImpl(SSL_CTX, NO_CLIENT_AUTH);
+            setClientAuthImpl(SSL_CTX, SSL, NO_CLIENT_AUTH);
         }
         want_client_auth = want;
         // reset the need_client_auth setting
@@ -463,7 +481,6 @@ public class SSLParameters {
         parameters.trustManager = trustManager;
         parameters.secureRandom = secureRandom;
 
-        parameters.enabledCipherSuites = enabledCipherSuites;
         parameters.enabledProtocols = enabledProtocols;
 
         parameters.client_mode = client_mode;

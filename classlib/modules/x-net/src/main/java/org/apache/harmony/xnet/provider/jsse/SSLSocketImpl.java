@@ -216,7 +216,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public String[] getSupportedCipherSuites() {
-        return CipherSuite.getSupportedCipherSuiteNames();
+        return sslParameters.getSupportedCipherSuites(SSL);
     }
 
     /**
@@ -226,7 +226,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public String[] getEnabledCipherSuites() {
-        return sslParameters.getEnabledCipherSuites();
+        return sslParameters.getEnabledCipherSuites(SSL);
     }
 
     /**
@@ -236,7 +236,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public void setEnabledCipherSuites(String[] suites) {
-        sslParameters.setEnabledCipherSuites(suites);
+        sslParameters.setEnabledCipherSuites(SSL, suites);
     }
 
     /**
@@ -266,7 +266,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public void setEnabledProtocols(String[] protocols) {
-        sslParameters.setEnabledProtocols(protocols);
+        sslParameters.setEnabledProtocols(SSL, protocols);
     }
 
     /**
@@ -300,7 +300,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public void setNeedClientAuth(boolean need) {
-        sslParameters.setNeedClientAuth(need);
+        sslParameters.setNeedClientAuth(SSL, need);
     }
 
     /**
@@ -320,7 +320,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public void setWantClientAuth(boolean want) {
-        sslParameters.setWantClientAuth(want);
+        sslParameters.setWantClientAuth(SSL, want);
     }
 
     /**
@@ -437,35 +437,21 @@ public class SSLSocketImpl extends SSLSocket {
             handshake_started = true;
             if (sslParameters.getUseClientMode()) {
                 if (logger != null) {
-                    logger.println("SSLSocketImpl: CLIENT");
+                    logger.println("SSLSocketImpl: CLIENT connecting");
                 }
 
                 sslConnectImpl(SSL, impl.getFileDescriptor());
-
-                //handshakeProtocol = new ClientHandshakeImpl(this);
             } else {
                 if (logger != null) {
-                    logger.println("SSLSocketImpl: SERVER");
+                    logger.println("SSLSocketImpl: SERVER accepting connection");
                 }
-                sslAcceptImpl(SSL, impl.getFileDescriptor());
-                
-
-                //handshakeProtocol = new ServerHandshakeImpl(this);
+                sslAcceptImpl(SSL, impl.getFileDescriptor());                
             }
-
-            alertProtocol = new AlertProtocol();
-            /*recordProtocol = new SSLRecordProtocol(handshakeProtocol,
-                    alertProtocol, new SSLStreamedInput(input),
-                    appDataIS.dataPoint);*/
         }
 
         if (logger != null) {
-            logger.println("SSLSocketImpl.startHandshake");
+            logger.println("SSLSocketImpl: Handshake complete, notifying listeners");
         }
-
-        //handshakeProtocol.start();
-
-        //doHandshake();
 
         session = new SSLSessionImpl(sslParameters, SSL);
         // Notify handshake completion listeners
@@ -546,6 +532,7 @@ public class SSLSocketImpl extends SSLSocket {
         if (logger != null) {
             logger.println("SSLSocket.close "+socket_was_closed);
         }
+        // TODO: Call down into natives to close down OpenSSL connection an clean up structs
         if (!socket_was_closed) {
             if (handshake_started) {
                 alertProtocol.alert(AlertProtocol.WARNING,
@@ -643,63 +630,6 @@ public class SSLSocketImpl extends SSLSocket {
             appDataIS.setEnd();
         }
         return data;
-        /*try {
-            while(appDataIS.available() == 0) {
-                // read and unwrap the record contained in the transport
-                // input stream (SSLStreamedInput), pass it
-                // to appropriate client protocol (alert, handshake, or app)
-                // and retrieve the type of unwrapped data
-                switch (type = recordProtocol.unwrap()) {
-                    case ContentType.HANDSHAKE:
-                        if (!handshakeProtocol.getStatus().equals(
-                                SSLEngineResult.HandshakeStatus
-                                .NOT_HANDSHAKING)) {
-                            // handshake protocol got addressed to it message 
-                            // and did not ignore it, so it's a rehandshake
-                            doHandshake();
-                        }
-                        break;
-                    case ContentType.ALERT:
-                        processAlert();
-                        if (socket_was_closed) {
-                            return;
-                        }
-                        break;
-                    case ContentType.APPLICATION_DATA:
-                        if (logger != null) {
-                            logger.println(
-                                    "SSLSocket.needAppData: got the data");
-                        }
-                        break;
-                    default:
-                        // will throw exception
-                        reportFatalAlert(AlertProtocol.UNEXPECTED_MESSAGE,
-                                new SSLException("Unexpected message of type "
-                                    + type + " has been got"));
-                }
-                if (alertProtocol.hasAlert()) {
-                    // warning alert occured during wrap or unwrap
-                    // (note: fatal alert causes AlertException
-                    // to be thrown)
-                    output.write(alertProtocol.wrap());
-                    alertProtocol.setProcessed();
-                }
-                if (socket_was_closed) {
-                    appDataIS.setEnd();
-                    return;
-                }
-            }
-        } catch (AlertException e) {
-            // will throw exception
-            reportFatalAlert(e.getDescriptionCode(), e.getReason());
-        } catch (EndOfSourceException e) {
-            // end of socket's input stream has been reached
-            appDataIS.setEnd();
-        }
-        if (logger != null) {
-            logger.println("SSLSocket.needAppData: app data len: "
-                    + appDataIS.available());
-        }*/
     }
 
 
@@ -720,171 +650,6 @@ public class SSLSocketImpl extends SSLSocket {
         }
 
         writeAppDataImpl(SSL, data, offset, len);
-        /*try {
-            if (len < SSLRecordProtocol.MAX_DATA_LENGTH) {
-                output.write(recordProtocol.wrap(ContentType.APPLICATION_DATA,
-                            data, offset, len));
-            } else {
-                while (len >= SSLRecordProtocol.MAX_DATA_LENGTH) {
-                    output.write(recordProtocol.wrap(
-                                ContentType.APPLICATION_DATA, data, offset,
-                                SSLRecordProtocol.MAX_DATA_LENGTH));
-                    offset += SSLRecordProtocol.MAX_DATA_LENGTH;
-                    len -= SSLRecordProtocol.MAX_DATA_LENGTH;
-                }
-                if (len > 0) {
-                    output.write(
-                        recordProtocol.wrap(ContentType.APPLICATION_DATA,
-                                            data, offset, len));
-                }
-            }
-        } catch (AlertException e) {
-            // will throw exception
-            reportFatalAlert(e.getDescriptionCode(), e.getReason());
-        }*/
-    }
-
-    /*
-     * Performs handshake proccess over this connection. The hanshake
-     * process is dirrected by the handshake status code provided by
-     * handshake protocol. If this status is NEED_WRAP, method retrieves
-     * handshake message from handshake protocol and sends it to another peer.
-     * If this status is NEED_UNWRAP, method receives and processes handshake
-     * message from another peer. Each of this stages (wrap/unwrap) change
-     * the state of handshake protocol and this process is performed 
-     * until handshake status is FINISHED. After handshake process is finnished
-     * handshake completed event are sent to the registered listeners.
-     * For more information about the handshake process see
-     * TLS v1 specification (http://www.ietf.org/rfc/rfc2246.txt) p 7.3.
-     */
-    private void doHandshake() throws IOException {
-        SSLEngineResult.HandshakeStatus status;
-        int type;
-        try {
-            while (!(status = handshakeProtocol.getStatus()).equals(
-                        SSLEngineResult.HandshakeStatus.FINISHED)) {
-                if (logger != null) {
-                    String s = (status.equals(
-                                SSLEngineResult.HandshakeStatus.NEED_WRAP))
-                        ? "NEED_WRAP"
-                        : (status.equals(
-                                SSLEngineResult.HandshakeStatus.NEED_UNWRAP))
-                            ? "NEED_UNWRAP"
-                            : "STATUS: OTHER!";
-                    logger.println("SSLSocketImpl: HS status: "+s+" "+status);
-                }
-                if (status.equals(SSLEngineResult.HandshakeStatus.NEED_WRAP)) {
-                    output.write(handshakeProtocol.wrap());
-                } else if (status.equals(
-                            SSLEngineResult.HandshakeStatus.NEED_UNWRAP)) {
-                    // read and unwrap the record contained in the transport
-                    // input stream (SSLStreamedInput), pass it
-                    // to appropriate client protocol (alert, handshake, or app)
-                    // and retrieve the type of unwrapped data
-                    switch (type = recordProtocol.unwrap()) {
-                        case ContentType.HANDSHAKE:
-                        case ContentType.CHANGE_CIPHER_SPEC:
-                            break;
-                        case ContentType.APPLICATION_DATA:
-                            // So it's rehandshake and
-                            // if app data buffer will be overloaded
-                            // it will throw alert exception.
-                            // Probably we should count the number of
-                            // not handshaking data and make additional
-                            // constraints (do not expect buffer overflow).
-                            break;
-                        case ContentType.ALERT:
-                            processAlert();
-                            if (socket_was_closed) {
-                                return;
-                            }
-                            break;
-                        default:
-                            // will throw exception
-                            reportFatalAlert(AlertProtocol.UNEXPECTED_MESSAGE,
-                                    new SSLException(
-                                        "Unexpected message of type "
-                                        + type + " has been got"));
-                    }
-                } else {
-                    // will throw exception
-                    reportFatalAlert(AlertProtocol.INTERNAL_ERROR,
-                        new SSLException(
-                            "Handshake passed unexpected status: "+status));
-                }
-                if (alertProtocol.hasAlert()) {
-                    // warning alert uccured during wrap or unwrap
-                    // (note: fatal alert causes AlertException
-                    // to be thrown)
-                    output.write(alertProtocol.wrap());
-                    alertProtocol.setProcessed();
-                }
-            }
-        } catch (EndOfSourceException e) {
-            appDataIS.setEnd();
-            throw new IOException("Connection was closed");
-        } catch (AlertException e) {
-            // will throw exception
-            reportFatalAlert(e.getDescriptionCode(), e.getReason());
-        }
-
-        session = recordProtocol.getSession();
-        if (listeners != null) {
-            // notify the listeners
-            HandshakeCompletedEvent event =
-                new HandshakeCompletedEvent(this, session);
-            int size = listeners.size();
-            for (int i=0; i<size; i++) {
-                listeners.get(i)
-                    .handshakeCompleted(event);
-            }
-        }
-    }
-        
-    /*
-     * Process received alert message
-     */
-    private void processAlert() throws IOException {
-        if (!alertProtocol.hasAlert()) {
-            return;
-        }
-        if (alertProtocol.isFatalAlert()) {
-            alertProtocol.setProcessed();
-            String description = "Fatal alert received "
-                + alertProtocol.getAlertDescription();
-            shutdown();
-            throw new SSLException(description);
-        }
-        
-        if (logger != null) {
-            logger.println("Warning alert received: "
-                + alertProtocol.getAlertDescription());
-        }
-        switch(alertProtocol.getDescriptionCode()) {
-            case AlertProtocol.CLOSE_NOTIFY:
-                alertProtocol.setProcessed();
-                appDataIS.setEnd();
-                close();
-                return;
-            default:
-                alertProtocol.setProcessed();
-            // TODO: process other warning messages
-        }
-    }
-    
-    /*
-     * Sends fatal alert message and throws exception
-     */
-    private void reportFatalAlert(byte description_code, 
-            SSLException reason) throws IOException {
-        alertProtocol.alert(AlertProtocol.FATAL, description_code);
-        try {
-            // the output stream can be closed
-            output.write(alertProtocol.wrap());
-        } catch (IOException ex) { }
-        alertProtocol.setProcessed();
-        shutdown();
-        throw reason;
     }
 }
 

@@ -122,9 +122,10 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledProtocolsImpl
-  (JNIEnv *env, jclass clazz, jlong context, jint flags) 
+  (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jint flags) 
 {
     SSL_CTX *ctx = (SSL_CTX*)context;
+    SSL *ssl = (SSL*)jssl;
     long options = 0;
     long mask = SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3 | SSL_OP_NO_SSLv2;
 
@@ -141,12 +142,19 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     // Clearing the options enables the protocol, setting disables
     SSL_CTX_clear_options(ctx, options);
     SSL_CTX_set_options(ctx, options ^ mask);
+
+    // If we have been passed an SSL pointer, set the options on that SSL too
+    if (ssl) {
+        SSL_clear_options(ssl, options);
+        SSL_set_options(ssl, options ^ mask);
+    }
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setClientAuthImpl
-  (JNIEnv *env, jclass clazz, jlong context, jshort flag)
+  (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jshort flag)
 {
     SSL_CTX *ctx = (SSL_CTX*)context;
+    SSL *ssl = (SSL*)jssl;
     int mode = 0;
 
     switch (flag) {
@@ -166,4 +174,9 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
 
     // Set the client authentication mode with a NULL callback
     SSL_CTX_set_verify(ctx, mode, NULL);
+
+    // If we have been passed an SSL pointer, set the options on that SSL too
+    if (ssl) {
+        SSL_set_verify(ssl, mode, NULL);
+    }
 }

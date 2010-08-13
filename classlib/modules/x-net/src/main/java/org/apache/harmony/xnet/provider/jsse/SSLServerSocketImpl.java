@@ -31,13 +31,7 @@ import javax.net.ssl.SSLServerSocket;
  */
 public class SSLServerSocketImpl extends SSLServerSocket {
 
-    // the sslParameters object encapsulates all the info
-    // about supported and enabled cipher suites and protocols,
-    // as well as the information about client/server mode of
-    // ssl socket, whether it require/want client authentication or not,
-    // and controls whether new SSL sessions may be established by this
-    // socket or not.
-    private final SSLParameters sslParameters;
+    private final SSLSocketImpl sslSocket;
 
     // logger
     private Logger.Stream logger = Logger.getStream("ssocket");
@@ -50,7 +44,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
     protected SSLServerSocketImpl(SSLParameters sslParameters)
         throws IOException {
         super();
-        this.sslParameters = sslParameters;
+        sslSocket = new SSLSocketImpl(sslParameters);
     }
 
     /**
@@ -62,7 +56,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
     protected SSLServerSocketImpl(int port, SSLParameters sslParameters)
         throws IOException {
         super(port);
-        this.sslParameters = sslParameters;
+        sslSocket = new SSLSocketImpl(sslParameters);
     }
 
     /**
@@ -75,7 +69,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
     protected SSLServerSocketImpl(int port, int backlog,
             SSLParameters sslParameters) throws IOException {
         super(port, backlog);
-        this.sslParameters = sslParameters;
+        sslSocket = new SSLSocketImpl(sslParameters);
     }
 
     /**
@@ -91,7 +85,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
                                 SSLParameters sslParameters)
         throws IOException {
         super(port, backlog, iAddress);
-        this.sslParameters = sslParameters;
+        sslSocket = new SSLSocketImpl(sslParameters);
     }
 
     // --------------- SSLParameters based methods ---------------------
@@ -103,7 +97,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public String[] getSupportedCipherSuites() {
-        return CipherSuite.getSupportedCipherSuiteNames();
+        return sslSocket.getSupportedCipherSuites();
     }
 
     /**
@@ -113,7 +107,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public String[] getEnabledCipherSuites() {
-        return sslParameters.getEnabledCipherSuites();
+        return sslSocket.getEnabledCipherSuites();
     }
 
     /**
@@ -123,7 +117,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public void setEnabledCipherSuites(String[] suites) {
-        sslParameters.setEnabledCipherSuites(suites);
+        sslSocket.setEnabledCipherSuites(suites);
     }
 
     /**
@@ -133,7 +127,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public String[] getSupportedProtocols() {
-        return ProtocolVersion.supportedProtocols.clone();
+        return sslSocket.getSupportedProtocols();
     }
 
     /**
@@ -143,7 +137,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public String[] getEnabledProtocols() {
-        return sslParameters.getEnabledProtocols();
+        return sslSocket.getEnabledProtocols();
     }
 
     /**
@@ -153,7 +147,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public void setEnabledProtocols(String[] protocols) {
-        sslParameters.setEnabledProtocols(protocols);
+        sslSocket.setEnabledProtocols(protocols);
     }
 
     /**
@@ -163,7 +157,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public void setUseClientMode(boolean mode) {
-        sslParameters.setUseClientMode(mode);
+        sslSocket.setUseClientMode(mode);
     }
 
     /**
@@ -173,7 +167,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public boolean getUseClientMode() {
-        return sslParameters.getUseClientMode();
+        return sslSocket.getUseClientMode();
     }
 
     /**
@@ -183,7 +177,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public void setNeedClientAuth(boolean need) {
-        sslParameters.setNeedClientAuth(need);
+        sslSocket.setNeedClientAuth(need);
     }
 
     /**
@@ -193,7 +187,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public boolean getNeedClientAuth() {
-        return sslParameters.getNeedClientAuth();
+        return sslSocket.getNeedClientAuth();
     }
 
     /**
@@ -203,7 +197,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public void setWantClientAuth(boolean want) {
-        sslParameters.setWantClientAuth(want);
+        sslSocket.setWantClientAuth(want);
     }
 
     /**
@@ -213,7 +207,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public boolean getWantClientAuth() {
-        return sslParameters.getWantClientAuth();
+        return sslSocket.getWantClientAuth();
     }
 
     /**
@@ -223,7 +217,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public void setEnableSessionCreation(boolean flag) {
-        sslParameters.setEnableSessionCreation(flag);
+        sslSocket.setEnableSessionCreation(flag);
     }
 
     /**
@@ -233,7 +227,7 @@ public class SSLServerSocketImpl extends SSLServerSocket {
      */
     @Override
     public boolean getEnableSessionCreation() {
-        return sslParameters.getEnableSessionCreation();
+        return sslSocket.getEnableSessionCreation();
     }
 
 
@@ -249,25 +243,23 @@ public class SSLServerSocketImpl extends SSLServerSocket {
         if (logger != null) {
             logger.println("SSLServerSocketImpl.accept ..");
         }
-        SSLSocketImpl s = new SSLSocketImpl(
-                (SSLParameters) sslParameters.clone());
-        implAccept(s);
+        implAccept(sslSocket);
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             try {
-                sm.checkAccept(s.getInetAddress().getHostAddress(),
-                        s.getPort());
+                sm.checkAccept(sslSocket.getInetAddress().getHostAddress(),
+                        sslSocket.getPort());
             } catch(SecurityException e) {
-                s.close();
+                sslSocket.close();
                 throw e;
             }
         }
-        s.init();
-        s.startHandshake();
+        sslSocket.init();
+        sslSocket.startHandshake();
         if (logger != null) {
             logger.println("SSLServerSocketImpl: accepted, initialized");
         }
-        return s;
+        return sslSocket;
     }
 
     /**
