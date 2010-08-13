@@ -40,6 +40,11 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
   (JNIEnv *, jclass, jlong, jlong, jint);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setClientAuthImpl
   (JNIEnv *, jclass, jlong, jlong, jshort);
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_getSupportedCipherSuitesImpl
+  (JNIEnv *, jclass, jlong);
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledCipherSuitesImpl
+  (JNIEnv *, jclass, jlong, jlong, jobjectArray);
+
 
 #ifdef __cplusplus
 }

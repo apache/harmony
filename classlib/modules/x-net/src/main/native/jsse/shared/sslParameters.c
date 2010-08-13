@@ -180,3 +180,34 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
         SSL_set_verify(ssl, mode, NULL);
     }
 }
+
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_getSupportedCipherSuitesImpl
+  (JNIEnv *env, jclass clazz, jlong jssl)
+{
+    SSL *ssl = (SSL*)jssl;
+    int i, count;
+    jclass stringClass;
+    jobjectArray stringArray; 
+    STACK_OF(SSL_CIPHER) *ciphers;
+
+    ciphers = SSL_get_ciphers(ssl);
+    count = sk_num(&ciphers->stack);
+
+    stringClass = (*env)->FindClass(env, "java/lang/String");
+    stringArray = (*env)->NewObjectArray(env, count, stringClass, NULL);
+
+    for (i=0; i<count; i++)
+    {
+        const char *cipherName = SSL_CIPHER_get_name(sk_value(&ciphers->stack, i));
+        jstring jcipherName = (*env)->NewStringUTF(env, cipherName);
+        (*env)->SetObjectArrayElement(env, stringArray, i, jcipherName);
+        (*env)->DeleteLocalRef(env, jcipherName);
+    }
+    return stringArray;
+}
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledCipherSuitesImpl
+  (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jobjectArray jenabledCiphers)
+{
+    // TODO: implement using SSL_CTX_set_cipher_list/SSL_set_cipher_list
+}

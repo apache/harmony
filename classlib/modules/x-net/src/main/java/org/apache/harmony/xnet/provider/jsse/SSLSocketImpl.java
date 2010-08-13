@@ -90,10 +90,12 @@ public class SSLSocketImpl extends SSLSocket {
      * @see javax.net.ssl.SSLSocket#SSLSocket() method documentation
      * for more information.
      */
-    protected SSLSocketImpl(SSLParameters sslParameters) {
+    protected SSLSocketImpl(SSLParameters sslParameters) throws IOException{
         super();
         this.sslParameters = sslParameters;
         // init should be called after creation!
+        // Initialise SSL now so it can be used
+        SSL = initImpl(sslParameters.getSSLContextAddress());
     }
 
     /**
@@ -185,7 +187,9 @@ public class SSLSocketImpl extends SSLSocket {
         appDataIS = new SSLSocketInputStream(this);
         appDataOS = new SSLSocketOutputStream(this);
 
-        SSL = initImpl(sslParameters.getSSLContextAddress());
+        if (SSL == 0) {
+            SSL = initImpl(sslParameters.getSSLContextAddress());
+        }
     }
 
     /**

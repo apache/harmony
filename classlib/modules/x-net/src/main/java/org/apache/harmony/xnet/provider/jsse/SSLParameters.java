@@ -286,7 +286,7 @@ public class SSLParameters {
 
 
     // TODO: implement the natives for get/set cipher suites
-    private native String[] getSupportedCipherSuitesImpl(long SSL);
+    private static native String[] getSupportedCipherSuitesImpl(long SSL);
 
     protected String[] getSupportedCipherSuites(long SSL) {
         if (supportedCipherSuites == null) {
@@ -306,7 +306,7 @@ public class SSLParameters {
     }
 
 
-    private native void setEnabledCipherSuitesImpl(long context, long SSL,  String[] enabledCiphers);
+    private static native void setEnabledCipherSuitesImpl(long context, long SSL,  String[] enabledCiphers);
 
     /**
      * Sets the set of available cipher suites for use in SSL connection.
