@@ -76,6 +76,11 @@ public class SSLParameters {
     private static String[] supportedProtocols = new String[] { "SSLv2", "SSLv3", "TLSv1" };
     private static int[] protocolFlags = new int[] { 1, 2, 4 }; // These correspond to the flags used in the natives
 
+    // These correspond to the flags used in the natives
+    private static short NO_CLIENT_AUTH = 1;
+    private static short REQUEST_CLIENT_AUTH = 2;
+    private static short REQUIRE_CLIENT_AUTH = 4;
+
     // Enable all protocols by default
     private String[] enabledProtocols = supportedProtocols;
     private int enabledProtocolsFlags = 7; // TLSv1 & SSLv3 & SSLv2
@@ -377,11 +382,18 @@ public class SSLParameters {
         return client_mode;
     }
 
+    private static native void setClientAuthImpl(long context, short flag);
+
     /**
      * Tunes the peer holding this parameters to require client authentication
      */
     protected void setNeedClientAuth(boolean need) {
-        need_client_auth = need;
+        if (need) {
+            setClientAuthImpl(SSL_CTX, REQUIRE_CLIENT_AUTH);
+        } else {
+            setClientAuthImpl(SSL_CTX, NO_CLIENT_AUTH);
+        }
+        need_client_auth = need;     
         // reset the want_client_auth setting
         want_client_auth = false;
     }
@@ -398,6 +410,11 @@ public class SSLParameters {
      * Tunes the peer holding this parameters to request client authentication
      */
     protected void setWantClientAuth(boolean want) {
+        if (want) {
+            setClientAuthImpl(SSL_CTX, REQUEST_CLIENT_AUTH);
+        } else {
+            setClientAuthImpl(SSL_CTX, NO_CLIENT_AUTH);
+        }
         want_client_auth = want;
         // reset the need_client_auth setting
         need_client_auth = false;

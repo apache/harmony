@@ -162,6 +162,11 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
      */
     final boolean isServer;
 
+    // OpenSSL SSL_SESSION pointer
+    private final long SSL_SESSION;
+
+    private final SSLParameters sslParameters;
+
     /**
      * Creates SSLSession implementation
      * 
@@ -187,6 +192,9 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
             isServer = true;
         }
 
+        // Add to satisfy compiler
+        SSL_SESSION = 0;
+        sslParameters = null;
     }
 
     /**
@@ -196,6 +204,14 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
      */
     public SSLSessionImpl(SecureRandom sr) {
         this(null, sr);
+    }
+
+    private native long initialiseSession(long SSL);
+    
+    public SSLSessionImpl(SSLParameters parms, long SSL) {
+        sslParameters = parms;
+        SSL_SESSION = initialiseSession(SSL);
+        this.isServer = !sslParameters.getUseClientMode();
     }
 
     public int getApplicationBufferSize() {

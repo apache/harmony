@@ -441,7 +441,6 @@ public class SSLSocketImpl extends SSLSocket {
                 }
 
                 sslConnectImpl(SSL, impl.getFileDescriptor());
-                
 
                 //handshakeProtocol = new ClientHandshakeImpl(this);
             } else {
@@ -467,6 +466,18 @@ public class SSLSocketImpl extends SSLSocket {
         //handshakeProtocol.start();
 
         //doHandshake();
+
+        session = new SSLSessionImpl(sslParameters, SSL);
+        // Notify handshake completion listeners
+        if (listeners != null) {
+            HandshakeCompletedEvent event =
+                new HandshakeCompletedEvent(this, session);
+            int size = listeners.size();
+            for (int i=0; i<size; i++) {
+                listeners.get(i)
+                    .handshakeCompleted(event);
+            }
+        }
 
         if (logger != null) {
             logger.println("SSLSocketImpl.startHandshake: END");

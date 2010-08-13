@@ -17,29 +17,15 @@
 
 #include <jni.h>
 
-#ifndef _SSLPARAMETERS_H
-#define _SSLPARAMETERS_H
+#ifndef _SSLSESSION_H
+#define _SSLSESSION_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// Protocol flags - these correspond to the flags used in SSLParameters.java
-#define PROTOCOL_SSLv2 1
-#define PROTOCOL_SSLv3 2
-#define PROTOCOL_TLSv1 4
-
-// Client authentication flags - these correspond to the flags used in SSLParameters.java
-#define NO_CLIENT_AUTH 1
-#define REQUEST_CLIENT_AUTH 2
-#define REQUIRE_CLIENT_AUTH 4
-
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
-  (JNIEnv *, jclass, jobjectArray, jbyteArray, jbyteArray);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledProtocolsImpl
-  (JNIEnv *, jclass, jlong, jint);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setClientAuthImpl
-  (JNIEnv *, jclass, jlong, jshort);
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_initialiseSession
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

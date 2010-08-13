@@ -47,6 +47,9 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
        ERR_print_errors_fp(stderr);
     }
 
+    // Set client auth off by default
+    SSL_CTX_set_verify(context, SSL_VERIFY_NONE, NULL);
+
     // First initilise the trust certificates in our newly created context
     size = (*env)->GetArrayLength(env, jtrustCerts);
     if (size) {
@@ -73,11 +76,6 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
             }
             free(certBuffer);
         }
-
-        // Carry out peer cert verification
-        // TODO: Is this the right setting?
-        SSL_CTX_set_verify(context, SSL_VERIFY_PEER, NULL);
-        SSL_CTX_set_verify_depth(context, 1);
     }
 
     if (jkeyCert != NULL) {
@@ -143,4 +141,29 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     // Clearing the options enables the protocol, setting disables
     SSL_CTX_clear_options(ctx, options);
     SSL_CTX_set_options(ctx, options ^ mask);
+}
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setClientAuthImpl
+  (JNIEnv *env, jclass clazz, jlong context, jshort flag)
+{
+    SSL_CTX *ctx = (SSL_CTX*)context;
+    int mode = 0;
+
+    switch (flag) {
+    case NO_CLIENT_AUTH:
+        mode = SSL_VERIFY_NONE;
+        break;
+    case REQUEST_CLIENT_AUTH:
+        mode = SSL_VERIFY_PEER;
+        break;
+    case REQUIRE_CLIENT_AUTH:
+        mode = SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
+        break;
+    default:
+        // Should never happen
+        return;
+    }
+
+    // Set the client authentication mode with a NULL callback
+    SSL_CTX_set_verify(ctx, mode, NULL);
 }
