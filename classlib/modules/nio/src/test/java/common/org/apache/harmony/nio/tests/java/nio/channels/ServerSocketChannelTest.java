@@ -369,10 +369,11 @@ public class ServerSocketChannelTest extends TestCase {
     }
     
     /**
+     * @throws InterruptedException 
      * @tests ServerSocketChannel#accept().socket()
      */
     public void test_read_LByteBuffer_Blocking_ReadWriteRealLargeData()
-            throws IOException {
+            throws IOException, InterruptedException {
         serverChannel.socket().bind(localAddr1);
         ByteBuffer buf = ByteBuffer.allocate(CAPACITY_64KB);
         for (int i = 0; i < CAPACITY_64KB; i++) {
@@ -380,13 +381,38 @@ public class ServerSocketChannelTest extends TestCase {
         }
         buf.flip();
         clientChannel.connect(localAddr1);
-        clientChannel.write(buf);
-        clientChannel.close();
+        WriteChannelThread writeThread = new WriteChannelThread(clientChannel, buf);
+        writeThread.start();
         Socket socket = serverChannel.accept().socket();
         InputStream in = socket.getInputStream();
         assertReadResult(in,CAPACITY_64KB);
+        writeThread.join();
+        // check if the thread threw any exceptions
+        if (writeThread.exception != null) {
+            throw writeThread.exception;
+        }
     }
 
+    class WriteChannelThread extends Thread {
+        SocketChannel channel;
+        ByteBuffer buffer;
+        IOException exception;
+        
+        public WriteChannelThread(SocketChannel channel, ByteBuffer buffer) {
+            this.channel = channel;
+            this.buffer = buffer;
+        }
+        
+        public void run() {
+            try {
+                channel.write(buffer);
+                channel.close();
+            } catch (IOException e) {
+                exception = e;
+            }
+        }
+    }
+    
     /**
      * @tests ServerSocketChannel#accept().socket()
      */
@@ -400,11 +426,16 @@ public class ServerSocketChannelTest extends TestCase {
         }
         buf.flip();
         clientChannel.connect(localAddr1);
-        clientChannel.write(buf);
-        clientChannel.close();
+        WriteChannelThread writeThread = new WriteChannelThread(clientChannel, buf);
+        writeThread.start();
         Socket socket = serverChannel.accept().socket();
         InputStream in = socket.getInputStream();
         assertReadResult(in,CAPACITY_64KB);
+        writeThread.join();
+        // check if the thread threw any exceptions
+        if (writeThread.exception != null) {
+            throw writeThread.exception;
+        }
     }
     
     /**
@@ -420,10 +451,35 @@ public class ServerSocketChannelTest extends TestCase {
         }
         clientChannel.connect(localAddr1); 
         Socket socket = serverChannel.accept().socket();
-        OutputStream out = socket.getOutputStream();
-        out.write(writeContent);
-        socket.close();
+        WriteSocketThread writeThread = new WriteSocketThread(socket, writeContent);
+        writeThread.start();
         assertWriteResult(CAPACITY_64KB);
+        writeThread.join();
+        // check if the thread threw any exceptions
+        if (writeThread.exception != null) {
+            throw writeThread.exception;
+        }
+    }
+    
+    class WriteSocketThread extends Thread {
+        Socket socket;
+        byte[] buffer;
+        IOException exception;
+        
+        public WriteSocketThread(Socket socket, byte[] buffer) {
+            this.socket = socket;
+            this.buffer = buffer;
+        }
+        
+        public void run() {
+            try {
+                OutputStream out = socket.getOutputStream();
+                out.write(buffer);
+                socket.close();
+            } catch (IOException e) {
+                exception = e;
+            }
+        }
     }
     
     /**
@@ -438,10 +494,14 @@ public class ServerSocketChannelTest extends TestCase {
         }
         clientChannel.connect(localAddr1); 
         Socket socket = serverChannel.accept().socket();
-        OutputStream out = socket.getOutputStream();
-        out.write(writeContent);
-        socket.close();
+        WriteSocketThread writeThread = new WriteSocketThread(socket, writeContent);
+        writeThread.start();
         assertWriteResult(CAPACITY_64KB);
+        writeThread.join();
+        // check if the thread threw any exceptions
+        if (writeThread.exception != null) {
+            throw writeThread.exception;
+        }
     }
     
     /**
