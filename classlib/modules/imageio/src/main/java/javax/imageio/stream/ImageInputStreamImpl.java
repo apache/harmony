@@ -187,11 +187,14 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	}
 
 	public String readUTF() throws IOException {
+		ByteOrder byteOrder = getByteOrder();
+		setByteOrder(ByteOrder.BIG_ENDIAN);
 		final int size = readUnsignedShort();
 		final byte[] buf = new byte[size];
 		final char[] out = new char[size];
 
 		readFully(buf, 0, size);
+		setByteOrder(byteOrder);
 		//return new DataInputStream(new ByteArrayInputStream(buff)).readUTF();
 		return Util.convertUTF8WithBuf(buf, out, 0, size);
 	}
