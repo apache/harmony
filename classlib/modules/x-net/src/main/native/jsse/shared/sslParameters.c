@@ -209,5 +209,36 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledCipherSuitesImpl
   (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jobjectArray jenabledCiphers)
 {
-    // TODO: implement using SSL_CTX_set_cipher_list/SSL_set_cipher_list
+    jsize i;
+    int size = 0;
+    jsize count = (*env)->GetArrayLength(env, jenabledCiphers);
+    char *cipherList;
+    
+    // Calculate the length of the cipher string for OpenSSL.
+    // This is strlen(cipher) + 1 for the ':' separator or the final '/0'
+    for (i=0; i<count; i++) {
+        size += (*env)->GetStringUTFLength(env, (jstring)(*env)->GetObjectArrayElement(env, jenabledCiphers, i)) + 1;
+    }
+
+    // malloc the memory we need
+    // TODO: go through the port library for this
+    cipherList = malloc(size);
+    memset(cipherList, 0, size);
+
+    // Now strcat all our cipher names separated by colons, as required by OpenSSL
+    for (i=0; i<count; i++) {
+        jstring jcipher = (jstring)(*env)->GetObjectArrayElement(env, jenabledCiphers, i);
+        const char *cipher = (*env)->GetStringUTFChars(env, jcipher, NULL);
+        strcat(cipherList, cipher);
+        if (i != count-1) {
+            strcat(cipherList, ":");
+        }
+        (*env)->ReleaseStringUTFChars(env, jcipher, cipher);
+    }
+
+    // Set the new cipher list in the context and SSL, if specified
+    SSL_CTX_set_cipher_list((SSL_CTX*)context, cipherList);
+    if (jssl) {
+        SSL_set_cipher_list((SSL*)jssl, cipherList);
+    }
 }
