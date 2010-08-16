@@ -35,6 +35,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	private boolean closed = false;
 
 	private final PositionStack posStack = new PositionStack();
+	private final PositionStack offsetStack = new PositionStack();
 	private final byte[] buff = new byte[8];
 
 	public ImageInputStreamImpl() {
@@ -360,6 +361,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	public void mark() {
 		try {
 			posStack.push(getStreamPosition());
+			offsetStack.push(getBitOffset());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(Messages.getString("imageio.11"));
@@ -367,14 +369,14 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	}
 
 	public void reset() throws IOException {
-		// -- TODO bit pos
-		if (!posStack.isEmpty()) {
+		if (!posStack.isEmpty() && !offsetStack.isEmpty()) {
 			long p = posStack.pop();
 			if (p < flushedPos) {
 				throw new IOException(
 						Messages.getString("imageio.12"));
 			}
 			seek(p);
+			setBitOffset((int)offsetStack.pop());
 		}
 	}
 
