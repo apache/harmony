@@ -19,6 +19,11 @@
  */
 package javax.imageio.spi;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -42,9 +47,8 @@ public class ServiceRegistry {
         }
     }
 
-    public static <T> Iterator<T> lookupProviders(Class<T> providerClass, ClassLoader loader) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static <T> Iterator<T> lookupProviders(Class<T> providerClass, ClassLoader loader) {
+        return new LookupProvidersIterator(providerClass, loader);
     }
 
     public static <T> Iterator<T> lookupProviders(Class<T> providerClass) {
@@ -547,6 +551,135 @@ public class ServiceRegistry {
         
         public void remove() {
             throw new UnsupportedOperationException();
+        }
+    }
+    
+    static class LookupProvidersIterator<T> implements Iterator {
+
+        private Set<String> providerNames = new HashSet<String>();
+        private Iterator<String> it = null;
+        private ClassLoader loader = null;
+        
+        public LookupProvidersIterator(Class<T> providerClass, ClassLoader loader) {
+            this.loader = loader;
+            
+            Enumeration<URL> e = null;
+            try {
+                e = loader.getResources("META-INF/services/"+providerClass.getName()); //$NON-NLS-1$
+                while (e.hasMoreElements()) {
+                    Set<String> names = parse((URL)e.nextElement());
+                    providerNames.addAll(names);
+                }
+            } catch (IOException e1) {
+                // Ignored
+            }
+
+            it = providerNames.iterator();
+        }
+        
+        /*
+         * Parse the provider-configuration file as specified 
+         * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/jar/jar.html#Provider Configuration File">JAR File Specification</a>
+         */
+        private Set<String> parse(URL u) {
+            InputStream input = null;
+            BufferedReader reader = null;
+            Set<String> names = new HashSet<String>();
+            try {
+                input = u.openStream();
+                reader = new BufferedReader(new InputStreamReader(input, "utf-8")); //$NON-NLS-1$
+                
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // The comment character is '#' (0x23)
+                    // on each line all characters following the first comment character are ignored
+                    int sharpIndex = line.indexOf('#');
+                    if (sharpIndex>=0) {
+                        line = line.substring(0, sharpIndex);
+                    }
+                    
+                    // Whitespaces are ignored
+                    line = line.trim();
+                    
+                    if (line.length()>0) {
+                        // a java class name, check if identifier correct
+                        char[] namechars = line.toCharArray();
+                        for (int i = 0; i < namechars.length; i++) {
+                            if (!(Character.isJavaIdentifierPart(namechars[i]) || namechars[i] == '.')) {
+                                throw new ServiceConfigurationError(Messages.getString("imageio.99", line));
+                            }
+                        }
+                        names.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                throw new ServiceConfigurationError(e.toString());
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                    if (input != null) {
+                        input.close();
+                    }
+                } catch (IOException e) {
+                    throw new ServiceConfigurationError(e.toString());
+                }
+            }
+            
+            return names;
+        }
+        
+        public boolean hasNext() {
+            return it.hasNext();
+        }
+
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            
+            String name = (String)it.next();
+            try {
+                return Class.forName(name, true, loader).newInstance();
+            } catch (Exception e) {
+                throw new ServiceConfigurationError(e.toString());
+            }
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();   
+        }
+    }
+    
+    /**
+     * An Error that can be thrown when something wrong occurs in loading a service
+     * provider.
+     */
+    static class ServiceConfigurationError extends Error {
+        
+        private static final long serialVersionUID = 74132770414881L;
+
+        /**
+         * The constructor
+         * 
+         * @param msg
+         *            the message of this error
+         */
+        public ServiceConfigurationError(String msg) {
+            super(msg);
+        }
+
+        /**
+         * The constructor
+         * 
+         * @param msg
+         *            the message of this error
+         * @param cause 
+         *            the cause of this error
+         */
+        public ServiceConfigurationError(String msg, Throwable cause) {
+            super(msg, cause);
         }
     }
 }

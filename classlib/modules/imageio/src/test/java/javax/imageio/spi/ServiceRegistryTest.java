@@ -31,6 +31,22 @@ import javax.imageio.spi.ImageWriterSpi;
 
 public class ServiceRegistryTest extends TestCase {
 
+    public void testLookupProviders() {
+        // lookup from a correct provider-configuration file
+        Iterator it = ServiceRegistry.lookupProviders(CorrectProviderConfiguration.class); 
+        assertEquals("Failed to find provider and instantiate it",
+                "class javax.imageio.spi.CorrectProviderConfiguration", 
+                it.next().getClass().toString());
+       
+        // lookup from incorrect provider-configuration file
+        try {
+            it = ServiceRegistry.lookupProviders(IncorrectProviderConfiguration.class);
+            fail("ServiceConfigurationError expected");
+        } catch (Error e) {
+            // Ok
+        }
+    }
+    
     public void testDeregisterAll() {
         Class[] CATEGORIES = new Class[] {
                 ImageReaderSpi.class };
