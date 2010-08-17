@@ -84,9 +84,8 @@ public class ServiceRegistry {
         return (Iterator<T>) categories.getProviders(category, useOrdering);
     }
 
-    public <T> T getServiceProviderByClass(Class<T> providerClass) throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public <T> T getServiceProviderByClass(Class<T> providerClass) {
+        return categories.getServiceProviderByClass(providerClass);
     }
 
     public <T> boolean setOrdering(Class<T> category, T firstProvider, T secondProvider) {
@@ -172,6 +171,18 @@ public class ServiceRegistry {
                 throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
             return providers.getProviders(useOrdering);
+        }
+        
+        <T> T getServiceProviderByClass(Class<T> providerClass) {
+        	for (Map.Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
+        		if (e.getKey().isAssignableFrom(providerClass)) {
+        			T provider = e.getValue().getServiceProviderByClass(providerClass);
+        			if (provider != null) {
+        				return provider;
+        			}
+        		}
+        	}
+        	return null;
         }
 
         Iterator<Class<?>> list() {
@@ -341,6 +352,11 @@ public class ServiceRegistry {
             }
             
             return providers.values().iterator();
+        }
+        
+        @SuppressWarnings("unchecked")
+		<T> T getServiceProviderByClass(Class<T> providerClass) {
+        	return (T)providers.get(providerClass);
         }
         
         public <T> boolean setOrdering(T firstProvider, T secondProvider) {
