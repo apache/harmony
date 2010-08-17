@@ -19,6 +19,8 @@ package javax.print.attribute;
 
 import java.io.Serializable;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public abstract class ResolutionSyntax implements Cloneable, Serializable {
     private static final long serialVersionUID = 2706743076526672017L;
 
@@ -31,14 +33,17 @@ public abstract class ResolutionSyntax implements Cloneable, Serializable {
     private final int feedRes;
 
     public ResolutionSyntax(int crossFeedResolution, int feedResolution, int units) {
-        if (crossFeedResolution < 1) {
-            throw new IllegalArgumentException("CrossFeedResolution " + "is less than 1");
+        if (crossFeedResolution < 1) {           
+            //print.0F= CrossFeedResolution is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.0F")); //$NON-NLS-1$            
         }
-        if (feedResolution < 1) {
-            throw new IllegalArgumentException("FeedResolution is less than 1");
+        if (feedResolution < 1) {            
+            //print.10= Feed resolution is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.10")); //$NON-NLS-1$        
         }
-        if (units < 1) {
-            throw new IllegalArgumentException("Units is less than 1");
+        if (units < 1) {            
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$        
         }
         crossFeedRes = crossFeedResolution * units;
         feedRes = feedResolution * units;
@@ -56,7 +61,8 @@ public abstract class ResolutionSyntax implements Cloneable, Serializable {
 
     public int getCrossFeedResolution(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$
         }
         return Math.round(((float) crossFeedRes) / units);
     }
@@ -67,7 +73,8 @@ public abstract class ResolutionSyntax implements Cloneable, Serializable {
 
     public int getFeedResolution(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$
         }
         return Math.round(((float) feedRes) / units);
     }

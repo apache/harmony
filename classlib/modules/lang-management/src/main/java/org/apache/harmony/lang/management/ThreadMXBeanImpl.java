@@ -23,6 +23,8 @@ import java.lang.management.ThreadMXBean;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Runtime type for {@link java.lang.management.ThreadMXBean}
  * 
@@ -177,8 +179,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
     public long getThreadCpuTime(long id) {
         // Validate input.
         if (id <= 0) {
-            throw new IllegalArgumentException(
-                    "Thread id must be greater than 0.");
+            //lm.1B=Thread id must be greater than 0
+            throw new IllegalArgumentException(Messages.getString("lm.1B")); //$NON-NLS-1$            
         }
 
         long result = -1;
@@ -187,8 +189,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
                 result = this.getThreadCpuTimeImpl(id);
             }
         } else {
-            throw new UnsupportedOperationException(
-                    "CPU time measurement is not supported on this virtual machine.");
+            //lm.1C=CPU time measurement is not supported on this virtual machine
+            throw new UnsupportedOperationException(Messages.getString("lm.1C")); //$NON-NLS-1$
         }
         return result;
     }
@@ -225,14 +227,14 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
         // Validate inputs
         for (int i = 0; i < ids.length; i++) {
             if (ids[i] <= 0) {
-                throw new IllegalArgumentException(
-                        "Thread id must be greater than 0.");
+                //lm.1B=Thread id must be greater than 0
+                throw new IllegalArgumentException(Messages.getString("lm.1B")); //$NON-NLS-1$            
             }
         }
 
-        if (maxDepth < 0) {
-            throw new IllegalArgumentException(
-                    "maxDepth value cannot be negative.");
+        if (maxDepth < 0) {            
+            //lm.1D=maxDepth value cannot be negative.
+            throw new IllegalArgumentException(Messages.getString("lm.1D")); //$NON-NLS-1$
         }
 
         // Create an array and populate with individual ThreadInfos
@@ -256,12 +258,12 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
 
         // Validate inputs
         if (id <= 0) {
-            throw new IllegalArgumentException(
-                    "Thread id must be greater than 0.");
+            //lm.1B=Thread id must be greater than 0
+            throw new IllegalArgumentException(Messages.getString("lm.1B")); //$NON-NLS-1$            
         }
         if (maxDepth < 0) {
-            throw new IllegalArgumentException(
-                    "maxDepth value cannot be negative.");
+            //lm.1D=maxDepth value cannot be negative.
+            throw new IllegalArgumentException(Messages.getString("lm.1D")); //$NON-NLS-1$
         }
         return this.getThreadInfoImpl(id, maxDepth);
     }
@@ -480,8 +482,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
     public long getThreadUserTime(long id) {
         // Validate input.
         if (id <= 0) {
-            throw new IllegalArgumentException(
-                    "Thread id must be greater than 0.");
+            //lm.1B=Thread id must be greater than 0
+            throw new IllegalArgumentException(Messages.getString("lm.1B")); //$NON-NLS-1$                          
         }
 
         long result = -1;
@@ -490,8 +492,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
                 result = this.getThreadUserTimeImpl(id);
             }
         } else {
-            throw new UnsupportedOperationException(
-                    "CPU time measurement is not supported on this virtual machine.");
+            //lm.1C=CPU time measurement is not supported on this virtual machine
+            throw new UnsupportedOperationException(Messages.getString("lm.1C")); //$NON-NLS-1$    
         }
         return result;
     }
@@ -541,8 +543,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public boolean isThreadContentionMonitoringEnabled() {
         if (!isThreadContentionMonitoringSupported()) {
-            throw new UnsupportedOperationException(
-                    "Thread contention monitoring is not supported on this virtual machine.");
+            //lm.1E=Thread contention monitoring is not supported on this virtual machine.
+            throw new UnsupportedOperationException(Messages.getString("lm.1E")); //$NON-NLS-1$
         }
         return this.isThreadContentionMonitoringEnabledImpl();
     }
@@ -577,8 +579,9 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public boolean isThreadCpuTimeEnabled() {
         if (!isThreadCpuTimeSupported()) {
-            throw new UnsupportedOperationException(
-                    "Thread CPU timing is not supported on this virtual machine.");
+            
+            //lm.01=Thread CPU timing is not supported on this virtual machine.
+            throw new UnsupportedOperationException(Messages.getString("lm.01")); //$NON-NLS-1$
         }
         return this.isThreadCpuTimeEnabledImpl();
     }
@@ -631,8 +634,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public void setThreadContentionMonitoringEnabled(boolean enable) {
         if (!isThreadContentionMonitoringSupported()) {
-            throw new UnsupportedOperationException(
-                    "Thread contention monitoring is not supported on this virtual machine.");
+            //lm.1E=Thread contention monitoring is not supported on this virtual machine.
+            throw new UnsupportedOperationException(Messages.getString("lm.1E")); //$NON-NLS-1$            
         }
 
         SecurityManager security = System.getSecurityManager();
@@ -656,8 +659,8 @@ public final class ThreadMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public void setThreadCpuTimeEnabled(boolean enable) {
         if (!isThreadCpuTimeSupported()) {
-            throw new UnsupportedOperationException(
-                    "Thread CPU timing is not supported on this virtual machine.");
+            //lm.01=Thread CPU timing is not supported on this virtual machine.
+            throw new UnsupportedOperationException(Messages.getString("lm.01")); //$NON-NLS-1$          
         }
 
         SecurityManager security = System.getSecurityManager();

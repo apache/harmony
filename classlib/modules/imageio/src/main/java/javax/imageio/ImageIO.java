@@ -44,9 +44,8 @@ public final class ImageIO {
     private ImageIO() {}
     
 
-    public static void scanForPlugins() throws NotImplementedException {
-        // TODO: implement
-        throw new NotImplementedException();
+    public static void scanForPlugins() {
+        registry.registerApplicationClasspathSpis();
     }
 
     public static void setUseCache(boolean useCache) {
@@ -77,7 +76,9 @@ public final class ImageIO {
         while (it.hasNext()) {
             ImageInputStreamSpi spi = it.next();
             if (spi.getInputClass().isInstance(input)) {
-                return spi.createInputStreamInstance(input);
+                return getUseCache() ?
+                		spi.createInputStreamInstance(input, true, getCacheDirectory()) :
+                		spi.createInputStreamInstance(input);
             }
         }
         return null;
@@ -94,8 +95,9 @@ public final class ImageIO {
         while (it.hasNext()) {
             ImageOutputStreamSpi spi = it.next();
             if (spi.getOutputClass().isInstance(output)) {
-                // todo - use getUseCache and getCacheDir here
-                return spi.createOutputStreamInstance(output);
+            	return getUseCache() ?
+            			spi.createOutputStreamInstance(output, true, getCacheDirectory()) :
+            		    spi.createOutputStreamInstance(output);
             }
         }
         return null;

@@ -61,6 +61,8 @@ import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 import javax.management.openmbean.TabularType;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Support methods for org.apache.harmony.lang.management classes.
  * 
@@ -772,9 +774,9 @@ public class ManagementUtils {
             String[] expectedNames, String[] expectedTypes) {
         Object[] allVals = cd.getAll(expectedNames);
         // Check that the number of elements match
-        if (allVals.length != expectedTypes.length) {
-            throw new IllegalArgumentException(
-                    "CompositeData does not contain the expected number of attributes.");
+        if (allVals.length != expectedTypes.length) {                    
+            //lm.0E=CompositeData does not contain the expected number of attribute.
+            throw new IllegalArgumentException(Messages.getString("lm.0E")); //$NON-NLS-1$       
         }
 
         // Type of corresponding elements must be the same
@@ -793,11 +795,10 @@ public class ManagementUtils {
                     if (allVals[i] instanceof CompositeData) {
                         continue;
                     }
-                }
-                throw new IllegalArgumentException(
-                        "CompositeData contains an attribute not of expected type. "
-                                + "Expected " + expectedType + ", found "
-                                + actualType);
+                }                                
+                //lm.0F=CompositeData contains an attribute not of expected type. Expected {0} ,found {1}
+                throw new IllegalArgumentException(Messages.getString("lm.0F", expectedType, actualType)); //$NON-NLS-1$               
+               
             }
         }// end for
     }
@@ -814,10 +815,9 @@ public class ManagementUtils {
      */
     public static void verifyFieldNames(CompositeData cd, String[] expected) {
         for (int i = 0; i < expected.length; i++) {
-            if (!cd.containsKey(expected[i])) {
-                throw new IllegalArgumentException(
-                        "CompositeData object does not contain expected key : " //$NON-NLS-1$
-                                + expected[i]);
+            if (!cd.containsKey(expected[i])) {                
+                //lm.10=CompositeData object does not contain expected key: {0}
+                throw new IllegalArgumentException(Messages.getString("lm.10", expected[i])); //$NON-NLS-1$                
             }
         }// end for all elements in expected
     }
@@ -833,10 +833,10 @@ public class ManagementUtils {
      *            the number of expected attributes in <code>cd</code>
      */
     public static void verifyFieldNumber(CompositeData cd, int minSize) {
-        if (cd.values().size() < minSize) {
-            throw new IllegalArgumentException(
-                    "CompositeData object does not have the expected number of attributes"); //$NON-NLS-1$
-        }
+        if (cd.values().size() < minSize) {            
+            //lm.11=CompositeData object does not have the expected number of attributes 
+            throw new IllegalArgumentException(Messages.getString("lm.11")); //$NON-NLS-1$          
+            }
     }
 
     /**
@@ -1129,9 +1129,9 @@ public class ManagementUtils {
         Set<String> cdKeySet = data.getTabularType().getRowType().keySet();
         // The key set for the CompositeData instances comprising each row
         // must contain only two elements.
-        if (cdKeySet.size() != 2) {
-            throw new IllegalArgumentException(
-                    "TabularData's row type is not a CompositeType with two items.");
+        if (cdKeySet.size() != 2) {            
+            //lm.12=TabularData row type is not CompositeType with two items.
+            throw new IllegalArgumentException(Messages.getString("lm.12")); //$NON-NLS-1$
         }
         String[] keysArray = new String[2];
         int count = 0;

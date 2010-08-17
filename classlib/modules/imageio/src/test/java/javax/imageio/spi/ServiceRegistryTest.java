@@ -31,6 +31,22 @@ import javax.imageio.spi.ImageWriterSpi;
 
 public class ServiceRegistryTest extends TestCase {
 
+    public void testLookupProviders() {
+        // lookup from a correct provider-configuration file
+        Iterator it = ServiceRegistry.lookupProviders(CorrectProviderConfiguration.class); 
+        assertEquals("Failed to find provider and instantiate it",
+                "class javax.imageio.spi.CorrectProviderConfiguration", 
+                it.next().getClass().toString());
+       
+        // lookup from incorrect provider-configuration file
+        try {
+            it = ServiceRegistry.lookupProviders(IncorrectProviderConfiguration.class);
+            fail("ServiceConfigurationError expected");
+        } catch (Error e) {
+            // Ok
+        }
+    }
+    
     public void testDeregisterAll() {
         Class[] CATEGORIES = new Class[] {
                 ImageReaderSpi.class };
@@ -148,6 +164,18 @@ public class ServiceRegistryTest extends TestCase {
         
         // Return false if this ordering is not set
         assertFalse("Failed to check if the ordering is not set", registry.unsetOrdering(CATEGORIES[0], reader2, reader));
+    }
+    
+    public void testGetServiceProviderByClass() {
+    	Class[] CATEGORIES = new Class[] {
+                ImageReaderSpi.class };
+        
+        ServiceRegistry registry = new ServiceRegistry(Arrays.<Class<?>> asList(CATEGORIES).iterator());
+        ImageReaderSpi reader = new SampleImageReaderSpi();
+        registry.registerServiceProvider(reader, CATEGORIES[0]);
+        
+        ImageReaderSpi provider = registry.getServiceProviderByClass(SampleImageReaderSpi.class);
+        assertEquals(reader, provider);
     }
 
     public void testRegistryServiceProvider() throws Exception {

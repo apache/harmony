@@ -25,6 +25,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import javax.print.attribute.DocAttributeSet;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class SimpleDoc implements Doc {
     private Object printdata;
 
@@ -44,16 +46,19 @@ public final class SimpleDoc implements Doc {
          * in the DocFlavor.
          */
         if (docflavor == null || printData == null) {
-            throw new IllegalArgumentException("Argument is null");
+            
+            //print.00= Argument is null
+            throw new IllegalArgumentException(Messages.getString("print.00")); //$NON-NLS-1$
         }
         try {
             Class<?> clazz = Class.forName(docflavor.getRepresentationClassName());
             if (!clazz.isInstance(printData)) {
                 throw new IllegalArgumentException("");
             }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Wrong type of print data");
-        }
+        } catch (Exception e) {          
+            //print.01= Wrong type of print data
+            throw new IllegalArgumentException(Messages.getString("print.01")); //$NON-NLS-1$
+            }
         this.printdata = printData;
         this.flavor = docflavor;
         this.attributes = docattributes;

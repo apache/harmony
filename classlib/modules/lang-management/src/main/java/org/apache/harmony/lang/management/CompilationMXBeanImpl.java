@@ -21,6 +21,8 @@ import java.lang.management.CompilationMXBean;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Runtime type for {@link CompilationMXBean}
  * 
@@ -97,9 +99,9 @@ public final class CompilationMXBeanImpl extends DynamicMXBeanImpl implements
      * @see java.lang.management.CompilationMXBean#getTotalCompilationTime()
      */
     public long getTotalCompilationTime() {
-        if (!isCompilationTimeMonitoringSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support monitoring of compilation time.");
+        if (!isCompilationTimeMonitoringSupported()) {            
+            //lm.09=VM does not support monitoring of compilation time
+            throw new UnsupportedOperationException(Messages.getString("lm.09")); //$NON-NLs-1$            
         }
         return this.getTotalCompilationTimeImpl();
     }

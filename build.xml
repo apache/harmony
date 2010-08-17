@@ -29,6 +29,8 @@
     <!-- debug or release version -->
     <property name="hy.cfg" value="release" />
 
+    <property name="hy.select" value="false" />
+
     <property name="hy.hdk" location="${hy.target}/hdk" />
     <property name="hy.component" location="federated" />
     <property name="hy.module" location="toplevel" />
@@ -125,21 +127,33 @@ Usage:
                  bundle-src-zip" />
 
     <target name="rat" depends="setup,copy-src">
+        <property name="rat.version" value="0.7" />
         <fail
              message="Set rat.home property to directory containing rat build">
             <condition><not><available file="${rat.home}" /></not></condition>
         </fail>
         <typedef resource="org/apache/rat/anttasks/antlib.xml"
                  uri="antlib:org.apache.rat.anttasks">
-            <classpath path="${rat.home}/apache-rat-tasks/target/apache-rat-tasks-0.7-SNAPSHOT.jar" />
-            <classpath path="${rat.home}/apache-rat-core/target/apache-rat-core-0.7-SNAPSHOT.jar" />
-            <classpath path="${rat.home}/apache-rat/target/apache-rat-0.7-SNAPSHOT.jar" />
+            <!-- these work if rat.home is a built source checkout -->
+            <classpath path="${rat.home}/apache-rat-tasks/target/apache-rat-tasks-${rat.version}.jar" />
+            <classpath path="${rat.home}/apache-rat-core/target/apache-rat-core-${rat.version}.jar" />
+            <classpath path="${rat.home}/apache-rat/target/apache-rat-${rat.version}.jar" />
+
+            <!-- these work if rat.home is a binary build -->
+            <classpath path="${rat.home}/apache-rat-tasks-${rat.version}.jar" />
+            <classpath path="${rat.home}/apache-rat-core-${rat.version}.jar" />
+            <classpath path="${rat.home}/apache-rat-${rat.version}.jar" />
         </typedef>
         <delete file="${hy.target}/rat.report.txt" />
         <rat:report xmlns:rat="antlib:org.apache.rat.anttasks"
                     reportFile="${hy.target}/rat.report.txt" >
             <fileset dir="${hy.target}/src" excludesfile="rat.excludes" />
         </rat:report>
+        <property name="rat.location"
+                  location="${hy.target}/rat.report.txt" />
+        <echo>Rat report generated at
+  ${rat.location}
+        </echo>
     </target>
 
     <!-- ============================================================== -->
@@ -448,6 +462,7 @@ Usage:
 
     <propertyset id="required.props">
         <propertyref name="hy.cfg" />
+        <propertyref name="hy.select" />
         <propertyref name="hy.hdk" />
         <propertyref name="hy.local.zlib" />
         <propertyref name="use.libstdc++5" />

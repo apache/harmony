@@ -43,6 +43,7 @@ import javax.management.ObjectName;
 import org.apache.harmony.lang.management.ManagementUtils;
 import org.apache.harmony.lang.management.MemoryManagerMXBeanImpl;
 import org.apache.harmony.lang.management.OpenTypeMappingIHandler;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 
 /**
@@ -374,16 +375,16 @@ public class ManagementFactory {
         if (multiInstanceBeanNames.contains(mxbeanInterfaceName)) {
             // partial match is good enough
             if (!mxbeanName.startsWith(expectedObjectName)) {
-                throw new IllegalArgumentException(mxbeanName
-                        + " is not an instance of interface "
-                        + mxbeanInterfaceName);
+                // lm.02={0} is not an instance of interface {1}
+                throw new IllegalArgumentException(Messages.getString(
+                        "lm.02", mxbeanName, mxbeanInterfaceName)); //$NON-NLS-1$                
             }
         } else {
             // exact match required
             if (!expectedObjectName.equals(mxbeanName)) {
-                throw new IllegalArgumentException(mxbeanName
-                        + " is not an instance of interface "
-                        + mxbeanInterfaceName);
+                // lm.02= {0} is not an instance of interface {1}
+                throw new IllegalArgumentException(Messages.getString(
+                        "lm.02", mxbeanName, mxbeanInterfaceName)); //$NON-NLS-1$                
             }
         }
     }

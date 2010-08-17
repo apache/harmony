@@ -287,6 +287,8 @@ public class JarFileTest extends TestCase {
         // java.util.jar.JarFile.getManifest()
         Support_Resources.copyFile(resources, null, JAR1);
         JarFile jarFile = new JarFile(new File(resources, JAR1));
+        InputStream is = jarFile.getInputStream(jarFile.getEntry(JAR1_ENTRY1));
+        assertTrue(is.available() > 0);
         assertNotNull("Error--Manifest not returned", jarFile.getManifest());
         jarFile.close();
 

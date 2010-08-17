@@ -20,6 +20,7 @@ package java.lang.management;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.harmony.lang.management.ManagementUtils;
+import org.apache.harmony.lang.management.internal.nls.Messages;
 
 /**
  * <p>
@@ -78,10 +79,12 @@ public class MemoryNotificationInfo {
     public MemoryNotificationInfo(String poolName, MemoryUsage usage, long count) {
         super();
         if (poolName == null) {
-            throw new NullPointerException("pooName is null"); //$NON-NLS-1$
+            //lm.03= poolName is null
+            throw new NullPointerException(Messages.getString("lm.03")); //$NON-NLS-1$            
         }
         if (usage == null) {
-            throw new NullPointerException("usage is null"); //$NON-NLS-1$
+            //lm.04=usage is null
+            throw new NullPointerException(Messages.getString("lm.04")); //$NOn-NLs-1$            
         }
         
         this.poolName = poolName;
@@ -92,8 +95,8 @@ public class MemoryNotificationInfo {
     private MemoryNotificationInfo(CompositeData cd) {
         final Object poolName = cd.get("poolName"); //$NON-NLS-1$
         if (poolName == null) {
-            throw new IllegalArgumentException(
-                    "Attribute poolName has null value"); //$NON-NLS-1$
+            //lm.05=Attribute poolName has null value
+            throw new IllegalArgumentException(Messages.getString("lm.05")); //$NON-NLs-1$           
         }
         this.poolName = (String) poolName;
         this.usage = MemoryUsage.from((CompositeData) cd.get("usage")); //$NON-NLS-1$

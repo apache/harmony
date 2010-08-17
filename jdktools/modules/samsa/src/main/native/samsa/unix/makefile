@@ -24,7 +24,11 @@ BUILDFILES = samsa.o
 
 EXENAME = $(LIBPATH)samsa
 
+ifeq ($(HY_OS),zos)
+MDLLIBFILES = $(LIBPATH)libhya2e.x
+else
 MDLLIBFILES = 
+endif
 
 include $(HY_HDK)/build/make/rules.mk
 

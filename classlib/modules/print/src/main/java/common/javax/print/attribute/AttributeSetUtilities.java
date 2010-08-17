@@ -18,6 +18,8 @@ package javax.print.attribute;
 
 import java.io.Serializable;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class AttributeSetUtilities {
 
 
@@ -147,16 +149,19 @@ public final class AttributeSetUtilities {
         }
 
 
-        public boolean add(Attribute attribute) {
-            throw new UnmodifiableSetException("Unmodifiable attribute set");
-        }
+        public boolean add(Attribute attribute) {                     
+            //print.06= Unmodifiable attribute set
+            throw new UnmodifiableSetException(Messages.getString("print.06")); //$NON-NLS-1$
+            }
 
-        public boolean addAll(AttributeSet attributeSet) {
-            throw new UnmodifiableSetException("Unmodifiable attribute set");
-        }
+        public boolean addAll(AttributeSet attributeSet) {             
+            //print.06= Unmodifiable attribute set
+            throw new UnmodifiableSetException(Messages.getString("print.06")); //$NON-NLS-1$        
+            }
 
-        public void clear() {
-            throw new UnmodifiableSetException("Unmodifiable attribute set");
+        public void clear() {            
+            //print.06= Unmodifiable attribute set
+            throw new UnmodifiableSetException(Messages.getString("print.06")); //$NON-NLS-1$
         }
 
         public boolean containsKey(Class attributeCategory) {
@@ -178,17 +183,19 @@ public final class AttributeSetUtilities {
         public int hashCode() {
             return aset.hashCode();
         }
-
+        
         public boolean isEmpty() {
             return aset.isEmpty();
         }
-
-        public boolean remove(Attribute attribute) {
-            throw new UnmodifiableSetException("Unmodifiable attribute set");
+        
+        public boolean remove(Attribute attribute) {             
+            //print.06= Unmodifiable attribute set
+            throw new UnmodifiableSetException(Messages.getString("print.06")); //$NON-NLS-1$
         }
-
-        public synchronized boolean remove (Class attributeCategory) {
-            throw new UnmodifiableSetException("Unmodifiable attribute set");
+        
+        public synchronized boolean remove (Class attributeCategory) {             
+            //print.06= Unmodifiable attribute set
+            throw new UnmodifiableSetException(Messages.getString("print.06")); //$NON-NLS-1$
         }
 
         public int size() {
@@ -257,113 +264,124 @@ public final class AttributeSetUtilities {
 
     public static AttributeSet 
         synchronizedView (AttributeSet attributeSet) {
-            if (attributeSet == null) {
-                throw new NullPointerException("Null attribute set");
+            if (attributeSet == null) {                           
+                //print.07= Null attribute set
+                throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$            
             }
             return new SynchronizedAttributeSet(attributeSet);
     }
   
     public static DocAttributeSet 
         synchronizedView (DocAttributeSet attributeSet) {
-            if (attributeSet == null) {
-                throw new NullPointerException("Null attribute set");
+            if (attributeSet == null) {                
+                //print.07= Null attribute set
+                throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$           
             }
             return new SynchronizedDocAttributeSet(attributeSet);
     }
     
     public static PrintRequestAttributeSet 
         synchronizedView(PrintRequestAttributeSet attributeSet) {
-            if (attributeSet == null) {
-                throw new NullPointerException("Null attribute set");
+        if (attributeSet == null) {                
+                //print.07= Null attribute set
+                throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$           
             }
             return new SynchronizedPrintRequestAttributeSet(attributeSet);
     }
 
     public static PrintJobAttributeSet
         synchronizedView(PrintJobAttributeSet attributeSet) {
-            if (attributeSet == null) {
-                throw new NullPointerException("Null attribute set");
+            if (attributeSet == null) {                
+                //print.07= Null attribute set
+                throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$           
             }
             return new SynchronizedPrintJobAttributeSet(attributeSet);
     }
 
     public static PrintServiceAttributeSet
         synchronizedView(PrintServiceAttributeSet attributeSet) {
-            if (attributeSet == null) {
-                throw new NullPointerException("Null attribute set");
+            if (attributeSet == null) {                
+                //print.07= Null attribute set
+                throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$           
             }
             return new SynchronizedPrintServiceAttributeSet(attributeSet);
     }
 
     
     public static AttributeSet unmodifiableView (AttributeSet attributeSet) {
-        if (attributeSet == null) {
-            throw new NullPointerException("Null attribute set");
+        if (attributeSet == null) {            
+            //print.07= Null attribute set
+            throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$       
         }
         return new UnmodifiableAttributeSet(attributeSet);
     }
     
     public static DocAttributeSet 
                     unmodifiableView (DocAttributeSet attributeSet) {
-        if (attributeSet == null) {
-            throw new NullPointerException("Null attribute set");
+        if (attributeSet == null) {            
+            //print.07= Null attribute set
+            throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$        
         }
         return new UnmodifiableDocAttributeSet(attributeSet);
     }
     
     public static PrintJobAttributeSet
                     unmodifiableView(PrintJobAttributeSet attributeSet) {
-        if (attributeSet == null) {
-            throw new NullPointerException("Null attribute set");
+        if (attributeSet == null) {            
+            //print.07= Null attribute set
+            throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$        
         }
         return new UnmodifiablePrintJobAttributeSet(attributeSet);
     }
     
     public static PrintRequestAttributeSet 
                     unmodifiableView(PrintRequestAttributeSet attributeSet) {
-        if (attributeSet == null) {
-            throw new NullPointerException("Null attribute set");
+        if (attributeSet == null) {            
+            //print.07= Null attribute set
+            throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$       
         }
         return new UnmodifiablePrintRequestAttributeSet(attributeSet);
     }
       
     public static PrintServiceAttributeSet
                         unmodifiableView(PrintServiceAttributeSet attributeSet) {
-        if (attributeSet == null) {
-            throw new NullPointerException("Null attribute set");
+        if (attributeSet == null) {            
+            //print.07= Null attribute set
+            throw new NullPointerException(Messages.getString("print.07")); //$NON-NLS-1$       
         }
         return new UnmodifiablePrintServiceAttributeSet (attributeSet);
     }
 
     
     public static Class<?> verifyAttributeCategory(Object object, Class<?> interfaceName) {
-        if (!(Attribute.class).isAssignableFrom(interfaceName)) {
-            throw new ClassCastException(interfaceName.getName() + " is not "
-                    + "interface Attribute or it's subinterface");
+        if (!(Attribute.class).isAssignableFrom(interfaceName)) {          
+            //print.08={0} is not interface Attribute or it's subinterface
+            throw new ClassCastException(Messages.getString("print.08",
+                                                            interfaceName.getName())); //$NON-NLs-1$            
         } else if (interfaceName.isAssignableFrom((Class<?>) object)) {
             return (Class<?>) object;
-        } else {
-            throw new ClassCastException(object.getClass().getName() + "doesn't implement"
-                    + interfaceName.getName());
+        } else {                   
+            //print.09={0} doesn't implement {1}
+            throw new ClassCastException(Messages.getString("print.09", object.getClass().getName(), interfaceName.getName())); //$NON-NLS-1$        
         }
     }
 
     public static Attribute verifyAttributeValue(Object attribute, Class<?> interfaceName) {
-        if (attribute == null) {
-            throw new NullPointerException("Null attribute");
+        if (attribute == null) {                      
+          //print.0A= Null attribute 
+            throw new NullPointerException(Messages.getString("print.0A")); //$NON-NLS-1$            
         } else if (interfaceName.isInstance(attribute)) {
             return (Attribute) attribute;
-        } else {
-            throw new ClassCastException("Object is not an instance of "
-                    + interfaceName.getName());
+        } else {                  
+            //print.0B= Object is not an instance of {0}
+            throw new ClassCastException(Messages.getString("print.0B", interfaceName.getName())); //$NON-NLS-1$        
         }
     }
 
     public static void verifyCategoryForValue(Class<?> attributeCategory, Attribute attribute) {
-        if (!attributeCategory.equals(attribute.getCategory())) {
-            throw new IllegalArgumentException(attributeCategory.getName()
-                    + "is not equal to the category of the attribute"
-                    + attribute.getCategory().getName());
+        if (!attributeCategory.equals(attribute.getCategory())) {                        
+            //print.0C= {0} is not equal to the category of the attribute {1}
+            throw new IllegalArgumentException(Messages.getString("print.0C", attributeCategory.getName(), attribute.getCategory().getName())); //$NON-NLs-1$        
         }
     }
 

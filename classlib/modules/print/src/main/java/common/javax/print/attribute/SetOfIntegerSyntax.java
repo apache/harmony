@@ -20,22 +20,26 @@ package javax.print.attribute;
 import java.io.Serializable;
 import java.util.Vector;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public abstract class SetOfIntegerSyntax implements Cloneable, Serializable {
     private static final long serialVersionUID = 3666874174847632203L;
 
     private int[][] canonicalArray;
 
     protected SetOfIntegerSyntax(int value) {
-        if (value < 0) {
-            throw new IllegalArgumentException("Value " + value + " is less than 0");
+        if (value < 0) {                       
+            //print.12= Value {0} is less than 0
+            throw new IllegalArgumentException(Messages.getString("print.12", value)); //NON-NLS-1$            
         }
         canonicalArray = new int[][] { { value, value } };
     }
 
     protected SetOfIntegerSyntax(int lowerBound, int upperBound) {
         if (lowerBound <= upperBound) {
-            if (lowerBound < 0) {
-                throw new IllegalArgumentException("Lower bound is less than 0");
+            if (lowerBound < 0) {              
+            //print.13= Lower bound is less than 0
+            throw new IllegalArgumentException(Messages.getString("print.13")); //NON-NLS-1$              
             }
             canonicalArray = new int[][] { { lowerBound, upperBound } };
         } else {
@@ -103,9 +107,9 @@ public abstract class SetOfIntegerSyntax implements Cloneable, Serializable {
                             continue;
                         } else if (Character.isDigit(symbol)) {
                             num1long = num1long * 10 + Character.digit(symbol, 10);
-                            if (num1long > Integer.MAX_VALUE) {
-                                throw new IllegalArgumentException(num1long
-                                        + " is out of int range");
+                            if (num1long > Integer.MAX_VALUE) {                                                            
+                                //print.14= {0} is out of int range
+                                throw new IllegalArgumentException(Messages.getString("print.24", num1long)); //$NON-NLs-1$
                             }
                             num2long = num1long;
                         } else if ((symbol == ':') || (symbol == '-')) {
@@ -131,9 +135,9 @@ public abstract class SetOfIntegerSyntax implements Cloneable, Serializable {
                             continue;
                         } else if (Character.isDigit(symbol)) {
                             num2long = num2long * 10 + Character.digit(symbol, 10);
-                            if (num2long > Integer.MAX_VALUE) {
-                                throw new IllegalArgumentException(num2long
-                                        + " is out of int range");
+                            if (num2long > Integer.MAX_VALUE) {                             
+                                //print.14= {0} is out of int range
+                                throw new IllegalArgumentException(Messages.getString("print.14", num2long)); //$NON-NLs-1$                                
                             }
                         } else {
                             throw new IllegalArgumentException();
@@ -159,7 +163,8 @@ public abstract class SetOfIntegerSyntax implements Cloneable, Serializable {
         int num2;
         for (int[] element : values) {
             if (element == null) {
-                throw new NullPointerException("int[][] array has null element");
+                //print.15= int[][] array has null element
+                throw new NullPointerException(Messages.getString("print.15")); //$NON-NLS-1$
             }
             if (element.length == 1) {
                 num1 = element[0];
@@ -168,11 +173,12 @@ public abstract class SetOfIntegerSyntax implements Cloneable, Serializable {
                 num1 = element[0];
                 num2 = element[1];
             } else {
-                throw new IllegalArgumentException("Only array of length-1 "
-                        + "or length-2 arrays of ints are valid");
+            	//print.16= Only array of length-1 or length-2 arrays of ints are valid
+                throw new IllegalArgumentException(Messages.getString("print.16")); //$NON-NLS-1$                
             }
             if (num1 < 0) {
-                throw new IllegalArgumentException("Valid values are " + "not less than 0");
+                //print.17= Valid values are not less than 0
+                throw new IllegalArgumentException(Messages.getString("print.17")); //$NON-NLS-1$            
             } else if (num1 <= num2) {
                 addRange(vector, num1, num2);
             }

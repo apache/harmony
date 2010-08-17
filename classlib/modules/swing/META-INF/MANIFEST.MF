@@ -51,7 +51,8 @@ Import-Package: java.applet,
  org.apache.harmony.misc,
  org.apache.harmony.security.asn1;version="1.0.0",
  org.xml.sax,
- org.xml.sax.helpers
+ org.xml.sax.helpers,
+ java_cup.runtime
 Export-Package: javax.swing,
  javax.swing.border,
  javax.swing.colorchooser,

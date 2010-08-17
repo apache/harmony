@@ -182,11 +182,37 @@ void JNICALL Java_java_lang_Runtime_00024SubProcess_createProcess0 (JNIEnv *env,
              }
              free(cmdDir);
          }
-         
+
+         char *newArgv[lenargv+2];
          if (lenEnvp == 0) {
              execvp(argv[0], argv);
+             if (errno == ENOEXEC) {
+               // give another try
+               for (i=0; i<lenargv; i++) {
+                 strCmd = (char *)malloc(1+strlen(argv[i])); // + NUL symbol
+                 *strCmd = '\0';
+                 strcat(strCmd, argv[i]);
+                 newArgv[i+1] = strCmd;
+               }
+               newArgv[0] = strdup("/bin/sh");
+               newArgv[lenargv+1] = (char *)0;
+               execvp(newArgv[0], newArgv);
+             }
          } else {
              execve(argv[0], argv, strEnvpBeginAA);
+             if (errno == ENOEXEC) {
+               // give another try
+               for (i=0; i<lenargv; i++) {
+                 strCmd = (char *)malloc(1+strlen(argv[i])); // + NUL symbol
+                 *strCmd = '\0';
+                 strcat(strCmd, argv[i]);
+                 newArgv[i+1] = strCmd;
+               }
+               newArgv[0] = strdup("/bin/sh");
+               newArgv[lenargv+1] = (char *)0;
+               execve(newArgv[0], newArgv, strEnvpBeginAA);
+             }
+
              if(strchr(argv[0], '/') == NULL) {
                  char* curDir = NULL;
                  char* cmdPath = NULL;
@@ -212,6 +238,11 @@ void JNICALL Java_java_lang_Runtime_00024SubProcess_createProcess0 (JNIEnv *env,
          }
          write(fildesInfo[1], &errno, sizeof(int));
          INFO("Process initiation failed: " << strerror(errno));
+         for (i=0; i<lenargv+1; i++) {
+           if (newArgv[i] != NULL) {
+             free(newArgv[i]);
+           }
+         }
          // kill self
          kill(getpid(), 9);
      }
@@ -221,8 +252,18 @@ void JNICALL Java_java_lang_Runtime_00024SubProcess_createProcess0 (JNIEnv *env,
      close(fildesI[0]);
      close(fildesE[1]);
      close(fildesInfo[1]);
-     free(cmdDir);
-     free(strCmd);
+
+     for (i=0; i<lenargv; i++) {
+       if (argv[i] != NULL) {
+         free(argv[i]);
+       }
+     }
+
+     for (i=0; i<lenEnvp; i++) {
+       if (strEnvpBeginAA[i] != NULL) {
+         free(strEnvpBeginAA[i]);
+       }
+     }
 
      // get execution status from child
      int errno_child;

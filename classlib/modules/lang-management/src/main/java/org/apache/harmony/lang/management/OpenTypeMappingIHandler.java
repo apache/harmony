@@ -44,6 +44,8 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.RuntimeMBeanException;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Concrete instance of the {@link InvocationHandler} interface that is used to
  * handle method invocations on MXBeans that have been obtained using the proxy
@@ -80,8 +82,8 @@ public class OpenTypeMappingIHandler implements InvocationHandler {
     private void setInfo(String mxBeanType) {
         this.info = ManagementUtils.getMBeanInfo(mxBeanType);
         if (info == null) {
-            throw new IllegalArgumentException("Unknown MXBean type : "
-                    + mxBeanType);
+            //lm.17=Unknown MXBean type : {0}
+            throw new IllegalArgumentException(Messages.getString("lm.17", mxBeanType)); //$NON-NLS-1$         
         }
     }
 
@@ -95,8 +97,8 @@ public class OpenTypeMappingIHandler implements InvocationHandler {
             if (ManagementUtils.VERBOSE_MODE) {
                 e.printStackTrace(System.err);
             }// end if
-            throw new IllegalArgumentException(
-                    "Bean name not in valid format.", e);
+            //lm.18=Bean name not in valid format. {0}
+            throw new IllegalArgumentException(Messages.getString("lm.18", e)); //$NON-NLS-1$           
         }
     }
 
@@ -105,8 +107,8 @@ public class OpenTypeMappingIHandler implements InvocationHandler {
      */
     private void checkBeanIsRegistered() throws IOException {
         if (!this.connection.isRegistered(this.mxBeanObjectName)) {
-            throw new IllegalArgumentException("Not registered : "
-                    + this.mxBeanObjectName);
+            //lm.19=Not registered {0}
+            throw new IllegalArgumentException(Messages.getString("lm.19", this.mxBeanObjectName)); //$NON-NLS-1$
         }
     }
 

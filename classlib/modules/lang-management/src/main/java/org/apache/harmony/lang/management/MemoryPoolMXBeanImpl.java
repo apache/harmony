@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Runtime type for {@link java.lang.management.MemoryPoolMXBean}
  * 
@@ -104,9 +106,10 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      * @see java.lang.management.MemoryPoolMXBean#getCollectionUsageThreshold()
      */
     public long getCollectionUsageThreshold() {
-        if (!isCollectionUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support collection usage threshold.");
+        if (!isCollectionUsageThresholdSupported()) {            
+            //lm.13=VM does not support collection usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.13")); //$NON-NLS-1$
+            
         }
         return this.getCollectionUsageThresholdImpl();
     }
@@ -125,8 +128,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public long getCollectionUsageThresholdCount() {
         if (!isCollectionUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support collection usage threshold.");
+            //lm.13=VM does not support collection usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.13")); //$NON-NLS-1$
         }
         return this.getCollectionUsageThresholdCountImpl();
     }
@@ -224,8 +227,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public long getUsageThreshold() {
         if (!isUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support usage threshold.");
+            //lm.14=VM does not support usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.14")); //$NON-NLS-1$
         }
         return this.getUsageThresholdImpl();
     }
@@ -244,8 +247,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public long getUsageThresholdCount() {
         if (!isUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support usage threshold.");
+            //lm.14=VM does not support usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.14")); //$NON-NLS-1$
         }
         return this.getUsageThresholdCountImpl();
     }
@@ -265,8 +268,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public boolean isCollectionUsageThresholdExceeded() {
         if (!isCollectionUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support collection usage threshold.");
+            //lm.13=VM does not support collection usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.13")); //$NON-NLS-1$            
         }
         return this.isCollectionUsageThresholdExceededImpl();
     }
@@ -300,8 +303,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public boolean isUsageThresholdExceeded() {
         if (!isUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support usage threshold.");
+            //lm.14=VM does not support usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.14")); //$NON-NLS-1$
         }
         return this.isUsageThresholdExceededImpl();
     }
@@ -370,8 +373,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public void setCollectionUsageThreshold(long threshold) {
         if (!isCollectionUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support collection usage threshold.");
+            //lm.13=VM does not support collection usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.13")); //$NON-NLS-1$
         }
 
         SecurityManager security = System.getSecurityManager();
@@ -379,14 +382,14 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
             security.checkPermission(new ManagementPermission("control"));
         }
 
-        if (threshold < 0) {
-            throw new IllegalArgumentException(
-                    "Collection usage threshold cannot be negative.");
+        if (threshold < 0) {            
+            //lm.15=Collection usage threshold cannot be negative.
+            throw new IllegalArgumentException(Messages.getString("lm.15")); //$NON-NLS-1$            
         }
 
-        if (exceedsMaxPoolSize(threshold)) {
-            throw new IllegalArgumentException(
-                    "Collection usage threshold cannot exceed maximum amount of memory for pool.");
+        if (exceedsMaxPoolSize(threshold)) {            
+            //lm.16=Collection usage threshold cannot exceed maximum amount of memory for pool.
+            throw new IllegalArgumentException(Messages.getString("lm.16")); //$NON-NLS-1$
         }
         this.setCollectionUsageThresholdImpl(threshold);
     }
@@ -405,8 +408,8 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
      */
     public void setUsageThreshold(long threshold) {
         if (!isUsageThresholdSupported()) {
-            throw new UnsupportedOperationException(
-                    "VM does not support usage threshold.");
+            //lm.13=VM does not support collection usage threshold.
+            throw new UnsupportedOperationException(Messages.getString("lm.13"));
         }
 
         SecurityManager security = System.getSecurityManager();
@@ -415,13 +418,13 @@ public final class MemoryPoolMXBeanImpl extends DynamicMXBeanImpl implements
         }
 
         if (threshold < 0) {
-            throw new IllegalArgumentException(
-                    "Usage threshold cannot be negative.");
+            //lm.15=Collection usage threshold cannot be negative.
+            throw new IllegalArgumentException(Messages.getString("lm.15")); //$NON-NLS-1$            
         }
 
         if (exceedsMaxPoolSize(threshold)) {
-            throw new IllegalArgumentException(
-                    "Usage threshold cannot exceed maximum amount of memory for pool.");
+            //lm.16=Collection usage threshold cannot exceed maximum amount of memory for pool.
+            throw new IllegalArgumentException(Messages.getString("lm.16")); //$NON-NLS-1$
         }
         this.setUsageThresholdImpl(threshold);
     }

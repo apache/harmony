@@ -35,6 +35,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	private boolean closed = false;
 
 	private final PositionStack posStack = new PositionStack();
+	private final PositionStack offsetStack = new PositionStack();
 	private final byte[] buff = new byte[8];
 
 	public ImageInputStreamImpl() {
@@ -186,11 +187,14 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	}
 
 	public String readUTF() throws IOException {
+		ByteOrder byteOrder = getByteOrder();
+		setByteOrder(ByteOrder.BIG_ENDIAN);
 		final int size = readUnsignedShort();
 		final byte[] buf = new byte[size];
 		final char[] out = new char[size];
 
 		readFully(buf, 0, size);
+		setByteOrder(byteOrder);
 		//return new DataInputStream(new ByteArrayInputStream(buff)).readUTF();
 		return Util.convertUTF8WithBuf(buf, out, 0, size);
 	}
@@ -360,6 +364,7 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	public void mark() {
 		try {
 			posStack.push(getStreamPosition());
+			offsetStack.push(getBitOffset());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(Messages.getString("imageio.11"));
@@ -367,14 +372,14 @@ public abstract class ImageInputStreamImpl implements ImageInputStream {
 	}
 
 	public void reset() throws IOException {
-		// -- TODO bit pos
-		if (!posStack.isEmpty()) {
+		if (!posStack.isEmpty() && !offsetStack.isEmpty()) {
 			long p = posStack.pop();
 			if (p < flushedPos) {
 				throw new IOException(
 						Messages.getString("imageio.12"));
 			}
 			seek(p);
+			setBitOffset((int)offsetStack.pop());
 		}
 	}
 

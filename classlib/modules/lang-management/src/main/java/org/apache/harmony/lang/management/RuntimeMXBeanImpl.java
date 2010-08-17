@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Runtime type for {@link java.lang.management.RuntimeMXBean}
  * 
@@ -63,8 +65,8 @@ public final class RuntimeMXBeanImpl extends DynamicMXBeanImpl implements
 	 */
 	public String getBootClassPath() {
 		if (!isBootClassPathSupported()) {
-			throw new UnsupportedOperationException(
-					"VM does not support boot classpath.");
+            //lm.1A=VM does not support boot classpath
+            throw new UnsupportedOperationException(Messages.getString("lm.1A")); //$NON-NLS-1$
 		}
 
 		SecurityManager security = System.getSecurityManager();

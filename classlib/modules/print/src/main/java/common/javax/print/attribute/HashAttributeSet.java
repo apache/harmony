@@ -23,6 +23,8 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public class HashAttributeSet implements Serializable, AttributeSet {
     private static final long serialVersionUID = 5311560590283707917L;
 
@@ -47,23 +49,26 @@ public class HashAttributeSet implements Serializable, AttributeSet {
     }
 
     protected HashAttributeSet(Class<?> interfaceName) {
-        if (interfaceName == null) {
-            throw new NullPointerException("Null attribute interface");
+        if (interfaceName == null) {             
+            //print.0D= Null attribute interface
+            throw new NullPointerException(Messages.getString("print.0D")); //$NON-NLS-1$        
         }
         attributeInterfaceName = interfaceName;
     }
 
     protected HashAttributeSet(Attribute attribute, Class<?> interfaceName) {
-        if (interfaceName == null) {
-            throw new NullPointerException("Null attribute interface");
+        if (interfaceName == null) {            
+            //print.0D= Null attribute interface
+            throw new NullPointerException(Messages.getString("print.0D")); //$NON-NLS-1$            
         }
         attributeInterfaceName = interfaceName;
         add(attribute);
     }
 
     protected HashAttributeSet(Attribute[] attributes, Class<?> interfaceName) {
-        if (interfaceName == null) {
-            throw new NullPointerException("Null attribute interface");
+        if (interfaceName == null) {            
+             //print.0D= Null attribute interface
+            throw new NullPointerException(Messages.getString("print.0D")); //$NON-NLS-1$        
         }
         attributeInterfaceName = interfaceName;
         if (attributes != null) {

@@ -224,6 +224,7 @@
         <propertyref name="svn.info" />
         <propertyref name="hy.no.thr" />
         <propertyref name="hy.zip.api" />
+        <propertyref name="hy.select" />
     </propertyset>
 
     <target name="echo" depends="-svn-info, test-jre-vm-info"

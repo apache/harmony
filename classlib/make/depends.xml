@@ -32,8 +32,6 @@
             depends="-check,-check-win,-extract" />
 
     <target name="-check">
-        <check-one-file src="${xalan.url}" dest="${xalan.orig.jar}" />
-        <check-one-file src="${xerces.url}" dest="${xerces.zip}" />
         <check-one-file src="${junit.url}" dest="${junit.jar}" />
         <check-one-file src="${hamcrest-library.url}" dest="${hamcrest-library.jar}" />
         <check-one-file src="${findbugs.url}" dest="${findbugs.zip}" />
@@ -52,43 +50,12 @@
         <check-one-file src="${msvcp.url}" dest="${msvcp.dll}" />
     </target>
 
-    <target name="-extract"
-         depends="-extract-props,-extract-xerces,-fix-xalan-manifest,-extract-findbugs" />
+    <target name="-extract" depends="-extract-props,-extract-findbugs" />
 
     <target name="-extract-props">
-        <uptodate property="xerces.uptodate"
-                  srcfile="${xerces.zip}"
-                  targetfile="${xerces.dir}/xercesImpl.jar" />
-        <uptodate property="xalan.uptodate"
-                  srcfile="${xalan.orig.jar}"
-                  targetfile="${xalan.jar}" />
         <uptodate property="findbugs.uptodate"
                   srcfile="${findbugs.zip}"
                   targetfile="${findbugs.dir}/uptodate" />
-    </target>
-
-    <target name="-extract-xerces" unless="xerces.uptodate">
-        <unzip src="${xerces.zip}" dest="${xerces.dir}.tmp" />
-        <copy todir="${xerces.dir}" flatten="yes">
-            <fileset dir="${xerces.dir}.tmp/xerces-2_10_0">
-                <include name="resolver.jar" />
-		<include name="xercesImpl.jar" />
-		<include name="xml-apis.jar" />
-            </fileset>
-        </copy>
-        <delete dir="${xerces.dir}.tmp" />
-	<touch file="${xerces.dir}/xercesImpl.jar" />
-    </target>
-
-    <target name="-fix-xalan-manifest" unless="xalan.uptodate">
-        <unjar src="${xalan.orig.jar}" dest="${xalan.dir}.tmp" />
-        <delete file="${xalan.jar}" />
-        <replace file="${xalan.dir}.tmp/META-INF/MANIFEST.MF"
-                 token="Class-Path: xercesImpl.jar xml-apis.jar serializer.jar"
-                 value="" />
-        <jar destfile="${xalan.jar}" basedir="${xalan.dir}.tmp"
-             manifest="${xalan.dir}.tmp/META-INF/MANIFEST.MF" />
-        <delete dir="${xalan.dir}.tmp" />
     </target>
 
     <target name="-extract-findbugs" unless="findbugs.uptodate">
@@ -101,14 +68,6 @@
             depends="-download,-download-win" />
 
     <target name="-download">
-
-        <mkdir dir="${xalan.dir}" />
-        <download-one-file src="${xalan.url}" dest="${xalan.orig.jar}"
-                           md5="${xalan.md5}" />
-
-        <mkdir dir="${xerces.dir}" />
-        <download-one-file src="${xerces.url}" dest="${xerces.zip}"
-                           md5="${xerces.md5}" />
 
         <mkdir dir="${junit.dir}" />
         <download-one-file src="${junit.url}" dest="${junit.jar}"

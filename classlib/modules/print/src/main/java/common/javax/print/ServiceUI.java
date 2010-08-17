@@ -25,6 +25,8 @@ import java.awt.HeadlessException;
 import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import javax.print.attribute.PrintRequestAttributeSet;
+
+import org.apache.harmony.print.internal.nls.Messages;
 import org.apache.harmony.x.print.ServiceUIDialog;
 
 public class ServiceUI {
@@ -65,12 +67,18 @@ public class ServiceUI {
      */
     static int checkServices(PrintService[] services, PrintService defaultService,
             PrintRequestAttributeSet attributes) {
-        if (services == null) {
-            throw new IllegalArgumentException("Services list is null!");
-        } else if (services.length == 0) {
-            throw new IllegalArgumentException("Services list is empty!");
-        } else if (attributes == null) {
-            throw new IllegalArgumentException("Attribute set is null!");
+       
+    if (services == null) {                 
+            //print.02= Services list is null
+            throw new IllegalArgumentException(Messages.getString("print.02")); //$NON-NLS-1$                   
+        }    
+    else if (services.length == 0) {                  
+            //print.03= Services list is empty
+            throw new IllegalArgumentException(Messages.getString("print.03")); //$NON-NLS-1$
+          }   
+    else if (attributes == null) {        
+            //print.04= Attribute set is null
+            throw new IllegalArgumentException(Messages.getString("print.04")); //$NON-NLS-1$            
         }
         int serviceIndex = 0;
         boolean defaultServiceFound = (defaultService == null);
@@ -81,9 +89,9 @@ public class ServiceUI {
                 break;
             }
         }
-        if (!defaultServiceFound) {
-            throw new IllegalArgumentException(
-                    "Default service is absent in the services list!");
+        if (!defaultServiceFound) {                    
+            //print.05= Default service is absent in the services list
+            throw new IllegalArgumentException(Messages.getString("print.05")); //$NON-NLS-1$
         }
         return serviceIndex;
     }

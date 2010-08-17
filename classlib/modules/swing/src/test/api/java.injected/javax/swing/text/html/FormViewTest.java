@@ -62,6 +62,8 @@ public class FormViewTest extends SwingTestCase {
     private Element elem;
 
     private FormView formView;
+    
+    private boolean dataSubmitted = false;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -695,7 +697,7 @@ public class FormViewTest extends SwingTestCase {
             }
 
             protected void submitData(String data) {
-                super.submitData(data);
+                dataSubmitted = true;
             }
         };
         component = formView.createComponent();
@@ -706,7 +708,8 @@ public class FormViewTest extends SwingTestCase {
         };
         panel.add(component);
         ((JButton) component).doClick();
-        
+        assertTrue(dataSubmitted);
+        dataSubmitted = false;
         throw new UnsupportedOperationException("Not implemented");
     }
 

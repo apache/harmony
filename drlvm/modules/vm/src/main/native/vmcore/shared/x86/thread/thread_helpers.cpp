@@ -65,7 +65,9 @@ char* gen_hythread_self_helper(char *ss) {
         ss = mov(ss,  eax_opnd,  M_Base_Opnd(eax_reg, offset));
 #   endif
 #else
+    ss = push(ss, ecx_opnd); // Preserve caller-saved ECX
     ss = call(ss, (char *)hythread_self);
+    ss = pop (ss, ecx_opnd);
 #endif
     return ss;
 }
@@ -204,7 +206,7 @@ char* gen_monitorenter_slow_path_helper(char *ss, const R_Opnd & input_param1) {
   *  @param[in] ss buffer to put the assembly code to
   *  @param[in] input_param1 register should point to the lockword in object header.
   *  If input_param1 == ecx it reduce one register mov.
-  *  The code use and do not restore eax registers.
+  *  The code use and do not restore eax, ecx registers.
   *  @return 0 if success in eax register
   */
 char* gen_monitor_exit_helper(char *ss, const R_Opnd & input_param1) {
@@ -280,7 +282,7 @@ fast_tls_func* get_tls_helper(hythread_tls_key_t key) {
     unsigned key_offset =
         (unsigned) &(((HyThread_public *) (0))->thread_local_storage[key]);
 
-    const int stub_size = 126;
+    const int stub_size = 128;
     char *stub = (char *)malloc(stub_size);
     memset(stub, 0xcc /*int 3*/, stub_size);
 

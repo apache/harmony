@@ -25,6 +25,8 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.LoggingMXBean;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Runtime type for {@link java.util.logging.LoggingMXBean}.
  * 
@@ -139,9 +141,9 @@ public class LoggingMXBeanImpl extends DynamicMXBeanImpl implements
                 logger.setLevel(null);
             }
         } else {
-            // Named Logger does not exist.
-            throw new IllegalArgumentException(
-                    "Unable to find Logger with name " + loggerName);
+            // Named Logger does not exist.           
+            //lm.0D=Unable to find logger with name {0}
+            throw new IllegalArgumentException(Messages.getString("lm.0D", loggerName)); //$NON-NLS-1$            
         }
     }
 }

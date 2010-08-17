@@ -2576,6 +2576,23 @@ public class DatagramChannelTest extends TestCase {
         }
     }
     
+    public void test_bounded_harmony6493() throws IOException {
+        DatagramChannel server = DatagramChannel.open();
+        InetSocketAddress addr = new InetSocketAddress("localhost", 0);
+        server.socket().bind(addr);
+        SocketAddress boundedAddress = server.socket().getLocalSocketAddress();
+
+        DatagramChannel client = DatagramChannel.open();
+        ByteBuffer sent = ByteBuffer.allocate(1024);
+        sent.put("test".getBytes());
+        sent.flip();
+        client.send(sent, boundedAddress);
+        assertTrue(client.socket().isBound());
+        
+        server.close();
+        client.close();
+    }
+    
     // -------------------------------------------------------------------
     // Mock class for security test.
     // -------------------------------------------------------------------

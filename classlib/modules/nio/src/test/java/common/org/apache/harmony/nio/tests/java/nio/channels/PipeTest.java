@@ -17,9 +17,11 @@
 package org.apache.harmony.nio.tests.java.nio.channels;
 
 import java.io.IOException;
+import java.net.NetPermission;
 import java.nio.channels.Pipe;
 import java.nio.channels.Pipe.SinkChannel;
 import java.nio.channels.Pipe.SourceChannel;
+import java.security.Permission;
 
 import junit.framework.TestCase;
 
@@ -36,6 +38,22 @@ public class PipeTest extends TestCase {
 		assertNotNull(pipe);
 	}
 	
+    /**
+     * @tests java.nio.channels.Pipe#open()
+     */
+    public void test_open_securityManager() throws IOException {
+        SecurityManager old = System.getSecurityManager();
+        SecurityManager sm = new MockSM();
+
+        try {
+            System.setSecurityManager(sm);
+            Pipe pipe = Pipe.open();
+            assertNotNull(pipe);
+        } finally {
+            System.setSecurityManager(old);
+        }
+    }
+
 	/**
 	 * @tests java.nio.channels.Pipe#sink()
 	 */
@@ -54,4 +72,18 @@ public class PipeTest extends TestCase {
 		assertTrue(source.isBlocking());
 	}
 
+}
+
+class MockSM extends SecurityManager {
+    public void checkPermission(Permission permission) {
+        if (permission instanceof NetPermission) {
+            throw new SecurityException();
+        }
+
+        if (permission instanceof RuntimePermission) {
+            if ("setSecurityManager".equals(permission.getName())) {
+                return;
+            }
+        }
+    }
 }

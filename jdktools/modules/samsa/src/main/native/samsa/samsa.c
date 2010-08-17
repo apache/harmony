@@ -15,10 +15,6 @@
  *  limitations under the License.
  */
 
-#if defined(FREEBSD)
-#include <sys/param.h>
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -83,6 +79,13 @@
 #define EXE_SUFFIX          ""
 #endif
 
+#if defined(ZOS)
+/* zOS does not define PATH_MAX, so just set it to be _POSIX_PATH_MAX */
+#if !defined(PATH_MAX)
+#define PATH_MAX _POSIX_PATH_MAX
+#endif
+#endif
+
 typedef struct ToolData {
     int numJars; 
     char **jarList;
@@ -94,6 +97,9 @@ char     *getRoot(const char*);
 TOOLDATA *getToolData(const char *, const char *, int toolType);
 int getToolType(const char*, const char*);
 char* jarFile(const char*, const char*);
+#if !defined(LINUX) && !defined(FREEBSD) && !defined(WIN32)
+char* findInPath(const char* basename);
+#endif
 
 /**
  *  main
@@ -459,19 +465,48 @@ char *getExeDir(const char* argv0) {
 
     char *last = NULL;
     
-#if defined(WIN32)
+#if defined(LINUX)
+    char buffer[PATH_MAX + 1];
+    
+    int size = readlink ("/proc/self/exe", buffer, sizeof(buffer)-2);
+    
+    buffer[size+1] = '\0';
+#elif defined(FREEBSD)
+    Dl_info info;
+    char buffer[PATH_MAX + 1];
+    if (dladdr( (const void*)&main, &info) == 0) {
+        return NULL;
+    }
+    strncpy(buffer, info.dli_fname, PATH_MAX);
+    buffer[PATH_MAX] = '\0';
+
+#elif defined(WIN32)
     char buffer[512];
     DWORD dwRet = GetModuleFileName(NULL, buffer, 512);
         
     // FIXME - handle this right - it could be that 512 isn't enough
 #else
-    char buffer[PATH_MAX + 1];
-
-    char *rc = realpath(argv0, buffer);
-    if (!rc) {
-      return NULL;
+    char buffer[PATH_MAX+1];
+    char *rc;
+    const char *exename;
+    rc = strchr(argv0, '/');
+    if (rc) {
+        /* is an absolute or relative path so just use that */
+        exename = argv0;
+    } else {
+        /* search in path */
+       exename = findInPath(argv0);
+       if (!exename) {
+           return NULL;
+       }
     }
-    buffer[PATH_MAX] = '\0';
+    rc = realpath(exename, buffer);
+    if (exename != argv0) {
+        free((void*)exename);
+    }
+    if (!rc) {
+        return NULL;
+    }
 #endif
 
     last = strrchr(buffer, PATH_SEPARATOR_CHAR);
@@ -677,3 +712,52 @@ char* jarFile(const char* path, const char* jarName) {
     strcat(jarPath, jarName);
     return jarPath;
 }
+
+#if !defined(LINUX) && !defined(FREEBSD) && !defined(WIN32)
+char* findInPath(const char* basename)
+{
+  char filename[PATH_MAX+1];
+  char *path;
+  char *path_to_free;
+  char *path_end;
+
+  path = getenv("PATH");
+  if (!path) {
+    return NULL;
+  }
+  path_to_free = path = strdup(path);
+  if (!path) {
+    return NULL;
+  }
+  path_end = path + strlen(path);
+  while (path < path_end) {
+    int rc;
+    char *path_next;
+    char *sep = strchr(path, ':');
+    if (sep) {
+      *sep = '\0';
+      path_next = sep + 1;
+    } else {
+      path_next = path_end;
+    }
+    if (PATH_MAX < strlen(path) + strlen(basename) + 1) {
+      path = path_next;
+      continue;
+    }
+    strcpy(filename, path);
+    filename[strlen(path)] = '/';
+    filename[strlen(path)+1] = '\0';
+    strcat(filename, basename);
+    rc = access(filename, X_OK);
+    if (rc == 0) {
+      char *ret = strdup(filename);
+      free((void*)path_to_free);
+      return ret;
+    }
+    path = path_next;
+  }
+
+  free((void*)path_to_free);
+  return NULL;
+}
+#endif

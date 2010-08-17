@@ -104,9 +104,9 @@ typedef void (Override_Generator)(Emitter_Handle, Method *);
 typedef unsigned (Override_Size)(Method *);
 
 typedef struct Stub_Override_Entry {
-    char *class_name;
-    char *method_name;
-    char *descriptor;
+    const char *class_name;
+    const char *method_name;
+    const char *descriptor;
     Override_Generator *override_generator;
     Override_Size *override_size;
 } Stub_Override_Entry;

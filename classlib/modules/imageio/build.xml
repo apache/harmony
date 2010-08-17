@@ -178,6 +178,7 @@ ${line.separator}For Fedora try: yum install libpng-devel" />
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
+            <metainf dir="src/test/java/META-INF" />
             <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
 

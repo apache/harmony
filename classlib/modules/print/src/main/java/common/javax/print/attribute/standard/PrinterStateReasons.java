@@ -25,6 +25,8 @@ import java.util.Set;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.PrintServiceAttribute;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 /*
  * Table values are obtained from RFC2911: Internet Printing Protocol/1.1: 
  * Model and Semantics, section 4.4.11, http://ietf.org/rfc/rfc2911.txt?number=2911
@@ -63,17 +65,20 @@ public final class PrinterStateReasons extends HashMap<PrinterStateReason, Sever
     @Override
     public Severity put(PrinterStateReason reason, Severity severity) {
         if (reason == null) {
-            throw new NullPointerException("Reason is null");
+            //print.26=Reason is null
+            throw new NullPointerException(Messages.getString("print.26")); //$NON-NLS-1$            
         }
         if (severity == null) {
-            throw new NullPointerException("Severity is null");
+            //print.27=Severity is null
+            throw new NullPointerException(Messages.getString("print.27")); //$NON-NLS-1$
         }
         return super.put(reason, severity);
     }
 
     public Set<PrinterStateReason> printerStateReasonSet(Severity severity) {
         if (severity == null) {
-            throw new NullPointerException("Severity is null");
+            //print.27=Severity is null
+            throw new NullPointerException(Messages.getString("print.27")); //$NON-NLS-1$       
         }
         Set<PrinterStateReason> set = new HashSet<PrinterStateReason>();
         for (Map.Entry<PrinterStateReason, Severity> mapEntry : entrySet()) {

@@ -22,6 +22,8 @@ import javax.print.attribute.DocAttribute;
 import javax.print.attribute.PrintJobAttribute;
 import javax.print.attribute.PrintRequestAttribute;
 
+import org.apache.harmony.print.internal.nls.Messages;
+
 public final class MediaPrintableArea implements DocAttribute, PrintJobAttribute,
         PrintRequestAttribute {
     private static final long serialVersionUID = -1597171464050795793L;
@@ -83,28 +85,32 @@ public final class MediaPrintableArea implements DocAttribute, PrintJobAttribute
 
     public float getX(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+             //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$        
         }
         return ((float) x) / units;
     }
 
     public float getY(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$        
         }
         return ((float) y) / units;
     }
 
     public float getWidth(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$        
         }
         return ((float) width) / units;
     }
 
     public float getHeight(int units) {
         if (units < 1) {
-            throw new IllegalArgumentException("units is less than 1");
+            //print.11= Units is less than 1
+            throw new IllegalArgumentException(Messages.getString("print.11")); // $NON-NLS-1$        
         }
         return ((float) height) / units;
     }

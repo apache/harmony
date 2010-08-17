@@ -294,9 +294,9 @@ public class KeyStoreLoginModule implements LoginModule {
             Certificate[] certificates = keyStore
                     .getCertificateChain(keyStoreAlias);
             if (null == certificates || certificates.length == 0) {
-                throw new FailedLoginException(
-                        "Cannot find certificate path for " + keyStoreAlias);
-            }
+                //auth.66=Cannot find certificate path for {0}
+                throw new FailedLoginException(Messages.getString("auth.66", keyStoreAlias)); //$NON-NLS-1$
+                }
             List<Certificate> list = new ArrayList<Certificate>(
                     certificates.length);
             for (int i = 0; i < certificates.length; i++) {
@@ -312,9 +312,9 @@ public class KeyStoreLoginModule implements LoginModule {
 
             Key privateKey = keyStore.getKey(keyStoreAlias, privateKeyPassword);
             if (null == privateKey || !(privateKey instanceof PrivateKey)) {
-                throw new FailedLoginException("Cannot find private key for "
-                        + keyStoreAlias);
-            }
+                //auth.67=Cannot find private key for {0}
+                throw new FailedLoginException(Messages.getString("auth.67", keyStoreAlias)); //$NON-NLS-1$
+               }
             privateCredential = new X500PrivateCredential(firstCertificate,
                     (PrivateKey) privateKey, keyStoreAlias);
 

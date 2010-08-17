@@ -35,7 +35,8 @@ Import-Package: java.awt,
  javax.swing.event,
  javax.swing.text,
  org.apache.harmony.awt.gl,
- org.apache.harmony.awt.gl.windows
+ org.apache.harmony.awt.gl.windows,
+ org.apache.harmony.kernel.vm
 Export-Package: javax.print,
  javax.print.attribute,
  javax.print.attribute.standard,

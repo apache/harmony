@@ -124,10 +124,13 @@ public abstract class ImageOutputStreamImpl extends ImageInputStreamImpl
 	}
 
 	public void writeUTF(String s) throws IOException {
+		ByteOrder byteOrder = getByteOrder();
+		setByteOrder(ByteOrder.BIG_ENDIAN);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 		new DataOutputStream(baos).writeUTF(s);
 		write(baos.toByteArray(), 0, baos.size());
+		setByteOrder(byteOrder);
 	}
 
 	public void writeShorts(short[] s, int off, int len) throws IOException {

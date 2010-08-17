@@ -31,6 +31,8 @@ import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ReflectionException;
 
+import org.apache.harmony.lang.management.internal.nls.Messages;
+
 /**
  * Abstract implementation of the {@link DynamicMBean} interface that provides
  * behaviour required by a dynamic MBean. This class is subclassed by all of the
@@ -169,9 +171,9 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
         Method getterMethod = null;
         MBeanAttributeInfo attribInfo = getPresentAttribute(attribute,
                 AttributeAccessType.READING);
-        if (attribInfo == null) {
-            throw new AttributeNotFoundException("No such attribute : "
-                    + attribute);
+        if (attribInfo == null) {            
+            //lm.0A=No such attribute : {0}
+            throw new AttributeNotFoundException(Messages.getString("lm.0A", attribute)); //$NON-NLs-1$
         }
 
         try {
@@ -228,8 +230,8 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
         MBeanAttributeInfo attribInfo = getPresentAttribute(
                 attribute.getName(), AttributeAccessType.WRITING);
         if (attribInfo == null) {
-            throw new AttributeNotFoundException("No such attribute : "
-                    + attribute);
+            //lm.0A=No such attribute : {0}
+            throw new AttributeNotFoundException(Messages.getString("lm.0A", attribute)); //$NON-NLs-1$
         }
 
         try {
@@ -245,13 +247,13 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
 
         if (argType.isPrimitive()) {
             if (!ManagementUtils.isWrapperClass(
-                    attribute.getValue().getClass(), argType)) {
-                throw new InvalidAttributeValueException(attribInfo.getName()
-                        + " is a " + attribInfo.getType() + " attribute");
+                    attribute.getValue().getClass(), argType)) {               
+                //lm.0B= {0} is a {1} attribute
+                throw new InvalidAttributeValueException(Messages.getString("lm.0B", attribInfo.getName(), attribInfo.getType())); //$NON-NLS-1$
             }
         } else if (!argType.equals(attribute.getValue().getClass())) {
-            throw new InvalidAttributeValueException(attribInfo.getName()
-                    + " is a " + attribInfo.getType() + " attribute");
+            //lm.0B= {0} is a {1} attribute
+            throw new InvalidAttributeValueException(Messages.getString("lm.0B", attribInfo.getName(), attribInfo.getType())); //$NON-NLS-1$
         }
 
         Method setterMethod = null;
@@ -302,11 +304,10 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
         // Validate that we have the named action
         MBeanOperationInfo opInfo = getPresentOperation(actionName,
                 localSignature);
-        if (opInfo == null) {
-            throw new ReflectionException(
-                    new NoSuchMethodException(actionName),
-                    "No such operation : " + actionName);
-        }
+        if (opInfo == null) {            
+            //lm.0C=No such operation : {0}
+            throw new ReflectionException( new NoSuchMethodException (actionName), Messages.getString("lm.0C", actionName)); //$NON-NLS-1$          
+            }
 
         // For Java 5.0 platform MXBeans, no conversion
         // to open MBean types is necessary for any of the arguments.
@@ -412,7 +413,7 @@ public abstract class DynamicMXBeanImpl implements DynamicMBean {
             Throwable root = e.getCause();
             if (root instanceof RuntimeException) {
                 throw (RuntimeException) root;
-            } else {
+            } else {                
                 throw new MBeanException((Exception) root);
             }// end else
         }// end catch

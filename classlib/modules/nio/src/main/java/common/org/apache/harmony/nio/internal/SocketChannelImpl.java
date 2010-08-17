@@ -43,6 +43,7 @@ import java.nio.channels.UnsupportedAddressTypeException;
 import java.nio.channels.spi.SelectorProvider;
 
 import org.apache.harmony.luni.net.PlainSocketImpl;
+import org.apache.harmony.luni.net.NetUtil;
 import org.apache.harmony.luni.platform.FileDescriptorHandler;
 import org.apache.harmony.luni.platform.INetworkSystem;
 import org.apache.harmony.luni.platform.Platform;
@@ -147,7 +148,7 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
         fd = new FileDescriptor();
         status = SOCKET_STATUS_UNCONNECTED;
         if (connect) {
-            networkSystem.createStreamSocket(fd, true);
+            networkSystem.createStreamSocket(fd, NetUtil.preferIPv4Stack());
         }
     }
 
@@ -745,7 +746,7 @@ class SocketChannelImpl extends SocketChannel implements FileDescriptorHandler {
          */
         @Override
         public boolean isConnected() {
-            return channel.isConnected();
+            return super.isConnected() || channel.isConnected();
         }
 
         /**

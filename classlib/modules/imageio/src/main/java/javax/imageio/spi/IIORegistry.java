@@ -19,7 +19,13 @@
  */
 package javax.imageio.spi;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.harmony.x.imageio.plugins.gif.GIFImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.jpeg.JPEGImageReaderSpi;
@@ -35,7 +41,8 @@ import org.apache.harmony.x.imageio.spi.RAFIOSSpi;
 
 public final class IIORegistry extends ServiceRegistry {
 
-    private static IIORegistry   instance;
+    private static Map<ThreadGroup, IIORegistry> instances = 
+    	Collections.synchronizedMap(new IdentityHashMap<ThreadGroup, IIORegistry>());
 
     private static final Class[] CATEGORIES = new Class[] {
                     javax.imageio.spi.ImageWriterSpi.class,
@@ -65,17 +72,30 @@ public final class IIORegistry extends ServiceRegistry {
     }
 
     public static IIORegistry getDefaultInstance() {
-        // TODO implement own instance for each ThreadGroup (see also
-        // ThreadLocal)
-        synchronized (IIORegistry.class) {
-            if (instance == null) {
-                instance = new IIORegistry();
-            }
-            return instance;
-        }
+        ThreadGroup tg = Thread.currentThread().getThreadGroup();
+        synchronized (instances) {
+        	IIORegistry instance = instances.get(tg);
+        	if (instance == null) {
+        		synchronized(IIORegistry.class) {
+        			instance = new IIORegistry();
+        		}
+            	instances.put(tg, instance);
+        	}
+        	return instance;
+        }    
     }
 
-    public void registerApplicationClasspathSpis() {
-        // -- TODO implement for non-builtin plugins
+    @SuppressWarnings("unchecked")
+	public void registerApplicationClasspathSpis() {
+        AccessController.doPrivileged(new PrivilegedAction() {
+			public Object run() {
+				Iterator<Class<?>> categories = getCategories();
+				while (categories.hasNext()) {
+					Iterator providers = lookupProviders(categories.next());
+					registerServiceProviders(providers);
+				}
+				return this;
+			}
+        });
     }
 }
