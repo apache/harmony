@@ -97,7 +97,18 @@ public class JPEGQTable {
 
     @Override
     public String toString() {
-        //-- TODO more informative info
-        return "JPEGQTable";
+    	StringBuilder sb = new StringBuilder();
+    	
+    	sb.append("JPEGQTable:\n");
+    	for (int i = 0; i < 8; i++) {
+    		sb.append('\t');
+    		for (int j = 0; j < 8; j++) {
+    			sb.append(theTable[i*8+j]);
+    			sb.append(' ');
+    		}
+    		sb.append('\n');
+    	}
+    	
+        return sb.toString();
     }
 }

@@ -30,9 +30,6 @@ import java.util.Map.Entry;
 import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
-/**
- * TODO: add all the methods from the spec
- */
 public class ServiceRegistry {
 
     CategoriesMap categories = new CategoriesMap(this);
@@ -169,7 +166,6 @@ public class ServiceRegistry {
             return providers.unsetOrdering(firstProvider, secondProvider);
         }
         
-        //-- TODO: useOrdering
         Iterator<?> getProviders(Class<?> category, boolean useOrdering) {
             ProvidersMap providers = categories.get(category);
             if (null == providers) {
