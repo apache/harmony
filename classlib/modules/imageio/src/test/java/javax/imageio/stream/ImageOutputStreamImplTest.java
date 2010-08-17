@@ -17,9 +17,7 @@
 
 package javax.imageio.stream;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
@@ -221,13 +219,12 @@ public class ImageOutputStreamImplTest extends TestCase {
 		out.writeUTF("test");
 		assertEquals("test", in.readUTF());
 
-		// FIXME: fails with ByteOrder.LITTLE_ENDIAN
-		// out.reset();
-		// in.reset();
-		// out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
-		// in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
-		// out.writeUTF("test");
-		// assertEquals("test", in.readUTF());
+		out.reset();
+		in.reset();
+		out.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		in.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+		out.writeUTF("test");
+		assertEquals("test", in.readUTF());
 	}
 
 	static class BasicImageOutputStreamImpl extends ImageOutputStreamImpl {
