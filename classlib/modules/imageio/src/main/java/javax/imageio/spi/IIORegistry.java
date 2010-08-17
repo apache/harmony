@@ -19,7 +19,10 @@
  */
 package javax.imageio.spi;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.apache.harmony.x.imageio.plugins.gif.GIFImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.jpeg.JPEGImageReaderSpi;
@@ -75,7 +78,17 @@ public final class IIORegistry extends ServiceRegistry {
         }
     }
 
-    public void registerApplicationClasspathSpis() {
-        // -- TODO implement for non-builtin plugins
+    @SuppressWarnings("unchecked")
+	public void registerApplicationClasspathSpis() {
+        AccessController.doPrivileged(new PrivilegedAction() {
+			public Object run() {
+				Iterator<Class<?>> categories = getCategories();
+				while (categories.hasNext()) {
+					Iterator providers = lookupProviders(categories.next());
+					registerServiceProviders(providers);
+				}
+				return this;
+			}
+        });
     }
 }
