@@ -111,9 +111,8 @@ public class JPEGImageWriter extends ImageWriter {
                         : reg.height;
             }
 
-            //-- TODO uncomment when JPEGImageWriteParam be implemented
             //-- Only default progressive mode yet
-            // progressive = param.getProgressiveMode() ==  ImageWriteParam.MODE_DEFAULT;
+            progressive = param.getProgressiveMode() ==  ImageWriteParam.MODE_DEFAULT;
 
             //-- def is 1
             deltaX = param.getSourceXSubsampling();
@@ -255,11 +254,12 @@ public class JPEGImageWriter extends ImageWriter {
      */
     @SuppressWarnings("unused")
     private void getScanLine(int scanline) {
-        //-- TODO: processImageProgress in ImageWriter
         Raster child = sourceRaster.createChild(srcXOff,
                 srcYOff + scanline * deltaY, srcWidth, 1, 0, 0, null);
 
         scanRaster.setRect(child);
+        // broadcast the current percentage of image completion
+        processImageProgress((float) scanline / (float) srcHeight * 100.0f);
     }
 
     /**
