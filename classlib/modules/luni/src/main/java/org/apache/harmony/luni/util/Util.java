@@ -324,7 +324,53 @@ public final class Util {
         }
         return result.toString();
     }
-	
+
+
+    /**
+     * Encode the given url string as RFC-1738 required.
+     * 
+     * @param urlString
+     * @return encoded URL string
+     */
+    public static String encodeURL(String urlStr) {
+        String digits = "0123456789ABCDEF"; //$NON-NLS-1$
+
+        StringBuilder buf = new StringBuilder(urlStr.length() + 16);
+        for (int i = 0; i < urlStr.length(); i++) {
+            char ch = urlStr.charAt(i);
+            if ('%' == ch) {
+                if (i + 1 < urlStr.length()
+                        && i + 2 < urlStr.length()
+                        && digits.indexOf(Character.toUpperCase(urlStr
+                                .charAt(i + 1))) != -1
+                        && digits.indexOf(Character.toUpperCase(urlStr
+                                .charAt(i + 2))) != -1) {
+                    buf.append(ch);
+                    buf.append(urlStr.charAt(i + 1));
+                    buf.append(urlStr.charAt(i + 2));
+                    i += 2;
+                } else {
+                    buf.append("%25"); //$NON-NLS-1$
+                }
+            } else if ("\"<>%\\^[]`+$,{}`~| ".indexOf(ch) == -1) { //$NON-NLS-1$
+                buf.append(ch);
+            } else {
+                byte[] bytes = null;
+                try {
+                    bytes = new String(new char[] { ch }).getBytes("UTF-8"); //$NON-NLS-1$
+                } catch (UnsupportedEncodingException e) {
+                    throw new AssertionError(e);
+                }
+                for (int j = 0; j < bytes.length; j++) {
+                    buf.append('%');
+                    buf.append(digits.charAt((bytes[j] & 0xf0) >> 4));
+                    buf.append(digits.charAt(bytes[j] & 0xf));
+                }
+            }
+        }
+        return buf.toString();
+    }
+
 	public static String toASCIILowerCase(String s) {
         int len = s.length();
 		StringBuilder buffer = new StringBuilder(len);

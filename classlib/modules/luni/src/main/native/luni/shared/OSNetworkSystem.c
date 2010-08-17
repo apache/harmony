@@ -23,6 +23,12 @@
 #include "socket.h"
 #include "harmonyglob.h"
 
+#if defined(WIN32) || defined(WIN64)
+#if !defined(ECONNABORTED)
+#define ECONNABORTED WSAECONNABORTED
+#endif
+#endif
+
 void setSocketImplPort(JNIEnv * env, jobject socketImpl, U_16 hPort);
 void setSocketImplAddress(JNIEnv * env, jobject socketImpl,
                           jobject anInetAddress);
@@ -714,49 +720,6 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_listenStreamSocket
   if (result < 0) {
     throwJavaNetSocketException(env, result);
     return;
-  }
-}
-
-
-/*
- * Class:     org_apache_harmony_luni_platform_OSNetworkSystem
- * Method:    accept
- * Signature: (Ljava/io/FileDescriptor;Ljava/net/SocketImpl;Ljava/io/FileDescriptor;I)V
- */
-JNIEXPORT void JNICALL
-Java_org_apache_harmony_luni_platform_OSNetworkSystem_acceptSocketImpl
-  (JNIEnv * env, jobject thiz, jobject fileDescriptorServer,
-   jobject socketImpl, jobject fileDescriptorSocketImpl, jint timeout)
-{
-  PORT_ACCESS_FROM_ENV(env);
-  I_32 result;
-  hysocket_t socketS, socketNew;
-  hysockaddr_struct sockaddrP;
-  jbyte nlocalAddrBytes[HYSOCK_INADDR6_LEN];
-
-  result = pollSelectRead(env, fileDescriptorServer, timeout, TRUE);
-
-  if (0 > result) {
-    return;
-  }
-
-  socketS =
-    getJavaIoFileDescriptorContentsAsAPointer(env, fileDescriptorServer);
-  if (!hysock_socketIsValid(socketS)) {
-    throwJavaNetSocketException(env, HYPORT_ERROR_SOCKET_BADSOCKET);
-    return;
-  }
-
-  hysock_sockaddr_init6(&sockaddrP, (U_8 *) nlocalAddrBytes,
-                        HYSOCK_INADDR_LEN, HYADDR_FAMILY_AFINET4, 0, 0, 0,
-                        socketS);
-
-  result = hysock_accept(socketS, &sockaddrP, &socketNew);
-  if (0 != result) {
-    throwJavaNetBindException(env, result);
-  } else {
-    updateSocket(env, &sockaddrP, socketNew, socketImpl,
-                 fileDescriptorSocketImpl);
   }
 }
 
@@ -1697,6 +1660,7 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_acceptStreamSocket
   hysockaddr_struct sockaddrP;
   jbyte nlocalAddrBytes[HYSOCK_INADDR6_LEN];
 
+  select_accept:
   result = pollSelectRead(env, fdServer, timeout, TRUE);
   if (0 > result) {
     return;
@@ -1714,8 +1678,13 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_acceptStreamSocket
 
   result = hysock_accept(socketS, &sockaddrP, &socketNew);
   if (0 != result) {
-    throwJavaNetBindException(env, result);
-    return;
+    // repeat accept if the server was reset
+    if (errno == ECONNABORTED) {
+      goto select_accept;
+    } else {
+      throwJavaNetSocketException(env, result);
+      return;
+    }
   }
 
   updateSocket(env, &sockaddrP, socketNew, socketImpl, fdSocketImpl);

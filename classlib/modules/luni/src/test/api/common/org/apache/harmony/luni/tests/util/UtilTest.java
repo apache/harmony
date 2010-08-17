@@ -55,4 +55,12 @@ public class UtilTest extends TestCase {
         }
     }
 
+    public void testEncodeURL() {
+        assertEquals("http://test.com/%25", Util.encodeURL("http://test.com/%"));
+        assertEquals("http://test.com/%250", Util.encodeURL("http://test.com/%0"));
+        assertEquals("http://test.com/%2b", Util.encodeURL("http://test.com/%2b"));
+        assertEquals("http://test.com/%2b/index", Util.encodeURL("http://test.com/%2b/index"));
+        assertEquals("http://test.com/%252z", Util.encodeURL("http://test.com/%2z"));
+        assertEquals("http://test.com/with%20space", Util.encodeURL("http://test.com/with space"));
+    }
 }

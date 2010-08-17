@@ -111,7 +111,7 @@ public abstract class URLStreamHandler {
         String userInfo = u.getUserInfo();
 
         int refIdx = parseString.indexOf('#', 0);
-        if (parseString.startsWith("//")) { //$NON-NLS-1$
+        if (parseString.startsWith("//") && !parseString.startsWith("////")) { //$NON-NLS-1$
             int hostIdx = 2, portIdx = -1;
             port = -1;
             fileIdx = parseString.indexOf('/', hostIdx);
