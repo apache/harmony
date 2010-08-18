@@ -28,60 +28,174 @@ void randAdd(const void *buf, int num, double entropy);
 int randPseudoBytes(unsigned char *buf, int num);
 int randStatus(void);
 
-JavaVM *javaVM;
+struct callbackFunctions_struct {
+    JavaVM *javaVM;
+    void (*origRandSeed)(const void *buf, int num);
+    int  (*origRandBytes)(unsigned char *buf, int num);
+    void (*origRandAdd)(const void *buf, int num, double entropy);
+    int (*origRandPseudoBytes)(unsigned char *buf, int num);
+    jclass rngClass;
+    jmethodID randSeedMethod;
+    jmethodID randBytesMethod;
+    jmethodID randAddMethod;
+    jmethodID randPseudoMethod;
+};
 
-RAND_METHOD *getRandMethod(JavaVM *jvm) {
-    RAND_METHOD *randMethod = malloc(sizeof(RAND_METHOD));
-    randMethod->seed = &randSeed;
-    randMethod->bytes = &randBytes;
-    randMethod->cleanup = &randCleanup;
-    randMethod->add = &randAdd;
-    randMethod->pseudorand = &randPseudoBytes;
-    randMethod->status = &randStatus;
+struct callbackFunctions_struct *callbacks;
 
-    javaVM = jvm;
+void initialiseRandMethod(JNIEnv *env) {
+    const RAND_METHOD *origRandMethod;
+    RAND_METHOD *newRandMethod;
 
-    return randMethod;
+    origRandMethod = RAND_get_rand_method();
+    callbacks = malloc(sizeof(struct callbackFunctions_struct));
+    (*env)->GetJavaVM(env, &callbacks->javaVM);
+    callbacks->origRandSeed = origRandMethod->seed;
+    callbacks->origRandBytes = origRandMethod->bytes;
+    callbacks->origRandAdd = origRandMethod->add;
+    callbacks->origRandPseudoBytes = origRandMethod->pseudorand;
+
+    // In each of the following cases if the return value is NULL an exception should already have been
+    // thrown, so just return
+    callbacks->rngClass = (*env)->FindClass(env, "org/apache/harmony/xnet/provider/jsse/RNGHandler");
+    if (!callbacks->rngClass) return;
+
+    callbacks->randSeedMethod = (*env)->GetStaticMethodID(env, callbacks->rngClass, "randSeed", "([B)I");
+    if (!callbacks->randSeedMethod) return;
+    callbacks->randBytesMethod = (*env)->GetStaticMethodID(env, callbacks->rngClass, "randBytes", "(I)[B");
+    if (!callbacks->randBytesMethod) return;
+    callbacks->randAddMethod = (*env)->GetStaticMethodID(env, callbacks->rngClass, "randAdd", "([B)I");
+    if (!callbacks->randAddMethod) return;
+    callbacks->randPseudoMethod = (*env)->GetStaticMethodID(env, callbacks->rngClass, "randPseudoBytes", "(I)[B");
+    if (!callbacks->randPseudoMethod) return;
+    
+    newRandMethod = malloc(sizeof(RAND_METHOD));
+    newRandMethod->seed = &randSeed;
+    newRandMethod->bytes = &randBytes;
+    newRandMethod->cleanup = &randCleanup;
+    newRandMethod->add = &randAdd;
+    newRandMethod->pseudorand = &randPseudoBytes;
+    newRandMethod->status = &randStatus;
+
+    // TODO: Check for error returns here
+    RAND_set_rand_method(newRandMethod);
 }
 
 void randSeed(const void *buf, int num) {
-    printf("randSeed with num=%d and javaVM=%p\n", num, javaVM);
+    JNIEnv *env;
+    int ret;
+    jbyteArray seedBuffer;
 
-    //(*javaVM)->GetEnv(javaVM, (void**)&env, JNI_VERSION_1_4);
+    ret = (*callbacks->javaVM)->GetEnv(callbacks->javaVM, (void**)&env, JNI_VERSION_1_4);
+    if (ret) {
+        // TODO: throw appropriate exception
+        return;
+    }
 
-    return;
+    seedBuffer = (*env)->NewByteArray(env, (jsize)num);
+    if ((*env)->ExceptionOccurred(env)) {
+        return;
+    }
+
+    (*env)->SetByteArrayRegion(env, seedBuffer, 0, (jsize)num, (jbyte*)buf);
+    if (!seedBuffer) {
+        return;
+    }
+
+    ret = (*env)->CallStaticIntMethod(env, callbacks->rngClass, callbacks->randSeedMethod, seedBuffer);
+    if (ret) {
+        // No SecureRandom implementation was set for this context - just call the OpenSSL default function
+        (*callbacks->origRandSeed)(buf, num);
+    }
 }
 
 int randBytes(unsigned char *buf, int num) {
-    int i;
-    printf("randBytes with num=%d and javaVM=%p\n", num, javaVM);
-    for (i=0; i<num; i++) {
-        buf[i] = 1;
+    JNIEnv *env;
+    int ret;
+    jbyteArray randBuffer;
+
+
+    ret = (*callbacks->javaVM)->GetEnv(callbacks->javaVM, (void**)&env, JNI_VERSION_1_4);
+    if (ret) {
+        // TODO: throw appropriate exception and return
+        return 0;
     }
+
+    randBuffer = (jbyteArray)(*env)->CallStaticObjectMethod(env, callbacks->rngClass, callbacks->randBytesMethod, (jint)num);
+    if (!randBuffer) {
+        // No SecureRandom implementation was set for this context - just call the OpenSSL default function
+        ret = (*callbacks->origRandBytes)(buf, num);
+        if (!ret) {
+            // TODO: throw appropriate exception here
+            return 0;
+        }
+    } else {
+        (*env)->GetByteArrayRegion(env, randBuffer, 0, (jint)num, (jbyte*)buf);
+    }
+
     return 1;
 }
 
 void randCleanup() {
-    printf("randCleanup and javaVM=%p\n", javaVM);
+    // Do nothing and return
     return;
 }
 
 void randAdd(const void *buf, int num, double entropy) {
-    printf("randAdd with num=%d and entropy=%f and javaVM=%p\n", num, entropy, javaVM);
+    JNIEnv *env;
+    int ret;
+    jbyteArray seedBuffer;
 
-    return;
+    ret = (*callbacks->javaVM)->GetEnv(callbacks->javaVM, (void**)&env, JNI_VERSION_1_4);
+    if (ret) {
+        // TODO: throw appropriate exception
+        return;
+    }
+
+    seedBuffer = (*env)->NewByteArray(env, (jsize)num);
+    if ((*env)->ExceptionOccurred(env)) {
+        return;
+    }
+
+    (*env)->SetByteArrayRegion(env, seedBuffer, 0, (jsize)num, (jbyte*)buf);
+    if (!seedBuffer) {
+        return;
+    }
+
+    ret = (*env)->CallStaticIntMethod(env, callbacks->rngClass, callbacks->randAddMethod, seedBuffer);
+    if (ret) {
+        // No SecureRandom implementation was set for this context - just call the OpenSSL default function
+        (*callbacks->origRandAdd)(buf, num, entropy);
+    }
 }
 
-int  randPseudoBytes(unsigned char *buf, int num) {
-    int i;
-    printf("randPseudoBytes with num=%d and javaVM=%p\n", num, javaVM);
-    for (i=0; i<num; i++) {
-        buf[i] = 1;
+int randPseudoBytes(unsigned char *buf, int num) {
+    JNIEnv *env;
+    int ret;
+    jbyteArray randBuffer;
+
+    ret = (*callbacks->javaVM)->GetEnv(callbacks->javaVM, (void**)&env, JNI_VERSION_1_4);
+    if (ret) {
+        // TODO: throw appropriate exception and return
+        return 0;
     }
+
+    randBuffer = (jbyteArray)(*env)->CallStaticObjectMethod(env, callbacks->rngClass, callbacks->randPseudoMethod, (jint)num);
+    if (!randBuffer) {
+        // No SecureRandom implementation was set for this context - just call the OpenSSL default function
+        ret = (*callbacks->origRandPseudoBytes)(buf, num);
+        if (!ret) {
+            // TODO: throw appropriate exception here
+            return 0;
+        }
+    } else {
+        (*env)->GetByteArrayRegion(env, randBuffer, 0, (jint)num, (jbyte*)buf);
+    }
+
     return 1;
 }
 
 int randStatus() {
-    printf("randStatus and javaVM=%p\n", javaVM);
-    return 0;
+    // Do nothing and return success
+    return 1;
 }

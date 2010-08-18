@@ -435,6 +435,9 @@ public class SSLSocketImpl extends SSLSocket {
             throw new IOException("Socket has already been closed.");
         }
 
+        // Set the thread local SSLParameter so it can be used in the RNG callbacks
+        sslParameters.threadLocalParams.set(sslParameters);
+
         if (!handshake_started) {
             handshake_started = true;
             if (sslParameters.getUseClientMode()) {
@@ -447,7 +450,7 @@ public class SSLSocketImpl extends SSLSocket {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: SERVER accepting connection");
                 }
-                sslAcceptImpl(SSL, impl.getFileDescriptor());                
+                sslAcceptImpl(SSL, impl.getFileDescriptor());
             }
         }
 
@@ -470,6 +473,9 @@ public class SSLSocketImpl extends SSLSocket {
         if (logger != null) {
             logger.println("SSLSocketImpl.startHandshake: END");
         }
+
+        // Remove our thread local SSLParameter now we are complete
+        sslParameters.threadLocalParams.remove();
     }
 
 

@@ -34,7 +34,7 @@ extern "C" {
 #define REQUEST_CLIENT_AUTH 2
 #define REQUIRE_CLIENT_AUTH 4
 
-JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_getDefaultCipherSuites
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseDefaults
   (JNIEnv *, jclass);
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
   (JNIEnv *, jclass, jobjectArray, jbyteArray, jbyteArray);

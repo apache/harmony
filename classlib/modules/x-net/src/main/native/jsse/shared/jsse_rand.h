@@ -15,11 +15,11 @@
  *  limitations under the License.
  */
 
-#include "openssl/rand.h"
+#include "jni.h"
 
-#ifndef _RAND_H
-#define _RAND_H
+#ifndef _JSSE_RAND_H
+#define _JSSE_RAND_H
 
-RAND_METHOD *getRandMethod();
+void initialiseRandMethod(JNIEnv*);
 
 #endif

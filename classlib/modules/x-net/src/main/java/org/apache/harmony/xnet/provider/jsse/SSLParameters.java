@@ -49,8 +49,6 @@ public class SSLParameters {
     private static X509KeyManager defaultKeyManager;
     // default source of authentication trust decisions
     private static X509TrustManager defaultTrustManager;
-    // default source of random numbers
-    private static SecureRandom defaultSecureRandom;
     // default SSL parameters
     private static SSLParameters defaultParameters;
 
@@ -93,16 +91,18 @@ public class SSLParameters {
     // if the peer with this parameters allowed to cteate new SSL session
     private boolean enable_session_creation = true;
 
+    static ThreadLocal<SSLParameters> threadLocalParams = new ThreadLocal<SSLParameters>();
     
     // Native address of the OpenSSL SSL_CTX struct
     private long SSL_CTX = 0;
 
-    // Native method that gets the default list of cipher suites from OpenSSL
-    private static native String[] getDefaultCipherSuites();
+    // Native method that returns the default list of cipher suites from OpenSSL
+    // and also sets the default RNG functions
+    private static native String[] initialiseDefaults();
 
     static {
         System.loadLibrary("hyjsse");
-        supportedCipherSuites = getDefaultCipherSuites();
+        supportedCipherSuites = initialiseDefaults();
     }
 
     private static native long initialiseContext(byte[][] trustCerts, byte[] keyCert, byte[] privateKey);
@@ -198,14 +198,7 @@ public class SSLParameters {
             throw new KeyManagementException(e);
         }
         // initialize secure random
-        if (sr == null) {
-            if (defaultSecureRandom == null) {
-        	    defaultSecureRandom = new SecureRandom();
-            }
-            secureRandom = defaultSecureRandom;
-        } else {
-            secureRandom = sr;
-        }
+        secureRandom = sr;
 
         // Now setup our OpenSSL SSL_CTX with the various certificates
         // First iterate through the trust certs storing their ASN1 form
@@ -242,7 +235,9 @@ public class SSLParameters {
             }
         }
 
+        threadLocalParams.set(this);
         SSL_CTX = initialiseContext(tempCertsDER, keyCertDER, privateKeyDER);
+        threadLocalParams.remove();
     }
 
     protected static SSLParameters getDefault() throws KeyManagementException {

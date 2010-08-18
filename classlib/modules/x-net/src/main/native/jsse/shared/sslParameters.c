@@ -24,7 +24,7 @@
 #include "openssl/err.h"
 #include "jsse_rand.h"
 
-JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_getDefaultCipherSuites
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseDefaults
   (JNIEnv *env, jclass clazz)
 {
     SSL_CTX *context;
@@ -64,6 +64,10 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     SSL_free(ssl);
     SSL_CTX_free(context);
 
+    // Initialise our global RNG functions to call into RNGHandler
+    initialiseRandMethod(env);
+
+    // Return the array of default cipher suites
     return stringArray;
 }
 
@@ -77,8 +81,6 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
     X509 *x509cert;
     const unsigned char *temp;
     int ret;
-    RAND_METHOD *randMethod;
-    JavaVM *jvm;
 
     context = SSL_CTX_new(SSLv23_method());
 
@@ -152,11 +154,6 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
         }
         free(certBuffer);
     }
-
-    // TODO: Check for error return here
-    (*env)->GetJavaVM(env, &jvm);
-    randMethod = getRandMethod(jvm);
-    RAND_set_rand_method(randMethod);
     
     return addr2jlong(context);
 }
