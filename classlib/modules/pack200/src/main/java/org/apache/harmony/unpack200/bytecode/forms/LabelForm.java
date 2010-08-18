@@ -37,14 +37,6 @@ public class LabelForm extends ByteCodeForm {
         this.widened = widened;
     }
 
-    public int getOperandType() {
-        return TYPE_LABEL;
-    }
-
-    public boolean hasLabelOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *

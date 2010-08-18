@@ -28,14 +28,6 @@ public class ByteForm extends ByteCodeForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_BYTE;
-    }
-
-    public boolean hasByteOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *

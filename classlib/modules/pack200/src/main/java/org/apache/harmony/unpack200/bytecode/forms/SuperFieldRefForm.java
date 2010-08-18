@@ -31,14 +31,6 @@ public class SuperFieldRefForm extends ClassSpecificReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_SUPERFIELDREF;
-    }
-
-    public boolean hasSuperFieldRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextSuperFieldRef();
     }

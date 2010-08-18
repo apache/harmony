@@ -31,14 +31,6 @@ public class ThisFieldRefForm extends ClassSpecificReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_THISFIELDREF;
-    }
-
-    public boolean hasThisFieldRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextThisFieldRef();
     }

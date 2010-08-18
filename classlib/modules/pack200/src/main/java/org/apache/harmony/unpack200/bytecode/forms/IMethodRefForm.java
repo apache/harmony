@@ -31,14 +31,6 @@ public class IMethodRefForm extends ReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_IMETHODREF;
-    }
-
-    public boolean hasIMethodRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextIMethodRef();
     }

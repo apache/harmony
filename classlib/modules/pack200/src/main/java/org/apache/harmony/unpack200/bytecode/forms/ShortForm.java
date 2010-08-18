@@ -28,14 +28,6 @@ public class ShortForm extends ByteCodeForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_SHORT;
-    }
-
-    public boolean hasShortOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *

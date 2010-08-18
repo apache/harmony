@@ -29,14 +29,6 @@ public class FieldRefForm extends ReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_FIELDREF;
-    }
-
-    public boolean hasFieldRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextFieldRef();
     }
