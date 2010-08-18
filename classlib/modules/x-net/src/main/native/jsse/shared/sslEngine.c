@@ -14,28 +14,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-#include <jni.h>
 
-#ifndef _SSLSOCKET_H
-#define _SSLSOCKET_H
+#include "sslEngine.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <stdio.h>
+#include "jni.h"
+#include "hysock.h"
+#include "openssl/bio.h"
+#include "openssl/ssl.h"
+#include "openssl/err.h"
 
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_initImpl
-  (JNIEnv *, jclass, jlong);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
-  (JNIEnv *, jclass, jlong, jobject);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
-  (JNIEnv *, jclass, jlong, jobject);
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_writeAppDataImpl
-  (JNIEnv *, jclass, jlong, jbyteArray, jint, jint);
-JNIEXPORT jbyte JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_needAppDataImpl
-  (JNIEnv *, jclass, jlong);
 
-#ifdef __cplusplus
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_initImpl
+  (JNIEnv *env, jclass clazz, jlong context) {
+    return (jlong)SSL_new((SSL_CTX*)context);
 }
-#endif
 
-#endif

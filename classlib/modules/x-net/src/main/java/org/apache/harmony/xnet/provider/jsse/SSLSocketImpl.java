@@ -49,8 +49,6 @@ public class SSLSocketImpl extends SSLSocket {
 
     // record protocol to be used
     protected SSLRecordProtocol recordProtocol;
-    // handshake protocol to be used
-    private HandshakeProtocol handshakeProtocol;
     // alert protocol to be used
     private AlertProtocol alertProtocol;
     // application data input stream, this stream is presented by
@@ -83,6 +81,8 @@ public class SSLSocketImpl extends SSLSocket {
     private long SSL;
 
     // ----------------- Constructors and initializers --------------------
+
+    private native long initImpl(long context);
 
     /**
      * Constructor
@@ -173,8 +173,6 @@ public class SSLSocketImpl extends SSLSocket {
         init();
     }
 
-
-    private native long initImpl(long context);
     /**
      * Initialize the SSL socket.
      */
@@ -220,7 +218,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public String[] getSupportedCipherSuites() {
-        return sslParameters.getSupportedCipherSuites(SSL);
+        return sslParameters.getSupportedCipherSuites();
     }
 
     /**
@@ -230,7 +228,7 @@ public class SSLSocketImpl extends SSLSocket {
      */
     @Override
     public String[] getEnabledCipherSuites() {
-        return sslParameters.getEnabledCipherSuites(SSL);
+        return sslParameters.getEnabledCipherSuites();
     }
 
     /**
@@ -603,8 +601,6 @@ public class SSLSocketImpl extends SSLSocket {
         if (handshake_started) {
             alertProtocol.shutdown();
             alertProtocol = null;
-            handshakeProtocol.shutdown();
-            handshakeProtocol = null;
             recordProtocol.shutdown();
             recordProtocol = null;
         }

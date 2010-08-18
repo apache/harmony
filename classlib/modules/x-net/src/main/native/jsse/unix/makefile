@@ -29,7 +29,7 @@ endif
 
 BUILDFILES = \
 	$(SHAREDSUB)jsse_copyright.o $(SHAREDSUB)sslParameters.o $(SHAREDSUB)sslSocket.o \
-	$(SHAREDSUB)sslSession.o $(SHAREDSUB)jsse_rand.o
+	$(SHAREDSUB)sslSession.o $(SHAREDSUB)sslEngine.o $(SHAREDSUB)jsse_rand.o
 
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX) \
 	$(OPENSSL_DIST)out32/libeay32$(HY_LINKLIB_SUFFIX) $(OPENSSL_DIST)out32/ssleay32$(HY_LINKLIB_SUFFIX)

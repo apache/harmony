@@ -24,6 +24,49 @@
 #include "openssl/err.h"
 #include "jsse_rand.h"
 
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_getDefaultCipherSuites
+  (JNIEnv *env, jclass clazz)
+{
+    SSL_CTX *context;
+    SSL *ssl;
+    int i, count;
+    jclass stringClass;
+    jobjectArray stringArray; 
+    STACK_OF(SSL_CIPHER) *ciphers;
+
+    SSL_library_init();
+    SSL_load_error_strings();
+    OpenSSL_add_all_algorithms();
+
+    context = SSL_CTX_new(SSLv23_method());
+
+    /*ret = SSL_CTX_set_cipher_list(context, "ALL");
+    if (ret<=0) {
+       ERR_print_errors_fp(stderr);
+    }*/
+
+    ssl = SSL_new(context);
+
+    ciphers = SSL_get_ciphers(ssl);
+    count = sk_num(&ciphers->stack);
+
+    stringClass = (*env)->FindClass(env, "java/lang/String");
+    stringArray = (*env)->NewObjectArray(env, count, stringClass, NULL);
+
+    for (i=0; i<count; i++)
+    {
+        const char *cipherName = SSL_CIPHER_get_name(sk_value(&ciphers->stack, i));
+        jstring jcipherName = (*env)->NewStringUTF(env, cipherName);
+        (*env)->SetObjectArrayElement(env, stringArray, i, jcipherName);
+        (*env)->DeleteLocalRef(env, jcipherName);
+    }
+
+    SSL_free(ssl);
+    SSL_CTX_free(context);
+
+    return stringArray;
+}
+
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
   (JNIEnv *env, jclass clazz, jbyteArray jtrustCerts, jbyteArray jkeyCert, jbyteArray jprivateKey)
 {
@@ -37,9 +80,6 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
     RAND_METHOD *randMethod;
     JavaVM *jvm;
 
-    SSL_library_init();
-    SSL_load_error_strings();
-    OpenSSL_add_all_algorithms();
     context = SSL_CTX_new(SSLv23_method());
 
     ret = SSL_CTX_set_cipher_list(context, "ALL");
@@ -179,31 +219,6 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     if (ssl) {
         SSL_set_verify(ssl, mode, NULL);
     }
-}
-
-JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_getSupportedCipherSuitesImpl
-  (JNIEnv *env, jclass clazz, jlong jssl)
-{
-    SSL *ssl = (SSL*)jssl;
-    int i, count;
-    jclass stringClass;
-    jobjectArray stringArray; 
-    STACK_OF(SSL_CIPHER) *ciphers;
-
-    ciphers = SSL_get_ciphers(ssl);
-    count = sk_num(&ciphers->stack);
-
-    stringClass = (*env)->FindClass(env, "java/lang/String");
-    stringArray = (*env)->NewObjectArray(env, count, stringClass, NULL);
-
-    for (i=0; i<count; i++)
-    {
-        const char *cipherName = SSL_CIPHER_get_name(sk_value(&ciphers->stack, i));
-        jstring jcipherName = (*env)->NewStringUTF(env, cipherName);
-        (*env)->SetObjectArrayElement(env, stringArray, i, jcipherName);
-        (*env)->DeleteLocalRef(env, jcipherName);
-    }
-    return stringArray;
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledCipherSuitesImpl

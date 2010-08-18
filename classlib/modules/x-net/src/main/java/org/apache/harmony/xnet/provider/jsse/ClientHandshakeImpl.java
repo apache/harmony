@@ -119,11 +119,11 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
      * Starts/resumes session
      */
     private void startSession() {
-        CipherSuite[] cipher_suites;
+        CipherSuite[] cipher_suites = null;
         if (isResuming) {
             cipher_suites = new CipherSuite[] { session.cipherSuite };
         } else {
-            cipher_suites = parameters.enabledCipherSuites;
+            //cipher_suites = parameters.getEnabledCipherSuites();
         }
         clientHello = new ClientHello(parameters.getSecureRandom(),
                 session.protocol.version, session.id, cipher_suites);
@@ -205,7 +205,7 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
                     }
                     
                     //check cipher_suite
-                    CipherSuite[] enabledSuites = parameters.enabledCipherSuites;
+                    CipherSuite[] enabledSuites = null;//parameters.getEnabledCipherSuites();
                     find: {
                         for (int i = 0; i < enabledSuites.length; i++) {
                             if (serverHello.cipher_suite

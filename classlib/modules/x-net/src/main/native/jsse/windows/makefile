@@ -29,7 +29,7 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
   $(SHAREDSUB)jsse_copyright.obj $(SHAREDSUB)sslParameters.obj $(SHAREDSUB)sslSocket.obj \
-  $(SHAREDSUB)sslSession.obj $(SHAREDSUB)jsse_rand.obj
+  $(SHAREDSUB)sslSession.obj $(SHAREDSUB)sslEngine.obj $(SHAREDSUB)jsse_rand.obj
 
 VIRTFILES = hyjsse.res
 

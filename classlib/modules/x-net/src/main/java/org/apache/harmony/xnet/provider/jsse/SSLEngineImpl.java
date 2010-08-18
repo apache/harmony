@@ -83,6 +83,11 @@ public class SSLEngineImpl extends SSLEngine {
     // logger
     private Logger.Stream logger = Logger.getStream("engine");
 
+    // Pointer to the OpenSSL SSL struct used for this engine
+    private long SSL;
+
+    private native long initImpl(long context);
+
     /**
      * Ctor
      * @param   sslParameters:  SSLParameters
@@ -90,6 +95,7 @@ public class SSLEngineImpl extends SSLEngine {
     protected SSLEngineImpl(SSLParameters sslParameters) {
         super();
         this.sslParameters = sslParameters;
+        SSL = initImpl(sslParameters.getSSLContextAddress());
     }
 
     /**
@@ -101,6 +107,7 @@ public class SSLEngineImpl extends SSLEngine {
     protected SSLEngineImpl(String host, int port, SSLParameters sslParameters) {
         super(host, port);
         this.sslParameters = sslParameters;
+        SSL = initImpl(sslParameters.getSSLContextAddress());
     }
 
     /**
@@ -232,7 +239,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public void setEnabledCipherSuites(String[] suites) {
-        sslParameters.setEnabledCipherSuites(suites);
+        sslParameters.setEnabledCipherSuites(SSL, suites);
     }
 
     /**
@@ -242,7 +249,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public String[] getSupportedProtocols() {
-        return ProtocolVersion.supportedProtocols.clone();
+        return sslParameters.getSupportedProtocols();
     }
 
     /**
@@ -262,7 +269,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public void setEnabledProtocols(String[] protocols) {
-        sslParameters.setEnabledProtocols(protocols);
+        sslParameters.setEnabledProtocols(SSL, protocols);
     }
 
     /**
@@ -297,7 +304,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public void setNeedClientAuth(boolean need) {
-        sslParameters.setNeedClientAuth(need);
+        sslParameters.setNeedClientAuth(SSL, need);
     }
 
     /**
@@ -317,7 +324,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public void setWantClientAuth(boolean want) {
-        sslParameters.setWantClientAuth(want);
+        sslParameters.setWantClientAuth(SSL, want);
     }
 
     /**

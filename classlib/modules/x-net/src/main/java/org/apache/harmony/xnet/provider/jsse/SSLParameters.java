@@ -68,7 +68,7 @@ public class SSLParameters {
     private SecureRandom secureRandom;
 
     // string representations of available cipher suites
-    private String[] supportedCipherSuites = null;
+    static String[] supportedCipherSuites = null;
     private String[] enabledCipherSuites = null;
 
     // protocols suported and those enabled for SSL connection
@@ -97,8 +97,12 @@ public class SSLParameters {
     // Native address of the OpenSSL SSL_CTX struct
     private long SSL_CTX = 0;
 
+    // Native method that gets the default list of cipher suites from OpenSSL
+    private static native String[] getDefaultCipherSuites();
+
     static {
         System.loadLibrary("hyjsse");
+        supportedCipherSuites = getDefaultCipherSuites();
     }
 
     private static native long initialiseContext(byte[][] trustCerts, byte[] keyCert, byte[] privateKey);
@@ -284,23 +288,16 @@ public class SSLParameters {
         return secureRandom;
     }
 
-
-    // TODO: implement the natives for get/set cipher suites
-    private static native String[] getSupportedCipherSuitesImpl(long SSL);
-
-    protected String[] getSupportedCipherSuites(long SSL) {
-        if (supportedCipherSuites == null) {
-            supportedCipherSuites = getSupportedCipherSuitesImpl(SSL);
-        }
+    protected String[] getSupportedCipherSuites() {
         return supportedCipherSuites.clone();
     }
 
     /**
      * @return the names of enabled cipher suites
      */
-    protected String[] getEnabledCipherSuites(long SSL) {
+    protected String[] getEnabledCipherSuites() {
         if (enabledCipherSuites == null) {
-            enabledCipherSuites = getSupportedCipherSuites(SSL);
+            enabledCipherSuites = supportedCipherSuites;
         }
         return enabledCipherSuites.clone();
     }
@@ -316,10 +313,6 @@ public class SSLParameters {
     protected void setEnabledCipherSuites(long SSL, String[] suites) {
         if (suites == null) {
             throw new IllegalArgumentException("Provided parameter is null");
-        }
-
-        if (supportedCipherSuites == null) {
-            supportedCipherSuites = getSupportedCipherSuitesImpl(SSL);
         }
 
         for (int i=0; i<suites.length; i++) {

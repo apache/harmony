@@ -669,8 +669,9 @@ public class ServerHandshakeImpl extends HandshakeProtocol {
             if (!client_suites[i].supported) {
                 continue;
             }
-            for (int j = 0; j < parameters.enabledCipherSuites.length; j++) {
-                if (client_suites[i].equals(parameters.enabledCipherSuites[j])) {
+            String[] enabledCipherSuites = parameters.getEnabledCipherSuites();
+            for (int j = 0; j < enabledCipherSuites.length; j++) {
+                if (client_suites[i].equals(enabledCipherSuites[j])) {
                     return client_suites[i];
                 }
             }
