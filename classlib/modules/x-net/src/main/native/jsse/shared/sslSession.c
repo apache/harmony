@@ -26,7 +26,7 @@
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_initialiseSession
   (JNIEnv *env, jobject object, jlong jssl)
 {
-    SSL *ssl = (SSL*)jssl;
+    SSL *ssl = jlong2addr(SSL, jssl);
 
-    return (jlong)SSL_get_session(ssl);
+    return addr2jlong(SSL_get_session(ssl));
 }

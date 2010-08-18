@@ -21,6 +21,8 @@ include $(HY_HDK)/build/make/defines.mk
 
 OPENSSL_DIST = ../../openssl/# path to OpenSSL
 
+INCLUDES += -I$(OPENSSL_DIST)include
+
 ifneq ($(HY_OS),zos)
 ifneq ($(HY_OS),aix)
 CFLAGS += -Wall
@@ -32,7 +34,7 @@ BUILDFILES = \
 	$(SHAREDSUB)sslSession.o $(SHAREDSUB)sslEngine.o $(SHAREDSUB)jsse_rand.o
 
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX) \
-	$(OPENSSL_DIST)out32/libeay32$(HY_LINKLIB_SUFFIX) $(OPENSSL_DIST)out32/ssleay32$(HY_LINKLIB_SUFFIX)
+	$(OPENSSL_DIST)libcrypto.a $(OPENSSL_DIST)libssl.a
 
 OSLIBS += -lm
 

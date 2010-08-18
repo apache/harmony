@@ -75,7 +75,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
     jint i;
     X509_STORE *certStore;
     X509 *x509cert;
-    unsigned char *temp;
+    const unsigned char *temp;
     int ret;
     RAND_METHOD *randMethod;
     JavaVM *jvm;
@@ -104,7 +104,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
             (*env)->GetByteArrayRegion(env, cert, 0, byteSize, certBuffer);
 
             // Copy certBuffer as the d2i_X509 will increment it
-            temp = (unsigned char*)certBuffer;
+            temp = (const unsigned char*)certBuffer;
 
             // Create an X509 from the ASN1 encoded certificate
             x509cert = d2i_X509(NULL, &temp, (int)byteSize);
@@ -158,14 +158,14 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
     randMethod = getRandMethod(jvm);
     RAND_set_rand_method(randMethod);
     
-    return (jlong)context;
+    return addr2jlong(context);
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setEnabledProtocolsImpl
   (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jint flags) 
 {
-    SSL_CTX *ctx = (SSL_CTX*)context;
-    SSL *ssl = (SSL*)jssl;
+    SSL_CTX *ctx = jlong2addr(SSL_CTX, context);
+    SSL *ssl = jlong2addr(SSL, jssl);
     long options = 0;
     long mask = SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3 | SSL_OP_NO_SSLv2;
 
@@ -193,8 +193,8 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_setClientAuthImpl
   (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jshort flag)
 {
-    SSL_CTX *ctx = (SSL_CTX*)context;
-    SSL *ssl = (SSL*)jssl;
+    SSL_CTX *ctx = jlong2addr(SSL_CTX, context);
+    SSL *ssl = jlong2addr(SSL, jssl);
     int mode = 0;
 
     switch (flag) {
@@ -252,8 +252,8 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     }
 
     // Set the new cipher list in the context and SSL, if specified
-    SSL_CTX_set_cipher_list((SSL_CTX*)context, cipherList);
+    SSL_CTX_set_cipher_list(jlong2addr(SSL_CTX, context), cipherList);
     if (jssl) {
-        SSL_set_cipher_list((SSL*)jssl, cipherList);
+        SSL_set_cipher_list(jlong2addr(SSL, jssl), cipherList);
     }
 }

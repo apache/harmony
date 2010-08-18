@@ -27,6 +27,6 @@
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_initImpl
   (JNIEnv *env, jclass clazz, jlong context) {
-    return (jlong)SSL_new((SSL_CTX*)context);
+    return addr2jlong(SSL_new(jlong2addr(SSL_CTX, context)));
 }
 

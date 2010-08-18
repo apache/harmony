@@ -60,13 +60,13 @@ jlong getFD(JNIEnv * env, jobject fd) {
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_initImpl
   (JNIEnv *env, jclass clazz, jlong context) {
-    return (jlong)SSL_new((SSL_CTX*)context);
+    return addr2jlong(SSL_new(jlong2addr(SSL_CTX, context)));
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
   (JNIEnv *env, jclass clazz, jlong jssl, jobject fd) {
     jlong socket = getFD(env, fd);
-    SSL *ssl = (SSL*)jssl;
+    SSL *ssl = jlong2addr(SSL, jssl);
     BIO *bio;
     int ret;
  
@@ -89,7 +89,7 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
   (JNIEnv *env, jclass clazz, jlong jssl, jobject fd) {
     jlong socket = getFD(env, fd);
-    SSL *ssl = (SSL*)jssl;
+    SSL *ssl = jlong2addr(SSL, jssl);
     BIO *bio;
     int ret;
 
@@ -111,10 +111,9 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_writeAppDataImpl
   (JNIEnv *env, jclass clazz, jlong jssl, jbyteArray data, jint offset, jint len) {
-    SSL *ssl = (SSL*)jssl;
+    SSL *ssl = jlong2addr(SSL, jssl);
     int ret;
 
-    jint byteSize = (*env)->GetArrayLength(env, data);
     jbyte *buffer = (jbyte*) malloc(len * sizeof(jbyte*)); 
     (*env)->GetByteArrayRegion(env, data, offset, len, buffer);
 
@@ -131,7 +130,7 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_
 
 JNIEXPORT jbyte JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_needAppDataImpl
   (JNIEnv *env, jclass clazz, jlong jssl) {
-    SSL *ssl = (SSL*)jssl;
+    SSL *ssl = jlong2addr(SSL, jssl);
     int ret;
     jbyte data;
 
