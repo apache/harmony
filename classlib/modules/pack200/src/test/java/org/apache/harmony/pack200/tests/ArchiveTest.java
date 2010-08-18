@@ -344,6 +344,20 @@ public class ArchiveTest extends TestCase {
 
         compareFiles(jarFile, jarFile2);
     }
+    
+    public void testAnnotations2() throws IOException, Pack200Exception,
+            URISyntaxException {
+        in = new JarFile(new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/annotations.jar").toURI()));
+        file = File.createTempFile("annotations", ".pack");
+        file.deleteOnExit();
+        out = new FileOutputStream(file);
+        PackingOptions options = new PackingOptions();
+        options.setGzip(false);
+        new Archive(in, out, options).pack();
+        in.close();
+        out.close();
+    }
 
     public void testE0() throws Pack200Exception, IOException, URISyntaxException {
         File f1 = new File(Archive.class.getResource(

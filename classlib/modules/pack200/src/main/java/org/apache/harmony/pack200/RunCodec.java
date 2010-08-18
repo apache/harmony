@@ -135,13 +135,11 @@ public class RunCodec extends Codec {
     }
 
     public byte[] encode(int value, int last) throws Pack200Exception {
-        // TODO Auto-generated method stub
-        return null;
+        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
     }
 
     public byte[] encode(int value) throws Pack200Exception {
-        // TODO Auto-generated method stub
-        return null;
+        throw new Pack200Exception("Must encode entire band at once with a RunCodec");
     }
 
     public int getK() {

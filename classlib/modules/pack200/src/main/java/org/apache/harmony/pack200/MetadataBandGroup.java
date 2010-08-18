@@ -268,7 +268,7 @@ public class MetadataBandGroup extends BandSet {
             } else if (tag.equals("J")) {
                 Long value = (Long)valuesIterator.next();
                 caseJ_KJ.add(cpBands.getConstant(value));
-            } else if (tag.equals("C")) {
+            } else if (tag.equals("c")) {
                 String value = (String)valuesIterator.next();
                 casec_RS.add(cpBands.getCPSignature(value));
             } else if (tag.equals("e")) {
