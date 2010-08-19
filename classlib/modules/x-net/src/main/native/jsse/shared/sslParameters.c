@@ -24,12 +24,14 @@
 #include "openssl/err.h"
 #include "jsse_rand.h"
 
+#include "cipherList.h"
+
 JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseDefaults
   (JNIEnv *env, jclass clazz)
 {
     SSL_CTX *context;
     SSL *ssl;
-    int i, count;
+    int i, count, ret;
     jclass stringClass;
     jobjectArray stringArray; 
     STACK_OF(SSL_CIPHER) *ciphers;
@@ -40,10 +42,10 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
 
     context = SSL_CTX_new(SSLv23_method());
 
-    /*ret = SSL_CTX_set_cipher_list(context, "ALL");
+    ret = SSL_CTX_set_cipher_list(context, "ALL");
     if (ret<=0) {
        ERR_print_errors_fp(stderr);
-    }*/
+    }
 
     ssl = SSL_new(context);
 
@@ -56,9 +58,16 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     for (i=0; i<count; i++)
     {
         const char *cipherName = SSL_CIPHER_get_name(sk_value(&ciphers->stack, i));
-        jstring jcipherName = (*env)->NewStringUTF(env, cipherName);
-        (*env)->SetObjectArrayElement(env, stringArray, i, jcipherName);
-        (*env)->DeleteLocalRef(env, jcipherName);
+        int j;
+        for (j=0; j<CIPHER_COUNT; j++) {
+            if (!strcmp(cipherName, openSSLNames[j])) {
+                jstring jcipherName;
+                jcipherName = (*env)->NewStringUTF(env, specNames[j]);
+                (*env)->SetObjectArrayElement(env, stringArray, i, jcipherName);
+                (*env)->DeleteLocalRef(env, jcipherName);
+                break;
+            }
+        }
     }
 
     SSL_free(ssl);
@@ -241,10 +250,17 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     for (i=0; i<count; i++) {
         jstring jcipher = (jstring)(*env)->GetObjectArrayElement(env, jenabledCiphers, i);
         const char *cipher = (*env)->GetStringUTFChars(env, jcipher, NULL);
-        strcat(cipherList, cipher);
-        if (i != count-1) {
-            strcat(cipherList, ":");
+        int j;
+        for (j=0; j<CIPHER_COUNT; j++) {
+            if (!strcmp(cipher, specNames[j])) {
+                strcat(cipherList, openSSLNames[j]);
+                if (i != count-1) {
+                    strcat(cipherList, ":");
+                }
+                break;
+            }
         }
+        
         (*env)->ReleaseStringUTFChars(env, jcipher, cipher);
     }
 
