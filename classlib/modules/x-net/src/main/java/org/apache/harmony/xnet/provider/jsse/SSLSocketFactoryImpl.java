@@ -76,7 +76,7 @@ public class SSLSocketFactoryImpl extends SSLSocketFactory {
         if (instantiationException != null) {
             return new String[0];
         }
-        return CipherSuite.getSupportedCipherSuiteNames();
+        return sslParameters.getSupportedCipherSuites();
     }
 
     /**
