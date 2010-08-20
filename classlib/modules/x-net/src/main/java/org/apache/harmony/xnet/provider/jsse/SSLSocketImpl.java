@@ -47,10 +47,6 @@ public class SSLSocketImpl extends SSLSocket {
     // indicates if handshake has been started
     private boolean handshake_started = false;
 
-    // record protocol to be used
-    protected SSLRecordProtocol recordProtocol;
-    // alert protocol to be used
-    private AlertProtocol alertProtocol;
     // application data input stream, this stream is presented by
     // ssl socket as an input stream. Additionaly this object is a
     // place where application data will be stored by record protocol
@@ -530,6 +526,8 @@ public class SSLSocketImpl extends SSLSocket {
         init();
     }
     
+
+    private static native void closeImpl(long ssl);
     /**
      * This method works according to the specification of implemented class.
      * @see javax.net.ssl.SSLSocket#close()
@@ -542,17 +540,12 @@ public class SSLSocketImpl extends SSLSocket {
         }
         // TODO: Call down into natives to close down OpenSSL connection an clean up structs
         if (!socket_was_closed) {
-            if (handshake_started) {
-                alertProtocol.alert(AlertProtocol.WARNING,
-                        AlertProtocol.CLOSE_NOTIFY);
-                try {
-                    output.write(alertProtocol.wrap());
-                } catch (IOException ex) { }
-                alertProtocol.setProcessed();
+            if (SSL != 0) {
+                closeImpl(SSL);
             }
-            shutdown();
             closeTransportLayer();
             socket_was_closed = true;
+            SSL = 0;
         }
     }
 
@@ -601,18 +594,6 @@ public class SSLSocketImpl extends SSLSocket {
     }
 
     // -----------------------------------------------------------------
-
-    // Shutdownes the ssl socket and makes all cleanup work.
-    private void shutdown() {
-        if (handshake_started) {
-            alertProtocol.shutdown();
-            alertProtocol = null;
-            recordProtocol.shutdown();
-            recordProtocol = null;
-        }
-        socket_was_closed = true;
-    }
-
 
     private native byte needAppDataImpl(long ssl);
 

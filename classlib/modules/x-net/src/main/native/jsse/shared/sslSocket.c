@@ -144,3 +144,13 @@ JNIEXPORT jbyte JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl
 
     return data;
 }
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_closeImpl
+  (JNIEnv *env, jclass clazz, jlong jssl) {
+    SSL *ssl = jlong2addr(SSL, jssl);
+
+    // The SSLSocket is being closed, so shutdown and free our SSL
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
+}
+

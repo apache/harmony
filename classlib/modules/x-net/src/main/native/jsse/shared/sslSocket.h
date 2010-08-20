@@ -33,6 +33,8 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_
   (JNIEnv *, jclass, jlong, jbyteArray, jint, jint);
 JNIEXPORT jbyte JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_needAppDataImpl
   (JNIEnv *, jclass, jlong);
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_closeImpl
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
