@@ -31,10 +31,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
 {
     SSL_CTX *context;
     SSL *ssl;
-    int i, count, ret;
+    int i, count, index, ret;
     jclass stringClass;
     jobjectArray stringArray; 
     STACK_OF(SSL_CIPHER) *ciphers;
+    jstring *jciphers;
 
     SSL_library_init();
     SSL_load_error_strings();
@@ -42,7 +43,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
 
     context = SSL_CTX_new(SSLv23_method());
 
-    ret = SSL_CTX_set_cipher_list(context, "ALL");
+    ret = SSL_CTX_set_cipher_list(context, "SSLv2:SSLv3:TLSv1");
     if (ret<=0) {
        ERR_print_errors_fp(stderr);
     }
@@ -52,24 +53,32 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     ciphers = SSL_get_ciphers(ssl);
     count = sk_num(&ciphers->stack);
 
-    stringClass = (*env)->FindClass(env, "java/lang/String");
-    stringArray = (*env)->NewObjectArray(env, count, stringClass, NULL);
+    jciphers = malloc(sizeof(jstring)*count);
 
+    index = 0;
     for (i=0; i<count; i++)
     {
         const char *cipherName = SSL_CIPHER_get_name(sk_value(&ciphers->stack, i));
         int j;
         for (j=0; j<CIPHER_COUNT; j++) {
             if (!strcmp(cipherName, openSSLNames[j])) {
-                jstring jcipherName;
-                jcipherName = (*env)->NewStringUTF(env, specNames[j]);
-                (*env)->SetObjectArrayElement(env, stringArray, i, jcipherName);
-                (*env)->DeleteLocalRef(env, jcipherName);
+                printf("match %s=%s\n", openSSLNames[j], specNames[j]);
+                jciphers[index] = (*env)->NewStringUTF(env, specNames[j]);                
+                index++;
                 break;
             }
         }
     }
 
+    stringClass = (*env)->FindClass(env, "java/lang/String");
+    stringArray = (*env)->NewObjectArray(env, index, stringClass, NULL);
+    for (i=0; i<index; i++)
+    {
+        (*env)->SetObjectArrayElement(env, stringArray, i, jciphers[i]);
+        (*env)->DeleteLocalRef(env, jciphers[i]);
+    }
+
+    free(jciphers);
     SSL_free(ssl);
     SSL_CTX_free(context);
 
