@@ -17,9 +17,7 @@
 
 package org.apache.harmony.xnet.provider.jsse;
 
-import org.apache.harmony.xnet.provider.jsse.AlertException;
 import org.apache.harmony.xnet.provider.jsse.SSLSocketOutputStream;
-import org.apache.harmony.xnet.provider.jsse.SSLStreamedInput;
 import org.apache.harmony.xnet.provider.jsse.SSLSessionImpl;
 
 import java.io.FileDescriptor;
@@ -33,10 +31,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLEngineResult;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+
+import org.apache.harmony.luni.platform.INetworkSystem;
+import org.apache.harmony.luni.platform.Platform;
 
 /**
  * SSLSocket implementation.
@@ -46,6 +45,8 @@ public class SSLSocketImpl extends SSLSocket {
 
     // indicates if handshake has been started
     private boolean handshake_started = false;
+
+    protected static INetworkSystem netImpl = Platform.getNetworkSystem();
 
     // application data input stream, this stream is presented by
     // ssl socket as an input stream. Additionaly this object is a
@@ -594,16 +595,10 @@ public class SSLSocketImpl extends SSLSocket {
     }
 
     // -----------------------------------------------------------------
+ 
+    private native int readAppDataImpl(long ssl, byte[] data, int off, int len);
 
-    private native byte needAppDataImpl(long ssl);
-
-    /**
-     * This method is called by SSLSocketInputStream class
-     * when client application tryes to read application data from
-     * the stream, but there is no data in its underlying buffer.
-     * @throws  IOException
-     */
-    protected byte needAppData() throws IOException {
+    protected int readAppData(byte[] data, int off, int len) throws IOException {
         if (!handshake_started) {
             startHandshake();
         }
@@ -612,14 +607,13 @@ public class SSLSocketImpl extends SSLSocket {
             logger.println("SSLSocket.needAppData..");
         }
 
-        byte data = needAppDataImpl(SSL);
-        if (data == -1) {
-            appDataIS.setEnd();
-        }
-        return data;
+        return readAppDataImpl(SSL, data, off, len);
     }
-
-
+  
+    protected int available() throws IOException {
+        return netImpl.availableStream(impl.getFileDescriptor());
+    }
+    
     private native void writeAppDataImpl(long SSL, byte[] data, int offset, int len);
     /**
      * This method is called by SSLSocketOutputStream when client application

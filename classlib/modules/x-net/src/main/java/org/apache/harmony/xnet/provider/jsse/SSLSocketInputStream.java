@@ -17,12 +17,10 @@
 
 package org.apache.harmony.xnet.provider.jsse;
 
-import org.apache.harmony.xnet.provider.jsse.AlertException;
 import org.apache.harmony.xnet.provider.jsse.SSLSocketImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import javax.net.ssl.SSLException;
 
 /**
  * This class provides input data stream functionality
@@ -32,27 +30,9 @@ import javax.net.ssl.SSLException;
 public final class SSLSocketInputStream
         extends InputStream {
 
-    // The size of the internal data buffer.
-    // It should not be less than maximum data chunk enclosed
-    // in one ssl packet.
-    private int size = SSLRecordProtocol.MAX_DATA_LENGTH;
-
-    // Internal buffer accumulating the received application data
-    private byte[] buffer = new byte[size];
-
-    // position of the next byte to read from the buffer
-    private int pos;
-
-    // position of the last byte to read + 1
-    private int end;
-
     // the ssl socket owning the stream
     private final SSLSocketImpl owner;
-
-    // the flag indicating that the end of the (owner's) input stream
-    // has been reached
-    private boolean end_reached = false;
-
+    
     /**
      * Creates the application data input stream for specified socket.
      * @param   owner the socket which will provide this input stream
@@ -62,18 +42,7 @@ public final class SSLSocketInputStream
         this.owner = owner;
     }
 
-    // The helper delivering the application data from the record layer
-    protected Adapter dataPoint = new Adapter();
-
-    /**
-     * Tells to the stream that the end of the income data has
-     * been reached.
-     */
-    protected void setEnd() {
-        end_reached = true;
-    }
-
-    // ------------------ InputStream implementetion -------------------
+    // ------------------ InputStream implementation -------------------
 
     /**
      * Returns the number of bytes available for reading without blocking.
@@ -82,7 +51,7 @@ public final class SSLSocketInputStream
      */
     @Override
     public int available() throws IOException {
-        return end - pos;
+        return owner.available();
     }
 
     /**
@@ -91,7 +60,6 @@ public final class SSLSocketInputStream
      */
     @Override
     public void close() throws IOException {
-        buffer = null;
     }
 
     /**
@@ -103,19 +71,15 @@ public final class SSLSocketInputStream
      */
     @Override
     public int read() throws IOException {
-        if (buffer == null) {
-            throw new IOException("Stream was closed.");
+        byte[] data = new byte[1];
+        int ret = read(data, 0, 1);
+        if (ret == 1) {
+            return (data[0] & 0xFF);
+        } else if (ret == 0) {
+            return -1;
+        } else {
+            throw new IOException();
         }
-        while (pos == end) {
-            if (end_reached) {
-                return -1;
-            }
-            // If there is no data in the buffer
-            // - will block untill the data will be provided by
-            // record layer
-            buffer[end++] = owner.needAppData();
-        }
-        return buffer[pos++];
     }
 
     /**
@@ -133,16 +97,7 @@ public final class SSLSocketInputStream
      */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int read_b;
-        int i = 0;
-        do {
-            if ((read_b = read()) == -1) {
-                return (i == 0) ? -1 : i;
-            }
-            b[off+i] = (byte) read_b;
-            i++;
-        } while ((available() != 0) && (i<len));
-        return i;
+        return owner.readAppData(b, off, len);
     }
 
     /**
@@ -160,41 +115,6 @@ public final class SSLSocketInputStream
             i++;
         }
         return i;
-    }
-
-    // The helper class devivering the application data from the record layer
-    // to this input stream.
-    // It 'adapts' the InputStream interface to Appendable, which is used for
-    // transmition of income data from the record protocol to its clients.
-    private class Adapter implements org.apache.harmony.xnet.provider.jsse.Appendable {
-        /**
-         * Appends the data to the stream.
-         * This method could be implemented in the outer class
-         * itself, but it could be insecure.
-         */
-        public void append(byte[] src) {
-            int length = src.length;
-            if (size - (end - pos) < length) {
-                // If the size of the buffer is greater than or equals to
-                // SSLRecordProtocol.MAX_DATA_LENGTH this situation will
-                // happen iff:
-                // 1. the length of received data fragment is greater
-                // than allowed by the spec
-                // 2. it is rehandhaking stage and we have got several
-                // extra app data messages.
-                // In any case it is better to throw alert exception.
-                throw new AlertException(AlertProtocol.INTERNAL_ERROR,
-                        new SSLException("Could not accept income app data."));
-            }
-            if (end + length > size) {
-                // move the content of the buffer to the beginnig
-                System.arraycopy(buffer, pos, buffer, 0, end-pos);
-                end -= pos;
-                pos = 0;
-            }
-            System.arraycopy(src, 0, buffer, end, length);
-            end = end + length;
-        }
     }
 }
 

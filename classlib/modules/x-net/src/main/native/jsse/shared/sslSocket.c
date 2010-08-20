@@ -128,21 +128,24 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_
     free(buffer);
 }
 
-JNIEXPORT jbyte JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_needAppDataImpl
-  (JNIEnv *env, jclass clazz, jlong jssl) {
+JNIEXPORT jint JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_readAppDataImpl
+  (JNIEnv *env, jclass clazz, jlong jssl, jbyteArray data, jint offset, jint len) {
     SSL *ssl = jlong2addr(SSL, jssl);
     int ret;
-    jbyte data;
 
-    ret = SSL_read(ssl, (void *)&data, 1);
+    jbyte *buffer = (jbyte*) malloc(len * sizeof(jbyte*));
+
+    ret = SSL_read(ssl, (void *)buffer, (int)len);
     if (ret == -1) {
         // The socket has been closed
         jclass exception = (*env)->FindClass(env, "java/net/SocketException");
         (*env)->ThrowNew(env, exception, "Connection was reset");
         return -1;
     }
-
-    return data;
+    
+    (*env)->SetByteArrayRegion(env, data, offset, ret, buffer);
+    free(buffer);
+    return ret;
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_closeImpl
