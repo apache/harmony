@@ -49,9 +49,10 @@ class ArgumentsParser {
     // maximum number of attempts to set the password
     static int maxNrOfAttempts = 3;
 
-    // length of the "\r\n" which is added to the end of the line,
-    // when ENTER is pressed.
-    private static int newLineLength = 2;
+    // length of the newline which is added to the end of the line
+    // when ENTER is pressed - on windows this is "\r\n", otherwise "\n"
+    private static int newLineLength = 
+        (File.separatorChar == '\\') ? 2 : 1;
 
     // options names to compare to //
     // commands
@@ -316,10 +317,18 @@ class ArgumentsParser {
                 }
                 if (args[i].compareToIgnoreCase(sStorepass) == 0) {
                     param.setStorePass(args[++i].toCharArray());
+                    if (param.getStorePass().length < minPwdLength) {
+                        throw new KeytoolException("The password must be at least "
+                                + minPwdLength + " characters");
+                    }
                     continue;
                 }
                 if (args[i].compareToIgnoreCase(sKeypass) == 0) {
                     param.setKeyPass(args[++i].toCharArray());
+                    if (param.getKeyPass().length < minPwdLength) {
+                        throw new KeytoolException("The password must be at least "
+                                + minPwdLength + " characters");
+                    }
                     continue;
                 }
                 if (args[i].compareToIgnoreCase(sIssuerPass) == 0) {
