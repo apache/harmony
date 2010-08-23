@@ -156,9 +156,13 @@ JNI_OnLoad (JavaVM * vm, void *reserved)
        /* Many classes depend on correct "file.encoding" value */
        (*vmInterface)->GetSystemProperty (vmInterface, "file.encoding", &propVal);
        if (propVal == NULL) {
+#if defined(ZOS)
+           propRes = (*vmInterface)->SetSystemProperty (vmInterface, "file.encoding", "IBM-1047");
+#else
            /* FIXME provide appropriate non-dummy value */
            getOSCharset(charset, CHARSETBUFF);
            propRes = (*vmInterface)->SetSystemProperty (vmInterface, "file.encoding", charset);
+#endif
            if (VMI_ERROR_NONE != propRes) {
                /* goto fail2; */
            }
