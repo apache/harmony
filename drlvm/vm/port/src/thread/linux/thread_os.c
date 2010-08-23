@@ -226,7 +226,10 @@ int set_alt_stack(port_tls_data_t* tlsdata, Boolean set)
 //#else
 //    sigalt.ss_flags = set ? SS_ONSTACK : SS_DISABLE;
 //#endif
-    return sigaltstack(&sigalt, NULL);
+    if (sigaltstack(&sigalt, NULL) != 0)
+        return errno;
+
+    return 0;
 }
 
 static int set_guard_page(port_tls_data_t* tlsdata, Boolean set)
@@ -257,7 +260,7 @@ static int set_guard_page(port_tls_data_t* tlsdata, Boolean set)
         res = set_alt_stack(tlsdata, TRUE);
 
         if (res != 0)
-            return errno;
+            return res;
     }
 
     tlsdata->guard_page_set = set;
@@ -317,17 +320,17 @@ static int setup_stack(port_tls_data_t* tlsdata)
     int res;
     void* ptr;
     stack_t sigalt;
-    size_t current_page_addr, mapping_addr, mapping_size;
+    size_t /*current_page_addr,*/ mapping_addr, mapping_size;
 
     if (!port_shared_data)
         return -1;
 
-    current_page_addr = ((size_t)&res) & ~(PSD->guard_page_size - 1);
+//    current_page_addr = ((size_t)&res) & ~(PSD->guard_page_size - 1);
     // leave place for mmap work
-    mapping_addr = current_page_addr - PSD->guard_page_size;
+//    mapping_addr = current_page_addr - PSD->guard_page_size;
     // found size of the stack area which should be maped
-    mapping_size = tlsdata->stack_size
-            - ((size_t)tlsdata->stack_addr - mapping_addr);
+//    mapping_size = tlsdata->stack_size
+//            - ((size_t)tlsdata->stack_addr - mapping_addr);
 
     if ((size_t)(&res) - PSD->mem_protect_size
             < (size_t)tlsdata->guard_page_addr + tlsdata->guard_page_size)
@@ -347,7 +350,7 @@ static int setup_stack(port_tls_data_t* tlsdata)
     res = set_guard_page(tlsdata, TRUE);
 
     if (res != 0)
-        return errno;
+        return res;
 
     return 0;
 }
@@ -492,6 +495,12 @@ int port_thread_detach()
 
     if (res != 0)
         return res;
+
+    size_t mapping_addr = (size_t)tlsdata->stack_addr - tlsdata->stack_size;
+    size_t mapping_size =
+        (tlsdata->guard_stack_size + tlsdata->mem_protect_size + 2*PSD->guard_page_size - 1) &
+            ~(PSD->guard_page_size - 1);
+    munmap((void*)mapping_addr, mapping_size);
 
     if (tlsdata->foreign)
         STD_FREE(tlsdata);
