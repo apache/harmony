@@ -224,15 +224,12 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     long mask = SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3 | SSL_OP_NO_SSLv2;
 
     if (flags & PROTOCOL_TLSv1) {
-        printf("TLS\n");
         options |= SSL_OP_NO_TLSv1;
     }
     if (flags & PROTOCOL_SSLv3) {
-        printf("SSLv3\n");
         options |= SSL_OP_NO_SSLv3;
     }
     if (flags & PROTOCOL_SSLv2) {
-        printf("SSLv2\n");
         options |= SSL_OP_NO_SSLv2;
     }
 
@@ -280,7 +277,6 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
 
 char* findOpenSSLName(const char *cipher) {
     int i;
-    printf("cipher=%s\n", cipher);
     if (strstr(cipher, "TLS_")) {
         // This is a TLS cipher name
         for (i=0; i<TLSv1_CIPHER_COUNT; i++) {
@@ -311,7 +307,7 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
   (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jobjectArray jenabledCiphers)
 {
     jsize i;
-    int size = 0, ret;
+    int size = 0;
     jsize count = (*env)->GetArrayLength(env, jenabledCiphers);
     char *cipherList;
     
@@ -330,9 +326,8 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     for (i=0; i<count; i++) {
         jstring jcipher = (jstring)(*env)->GetObjectArrayElement(env, jenabledCiphers, i);
         const char *cipher = (*env)->GetStringUTFChars(env, jcipher, NULL);
+
         char *openSSLName = findOpenSSLName(cipher);
-        printf("before search cipher=%s\n", cipher);        
-        printf("after search cipher=%s\n", openSSLName);
         if (openSSLName) {
             strcat(cipherList, openSSLName);
             if (i != count-1) {
@@ -343,12 +338,9 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
         (*env)->ReleaseStringUTFChars(env, jcipher, cipher);
     }
 
-    printf("cipherList=%s ctx=%p ssl=%p\n", cipherList, jlong2addr(SSL_CTX, context), jlong2addr(SSL, jssl));
     // Set the new cipher list in the context and SSL, if specified
-    ret = SSL_CTX_set_cipher_list(jlong2addr(SSL_CTX, context), cipherList);
-    printf("ret=%d\n", ret);
+    SSL_CTX_set_cipher_list(jlong2addr(SSL_CTX, context), cipherList);
     if (jssl) {
-        ret = SSL_set_cipher_list(jlong2addr(SSL, jssl), cipherList);
-        printf("ret=%d\n", ret);
+        SSL_set_cipher_list(jlong2addr(SSL, jssl), cipherList);
     }
 }
