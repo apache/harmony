@@ -33,14 +33,6 @@ public class FloatRefForm extends SingleByteReferenceForm {
         this.widened = widened;
     }
 
-    public int getOperandType() {
-        return TYPE_FLOATREF;
-    }
-
-    public boolean hasFloatRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextFloatRef();
     }

@@ -31,18 +31,6 @@ public class MultiANewArrayForm extends ClassRefForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_MULTIANEWARRAY;
-    }
-
-    public boolean hasMultianewarrayOperand() {
-        return true;
-    }
-
-    public boolean hasClassRefOperand() {
-        return false;
-    }
-
     /*
      * (non-Javadoc)
      *

@@ -61,14 +61,6 @@ public class ClassRefForm extends ReferenceForm {
         byteCode.setNestedPositions(new int[][] { { 0, 2 } });
     }
 
-    public int getOperandType() {
-        return TYPE_CLASSREF;
-    }
-
-    public boolean hasClassRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextClassRef();
     }

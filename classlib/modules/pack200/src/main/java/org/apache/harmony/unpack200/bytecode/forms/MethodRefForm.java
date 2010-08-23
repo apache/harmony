@@ -31,14 +31,6 @@ public class MethodRefForm extends ReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_METHODREF;
-    }
-
-    public boolean hasMethodRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextMethodRef();
     }

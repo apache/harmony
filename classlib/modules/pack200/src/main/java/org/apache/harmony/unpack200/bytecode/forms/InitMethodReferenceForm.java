@@ -35,10 +35,6 @@ public abstract class InitMethodReferenceForm extends
 
     protected abstract String context(OperandManager operandManager);
 
-    public boolean hasInitMethodRefOperand() {
-        return true;
-    }
-
     protected int getPoolID() {
         return SegmentConstantPool.CP_METHOD;
     }

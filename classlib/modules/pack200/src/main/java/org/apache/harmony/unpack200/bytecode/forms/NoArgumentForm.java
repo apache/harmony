@@ -30,14 +30,6 @@ public class NoArgumentForm extends ByteCodeForm {
         super(opcode, name);
     }
 
-    public int getOperandType() {
-        return TYPE_NONE;
-    }
-
-    public boolean hasNoOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *

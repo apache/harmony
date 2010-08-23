@@ -38,14 +38,6 @@ public class StringRefForm extends SingleByteReferenceForm {
         this.widened = widened;
     }
 
-    public int getOperandType() {
-        return TYPE_STRINGREF;
-    }
-
-    public boolean hasStringRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextStringRef();
     }

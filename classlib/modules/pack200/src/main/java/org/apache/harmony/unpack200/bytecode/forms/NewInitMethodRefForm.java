@@ -32,14 +32,6 @@ public class NewInitMethodRefForm extends InitMethodReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_NEWINITMETHODREF;
-    }
-
-    public boolean hasNewInitMethodRefOperand() {
-        return true;
-    }
-
     protected String context(OperandManager operandManager) {
         final String result = operandManager.getNewClass();
         return result;
