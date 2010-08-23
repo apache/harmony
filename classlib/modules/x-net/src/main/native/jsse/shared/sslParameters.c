@@ -117,6 +117,13 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     return stringArray;
 }
 
+// Callback for DH key exchange.
+// Just uses the OpenSSL DH_generate_parameters to create a prime of the appropriate size
+DH *tmp_dh_callback(SSL *s, int is_export, int keylength)
+{
+    return DH_generate_parameters(keylength, 5, NULL, NULL);
+}
+
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
   (JNIEnv *env, jclass clazz, jbyteArray jtrustCerts, jbyteArray jkeyCert, jbyteArray jprivateKey)
 {
@@ -137,6 +144,10 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
 
     // Set client auth off by default
     SSL_CTX_set_verify(context, SSL_VERIFY_NONE, NULL);
+
+    // Set callback for DH key exchange.
+    SSL_CTX_set_options(context, SSL_OP_SINGLE_DH_USE);
+    SSL_CTX_set_tmp_dh_callback(context, &tmp_dh_callback);
 
     // First initilise the trust certificates in our newly created context
     size = (*env)->GetArrayLength(env, jtrustCerts);
@@ -213,12 +224,15 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     long mask = SSL_OP_NO_TLSv1 | SSL_OP_NO_SSLv3 | SSL_OP_NO_SSLv2;
 
     if (flags & PROTOCOL_TLSv1) {
+        printf("TLS\n");
         options |= SSL_OP_NO_TLSv1;
     }
     if (flags & PROTOCOL_SSLv3) {
+        printf("SSLv3\n");
         options |= SSL_OP_NO_SSLv3;
     }
     if (flags & PROTOCOL_SSLv2) {
+        printf("SSLv2\n");
         options |= SSL_OP_NO_SSLv2;
     }
 
@@ -266,6 +280,7 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
 
 char* findOpenSSLName(const char *cipher) {
     int i;
+    printf("cipher=%s\n", cipher);
     if (strstr(cipher, "TLS_")) {
         // This is a TLS cipher name
         for (i=0; i<TLSv1_CIPHER_COUNT; i++) {
@@ -296,7 +311,7 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
   (JNIEnv *env, jclass clazz, jlong context, jlong jssl, jobjectArray jenabledCiphers)
 {
     jsize i;
-    int size = 0;
+    int size = 0, ret;
     jsize count = (*env)->GetArrayLength(env, jenabledCiphers);
     char *cipherList;
     
@@ -315,8 +330,9 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
     for (i=0; i<count; i++) {
         jstring jcipher = (jstring)(*env)->GetObjectArrayElement(env, jenabledCiphers, i);
         const char *cipher = (*env)->GetStringUTFChars(env, jcipher, NULL);
-
         char *openSSLName = findOpenSSLName(cipher);
+        printf("before search cipher=%s\n", cipher);        
+        printf("after search cipher=%s\n", openSSLName);
         if (openSSLName) {
             strcat(cipherList, openSSLName);
             if (i != count-1) {
@@ -327,9 +343,12 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
         (*env)->ReleaseStringUTFChars(env, jcipher, cipher);
     }
 
+    printf("cipherList=%s ctx=%p ssl=%p\n", cipherList, jlong2addr(SSL_CTX, context), jlong2addr(SSL, jssl));
     // Set the new cipher list in the context and SSL, if specified
-    SSL_CTX_set_cipher_list(jlong2addr(SSL_CTX, context), cipherList);
+    ret = SSL_CTX_set_cipher_list(jlong2addr(SSL_CTX, context), cipherList);
+    printf("ret=%d\n", ret);
     if (jssl) {
-        SSL_set_cipher_list(jlong2addr(SSL, jssl), cipherList);
+        ret = SSL_set_cipher_list(jlong2addr(SSL, jssl), cipherList);
+        printf("ret=%d\n", ret);
     }
 }
