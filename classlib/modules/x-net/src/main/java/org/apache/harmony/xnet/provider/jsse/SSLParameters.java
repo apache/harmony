@@ -322,7 +322,7 @@ public class SSLParameters {
                 throw new IllegalArgumentException(suites[i] + " is not supported.");
             }
         }
-        enabledCipherSuites = suites;        
+        enabledCipherSuites = suites.clone();
         setEnabledCipherSuitesImpl(SSL_CTX, SSL, suites);
     }
 
