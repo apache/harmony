@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
+import org.apache.harmony.pack200.BHSDCodec;
 import org.apache.harmony.pack200.Codec;
 import org.apache.harmony.pack200.Pack200Exception;
 import org.apache.harmony.pack200.PopulationCodec;
@@ -62,6 +63,21 @@ public class PopulationCodecTest extends TestCase {
             assertEquals(expectedResult[i], result[i]);
         }
         assertEquals(0, in.available());
+    }
+    
+    public void testEncodeSingleValue() {
+        try {
+            new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5);
+            fail("Should not allow a single value to be encoded as we don't know which codec to use");
+        } catch (Pack200Exception e) {
+            // pass
+        }
+        try {
+            new PopulationCodec(BHSDCodec.SIGNED5, BHSDCodec.SIGNED5, BHSDCodec.UDELTA5).encode(5, 8);
+            fail("Should not allow a single value to be encoded as we don't know which codec to use");
+        } catch (Pack200Exception e) {
+            // pass
+        }
     }
 
 }
