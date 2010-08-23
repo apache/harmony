@@ -26,9 +26,9 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_initImpl
   (JNIEnv *, jclass, jlong);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
-  (JNIEnv *, jclass, jlong, jobject);
+  (JNIEnv *, jclass, jlong, jlong);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
-  (JNIEnv *, jclass, jlong, jobject);
+  (JNIEnv *, jclass, jlong, jlong);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_writeAppDataImpl
   (JNIEnv *, jclass, jlong, jbyteArray, jint, jint);
 JNIEXPORT jint JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_readAppDataImpl

@@ -24,11 +24,15 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSession;
@@ -77,9 +81,42 @@ public class SSLSocketImpl extends SSLSocket {
     // Pointer to the OpenSSL SSL struct used for this connection
     private long SSL;
 
+    private static Field fdField;
+    private static Field descriptorField;
+    private FileDescriptor fd;
+
     // ----------------- Constructors and initializers --------------------
+    private static Field getField(final String className, final String fieldName) {
+        return AccessController.doPrivileged(new PrivilegedAction<Field>() {
+            public Field run() {
+                Field field = null;
+                try {
+                    Class clazz = Class.forName(className);
+                    field = clazz.getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                } catch (NoSuchFieldException e) {
+                    throw new Error(e);
+                } catch (ClassNotFoundException e) {
+                    throw new Error(e);
+                }
+                return field;
+            }
+        });
+    }
+
+    {
+        fdField = getField("java.net.SocketImpl", "fd");
+        descriptorField = getField("java.io.FileDescriptor", "descriptor");
+    }
 
     private native long initImpl(long context);
+
+    SSLSocketImpl(Socket socket, boolean autoClose, SSLParameters sslParameters) throws IOException {
+        super();
+
+        this.sslParameters = sslParameters;
+        init();
+    }
 
     /**
      * Constructor
@@ -204,6 +241,10 @@ public class SSLSocketImpl extends SSLSocket {
             input.close();
             output.close();
         }
+    }
+
+    long getSSL() {
+        return SSL;
     }
 
     // --------------- SSLParameters based methods ---------------------
@@ -411,8 +452,8 @@ public class SSLSocketImpl extends SSLSocket {
         }
     }
 
-    private native void sslConnectImpl(long sslContextAddress, FileDescriptor fd);
-    private native void sslAcceptImpl(long sslContextAddress, FileDescriptor fd);
+    private native void sslConnectImpl(long sslContextAddress, long fd);
+    private native void sslAcceptImpl(long sslContextAddress, long fd);
 
     /**
      * Performs the handshake process over the SSL/TLS connection
@@ -437,17 +478,26 @@ public class SSLSocketImpl extends SSLSocket {
 
         if (!handshake_started) {
             handshake_started = true;
+
+            long descriptor;
+            try {
+                fd = (FileDescriptor) fdField.get(impl);
+                descriptor = descriptorField.getLong(fd);
+            } catch (IllegalAccessException e) {
+                throw new Error(e);
+            }
+
             if (sslParameters.getUseClientMode()) {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: CLIENT connecting");
                 }
 
-                sslConnectImpl(SSL, impl.getFileDescriptor());
+                sslConnectImpl(SSL, descriptor);
             } else {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: SERVER accepting connection");
                 }
-                sslAcceptImpl(SSL, impl.getFileDescriptor());
+                sslAcceptImpl(SSL, descriptor);
             }
         }
 
@@ -474,7 +524,6 @@ public class SSLSocketImpl extends SSLSocket {
         // Remove our thread local SSLParameter now we are complete
         sslParameters.threadLocalParams.remove();
     }
-
 
     // ---------------- Socket's methods overridings -------------------
 
@@ -611,7 +660,7 @@ public class SSLSocketImpl extends SSLSocket {
     }
   
     protected int available() throws IOException {
-        return netImpl.availableStream(impl.getFileDescriptor());
+        return netImpl.availableStream(fd);
     }
     
     private native void writeAppDataImpl(long SSL, byte[] data, int offset, int len);

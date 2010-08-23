@@ -18,10 +18,14 @@
 package org.apache.harmony.xnet.provider.jsse;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketImpl;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * This class wraps the SSL fuctionality over existing conneted socket.
@@ -31,12 +35,36 @@ public class SSLSocketWrapper extends SSLSocketImpl {
     private final Socket socket;
     private final boolean autoClose;
 
+    private static Field implField;
+
+    {
+        implField = AccessController.doPrivileged(new PrivilegedAction<Field>() {
+            public Field run() {
+                Field field = null;
+                try {
+                    field = Socket.class.getDeclaredField("impl");
+                    field.setAccessible(true);
+                } catch (NoSuchFieldException e) {
+                    throw new Error(e);
+                }
+                return field;
+            }
+        });
+    }
+
     protected SSLSocketWrapper(Socket socket, boolean autoClose, SSLParameters sslParameters) throws IOException {
         super(sslParameters);
         if (!socket.isConnected()) {
             throw new SocketException("Socket is not connected.");
         }
         this.socket = socket;
+
+        try {
+            impl = (SocketImpl) implField.get(socket);
+        } catch (IllegalAccessException e) {
+            throw new Error(e);
+        }
+
         this.autoClose = autoClose;
         init();
     }

@@ -24,26 +24,8 @@
 #include "openssl/err.h"
 #include "errno.h"
 
-jlong getFD(JNIEnv * env, jobject fd) {
-    jclass descriptorCLS;
-    jfieldID descriptorFID;
-    hysocket_t hysocketP;
-
-    //TODO add to cache
-    descriptorCLS = (*env)->FindClass (env, "java/io/FileDescriptor");
-    if (NULL == descriptorCLS){
-        return 0;
-    }
-
-    descriptorFID = (*env)->GetFieldID (env, descriptorCLS, "descriptor", "J");
-    if (NULL == descriptorFID){
-        return 0;
-    }
-
-    hysocketP = (hysocket_t) ((IDATA)((*env)->GetLongField (env, fd, descriptorFID)));
-    if (NULL == hysocketP) {
-        return 0;
-    }
+jlong getFD(jlong fd) {
+    hysocket_t hysocketP = (hysocket_t) fd;
 
 #if defined(WIN32) || defined(WIN64)
     if (hysocketP->flags & SOCKET_IPV4_OPEN_MASK) {
@@ -64,8 +46,8 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslAcceptImpl
-  (JNIEnv *env, jclass clazz, jlong jssl, jobject fd) {
-    jlong socket = getFD(env, fd);
+  (JNIEnv *env, jclass clazz, jlong jssl, jlong fd) {
+    jlong socket = getFD(fd);
     SSL *ssl = jlong2addr(SSL, jssl);
     BIO *bio;
     int ret;
@@ -87,8 +69,8 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_
 }
 
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSocketImpl_sslConnectImpl
-  (JNIEnv *env, jclass clazz, jlong jssl, jobject fd) {
-    jlong socket = getFD(env, fd);
+  (JNIEnv *env, jclass clazz, jlong jssl, jlong fd) {
+    jlong socket = getFD(fd);
     SSL *ssl = jlong2addr(SSL, jssl);
     BIO *bio;
     int ret;
