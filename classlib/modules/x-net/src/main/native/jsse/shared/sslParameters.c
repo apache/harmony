@@ -117,11 +117,24 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     return stringArray;
 }
 
-// Callback for DH key exchange.
-// Just uses the OpenSSL DH_generate_parameters to create a prime of the appropriate size
+// Callback for DH params generation
+// TODO: Would pregenerated params do? e.g. get_rfc2409_prime_768() etc.
 DH *tmp_dh_callback(SSL *s, int is_export, int keylength)
 {
-    return DH_generate_parameters(keylength, 5, NULL, NULL);
+    DH *dh;
+
+    // For key lengths under 1024 generate the DH params directly
+    // For 1024 (or greater) use DSA generation for performance
+    if (keylength < 1024) {
+        dh = DH_generate_parameters(keylength, 5, NULL, NULL);
+    } else {
+        DSA *dsa = DSA_generate_parameters(1024, NULL, 0, NULL, NULL, NULL, NULL);
+        dh = DSA_dup_DH(dsa);
+        DSA_free(dsa);
+    }  
+
+    // TODO: Throw an exception if dh is NULL?
+    return dh;
 }
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
