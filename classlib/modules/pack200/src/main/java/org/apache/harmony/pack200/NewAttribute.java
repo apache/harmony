@@ -142,4 +142,61 @@ public class NewAttribute extends Attribute {
     public Label getLabel(int index) {
         return labels[index];
     }
+
+    /**
+     * ErrorAttribute extends <code>NewAttribute</code> and manages attributes
+     * encountered by ASM that have had an error action specified to pack200
+     * (e.g. via one of the -C, -M, -F or -D command line options such as
+     * -Cattribute-name=error)
+     */
+    public static class ErrorAttribute extends NewAttribute {
+
+        public ErrorAttribute(String type, int context) {
+            super(type, "", context);
+        }
+
+        protected Attribute read(ClassReader cr, int off, int len, char[] buf,
+                int codeOff, Label[] labels) {
+            throw new Error("Attribute " + type + " was found");
+        }
+
+    }
+
+    /**
+     * StripAttribute extends <code>NewAttribute</code> and manages attributes
+     * encountered by ASM that have had an strip action specified to pack200
+     * (e.g. via one of the -C, -M, -F or -D command line options such as
+     * -Cattribute-name=strip)
+     */
+    public static class StripAttribute extends NewAttribute {
+
+        public StripAttribute(String type, int context) {
+            super(type, "", context);
+        }
+
+        protected Attribute read(ClassReader cr, int off, int len, char[] buf,
+                int codeOff, Label[] labels) {
+            // TODO Not sure if this works, can we really strip an attribute if we don't know the layout?
+            return null;
+        }
+    }
+
+    /**
+     * PassAttribute extends <code>NewAttribute</code> and manages attributes
+     * encountered by ASM that have had an pass action specified to pack200
+     * (e.g. via one of the -C, -M, -F or -D command line options such as
+     * -Cattribute-name=pass)
+     */
+    public static class PassAttribute extends NewAttribute {
+
+        public PassAttribute(String type, int context) {
+            super(type, "", context);
+        }
+
+        protected Attribute read(ClassReader cr, int off, int len, char[] buf,
+                int codeOff, Label[] labels) {
+            throw new Segment.PassException();
+        }
+
+    }
 }

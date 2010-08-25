@@ -209,19 +209,11 @@ public class PackingOptions {
         }
     }
 
-    public Map getClassAttributeActions() {
-        return classAttributeActions;
-    }
-
     public void addClassAttributeAction(String attributeName, String action) {
         if(classAttributeActions == null) {
             classAttributeActions = new HashMap();
         }
         classAttributeActions.put(attributeName, action);
-    }
-
-    public Map getFieldAttributeActions() {
-        return fieldAttributeActions;
     }
 
     public void addFieldAttributeAction(String attributeName, String action) {
@@ -231,19 +223,11 @@ public class PackingOptions {
         fieldAttributeActions.put(attributeName, action);
     }
 
-    public Map getMethodAttributeActions() {
-        return methodAttributeActions;
-    }
-
     public void addMethodAttributeAction(String attributeName, String action) {
         if(methodAttributeActions == null) {
             methodAttributeActions = new HashMap();
         }
         methodAttributeActions.put(attributeName, action);
-    }
-
-    public Map getCodeAttributeActions() {
-        return codeAttributeActions;
     }
 
     public void addCodeAttributeAction(String attributeName, String action) {
@@ -288,25 +272,29 @@ public class PackingOptions {
                         .hasNext();) {
                     name = (String) iteratorI.next();
                     action = (String) attributeActions.get(name);
-                    if (!ERROR.equals(action) && !STRIP.equals(action)
-                            && !PASS.equals(action)) {
-                        prototypeExists = false;
-                        for (Iterator iteratorJ = prototypes.iterator(); iteratorJ
-                                .hasNext();) {
-                            newAttribute = (NewAttribute) iteratorJ.next();
-                            if (newAttribute.type.equals(name)) {
-                                // if the attribute exists, update its context
-                                newAttribute.addContext(tag);
-                                prototypeExists = true;
-                                break;
-                            }
-                            // if no attribute is found, add a new attribute
-                            if (!prototypeExists) {
-                                newAttribute = new NewAttribute(name, action,
-                                        tag);
-                                prototypes.add(newAttribute);
-                            }
+                    prototypeExists = false;
+                    for (Iterator iteratorJ = prototypes.iterator(); iteratorJ
+                            .hasNext();) {
+                        newAttribute = (NewAttribute) iteratorJ.next();
+                        if (newAttribute.type.equals(name)) {
+                            // if the attribute exists, update its context
+                            newAttribute.addContext(tag);
+                            prototypeExists = true;
+                            break;
                         }
+                    }
+                    // if no attribute is found, add a new attribute
+                    if (!prototypeExists) {
+                        if (ERROR.equals(action)) {
+                            newAttribute = new NewAttribute.ErrorAttribute(name, tag);
+                        } else if (STRIP.equals(action)) {
+                            newAttribute = new NewAttribute.StripAttribute(name, tag);
+                        } else if (PASS.equals(action)) {
+                            newAttribute = new NewAttribute.PassAttribute(name, tag);
+                        } else {
+                            newAttribute = new NewAttribute(name, action, tag);
+                        }
+                        prototypes.add(newAttribute);
                     }
                 }
             }

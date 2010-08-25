@@ -1327,7 +1327,7 @@ public class ClassBands extends BandSet {
     public void addParameterAnnotation(int parameter, String desc,
             boolean visible, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
         if(visible) {
-            method_RVPA_bands.addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
+            method_RVPA_bands.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
             if((flag.intValue() & (1<<23)) != 0) {
                 method_RVPA_bands.incrementAnnoN();
@@ -1336,7 +1336,7 @@ public class ClassBands extends BandSet {
             }
             tempMethodFlags.add(new Long(flag.longValue() | (1<<23)));
         } else {
-            method_RIPA_bands.addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
+            method_RIPA_bands.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
             if((flag.longValue() & (1<<24)) != 0) {
                 method_RIPA_bands.incrementAnnoN();

@@ -344,7 +344,7 @@ public class ArchiveTest extends TestCase {
 
         compareFiles(jarFile, jarFile2);
     }
-    
+
     public void testAnnotations2() throws IOException, Pack200Exception,
             URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
@@ -357,6 +357,22 @@ public class ArchiveTest extends TestCase {
         new Archive(in, out, options).pack();
         in.close();
         out.close();
+
+        // now unpack
+        InputStream in2 = new FileInputStream(file);
+        File file2 = File.createTempFile("annotationsout", ".jar");
+        // file2.deleteOnExit();
+        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
+                in2, out2);
+        archive.unpack();
+
+        // TODO: This isn't quite right - to fix
+//        JarFile jarFile = new JarFile(file2);
+//        JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
+//                "/org/apache/harmony/pack200/tests/annotations2unpacked.jar")
+//                .toURI()));
+//        compareFiles(jarFile, jarFile2);
     }
 
     public void testE0() throws Pack200Exception, IOException, URISyntaxException {

@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.harmony.unpack200.bytecode.AnnotationDefaultAttribute;
+import org.apache.harmony.unpack200.bytecode.AnnotationsAttribute.Annotation;
+import org.apache.harmony.unpack200.bytecode.AnnotationsAttribute.ElementValue;
 import org.apache.harmony.unpack200.bytecode.Attribute;
 import org.apache.harmony.unpack200.bytecode.CPDouble;
 import org.apache.harmony.unpack200.bytecode.CPFloat;
@@ -30,8 +32,6 @@ import org.apache.harmony.unpack200.bytecode.CPLong;
 import org.apache.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.harmony.unpack200.bytecode.RuntimeVisibleorInvisibleAnnotationsAttribute;
 import org.apache.harmony.unpack200.bytecode.RuntimeVisibleorInvisibleParameterAnnotationsAttribute;
-import org.apache.harmony.unpack200.bytecode.AnnotationsAttribute.Annotation;
-import org.apache.harmony.unpack200.bytecode.AnnotationsAttribute.ElementValue;
 import org.apache.harmony.unpack200.bytecode.RuntimeVisibleorInvisibleParameterAnnotationsAttribute.ParameterAnnotation;
 
 /**
@@ -117,8 +117,6 @@ public class MetadataBandGroup {
 
     private int anno_N_Index;
 
-    private Iterator type_RS_Iterator;
-
     private int pair_N_Index;
 
     public List getAttributes() {
@@ -149,7 +147,6 @@ public class MetadataBandGroup {
                     }
                 } else if (type.equals("RVPA") || type.equals("RIPA")) {
                     anno_N_Index = 0;
-                    type_RS_Iterator = Arrays.asList(type_RS).iterator();
                     pair_N_Index = 0;
                     for (int i = 0; i < param_NB.length; i++) {
                         attributes.add(getParameterAttribute(param_NB[i],
@@ -185,14 +182,13 @@ public class MetadataBandGroup {
             int[] pairCounts = pair_N[pair_N_Index++];
             Annotation[] annotations = new Annotation[numAnnotations];
             for (int j = 0; j < annotations.length; j++) {
-                annotations[j] = getAnnotation(
-                        (CPUTF8) type_RS_Iterator.next(), pairCounts[j],
-                        namesIterator);
+                annotations[j] = getAnnotation(type_RS[anno_N_Index - 1][j],
+                        pairCounts[j], namesIterator);
             }
             parameter_annotations[i] = new ParameterAnnotation(annotations);
         }
-        return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type
-                .equals("RVPA") ? rvpaUTF8 : ripaUTF8,
+        return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(
+                type.equals("RVPA") ? rvpaUTF8 : ripaUTF8,
                 parameter_annotations);
     }
 
