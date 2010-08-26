@@ -451,9 +451,6 @@ public class Deflater {
         if (level < DEFAULT_COMPRESSION || level > BEST_COMPRESSION) {
             throw new IllegalArgumentException();
         }
-        if (inputBuffer != null) {
-            throw new IllegalStateException();
-        }
         compressLevel = level;
     }
 
@@ -471,9 +468,6 @@ public class Deflater {
     public synchronized void setStrategy(int strategy) {
         if (strategy < DEFAULT_STRATEGY || strategy > HUFFMAN_ONLY) {
             throw new IllegalArgumentException();
-        }
-        if (inputBuffer != null) {
-            throw new IllegalStateException();
         }
         this.strategy = strategy;
     }
