@@ -49,6 +49,30 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     public static final SSLSessionImpl NULL_SESSION = new SSLSessionImpl(null);
 
     /**
+     * Maximum length of allowed plain data fragment 
+     * as specified by TLS specification.
+     */
+    protected static final int MAX_DATA_LENGTH = 16384; // 2^14
+    /**
+     * Maximum length of allowed compressed data fragment
+     * as specified by TLS specification.
+     */
+    protected static final int MAX_COMPRESSED_DATA_LENGTH
+                                    = MAX_DATA_LENGTH + 1024;
+    /**
+     * Maximum length of allowed ciphered data fragment
+     * as specified by TLS specification.
+     */
+    protected static final int MAX_CIPHERED_DATA_LENGTH
+                                    = MAX_COMPRESSED_DATA_LENGTH + 1024;
+    /** 
+     * Maximum length of ssl record. It is counted as:
+     * type(1) + version(2) + length(2) + MAX_CIPHERED_DATA_LENGTH
+     */
+    protected static final int MAX_SSL_PACKET_SIZE
+                                    = MAX_CIPHERED_DATA_LENGTH + 5;
+
+    /**
      * Container class for the 'value' map's keys.
      */
     private static final class ValueKey {
@@ -160,7 +184,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     /**
      * True if this entity is considered the server
      */
-    final boolean isServer;
+    boolean isServer;
 
     // OpenSSL SSL_SESSION pointer
     private long SSL_SESSION;
@@ -214,6 +238,10 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     private native String getCipherNameImpl(long SSL);
     private native long getCreationTimeImpl(long SSL_SESSION);
     
+    // Used just for clone()
+    private SSLSessionImpl() {
+    }
+
     public SSLSessionImpl(SSLParameters parms, long SSL) {
         sslParameters = parms;
         this.SSL = SSL;
@@ -242,7 +270,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     }
 
     public int getApplicationBufferSize() {
-        return SSLRecordProtocol.MAX_DATA_LENGTH;
+        return MAX_DATA_LENGTH;
     }
 
     public String getCipherSuite() {
@@ -261,10 +289,12 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return lastAccessedTime;
     }
 
+    // TODO: implement
     public Certificate[] getLocalCertificates() {
         return localCertificates;
     }
-
+    
+    // TODO: implement
     public Principal getLocalPrincipal() {
         if (localCertificates != null && localCertificates.length > 0) {
             return localCertificates[0].getSubjectX500Principal();
@@ -273,9 +303,10 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     }
 
     public int getPacketBufferSize() {
-        return SSLRecordProtocol.MAX_SSL_PACKET_SIZE;
+        return MAX_SSL_PACKET_SIZE;
     }
 
+    // TODO: implement
     public javax.security.cert.X509Certificate[] getPeerCertificateChain()
             throws SSLPeerUnverifiedException {
         if (peerCertificates == null) {
@@ -293,6 +324,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return certs;
     }
 
+    // TODO: implement
     public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException {
         if (peerCertificates == null) {
             throw new SSLPeerUnverifiedException("No peer certificate");
@@ -300,14 +332,17 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return peerCertificates;
     }
 
+    // TODO: implement
     public String getPeerHost() {
         return peerHost;
     }
 
+    // TODO: implement
     public int getPeerPort() {
         return peerPort;
     }
 
+    // TODO: implement
     public Principal getPeerPrincipal() throws SSLPeerUnverifiedException {
         if (peerCertificates == null) {
             throw new SSLPeerUnverifiedException("No peer certificate");
@@ -315,10 +350,12 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return peerCertificates[0].getSubjectX500Principal();
     }
 
+    // TODO: implement
     public String getProtocol() {
         return protocol.name;
     }
 
+    // TODO: implement
     public SSLSessionContext getSessionContext() {
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
@@ -382,21 +419,28 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
     @Override
     public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
-    }
+        SSLSessionImpl clonedSession = new SSLSessionImpl();
+        
+        clonedSession.creationTime = creationTime;
+        clonedSession.isValid = isValid;
+        clonedSession.values = new HashMap<ValueKey, Object>(values);
+        clonedSession.id = (byte[])id.clone();
+        clonedSession.lastAccessedTime = lastAccessedTime;
+        clonedSession.protocol = protocol;
+        clonedSession.cipherSuite = cipherSuite;
+        clonedSession.context = context;
+        clonedSession.localCertificates = localCertificates.clone();
+        clonedSession.peerCertificates = peerCertificates.clone();
+        clonedSession.peerHost = peerHost;
+        clonedSession.master_secret = master_secret.clone();
+        clonedSession.clientRandom = clientRandom.clone();
+        clonedSession.serverRandom = serverRandom.clone();
+        clonedSession.isServer = isServer;
+        clonedSession.SSL_SESSION = SSL_SESSION;
+        clonedSession.SSL = SSL;
+        clonedSession.sslParameters = (SSLParameters)sslParameters.clone();
+        clonedSession.cipherName = cipherName;
 
-    /**
-     * Sets the address of the peer
-     * 
-     * @param peerHost
-     * @param peerPort
-     */
-    void setPeer(String peerHost, int peerPort) {
-        this.peerHost = peerHost;
-        this.peerPort = peerPort;
+        return clonedSession;
     }
 }
