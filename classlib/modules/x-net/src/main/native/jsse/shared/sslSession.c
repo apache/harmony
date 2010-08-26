@@ -49,7 +49,6 @@ JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionI
     const char *cipherName = SSL_get_cipher(ssl);
     char *protocol = SSL_get_cipher_version(ssl);
     char *specName = NULL;
-    char buf[256];
 
     if (!strcmp(protocol, "TLSv1/SSLv3")) {
         // We're in either TLS or SSLv3, now find the spec name
@@ -58,7 +57,7 @@ JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionI
             // Not in the TLS list, now search the SSL list
             // TODO: Lists are likely to be the same - can this case ever occur?
             specName = getSpecName(cipherName, getSSLv3OpenSSLNames(), getSSLv3SpecNames(), SSLv3_CIPHER_COUNT);
-        }        
+        }
     } else {
         // SSLv2 case
         specName = getSpecName(cipherName, getSSLv2OpenSSLNames(), getSSLv2SpecNames(), SSLv2_CIPHER_COUNT);
