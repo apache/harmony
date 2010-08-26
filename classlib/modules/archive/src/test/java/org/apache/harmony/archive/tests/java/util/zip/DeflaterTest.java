@@ -676,6 +676,22 @@ public class DeflaterTest extends TestCase {
 			defl.end();
 		}
 
+        //test setLevel - Call after inputArray 
+        Deflater defl = new Deflater();
+        defl.setLevel(2);
+        outPutBuf = new byte[500];
+        defl.setInput(byteArray);
+        defl.setLevel(3);
+        while (!defl.needsInput()) {
+            defl.deflate(outPutBuf);
+        }
+        defl.finish();
+        while (!defl.finished()) {
+            defl.deflate(outPutBuf);
+        }
+        totalOut = defl.getTotalOut();
+        defl.end();
+
 		// testing boundaries
 		try {
 			Deflater boundDefl = new Deflater();
@@ -744,6 +760,21 @@ public class DeflaterTest extends TestCase {
 			}
 			mdefl.end();
 		}
+
+		//Call setStrategy after setInput call
+        byte outPutBuf[] = new byte[500];
+        MyDeflater mdefl = new MyDeflater();
+        mdefl.setStrategy(mdefl.getDefStrategy());
+        mdefl.setInput(byteArray);
+        mdefl.setStrategy(mdefl.getHuffman());
+        while (!mdefl.needsInput()) {
+            mdefl.deflate(outPutBuf);
+        }
+        mdefl.finish();
+        while (!mdefl.finished()) {
+            mdefl.deflate(outPutBuf);
+        }
+        mdefl.end();
 
 		// Attempting to setStrategy to an invalid value
 		try {
