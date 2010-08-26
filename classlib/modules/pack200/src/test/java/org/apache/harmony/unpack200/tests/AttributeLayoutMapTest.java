@@ -31,14 +31,15 @@ public class AttributeLayoutMapTest extends TestCase {
                 AttributeLayout.CONTEXT_CLASS);
         assertNotNull(layout);
         assertEquals("RUNH", layout.getLayout());
+        assertEquals(17, layout.getIndex());
         // and that we can change it
         a.add(new AttributeLayout("SourceFile", AttributeLayout.CONTEXT_CLASS,
-                "FROG", 15));
+                "FROG", 17));
         layout = a.getAttributeLayout("SourceFile",
                 AttributeLayout.CONTEXT_CLASS);
         assertNotNull(layout);
         assertEquals("FROG", layout.getLayout());
-        assertTrue(layout.matches(1 << 15));
+        assertTrue(layout.matches(1 << 17));
         assertFalse(layout.matches(1 << 16));
         assertTrue(layout.matches(-1));
         assertFalse(layout.matches(0));

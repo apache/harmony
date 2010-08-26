@@ -35,7 +35,7 @@ public class MetadataBandGroup extends BandSet {
     private final String type;
     private int numBackwardsCalls = 0;
 
-    public List param_NB = new ArrayList(); // TODO: Lazy instantiation?
+    public IntList param_NB = new IntList(); // TODO: Lazy instantiation?
     public IntList anno_N = new IntList();
     public List type_RS = new ArrayList();
     public IntList pair_N = new IntList();
@@ -95,6 +95,16 @@ public class MetadataBandGroup extends BandSet {
             }
             byte[] encodedBand = null;
             if(!type.equals("AD")) {
+                if(type.indexOf('P') != -1) {
+                    // Parameter annotation so we need to transmit param_NB
+                    encodedBand = encodeBandInt(
+                            contextStr + "_" + type + " param_NB", param_NB.toArray(),
+                            Codec.BYTE1);
+                    out.write(encodedBand);
+                    PackingUtils.log("Wrote " + encodedBand.length
+                            + " bytes from " + contextStr + "_" + type + " anno_N["
+                            + param_NB.size() + "]");
+                }
                 encodedBand = encodeBandInt(
                         contextStr + "_" + type + " anno_N", anno_N.toArray(),
                         Codec.UNSIGNED5);
@@ -242,9 +252,26 @@ public class MetadataBandGroup extends BandSet {
      * @param nestNameRU
      * @param nestPairN
      */
+    public void addParameterAnnotation(int parameter, String desc, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
+        param_NB.add(parameter);
+        addAnnotation(desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
+    }
+
+    /**
+     * Add an annotation to this set of bands
+     *
+     * @param desc
+     * @param nameRU
+     * @param t
+     * @param values
+     * @param caseArrayN
+     * @param nestTypeRS
+     * @param nestNameRU
+     * @param nestPairN
+     */
     public void addAnnotation(String desc, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
         type_RS.add(cpBands.getCPSignature(desc));
-        pair_N.add(t.size());
+        pair_N.add(nameRU.size());
 
         for (Iterator iterator = nameRU.iterator(); iterator.hasNext();) {
             String name = (String) iterator.next();

@@ -53,7 +53,7 @@ public class Segment implements ClassVisitor {
     private PackingOptions options;
     private boolean stripDebug;
     private Attribute[] nonStandardAttributePrototypes;
-    
+
     /**
      * The main method on Segment. Reads in all the class files, packs them and
      * then writes the packed segment out to the given OutputStream.
@@ -76,11 +76,11 @@ public class Segment implements ClassVisitor {
         this.stripDebug = options.isStripDebug();
         int effort = options.getEffort();
         nonStandardAttributePrototypes = options.getUnknownAttributePrototypes();
-        
+
         PackingUtils.log("Start to pack a new segment with "
                 + segmentUnit.fileListSize() + " files including "
                 + segmentUnit.classListSize() + " classes");
-        
+
         PackingUtils.log("Initialize a header for the segment");
         segmentHeader = new SegmentHeader();
         segmentHeader.setFile_count(segmentUnit.fileListSize());
@@ -89,22 +89,22 @@ public class Segment implements ClassVisitor {
             segmentHeader.setDeflate_hint("true".equals(options
                     .getDeflateHint()));
         }
-        
+
         PackingUtils.log("Setup constant pool bands for the segment");
         cpBands = new CpBands(this, effort);
-        
+
         PackingUtils.log("Setup attribute definition bands for the segment");
         attributeDefinitionBands = new AttributeDefinitionBands(this, effort, nonStandardAttributePrototypes);
-        
+
         PackingUtils.log("Setup internal class bands for the segment");
         icBands = new IcBands(segmentHeader, cpBands, effort);
-        
+
         PackingUtils.log("Setup class bands for the segment");
         classBands = new ClassBands(this, segmentUnit.classListSize(), effort, stripDebug);
-        
+
         PackingUtils.log("Setup byte code bands for the segment");
         bcBands = new BcBands(cpBands, this, effort);
-        
+
         PackingUtils.log("Setup file bands for the segment");
         fileBands = new FileBands(cpBands, segmentHeader, options, segmentUnit, effort);
 
@@ -136,10 +136,10 @@ public class Segment implements ClassVisitor {
 
         headerOutputStream.writeTo(out);
         bandsOutputStream.writeTo(out);
-        
+
         segmentUnit.addPackedByteAmount(headerOutputStream.size());
         segmentUnit.addPackedByteAmount(bandsOutputStream.size());
-        
+
         PackingUtils.log("Wrote total of " + segmentUnit.getPackedByteAmount()
                 + " bytes");
         PackingUtils.log("Transmitted " + segmentUnit.fileListSize() + " files of "
@@ -571,10 +571,6 @@ public class Segment implements ClassVisitor {
                     Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
                     caseArrayN.add(new Integer(numCases.intValue() + 1));
                     T.add("e");
-                    if(name == null) {
-                        name = "";
-                    }
-                    nameRU.add(name);
                     values.add(desc);
                     values.add(value);
                 }
@@ -677,7 +673,7 @@ public class Segment implements ClassVisitor {
      * passed through as-is in the file_bands rather than being packed with
      * pack200.
      */
-    public class PassException extends RuntimeException {
+    public static class PassException extends RuntimeException {
 
     }
 }
