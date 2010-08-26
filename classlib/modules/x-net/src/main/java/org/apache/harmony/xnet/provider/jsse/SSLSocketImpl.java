@@ -17,9 +17,6 @@
 
 package org.apache.harmony.xnet.provider.jsse;
 
-import org.apache.harmony.xnet.provider.jsse.SSLSocketOutputStream;
-import org.apache.harmony.xnet.provider.jsse.SSLSessionImpl;
-
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;

@@ -163,9 +163,16 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     final boolean isServer;
 
     // OpenSSL SSL_SESSION pointer
-    private final long SSL_SESSION;
+    private long SSL_SESSION;
 
-    private final SSLParameters sslParameters;
+    // The associated OpenSSL SSL pointer
+    private long SSL;
+
+    private static final SecureRandom rng = new SecureRandom();
+
+    private SSLParameters sslParameters;
+
+    private String cipherName;
 
     /**
      * Creates SSLSession implementation
@@ -191,10 +198,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
             id[31] = (byte) ((time & 0x000000FF));
             isServer = true;
         }
-
-        // Add to satisfy compiler
-        SSL_SESSION = 0;
-        sslParameters = null;
     }
 
     /**
@@ -207,11 +210,35 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     }
 
     private native long initialiseSession(long SSL);
+
+    private native String getCipherNameImpl(long SSL);
+    private native long getCreationTimeImpl(long SSL_SESSION);
     
     public SSLSessionImpl(SSLParameters parms, long SSL) {
         sslParameters = parms;
-        SSL_SESSION = initialiseSession(SSL);
+        this.SSL = SSL;
+
         this.isServer = !sslParameters.getUseClientMode();
+
+        if (SSL == 0) {
+            creationTime = System.currentTimeMillis();
+            cipherName = "SSL_NULL_WITH_NULL_NULL";
+            id = new byte[0];
+        } else {
+            SSL_SESSION = initialiseSession(SSL);
+            cipherName = getCipherNameImpl(SSL);
+            creationTime = getCreationTimeImpl(SSL_SESSION);
+
+            id = new byte[32];
+            rng.nextBytes(id);
+            long time = creationTime / 1000;
+            id[28] = (byte) ((time & 0xFF000000) >>> 24);
+            id[29] = (byte) ((time & 0x00FF0000) >>> 16);
+            id[30] = (byte) ((time & 0x0000FF00) >>> 8);
+            id[31] = (byte) ((time & 0x000000FF));
+        }
+
+        lastAccessedTime = creationTime;
     }
 
     public int getApplicationBufferSize() {
@@ -219,7 +246,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     }
 
     public String getCipherSuite() {
-        return cipherSuite.getName();
+        return cipherName;
     }
 
     public long getCreationTime() {

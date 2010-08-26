@@ -26,6 +26,10 @@ extern "C" {
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_initialiseSession
   (JNIEnv *, jobject, jlong);
+JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getCipherNameImpl
+  (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getCreationTimeImpl
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

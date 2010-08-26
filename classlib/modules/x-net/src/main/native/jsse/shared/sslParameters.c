@@ -82,9 +82,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     ssl = SSL_new(context);
     
     // TODO: check for exception return
-    ssl2matched = getCipherSpecList(env, ssl, "SSLv2", &ssl2jciphers, SSLv2_openSSLNames, SSLv2_SpecNames, SSLv2_CIPHER_COUNT);
-    ssl3matched = getCipherSpecList(env, ssl, "SSLv3", &ssl3jciphers, SSLv3_openSSLNames, SSLv3_SpecNames, SSLv3_CIPHER_COUNT);
-    tlsmatched = getCipherSpecList(env, ssl, "TLSv1", &tlsjciphers, TLSv1_openSSLNames, TLSv1_SpecNames, TLSv1_CIPHER_COUNT);
+    ssl2matched = getCipherSpecList(env, ssl, "SSLv2:!LOW:@STRENGTH", &ssl2jciphers, getSSLv2OpenSSLNames(), getSSLv2SpecNames(), SSLv2_CIPHER_COUNT);
+    ssl3matched = getCipherSpecList(env, ssl, "SSLv3:!LOW:@STRENGTH", &ssl3jciphers, getSSLv3OpenSSLNames(), getSSLv3SpecNames(), SSLv3_CIPHER_COUNT);
+    tlsmatched = getCipherSpecList(env, ssl, "TLSv1:!LOW:@STRENGTH", &tlsjciphers, getTLSv1OpenSSLNames(), getTLSv1SpecNames(), TLSv1_CIPHER_COUNT);
 
     stringClass = (*env)->FindClass(env, "java/lang/String");
     stringArray = (*env)->NewObjectArray(env, ssl2matched + ssl3matched + tlsmatched, stringClass, NULL);
@@ -115,6 +115,12 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
 
     // Return the array of default cipher suites
     return stringArray;
+}
+
+// Callback for temporary RSA key generation
+RSA *tmp_rsa_callback(SSL *s, int is_export, int keylength)
+{
+    return RSA_generate_key(keylength, RSA_F4, NULL, NULL);
 }
 
 // Callback for DH params generation
@@ -161,6 +167,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters
     // Set callback for DH key exchange.
     SSL_CTX_set_options(context, SSL_OP_SINGLE_DH_USE);
     SSL_CTX_set_tmp_dh_callback(context, &tmp_dh_callback);
+    SSL_CTX_set_tmp_rsa_callback(context, &tmp_rsa_callback);
 
     // First initilise the trust certificates in our newly created context
     size = (*env)->GetArrayLength(env, jtrustCerts);
@@ -289,29 +296,31 @@ JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_
 }
 
 char* findOpenSSLName(const char *cipher) {
-    int i;
+    int i, numNames;
+    char **openSSLNames, **specNames;
     if (strstr(cipher, "TLS_")) {
         // This is a TLS cipher name
-        for (i=0; i<TLSv1_CIPHER_COUNT; i++) {
-            if (!strcmp(cipher, TLSv1_SpecNames[i])) {
-                return TLSv1_openSSLNames[i];
-            }
-        }
+        numNames = TLSv1_CIPHER_COUNT;
+        specNames = getTLSv1SpecNames();
+        openSSLNames = getTLSv1OpenSSLNames();
+        
     } else if (strstr(cipher, "SSL_CK")) {
         // This is an SSLv2 cipher name
-        for (i=0; i<SSLv2_CIPHER_COUNT; i++) {
-            if (!strcmp(cipher, SSLv2_SpecNames[i])) {
-                return SSLv2_openSSLNames[i];
-            }
-        }
+        numNames = SSLv2_CIPHER_COUNT;
+        specNames = getSSLv2SpecNames();
+        openSSLNames = getSSLv2OpenSSLNames();
     } else {
         // This is an SSLv3 cipher name
-        for (i=0; i<SSLv3_CIPHER_COUNT; i++) {
-            if (!strcmp(cipher, SSLv3_SpecNames[i])) {
-                return SSLv3_openSSLNames[i];
-            }
+        numNames = SSLv3_CIPHER_COUNT;
+        specNames = getSSLv3SpecNames();
+        openSSLNames = getSSLv3OpenSSLNames();
+    }
+
+    for (i=0; i<numNames; i++) {
+        if (!strcmp(cipher, specNames[i])) {
+            return openSSLNames[i];
         }
-    }  
+    }
 
     return NULL;  
 }

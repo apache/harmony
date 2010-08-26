@@ -31,7 +31,8 @@ endif
 
 BUILDFILES = \
 	$(SHAREDSUB)jsse_copyright.o $(SHAREDSUB)sslParameters.o $(SHAREDSUB)sslSocket.o \
-	$(SHAREDSUB)sslSession.o $(SHAREDSUB)sslEngine.o $(SHAREDSUB)jsse_rand.o
+	$(SHAREDSUB)sslSession.o $(SHAREDSUB)sslEngine.o $(SHAREDSUB)jsse_rand.o \
+	$(SHAREDSUB)cipherList.o
 
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX) \
 	$(OPENSSL_DIST)libcrypto.a $(OPENSSL_DIST)libssl.a
