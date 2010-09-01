@@ -277,6 +277,9 @@ public class PriorityQueue<E> extends AbstractQueue<E> implements Serializable {
      */
     @Override
     public boolean contains(Object object) {
+        if (object == null) {
+            return false;
+        }
         for (int i = 0; i < size; i++) {
             if (object.equals(elements[i])) {
                 return true;
