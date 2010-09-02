@@ -105,7 +105,7 @@ public final class Main {
         sb.append(File.pathSeparator);
         sb.append('.');
         result[args.length + 1] = sb.toString();
-        result[args.length + 2] = "-1.6"; //$NON-NLS-1$
+        result[args.length + 2] = "-1.5"; //$NON-NLS-1$
         return result;
     }
 }
