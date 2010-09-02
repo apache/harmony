@@ -25,7 +25,7 @@
 #include "errno.h"
 
 jlong getFD(jlong fd) {
-    hysocket_t hysocketP = (hysocket_t) fd;
+    hysocket_t hysocketP = jlong2addr(hysocket_struct, fd);
 
 #if defined(WIN32) || defined(WIN64)
     if (hysocketP->flags & SOCKET_IPV4_OPEN_MASK) {
