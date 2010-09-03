@@ -144,7 +144,7 @@ DH *tmp_dh_callback(SSL *s, int is_export, int keylength)
 }
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLParameters_initialiseContext
-  (JNIEnv *env, jclass clazz, jbyteArray jtrustCerts, jbyteArray jkeyCert, jbyteArray jprivateKey)
+  (JNIEnv *env, jclass clazz, jobjectArray jtrustCerts, jbyteArray jkeyCert, jbyteArray jprivateKey)
 {
     SSL_CTX *context;
     jint size;
