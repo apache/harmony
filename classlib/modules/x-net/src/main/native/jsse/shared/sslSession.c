@@ -45,26 +45,35 @@ char* getSpecName(const char *cipherName, char *openSSLNames[], char *specNames[
 JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getCipherNameImpl
   (JNIEnv *env, jobject object, jlong jssl) {
     SSL *ssl = jlong2addr(SSL, jssl);
-    const SSL_CIPHER *cipher;
     const char *cipherName = SSL_get_cipher(ssl);
     char *protocol = SSL_get_cipher_version(ssl);
     char *specName = NULL;
+    char *finalName;
 
     if (!strcmp(protocol, "TLSv1/SSLv3")) {
         // We're in either TLS or SSLv3, now find the spec name
         specName = getSpecName(cipherName, getTLSv1OpenSSLNames(), getTLSv1SpecNames(), TLSv1_CIPHER_COUNT);
-        if (!specName) {
+        if (specName) {
+            protocol = "TLSv1";
+        } else {
             // Not in the TLS list, now search the SSL list
             // TODO: Lists are likely to be the same - can this case ever occur?
             specName = getSpecName(cipherName, getSSLv3OpenSSLNames(), getSSLv3SpecNames(), SSLv3_CIPHER_COUNT);
+            protocol = "SSLv3";
         }
     } else {
-        // SSLv2 case
+        // SSLv2 case - protocol will already be "SSLv2", so no need to set it
         specName = getSpecName(cipherName, getSSLv2OpenSSLNames(), getSSLv2SpecNames(), SSLv2_CIPHER_COUNT);
     }
 
-    cipher = SSL_get_current_cipher(ssl);
-    return (*env)->NewStringUTF(env, specName);
+    // finalName is "protocol:specName\0"
+    // protocol length is always 5, so allocate strlen(specName) + 5 + 1 for the colon + 1 for the terminator
+    finalName = malloc(strlen(specName)+7);
+    strcpy(finalName, protocol);
+    strcat(finalName, ":");
+    strcat(finalName, specName);
+
+    return (*env)->NewStringUTF(env, finalName);
 }
 
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getCreationTimeImpl

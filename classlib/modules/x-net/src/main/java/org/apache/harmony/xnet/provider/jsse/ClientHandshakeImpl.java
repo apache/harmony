@@ -88,9 +88,9 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
         } else if (parameters.getEnableSessionCreation()){    
             isResuming = false;
             session = new SSLSessionImpl(parameters.getSecureRandom());
-            session.protocol = ProtocolVersion.getLatestVersion(parameters
+            /*session.protocol = ProtocolVersion.getLatestVersion(parameters
                     .getEnabledProtocols());
-            recordProtocol.setVersion(session.protocol.version);
+            recordProtocol.setVersion(session.protocol.version);*/
         } else {
             fatalAlert(AlertProtocol.HANDSHAKE_FAILURE, "SSL Session may not be created ");
         }
@@ -105,9 +105,9 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
         if (parameters.getEnableSessionCreation()){    
             isResuming = false;
             session = new SSLSessionImpl(parameters.getSecureRandom());
-            session.protocol = ProtocolVersion.getLatestVersion(parameters
+            /*session.protocol = ProtocolVersion.getLatestVersion(parameters
                     .getEnabledProtocols());
-            recordProtocol.setVersion(session.protocol.version);
+            recordProtocol.setVersion(session.protocol.version);*/
             startSession();
         } else {
             status = NOT_HANDSHAKING;
@@ -125,8 +125,8 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
         } else {
             //cipher_suites = parameters.getEnabledCipherSuites();
         }
-        clientHello = new ClientHello(parameters.getSecureRandom(),
-                session.protocol.version, session.id, cipher_suites);
+        /*clientHello = new ClientHello(parameters.getSecureRandom(),
+                session.protocol.version, session.id, cipher_suites);*/
         session.clientRandom = clientHello.random;
         send(clientHello);
         status = NEED_UNWRAP;
@@ -224,9 +224,9 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
                             isResuming = false;
                         } else if (!Arrays.equals(serverHello.session_id, clientHello.session_id)) {
                             isResuming = false;
-                        } else if (!session.protocol.equals(servProt)) {
+                        /*} else if (!session.protocol.equals(servProt)) {
                             fatalAlert(AlertProtocol.HANDSHAKE_FAILURE,
-                                    "Bad server hello protocol version");                            
+                                    "Bad server hello protocol version");                            */
                         } else if (!session.cipherSuite
                                 .equals(serverHello.cipher_suite)) {
                             fatalAlert(AlertProtocol.HANDSHAKE_FAILURE,
@@ -238,8 +238,8 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
                             computerReferenceVerifyDataSSLv3(SSLv3Constants.server);
                         }
                     }
-                    session.protocol = servProt;
-                    recordProtocol.setVersion(session.protocol.version);
+                    //session.protocol = servProt;
+                    //recordProtocol.setVersion(session.protocol.version);
                     session.cipherSuite = serverHello.cipher_suite;
                     session.id = serverHello.session_id.clone();
                     session.serverRandom = serverHello.random;

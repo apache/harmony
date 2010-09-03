@@ -431,7 +431,7 @@ public class ServerHandshakeImpl extends HandshakeProtocol {
         }
 
         recordProtocol.setVersion(clientHello.client_version);
-        session.protocol = ProtocolVersion.getByVersion(clientHello.client_version);
+        //session.protocol = ProtocolVersion.getByVersion(clientHello.client_version);
         session.clientRandom = clientHello.random;
         
         // create server hello message

@@ -46,11 +46,13 @@ import javax.net.ssl.X509TrustManager;
 public class SSLParameters {
 
     // default source of authentication keys
-    private static X509KeyManager defaultKeyManager;
+    private X509KeyManager defaultKeyManager;
     // default source of authentication trust decisions
-    private static X509TrustManager defaultTrustManager;
+    private X509TrustManager defaultTrustManager;
     // default SSL parameters
     private static SSLParameters defaultParameters;
+
+    private X509Certificate[] certChain;
 
     // client session context contains the set of reusable
     // client-side SSL sessions
@@ -219,10 +221,10 @@ public class SSLParameters {
         byte[] privateKeyDER = null;
 
         if (alias != null) {
-            X509Certificate[] certs = keyManager.getCertificateChain(alias);
-            if (certs.length != 0) {
+            certChain = keyManager.getCertificateChain(alias);
+            if (certChain.length != 0) {
                 try {
-                    keyCertDER = certs[0].getEncoded();
+                    keyCertDER = certChain[0].getEncoded();
                 } catch (CertificateEncodingException e) {
                     //TODO how to handle exceptions?
                     System.out.println("threw exception");
@@ -274,6 +276,13 @@ public class SSLParameters {
      */
     protected X509TrustManager getTrustManager() {
         return trustManager;
+    }
+
+    /**
+     * @return certificate chain
+     */
+    protected X509Certificate[] getCertificateChain() {
+        return certChain;
     }
 
     /**
@@ -467,6 +476,7 @@ public class SSLParameters {
         parameters.serverSessionContext = serverSessionContext;
         parameters.keyManager = keyManager;
         parameters.trustManager = trustManager;
+        if (certChain != null) parameters.certChain = certChain.clone();
         parameters.secureRandom = secureRandom;
 
         parameters.enabledProtocols = enabledProtocols;

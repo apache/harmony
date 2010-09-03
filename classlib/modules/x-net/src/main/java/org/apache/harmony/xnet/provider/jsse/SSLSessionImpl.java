@@ -134,7 +134,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     /**
      * Protocol used in the session
      */
-    ProtocolVersion protocol;
+    String protocol;
 
     /**
      * CipherSuite used in the session
@@ -254,7 +254,13 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
             id = new byte[0];
         } else {
             SSL_SESSION = initialiseSession(SSL);
-            cipherName = getCipherNameImpl(SSL);
+
+            // Get back the cipher name with protocol prefixed
+            // Expected to be in the format "<protocol>:<cipher_name>"
+            String[] tokens = getCipherNameImpl(SSL).split(":");
+            protocol = tokens[0];
+            cipherName = tokens[1];
+
             creationTime = getCreationTimeImpl(SSL_SESSION);
 
             id = new byte[32];
@@ -267,6 +273,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         }
 
         lastAccessedTime = creationTime;
+        localCertificates = parms.getCertificateChain();
     }
 
     public int getApplicationBufferSize() {
@@ -289,12 +296,10 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return lastAccessedTime;
     }
 
-    // TODO: implement
     public Certificate[] getLocalCertificates() {
         return localCertificates;
     }
     
-    // TODO: implement
     public Principal getLocalPrincipal() {
         if (localCertificates != null && localCertificates.length > 0) {
             return localCertificates[0].getSubjectX500Principal();
@@ -350,9 +355,8 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return peerCertificates[0].getSubjectX500Principal();
     }
 
-    // TODO: implement
     public String getProtocol() {
-        return protocol.name;
+        return protocol;
     }
 
     // TODO: implement
