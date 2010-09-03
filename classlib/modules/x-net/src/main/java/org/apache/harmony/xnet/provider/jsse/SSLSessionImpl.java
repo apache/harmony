@@ -247,7 +247,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     private SSLSessionImpl() {
     }
 
-    public SSLSessionImpl(SSLParameters parms, long SSL) {
+    public SSLSessionImpl(SSLSocketImpl socket, SSLParameters parms, long SSL) {
         sslParameters = parms;
         this.SSL = SSL;
 
@@ -275,6 +275,11 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
             id[29] = (byte) ((time & 0x00FF0000) >>> 16);
             id[30] = (byte) ((time & 0x0000FF00) >>> 8);
             id[31] = (byte) ((time & 0x000000FF));
+
+            if (socket != null) {
+                peerPort = socket.getPort();
+                peerHost = socket.getInetAddress().getHostName();
+            }
         }
 
         lastAccessedTime = creationTime;
@@ -360,12 +365,10 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return peerCertificates;
     }
 
-    // TODO: implement
     public String getPeerHost() {
         return peerHost;
     }
 
-    // TODO: implement
     public int getPeerPort() {
         return peerPort;
     }

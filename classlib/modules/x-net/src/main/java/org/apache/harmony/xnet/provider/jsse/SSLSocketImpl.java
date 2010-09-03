@@ -502,7 +502,7 @@ public class SSLSocketImpl extends SSLSocket {
             logger.println("SSLSocketImpl: Handshake complete, notifying listeners");
         }
 
-        session = new SSLSessionImpl(sslParameters, SSL);
+        session = new SSLSessionImpl(this, sslParameters, SSL);
         // Notify handshake completion listeners
         if (listeners != null) {
             HandshakeCompletedEvent event =
