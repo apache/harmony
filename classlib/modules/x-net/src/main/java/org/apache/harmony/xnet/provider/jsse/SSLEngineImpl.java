@@ -127,9 +127,9 @@ public class SSLEngineImpl extends SSLEngine {
         if (!handshake_started) {
             handshake_started = true;
             if (getUseClientMode()) {
-                handshakeProtocol = new ClientHandshakeImpl(this);
+                //handshakeProtocol = new ClientHandshakeImpl(this);
             } else {
-                handshakeProtocol = new ServerHandshakeImpl(this);
+                //handshakeProtocol = new ServerHandshakeImpl(this);
             }
             appData = new SSLEngineAppData();
             alertProtocol = new AlertProtocol();

@@ -50,7 +50,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     /**
      * Session object reporting an invalid cipher suite of "SSL_NULL_WITH_NULL_NULL"
      */
-    public static final SSLSessionImpl NULL_SESSION = new SSLSessionImpl(null);
+    public static final SSLSessionImpl NULL_SESSION = new SSLSessionImpl();
 
     /**
      * Maximum length of allowed plain data fragment 
@@ -141,11 +141,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     String protocol;
 
     /**
-     * CipherSuite used in the session
-     */
-    CipherSuite cipherSuite;
-
-    /**
      * Context of the session
      */
     SSLSessionContextImpl context;
@@ -171,21 +166,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     private int peerPort = -1;
 
     /**
-     * Master secret
-     */
-    byte[] master_secret;
-
-    /**
-     * clientRandom
-     */
-    byte[] clientRandom;
-
-    /**
-     * serverRandom
-     */
-    byte[] serverRandom;
-
-    /**
      * True if this entity is considered the server
      */
     boolean isServer;
@@ -202,41 +182,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
     private String cipherName;
 
-    // TODO: remove this constructor
-    /**
-     * Creates SSLSession implementation
-     * 
-     * @param cipher_suite
-     * @param sr
-     */
-    public SSLSessionImpl(CipherSuite cipher_suite, SecureRandom sr) {
-        creationTime = System.currentTimeMillis();
-        lastAccessedTime = creationTime;
-        if (cipher_suite == null) {
-            this.cipherSuite = CipherSuite.TLS_NULL_WITH_NULL_NULL;
-            id = new byte[0];
-            isServer = false;
-        } else {
-            this.cipherSuite = cipher_suite;
-            id = new byte[32];
-            sr.nextBytes(id);
-            long time = creationTime / 1000;
-            id[28] = (byte) ((time & 0xFF000000) >>> 24);
-            id[29] = (byte) ((time & 0x00FF0000) >>> 16);
-            id[30] = (byte) ((time & 0x0000FF00) >>> 8);
-            id[31] = (byte) ((time & 0x000000FF));
-            isServer = true;
-        }
-    }
-
-    /**
-     * Creates SSLSession implementation
-     * 
-     * @param sr
-     */
-    public SSLSessionImpl(SecureRandom sr) {
-        this(null, sr);
-    }
 
     private native long initialiseSession(long SSL);
 
@@ -244,8 +189,10 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     private native long getCreationTimeImpl(long SSL_SESSION);
     private native Object[] getPeerCertificatesImpl(long SSL);
     
-    // Used just for clone()
     private SSLSessionImpl() {
+        creationTime = System.currentTimeMillis();
+        cipherName = "SSL_NULL_WITH_NULL_NULL";
+        id = new byte[0];
     }
 
     public SSLSessionImpl(SSLSocket socket, SSLParameters parms, long SSL) {
@@ -385,7 +332,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return protocol;
     }
 
-    // TODO: implement
     public SSLSessionContext getSessionContext() {
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
@@ -457,14 +403,10 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         clonedSession.id = (byte[])id.clone();
         clonedSession.lastAccessedTime = lastAccessedTime;
         clonedSession.protocol = protocol;
-        clonedSession.cipherSuite = cipherSuite;
         clonedSession.context = context;
         clonedSession.localCertificates = localCertificates.clone();
         clonedSession.peerCertificates = peerCertificates.clone();
         clonedSession.peerHost = peerHost;
-        clonedSession.master_secret = master_secret.clone();
-        clonedSession.clientRandom = clientRandom.clone();
-        clonedSession.serverRandom = serverRandom.clone();
         clonedSession.isServer = isServer;
         clonedSession.SSL_SESSION = SSL_SESSION;
         clonedSession.SSL = SSL;
