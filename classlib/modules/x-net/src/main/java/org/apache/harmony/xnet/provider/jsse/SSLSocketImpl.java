@@ -471,7 +471,7 @@ public class SSLSocketImpl extends SSLSocket {
         }
 
         // Set the thread local SSLParameter so it can be used in the RNG callbacks
-        sslParameters.threadLocalParams.set(sslParameters);
+        SSLParameters.threadLocalParams.set(sslParameters);
 
         if (!handshake_started) {
             handshake_started = true;
@@ -481,6 +481,7 @@ public class SSLSocketImpl extends SSLSocket {
                 fd = (FileDescriptor) fdField.get(impl);
                 descriptor = descriptorField.getLong(fd);
             } catch (IllegalAccessException e) {
+                SSLParameters.threadLocalParams.remove();
                 throw new Error(e);
             }
 
@@ -503,6 +504,8 @@ public class SSLSocketImpl extends SSLSocket {
         }
 
         session = new SSLSessionImpl(this, sslParameters, SSL);
+        sslParameters.getClientSessionContext().putSession(session);
+
         // Notify handshake completion listeners
         if (listeners != null) {
             HandshakeCompletedEvent event =
@@ -519,7 +522,7 @@ public class SSLSocketImpl extends SSLSocket {
         }
 
         // Remove our thread local SSLParameter now we are complete
-        sslParameters.threadLocalParams.remove();
+        SSLParameters.threadLocalParams.remove();
     }
 
     // ---------------- Socket's methods overridings -------------------
