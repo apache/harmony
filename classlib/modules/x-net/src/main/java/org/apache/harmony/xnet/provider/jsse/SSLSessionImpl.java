@@ -37,6 +37,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSessionBindingEvent;
 import javax.net.ssl.SSLSessionBindingListener;
 import javax.net.ssl.SSLSessionContext;
+import javax.net.ssl.SSLSocket;
 
 /**
  * 
@@ -247,7 +248,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     private SSLSessionImpl() {
     }
 
-    public SSLSessionImpl(SSLSocketImpl socket, SSLParameters parms, long SSL) {
+    public SSLSessionImpl(SSLSocket socket, SSLParameters parms, long SSL) {
         sslParameters = parms;
         this.SSL = SSL;
 
