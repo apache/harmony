@@ -17,11 +17,14 @@
 
 package org.apache.harmony.xnet.provider.jsse;
 
+import java.io.ByteArrayInputStream;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -198,6 +201,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
     private String cipherName;
 
+    // TODO: remove this constructor
     /**
      * Creates SSLSession implementation
      * 
@@ -237,6 +241,7 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
     private native String getCipherNameImpl(long SSL);
     private native long getCreationTimeImpl(long SSL_SESSION);
+    private native Object[] getPeerCertificatesImpl(long SSL);
     
     // Used just for clone()
     private SSLSessionImpl() {
@@ -274,6 +279,26 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
         lastAccessedTime = creationTime;
         localCertificates = parms.getCertificateChain();
+
+        // Get the list of DER encoded peer certificates from OpenSSL
+        Object[] DERCerts = getPeerCertificatesImpl(SSL);
+        if (DERCerts != null) {
+            // If we have got an array of DER certificates, generate X509Certificates from them
+            CertificateFactory cf;
+            try {
+                cf = CertificateFactory.getInstance("X.509");
+            } catch (CertificateException e) {
+                throw new Error(e);
+            }
+            peerCertificates = new X509Certificate[DERCerts.length];
+            for (int i=0; i<peerCertificates.length; i++) {
+                try {
+                    peerCertificates[i] = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream((byte[])DERCerts[i]));
+                } catch (CertificateException e) {
+                    // Do nothing
+                }
+            }
+        }
     }
 
     public int getApplicationBufferSize() {
@@ -311,7 +336,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return MAX_SSL_PACKET_SIZE;
     }
 
-    // TODO: implement
     public javax.security.cert.X509Certificate[] getPeerCertificateChain()
             throws SSLPeerUnverifiedException {
         if (peerCertificates == null) {
@@ -329,7 +353,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return certs;
     }
 
-    // TODO: implement
     public Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException {
         if (peerCertificates == null) {
             throw new SSLPeerUnverifiedException("No peer certificate");
@@ -347,7 +370,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
         return peerPort;
     }
 
-    // TODO: implement
     public Principal getPeerPrincipal() throws SSLPeerUnverifiedException {
         if (peerCertificates == null) {
             throw new SSLPeerUnverifiedException("No peer certificate");

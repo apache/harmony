@@ -83,4 +83,42 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImp
     return (jlong)SSL_SESSION_get_time(session)*1000;
 }
 
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getPeerCertificatesImpl
+  (JNIEnv *env, jobject object, jlong jssl) {
+    SSL *ssl = jlong2addr(SSL, jssl);
+    STACK_OF(X509) *certs;
+    int certCount, i;
+    jobjectArray jcerts;
+    jclass byteArrayClass;
 
+    // Get the chain of peer certificates from OpenSSL
+    certs = SSL_get_peer_cert_chain(ssl);
+    if (!certs) {
+        return NULL;
+    }
+
+    // Get the number of certificates in the chain
+    certCount = sk_num(&certs->stack);
+    if (!certCount) {
+        return NULL;
+    }
+
+    // Allocate an array of jbyte arrays to contain the peer certs
+    byteArrayClass = (*env)->FindClass(env, "[B");
+    jcerts = (*env)->NewObjectArray(env, certCount, byteArrayClass, NULL);
+
+    for (i=0; i<certCount; i++) {
+        unsigned char *certBuffer = NULL;
+        jbyteArray jcertBuffer;
+
+        // OpenSSL will automatically allocate the buffer for us because certBuffer is NULL
+        int len = i2d_X509(sk_value(&certs->stack, i), &certBuffer);
+
+        // Allocate a jbyte array for the certificate data and copy it over
+        jcertBuffer = (*env)->NewByteArray(env, len);
+        (*env)->SetByteArrayRegion(env, jcertBuffer, 0, len, (jbyte*)certBuffer);
+        (*env)->SetObjectArrayElement(env, jcerts, i, jcertBuffer);
+    }
+
+    return jcerts;
+}

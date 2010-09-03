@@ -30,6 +30,8 @@ JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionI
   (JNIEnv *, jobject, jlong);
 JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getCreationTimeImpl
   (JNIEnv *, jobject, jlong);
+JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionImpl_getPeerCertificatesImpl
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }
