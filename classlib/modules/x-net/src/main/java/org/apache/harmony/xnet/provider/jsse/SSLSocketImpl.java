@@ -485,26 +485,29 @@ public class SSLSocketImpl extends SSLSocket {
                 throw new Error(e);
             }
 
+            SSLSessionContextImpl sessionContext;
             if (sslParameters.getUseClientMode()) {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: CLIENT connecting");
                 }
 
                 sslConnectImpl(SSL, descriptor);
+                sessionContext = sslParameters.getClientSessionContext();
             } else {
                 if (logger != null) {
                     logger.println("SSLSocketImpl: SERVER accepting connection");
                 }
                 sslAcceptImpl(SSL, descriptor);
+                sessionContext = sslParameters.getServerSessionContext();
             }
+
+            session = new SSLSessionImpl(this, sslParameters, SSL);
+            sessionContext.putSession(session);
         }
 
         if (logger != null) {
             logger.println("SSLSocketImpl: Handshake complete, notifying listeners");
         }
-
-        session = new SSLSessionImpl(this, sslParameters, SSL);
-        sslParameters.getClientSessionContext().putSession(session);
 
         // Notify handshake completion listeners
         if (listeners != null) {

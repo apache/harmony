@@ -16,9 +16,12 @@
  */
 package org.apache.harmony.xnet.provider.jsse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSessionContext;
@@ -35,6 +38,8 @@ public class SSLSessionContextImpl implements SSLSessionContext {
     private long timeout = 0;
 
     private final Hashtable<IdKey, SSLSessionImpl> sessions = new Hashtable<IdKey, SSLSessionImpl>();
+
+    private final List<IdKey> keys = Collections.synchronizedList(new ArrayList<IdKey>(0));
 
     @SuppressWarnings("unchecked")
     public Enumeration getIds() {
@@ -112,13 +117,19 @@ public class SSLSessionContextImpl implements SSLSessionContext {
             removeOldest(1);
         }
         ses.context = this;
-        sessions.put(new IdKey(ses.getId()), ses);
+        IdKey idKey = new IdKey(ses.getId());
+        sessions.put(idKey, ses);
+        keys.add(idKey);
     }
 
     // removes invalidated/oldest sessions from the session cache
     private void removeOldest(int num) {
-        //TODO
-        // ses.context = null;
+        for (int i=0; i<num; i++) {
+            // The list is ordered. Since we always add to the end of it, 
+            // the element at index 0 will be the oldest
+            IdKey id = keys.remove(0);
+            sessions.remove(id);
+        }
     }
     
     private class IdKey {
