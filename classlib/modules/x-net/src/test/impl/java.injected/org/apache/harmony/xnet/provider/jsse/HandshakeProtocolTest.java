@@ -32,7 +32,7 @@ import junit.framework.TestCase;
  */
 public class HandshakeProtocolTest extends TestCase {
 
-    public void testGetStatus() throws Exception {
+    /*public void testGetStatus() throws Exception {
         HandshakeProtocol protocol = new ClientHandshakeImpl(new SSLEngineImpl(
                 new SSLParameters(null, null, null,
                         new SSLSessionContextImpl(),
@@ -207,7 +207,7 @@ public class HandshakeProtocolTest extends TestCase {
         protocol.delegatedTasks.add(task);
         assertSame(protocol.getTask(), task);
         assertNull(protocol.getTask());
-    }
+    }*/
 
     public void testGetRSAKeyLength() throws Exception {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
