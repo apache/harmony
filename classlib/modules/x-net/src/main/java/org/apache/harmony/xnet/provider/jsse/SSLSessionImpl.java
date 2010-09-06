@@ -228,30 +228,30 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
                 peerPort = socket.getPort();
                 peerHost = socket.getInetAddress().getHostName();
             }
+
+            // Get the list of DER encoded peer certificates from OpenSSL
+            Object[] DERCerts = getPeerCertificatesImpl(SSL);
+            if (DERCerts != null) {
+                // If we have got an array of DER certificates, generate X509Certificates from them
+                CertificateFactory cf;
+                try {
+                    cf = CertificateFactory.getInstance("X.509");
+                } catch (CertificateException e) {
+                    throw new Error(e);
+                }
+                peerCertificates = new X509Certificate[DERCerts.length];
+                for (int i=0; i<peerCertificates.length; i++) {
+                    try {
+                        peerCertificates[i] = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream((byte[])DERCerts[i]));
+                    } catch (CertificateException e) {
+                        // Do nothing
+                    }
+                }
+            }
         }
 
         lastAccessedTime = creationTime;
         localCertificates = parms.getCertificateChain();
-
-        // Get the list of DER encoded peer certificates from OpenSSL
-        Object[] DERCerts = getPeerCertificatesImpl(SSL);
-        if (DERCerts != null) {
-            // If we have got an array of DER certificates, generate X509Certificates from them
-            CertificateFactory cf;
-            try {
-                cf = CertificateFactory.getInstance("X.509");
-            } catch (CertificateException e) {
-                throw new Error(e);
-            }
-            peerCertificates = new X509Certificate[DERCerts.length];
-            for (int i=0; i<peerCertificates.length; i++) {
-                try {
-                    peerCertificates[i] = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream((byte[])DERCerts[i]));
-                } catch (CertificateException e) {
-                    // Do nothing
-                }
-            }
-        }
     }
 
     public int getApplicationBufferSize() {
