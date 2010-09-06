@@ -353,7 +353,7 @@ public abstract class HandshakeProtocol {
         System.arraycopy(sha_digest, 0, digest, md5_digest.length,
                 sha_digest.length);
         try {
-            PRF.computePRF(buf, session.master_secret, 
+            PRF.computePRF(buf, null, //session.master_secret, 
                     label.getBytes(), digest);
         } catch (GeneralSecurityException e) {
             fatalAlert(AlertProtocol.INTERNAL_ERROR, "PRF error", e);
@@ -390,17 +390,17 @@ public abstract class HandshakeProtocol {
             byte[] hanshake_messages = io_stream.getMessages();
             md5.update(hanshake_messages);
             md5.update(sender);
-            md5.update(session.master_secret);
+            //md5.update(session.master_secret);
             byte[] b = md5.digest(SSLv3Constants.MD5pad1);
-            md5.update(session.master_secret);
+            //md5.update(session.master_secret);
             md5.update(SSLv3Constants.MD5pad2);
             System.arraycopy(md5.digest(b), 0, buf, 0, 16);
 
             sha.update(hanshake_messages);
             sha.update(sender);
-            sha.update(session.master_secret);
+            //sha.update(session.master_secret);
             b = sha.digest(SSLv3Constants.SHApad1);
-            sha.update(session.master_secret);
+            //sha.update(session.master_secret);
             sha.update(SSLv3Constants.SHApad2);
             System.arraycopy(sha.digest(b), 0, buf, 16, 20);
         } catch (Exception e) {
@@ -448,16 +448,17 @@ public abstract class HandshakeProtocol {
         byte[] seed = new byte[64];
         System.arraycopy(clientHello.getRandom(), 0, seed, 0, 32);
         System.arraycopy(serverHello.getRandom(), 0, seed, 32, 32);
-        session.master_secret = new byte[48];
+        //session.master_secret = new byte[48];
         if (serverHello.server_version[1] == 1) { // TLSv1
             try {
-                PRF.computePRF(session.master_secret, preMasterSecret,
-                        master_secret_bytes, seed);
+                PRF.computePRF(null, //session.master_secret, 
+                                     preMasterSecret, master_secret_bytes, seed);
             } catch (GeneralSecurityException e) {
                 fatalAlert(AlertProtocol.INTERNAL_ERROR, "PRF error", e);
             }
         } else { // SSL3.0
-            PRF.computePRF_SSLv3(session.master_secret, preMasterSecret, seed);
+            PRF.computePRF_SSLv3(//session.master_secret
+                                 null, preMasterSecret, seed);
         }
         
         //delete preMasterSecret from memory

@@ -86,7 +86,7 @@ public class ConnectionStateTLS extends ConnectionState {
      */
     protected ConnectionStateTLS(SSLSessionImpl session) {
         try {
-            CipherSuite cipherSuite = session.cipherSuite;
+            CipherSuite cipherSuite = null; //session.cipherSuite;
 
             hash_size = cipherSuite.getMACLength();
             boolean is_exportabe =  cipherSuite.isExportable();
@@ -109,8 +109,8 @@ public class ConnectionStateTLS extends ConnectionState {
                 logger.println("  key size: " + key_size);
             }
 
-            byte[] clientRandom = session.clientRandom;
-            byte[] serverRandom = session.serverRandom;
+            byte[] clientRandom = null; //session.clientRandom;
+            byte[] serverRandom = null; //session.serverRandom;
             // so we need PRF value of size of
             // 2*hash_size + 2*key_size + 2*iv_size
             byte[] key_block = new byte[2*hash_size + 2*key_size + 2*iv_size];
@@ -119,7 +119,7 @@ public class ConnectionStateTLS extends ConnectionState {
             System.arraycopy(clientRandom, 0, seed, serverRandom.length,
                     clientRandom.length);
 
-            PRF.computePRF(key_block, session.master_secret,
+            PRF.computePRF(key_block, null, //session.master_secret,
                     KEY_EXPANSION_LABEL, seed);
 
             byte[] client_mac_secret = new byte[hash_size];
@@ -174,7 +174,7 @@ public class ConnectionStateTLS extends ConnectionState {
             if (logger != null) {
                 logger.println("is exportable: "+is_exportabe);
                 logger.println("master_secret");
-                logger.print(session.master_secret);
+                //logger.print(session.master_secret);
                 logger.println("client_random");
                 logger.print(clientRandom);
                 logger.println("server_random");
