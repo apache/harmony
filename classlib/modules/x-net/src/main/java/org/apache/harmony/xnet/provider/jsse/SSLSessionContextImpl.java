@@ -128,7 +128,8 @@ public class SSLSessionContextImpl implements SSLSessionContext {
             // The list is ordered. Since we always add to the end of it, 
             // the element at index 0 will be the oldest
             IdKey id = keys.remove(0);
-            sessions.remove(id);
+            SSLSessionImpl session = sessions.remove(id);
+            session.context = null;
         }
     }
     
