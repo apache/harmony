@@ -99,15 +99,8 @@ public abstract class HandshakeProtocol {
     /**
      * Sended and received handshake messages
      */ 
-    protected ClientHello clientHello;
-    protected ServerHello serverHello;
-    protected CertificateMessage serverCert;
     protected ServerKeyExchange serverKeyExchange;
-    protected CertificateRequest certificateRequest;
-    protected ServerHelloDone serverHelloDone;
-    protected CertificateMessage clientCert;
     protected ClientKeyExchange clientKeyExchange;
-    protected CertificateVerify certificateVerify;
     protected Finished clientFinished;
     protected Finished serverFinished;
     
@@ -446,10 +439,10 @@ public abstract class HandshakeProtocol {
      */
     public void computerMasterSecret() {
         byte[] seed = new byte[64];
-        System.arraycopy(clientHello.getRandom(), 0, seed, 0, 32);
-        System.arraycopy(serverHello.getRandom(), 0, seed, 32, 32);
+        //System.arraycopy(clientHello.getRandom(), 0, seed, 0, 32);
+        //System.arraycopy(serverHello.getRandom(), 0, seed, 32, 32);
         //session.master_secret = new byte[48];
-        if (serverHello.server_version[1] == 1) { // TLSv1
+/*        if (serverHello.server_version[1] == 1) { // TLSv1
             try {
                 PRF.computePRF(null, //session.master_secret, 
                                      preMasterSecret, master_secret_bytes, seed);
@@ -459,7 +452,7 @@ public abstract class HandshakeProtocol {
         } else { // SSL3.0
             PRF.computePRF_SSLv3(//session.master_secret
                                  null, preMasterSecret, seed);
-        }
+        }*/
         
         //delete preMasterSecret from memory
         Arrays.fill(preMasterSecret, (byte)0);
@@ -483,15 +476,8 @@ public abstract class HandshakeProtocol {
      */
     protected void clearMessages() {
         io_stream.clearBuffer();
-        clientHello = null;
-        serverHello = null;
-        serverCert = null;
         serverKeyExchange = null;
-        certificateRequest = null;
-        serverHelloDone = null;
-        clientCert = null;
         clientKeyExchange = null;
-        certificateVerify = null;
         clientFinished = null;
         serverFinished = null;
     }
