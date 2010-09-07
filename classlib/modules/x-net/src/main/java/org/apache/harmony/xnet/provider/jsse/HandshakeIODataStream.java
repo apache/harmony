@@ -141,7 +141,7 @@ public class HandshakeIODataStream
     public int read() throws IOException {
         if (read_pos == read_pos_end) {
             //return -1;
-            throw new EndOfBufferException();
+            //throw new EndOfBufferException();
         }
         return buffer[read_pos++] & 0xFF;
     }
@@ -154,7 +154,7 @@ public class HandshakeIODataStream
     @Override
     public byte[] read(int length) throws IOException {
         if (length > available()) {
-            throw new EndOfBufferException();
+            //throw new EndOfBufferException();
         }
         byte[] res = new byte[length];
         System.arraycopy(buffer, read_pos, res, 0, length);
@@ -165,7 +165,7 @@ public class HandshakeIODataStream
     @Override
     public int read(byte[] dest, int offset, int length) throws IOException {
         if (length > available()) {
-            throw new EndOfBufferException();
+            //throw new EndOfBufferException();
         }
         System.arraycopy(buffer, read_pos, dest, offset, length);
         read_pos = read_pos + length;

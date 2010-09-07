@@ -95,15 +95,7 @@ public abstract class HandshakeProtocol {
      * Pending session
      */ 
     protected SSLSessionImpl session;
-
-    /**
-     * Sended and received handshake messages
-     */ 
-    protected ServerKeyExchange serverKeyExchange;
-    protected ClientKeyExchange clientKeyExchange;
-    protected Finished clientFinished;
-    protected Finished serverFinished;
-    
+   
     /**
      * Indicates that change cipher spec message has been received
      */
@@ -476,10 +468,6 @@ public abstract class HandshakeProtocol {
      */
     protected void clearMessages() {
         io_stream.clearBuffer();
-        serverKeyExchange = null;
-        clientKeyExchange = null;
-        clientFinished = null;
-        serverFinished = null;
     }
     
     /**
