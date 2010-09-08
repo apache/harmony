@@ -82,9 +82,9 @@ JNIEXPORT jobjectArray JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLPar
     ssl = SSL_new(context);
     
     // TODO: check for exception return
-    ssl2matched = getCipherSpecList(env, ssl, "SSLv2:!LOW:@STRENGTH", &ssl2jciphers, getSSLv2OpenSSLNames(), getSSLv2SpecNames(), SSLv2_CIPHER_COUNT);
-    ssl3matched = getCipherSpecList(env, ssl, "SSLv3:!LOW:@STRENGTH", &ssl3jciphers, getSSLv3OpenSSLNames(), getSSLv3SpecNames(), SSLv3_CIPHER_COUNT);
-    tlsmatched = getCipherSpecList(env, ssl, "TLSv1:!LOW:@STRENGTH", &tlsjciphers, getTLSv1OpenSSLNames(), getTLSv1SpecNames(), TLSv1_CIPHER_COUNT);
+    ssl2matched = getCipherSpecList(env, ssl, "SSLv2:@STRENGTH", &ssl2jciphers, getSSLv2OpenSSLNames(), getSSLv2SpecNames(), SSLv2_CIPHER_COUNT);
+    ssl3matched = getCipherSpecList(env, ssl, "SSLv3:@STRENGTH", &ssl3jciphers, getSSLv3OpenSSLNames(), getSSLv3SpecNames(), SSLv3_CIPHER_COUNT);
+    tlsmatched = getCipherSpecList(env, ssl, "TLSv1:@STRENGTH", &tlsjciphers, getTLSv1OpenSSLNames(), getTLSv1SpecNames(), TLSv1_CIPHER_COUNT);
 
     stringClass = (*env)->FindClass(env, "java/lang/String");
     stringArray = (*env)->NewObjectArray(env, ssl2matched + ssl3matched + tlsmatched, stringClass, NULL);
