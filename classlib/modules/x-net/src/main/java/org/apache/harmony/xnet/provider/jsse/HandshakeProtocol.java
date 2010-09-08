@@ -337,12 +337,12 @@ public abstract class HandshakeProtocol {
         System.arraycopy(md5_digest, 0, digest, 0, md5_digest.length);
         System.arraycopy(sha_digest, 0, digest, md5_digest.length,
                 sha_digest.length);
-        try {
+        /*try {
             PRF.computePRF(buf, null, //session.master_secret, 
                     label.getBytes(), digest);
         } catch (GeneralSecurityException e) {
             fatalAlert(AlertProtocol.INTERNAL_ERROR, "PRF error", e);
-        }
+        }*/
     }
 
     /**
