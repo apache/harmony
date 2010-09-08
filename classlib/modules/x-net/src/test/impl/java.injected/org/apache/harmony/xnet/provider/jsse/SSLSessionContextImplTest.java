@@ -30,14 +30,21 @@ import junit.framework.TestCase;
  */
 public class SSLSessionContextImplTest extends TestCase {
 
-    public void testSSLSessionContextImpl() {
-        SecureRandom sr = new SecureRandom();
-        /*SSLSessionImpl ses1 = new SSLSessionImpl(
-                CipherSuite.TLS_DH_anon_EXPORT_WITH_DES40_CBC_SHA, sr);
+    public void testSSLSessionContextImpl() throws Exception {
+        SSLParameters parms = SSLParameters.getDefault();
+        SSLSocketImpl socket1 = new SSLSocketImpl(parms);
+        SSLSocketImpl socket2 = new SSLSocketImpl(parms);
+        SSLSocketImpl socket3 = new SSLSocketImpl(parms);
+
+        SSLSessionImpl ses1 = new SSLSessionImpl(
+                socket1, SSLParameters.getDefault(), 0);
+        ses1.id = new byte[] {0,1,2,3};
         SSLSessionImpl ses2 = new SSLSessionImpl(
-                CipherSuite.TLS_DH_anon_WITH_3DES_EDE_CBC_SHA, sr);
+                socket2, SSLParameters.getDefault(), 0);
+        ses1.id = new byte[] {0,1,2,4};
         SSLSessionImpl ses3 = new SSLSessionImpl(
-                CipherSuite.TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5, sr);
+                socket3, SSLParameters.getDefault(), 0);
+        ses1.id = new byte[] {0,1,2,5};
 
         SSLSessionContextImpl context = new SSLSessionContextImpl();
         context.putSession(ses1);
@@ -53,7 +60,7 @@ public class SSLSessionContextImplTest extends TestCase {
         assertSame(ses1, ses);
 
         ses = context.getSession(ses3.getId());
-        assertSame(ses3, ses);*/
+        assertSame(ses3, ses);
     }
 
     public void testGetSessionCacheSize() {
