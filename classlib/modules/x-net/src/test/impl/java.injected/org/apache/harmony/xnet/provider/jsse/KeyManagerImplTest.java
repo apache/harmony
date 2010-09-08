@@ -35,15 +35,18 @@ public class KeyManagerImplTest extends TestCase {
         ks = KeyStore.getInstance("BKS");
         ks.load(null, null);
 
+        SSLContextImpl context = new SSLContextImpl();
+        context.engineInit(null, null, null);
+
         KeyManagerImpl km = new KeyManagerImpl(ks, new char[0]);
         String[] keyType = {"RSA", "DSA"};
         String al = km.chooseClientAlias(keyType, null, new Socket());
         assertNull(al);
         
-        al = km.chooseEngineClientAlias(keyType, null, new SSLEngineImpl(null));
+        al = km.chooseEngineClientAlias(keyType, null, context.engineCreateSSLEngine());
         assertNull(al);
         
-        al = km.chooseEngineServerAlias("RSA", null, new SSLEngineImpl(null));
+        al = km.chooseEngineServerAlias("RSA", null, context.engineCreateSSLEngine());
         assertNull(al);
         
         al = km.chooseServerAlias("RSA", null, new Socket());
@@ -61,16 +64,19 @@ public class KeyManagerImplTest extends TestCase {
         
         KeyStore ks = JSSETestData.getKeyStore();
         char[] pwd = JSSETestData.KS_PASSWORD;
+
+        SSLContextImpl context = new SSLContextImpl();
+        context.engineInit(null, null, null);
         
         KeyManagerImpl km = new KeyManagerImpl(ks, pwd);
         String[] keyType = { "RSA", "DSA" };
         String al = km.chooseClientAlias(keyType, null, new Socket());
         assertEquals("ssl_test_store", al);
 
-        al = km.chooseEngineClientAlias(keyType, null, new SSLEngineImpl(null));
+        al = km.chooseEngineClientAlias(keyType, null, context.engineCreateSSLEngine());
         assertEquals("ssl_test_store", al);
 
-        al = km.chooseEngineServerAlias("RSA", null, new SSLEngineImpl(null));
+        al = km.chooseEngineServerAlias("RSA", null, context.engineCreateSSLEngine());
         assertEquals("ssl_test_store", al);
 
         al = km.chooseServerAlias("RSA", null, new Socket());
