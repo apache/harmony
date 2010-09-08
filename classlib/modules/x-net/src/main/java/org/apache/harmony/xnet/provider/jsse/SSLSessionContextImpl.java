@@ -84,9 +84,9 @@ public class SSLSessionContextImpl implements SSLSessionContext {
             throw new IllegalArgumentException("size < 0");
         }
         cacheSize = size;
-        if (size > 0 && sessions.size() < size) {
+        if (size > 0 && sessions.size() > size) {
             // remove size-sessions.size() oldest sessions
-            removeOldest(size - sessions.size());
+            removeOldest(sessions.size() - size);
         }
 
     }
