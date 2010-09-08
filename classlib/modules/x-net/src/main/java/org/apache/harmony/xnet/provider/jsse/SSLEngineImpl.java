@@ -217,7 +217,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public String[] getSupportedCipherSuites() {
-        return CipherSuite.getSupportedCipherSuiteNames();
+        return sslParameters.getSupportedCipherSuites();
     }
 
     // --------------- SSLParameters based methods ---------------------
