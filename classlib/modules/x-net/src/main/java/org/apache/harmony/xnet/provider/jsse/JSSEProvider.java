@@ -108,6 +108,9 @@ public final class JSSEProvider extends Provider {
             public Void run() {
                 put("SSLContext.TLS", SSLContextImpl.class.getName());
                 put("Alg.Alias.SSLContext.TLSv1", "TLS");
+                put("SSLContext.SSL", SSLContextImpl.class.getName());
+                put("Alg.Alias.SSLContext.SSLv3", "SSL");
+                put("Alg.Alias.SSLContext.SSLv2", "SSL");
                 put("KeyManagerFactory.X509", KeyManagerFactoryImpl.class.getName());
                 put("TrustManagerFactory.X509", TrustManagerFactoryImpl.class.getName());
                 return null;

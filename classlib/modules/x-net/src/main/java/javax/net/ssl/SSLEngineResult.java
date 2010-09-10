@@ -26,7 +26,7 @@ public class SSLEngineResult {
     /**
      * The {@code enum} describing the state of the current handshake.
      */
-    public enum HandshakeStatus {
+    public static enum HandshakeStatus {
         /**
          * No handshake in progress.
          */
