@@ -42,6 +42,13 @@ public class Support_NetworkInterface {
 				result = false;
 			}
 		}
-		return result;
+
+        if (platform.startsWith("Linux")) {
+            if ((theInterface.getDisplayName().equals("lo"))
+                    || (theInterface.getDisplayName().equals("teredo"))) {
+                result = false;
+            }
+        }
+        return result;
 	}
 }
