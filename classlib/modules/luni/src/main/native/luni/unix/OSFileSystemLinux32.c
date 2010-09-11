@@ -177,7 +177,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_readv
     vectors[i].iov_len = lengths[i];
     i++;
   }
-  totalRead = readv(fd - FD_BIAS, vectors, size);
+  totalRead = readv((int)fd - FD_BIAS, vectors, size);
   if(bufsCopied){
     (*env)->ReleaseLongArrayElements(env, jbuffers, bufs, JNI_ABORT);
   }
@@ -259,11 +259,12 @@ Java_org_apache_harmony_luni_platform_OSFileSystem_writev
     (*env)->ReleasePrimitiveArrayCritical(env, counts, cts, JNI_ABORT);
   }
 
-  result = writev(fd - FD_BIAS, vect, length);
+  result = writev((int)fd - FD_BIAS, vect, length);
 
   if (0 > result) {
     if (errno != EAGAIN) {
-      throwJavaIoIOException(env, "");
+      hyerror_set_last_error(errno, HYPORT_ERROR_OPFAILED);
+      throwJavaIoIOException(env, hyerror_last_error_message());
     }
     result = 0;
   }
@@ -352,7 +353,8 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSFileSystem_sizeI
 (JNIEnv *env, jobject thiz, jlong fd)
 {
   struct stat statbuf;
-  if (fstat(fd - FD_BIAS, &statbuf) < 0) {
+  // cast long handler to int to avoid potential problems
+  if (fstat((int)fd - FD_BIAS, &statbuf) < 0) {
     return -1;
   }
   return (jlong)statbuf.st_size;
