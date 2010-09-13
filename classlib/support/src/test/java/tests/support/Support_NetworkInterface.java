@@ -38,7 +38,8 @@ public class Support_NetworkInterface {
 					|| (theInterface.getDisplayName()
 							.equals("Automatic Tunneling Pseudo-Interface"))
 					|| (theInterface.getDisplayName()
-							.equals("Loopback Pseudo-Interface"))) {
+							.equals("Loopback Pseudo-Interface"))
+					|| (theInterface.getDisplayName().equals("MS TCP Loopback interface"))) {
 				result = false;
 			}
 		}
