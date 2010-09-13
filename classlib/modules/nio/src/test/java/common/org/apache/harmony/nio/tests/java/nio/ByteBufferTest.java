@@ -43,6 +43,7 @@ public class ByteBufferTest extends AbstractBufferTest {
 
     protected void setUp() throws Exception {
         buf = ByteBuffer.allocate(10);
+        loadTestData1(buf);
         baseBuf = buf;
     }
 
