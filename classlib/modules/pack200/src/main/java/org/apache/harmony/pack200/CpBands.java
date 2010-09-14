@@ -151,28 +151,28 @@ public class CpBands extends BandSet {
                 cpUtf8BigChars[i][j] = ((Character) bigChars.remove(0)).charValue();
             }
         }
-        
+
         byte[] encodedBand = encodeBandInt("cpUtf8Prefix", cpUtf8Prefix, Codec.DELTA5);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cpUtf8Prefix[" + cpUtf8Prefix.length + "]");
-        
+
         encodedBand = encodeBandInt("cpUtf8Suffix", cpUtf8Suffix, Codec.UNSIGNED5);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cpUtf8Suffix[" + cpUtf8Suffix.length + "]");
-        
+
         encodedBand = encodeBandInt("cpUtf8Chars", cpUtf8Chars, Codec.CHAR3);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cpUtf8Chars[" + cpUtf8Chars.length + "]");
-        
+
         encodedBand = encodeBandInt("cpUtf8BigSuffix", cpUtf8BigSuffix,
                 Codec.DELTA5);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cpUtf8BigSuffix[" + cpUtf8BigSuffix.length + "]");
-        
+
         for (int i = 0; i < cpUtf8BigChars.length; i++) {
             encodedBand = encodeBandInt("cpUtf8BigChars " + i,
                     cpUtf8BigChars[i], Codec.DELTA5);
@@ -238,7 +238,7 @@ public class CpBands extends BandSet {
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cp_Long_hi[" + highBits.length + "]");
-        
+
         encodedBand = encodeBandInt("cp_Long_lo", loBits, Codec.DELTA5);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
@@ -262,7 +262,7 @@ public class CpBands extends BandSet {
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cp_Double_hi[" + highBits.length + "]");
-        
+
         encodedBand = encodeBandInt("cp_Double_lo", loBits, Codec.DELTA5);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
@@ -317,13 +317,13 @@ public class CpBands extends BandSet {
         for (int j = 0; j < cpSignatureClasses.length; j++) {
             cpSignatureClasses[j] = ((CPClass) classes.get(j)).getIndex();
         }
-        
+
         byte[] encodedBand = encodeBandInt("cpSignatureForm", cpSignatureForm,
                 Codec.DELTA5);
         out.write(encodedBand);
         PackingUtils.log("Wrote " + encodedBand.length
                 + " bytes from cpSignatureForm[" + cpSignatureForm.length + "]");
-        
+
         encodedBand = encodeBandInt("cpSignatureClasses", cpSignatureClasses,
                 Codec.UDELTA5);
         out.write(encodedBand);
