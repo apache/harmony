@@ -23,7 +23,7 @@ package java.security;
  * 
  * @see KeyStore
  */
-public class UnrecoverableKeyException extends GeneralSecurityException {
+public class UnrecoverableKeyException extends UnrecoverableEntryException {
 
     private static final long serialVersionUID = 7275063078190151277L;
 
