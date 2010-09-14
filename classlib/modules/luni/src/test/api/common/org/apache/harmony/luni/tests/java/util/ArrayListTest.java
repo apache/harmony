@@ -546,6 +546,10 @@ public class ArrayListTest extends junit.framework.TestCase {
         al.ensureCapacity(capacity + 2);
         assertTrue("EnsureCapacity did not change location.", location == al
                 .indexOf(testObject));
+
+        ArrayList<String> list = new ArrayList<String>(1);
+        list.add("hello");
+        list.ensureCapacity(Integer.MIN_VALUE);
     }
 
     /**
