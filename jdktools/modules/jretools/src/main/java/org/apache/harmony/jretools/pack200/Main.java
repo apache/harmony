@@ -41,6 +41,7 @@ public class Main {
         String outputFileName = null;
         PackingOptions options = new PackingOptions();
         String value = null;
+        boolean repack = false;
 
         for (int i = 0; i < args.length; i++) {
             if ("--help".equals(args[i]) || "-help".equals(args[i])
@@ -219,10 +220,8 @@ public class Main {
                         nameEqualsAction[1]);
             } else if ("-v".equals(args[i]) || "--verbose".equals(args[i])) {
                 options.setVerbose(true);
-                options.setQuiet(false);
             } else if ("-q".equals(args[i]) || "--quiet".equals(args[i])) {
                 options.setQuiet(true);
-                options.setVerbose(false);
             } else if (args[i].startsWith("-l")) {
                 value = args[i].substring(2);
                 if (value.length() == 0) {
@@ -238,7 +237,7 @@ public class Main {
             } else if (args[i].startsWith("--log-file=")) {
                 options.setLogFile(args[i].substring(11));
             } else if ("-r".equals(args[i]) || "--repack".equals(args[i])) {
-                options.setRepack(true);
+                repack = true;
             } else if (args[i].startsWith("-f")) {
                 value = args[i].substring(2);
                 if (value.length() == 0) {
@@ -266,7 +265,7 @@ public class Main {
             }
         }
 
-        if (options.isRepack()) {
+        if (repack) {
             repack(inputFileName, outputFileName, options);
         } else {
             pack(inputFileName, outputFileName, options);
@@ -362,7 +361,6 @@ public class Main {
         org.apache.harmony.unpack200.Archive unpacker = new org.apache.harmony.unpack200.Archive(
                 inputStream, jarOutputStream);
         unpacker.setVerbose(options.isVerbose());
-        unpacker.setQuiet(options.isQuiet());
         // set deflate_hint option
         if (!options.isKeepDeflateHint()) {
             unpacker.setDeflateHint("true".equals(options.getDeflateHint()));
