@@ -714,6 +714,7 @@ jboolean
 getPlatformNetworkInterfaceAttribute(JNIEnv * env, FLAGTYPE type , jint jindex, DWORD flag)
 {
 	PIP_ADAPTER_ADDRESSES AdapterAddresses = NULL;
+	PIP_ADAPTER_ADDRESSES AdapterAddressesBuffer = NULL;
 	ULONG OutBufferLength = 0;
 	ULONG RetVal = 0;
 	jboolean isIPv6 = JNI_FALSE;
@@ -723,6 +724,8 @@ getPlatformNetworkInterfaceAttribute(JNIEnv * env, FLAGTYPE type , jint jindex, 
 	PORT_ACCESS_FROM_ENV (env);
 
     AdapterAddresses = initAdapters(env, RetVal);
+	AdapterAddressesBuffer = AdapterAddresses;
+
 	isIPv6 = isIPv6Enabled (AdapterAddresses);
 	if (RetVal == NO_ERROR) {		
 		while (AdapterAddresses != NULL) {
@@ -754,8 +757,8 @@ getPlatformNetworkInterfaceAttribute(JNIEnv * env, FLAGTYPE type , jint jindex, 
 		return 0;
 	}
 
-	if (AdapterAddresses != NULL) {
-		hymem_free_memory (AdapterAddresses);
+	if (AdapterAddressesBuffer != NULL) {
+		hymem_free_memory (AdapterAddressesBuffer);
 	}
 	return isSet;
 }
@@ -788,6 +791,7 @@ jint
 getPlatformMTU(JNIEnv * env, jstring ifname, jint index)
 {
 	PIP_ADAPTER_ADDRESSES AdapterAddresses = NULL;
+	PIP_ADAPTER_ADDRESSES AdapterAddressesBuffer = NULL;
 	ULONG OutBufferLength = 0;
 	ULONG RetVal = 0;
 	DWORD mtu = 0;
@@ -797,6 +801,8 @@ getPlatformMTU(JNIEnv * env, jstring ifname, jint index)
 	PORT_ACCESS_FROM_ENV (env);
 
     AdapterAddresses = initAdapters(env, RetVal);
+	AdapterAddressesBuffer = AdapterAddresses;
+
 	isIPv6 = isIPv6Enabled (AdapterAddresses);
 
 	if (RetVal == NO_ERROR) {		
@@ -815,8 +821,8 @@ getPlatformMTU(JNIEnv * env, jstring ifname, jint index)
 		return 0;
 	}
 
-	if (AdapterAddresses != NULL) {
-		hymem_free_memory (AdapterAddresses);
+	if (AdapterAddressesBuffer != NULL) {
+		hymem_free_memory (AdapterAddressesBuffer);
 	}
 	return mtu;
 }
@@ -825,6 +831,7 @@ jbyteArray
 getPlatformHardwareAddress(JNIEnv * env, jstring ifname, jint index)
 {   
 	PIP_ADAPTER_ADDRESSES AdapterAddresses = NULL;
+	PIP_ADAPTER_ADDRESSES AdapterAddressesBuffer = NULL;
 	ULONG OutBufferLength = 0;
 	ULONG RetVal = 0; 
 	jboolean isIPv6 = JNI_FALSE;
@@ -834,6 +841,8 @@ getPlatformHardwareAddress(JNIEnv * env, jstring ifname, jint index)
 	PORT_ACCESS_FROM_ENV (env);
 
 	AdapterAddresses = initAdapters(env, RetVal);
+	AdapterAddressesBuffer = AdapterAddresses;
+
 	isIPv6 = isIPv6Enabled(AdapterAddresses);
 
 	if (RetVal == NO_ERROR) {		
@@ -856,8 +865,8 @@ getPlatformHardwareAddress(JNIEnv * env, jstring ifname, jint index)
 		return NULL;
 	}
 
-	if (AdapterAddresses != NULL) {
-		hymem_free_memory (AdapterAddresses);
+	if (AdapterAddressesBuffer != NULL) {
+		hymem_free_memory (AdapterAddressesBuffer);
 	}
 	return byteArray;
 }
