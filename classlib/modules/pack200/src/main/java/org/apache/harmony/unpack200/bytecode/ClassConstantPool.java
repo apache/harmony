@@ -115,8 +115,6 @@ public class ClassConstantPool {
             // children now become parents
             parents.clear();
             parents.addAll(children);
-
-
         }
     }
 

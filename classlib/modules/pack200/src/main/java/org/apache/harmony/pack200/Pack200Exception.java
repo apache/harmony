@@ -33,26 +33,4 @@ public class Pack200Exception extends Exception {
         super(message);
     }
 
-    /**
-     * Create a new Pack200 exception with the given message and cause
-     *
-     * @param message
-     *            the text message to display
-     * @param cause
-     *            the {@link Throwable} that caused this problem
-     */
-    public Pack200Exception(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
-     * Create a new Pack200 exception with the given cause
-     *
-     * @param cause
-     *            the {@link Throwable} that caused this problem
-     */
-    public Pack200Exception(Throwable cause) {
-        super(cause);
-    }
-
 }
