@@ -88,12 +88,26 @@ public class SSLEngineImpl extends SSLEngine {
     // logger
     private Logger.Stream logger = Logger.getStream("engine");
 
-    // Pointer to the OpenSSL SSL struct used for this engine
+    // Pointer to the SSL struct
     private long SSL;
+    // Pointer to the custom struct used for this engine
+    private long SSLEngineAddress;
     
     private SSLEngineResult.HandshakeStatus handshakeStatus;
     
-    private native long initImpl(long context);
+    static {
+        initImpl();
+    }
+    
+    private static native void initImpl();
+    private static native long initSSL(long context);
+    private static native long initSSLEngine(long context);
+    private static native SSLEngineResult.HandshakeStatus connectImpl(long sslEngineAddress);
+    private static native SSLEngineResult.HandshakeStatus acceptImpl(long sslEngineAddress);
+    private static native SSLEngineResult wrapImpl(long sslEngineAddress,
+            byte[] src, int src_len, byte[] dst, int dst_len);
+    private static native SSLEngineResult unwrapImpl(long sslEngineAddress,
+            byte[] src, int src_len, byte[] dst, int dst_len);
     
     /**
      * Ctor
@@ -102,7 +116,8 @@ public class SSLEngineImpl extends SSLEngine {
     protected SSLEngineImpl(SSLParameters sslParameters) {
         super();
         this.sslParameters = sslParameters;
-        SSL = initImpl(sslParameters.getSSLContextAddress());
+        SSL = initSSL(sslParameters.getSSLContextAddress());
+        SSLEngineAddress = initSSLEngine(SSL);
     }
 
     /**
@@ -114,13 +129,9 @@ public class SSLEngineImpl extends SSLEngine {
     protected SSLEngineImpl(String host, int port, SSLParameters sslParameters) {
         super(host, port);
         this.sslParameters = sslParameters;
-        SSL = initImpl(sslParameters.getSSLContextAddress());
+        SSL = initSSL(sslParameters.getSSLContextAddress());
+        SSLEngineAddress = initSSLEngine(SSL);
     }
-
-    private native SSLEngineResult.HandshakeStatus connectImpl(long sslContextAddress);
-    private native SSLEngineResult.HandshakeStatus acceptImpl(long sslContextAddress);
-    private native SSLEngineResult wrapImpl(long sslContextAddress,
-            byte[] src, int src_len, byte[] dst, int dst_len);
     
     /**
      * Starts the handshake.
@@ -145,12 +156,12 @@ public class SSLEngineImpl extends SSLEngine {
                     logger.println("SSLEngineImpl: CLIENT connecting");
                 }
 
-                handshakeStatus = connectImpl(SSL);
+                handshakeStatus = connectImpl(SSLEngineAddress);
             } else {
                 if (logger != null) {
                     logger.println("SSLEngineImpl: SERVER accepting connection");
                 }
-                handshakeStatus = acceptImpl(SSL);
+                handshakeStatus = acceptImpl(SSLEngineAddress);
             }
 //            appData = new SSLEngineAppData();
 //            alertProtocol = new AlertProtocol();
@@ -464,138 +475,142 @@ public class SSLEngineImpl extends SSLEngine {
             beginHandshake();
         }
 
-        SSLEngineResult.HandshakeStatus handshakeStatus = getHandshakeStatus();
-        // If is is initial handshake or connection closure stage,
-        // check if this call was made in spite of handshake status
-        if ((session == null || engine_was_closed) && (
-                    handshakeStatus.equals(
-                        SSLEngineResult.HandshakeStatus.NEED_WRAP) ||
-                    handshakeStatus.equals(
-                        SSLEngineResult.HandshakeStatus.NEED_TASK))) {
-            return new SSLEngineResult(
-                    getEngineStatus(), handshakeStatus, 0, 0);
-        }
-
-        if (src.remaining() < recordProtocol.getMinRecordSize()) {
-            return new SSLEngineResult(
-                    SSLEngineResult.Status.BUFFER_UNDERFLOW,
-                    getHandshakeStatus(), 0, 0);
-        }
-
-        try {
-            src.mark();
-            // check the destination buffers and count their capacity
-            int capacity = 0;
-            for (int i=offset; i<offset+length; i++) {
-                if (dsts[i] == null) {
-                    throw new IllegalStateException(
-                            "Some of the input parameters are null");
-                }
-                if (dsts[i].isReadOnly()) {
-                    throw new ReadOnlyBufferException();
-                }
-                capacity += dsts[i].remaining();
-            }
-            if (capacity < recordProtocol.getDataSize(src.remaining())) {
-                return new SSLEngineResult(
-                        SSLEngineResult.Status.BUFFER_OVERFLOW,
-                        getHandshakeStatus(), 0, 0);
-            }
-            recProtIS.setSourceBuffer(src);
-            // unwrap the record contained in source buffer, pass it
-            // to appropriate client protocol (alert, handshake, or app)
-            // and retrieve the type of unwrapped data
-            int type = recordProtocol.unwrap();
-            // process the data and return the result
-            switch (type) {
-                case ContentType.HANDSHAKE:
-                case ContentType.CHANGE_CIPHER_SPEC:
-                    if (handshakeProtocol.getStatus().equals(
-                            SSLEngineResult.HandshakeStatus.FINISHED)) {
-                        session = recordProtocol.getSession();
-                    }
-                    break;
-                case ContentType.APPLICATION_DATA:
-                    break;
-                case ContentType.ALERT:
-                    if (alertProtocol.isFatalAlert()) {
-                        alertProtocol.setProcessed();
-                        if (session != null) {
-                            session.invalidate();
-                        }
-                        String description = "Fatal alert received "
-                            + alertProtocol.getAlertDescription();
-                        shutdown();
-                        throw new SSLException(description);
-                    } else {
-                        if (logger != null) {
-                            logger.println("Warning allert has been received: "
-                                + alertProtocol.getAlertDescription());
-                        }
-                        switch(alertProtocol.getDescriptionCode()) {
-                            case AlertProtocol.CLOSE_NOTIFY:
-                                alertProtocol.setProcessed();
-                                close_notify_was_received = true;
-                                if (!close_notify_was_sent) {
-                                    closeOutbound();
-                                    closeInbound();
-                                } else {
-                                    closeInbound();
-                                    shutdown();
-                                }
-                                break;
-                            case AlertProtocol.NO_RENEGOTIATION:
-                                alertProtocol.setProcessed();
-                                if (session == null) {
-                                    // message received during the initial 
-                                    // handshake
-                                    throw new AlertException(
-                                        AlertProtocol.HANDSHAKE_FAILURE,
-                                        new SSLHandshakeException(
-                                            "Received no_renegotiation "
-                                            + "during the initial handshake"));
-                                } else {
-                                    // just stop the handshake
-                                    handshakeProtocol.stop();
-                                }
-                                break;
-                            default:
-                                alertProtocol.setProcessed();
-                        }
-                    }
-                    break;
-            }
-            return new SSLEngineResult(getEngineStatus(), getHandshakeStatus(),
-                    recProtIS.consumed(), 
-                    // place the app. data (if any) into the dest. buffers 
-                    // and get the number of produced bytes:
-                    appData.placeTo(dsts, offset, length));
-        } catch (BufferUnderflowException e) {
-            // there was not enought data ource buffer to make complete packet
-            src.reset();
-            return new SSLEngineResult(SSLEngineResult.Status.BUFFER_UNDERFLOW,
-                    getHandshakeStatus(), 0, 0);
-        } catch (AlertException e) {
-            // fatal alert occured
-            alertProtocol.alert(AlertProtocol.FATAL, e.getDescriptionCode());
-            engine_was_closed = true;
-            src.reset();
-            if (session != null) {
-                session.invalidate();
-            }
-            // shutdown work will be made after the alert will be sent
-            // to another peer (by wrap method)
-            throw e.getReason();
-        } catch (SSLException e) {
-            throw e;
-        } catch (IOException e) {
-            alertProtocol.alert(AlertProtocol.FATAL,
-                    AlertProtocol.INTERNAL_ERROR);
-            engine_was_closed = true;
-            // shutdown work will be made after the alert will be sent
-            // to another peer (by wrap method)
-            throw new SSLException(e.getMessage());
-        }
+        // only use the first buffer at the moment
+        byte[] dst = dsts[0].array();
+        int dst_len = dst.length;
+        return unwrapImpl(SSLEngineAddress, src.array(), src.array().length, dst, dst_len);
+//        SSLEngineResult.HandshakeStatus handshakeStatus = getHandshakeStatus();
+//        // If is is initial handshake or connection closure stage,
+//        // check if this call was made in spite of handshake status
+//        if ((session == null || engine_was_closed) && (
+//                    handshakeStatus.equals(
+//                        SSLEngineResult.HandshakeStatus.NEED_WRAP) ||
+//                    handshakeStatus.equals(
+//                        SSLEngineResult.HandshakeStatus.NEED_TASK))) {
+//            return new SSLEngineResult(
+//                    getEngineStatus(), handshakeStatus, 0, 0);
+//        }
+//
+//        if (src.remaining() < recordProtocol.getMinRecordSize()) {
+//            return new SSLEngineResult(
+//                    SSLEngineResult.Status.BUFFER_UNDERFLOW,
+//                    getHandshakeStatus(), 0, 0);
+//        }
+//
+//        try {
+//            src.mark();
+//            // check the destination buffers and count their capacity
+//            int capacity = 0;
+//            for (int i=offset; i<offset+length; i++) {
+//                if (dsts[i] == null) {
+//                    throw new IllegalStateException(
+//                            "Some of the input parameters are null");
+//                }
+//                if (dsts[i].isReadOnly()) {
+//                    throw new ReadOnlyBufferException();
+//                }
+//                capacity += dsts[i].remaining();
+//            }
+//            if (capacity < recordProtocol.getDataSize(src.remaining())) {
+//                return new SSLEngineResult(
+//                        SSLEngineResult.Status.BUFFER_OVERFLOW,
+//                        getHandshakeStatus(), 0, 0);
+//            }
+//            recProtIS.setSourceBuffer(src);
+//            // unwrap the record contained in source buffer, pass it
+//            // to appropriate client protocol (alert, handshake, or app)
+//            // and retrieve the type of unwrapped data
+//            int type = recordProtocol.unwrap();
+//            // process the data and return the result
+//            switch (type) {
+//                case ContentType.HANDSHAKE:
+//                case ContentType.CHANGE_CIPHER_SPEC:
+//                    if (handshakeProtocol.getStatus().equals(
+//                            SSLEngineResult.HandshakeStatus.FINISHED)) {
+//                        session = recordProtocol.getSession();
+//                    }
+//                    break;
+//                case ContentType.APPLICATION_DATA:
+//                    break;
+//                case ContentType.ALERT:
+//                    if (alertProtocol.isFatalAlert()) {
+//                        alertProtocol.setProcessed();
+//                        if (session != null) {
+//                            session.invalidate();
+//                        }
+//                        String description = "Fatal alert received "
+//                            + alertProtocol.getAlertDescription();
+//                        shutdown();
+//                        throw new SSLException(description);
+//                    } else {
+//                        if (logger != null) {
+//                            logger.println("Warning allert has been received: "
+//                                + alertProtocol.getAlertDescription());
+//                        }
+//                        switch(alertProtocol.getDescriptionCode()) {
+//                            case AlertProtocol.CLOSE_NOTIFY:
+//                                alertProtocol.setProcessed();
+//                                close_notify_was_received = true;
+//                                if (!close_notify_was_sent) {
+//                                    closeOutbound();
+//                                    closeInbound();
+//                                } else {
+//                                    closeInbound();
+//                                    shutdown();
+//                                }
+//                                break;
+//                            case AlertProtocol.NO_RENEGOTIATION:
+//                                alertProtocol.setProcessed();
+//                                if (session == null) {
+//                                    // message received during the initial 
+//                                    // handshake
+//                                    throw new AlertException(
+//                                        AlertProtocol.HANDSHAKE_FAILURE,
+//                                        new SSLHandshakeException(
+//                                            "Received no_renegotiation "
+//                                            + "during the initial handshake"));
+//                                } else {
+//                                    // just stop the handshake
+//                                    handshakeProtocol.stop();
+//                                }
+//                                break;
+//                            default:
+//                                alertProtocol.setProcessed();
+//                        }
+//                    }
+//                    break;
+//            }
+//            return new SSLEngineResult(getEngineStatus(), getHandshakeStatus(),
+//                    recProtIS.consumed(), 
+//                    // place the app. data (if any) into the dest. buffers 
+//                    // and get the number of produced bytes:
+//                    appData.placeTo(dsts, offset, length));
+//        } catch (BufferUnderflowException e) {
+//            // there was not enought data ource buffer to make complete packet
+//            src.reset();
+//            return new SSLEngineResult(SSLEngineResult.Status.BUFFER_UNDERFLOW,
+//                    getHandshakeStatus(), 0, 0);
+//        } catch (AlertException e) {
+//            // fatal alert occured
+//            alertProtocol.alert(AlertProtocol.FATAL, e.getDescriptionCode());
+//            engine_was_closed = true;
+//            src.reset();
+//            if (session != null) {
+//                session.invalidate();
+//            }
+//            // shutdown work will be made after the alert will be sent
+//            // to another peer (by wrap method)
+//            throw e.getReason();
+//        } catch (SSLException e) {
+//            throw e;
+//        } catch (IOException e) {
+//            alertProtocol.alert(AlertProtocol.FATAL,
+//                    AlertProtocol.INTERNAL_ERROR);
+//            engine_was_closed = true;
+//            // shutdown work will be made after the alert will be sent
+//            // to another peer (by wrap method)
+//            throw new SSLException(e.getMessage());
+//        }
     }
 
     /**
@@ -636,7 +651,7 @@ public class SSLEngineImpl extends SSLEngine {
         byte[] src = srcs[0].array();
         int src_len = src.length;
         
-        return wrapImpl(SSL, src, src_len, dst.array(), dst.array().length);
+        return wrapImpl(SSLEngineAddress, src, src_len, dst.array(), dst.array().length);
         
         
 //        SSLEngineResult.HandshakeStatus handshakeStatus = getHandshakeStatus();

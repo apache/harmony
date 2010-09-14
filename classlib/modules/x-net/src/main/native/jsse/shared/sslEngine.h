@@ -23,13 +23,17 @@
 extern "C" {
 #endif
 
-JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_initImpl
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_initImpl
+  (JNIEnv *, jclass);
+JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_sslEngineImpl
   (JNIEnv *, jclass, jlong);
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_acceptImpl
   (JNIEnv *, jclass, jlong);
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_connectImpl
   (JNIEnv *, jclass, jlong);
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_wrapImpl
+  (JNIEnv *, jclass, jlong, jbyteArray, int, jbyteArray, int);
+JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_unwrapImpl
   (JNIEnv *, jclass, jlong, jbyteArray, int, jbyteArray, int);
 #ifdef __cplusplus
 }
