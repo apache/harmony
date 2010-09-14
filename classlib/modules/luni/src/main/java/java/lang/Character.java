@@ -2184,7 +2184,7 @@ public final class Character implements Serializable, Comparable<Character> {
         }
         int len = seq.length();
         if (index < 0 || index >= len) {
-            throw new IndexOutOfBoundsException();
+            throw new StringIndexOutOfBoundsException(index);
         }
 
         char high = seq.charAt(index++);
