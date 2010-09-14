@@ -238,6 +238,32 @@ public class GenKeyTest extends TestCase {
             }
             // set normal issuer alias back
             args[26] = issuerAlias;
+            
+            // bad store password length
+            args[4] = "12345";
+            try {
+                Main.run(args);
+                fail(excNotThrown);
+            } catch (KeytoolException ok) {
+                assertNotNull(ok.getMessage());
+                assertTrue("Expected password length error, got: " + 
+                        ok.getMessage(), 
+                        ok.getMessage().contains("The password must be at least"));
+            }
+            args[4] = TestUtils.ksPass;
+            
+            // bad key password length
+            args[10] = "12345";
+            try {
+                Main.run(args);
+                fail(excNotThrown);
+            } catch (KeytoolException ok) {
+                assertNotNull(ok.getMessage());
+                assertTrue("Expected password length error, got: " + 
+                        ok.getMessage(), 
+                        ok.getMessage().contains("The password must be at least"));
+            }
+            args[10] = TestUtils.keyPass;
         } finally {
             keyStoreFile.delete();
         }

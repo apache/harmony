@@ -31,14 +31,6 @@ public class SuperMethodRefForm extends ClassSpecificReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_SUPERMETHODREF;
-    }
-
-    public boolean hasSuperMethodRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextSuperMethodRef();
     }

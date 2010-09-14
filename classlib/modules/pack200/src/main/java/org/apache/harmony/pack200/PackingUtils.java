@@ -86,7 +86,7 @@ public class PackingUtils {
     }
 
     /**
-     * When effort is 0, the packer copys through the original jar input stream
+     * When effort is 0, the packer copies through the original jar input stream
      * without compression
      * 
      * @param jarInputStream

@@ -59,17 +59,19 @@ public class AttributeDefinitionBands extends BandSet {
 
         for (int i = 0; i < attributePrototypes.length; i++) {
             NewAttribute newAttribute = (NewAttribute) attributePrototypes[i];
-            if (newAttribute.isContextClass()) {
-                classLayouts.put(newAttribute.type, newAttribute.getLayout());
-            }
-            if (newAttribute.isContextMethod()) {
-                methodLayouts.put(newAttribute.type, newAttribute.getLayout());
-            }
-            if (newAttribute.isContextField()) {
-                fieldLayouts.put(newAttribute.type, newAttribute.getLayout());
-            }
-            if (newAttribute.isContextCode()) {
-                codeLayouts.put(newAttribute.type, newAttribute.getLayout());
+            if(!(newAttribute instanceof NewAttribute.ErrorAttribute) && !(newAttribute instanceof NewAttribute.PassAttribute) && !(newAttribute instanceof NewAttribute.StripAttribute)) {
+                if (newAttribute.isContextClass()) {
+                    classLayouts.put(newAttribute.type, newAttribute.getLayout());
+                }
+                if (newAttribute.isContextMethod()) {
+                    methodLayouts.put(newAttribute.type, newAttribute.getLayout());
+                }
+                if (newAttribute.isContextField()) {
+                    fieldLayouts.put(newAttribute.type, newAttribute.getLayout());
+                }
+                if (newAttribute.isContextCode()) {
+                    codeLayouts.put(newAttribute.type, newAttribute.getLayout());
+                }
             }
         }
         if (classLayouts.keySet().size() > 7) {

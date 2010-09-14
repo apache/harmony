@@ -28,14 +28,6 @@ public class ThisInitMethodRefForm extends InitMethodReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_THISINITMETHODREF;
-    }
-
-    public boolean hasThisInitMethodRefOperand() {
-        return true;
-    }
-
     protected String context(OperandManager operandManager) {
         return operandManager.getCurrentClass();
     }

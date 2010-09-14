@@ -30,14 +30,6 @@ public abstract class SwitchForm extends VariableInstructionForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_SWITCH;
-    }
-
-    public boolean hasSwitchOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *

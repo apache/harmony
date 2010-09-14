@@ -34,14 +34,6 @@ public class LocalForm extends ByteCodeForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_LOCAL;
-    }
-
-    public boolean hasLocalOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *

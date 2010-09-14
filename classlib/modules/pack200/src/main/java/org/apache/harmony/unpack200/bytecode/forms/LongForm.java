@@ -29,14 +29,6 @@ public class LongForm extends ReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_LONG;
-    }
-
-    public boolean hasLongOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextLongRef();
     }

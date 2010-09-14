@@ -100,10 +100,6 @@ public class ByteCode extends ClassFileEntry {
         return getByteCodeForm().getOpcode();
     }
 
-    public int getOperandType() {
-        return getByteCodeForm().getOperandType();
-    }
-
     private boolean hashcodeComputed;
     private int cachedHashCode;
 

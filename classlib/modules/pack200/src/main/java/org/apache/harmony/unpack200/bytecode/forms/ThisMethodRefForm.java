@@ -31,14 +31,6 @@ public class ThisMethodRefForm extends ClassSpecificReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_THISMETHODREF;
-    }
-
-    public boolean hasThisMethodRefOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextThisMethodRef();
     }

@@ -26,14 +26,6 @@ public class SuperInitMethodRefForm extends InitMethodReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_SUPERINITMETHODREF;
-    }
-
-    public boolean hasSuperInitMethodRefOperand() {
-        return true;
-    }
-
     protected String context(
             org.apache.harmony.unpack200.bytecode.OperandManager operandManager) {
         return operandManager.getSuperClass();

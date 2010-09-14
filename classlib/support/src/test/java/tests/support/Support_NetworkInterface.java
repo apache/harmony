@@ -38,10 +38,18 @@ public class Support_NetworkInterface {
 					|| (theInterface.getDisplayName()
 							.equals("Automatic Tunneling Pseudo-Interface"))
 					|| (theInterface.getDisplayName()
-							.equals("Loopback Pseudo-Interface"))) {
+							.equals("Loopback Pseudo-Interface"))
+					|| (theInterface.getDisplayName().equals("MS TCP Loopback interface"))) {
 				result = false;
 			}
 		}
-		return result;
+
+        if (platform.startsWith("Linux")) {
+            if ((theInterface.getDisplayName().equals("lo"))
+                    || (theInterface.getDisplayName().equals("teredo"))) {
+                result = false;
+            }
+        }
+        return result;
 	}
 }

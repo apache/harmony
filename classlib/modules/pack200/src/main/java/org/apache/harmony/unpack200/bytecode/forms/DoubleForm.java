@@ -29,14 +29,6 @@ public class DoubleForm extends ReferenceForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_DOUBLE;
-    }
-
-    public boolean hasDoubleOperand() {
-        return true;
-    }
-
     protected int getOffset(OperandManager operandManager) {
         return operandManager.nextDoubleRef();
     }

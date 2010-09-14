@@ -165,23 +165,6 @@ public class CodecTest extends TestCase {
         assertFalse(byte2s.encodes(256));
     }
 
-    public void testRunCodec() throws Exception {
-        RunCodec runCodec = new RunCodec(1, Codec.UNSIGNED5, Codec.BYTE1);
-        ByteArrayInputStream bais = new ByteArrayInputStream(new byte[] {
-                (byte) 192, 0, (byte) 192, 0 });
-        assertEquals(192, runCodec.decode(bais));
-        assertEquals(192, runCodec.decode(bais));
-        assertEquals(0, runCodec.decode(bais));
-        assertEquals(0, bais.available());
-        runCodec = new RunCodec(1, Codec.BYTE1, Codec.UNSIGNED5);
-        bais = new ByteArrayInputStream(new byte[] { (byte) 192, 0, (byte) 192,
-                0 });
-        assertEquals(192, runCodec.decode(bais));
-        assertEquals(0, runCodec.decode(bais));
-        assertEquals(192, runCodec.decode(bais));
-        assertEquals(0, bais.available());
-    }
-
     public void testUnsigned5() throws Exception {
         decode(Codec.UNSIGNED5, new byte[] { 1 }, 1, 0);
         decode(Codec.UNSIGNED5, new byte[] { (byte) 191 }, 191, 0);

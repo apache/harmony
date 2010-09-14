@@ -23,39 +23,7 @@ import org.apache.harmony.unpack200.bytecode.ByteCode;
 import org.apache.harmony.unpack200.bytecode.CodeAttribute;
 import org.apache.harmony.unpack200.bytecode.OperandManager;
 
-public class ByteCodeForm {
-
-    // Operand types. Those with no operands and
-    // those with operands on the operand stack are
-    // treated similarly. These types are used to
-    // distinguish different kinds of non-stack
-    // bytecode operands
-    protected static final int TYPE_NONE = 0;
-    protected static final int TYPE_BYTE = 1;
-    protected static final int TYPE_SHORT = 2;
-    protected static final int TYPE_INTREF = 3;
-    protected static final int TYPE_FLOATREF = 4;
-    protected static final int TYPE_STRINGREF = 5;
-    protected static final int TYPE_CLASSREF = 6;
-    protected static final int TYPE_LONG = 7;
-    protected static final int TYPE_DOUBLE = 8;
-    protected static final int TYPE_LOCAL = 9;
-    protected static final int TYPE_LABEL = 10;
-    protected static final int TYPE_FIELDREF = 11;
-    protected static final int TYPE_METHODREF = 12;
-    protected static final int TYPE_IMETHODREF = 13;
-    protected static final int TYPE_WIDE = 14;
-    protected static final int TYPE_IINC = 15;
-    protected static final int TYPE_SWITCH = 16;
-    protected static final int TYPE_MULTIANEWARRAY = 17;
-    protected static final int TYPE_THISFIELDREF = 18;
-    protected static final int TYPE_THISMETHODREF = 19;
-    protected static final int TYPE_SUPERFIELDREF = 20;
-    protected static final int TYPE_SUPERMETHODREF = 21;
-    protected static final int TYPE_THISINITMETHODREF = 22;
-    protected static final int TYPE_SUPERINITMETHODREF = 23;
-    protected static final int TYPE_NEWINITMETHODREF = 24;
-    protected static final int TYPE_NEWCLASSREF = 25;
+public abstract class ByteCodeForm {
 
     protected static final boolean WIDENED = true;
 
@@ -480,13 +448,8 @@ public class ByteCodeForm {
         return (ByteCodeForm) byteCodeArray[opcode];
     }
 
-    public static ByteCodeForm get(String name) {
-        return (ByteCodeForm) byteCodesByName.get(name);
-    }
-
     public String toString() {
-        return this.getClass().getName() + "(" + getName() + ":"
-                + getOperandType() + ")";
+        return this.getClass().getName() + "(" + getName() + ")";
     }
 
     public int getOpcode() {
@@ -495,10 +458,6 @@ public class ByteCodeForm {
 
     public String getName() {
         return name;
-    }
-
-    public int getOperandType() {
-        return -1;
     }
 
     public int[] getRewrite() {
@@ -520,106 +479,6 @@ public class ByteCodeForm {
     }
 
     public boolean hasNoOperand() {
-        return false;
-    }
-
-    public boolean hasByteOperand() {
-        return false;
-    }
-
-    public boolean hasShortOperand() {
-        return false;
-    }
-
-    public boolean hasIntRefOperand() {
-        return false;
-    }
-
-    public boolean hasFloatRefOperand() {
-        return false;
-    }
-
-    public boolean hasStringRefOperand() {
-        return false;
-    }
-
-    public boolean hasClassRefOperand() {
-        return false;
-    }
-
-    public boolean hasLongOperand() {
-        return false;
-    }
-
-    public boolean hasDoubleOperand() {
-        return false;
-    }
-
-    public boolean hasLocalOperand() {
-        return false;
-    }
-
-    public boolean hasLabelOperand() {
-        return false;
-    }
-
-    public boolean hasFieldRefOperand() {
-        return false;
-    }
-
-    public boolean hasMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasIMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasWideOperand() {
-        return false;
-    }
-
-    public boolean hasIincOperand() {
-        return false;
-    }
-
-    public boolean hasSwitchOperand() {
-        return false;
-    }
-
-    public boolean hasMultianewarrayOperand() {
-        return false;
-    }
-
-    public boolean hasThisFieldRefOperand() {
-        return false;
-    }
-
-    public boolean hasThisMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasSuperFieldRefOperand() {
-        return false;
-    }
-
-    public boolean hasSuperMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasThisInitMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasSuperInitMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasNewInitMethodRefOperand() {
-        return false;
-    }
-
-    public boolean hasInitMethodRefOperand() {
         return false;
     }
 
@@ -657,10 +516,8 @@ public class ByteCodeForm {
      *            of the method. Used in calculating padding for some
      *            variable-length bytecodes (such as lookupswitch, tableswitch).
      */
-    public void setByteCodeOperands(ByteCode byteCode,
-            OperandManager operandManager, int codeLength) {
-        throw new Error("My subclass should have implemented this");
-    }
+    public abstract void setByteCodeOperands(ByteCode byteCode,
+            OperandManager operandManager, int codeLength);
 
     /**
      * The ByteCodeForm knows how to fix up a bytecode if it needs to be fixed

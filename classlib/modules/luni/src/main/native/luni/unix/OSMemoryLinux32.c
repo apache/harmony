@@ -181,7 +181,7 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_luni_platform_OSMemory_mmapImpl
         return -1;
     }
 
-  mapAddress = mmap(0, (size_t)(size&0x7fffffff), prot, flags, fd-FD_BIAS, (off_t)(alignment&0x7fffffff));
+  mapAddress = mmap(0, (size_t)(size&0x7fffffff), prot, flags, (int)fd-FD_BIAS, (off_t)(alignment&0x7fffffff));
   if (mapAddress == MAP_FAILED)
     {
       hyerror_set_last_error(errno, HYPORT_ERROR_OPFAILED);

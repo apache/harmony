@@ -29,14 +29,6 @@ public class IincForm extends ByteCodeForm {
         super(opcode, name, rewrite);
     }
 
-    public int getOperandType() {
-        return TYPE_IINC;
-    }
-
-    public boolean hasIincOperand() {
-        return true;
-    }
-
     /*
      * (non-Javadoc)
      *
