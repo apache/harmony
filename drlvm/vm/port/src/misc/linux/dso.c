@@ -63,10 +63,14 @@ APR_DECLARE(apr_status_t) port_dso_search_path(char** path,
 }
 
 APR_DECLARE(char *) port_dso_name_decorate(const char* dl_name,
-                            apr_pool_t* pool) {
-									
+                                           const char* dl_ver,
+                                           apr_pool_t* pool) {
 	if (!dl_name) {
 		return 0;
 	}
-	return apr_pstrcat(pool, "lib", dl_name, ".so", NULL);
+        if (dl_ver) {
+                return apr_pstrcat(pool, "lib", dl_name, ".so.", dl_ver, NULL);
+        } else {
+                return apr_pstrcat(pool, "lib", dl_name, ".so", NULL);
+        }
 }
