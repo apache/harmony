@@ -234,7 +234,7 @@ public class Archive {
 
     public void setLogFile(String logFileName, boolean append)
             throws FileNotFoundException {
-        logFile = new FileOutputStream(logFileName, true);
+        logFile = new FileOutputStream(logFileName, append);
     }
 
     public void setDeflateHint(boolean deflateHint) {

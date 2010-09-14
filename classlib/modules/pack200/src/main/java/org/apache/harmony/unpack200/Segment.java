@@ -506,6 +506,9 @@ public class Segment {
 
     void unpackWrite(JarOutputStream out) throws IOException, Pack200Exception {
         writeJar(out);
+        if(logStream != null) {
+            logStream.close();
+        }
     }
 
     /**
@@ -592,20 +595,12 @@ public class Segment {
         return attrDefinitionBands;
     }
 
-    protected BcBands getBcBands() {
-        return bcBands;
-    }
-
     protected ClassBands getClassBands() {
         return classBands;
     }
 
     protected CpBands getCpBands() {
         return cpBands;
-    }
-
-    protected FileBands getFileBands() {
-        return fileBands;
     }
 
     protected IcBands getIcBands() {

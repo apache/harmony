@@ -35,7 +35,6 @@ public class PackingOptions {
     public static final String KEEP = "keep";
 
     // All options are initially set to their defaults
-    private boolean repack = false;
     private boolean gzip = true;
     private boolean stripDebug = false;
     private boolean keepFileOrder = true;
@@ -50,18 +49,9 @@ public class PackingOptions {
     private Map methodAttributeActions;
     private Map codeAttributeActions;
     private boolean verbose = false;
-    private boolean quiet = true;
     private String logFile;
 
     private Attribute[] unknownAttributeTypes;
-
-    public boolean isRepack() {
-        return repack;
-    }
-
-    public void setRepack(boolean repack) {
-        this.repack = repack;
-    }
 
     public boolean isGzip() {
         return gzip;
@@ -128,6 +118,14 @@ public class PackingOptions {
     }
 
     public void setDeflateHint(String deflateHint) {
+        if (!KEEP.equals(deflateHint)
+                && !"true".equals(deflateHint)
+                && !"false".equals(deflateHint)) {
+            throw new IllegalArgumentException(
+                    "Bad argument: -H "
+                            + deflateHint
+                            + " ? deflate hint should be either true, false or keep (default)");
+        }
         this.deflateHint = deflateHint;
     }
 
@@ -245,12 +243,8 @@ public class PackingOptions {
         this.verbose = verbose;
     }
 
-    public boolean isQuiet() {
-        return quiet;
-    }
-
     public void setQuiet(boolean quiet) {
-        this.quiet = quiet;
+        this.verbose = !quiet;
     }
 
     public String getLogFile() {

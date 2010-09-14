@@ -24,14 +24,12 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.harmony.pack200.AttributeDefinitionBands;
+import org.apache.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
 import org.apache.harmony.pack200.CPUTF8;
 import org.apache.harmony.pack200.Codec;
 import org.apache.harmony.pack200.CpBands;
 import org.apache.harmony.pack200.NewAttribute;
 import org.apache.harmony.pack200.NewAttributeBands;
-import org.apache.harmony.pack200.Pack200Exception;
-import org.apache.harmony.pack200.SegmentHeader;
-import org.apache.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
 import org.apache.harmony.pack200.NewAttributeBands.Call;
 import org.apache.harmony.pack200.NewAttributeBands.Callable;
 import org.apache.harmony.pack200.NewAttributeBands.Integral;
@@ -39,6 +37,8 @@ import org.apache.harmony.pack200.NewAttributeBands.Reference;
 import org.apache.harmony.pack200.NewAttributeBands.Replication;
 import org.apache.harmony.pack200.NewAttributeBands.Union;
 import org.apache.harmony.pack200.NewAttributeBands.UnionCase;
+import org.apache.harmony.pack200.Pack200Exception;
+import org.apache.harmony.pack200.SegmentHeader;
 
 /**
  * Tests for pack200 support for non-predefined attributes
@@ -200,6 +200,65 @@ public class NewAttributeBandsTest extends TestCase {
         Call call = (Call) repBody.get(0);
         assertEquals(1, call.getCallableIndex());
         assertEquals(secondCallable, call.getCallable());
+        assertFalse(firstCallable.isBackwardsCallable());
+        assertFalse(secondCallable.isBackwardsCallable());
+        assertFalse(thirdCallable.isBackwardsCallable());
+    }
+
+    public void testLayoutWithBackwardsCalls() throws Exception {
+        CPUTF8 name = new CPUTF8("TestAttribute");
+        CPUTF8 layout = new CPUTF8("[NH[(1)]][KIH][(-1)]");
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
+                null, null, new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        List layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(3, layoutElements.size());
+        Callable firstCallable = (Callable) layoutElements.get(0);
+        Callable secondCallable = (Callable) layoutElements.get(1);
+        Callable thirdCallable = (Callable) layoutElements.get(2);
+        List thirdBody = thirdCallable.getBody();
+        assertEquals(1, thirdBody.size());
+        Call call = (Call) thirdBody.get(0);
+        assertEquals(secondCallable, call.getCallable());
+        assertTrue(secondCallable.isBackwardsCallable());
+        assertFalse(firstCallable.isBackwardsCallable());
+        assertFalse(thirdCallable.isBackwardsCallable());
+
+        name = new CPUTF8("TestAttribute");
+        layout = new CPUTF8("[NH[(1)]][KIH][(-2)]");
+        newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(3, layoutElements.size());
+        firstCallable = (Callable) layoutElements.get(0);
+        secondCallable = (Callable) layoutElements.get(1);
+        thirdCallable = (Callable) layoutElements.get(2);
+        thirdBody = thirdCallable.getBody();
+        assertEquals(1, thirdBody.size());
+        call = (Call) thirdBody.get(0);
+        assertEquals(firstCallable, call.getCallable());
+        assertTrue(firstCallable.isBackwardsCallable());
+        assertFalse(secondCallable.isBackwardsCallable());
+        assertFalse(thirdCallable.isBackwardsCallable());
+
+        name = new CPUTF8("TestAttribute");
+        layout = new CPUTF8("[NH[(1)]][KIH][(0)]");
+        newAttributeBands = new MockNewAttributeBands(1, null, null,
+                new AttributeDefinition(35,
+                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        layoutElements = newAttributeBands.getLayoutElements();
+        assertEquals(3, layoutElements.size());
+        firstCallable = (Callable) layoutElements.get(0);
+        secondCallable = (Callable) layoutElements.get(1);
+        thirdCallable = (Callable) layoutElements.get(2);
+        thirdBody = thirdCallable.getBody();
+        assertEquals(1, thirdBody.size());
+        call = (Call) thirdBody.get(0);
+        assertEquals(thirdCallable, call.getCallable());
+        assertTrue(thirdCallable.isBackwardsCallable());
+        assertFalse(firstCallable.isBackwardsCallable());
+        assertFalse(secondCallable.isBackwardsCallable());
     }
 
     public void testAddAttributes() throws IOException, Pack200Exception {
@@ -208,12 +267,16 @@ public class NewAttributeBandsTest extends TestCase {
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] {27}, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] {56}, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] {3}, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 27 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 56 }, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 3 }, null, 0, null));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         newAttributeBands.pack(out);
-        // BYTE1 is used for B layouts so we don't need to unpack to test the results
+        // BYTE1 is used for B layouts so we don't need to unpack to test the
+        // results
         byte[] bytes = out.toByteArray();
         assertEquals(3, bytes.length);
         assertEquals(27, bytes[0]);
@@ -221,17 +284,20 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals(3, bytes[2]);
     }
 
-    public void testAddAttributesWithReplicationLayout() throws IOException, Pack200Exception {
+    public void testAddAttributesWithReplicationLayout() throws IOException,
+            Pack200Exception {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("NB[SH]");
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
                 null, null, new AttributeDefinition(35,
                         AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] {1, 0, 100}, null, 0, null));
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 1, 0, 100 }, null, 0, null));
         short s = -50;
-        byte b1 = (byte)(s>>>8);
-        byte b2 = (byte)s;
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute", "B", new byte[] {3, 0, 5, 0, 25, b1, b2}, null, 0, null));
+        byte b1 = (byte) (s >>> 8);
+        byte b2 = (byte) s;
+        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
+                "B", new byte[] { 3, 0, 5, 0, 25, b1, b2 }, null, 0, null));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         newAttributeBands.pack(out);
         byte[] bytes = out.toByteArray();
@@ -239,7 +305,8 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals(3, bytes[1]);
         byte[] band = new byte[bytes.length - 2];
         System.arraycopy(bytes, 2, band, 0, band.length);
-        int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(band));
+        int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(
+                band));
         assertEquals(4, decoded.length);
         assertEquals(100, decoded[0]);
         assertEquals(5, decoded[1]);

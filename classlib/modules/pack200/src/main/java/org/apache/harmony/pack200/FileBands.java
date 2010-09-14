@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.harmony.pack200.Archive.PackingFile;
 import org.apache.harmony.pack200.Archive.SegmentUnit;
@@ -41,11 +40,16 @@ public class FileBands extends BandSet {
     private final long[] file_size;
     private final int[] file_options;
     private final byte[][] file_bits;
+    private final List fileList;
+    private final PackingOptions options;
+    private final CpBands cpBands;
 
     public FileBands(CpBands cpBands, SegmentHeader segmentHeader,
             PackingOptions options, SegmentUnit segmentUnit, int effort) {
         super(effort, segmentHeader);
-        List fileList = segmentUnit.getFileList();
+        fileList = segmentUnit.getFileList();
+        this.options = options;
+        this.cpBands = cpBands;
         int size = fileList.size();
         fileName = new CPUTF8[size];
         file_modtime = new int[size];
@@ -88,7 +92,7 @@ public class FileBands extends BandSet {
             totalSize += file_size[i];
 
             // update modification time
-            modtime = (packingFile.getModtime() + TimeZone.getDefault().getRawOffset()) / 1000L;
+            modtime = (packingFile.getModtime()) / 1000L;
             file_modtime[i] = (int) (modtime - archiveModtime);
             if (isLatest && latestModtime < file_modtime[i]) {
                 latestModtime = file_modtime[i];
@@ -112,6 +116,14 @@ public class FileBands extends BandSet {
     public void finaliseBands() {
         file_name = new int[fileName.length];
         for (int i = 0; i < file_name.length; i++) {
+            if (fileName[i].equals(cpBands.getCPUtf8(""))) {
+                PackingFile packingFile = (PackingFile) fileList.get(i);
+                String name = packingFile.getName();
+                if (options.isPassFile(name)) {
+                    fileName[i] = cpBands.getCPUtf8(name);
+                    file_options[i] &= (1 << 1) ^ 0xFFFFFFFF;
+                }
+            }
             file_name[i] = fileName[i].getIndex();
         }
     }

@@ -19,6 +19,7 @@ package org.apache.harmony.unpack200.tests;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,11 +66,11 @@ public class ArchiveTest extends TestCase {
         in = Archive.class
                 .getResourceAsStream("/org/apache/harmony/pack200/tests/sql.pack.gz");
         file = File.createTempFile("sql", ".jar");
+        file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
         Archive archive = new Archive(in, out);
         archive.unpack();
         JarFile jarFile = new JarFile(file);
-        file.deleteOnExit();
 
         File compareFile = new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI());
@@ -172,6 +173,7 @@ public class ArchiveTest extends TestCase {
         in = Archive.class
                 .getResourceAsStream("/org/apache/harmony/pack200/tests/LargeClass.pack.gz");
         file = File.createTempFile("largeClass", ".jar");
+        file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
         Archive archive = new Archive(in, out);
         archive.unpack();
@@ -194,6 +196,62 @@ public class ArchiveTest extends TestCase {
             e.printStackTrace();
         }
         file.delete();
+    }
+
+    // Test verbose, quiet and log file options.
+    public void testLoggingOptions() throws Exception {
+        // test default option, which is quiet (no output at all)
+        in = Archive.class
+                .getResourceAsStream("/org/apache/harmony/pack200/tests/sql.pack.gz");
+        file = File.createTempFile("logtest", ".jar");
+        file.deleteOnExit();
+        out = new JarOutputStream(new FileOutputStream(file));
+        Archive archive = new Archive(in, out);
+        File logFile = File.createTempFile("logfile", ".txt");
+        logFile.deleteOnExit();
+        archive.setLogFile(logFile.getPath());
+        archive.unpack();
+
+        // log file should be empty
+        FileReader reader = new FileReader(logFile);
+        assertFalse(reader.ready());
+        reader.close();
+
+        // test verbose
+        in = Archive.class
+                .getResourceAsStream("/org/apache/harmony/pack200/tests/sql.pack.gz");
+        file = File.createTempFile("logtest", ".jar");
+        file.deleteOnExit();
+        out = new JarOutputStream(new FileOutputStream(file));
+        archive = new Archive(in, out);
+        logFile = File.createTempFile("logfile", ".txt");
+        logFile.deleteOnExit();
+        archive.setLogFile(logFile.getPath());
+        archive.setVerbose(true);
+        archive.unpack();
+
+        // log file should not be empty
+        reader = new FileReader(logFile);
+        assertTrue(reader.ready());
+        reader.close();
+
+        // test setting quiet explicitly
+        in = Archive.class
+                .getResourceAsStream("/org/apache/harmony/pack200/tests/sql.pack.gz");
+        file = File.createTempFile("logtest", ".jar");
+        file.deleteOnExit();
+        out = new JarOutputStream(new FileOutputStream(file));
+        archive = new Archive(in, out);
+        logFile = File.createTempFile("logfile", ".txt");
+        logFile.deleteOnExit();
+        archive.setLogFile(logFile.getPath());
+        archive.setQuiet(true);
+        archive.unpack();
+
+        // log file should be empty
+        reader = new FileReader(logFile);
+        assertFalse(reader.ready());
+        reader.close();
     }
 
 }

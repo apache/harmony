@@ -155,7 +155,7 @@ public class NewAttributeBands extends BandSet {
                     }
                 }
             } else { // Backwards call
-                for (int k = i; k >= 0; k--) {
+                for (int k = i - 1; k >= 0; k--) {
                     AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
                             .get(k);
                     if (el instanceof Callable) {
@@ -657,13 +657,10 @@ public class NewAttributeBands extends BandSet {
 
         private List band;
 
-        private final int length;
-
         private boolean nullsAllowed = false;
 
         public Reference(String tag) {
             this.tag = tag;
-            length = getLength(tag.charAt(tag.length() - 1));
             nullsAllowed = tag.indexOf('N') != -1;
         }
 
