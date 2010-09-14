@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: harmony-6.0-drlvm
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, zlib1g-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Provides: harmony-6.0-vm
 Suggests: harmony-6.0-jre
 Description: Apache Harmony DRL Virtual Machine
@@ -21,7 +21,7 @@ Description: Apache Harmony Java Class Libraries
 
 Package: harmony-6.0-jre
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, zlib1g-dev, libxext6, libxmu6, harmony-6.0-vm, harmony-6.0-classlib
+Depends: ${shlibs:Depends}, ${misc:Depends}, libstdc++6, libxext6, libxmu6, harmony-6.0-vm, harmony-6.0-classlib
 Provides: java-virtual-machine, java-runtime, java1-runtime, java2-runtime, java2-runtime-headless, java6-runtime-headless
 Description: Apache Harmony JRE
  <insert long description, indented with spaces>

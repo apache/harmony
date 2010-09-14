@@ -520,7 +520,7 @@ static void generate_platform_lib_name(apr_pool_t* pool, JavaVM_Internal *vm,
     char *vm_libs = vm_properties_get_value("vm.boot.library.path", JAVA_PROPERTIES);
     assert(vm_libs);
     char *path1 = apr_pstrdup(pool, vm_libs);
-    char *path2 = port_dso_name_decorate(lib_name, pool);
+    char *path2 = port_dso_name_decorate(lib_name, NULL, pool);
     path1 = port_filepath_merge(path1, path2, pool);
     *p_path1 = path1;
     *p_path2 = path2;

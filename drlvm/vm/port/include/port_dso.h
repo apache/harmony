@@ -104,10 +104,12 @@ APR_DECLARE(apr_status_t) port_dso_search_path(char** path,
 /**
  * Decorates shared library name (.dll <-> lib*.so).
  * @param dl_name - the name of the shared library
+ * @param dl_ver   - the version number of the shared library or NULL
  * @param pool    - storage to allocate the returned handle
  * @return The platform-specific filename for the library.
  */
 APR_DECLARE(char *) port_dso_name_decorate(const char* dl_name,
+                                           const char* dl_ver,
                             apr_pool_t* pool);
 
 /** @} */
