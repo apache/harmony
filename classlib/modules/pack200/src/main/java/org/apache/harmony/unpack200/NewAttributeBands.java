@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class NewAttributeBands extends BandSet {
 
     private int backwardsCallCount;
 
-    private List attributeLayoutElements;
+    protected List attributeLayoutElements;
 
     public NewAttributeBands(Segment segment, AttributeLayout attributeLayout)
             throws IOException {
@@ -76,14 +77,15 @@ public class NewAttributeBands extends BandSet {
      */
     public List parseAttributes(InputStream in, int occurrenceCount)
             throws IOException, Pack200Exception {
-        for(int i = 0; i < attributeLayoutElements.size(); i++) {
-            AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
+        for (int i = 0; i < attributeLayoutElements.size(); i++) {
+            AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements
+                    .get(i);
             element.readBands(in, occurrenceCount);
         }
 
         List attributes = new ArrayList(occurrenceCount);
         for (int i = 0; i < occurrenceCount; i++) {
-        	attributes.add(getOneAttribute(i, attributeLayoutElements));
+            attributes.add(getOneAttribute(i, attributeLayoutElements));
         }
         return attributes;
     }
@@ -100,8 +102,9 @@ public class NewAttributeBands extends BandSet {
         NewAttribute attribute = new NewAttribute(segment.getCpBands()
                 .cpUTF8Value(attributeLayout.getName()),
                 attributeLayout.getIndex());
-        for(int i = 0; i < elements.size(); i++) {
-            AttributeLayoutElement element = (AttributeLayoutElement) elements.get(i);
+        for (int i = 0; i < elements.size(); i++) {
+            AttributeLayoutElement element = (AttributeLayoutElement) elements
+                    .get(i);
             element.addToAttribute(index, attribute);
         }
         return attribute;
@@ -135,66 +138,67 @@ public class NewAttributeBands extends BandSet {
                     .get(i);
             if (element instanceof Callable) {
                 Callable callable = (Callable) element;
-                if(i == 0) {
-                	callable.setFirstCallable(true);
+                if (i == 0) {
+                    callable.setFirstCallable(true);
                 }
                 List body = callable.body; // Look for calls in the body
-                for(int iIndex = 0; iIndex < body.size(); iIndex++) {
+                for (int iIndex = 0; iIndex < body.size(); iIndex++) {
                     LayoutElement layoutElement = (LayoutElement) body
-							.get(iIndex);
-					// Set the callable for each call
-					backwardsCalls += resolveCallsForElement(i, callable,
-							layoutElement);
+                            .get(iIndex);
+                    // Set the callable for each call
+                    backwardsCalls += resolveCallsForElement(i, callable,
+                            layoutElement);
                 }
             }
         }
         backwardsCallCount = backwardsCalls;
     }
 
-	private int resolveCallsForElement(int i,
-			Callable currentCallable, LayoutElement layoutElement) {
-		int backwardsCalls = 0;
-		if (layoutElement instanceof Call) {
+    private int resolveCallsForElement(int i, Callable currentCallable,
+            LayoutElement layoutElement) {
+        int backwardsCalls = 0;
+        if (layoutElement instanceof Call) {
             Call call = (Call) layoutElement;
-			int index = call.callableIndex;
-			if (index == 0) { // Calls the parent callable
-			    backwardsCalls++;
-			    call.setCallable(currentCallable);
-			} else if (index > 0) { // Forwards call
-			    for (int k = i + 1; k < attributeLayoutElements.size(); k++) {
-			        AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
-			                .get(k);
-			        if (el instanceof Callable) {
-			            index--;
-			            if (index == 0) {
-			                call.setCallable((Callable) el);
-			                break;
-			            }
-			        }
-			    }
-			} else { // Backwards call
-			    backwardsCalls++;
-			    for (int k = i; k >= 0; k--) {
-			        AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
-			                .get(k);
-			        if (el instanceof Callable) {
-			            index++;
-			            if (index == 0) {
-			                call.setCallable((Callable) el);
-			                break;
-			            }
-			        }
-			    }
-			}
-		} else if (layoutElement instanceof Replication) {
-			List children = ((Replication)layoutElement).layoutElements;
-			for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-				LayoutElement object = (LayoutElement) iterator.next();
-				backwardsCalls += resolveCallsForElement(i, currentCallable, object);
-			}
-		}
-		return backwardsCalls;
-	}
+            int index = call.callableIndex;
+            if (index == 0) { // Calls the parent callable
+                backwardsCalls++;
+                call.setCallable(currentCallable);
+            } else if (index > 0) { // Forwards call
+                for (int k = i + 1; k < attributeLayoutElements.size(); k++) {
+                    AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
+                            .get(k);
+                    if (el instanceof Callable) {
+                        index--;
+                        if (index == 0) {
+                            call.setCallable((Callable) el);
+                            break;
+                        }
+                    }
+                }
+            } else { // Backwards call
+                backwardsCalls++;
+                for (int k = i - 1; k >= 0; k--) {
+                    AttributeLayoutElement el = (AttributeLayoutElement) attributeLayoutElements
+                            .get(k);
+                    if (el instanceof Callable) {
+                        index++;
+                        if (index == 0) {
+                            call.setCallable((Callable) el);
+                            break;
+                        }
+                    }
+                }
+            }
+        } else if (layoutElement instanceof Replication) {
+            List children = ((Replication) layoutElement).layoutElements;
+            for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+                LayoutElement object = (LayoutElement) iterator.next();
+                backwardsCalls += resolveCallsForElement(i, currentCallable,
+                        object);
+            }
+        }
+        return backwardsCalls;
+    }
 
     private AttributeLayoutElement readNextAttributeElement(StringReader stream)
             throws IOException {
@@ -224,10 +228,10 @@ public class NewAttributeBands extends BandSet {
         case 'H':
         case 'I':
         case 'V':
-            return new Integral(new String(new char[] { (char)nextChar }));
+            return new Integral(new String(new char[] { (char) nextChar }));
         case 'S':
         case 'F':
-            return new Integral(new String(new char[] { (char)nextChar,
+            return new Integral(new String(new char[] { (char) nextChar,
                     (char) stream.read() }));
         case 'P':
             stream.mark(1);
@@ -284,7 +288,7 @@ public class NewAttributeBands extends BandSet {
             // Reference
         case 'K':
         case 'R':
-            String string = "" + (char)nextChar + (char) stream.read();
+            String string = "" + (char) nextChar + (char) stream.read();
             char nxt = (char) stream.read();
             string += nxt;
             if (nxt == 'N') {
@@ -316,9 +320,9 @@ public class NewAttributeBands extends BandSet {
         List tags = new ArrayList();
         Integer nextTag;
         do {
-        	nextTag = readNumber(stream);
-            if(nextTag != null) {
-            	tags.add(nextTag);
+            nextTag = readNumber(stream);
+            if (nextTag != null) {
+                tags.add(nextTag);
                 stream.read(); // ',' or ')'
             }
         } while (nextTag != null);
@@ -385,9 +389,10 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
-    private class Integral extends LayoutElement {
+    public class Integral extends LayoutElement {
 
         private final String tag;
+
         private int[] band;
 
         public Integral(String tag) {
@@ -447,12 +452,16 @@ public class NewAttributeBands extends BandSet {
             return band[index];
         }
 
+        public String getTag() {
+            return tag;
+        }
+
     }
 
     /**
      * A replication is an array of layout elements, with an associated count
      */
-    private class Replication extends LayoutElement {
+    public class Replication extends LayoutElement {
 
         private final Integral countElement;
 
@@ -474,7 +483,7 @@ public class NewAttributeBands extends BandSet {
             for (int i = 0; i < count; i++) {
                 arrayCount += countElement.getValue(i);
             }
-            for(int i = 0; i < layoutElements.size(); i++) {
+            for (int i = 0; i < layoutElements.size(); i++) {
                 LayoutElement element = (LayoutElement) layoutElements.get(i);
                 element.readBands(in, arrayCount);
             }
@@ -492,10 +501,19 @@ public class NewAttributeBands extends BandSet {
             long numElements = countElement.getValue(index);
             for (int i = offset; i < offset + numElements; i++) {
                 for (int it = 0; it < layoutElements.size(); it++) {
-                    LayoutElement element = (LayoutElement) layoutElements.get(it);
+                    LayoutElement element = (LayoutElement) layoutElements
+                            .get(it);
                     element.addToAttribute(i, attribute);
                 }
             }
+        }
+
+        public Integral getCountElement() {
+            return countElement;
+        }
+
+        public List getLayoutElements() {
+            return layoutElements;
         }
     }
 
@@ -503,7 +521,7 @@ public class NewAttributeBands extends BandSet {
      * A Union is a type of layout element where the tag value acts as a
      * selector for one of the union cases
      */
-    private class Union extends LayoutElement {
+    public class Union extends LayoutElement {
 
         private final Integral unionTag;
         private final List unionCases;
@@ -535,7 +553,7 @@ public class NewAttributeBands extends BandSet {
             // Count number of default cases then read the default bands
             for (int i = 0; i < values.length; i++) {
                 boolean found = false;
-                for(int it = 0; it < unionCases.size(); it++) {
+                for (int it = 0; it < unionCases.size(); it++) {
                     UnionCase unionCase = (UnionCase) unionCases.get(it);
                     if (unionCase.hasTag(values[i])) {
                         found = true;
@@ -546,8 +564,9 @@ public class NewAttributeBands extends BandSet {
                 }
             }
             if (defaultCaseBody != null) {
-                for(int i = 0; i < defaultCaseBody.size(); i++) {
-                    LayoutElement element = (LayoutElement) defaultCaseBody.get(i);
+                for (int i = 0; i < defaultCaseBody.size(); i++) {
+                    LayoutElement element = (LayoutElement) defaultCaseBody
+                            .get(i);
                     element.readBands(in, defaultCount);
                 }
             }
@@ -559,7 +578,7 @@ public class NewAttributeBands extends BandSet {
             int[] tagBand = unionTag.band;
             long tag = unionTag.getValue(n);
             boolean defaultCase = true;
-            for(int i = 0; i < unionCases.size(); i++) {
+            for (int i = 0; i < unionCases.size(); i++) {
                 UnionCase element = (UnionCase) unionCases.get(i);
                 if (element.hasTag(tag)) {
                     defaultCase = false;
@@ -576,7 +595,7 @@ public class NewAttributeBands extends BandSet {
                 int defaultOffset = 0;
                 for (int j = 0; j < n; j++) {
                     boolean found = false;
-                    for(int i = 0; i < unionCases.size(); i++) {
+                    for (int i = 0; i < unionCases.size(); i++) {
                         UnionCase element = (UnionCase) unionCases.get(i);
                         if (element.hasTag(tagBand[j])) {
                             found = true;
@@ -587,17 +606,30 @@ public class NewAttributeBands extends BandSet {
                     }
                 }
                 if (defaultCaseBody != null) {
-                    for(int i = 0; i < defaultCaseBody.size(); i++) {
-                        LayoutElement element = (LayoutElement) defaultCaseBody.get(i);
+                    for (int i = 0; i < defaultCaseBody.size(); i++) {
+                        LayoutElement element = (LayoutElement) defaultCaseBody
+                                .get(i);
                         element.addToAttribute(defaultOffset, attribute);
                     }
                 }
             }
         }
 
+        public Integral getUnionTag() {
+            return unionTag;
+        }
+
+        public List getUnionCases() {
+            return unionCases;
+        }
+
+        public List getDefaultCaseBody() {
+            return defaultCaseBody;
+        }
+
     }
 
-    private class Call extends LayoutElement {
+    public class Call extends LayoutElement {
 
         private final int callableIndex;
         private Callable callable;
@@ -628,12 +660,20 @@ public class NewAttributeBands extends BandSet {
         public void addToAttribute(int n, NewAttribute attribute) {
             callable.addNextToAttribute(attribute);
         }
+
+        public int getCallableIndex() {
+            return callableIndex;
+        }
+
+        public Callable getCallable() {
+            return callable;
+        }
     }
 
     /**
      * Constant Pool Reference
      */
-    private class Reference extends LayoutElement {
+    public class Reference extends LayoutElement {
 
         private final String tag;
 
@@ -679,8 +719,8 @@ public class NewAttributeBands extends BandSet {
                 band = parseCPMethodRefReferences(attributeLayout.getName(),
                         in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RI")) { // Interface Method Reference
-                band = parseCPInterfaceMethodRefReferences(attributeLayout
-                        .getName(), in, Codec.UNSIGNED5, count);
+                band = parseCPInterfaceMethodRefReferences(
+                        attributeLayout.getName(), in, Codec.UNSIGNED5, count);
             } else if (tag.startsWith("RU")) { // UTF8 String
                 band = parseCPUTF8References(attributeLayout.getName(), in,
                         Codec.UNSIGNED5, count);
@@ -716,15 +756,19 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        public String getTag() {
+            return tag;
+        }
+
     }
 
-    private static class Callable implements AttributeLayoutElement {
+    public static class Callable implements AttributeLayoutElement {
 
         private final List body;
 
         private boolean isBackwardsCallable;
 
-		private boolean isFirstCallable;
+        private boolean isFirstCallable;
 
         public Callable(List body) throws IOException {
             this.body = body;
@@ -740,7 +784,7 @@ public class NewAttributeBands extends BandSet {
          * @param attribute
          */
         public void addNextToAttribute(NewAttribute attribute) {
-            for(int i = 0; i < body.size(); i++) {
+            for (int i = 0; i < body.size(); i++) {
                 LayoutElement element = (LayoutElement) body.get(i);
                 element.addToAttribute(index, attribute);
             }
@@ -758,26 +802,26 @@ public class NewAttributeBands extends BandSet {
 
         public void readBands(InputStream in, int count) throws IOException,
                 Pack200Exception {
-        	if(isFirstCallable) {
-        		count += this.count;
-        	} else {
-        		count = this.count;
-        	}
-            for(int i = 0; i < body.size(); i++) {
+            if (isFirstCallable) {
+                count += this.count;
+            } else {
+                count = this.count;
+            }
+            for (int i = 0; i < body.size(); i++) {
                 LayoutElement element = (LayoutElement) body.get(i);
                 element.readBands(in, count);
             }
         }
 
         public void addToAttribute(int n, NewAttribute attribute) {
-        	if(isFirstCallable) {
-	            // Ignore n because bands also contain element parts from calls
-	            for(int i = 0; i < body.size(); i++) {
-	                LayoutElement element = (LayoutElement) body.get(i);
-	                element.addToAttribute(index, attribute);
-	            }
-	            index++;
-        	}
+            if (isFirstCallable) {
+                // Ignore n because bands also contain element parts from calls
+                for (int i = 0; i < body.size(); i++) {
+                    LayoutElement element = (LayoutElement) body.get(i);
+                    element.addToAttribute(index, attribute);
+                }
+                index++;
+            }
         }
 
         public boolean isBackwardsCallable() {
@@ -791,15 +835,19 @@ public class NewAttributeBands extends BandSet {
             this.isBackwardsCallable = true;
         }
 
-		public void setFirstCallable(boolean isFirstCallable) {
-			this.isFirstCallable = isFirstCallable;
-		}
+        public void setFirstCallable(boolean isFirstCallable) {
+            this.isFirstCallable = isFirstCallable;
+        }
+
+        public List getBody() {
+            return body;
+        }
     }
 
     /**
      * A Union case
      */
-    private class UnionCase extends LayoutElement {
+    public class UnionCase extends LayoutElement {
 
         private List body;
 
@@ -821,7 +869,7 @@ public class NewAttributeBands extends BandSet {
         public void readBands(InputStream in, int count) throws IOException,
                 Pack200Exception {
             if (body != null) {
-                for(int i = 0; i < body.size(); i++) {
+                for (int i = 0; i < body.size(); i++) {
                     LayoutElement element = (LayoutElement) body.get(i);
                     element.readBands(in, count);
                 }
@@ -830,11 +878,15 @@ public class NewAttributeBands extends BandSet {
 
         public void addToAttribute(int index, NewAttribute attribute) {
             if (body != null) {
-                for(int i = 0; i < body.size(); i++) {
+                for (int i = 0; i < body.size(); i++) {
                     LayoutElement element = (LayoutElement) body.get(i);
                     element.addToAttribute(index, attribute);
                 }
             }
+        }
+
+        public List getBody() {
+            return body == null ? Collections.EMPTY_LIST : body;
         }
     }
 
@@ -876,7 +928,8 @@ public class NewAttributeBands extends BandSet {
             return Codec.BRANCH5;
         } else if (layoutElement.indexOf('P') >= 0) {
             return Codec.BCI5;
-        } else if (layoutElement.indexOf('S') >= 0 && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
+        } else if (layoutElement.indexOf('S') >= 0
+                && layoutElement.indexOf("KS") < 0 //$NON-NLS-1$
                 && layoutElement.indexOf("RS") < 0) { //$NON-NLS-1$
             return Codec.SIGNED5;
         } else if (layoutElement.indexOf('B') >= 0) {
@@ -934,15 +987,16 @@ public class NewAttributeBands extends BandSet {
             length++;
         }
         stream.reset();
-        if(length == 0) {
-        	return null;
+        if (length == 0) {
+            return null;
         }
         char[] digits = new char[length];
         int read = stream.read(digits);
         if (read != digits.length) {
             throw new IOException("Error reading from the input stream");
         }
-        return new Integer(Integer.parseInt((negative ? "-" : "") + new String(digits)));
+        return new Integer(Integer.parseInt((negative ? "-" : "")
+                + new String(digits)));
     }
 
     /**
@@ -978,8 +1032,9 @@ public class NewAttributeBands extends BandSet {
     public void setBackwardsCalls(int[] backwardsCalls) throws IOException {
         int index = 0;
         parseLayout();
-        for(int i = 0; i < attributeLayoutElements.size(); i++) {
-            AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements.get(i);
+        for (int i = 0; i < attributeLayoutElements.size(); i++) {
+            AttributeLayoutElement element = (AttributeLayoutElement) attributeLayoutElements
+                    .get(i);
             if (element instanceof Callable
                     && ((Callable) element).isBackwardsCallable()) {
                 ((Callable) element).addCount(backwardsCalls[index]);

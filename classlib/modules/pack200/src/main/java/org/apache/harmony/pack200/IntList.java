@@ -250,4 +250,11 @@ public class IntList {
         return result;
     }
 
+    public void addAll(IntList list) {
+        growAtEnd(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            add(list.get(i));
+        }
+    }
+
 }

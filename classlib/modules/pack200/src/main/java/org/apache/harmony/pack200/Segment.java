@@ -108,7 +108,7 @@ public class Segment implements ClassVisitor {
         PackingUtils.log("Setup file bands for the segment");
         fileBands = new FileBands(cpBands, segmentHeader, options, segmentUnit, effort);
 
-        processClasses(segmentUnit);
+        processClasses(segmentUnit, nonStandardAttributePrototypes);
 
         cpBands.finaliseBands();
         attributeDefinitionBands.finaliseBands();
@@ -124,11 +124,15 @@ public class Segment implements ClassVisitor {
         ByteArrayOutputStream bandsOutputStream = new ByteArrayOutputStream();
 
         PackingUtils.log("Packing...");
+        int finalNumberOfClasses = classBands.numClassesProcessed();
+        segmentHeader.setClass_count(finalNumberOfClasses);
         cpBands.pack(bandsOutputStream);
-        attributeDefinitionBands.pack(bandsOutputStream);
-        icBands.pack(bandsOutputStream);
-        classBands.pack(bandsOutputStream);
-        bcBands.pack(bandsOutputStream);
+        if(finalNumberOfClasses > 0) {
+            attributeDefinitionBands.pack(bandsOutputStream);
+            icBands.pack(bandsOutputStream);
+            classBands.pack(bandsOutputStream);
+            bcBands.pack(bandsOutputStream);
+        }
         fileBands.pack(bandsOutputStream);
 
         ByteArrayOutputStream headerOutputStream = new ByteArrayOutputStream();
@@ -147,7 +151,7 @@ public class Segment implements ClassVisitor {
                 + segmentUnit.getPackedByteAmount() + " bytes");
     }
 
-    private void processClasses(SegmentUnit segmentUnit) throws Pack200Exception {
+    private void processClasses(SegmentUnit segmentUnit, Attribute[] attributes) throws Pack200Exception {
         segmentHeader.setClass_count(segmentUnit.classListSize());
         for (Iterator iterator = segmentUnit.getClassList().iterator(); iterator.hasNext();) {
             Pack200ClassReader classReader = (Pack200ClassReader) iterator
@@ -158,12 +162,14 @@ public class Segment implements ClassVisitor {
                 flags |= ClassReader.SKIP_DEBUG;
             }
             try {
-                classReader.accept(this, flags);
+                classReader.accept(this, attributes, flags);
             } catch (PassException pe) {
                 // Pass this class through as-is rather than packing it
                 // TODO: probably need to deal with any inner classes
                 classBands.removeCurrentClass();
                 String name = classReader.getFileName();
+                options.addPassFile(name);
+                cpBands.addCPUtf8(name);
                 boolean found = false;
                 for (Iterator iterator2 = segmentUnit.getFileList().iterator(); iterator2
                         .hasNext();) {

@@ -47,6 +47,7 @@ public class ArchiveTest extends TestCase {
         in = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/hw.jar").toURI()));
         file = File.createTempFile("helloworld", ".pack.gz");
+        file.deleteOnExit();
         out = new FileOutputStream(file);
         new Archive(in, out, null).pack();
         in.close();
@@ -55,6 +56,7 @@ public class ArchiveTest extends TestCase {
         // now unpack
         InputStream in2 = new FileInputStream(file);
         File file2 = File.createTempFile("helloworld", ".jar");
+        file2.deleteOnExit();
         JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
                 in2, out2);
@@ -63,7 +65,6 @@ public class ArchiveTest extends TestCase {
         in2.close();
 
         JarFile jarFile = new JarFile(file2);
-        file2.deleteOnExit();
         JarEntry entry = jarFile
                 .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
         assertNotNull(entry);
@@ -97,6 +98,7 @@ public class ArchiveTest extends TestCase {
         in = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI()));
         file = File.createTempFile("sql", ".pack");
+        file.deleteOnExit();
         out = new FileOutputStream(file);
         PackingOptions options = new PackingOptions();
         options.setGzip(false);
@@ -108,11 +110,11 @@ public class ArchiveTest extends TestCase {
         // now unpack
         InputStream in2 = new FileInputStream(file);
         File file2 = File.createTempFile("sqlout", ".jar");
+        file2.deleteOnExit();
         JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
         JarFile jarFile = new JarFile(file2);
-        file2.deleteOnExit();
 
         File compareFile = new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI());
@@ -128,6 +130,7 @@ public class ArchiveTest extends TestCase {
                 "/org/apache/harmony/pack200/tests/largeClassUnpacked.jar")
                 .toURI()));
         file = File.createTempFile("largeClass", ".pack");
+        file.deleteOnExit();
         out = new FileOutputStream(file);
         PackingOptions options = new PackingOptions();
         options.setGzip(false);
@@ -138,11 +141,11 @@ public class ArchiveTest extends TestCase {
         // now unpack
         InputStream in2 = new FileInputStream(file);
         File file2 = File.createTempFile("largeClassOut", ".jar");
+        file2.deleteOnExit();
         JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
         JarFile jarFile = new JarFile(file2);
-        file2.deleteOnExit();
 
         File compareFile = new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/largeClassUnpacked.jar").toURI());
@@ -157,6 +160,7 @@ public class ArchiveTest extends TestCase {
         in = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/jndi.jar").toURI()));
         file = File.createTempFile("jndi", ".pack");
+        file.deleteOnExit();
         out = new FileOutputStream(file);
         PackingOptions options = new PackingOptions();
         options.setGzip(false);
@@ -167,154 +171,15 @@ public class ArchiveTest extends TestCase {
         // now unpack
         InputStream in2 = new FileInputStream(file);
         File file2 = File.createTempFile("jndiout", ".jar");
+        file2.deleteOnExit();
         JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(in2, out2);
         archive.unpack();
         JarFile jarFile = new JarFile(file2);
-        file2.deleteOnExit();
         JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/jndiUnpacked.jar").toURI()));
 
         compareFiles(jarFile, jarFile2);
-    }
-
-    public void testSegmentLimits() throws IOException, Pack200Exception,
-            URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/hw.jar").toURI()));
-        file = File.createTempFile("helloworld", ".pack.gz");
-        out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
-        options.setSegmentLimit(0);
-        Archive archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-
-        in = new JarFile(new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/hw.jar").toURI()));
-        file = File.createTempFile("helloworld", ".pack.gz");
-        out = new FileOutputStream(file);
-        options = new PackingOptions();
-        options.setSegmentLimit(-1);
-        archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-
-        in = new JarFile(new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/hw.jar").toURI()));
-        file = File.createTempFile("helloworld", ".pack.gz");
-        out = new FileOutputStream(file);
-        options = new PackingOptions();
-        options.setSegmentLimit(5000);
-        archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-    }
-
-    public void testStripDebug() throws IOException, Pack200Exception, URISyntaxException {
-        in = new JarFile(new File(Archive.class
-                .getResource("/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI()));
-        file = File.createTempFile("sql", ".pack");
-        out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        options.setStripDebug(true);
-        Archive archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-
-        // now unpack
-        InputStream in2 = new FileInputStream(file);
-        File file2 = File.createTempFile("sqloutNoDebug", ".jar");
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        org.apache.harmony.unpack200.Archive u2archive = new org.apache.harmony.unpack200.Archive(in2, out2);
-        u2archive.unpack();
-
-        File compareFile = new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/sqlUnpackedNoDebug.jar").toURI());
-        JarFile jarFile = new JarFile(file2);
-        assertTrue(file2.length() < 250000);
-        file2.deleteOnExit();
-
-        JarFile jarFile2 = new JarFile(compareFile);
-
-        compareFiles(jarFile, jarFile2);
-    }
-
-    public void testPassFiles() throws IOException, URISyntaxException, Pack200Exception {
-        // Don't pass any
-        in = new JarFile(new File(Archive.class
-                .getResource("/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI()));
-        File file0 = File.createTempFile("sql", ".pack");
-        out = new FileOutputStream(file0);
-        PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        Archive archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-
-        // Pass one file
-        in = new JarFile(new File(Archive.class
-                .getResource("/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI()));
-        file = File.createTempFile("sql", ".pack");
-        out = new FileOutputStream(file);
-        options = new PackingOptions();
-        options.setGzip(false);
-        options.addPassFile("bin/test/org/apache/harmony/sql/tests/java/sql/DatabaseMetaDataTest.class");
-        assertTrue(options.isPassFile("bin/test/org/apache/harmony/sql/tests/java/sql/DatabaseMetaDataTest.class"));
-        archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-
-        // Pass a whole directory
-        in = new JarFile(new File(Archive.class
-                .getResource("/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI()));
-        File file2 = File.createTempFile("sql", ".pack");
-        out = new FileOutputStream(file2);
-        options = new PackingOptions();
-        options.setGzip(false);
-        options.addPassFile("bin/test/org/apache/harmony/sql/tests/java/sql");
-        assertTrue(options.isPassFile("bin/test/org/apache/harmony/sql/tests/java/sql/DatabaseMetaDataTest.class"));
-        assertFalse(options.isPassFile("bin/test/org/apache/harmony/sql/tests/java/sqldata/SqlData.class"));
-        archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-
-        assertTrue("If files are passed then the pack file should be larger", file.length() > file0.length());
-        assertTrue("If more files are passed then the pack file should be larger", file2.length() > file.length());
-
-        // now unpack
-        InputStream in2 = new FileInputStream(file);
-        File file3 = File.createTempFile("sql", ".jar");
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file3));
-        org.apache.harmony.unpack200.Archive u2archive = new org.apache.harmony.unpack200.Archive(in2, out2);
-        u2archive.unpack();
-
-        File compareFile = new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI());
-        JarFile jarFile = new JarFile(file3);
-        file2.deleteOnExit();
-
-        JarFile jarFile2 = new JarFile(compareFile);
-        // Check that both jars have the same entries
-        compareJarEntries(jarFile, jarFile2);
-
-        // now unpack the file with lots of passed files
-        InputStream in3 = new FileInputStream(file2);
-        File file4 = File.createTempFile("sql", ".jar");
-        JarOutputStream out3 = new JarOutputStream(new FileOutputStream(file4));
-        u2archive = new org.apache.harmony.unpack200.Archive(in3, out3);
-        u2archive.unpack();
-        jarFile = new JarFile(file4);
-        jarFile2 = new JarFile(compareFile);
-        compareJarEntries(jarFile, jarFile2);
     }
 
     public void testAnnotations() throws IOException, Pack200Exception,
@@ -322,33 +187,6 @@ public class ArchiveTest extends TestCase {
         in = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/annotationsUnpacked.jar")
                 .toURI()));
-        file = File.createTempFile("annotations", ".pack");
-        out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        new Archive(in, out, options).pack();
-        in.close();
-        out.close();
-
-        // now unpack
-        InputStream in2 = new FileInputStream(file);
-        File file2 = File.createTempFile("annotationsout", ".jar");
-        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
-        org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
-                in2, out2);
-        archive.unpack();
-        JarFile jarFile = new JarFile(file2);
-        file2.deleteOnExit();
-        JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/annotationsUnpacked.jar").toURI()));
-
-        compareFiles(jarFile, jarFile2);
-    }
-
-    public void testAnnotations2() throws IOException, Pack200Exception,
-            URISyntaxException {
-        in = new JarFile(new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/annotations.jar").toURI()));
         file = File.createTempFile("annotations", ".pack");
         file.deleteOnExit();
         out = new FileOutputStream(file);
@@ -361,50 +199,66 @@ public class ArchiveTest extends TestCase {
         // now unpack
         InputStream in2 = new FileInputStream(file);
         File file2 = File.createTempFile("annotationsout", ".jar");
-        // file2.deleteOnExit();
+        file2.deleteOnExit();
+        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
+                in2, out2);
+        archive.unpack();
+        JarFile jarFile = new JarFile(file2);
+        JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/annotationsUnpacked.jar").toURI()));
+
+        compareFiles(jarFile, jarFile2);
+    }
+
+    public void testAnnotations2() throws IOException, Pack200Exception,
+            URISyntaxException {
+
+        in = new JarFile(new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/annotations.jar").toURI()));
+        file = File.createTempFile("annotations", ".pack");
+//        file.deleteOnExit();
+        out = new FileOutputStream(file);
+        PackingOptions options = new PackingOptions();
+        options.setGzip(false);
+        new Archive(in, out, options).pack();
+        in.close();
+        out.close();
+
+        // now unpack
+        InputStream in2 = new FileInputStream(file);
+        File file2 = File.createTempFile("annotationsout", ".jar");
+//        file2.deleteOnExit();
         JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
                 in2, out2);
         archive.unpack();
 
         // TODO: This isn't quite right - to fix
-//        JarFile jarFile = new JarFile(file2);
-//        JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
-//                "/org/apache/harmony/pack200/tests/annotations2unpacked.jar")
-//                .toURI()));
-//        compareFiles(jarFile, jarFile2);
+        JarFile jarFile = new JarFile(file2);
+        JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/annotationsRI.jar")
+                .toURI()));
+        compareFiles(jarFile, jarFile2);
     }
 
-    public void testE0() throws Pack200Exception, IOException, URISyntaxException {
-        File f1 = new File(Archive.class.getResource(
-                "/org/apache/harmony/pack200/tests/jndi.jar").toURI());
-        in = new JarFile(f1);
-        file = File.createTempFile("jndiE0", ".pack");
-        out = new FileOutputStream(file);
-        PackingOptions options = new PackingOptions();
-        options.setGzip(false);
-        options.setEffort(0);
-        Archive archive = new Archive(in, out, options);
-        archive.pack();
-        in.close();
-        out.close();
-        compareFiles(new JarFile(f1), new JarFile(file));
+//     Test with an archive containing Annotations
+    public void testWithAnnotations2() throws Exception {
+        InputStream i = Archive.class
+                .getResourceAsStream("/org/apache/harmony/pack200/tests/annotationsRI.pack.gz");
+        file = File.createTempFile("annotations", ".jar");
+        file.deleteOnExit();
+        JarOutputStream jout = new JarOutputStream(new FileOutputStream(file));
+        org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
+                i, jout);
+        archive.unpack();
+        JarFile jarFile = new JarFile(file);
+        JarFile jarFile2 = new JarFile(new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/annotationsRI.jar")
+                .toURI()));
 
+        compareFiles(jarFile, jarFile2);
     }
-
-//    public void testE0again() throws IOException, Pack200Exception, URISyntaxException {
-//        JarInputStream inputStream = new JarInputStream(Archive.class.getResourceAsStream("/org/apache/harmony/pack200/tests/jndi.jar"));
-//        file = File.createTempFile("jndiE0", ".pack");
-//        out = new FileOutputStream(file);
-//        Archive archive = new Archive(inputStream, out, false);
-//        archive.setEffort(0);
-//        archive.pack();
-//        inputStream.close();
-//        out.close();
-//        in = new JarFile(new File(Archive.class.getResource(
-//                "/org/apache/harmony/pack200/tests/jndi.jar").toURI()));
-//        compareFiles(in, new JarFile(file));
-//    }
 
     public void testMultipleJars() throws URISyntaxException, IOException, Pack200Exception {
     	File folder = new File(Archive.class
@@ -415,6 +269,7 @@ public class ArchiveTest extends TestCase {
 				File inputFile = new File(folder, children[i]);
 				in = new JarFile(inputFile);
 				file = File.createTempFile("temp", ".pack.gz");
+		        file.deleteOnExit();
 		        out = new FileOutputStream(file);
 //		        System.out.println("packing " + children[i]);
 		        new Archive(in, out, null).pack();

@@ -127,6 +127,9 @@ public abstract class AnnotationsAttribute extends Attribute {
             } else if (value instanceof CPClass) {
                 ((CPClass) value).resolve(pool);
                 constant_value_index = pool.indexOf((CPClass) value);
+            } else if (value instanceof CPUTF8) {
+                ((CPUTF8) value).resolve(pool);
+                constant_value_index = pool.indexOf((CPUTF8) value);
             } else if (value instanceof CPNameAndType) {
                 ((CPNameAndType) value).resolve(pool);
             } else if (value instanceof Annotation) {
@@ -149,9 +152,12 @@ public abstract class AnnotationsAttribute extends Attribute {
                 ((Annotation) value).writeBody(dos);
             } else if (value instanceof ElementValue[]) {
                 ElementValue[] nestedValues = (ElementValue[]) value;
+                dos.writeShort(nestedValues.length);
                 for (int i = 0; i < nestedValues.length; i++) {
                     nestedValues[i].writeBody(dos);
                 }
+            } else {
+                throw new Error("");
             }
         }
 
@@ -166,6 +172,7 @@ public abstract class AnnotationsAttribute extends Attribute {
             case 'S':
             case 'Z':
             case 'c':
+            case 's':
                 return 3;
             case 'e':
                 return 5;

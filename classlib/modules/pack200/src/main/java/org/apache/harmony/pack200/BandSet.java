@@ -331,26 +331,6 @@ public abstract class BandSet {
         }
     }
 
-    /**
-     * Returns true if the name of the source file can be predicted from the
-     * class name
-     *
-     * @param className
-     *            the class name
-     * @param sourceFileName
-     *            the source file name
-     */
-    public boolean isPredictableSourceFileName(String className, String sourceFileName) {
-        if (className.indexOf('.') != -1) {
-            className = className.substring(className.lastIndexOf('.') + 1);
-        }
-        if (className.indexOf('$') != -1) {
-            className = className.substring(0, className.indexOf('$'));
-        }
-        className += ".java";
-        return className.equals(sourceFileName);
-    }
-
 // This could be useful if further enhancements are done but is not currently used
 //
 //    private void encodeWithRunCodec(String name, int[] band, int index,

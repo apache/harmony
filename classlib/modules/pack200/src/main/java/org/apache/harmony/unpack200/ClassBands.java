@@ -1085,7 +1085,7 @@ public class ClassBands extends BandSet {
                     + "_caseF_KF", in, Codec.UNSIGNED5, FCount);
             mbg[i].caseJ_KJ = parseCPLongReferences(contextName + "_" + rxa
                     + "_caseJ_KJ", in, Codec.UNSIGNED5, JCount);
-            mbg[i].casec_RS = parseCPUTF8References(contextName + "_" + rxa
+            mbg[i].casec_RS = parseCPSignatureReferences(contextName + "_" + rxa
                     + "_casec_RS", in, Codec.UNSIGNED5, cCount);
             mbg[i].caseet_RS = parseReferences(contextName + "_" + rxa
                     + "_caseet_RS", in, Codec.UNSIGNED5, eCount, cpBands
