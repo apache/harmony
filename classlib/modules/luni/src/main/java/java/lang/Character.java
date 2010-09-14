@@ -2226,7 +2226,7 @@ public final class Character implements Serializable, Comparable<Character> {
         }
         int len = seq.length;
         if (index < 0 || index >= len) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException(index);
         }
 
         char high = seq[index++];
@@ -2267,7 +2267,7 @@ public final class Character implements Serializable, Comparable<Character> {
      */
     public static int codePointAt(char[] seq, int index, int limit) {
         if (index < 0 || index >= limit || limit < 0 || limit > seq.length) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }       
 
         char high = seq[index++];
@@ -2309,7 +2309,7 @@ public final class Character implements Serializable, Comparable<Character> {
         }
         int len = seq.length();
         if (index < 1 || index > len) {
-            throw new IndexOutOfBoundsException();
+            throw new StringIndexOutOfBoundsException(index);
         }
 
         char low = seq.charAt(--index);
@@ -2351,7 +2351,7 @@ public final class Character implements Serializable, Comparable<Character> {
         }
         int len = seq.length;
         if (index < 1 || index > len) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException(index);
         }
 
         char low = seq[--index];
@@ -2398,7 +2398,7 @@ public final class Character implements Serializable, Comparable<Character> {
         }
         int len = seq.length;
         if (index <= start || index > len || start < 0 || start >= len) {
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         }
 
         char low = seq[--index];
