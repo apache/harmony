@@ -228,7 +228,7 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_unwrapImpl
   (JNIEnv *env, jclass clazz, jlong jsslengine, jbyteArray src, int src_len, 
   jbyteArray dst, int dst_len) {
-      _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
+    _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO *bio = sslengine->bio;
     BIO *bio_io = sslengine->bio_io;
     SSL *ssl = NULL;
@@ -295,4 +295,16 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     result = (*env)->NewObject(env, result_class, result_constructor,
         engine_state, handshake_state, write_result, read_result);
     return result;  
+}
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_closeInboundImpl
+  (JNIEnv *env, jclass clazz, jlong jsslengine) {
+    _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
+    BIO_shutdown_wr(sslengine->bio_io);
+}
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_closeOutboundImpl
+  (JNIEnv *env, jclass clazz, jlong jsslengine) {
+    _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
+    BIO_shutdown_wr(sslengine->bio);
 }

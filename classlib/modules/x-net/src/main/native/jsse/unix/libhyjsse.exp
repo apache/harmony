@@ -22,5 +22,7 @@ HYJSSE_0.1 {
     Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_connectImpl;
     Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_wrapImpl;
     Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_unwrapImpl;
+    Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_closeInboundImpl;
+    Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_closeOutboundImpl;
   local : *;
 };
