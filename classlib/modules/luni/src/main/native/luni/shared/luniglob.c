@@ -57,6 +57,11 @@ JNI_OnLoad (JavaVM * vm, void *reserved)
   char charset[CHARSETBUFF];
   vmiError propRes;
 
+#ifdef ZOS
+  /* Ensure that stdout only line buffers and has a maximum buffer of 128 */
+  setvbuf(stdout, NULL, _IOLBF, 128);
+#endif
+
   /* Query the VM interface */
   vmInterface = VMI_GetVMIFromJavaVM (vm);
   if (!vmInterface)
