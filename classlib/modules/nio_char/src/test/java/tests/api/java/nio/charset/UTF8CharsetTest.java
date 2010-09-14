@@ -16,6 +16,8 @@
 
 package tests.api.java.nio.charset;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Test UTF-8 charset.
  */
@@ -50,4 +52,11 @@ public class UTF8CharsetTest extends AbstractCharsetTestCase {
 		byte[] output = new byte[] { 97, 98, -27, -76, -108, -26, -107, -113 };
 		internalTestEncode(input, output);
 	}
+	
+    public void test_surrogate() throws UnsupportedEncodingException {
+        // U+1D11E: MUSICAL SYMBOL G CLEF
+        String s = new StringBuilder().appendCodePoint(0x1D11E).toString();
+        byte utf8[] = s.getBytes("UTF-8");
+        assertEquals(s, new String(utf8, 0, utf8.length, "UTF-8"));
+    }
 }

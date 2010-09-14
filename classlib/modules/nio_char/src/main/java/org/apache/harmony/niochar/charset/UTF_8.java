@@ -157,8 +157,17 @@ public class UTF_8 extends Charset {
                         }
                         inIndex += tail;
                     }
-                    cArr[outIndex++] = (char) jchar;
-                    outRemaining--;
+                    if (jchar <= 0xffff) {
+                      cArr[outIndex++] = (char) jchar;
+                      outRemaining--;
+                    } else {
+                      if (outRemaining < 2) {
+                          return CoderResult.OVERFLOW;
+                      }
+                      cArr[outIndex++] = (char) ((jchar >> 0xA) + 0xD7C0);
+                      cArr[outIndex++] = (char) ((jchar & 0x3FF) + 0xDC00);
+                      outRemaining -= 2;
+                    }
                 }
                 in.position(inIndex - in.arrayOffset());
                 out.position(outIndex - out.arrayOffset());
@@ -198,9 +207,18 @@ public class UTF_8 extends Charset {
                             }
                             pos += tail;
                         }
+                        if (jchar <= 0xffff) {
+                          out.put((char) jchar);
+                          outRemaining--;
+                        } else {
+                          if (outRemaining < 2) {
+                              return CoderResult.OVERFLOW;
+                          }
+                          out.put((char) ((jchar >> 0xA) + 0xD7C0));
+                          out.put((char) ((jchar & 0x3FF) + 0xDC00));
+                          outRemaining -= 2;
+                        }
                         pos++;
-                        out.put((char) jchar);
-                        outRemaining--;
                     }
                     return CoderResult.UNDERFLOW;
                 } finally {
