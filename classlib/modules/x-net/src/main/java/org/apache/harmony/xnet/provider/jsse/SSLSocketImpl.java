@@ -677,8 +677,7 @@ public class SSLSocketImpl extends SSLSocket {
             startHandshake();
         }
         if (logger != null) {
-            logger.println("SSLSocket.writeAppData: " +
-                    len + " " + SSLRecordProtocol.MAX_DATA_LENGTH);
+            logger.println("SSLSocket.writeAppData: " + len);
             //logger.println(new String(data, offset, len));
         }
 

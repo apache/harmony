@@ -17,8 +17,6 @@
 
 package org.apache.harmony.xnet.provider.jsse;
 
-import org.apache.harmony.xnet.provider.jsse.HandshakeProtocol;
-
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -29,9 +27,9 @@ import java.security.PrivilegedExceptionAction;
  */
 public class DelegatedTask implements Runnable {
 
-    private final HandshakeProtocol handshaker;
+    /*private final HandshakeProtocol handshaker;
     private final PrivilegedExceptionAction<Void> action;
-    private final AccessControlContext  context;
+    private final AccessControlContext  context;*/
     
     /**
      * Creates DelegatedTask
@@ -39,17 +37,17 @@ public class DelegatedTask implements Runnable {
      * @param handshaker
      * @param context
      */
-    public DelegatedTask(PrivilegedExceptionAction<Void> action, HandshakeProtocol handshaker, AccessControlContext  context) {
+    /*public DelegatedTask(PrivilegedExceptionAction<Void> action, HandshakeProtocol handshaker, AccessControlContext  context) {
         this.action = action;
         this.handshaker = handshaker;
         this.context = context;
-    }
+    }*/
 
     /**
      * Executes DelegatedTask
      */
     public void run() {
-        synchronized (handshaker) {
+        /*synchronized (handshaker) {
             try {
                 AccessController.doPrivileged(action, context);
             } catch (PrivilegedActionException e) {
@@ -59,7 +57,6 @@ public class DelegatedTask implements Runnable {
                 // pass exception to HandshakeProtocol
                 handshaker.delegatedTaskErr = e;
             }
-        }
-
+        }*/
     }
 }

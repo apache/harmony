@@ -41,9 +41,6 @@ public abstract class SSLInputStream extends InputStream {
      * exception, not return -1. The type of exception depends
      * on implementation. It was done for simplifying and speeding
      * up of processing of such cases.
-     * @see org.apache.harmony.xnet.provider.jsse.SSLStreamedInput#read()
-     * @see org.apache.harmony.xnet.provider.jsse.SSLBufferedInput#read()
-     * @see org.apache.harmony.xnet.provider.jsse.HandshakeIODataStream#read()
      */
     @Override
     public abstract int read() throws IOException;

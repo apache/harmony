@@ -77,12 +77,12 @@ public class SSLSessionImplTest extends TestCase {
 
     public void testGetApplicationBufferSize() {
         assertEquals(SSLSessionImpl.NULL_SESSION.getApplicationBufferSize(),
-                SSLRecordProtocol.MAX_DATA_LENGTH);
+                SSLSessionImpl.MAX_DATA_LENGTH);
     }
     
     public void testGetPacketBufferSize() {
         assertEquals(SSLSessionImpl.NULL_SESSION.getPacketBufferSize(),
-                SSLRecordProtocol.MAX_SSL_PACKET_SIZE);
+                SSLSessionImpl.MAX_SSL_PACKET_SIZE);
     }    
 
     public void testInvalidate() {
