@@ -170,6 +170,16 @@ Usage:
         <ant antfile="make/vm/gc_gen.xml"/>
     </target>
 
+    <target name="-init-hdk">
+        <copy todir="${hy.hdk}/jdk/include">
+            <fileset dir="vm/include">
+                <include name="jvmti.h" />
+                <include name="jvmti_types.h" />
+                <include name="jni.h" />
+                <include name="jni_types.h" />
+            </fileset>
+        </copy>
+    </target>
 
     <!-- ================================================================
             import the deploy stuff from hdk / classlib
