@@ -192,12 +192,18 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     private SSLSessionImpl() {
         creationTime = System.currentTimeMillis();
         cipherName = "SSL_NULL_WITH_NULL_NULL";
+        protocol = "NONE";
         id = new byte[0];
     }
 
-    public SSLSessionImpl(SSLSocket socket, SSLParameters parms, long SSL) {
+    public SSLSessionImpl(SSLParameters parms, long SSL) {
         sslParameters = parms;
         this.SSL = SSL;
+
+        // Initialise defaults for peer.
+        // These will be set later if an SSLSocket is construting this session
+        peerPort = -1;
+        peerHost = null;
 
         this.isServer = !sslParameters.getUseClientMode();
 
@@ -224,11 +230,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
             id[30] = (byte) ((time & 0x0000FF00) >>> 8);
             id[31] = (byte) ((time & 0x000000FF));
 
-            if (socket != null) {
-                peerPort = socket.getPort();
-                peerHost = socket.getInetAddress().getHostName();
-            }
-
             // Get the list of DER encoded peer certificates from OpenSSL
             Object[] DERCerts = getPeerCertificatesImpl(SSL);
             if (DERCerts != null) {
@@ -252,6 +253,14 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
         lastAccessedTime = creationTime;
         localCertificates = parms.getCertificateChain();
+    }
+
+    public SSLSessionImpl(SSLSocket socket, SSLParameters parms, long SSL) {
+        this(parms, SSL);
+        if (socket != null) {
+            peerPort = socket.getPort();
+            peerHost = socket.getInetAddress().getHostName();
+        }
     }
 
     public int getApplicationBufferSize() {

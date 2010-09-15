@@ -131,22 +131,27 @@ public class SSLEngineImpl extends SSLEngine {
         if (!handshake_started) {
             handshake_started = true;
 
+            SSLSessionContextImpl sessionContext;
             if (sslParameters.getUseClientMode()) {
                 if (logger != null) {
                     logger.println("SSLEngineImpl: CLIENT connecting");
                 }
 
                 handshakeStatus = connectImpl(SSL);
+                sessionContext = sslParameters.getClientSessionContext();
             } else {
                 if (logger != null) {
                     logger.println("SSLEngineImpl: SERVER accepting connection");
                 }
                 handshakeStatus = acceptImpl(SSL);
+                sessionContext = sslParameters.getServerSessionContext();
             }
+            session = new SSLSessionImpl(sslParameters, SSL);
+            sessionContext.putSession(session);
         }
     }
 
-    private static native void closeInboundImpl(long SSLEngineAddress);    
+    private static native void closeInboundImpl(long SSLEngineAddress);
 
     /**
      * Closes inbound operations of this engine
