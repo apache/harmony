@@ -49,7 +49,7 @@ JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionI
     char *protocol = SSL_get_cipher_version(ssl);
     char *specName = NULL;
     char *finalName;
-
+   
     if (!strcmp(protocol, "TLSv1/SSLv3")) {
         // We're in either TLS or SSLv3, now find the spec name
         specName = getSpecName(cipherName, getTLSv1OpenSSLNames(), getTLSv1SpecNames(), TLSv1_CIPHER_COUNT);
@@ -61,10 +61,13 @@ JNIEXPORT jstring JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLSessionI
             specName = getSpecName(cipherName, getSSLv3OpenSSLNames(), getSSLv3SpecNames(), SSLv3_CIPHER_COUNT);
             protocol = "SSLv3";
         }
+    } else if (!strcmp(protocol, "(NONE)")) {
+        // Handshake not completed yet - return NULL protocol/cipher
+        return (*env)->NewStringUTF(env, "NONE:SSL_NULL_WITH_NULL_NULL");
     } else {
         // SSLv2 case - protocol will already be "SSLv2", so no need to set it
         specName = getSpecName(cipherName, getSSLv2OpenSSLNames(), getSSLv2SpecNames(), SSLv2_CIPHER_COUNT);
-    }
+    } 
 
     // finalName is "protocol:specName\0"
     // protocol length is always 5, so allocate strlen(specName) + 5 + 1 for the colon + 1 for the terminator
