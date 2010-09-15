@@ -167,8 +167,4 @@ public class PopulationCodec extends Codec {
     public Codec getTokenCodec() {
         return tokenCodec;
     }
-
-    public int getL() {
-        return l;
-    }
 }

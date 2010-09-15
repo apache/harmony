@@ -187,8 +187,11 @@ public class Archive {
             }
         }
         if (removePackFile) {
-            File file = new File(inputFileName);
-            boolean deleted = file.delete();
+            boolean deleted = false;
+            if(inputFileName != null) {
+                File file = new File(inputFileName);
+                deleted = file.delete();
+            }
             if (!deleted) {
                 throw new Pack200Exception("Failed to delete the input file.");
             }

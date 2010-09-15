@@ -150,7 +150,12 @@ public class Segment {
                             AttributeLayout.ATTRIBUTE_SOURCE_FILE,
                             AttributeLayout.CONTEXT_CLASS);
             if (SOURCE_FILE.matches(classBands.getRawClassFlags()[classNum])) {
-                int firstDollar = SegmentUtils.indexOfFirstDollar(fullName);
+                int firstDollar = -1;
+                for (int index = 0; index < fullName.length(); index++) {
+                    if (fullName.charAt(index) <= '$') {
+                        firstDollar = index;
+                    }
+                }
                 String fileName = null;
 
                 if (firstDollar > -1 && (i <= firstDollar)) {
@@ -225,7 +230,6 @@ public class Segment {
         // methodDescr and methodFlags used to create this
         for (i = 0; i < cfMethods.length; i++) {
             int descriptorIndex = classBands.getMethodDescrInts()[classNum][i];
-//            int colon = descriptorStr.indexOf(':');
             int nameIndex = cpBands.getCpDescriptorNameInts()[descriptorIndex];
             int typeIndex = cpBands.getCpDescriptorTypeInts()[descriptorIndex];
             CPUTF8 name = cpBands.cpUTF8Value(nameIndex);

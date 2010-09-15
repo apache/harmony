@@ -464,43 +464,8 @@ public class Segment implements ClassVisitor {
                 name = "";
             }
             nameRU.add(name);
-            addValueAndTag(value);
+            addValueAndTag(value, T, values);
         }
-
-        private void addValueAndTag(Object value) {
-            if(value instanceof Integer) {
-                T.add("I");
-                values.add(value);
-            } else if (value instanceof Double) {
-                T.add("D");
-                values.add(value);
-            } else if (value instanceof Float) {
-                T.add("F");
-                values.add(value);
-            } else if (value instanceof Long) {
-                T.add("J");
-                values.add(value);
-            } else if (value instanceof Byte) {
-                T.add("B");
-                values.add(new Integer(((Byte)value).intValue()));
-            } else if (value instanceof Character) {
-                T.add("C");
-                values.add(new Integer(((Character)value).charValue()));
-            } else if (value instanceof Short) {
-                T.add("S");
-                values.add(new Integer(((Short)value).intValue()));
-            } else if (value instanceof Boolean) {
-                T.add("Z");
-                values.add(new Integer(((Boolean)value).booleanValue() ? 1 : 0));
-            } else if (value instanceof String) {
-                T.add("s");
-                values.add(value);
-            } else if (value instanceof Type) {
-                T.add("c");
-                values.add(((Type)value).toString());
-            }
-        }
-
         public AnnotationVisitor visitAnnotation(String name, String desc) {
             T.add("@");
             if (name == null) {
@@ -514,7 +479,7 @@ public class Segment implements ClassVisitor {
                     Integer numPairs = (Integer) nestPairN.remove(nestPairN.size() - 1);
                     nestPairN.add(new Integer(numPairs.intValue() + 1));
                     nestNameRU.add(name);
-                    addValueAndTag(value);
+                    addValueAndTag(value, T, values);
                 }
 
                 public AnnotationVisitor visitAnnotation(String arg0,
@@ -549,38 +514,7 @@ public class Segment implements ClassVisitor {
             }
             nameRU.add(name);
             caseArrayN.add(new Integer(0));
-            return new AnnotationVisitor() {
-                public void visit(String name, Object value) {
-                    Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
-                    caseArrayN.add(new Integer(numCases.intValue() + 1));
-                    if (name == null) {
-                        name = "";
-                    }
-                    nameRU.add(name);
-                    addValueAndTag(value);
-                }
-
-                public AnnotationVisitor visitAnnotation(String arg0,
-                        String arg1) {
-                    throw new RuntimeException("Not yet supported");
-                }
-
-                public AnnotationVisitor visitArray(String arg0) {
-                    throw new RuntimeException("Not yet supported");
-//                    return null;
-                }
-
-                public void visitEnd() {
-                }
-
-                public void visitEnum(String name, String desc, String value) {
-                    Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
-                    caseArrayN.add(new Integer(numCases.intValue() + 1));
-                    T.add("e");
-                    values.add(desc);
-                    values.add(value);
-                }
-            };
+            return new ArrayVisitor(caseArrayN, T, nameRU, values);
         }
 
         public void visitEnd() {
@@ -599,6 +533,58 @@ public class Segment implements ClassVisitor {
                 name = "";
             }
             nameRU.add(name);
+            values.add(desc);
+            values.add(value);
+        }
+    }
+    
+    public class ArrayVisitor implements AnnotationVisitor  {
+        
+        private int indexInCaseArrayN;
+        private List caseArrayN;
+        private List values;
+        private List nameRU;
+        private List T;
+
+        public ArrayVisitor(List caseArrayN, List T, List nameRU, List values) {
+            this.caseArrayN = caseArrayN;
+            this.T = T;
+            this.nameRU = nameRU;
+            this.values = values;
+            this.indexInCaseArrayN = caseArrayN.size() - 1;
+        }
+        
+        public void visit(String name, Object value) {
+            Integer numCases = (Integer) caseArrayN.remove(indexInCaseArrayN);
+            caseArrayN.add(indexInCaseArrayN, new Integer(numCases.intValue() + 1));
+            if (name == null) {
+                name = "";
+            }
+            addValueAndTag(value, T, values);
+        }
+
+        public AnnotationVisitor visitAnnotation(String arg0,
+                String arg1) {
+            throw new RuntimeException("Not yet supported");
+        }
+
+        public AnnotationVisitor visitArray(String name) {
+            T.add("[");
+            if (name == null) {
+                name = "";
+            }
+            nameRU.add(name);
+            caseArrayN.add(new Integer(0));
+            return new ArrayVisitor(caseArrayN, T, nameRU, values);
+        }
+
+        public void visitEnd() {
+        }
+
+        public void visitEnum(String name, String desc, String value) {
+            Integer numCases = (Integer) caseArrayN.remove(caseArrayN.size() - 1);
+            caseArrayN.add(new Integer(numCases.intValue() + 1));
+            T.add("e");
             values.add(desc);
             values.add(value);
         }
@@ -644,6 +630,42 @@ public class Segment implements ClassVisitor {
         public void visitEnd() {
         }
     }
+
+    // helper method for annotation visitors
+    private void addValueAndTag(Object value, List T, List values) {
+        if(value instanceof Integer) {
+            T.add("I");
+            values.add(value);
+        } else if (value instanceof Double) {
+            T.add("D");
+            values.add(value);
+        } else if (value instanceof Float) {
+            T.add("F");
+            values.add(value);
+        } else if (value instanceof Long) {
+            T.add("J");
+            values.add(value);
+        } else if (value instanceof Byte) {
+            T.add("B");
+            values.add(new Integer(((Byte)value).intValue()));
+        } else if (value instanceof Character) {
+            T.add("C");
+            values.add(new Integer(((Character)value).charValue()));
+        } else if (value instanceof Short) {
+            T.add("S");
+            values.add(new Integer(((Short)value).intValue()));
+        } else if (value instanceof Boolean) {
+            T.add("Z");
+            values.add(new Integer(((Boolean)value).booleanValue() ? 1 : 0));
+        } else if (value instanceof String) {
+            T.add("s");
+            values.add(value);
+        } else if (value instanceof Type) {
+            T.add("c");
+            values.add(((Type)value).toString());
+        }
+    }
+
 
     public boolean lastConstantHadWideIndex() {
         return currentClassReader.lastConstantHadWideIndex();

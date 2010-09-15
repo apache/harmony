@@ -26,10 +26,6 @@ import org.apache.harmony.unpack200.bytecode.OperandManager;
  */
 public class LocalForm extends ByteCodeForm {
 
-    public LocalForm(int opcode, String name) {
-        super(opcode, name);
-    }
-
     public LocalForm(int opcode, String name, int[] rewrite) {
         super(opcode, name, rewrite);
     }

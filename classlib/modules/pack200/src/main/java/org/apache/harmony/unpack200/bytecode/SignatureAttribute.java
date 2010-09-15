@@ -76,8 +76,4 @@ public class SignatureAttribute extends Attribute {
         return "Signature: " + signature;
     }
 
-
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
 }

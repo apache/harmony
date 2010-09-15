@@ -61,10 +61,6 @@ public class IcTuple {
         initializeClassStrings();
     }
 
-    public IcTuple(String C, int F, int cIndex) {
-        this(C, F, null, null, cIndex, -1, -1, -1);
-    }
-
     public static final int NESTED_CLASS_FLAG = 0x00010000;
     protected String C; // this class
     protected int F; // flags
@@ -342,14 +338,6 @@ public class IcTuple {
 
     public int getTupleIndex() {
     	return tIndex;
-    }
-
-    public String realOuterClassString() {
-        int firstDollarPosition = cachedOuterClassString.indexOf('$');
-        if (firstDollarPosition <= 0) {
-            return cachedOuterClassString;
-        }
-        return cachedOuterClassString.substring(0, firstDollarPosition);
     }
 
     public int thisClassIndex() {

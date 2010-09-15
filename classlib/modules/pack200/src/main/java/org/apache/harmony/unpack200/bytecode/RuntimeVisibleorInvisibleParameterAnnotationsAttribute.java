@@ -110,10 +110,6 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends
 
     }
 
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
-
     protected ClassFileEntry[] getNestedClassFileEntries() {
         List nested = new ArrayList();
         nested.add(attributeName);

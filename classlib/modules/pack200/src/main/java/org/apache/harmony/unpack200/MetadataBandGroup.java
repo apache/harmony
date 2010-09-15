@@ -152,11 +152,11 @@ public class MetadataBandGroup {
                         attributes.add(getParameterAttribute(param_NB[i],
                                 name_RU_Iterator));
                     }
-                } else { // type.equals("AD")
-                    for (int i = 0; i < T.length; i++) {
-                        attributes.add(new AnnotationDefaultAttribute(
-                                new ElementValue(T[i], getNextValue(T[i]))));
-                    }
+                }
+            } else if(type.equals("AD")){
+                for (int i = 0; i < T.length; i++) {
+                    attributes.add(new AnnotationDefaultAttribute(
+                            new ElementValue(T[i], getNextValue(T[i]))));
                 }
             }
         }

@@ -76,11 +76,6 @@ public abstract class CPRef extends ConstantPoolEntry {
         return entries;
     }
 
-    public int hashCode() {
-        final int PRIME = 37;
-        return (PRIME * className.hashCode()) + nameAndType.hashCode();
-    }
-
     protected void resolve(ClassConstantPool pool) {
         super.resolve(pool);
         nameAndTypeIndex = pool.indexOf(nameAndType);
