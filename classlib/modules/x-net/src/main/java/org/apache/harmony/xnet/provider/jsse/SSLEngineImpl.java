@@ -32,6 +32,8 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 
+import org.apache.harmony.nio.AddressUtil;
+
 /**
  * Implementation of SSLEngine.
  * @see javax.net.ssl.SSLEngine class documentation for more information.
@@ -80,12 +82,12 @@ public class SSLEngineImpl extends SSLEngine {
     private static native void initImpl();
     private static native long initSSL(long context);
     private static native long initSSLEngine(long context);
-    private static native SSLEngineResult.HandshakeStatus connectImpl(long sslEngineAddress);
-    private static native SSLEngineResult.HandshakeStatus acceptImpl(long sslEngineAddress);
+    private static native SSLEngineResult.HandshakeStatus connectImpl(long ssl);
+    private static native SSLEngineResult.HandshakeStatus acceptImpl(long ssl);
     private static native SSLEngineResult wrapImpl(long sslEngineAddress,
-            byte[] src, int src_len, byte[] dst, int dst_len);
+            long src_address, int src_len, long dst_address, int dst_len);
     private static native SSLEngineResult unwrapImpl(long sslEngineAddress,
-            byte[] src, int src_len, byte[] dst, int dst_len);
+            long src_address, int src_len, long dst_address, int dst_len);
     
     /**
      * Ctor
@@ -134,12 +136,12 @@ public class SSLEngineImpl extends SSLEngine {
                     logger.println("SSLEngineImpl: CLIENT connecting");
                 }
 
-                handshakeStatus = connectImpl(SSLEngineAddress);
+                handshakeStatus = connectImpl(SSL);
             } else {
                 if (logger != null) {
                     logger.println("SSLEngineImpl: SERVER accepting connection");
                 }
-                handshakeStatus = acceptImpl(SSLEngineAddress);
+                handshakeStatus = acceptImpl(SSL);
             }
         }
     }
@@ -432,11 +434,46 @@ public class SSLEngineImpl extends SSLEngine {
         if (!handshake_started) {
             beginHandshake();
         }
-
+        
+        // get direct addresses to the buffers
         // only use the first buffer at the moment
-        byte[] dst = dsts[0].array();
-        int dst_len = dst.length;
-        return unwrapImpl(SSLEngineAddress, src.array(), src.array().length, dst, dst_len);
+        ByteBuffer src_temp_buffer = null, dst_temp_buffer = null;
+        long src_address, dst_address;
+        int src_length = src.remaining();
+        int dst_length = dsts[0].remaining();
+        if (src.isDirect()) {
+            src_address = AddressUtil.getDirectBufferAddress(src) + src.position();
+        } else {
+            // create a temporary buffer and copy the contents
+            src_temp_buffer = ByteBuffer.allocateDirect(src_length);
+            src_temp_buffer.put(src.array(), src.position(), src_length);
+            src_temp_buffer.rewind();
+            src_address = AddressUtil.getDirectBufferAddress(src_temp_buffer);
+        }
+        if (dsts[0].isDirect()) {
+            dst_address = AddressUtil.getDirectBufferAddress(dsts[0]) + dsts[0].position();
+        } else {
+            dst_temp_buffer = ByteBuffer.allocateDirect(dst_length);
+            src_temp_buffer.rewind();
+            dst_address = AddressUtil.getDirectBufferAddress(dst_temp_buffer);
+        }
+        
+        SSLEngineResult result = unwrapImpl(SSLEngineAddress, src_address, src_length, dst_address, dst_length);
+        
+        // update the buffers contents and positions
+        src.position(src.position() + result.bytesConsumed());
+
+        if (dst_temp_buffer == null) {
+            dsts[0].position(dsts[0].position() + result.bytesConsumed());
+        } else {
+            // if reading and a temporary buffer was used, copy buffer contents
+            int position = dsts[0].position();
+            dsts[0].put(dst_temp_buffer);
+            // adjust position as not all bytes may have been written
+            dsts[0].position(position + result.bytesProduced());
+        }
+        
+        return result;
     }
 
     /**
@@ -473,11 +510,45 @@ public class SSLEngineImpl extends SSLEngine {
             beginHandshake();
         }
         
+        // get direct addresses to the buffers
         // only use the first buffer at the moment
-        byte[] src = srcs[0].array();
-        int src_len = src.length;
+        ByteBuffer src_temp_buffer = null, dst_temp_buffer = null;
+        long src_address, dst_address;
+        int src_length = srcs[0].remaining();
+        int dst_length = dst.remaining();
+        if (srcs[0].isDirect()) {
+            src_address = AddressUtil.getDirectBufferAddress(srcs[0]) + srcs[0].position();
+        } else {
+            // create a temporary buffer and copy the contents
+            src_temp_buffer = ByteBuffer.allocateDirect(src_length);
+            src_temp_buffer.put(srcs[0].array(), srcs[0].position(), src_length);
+            src_temp_buffer.rewind();
+            src_address = AddressUtil.getDirectBufferAddress(src_temp_buffer);
+        }
+        if (dst.isDirect()) {
+            dst_address = AddressUtil.getDirectBufferAddress(dst) + dst.position();
+        } else {
+            dst_temp_buffer = ByteBuffer.allocateDirect(dst_length);
+            src_temp_buffer.rewind();
+            dst_address = AddressUtil.getDirectBufferAddress(dst_temp_buffer);
+        }
         
-        return wrapImpl(SSLEngineAddress, src, src_len, dst.array(), dst.array().length);
+        SSLEngineResult result = wrapImpl(SSLEngineAddress, src_address, src_length, dst_address, dst_length);
+        
+        // update the buffers contents and positions
+        srcs[0].position(srcs[0].position() + result.bytesConsumed());
+
+        if (dst_temp_buffer == null) {
+            dst.position(dst.position() + result.bytesConsumed());
+        } else {
+            // if reading and a temporary buffer was used, copy buffer contents
+            int position = dst.position();
+            dst.put(dst_temp_buffer);
+            // adjust position as not all bytes may have been written
+            dst.position(position + result.bytesProduced());
+        }
+        
+        return result;
     }
     
     // Shutdownes the engine and makes all cleanup work.

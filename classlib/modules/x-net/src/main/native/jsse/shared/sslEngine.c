@@ -100,64 +100,36 @@ JNIEXPORT jlong JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl
 }
 
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_acceptImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine) {
-    _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
-    SSL *ssl = NULL;
-    BIO *bio = sslengine->bio;
-    BIO *server_io = sslengine->bio_io;
+  (JNIEnv *env, jclass clazz, jlong jssl) {
+    SSL *ssl = jlong2addr(SSL, jssl);
     int ret;
     
-    BIO_get_ssl(bio, &ssl);
     // Put our SSL into accept state
     SSL_set_accept_state(ssl);
     // Start the client handshake
     ret = SSL_do_handshake(ssl);
     
-    fprintf(stderr, "Server bio pending: %d\n", BIO_ctrl_pending(bio));
-    fprintf(stderr, "Server bio can write: %d\n", BIO_ctrl_get_write_guarantee(bio));
-    fprintf(stderr, "Server bio read request: %d\n", BIO_ctrl_get_read_request(bio));
-    fprintf(stderr, "Server IO pending: %d\n", BIO_ctrl_pending(server_io));
-    fprintf(stderr, "Server IO can write: %d\n", BIO_ctrl_get_write_guarantee(server_io));
-    fprintf(stderr, "Server IO read request: %d\n", BIO_ctrl_get_read_request(server_io));
     return handshake_need_unwrap;
     //return getHandshakeStatus(env, SSL_get_error(ssl, ret));
 }
 
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_connectImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine) {
-    _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
-    SSL *ssl = NULL;
-    BIO *bio = sslengine->bio;
-    BIO *client_io = sslengine->bio_io;
+  (JNIEnv *env, jclass clazz, jlong jssl) {
+    SSL *ssl = jlong2addr(SSL, jssl);
     int ret;
     
-    BIO_get_ssl(bio, &ssl);
-    // Put our SSL into connect state
+    // Put our SSL into accept state
     SSL_set_connect_state(ssl);
-
-    // Start the client handshake
-    fprintf(stderr, "before handshake: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
-    fprintf(stderr, "Client bio pending: %d\n", BIO_ctrl_pending(bio));
-    fprintf(stderr, "Client bio can write: %d\n", BIO_ctrl_get_write_guarantee(bio));
-    fprintf(stderr, "Client bio read request: %d\n", BIO_ctrl_get_read_request(bio));
-    fprintf(stderr, "Client IO pending: %d\n", BIO_ctrl_pending(client_io));
-    fprintf(stderr, "Client IO can write: %d\n", BIO_ctrl_get_write_guarantee(client_io));
-    fprintf(stderr, "Client IO read request: %d\n", BIO_ctrl_get_read_request(client_io));
+    // Start the server handshake
     ret = SSL_do_handshake(ssl);
-    fprintf(stderr, "after handshake: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
-    fprintf(stderr, "Client bio pending: %d\n", BIO_ctrl_pending(bio));
-    fprintf(stderr, "Client bio can write: %d\n", BIO_ctrl_get_write_guarantee(bio));
-    fprintf(stderr, "Client bio read request: %d\n", BIO_ctrl_get_read_request(bio));
-    fprintf(stderr, "Client IO pending: %d\n", BIO_ctrl_pending(client_io));
-    fprintf(stderr, "Client IO can write: %d\n", BIO_ctrl_get_write_guarantee(client_io));
-    fprintf(stderr, "Client IO read request: %d\n", BIO_ctrl_get_read_request(client_io));
+    
     return handshake_need_wrap;
     //return getHandshakeStatus(env, SSL_get_error(ssl, ret));
 }
 
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_wrapImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine, jbyteArray src, int src_len, 
-  jbyteArray dst, int dst_len) {
+  (JNIEnv *env, jclass clazz, jlong jsslengine, jlong src_address, int src_len, 
+  jlong dst_address, int dst_len) {
     _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO *bio = sslengine->bio;
     BIO *bio_io = sslengine->bio_io;
@@ -166,16 +138,15 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     jobject handshake_state = NULL, engine_state = NULL, result = NULL;
     jclass result_class;
     jmethodID result_constructor;
-    jbyte *buffer;
+    jbyte *src_buffer = jlong2addr(jbyte, src_address);
+    jbyte *dst_buffer = jlong2addr(jbyte, dst_address);
 
     BIO_get_ssl(bio, &ssl);
 
     fprintf(stderr, ">wrap 1: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
     
     // write input data
-    buffer = (jbyte*) malloc(src_len * sizeof(jbyte*));
-    (*env)->GetByteArrayRegion(env, src, 0, src_len, buffer);
-    write_result = BIO_write(bio, (const void *)buffer, (int)src_len);
+    write_result = BIO_write(bio, (const void *)src_buffer, (int)src_len);
     fprintf(stderr, ">wrap BIO_write, result:%d \n", write_result);
     if (write_result > 0) {
         // wrote some data so must not be handshaking
@@ -190,13 +161,11 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
         handshake_state = handshake_need_unwrap;
         engine_state = engine_ok;
     }
-    free(buffer);
     
     fprintf(stderr, ">wrap 2: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
     
     // read output data
-    buffer = (jbyte*) malloc(dst_len * sizeof(jbyte*));
-    read_result = BIO_read(bio_io, buffer, dst_len);
+    read_result = BIO_read(bio_io, dst_buffer, dst_len);
     
     fprintf(stderr, ">wrap read result: %d\n", read_result);
     fprintf(stderr, ">wrap 3: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
@@ -206,15 +175,11 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     fprintf(stderr, ">wrap IO pending: %d\n", BIO_ctrl_pending(bio_io));
     fprintf(stderr, ">wrap IO can write: %d\n", BIO_ctrl_get_write_guarantee(bio_io));
     fprintf(stderr, ">wrap IO read request: %d\n", BIO_ctrl_get_read_request(bio_io));
-    
-    if (read_result > 0) {
-      (*env)->SetByteArrayRegion(env, dst, 0, read_result, buffer);
-    }
+
     if (read_result < 0) {
         // change state?
         read_result = 0;
     }
-    free(buffer);
     
     // construct return object
     result_class = (*env)->FindClass(env, "javax/net/ssl/SSLEngineResult");
@@ -226,8 +191,8 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
 }
 
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_unwrapImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine, jbyteArray src, int src_len, 
-  jbyteArray dst, int dst_len) {
+  (JNIEnv *env, jclass clazz, jlong jsslengine, jlong src_address, int src_len, 
+  jlong dst_address, int dst_len) {
     _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO *bio = sslengine->bio;
     BIO *bio_io = sslengine->bio_io;
@@ -236,29 +201,32 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     jobject handshake_state = NULL, engine_state = NULL, result = NULL;
     jclass result_class;
     jmethodID result_constructor;
-    jbyte *buffer;
+    jbyte *src_buffer = jlong2addr(jbyte, src_address);
+    jbyte *dst_buffer = jlong2addr(jbyte, dst_address);
 
     BIO_get_ssl(bio, &ssl);
 
     fprintf(stderr, ">unwrap 1: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
     
     // write input data
-    buffer = (jbyte*) malloc(src_len * sizeof(jbyte*));
-    (*env)->GetByteArrayRegion(env, src, 0, src_len, buffer);
-    write_result = BIO_write(bio_io, (const void *)buffer, (int)src_len);
+    //buffer = (jbyte*) malloc(src_len * sizeof(jbyte*));
+    //(*env)->GetByteArrayRegion(env, src, 0, src_len, buffer);
+    //write_result = BIO_write(bio_io, (const void *)buffer, (int)src_len);
+    write_result = BIO_write(bio_io, (const void *)src_buffer, (int)src_len);
     fprintf(stderr, ">unwrap BIO_write, result:%d \n", write_result);
     if (write_result < 0) {
         // change state?
         write_result = 0;
     }
     
-    free(buffer);
+    //free(buffer);
     
     fprintf(stderr, ">unwrap 2: SSL in init? %d : %s\n", SSL_in_init(ssl), SSL_state_string_long(ssl));
     
     // read output data
-    buffer = (jbyte*) malloc(dst_len * sizeof(jbyte*));
-    read_result = BIO_read(bio, buffer, dst_len);
+    //buffer = (jbyte*) malloc(dst_len * sizeof(jbyte*));
+    //read_result = BIO_read(bio, buffer, dst_len);
+    read_result = BIO_read(bio, dst_buffer, dst_len);
     
     if (read_result > 0) {
         // wrote some data so must not be handshaking
@@ -283,10 +251,10 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     fprintf(stderr, ">unwrap IO can write: %d\n", BIO_ctrl_get_write_guarantee(bio_io));
     fprintf(stderr, ">unwrap IO read request: %d\n", BIO_ctrl_get_read_request(bio_io));
     
-    if (read_result > 0) {
-      (*env)->SetByteArrayRegion(env, dst, 0, read_result, buffer);
-    }
-    free(buffer);
+    //if (read_result > 0) {
+    //  (*env)->SetByteArrayRegion(env, dst, 0, read_result, buffer);
+    //}
+    //free(buffer);
     
     // construct return object
     result_class = (*env)->FindClass(env, "javax/net/ssl/SSLEngineResult");
