@@ -504,6 +504,44 @@ public class PackingOptionsTest extends TestCase {
 //        compareFiles(jarFile, jarFile2);
     }
 
+    public void testNewAttributes2() throws Exception {
+        in = new JarFile(
+                new File(
+                        Archive.class
+                                .getResource(
+                                        "/org/apache/harmony/pack200/tests/p200WithUnknownAttributes.jar")
+                                .toURI()));
+        file = File.createTempFile("unknown", ".pack");
+        file.deleteOnExit();
+        out = new FileOutputStream(file);
+        PackingOptions options = new PackingOptions();
+        options.addFieldAttributeAction("Pack200", "I");
+        options.addMethodAttributeAction("Pack200", "I");
+        options.addCodeAttributeAction("Pack200", "I");
+        Archive ar = new Archive(in, out, options);
+        ar.pack();
+        in.close();
+        out.close();
+
+        // unpack and check this was done right
+        InputStream in2 = new FileInputStream(file);
+        File file2 = File.createTempFile("unknown", ".jar");
+        file2.deleteOnExit();
+        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        org.apache.harmony.unpack200.Archive u2archive = new org.apache.harmony.unpack200.Archive(
+                in2, out2);
+        u2archive.unpack();
+
+        // compare with original
+        File compareFile = new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/p200WithUnknownAttributes.jar").toURI());
+        JarFile jarFile = new JarFile(file2);
+
+        JarFile jarFile2 = new JarFile(compareFile);
+        assertEquals(jarFile2.size(), jarFile.size());
+        compareJarEntries(jarFile, jarFile2);
+    }
+
     public void testErrorAttributes() throws Exception {
         in = new JarFile(
                 new File(

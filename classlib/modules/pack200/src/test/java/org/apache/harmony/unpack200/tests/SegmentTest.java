@@ -80,13 +80,13 @@ public class SegmentTest extends TestCase {
         in = Segment.class
                 .getResourceAsStream("/org/apache/harmony/pack200/tests/HelloWorld.pack");
         file = File.createTempFile("hello", "world.jar");
+        file.deleteOnExit();
         out = new JarOutputStream(new FileOutputStream(file));
         Segment segment = new Segment();
         segment.unpack(in, out);
         out.close();
         out = null;
         JarFile jarFile = new JarFile(file);
-        file.deleteOnExit();
 
         JarEntry entry = jarFile
                 .getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");

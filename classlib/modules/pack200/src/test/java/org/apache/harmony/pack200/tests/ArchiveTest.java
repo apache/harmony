@@ -19,6 +19,7 @@ package org.apache.harmony.pack200.tests;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
 import junit.framework.TestCase;
@@ -125,7 +127,21 @@ public class ArchiveTest extends TestCase {
         compareFiles(jarFile, jarFile2);
     }
 
-    public void testLargeClass() throws IOException, Pack200Exception, URISyntaxException {
+    public void testAlternativeConstructor() throws FileNotFoundException,
+            IOException, URISyntaxException, Pack200Exception {
+        JarInputStream inStream = new JarInputStream(new FileInputStream(
+                new File(Archive.class.getResource(
+                        "/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI())));
+        file = File.createTempFile("sql", ".pack.gz");
+        file.deleteOnExit();
+        out = new FileOutputStream(file);
+        new Archive(inStream, out, null).pack();
+        inStream.close();
+        out.close();
+    }
+
+    public void testLargeClass() throws IOException, Pack200Exception,
+            URISyntaxException {
         in = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/largeClassUnpacked.jar")
                 .toURI()));
@@ -217,7 +233,7 @@ public class ArchiveTest extends TestCase {
         in = new JarFile(new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/annotations.jar").toURI()));
         file = File.createTempFile("annotations", ".pack");
-//        file.deleteOnExit();
+        file.deleteOnExit();
         out = new FileOutputStream(file);
         PackingOptions options = new PackingOptions();
         options.setGzip(false);
@@ -228,7 +244,7 @@ public class ArchiveTest extends TestCase {
         // now unpack
         InputStream in2 = new FileInputStream(file);
         File file2 = File.createTempFile("annotationsout", ".jar");
-//        file2.deleteOnExit();
+        file2.deleteOnExit();
         JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
         org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(
                 in2, out2);
