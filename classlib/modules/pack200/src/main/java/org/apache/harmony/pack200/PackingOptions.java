@@ -185,6 +185,10 @@ public class PackingOptions {
         passFiles.add(passFileName);
     }
 
+    public void removePassFile(String passFileName) {
+        passFiles.remove(passFileName);
+    }
+
     public String getUnknownAttributeAction() {
         return unknownAttributeAction;
     }
