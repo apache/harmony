@@ -19,8 +19,10 @@ package org.apache.harmony.xnet.provider.jsse;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 
@@ -83,9 +85,97 @@ public class SSLEngineImplTest extends TestCase {
     }
 
     /**
-     * Tests the session negotiation process.
+     * Test for <code>beginHandshake()</code> method
+     * 
+     * Test establishing a handshake between client and server and then sending
+     * some data between them.
      */
     public void testHandshake() throws Exception {
+        SSLContext context = JSSETestData.getContext();
+        SSLEngine client = context.createSSLEngine();
+        client.setUseClientMode(true);
+        client.beginHandshake();
+        assertEquals(HandshakeStatus.NEED_WRAP, client.getHandshakeStatus());
+        SSLEngine server = context.createSSLEngine();
+        server.setUseClientMode(false);
+        server.beginHandshake();
+        assertEquals(HandshakeStatus.NEED_UNWRAP, server.getHandshakeStatus());
+
+        // application data
+        String clientData = "hello server";
+        String serverData = "hello client";
+
+        // create buffers
+        // output buffers contain the application data to write
+        ByteBuffer clientOutBuffer = ByteBuffer.wrap(clientData.getBytes());
+        ByteBuffer serverOutBuffer = ByteBuffer.wrap(serverData.getBytes());
+        // input buffers contain the responses to read
+        ByteBuffer clientInBuffer = ByteBuffer.allocate(client.getSession()
+                .getApplicationBufferSize());
+        ByteBuffer serverInBuffer = ByteBuffer.allocate(server.getSession()
+                .getApplicationBufferSize());
+        // transport buffers represent the network connection
+        ByteBuffer clientTransport = ByteBuffer.allocate(client.getSession()
+                .getPacketBufferSize());
+        ByteBuffer serverTransport = ByteBuffer.allocate(server.getSession()
+                .getPacketBufferSize());
+
+        SSLEngineResult result;
+        // loop trying to establish handshake between server and client
+        // break out when the application data has been written
+        while (true) {
+            // first try writing from the server/client to the transport
+            result = server.wrap(serverOutBuffer, serverTransport);
+            if (server.getHandshakeStatus() == HandshakeStatus.NEED_TASK) {
+                Runnable task = server.getDelegatedTask();
+                task.run();
+            }
+            result = client.wrap(clientOutBuffer, clientTransport);
+            if (client.getHandshakeStatus() == HandshakeStatus.NEED_TASK) {
+                Runnable task = client.getDelegatedTask();
+                task.run();
+            }
+            
+            // then read from the transport to the server/client
+            serverTransport.flip();
+            clientTransport.flip();
+            result = server.unwrap(clientTransport, serverInBuffer);
+            if (server.getHandshakeStatus() == HandshakeStatus.NEED_TASK) {
+                Runnable task = server.getDelegatedTask();
+                task.run();
+            }
+            result = client.unwrap(serverTransport, clientInBuffer);
+            if (client.getHandshakeStatus() == HandshakeStatus.NEED_TASK) {
+                Runnable task = client.getDelegatedTask();
+                task.run();
+            }
+
+            // clear the buffers
+            serverTransport.clear();
+            clientTransport.clear();
+
+            // if all application data bas been written, break out
+            if (clientOutBuffer.remaining() == 0
+                    && serverOutBuffer.remaining() == 0) {
+                break;
+            }
+        }
+        // check that the handshake status is correct
+        assertEquals(HandshakeStatus.NOT_HANDSHAKING, client
+                .getHandshakeStatus());
+        assertEquals(HandshakeStatus.NOT_HANDSHAKING, server
+                .getHandshakeStatus());
+        // check the data in the client and server buffers
+        assertEquals(clientData, new String(serverInBuffer.array(), 0,
+                clientData.length()));
+        assertEquals(serverData, new String(clientInBuffer.array(), 0,
+                serverData.length()));
+    }
+
+    /**
+     * Tests the session negotiation process.
+     */
+    public void testHandshake2() throws Exception {
         SSLEngine client = getEngine();
         SSLEngine server = getEngine();
 
