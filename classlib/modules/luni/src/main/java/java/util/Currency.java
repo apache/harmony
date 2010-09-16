@@ -73,13 +73,11 @@ public final class Currency implements Serializable {
      */
     public static Currency getInstance(Locale locale) {
         com.ibm.icu.util.Currency currency = null;
-        try {
-            currency = com.ibm.icu.util.Currency.getInstance(locale);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        currency = com.ibm.icu.util.Currency.getInstance(locale);
+
         if (currency == null) {
-            throw new IllegalArgumentException(locale.getCountry());
+            checkCountry(locale.getCountry());
+            return null;
         }
         String currencyCode = currency.getCurrencyCode();
 
@@ -88,6 +86,15 @@ public final class Currency implements Serializable {
         }
 
         return getInstance(currencyCode);
+    }
+
+    private static void checkCountry(String country) {
+        String[] countries = Locale.getISOCountries();
+        List<String> countryArray = Arrays.asList(countries);
+
+        if (!countryArray.contains(country)) {
+            throw new IllegalArgumentException(country);
+        }
     }
 
     /**

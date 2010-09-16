@@ -200,7 +200,7 @@ module:
         <!-- Copy across the boot dependency jars --><!-- TOFIX clean these? -->
         <copy todir="${hy.jdk}/jre/lib/boot">
             <fileset dir="${depends.jars}">
-                <patternset includes="icu4j_4.2.1/*.jar" />
+                <patternset includes="icu4j_4.4.1.1/*.jar" />
             </fileset>
             <fileset dir="${depends.manifests}"/>
         </copy>
