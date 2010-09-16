@@ -22,6 +22,7 @@ import java.nio.ReadOnlyBufferException;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 
@@ -62,7 +63,7 @@ public class SSLEngineImpl extends SSLEngine {
     // Pointer to the custom struct used for this engine
     private long SSLEngineAddress;
     
-    private SSLEngineResult.HandshakeStatus handshakeStatus;
+    private HandshakeStatus handshakeStatus;
     
     static {
         initImpl();
@@ -71,8 +72,8 @@ public class SSLEngineImpl extends SSLEngine {
     private static native void initImpl();
     private static native long initSSL(long context);
     private static native long initSSLEngine(long context);
-    private static native SSLEngineResult.HandshakeStatus connectImpl(long ssl);
-    private static native SSLEngineResult.HandshakeStatus acceptImpl(long ssl);
+    private static native HandshakeStatus connectImpl(long ssl);
+    private static native HandshakeStatus acceptImpl(long ssl);
     private static native SSLEngineResult wrapImpl(long sslEngineAddress,
             long src_address, int src_len, long dst_address, int dst_len);
     private static native SSLEngineResult unwrapImpl(long sslEngineAddress,
@@ -361,10 +362,10 @@ public class SSLEngineImpl extends SSLEngine {
      * documentation for more information
      */
     @Override
-    public SSLEngineResult.HandshakeStatus getHandshakeStatus() {
+    public HandshakeStatus getHandshakeStatus() {
         if (!handshake_started || engine_was_shutdown) {
             // initial handshake has not been started yet
-            return SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING;
+            return HandshakeStatus.NOT_HANDSHAKING;
         }
         return handshakeStatus;
     }
@@ -418,7 +419,7 @@ public class SSLEngineImpl extends SSLEngine {
                                 int offset, int length) throws SSLException {
         if (engine_was_shutdown) {
             return new SSLEngineResult(SSLEngineResult.Status.CLOSED,
-                    SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING, 0, 0);
+                    HandshakeStatus.NOT_HANDSHAKING, 0, 0);
         }
         if ((src == null) || (dsts == null)) {
             throw new IllegalStateException(
@@ -469,9 +470,10 @@ public class SSLEngineImpl extends SSLEngine {
         // update handshake status
         handshakeStatus = result.getHandshakeStatus();
 
-        if (handshakeStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
+        if (handshakeStatus == HandshakeStatus.FINISHED) {
             // If we've just completed the handshake, refresh the data in the SSLSession
             session.refreshSessionData(null, sslParameters, SSL);
+            handshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
         }
 
         return result;
@@ -497,7 +499,7 @@ public class SSLEngineImpl extends SSLEngine {
                             int len, ByteBuffer dst) throws SSLException {
         if (engine_was_shutdown) {
             return new SSLEngineResult(SSLEngineResult.Status.CLOSED,
-                    SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING, 0, 0);
+                    HandshakeStatus.NOT_HANDSHAKING, 0, 0);
         }
         if ((srcs == null) || (dst == null)) {
             throw new IllegalStateException(
@@ -551,9 +553,11 @@ public class SSLEngineImpl extends SSLEngine {
         // update handshake status
         handshakeStatus = result.getHandshakeStatus();
 
-        if (handshakeStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
-            // If we've just completed the handshake, refresh the data in the SSLSession
+        if (handshakeStatus == HandshakeStatus.FINISHED) {
+            // If we've just completed the handshake, refresh the data in 
+            // the SSLSession and set the handshake status to NOT_HANDSHAKING
             session.refreshSessionData(null, sslParameters, SSL);
+            handshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
         }
 
         return result;
