@@ -284,7 +284,7 @@ void mspace_extend_compact(Collector *collector)
   atomic_cas32( &num_space_changing_collectors, 0, num_active_collectors + 1);
   old_num = atomic_inc32(&num_space_changing_collectors);
   if( ++old_num == num_active_collectors ){
-     if(NOS_SIZE) /* when NOS_SIZE is speficied, it can't be shrunk. */
+     if(NOS_SIZE) /* when NOS_SIZE is specified, it can't be shrunk. */
        LWARN(59, "GC: collector[{0}]: MOS is overflowed, have to reduce NOS size." << ((POINTER_SIZE_INT)collector->thread_handle));
      Block *old_nos_boundary = nspace->blocks;
      nos_boundary = &mspace->blocks[mspace->free_block_idx - mspace->first_block_idx];
