@@ -25,10 +25,6 @@ public class TableSwitchForm extends SwitchForm {
         super(opcode, name);
     }
 
-    public TableSwitchForm(int opcode, String name, int[] rewrite) {
-        super(opcode, name, rewrite);
-    }
-
     /*
      * (non-Javadoc)
      *

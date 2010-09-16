@@ -586,21 +586,4 @@ public class BcBands extends BandSet {
     public int[] getBcThisMethod() {
         return bcThisMethod;
     }
-
-    public int[] getBcEscRef() {
-        return bcEscRef;
-    }
-
-    public int[] getBcEscRefSize() {
-        return bcEscRefSize;
-    }
-
-    public int[] getBcEscSize() {
-        return bcEscSize;
-    }
-
-    public int[][] getBcEscByte() {
-        return bcEscByte;
-    }
-
 }

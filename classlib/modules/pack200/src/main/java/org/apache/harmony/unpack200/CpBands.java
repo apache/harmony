@@ -477,28 +477,12 @@ public class CpBands extends BandSet {
         return cpDescriptor;
     }
 
-    public double[] getCpDouble() {
-        return cpDouble;
-    }
-
     public String[] getCpFieldClass() {
         return cpFieldClass;
     }
 
-    public String[] getCpFieldDescriptor() {
-        return cpFieldDescriptor;
-    }
-
-    public float[] getCpFloat() {
-        return cpFloat;
-    }
-
     public String[] getCpIMethodClass() {
         return cpIMethodClass;
-    }
-
-    public String[] getCpIMethodDescriptor() {
-        return cpIMethodDescriptor;
     }
 
     public int[] getCpInt() {
@@ -519,10 +503,6 @@ public class CpBands extends BandSet {
 
     public String[] getCpSignature() {
         return cpSignature;
-    }
-
-    public String[] getCpString() {
-        return cpString;
     }
 
     public String[] getCpUTF8() {

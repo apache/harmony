@@ -499,14 +499,6 @@ public class CpBands extends BandSet {
         return cpUtf8;
     }
 
-    public void addCPNameAndType(String name, String signature) {
-        getCPNameAndType(name, signature);
-    }
-
-    public void addCPSignature(String signature) {
-        getCPSignature(signature);
-    }
-
     public CPSignature getCPSignature(String signature) {
         if(signature == null) {
             return null;

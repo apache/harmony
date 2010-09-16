@@ -112,13 +112,13 @@ public class NewAttribute extends Attribute {
     public boolean isUnknown(int context) {
         switch(context) {
         case AttributeDefinitionBands.CONTEXT_CLASS:
-            return contextClass;
+            return !contextClass;
         case AttributeDefinitionBands.CONTEXT_METHOD:
-            return contextMethod;
+            return !contextMethod;
         case AttributeDefinitionBands.CONTEXT_FIELD:
-            return contextField;
+            return !contextField;
         case AttributeDefinitionBands.CONTEXT_CODE:
-            return contextCode;
+            return !contextCode;
         }
         return false;
     }

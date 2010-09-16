@@ -64,8 +64,8 @@ public class SegmentHeader extends BandSet {
     private int file_count;
 
     private boolean deflate_hint;
-    private boolean have_file_modtime = true;
-    private boolean have_file_options = true;
+    private final boolean have_file_modtime = true;
+    private final boolean have_file_options = true;
     private boolean have_file_size_hi;
     private boolean have_class_flags_hi;
     private boolean have_field_flags_hi;
@@ -190,22 +190,6 @@ public class SegmentHeader extends BandSet {
         this.have_all_code_flags = have_all_code_flags;
     }
 
-    public void setArchive_size_hi(int archive_size_hi) {
-        this.archive_size_hi = archive_size_hi;
-    }
-
-    public void setArchive_size_lo(int archive_size_lo) {
-        this.archive_size_lo = archive_size_lo;
-    }
-
-    public void setArchive_next_count(int archive_next_count) {
-        this.archive_next_count = archive_next_count;
-    }
-
-    public void setArchive_modtime(int archive_modtime) {
-        this.archive_modtime = archive_modtime;
-    }
-
     public int getArchive_modtime() {
         return archive_modtime;
     }
@@ -216,18 +200,6 @@ public class SegmentHeader extends BandSet {
 
     public void setDeflate_hint(boolean deflate_hint) {
         this.deflate_hint = deflate_hint;
-    }
-
-    public void setHave_file_modtime(boolean have_file_modtime) {
-        this.have_file_modtime = have_file_modtime;
-    }
-
-    public void setHave_file_options(boolean have_file_options) {
-        this.have_file_options = have_file_options;
-    }
-
-    public void setHave_file_size_hi(boolean have_file_size_hi) {
-        this.have_file_size_hi = have_file_size_hi;
     }
 
     public void setHave_class_flags_hi(boolean have_class_flags_hi) {
@@ -359,10 +331,6 @@ public class SegmentHeader extends BandSet {
             }
             return objs[returnIndex];
         }
-    }
-
-    public int getDefaultMinorVersion() {
-        return 0;
     }
 
     public int getDefaultMajorVersion() {

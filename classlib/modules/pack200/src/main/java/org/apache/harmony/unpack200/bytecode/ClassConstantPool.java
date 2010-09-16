@@ -39,10 +39,6 @@ public class ClassConstantPool {
 
     protected Map indexCache;
 
-    public String toString() {
-        return entries.toString();
-    }
-
     private final List others = new ArrayList(500);
     private final List entries = new ArrayList(500);
 

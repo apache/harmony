@@ -1037,6 +1037,8 @@ public class ClassBands extends BandSet {
                 mbg[i].name_RU = parseCPUTF8References(contextName
                         + "_" + rxa + "_name_RU", in, Codec.UNSIGNED5,
                         pairCount);
+            } else {
+                pairCount = RxACount[i];
             }
             mbg[i].T = decodeBandInt(contextName + "_" + rxa + "_T", in,
                     Codec.BYTE1, pairCount + backwardsCallCounts[i]);
@@ -1116,17 +1118,7 @@ public class ClassBands extends BandSet {
         int backwardsCallsUsed = 0;
         String[] RxA = new String[] { "RVA", "RIA", "RVPA", "RIPA", "AD" };
         int[] rxaCounts = new int[] { 0, 0, 0, 0, 0 };
-        int[] backwardsCalls = new int[5];
-        int methodAttrIndex = 0;
-        for (int i = 0; i < backwardsCalls.length; i++) {
-            if (rxaCounts[i] > 0) {
-                backwardsCallsUsed++;
-                backwardsCalls[i] = methodAttrCalls[methodAttrIndex];
-                methodAttrIndex++;
-            } else {
-                backwardsCalls[i] = 0;
-            }
-        }
+        
         AttributeLayout rvaLayout = attrMap.getAttributeLayout(
                 AttributeLayout.ATTRIBUTE_RUNTIME_VISIBLE_ANNOTATIONS,
                 AttributeLayout.CONTEXT_METHOD);
@@ -1150,6 +1142,17 @@ public class ClassBands extends BandSet {
         for (int i = 0; i < rxaLayouts.length; i++) {
             rxaCounts[i] = SegmentUtils
                     .countMatches(methodFlags, rxaLayouts[i]);
+        }
+        int[] backwardsCalls = new int[5];
+        int methodAttrIndex = 0;
+        for (int i = 0; i < backwardsCalls.length; i++) {
+            if (rxaCounts[i] > 0) {
+                backwardsCallsUsed++;
+                backwardsCalls[i] = methodAttrCalls[methodAttrIndex];
+                methodAttrIndex++;
+            } else {
+                backwardsCalls[i] = 0;
+            }
         }
         MetadataBandGroup[] mbgs = parseMetadata(in, RxA, rxaCounts,
                 backwardsCalls, "method");

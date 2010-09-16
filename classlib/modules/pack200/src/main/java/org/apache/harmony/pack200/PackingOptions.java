@@ -185,10 +185,6 @@ public class PackingOptions {
         passFiles.add(passFileName);
     }
 
-    public void removePassFile(String passFileName) {
-        passFiles.remove(passFileName);
-    }
-
     public String getUnknownAttributeAction() {
         return unknownAttributeAction;
     }
@@ -317,6 +313,9 @@ public class PackingOptions {
     }
 
     public String getUnknownClassAttributeAction(String type) {
+        if (classAttributeActions == null) {
+            return unknownAttributeAction;
+        }
         String action = (String) classAttributeActions.get(type);
         if(action == null) {
             action = unknownAttributeAction;
@@ -325,6 +324,9 @@ public class PackingOptions {
     }
 
     public String getUnknownMethodAttributeAction(String type) {
+        if (methodAttributeActions == null) {
+            return unknownAttributeAction;
+        }
         String action = (String) methodAttributeActions.get(type);
         if(action == null) {
             action = unknownAttributeAction;
@@ -333,6 +335,9 @@ public class PackingOptions {
     }
 
     public String getUnknownFieldAttributeAction(String type) {
+        if (fieldAttributeActions == null) {
+            return unknownAttributeAction;
+        }
         String action = (String) fieldAttributeActions.get(type);
         if(action == null) {
             action = unknownAttributeAction;
@@ -341,6 +346,9 @@ public class PackingOptions {
     }
 
     public String getUnknownCodeAttributeAction(String type) {
+        if (codeAttributeActions == null) {
+            return unknownAttributeAction;
+        }
         String action = (String) codeAttributeActions.get(type);
         if(action == null) {
             action = unknownAttributeAction;

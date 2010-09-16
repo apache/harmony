@@ -61,8 +61,4 @@ public class DeprecatedAttribute extends Attribute {
         return "Deprecated Attribute";
     }
 
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
-
 }

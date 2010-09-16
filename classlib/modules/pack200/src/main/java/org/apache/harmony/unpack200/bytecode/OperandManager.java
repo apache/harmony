@@ -196,10 +196,6 @@ public class OperandManager {
         this.segment = segment;
     }
 
-    public Segment getSegment() {
-        return segment;
-    }
-
     public SegmentConstantPool globalConstantPool() {
         return segment.getConstantPool();
     }

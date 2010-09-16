@@ -27,10 +27,6 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
         super(opcode, name);
     }
 
-    public VariableInstructionForm(int opcode, String name, int[] rewrite) {
-        super(opcode, name, rewrite);
-    }
-
     /**
      * Given an int operand, set the rewrite bytes for the next available
      * operand position and the three immediately following it to a
@@ -62,38 +58,6 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
             }
         }
         setRewrite4Bytes(operand, firstOperandPosition, rewrite);
-    }
-
-    /**
-     * Given an int operand, set the rewrite bytes for the next available
-     * operand position and the byte immediately following it to a high-byte,
-     * low-byte encoding of the operand.
-     *
-     * Note that unlike the ByteCode setOperand* operations, this starts with an
-     * actual bytecode rewrite array (rather than a ByteCodeForm prototype
-     * rewrite array). Also, this method overwrites -1 values in the rewrite
-     * array - so if you start with an array that looks like: {100, -1, -1, -1,
-     * -1, 200, -1, -1, -1, -1} then calling setRewrite2Bytes(0, rewrite) the
-     * first time will convert it to: {100, 0, 0, -1, -1, 200, -1, -1, -1, -1}
-     * Calling setRewrite2Bytes(0, rewrite) a second time will convert it to:
-     * {100, 0, 0, 0, 0, 200, -1, -1, -1, -1}
-     *
-     * @param operand
-     *            int to set the rewrite bytes to
-     * @param rewrite
-     *            int[] bytes to rewrite
-     */
-    public void setRewrite2Bytes(int operand, int[] rewrite) {
-        int firstOperandPosition = -1;
-
-        // Find the first -1 in the rewrite array
-        for (int index = 0; index < rewrite.length - 3; index++) {
-            if ((rewrite[index] == -1) && (rewrite[index + 1] == -1)) {
-                firstOperandPosition = index;
-                break;
-            }
-        }
-        setRewrite2Bytes(operand, firstOperandPosition, rewrite);
     }
 
     /**

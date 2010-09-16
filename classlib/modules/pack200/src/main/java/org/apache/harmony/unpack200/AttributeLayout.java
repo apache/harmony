@@ -145,31 +145,6 @@ public class AttributeLayout implements IMatcher {
         this.isDefault = isDefault;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final AttributeLayout other = (AttributeLayout) obj;
-        if (layout == null) {
-            if (other.layout != null)
-                return false;
-        } else if (!layout.equals(other.layout))
-            return false;
-        if (index != other.index)
-            return false;
-        if (context != other.context)
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
-    }
-
     public Codec getCodec() {
         if (layout.indexOf('O') >= 0) {
             return Codec.BRANCH5;
@@ -224,22 +199,6 @@ public class AttributeLayout implements IMatcher {
         r = r * PRIME + index;
         r = r * PRIME + context;
         return r;
-    }
-
-    public boolean isClass() {
-        return context == CONTEXT_CLASS;
-    }
-
-    public boolean isCode() {
-        return context == CONTEXT_CODE;
-    }
-
-    public boolean isField() {
-        return context == CONTEXT_FIELD;
-    }
-
-    public boolean isMethod() {
-        return context == CONTEXT_METHOD;
     }
 
     /*

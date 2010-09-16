@@ -28,7 +28,7 @@ import org.apache.harmony.pack200.Pack200Exception;
  */
 public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
 
-    private int local_variable_table_length;
+    private final int local_variable_table_length;
     private final int[] start_pcs;
     private final int[] lengths;
     private int[] name_indexes;
@@ -163,9 +163,5 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
             }
             lengths[index] = revisedLength;
         }
-    }
-
-    public boolean equals(Object obj) {
-        return this == obj;
     }
 }
