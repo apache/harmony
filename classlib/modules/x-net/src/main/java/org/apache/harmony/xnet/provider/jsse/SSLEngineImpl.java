@@ -17,17 +17,10 @@
 
 package org.apache.harmony.xnet.provider.jsse;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ReadOnlyBufferException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
@@ -48,16 +41,12 @@ public class SSLEngineImpl extends SSLEngine {
     private boolean isInboundDone = false;
     // indicates if outbound operations finished
     private boolean isOutboundDone = false;
-    // indicates if close_notify alert had been sent to another peer
-    private boolean close_notify_was_sent = false;
-    // indicates if close_notify alert had been received from another peer
-    private boolean close_notify_was_received = false;
     // indicates if engine was closed (it means that
     // all the works on it are done, except (probably) some finalizing work)
     private boolean engine_was_closed = false;
-    // indicates if engine was shutted down (it means that
+    // indicates if engine was shut down (it means that
     // all cleaning work had been done and the engine is not operable)
-    private boolean engine_was_shutteddown = false;
+    private boolean engine_was_shutdown = false;
 
     // active session object
     private SSLSessionImpl session;
@@ -373,7 +362,7 @@ public class SSLEngineImpl extends SSLEngine {
      */
     @Override
     public SSLEngineResult.HandshakeStatus getHandshakeStatus() {
-        if (!handshake_started || engine_was_shutteddown) {
+        if (!handshake_started || engine_was_shutdown) {
             // initial handshake has not been started yet
             return SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING;
         }
@@ -427,7 +416,7 @@ public class SSLEngineImpl extends SSLEngine {
     @Override
     public SSLEngineResult unwrap(ByteBuffer src, ByteBuffer[] dsts,
                                 int offset, int length) throws SSLException {
-        if (engine_was_shutteddown) {
+        if (engine_was_shutdown) {
             return new SSLEngineResult(SSLEngineResult.Status.CLOSED,
                     SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING, 0, 0);
         }
@@ -459,7 +448,6 @@ public class SSLEngineImpl extends SSLEngine {
             dst_address = AddressUtil.getDirectBufferAddress(dsts[0]) + dsts[0].position();
         } else {
             dst_temp_buffer = ByteBuffer.allocateDirect(dst_length);
-            src_temp_buffer.rewind();
             dst_address = AddressUtil.getDirectBufferAddress(dst_temp_buffer);
         }
         
@@ -471,13 +459,15 @@ public class SSLEngineImpl extends SSLEngine {
         if (dst_temp_buffer == null) {
             dsts[0].position(dsts[0].position() + result.bytesConsumed());
         } else {
-            // if reading and a temporary buffer was used, copy buffer contents
+            // if a temporary buffer was used, copy buffer contents
             int position = dsts[0].position();
             dsts[0].put(dst_temp_buffer);
             // adjust position as not all bytes may have been written
             dsts[0].position(position + result.bytesProduced());
         }
         
+        // update handshake status
+        handshakeStatus = result.getHandshakeStatus();
         return result;
     }
 
@@ -499,7 +489,7 @@ public class SSLEngineImpl extends SSLEngine {
     @Override
     public SSLEngineResult wrap(ByteBuffer[] srcs, int offset,
                             int len, ByteBuffer dst) throws SSLException {
-        if (engine_was_shutteddown) {
+        if (engine_was_shutdown) {
             return new SSLEngineResult(SSLEngineResult.Status.CLOSED,
                     SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING, 0, 0);
         }
@@ -534,7 +524,6 @@ public class SSLEngineImpl extends SSLEngine {
             dst_address = AddressUtil.getDirectBufferAddress(dst) + dst.position();
         } else {
             dst_temp_buffer = ByteBuffer.allocateDirect(dst_length);
-            src_temp_buffer.rewind();
             dst_address = AddressUtil.getDirectBufferAddress(dst_temp_buffer);
         }
         
@@ -546,20 +535,22 @@ public class SSLEngineImpl extends SSLEngine {
         if (dst_temp_buffer == null) {
             dst.position(dst.position() + result.bytesConsumed());
         } else {
-            // if reading and a temporary buffer was used, copy buffer contents
+            // if a temporary buffer was used, copy buffer contents
             int position = dst.position();
             dst.put(dst_temp_buffer);
             // adjust position as not all bytes may have been written
             dst.position(position + result.bytesProduced());
         }
         
+        // update handshake status
+        handshakeStatus = result.getHandshakeStatus();
         return result;
     }
     
     // Shutdownes the engine and makes all cleanup work.
     private void shutdown() {
         engine_was_closed = true;
-        engine_was_shutteddown = true;
+        engine_was_shutdown = true;
         isOutboundDone = true;
         isInboundDone = true;
     }
