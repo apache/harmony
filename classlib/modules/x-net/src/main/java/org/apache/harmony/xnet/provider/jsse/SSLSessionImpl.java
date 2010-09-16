@@ -197,14 +197,16 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
     }
 
     public SSLSessionImpl(SSLParameters parms, long SSL) {
+        refreshSessionData(null, parms, SSL);
+    }
+
+    public SSLSessionImpl(SSLSocket socket, SSLParameters parms, long SSL) {
+        refreshSessionData(socket, parms, SSL);
+    }
+
+    public void refreshSessionData(SSLSocket socket, SSLParameters parms, long SSL) {
         sslParameters = parms;
         this.SSL = SSL;
-
-        // Initialise defaults for peer.
-        // These will be set later if an SSLSocket is construting this session
-        peerPort = -1;
-        peerHost = null;
-
         this.isServer = !sslParameters.getUseClientMode();
 
         if (SSL == 0) {
@@ -221,6 +223,11 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
             cipherName = tokens[1];
 
             creationTime = getCreationTimeImpl(SSL_SESSION);
+
+            if (socket != null) {
+                peerPort = socket.getPort();
+                peerHost = socket.getInetAddress().getHostName();
+            }
 
             id = new byte[32];
             rng.nextBytes(id);
@@ -253,14 +260,6 @@ public class SSLSessionImpl implements SSLSession, Cloneable  {
 
         lastAccessedTime = creationTime;
         localCertificates = parms.getCertificateChain();
-    }
-
-    public SSLSessionImpl(SSLSocket socket, SSLParameters parms, long SSL) {
-        this(parms, SSL);
-        if (socket != null) {
-            peerPort = socket.getPort();
-            peerHost = socket.getInetAddress().getHostName();
-        }
     }
 
     public int getApplicationBufferSize() {

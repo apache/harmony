@@ -468,6 +468,12 @@ public class SSLEngineImpl extends SSLEngine {
         
         // update handshake status
         handshakeStatus = result.getHandshakeStatus();
+
+        if (handshakeStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
+            // If we've just completed the handshake, refresh the data in the SSLSession
+            session.refreshSessionData(null, sslParameters, SSL);
+        }
+
         return result;
     }
 
@@ -544,6 +550,12 @@ public class SSLEngineImpl extends SSLEngine {
         
         // update handshake status
         handshakeStatus = result.getHandshakeStatus();
+
+        if (handshakeStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
+            // If we've just completed the handshake, refresh the data in the SSLSession
+            session.refreshSessionData(null, sslParameters, SSL);
+        }
+
         return result;
     }
     
