@@ -1117,7 +1117,7 @@ public class ScannerTest extends TestCase {
             // expected
         }
 
-        s = new Scanner("-123 123- (123)");
+        s = new Scanner("-123 123-");
         s.useLocale(new Locale("mk", "MK"));
         assertEquals(-123, s.nextInt(10));
         try {
@@ -1128,8 +1128,6 @@ public class ScannerTest extends TestCase {
         }
         // Skip the un-recognizable token 123-.
         assertEquals("123-", s.next());
-        // The following test case fails on RI
-        assertEquals(-123, s.nextInt(10));
 
         // If the parameter radix is illegal, the following test cases fail on
         // RI
@@ -1317,7 +1315,7 @@ public class ScannerTest extends TestCase {
             // expected
         }
 
-        s = new Scanner("-123 123- (123)");
+        s = new Scanner("-123 123-");
         s.useLocale(new Locale("mk", "MK"));
         assertEquals(-123, s.nextInt());
         try {
@@ -1328,8 +1326,6 @@ public class ScannerTest extends TestCase {
         }
         // Skip the un-recognizable token 123-.
         assertEquals("123-", s.next());
-        // The following test case fails on RI
-        assertEquals(-123, s.nextInt());
     }
     
     /**
@@ -1574,9 +1570,8 @@ public class ScannerTest extends TestCase {
             // Expected
         }
 
-        s = new Scanner("(123) 123- -123");
+        s = new Scanner("123- -123");
         s.useLocale(new Locale("mk", "MK"));
-        assertEquals((float)-123.0, s.nextFloat());
         try {
             s.nextFloat();
             fail("Should throw InputMismatchException");
@@ -3451,7 +3446,7 @@ public class ScannerTest extends TestCase {
             // expected
         }
 
-        s = new Scanner("-123 123- (123)");
+        s = new Scanner("-123 123-");
         s.useLocale(new Locale("mk", "MK"));
         assertTrue(s.hasNextInt(10));
         assertEquals(-123, s.nextInt(10));
@@ -3464,9 +3459,6 @@ public class ScannerTest extends TestCase {
         }
         // Skip the un-recognizable token 123-.
         assertEquals("123-", s.next());
-        // The following test case fails on RI
-        assertTrue(s.hasNextInt(10));
-        assertEquals(-123, s.nextInt(10));
     }
 
     /**
@@ -3653,7 +3645,7 @@ public class ScannerTest extends TestCase {
             // expected
         }
 
-        s = new Scanner("-123 123- (123)");
+        s = new Scanner("-123 123-");
         s.useLocale(new Locale("mk", "MK"));
         assertTrue(s.hasNextInt());
         assertEquals(-123, s.nextInt());
@@ -3665,9 +3657,6 @@ public class ScannerTest extends TestCase {
         }
         // Skip the un-recognizable token 123-.
         assertEquals("123-", s.next());
-        // The following test case fails on RI
-        assertTrue(s.hasNextInt());
-        assertEquals(-123, s.nextInt());
     }
     
     /**
@@ -3775,10 +3764,8 @@ public class ScannerTest extends TestCase {
 //            // Expected
 //        }
 
-        s = new Scanner("(123) 123- -123");
+        s = new Scanner("123- -123");
         s.useLocale(new Locale("mk", "MK"));
-        assertTrue(s.hasNextFloat());
-        assertEquals((float)-123.0, s.nextFloat());
         assertFalse(s.hasNextFloat());
         try {
             s.nextFloat();
