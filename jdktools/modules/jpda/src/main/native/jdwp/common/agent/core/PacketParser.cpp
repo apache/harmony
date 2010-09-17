@@ -313,10 +313,11 @@ jclass InputPacketParser::ReadReferenceTypeIDOrNull(JNIEnv *jni) {
     }
 
     jclass cls = 0;
+    jobject obj = 0;
     if(rtid < REFTYPEID_MINIMUM) {
         // For a ObjectID, we should convert it to ReferenceTypeID 
         // if it is a ClassObjectID
-        jobject obj = GetObjectManager().MapFromObjectID(jni, rtid);
+        obj = GetObjectManager().MapFromObjectID(jni, rtid);
         if (NULL == obj) {
             JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "MapFromObjectID returned NULL"));
             AgentException ex(JDWP_ERROR_INVALID_OBJECT);
@@ -336,10 +337,10 @@ jclass InputPacketParser::ReadReferenceTypeIDOrNull(JNIEnv *jni) {
           if (isClass) {
             JDWP_TRACE(LOG_RELEASE, (LOG_DATA_FL, "## ReadReferenceTypeIDOrNul: read : ObjectID is a ClassObjectID"));
             cls = static_cast<jclass> (obj);
-            jni->DeleteLocalRef(obj);
             
-            jboolean isValidID = GetObjectManager().FindObjectID(jni, cls, rtid); 
+            jboolean isValidID = GetObjectManager().FindObjectID(jni, cls, rtid);
             if(!isValidID) {
+              jni->DeleteLocalRef(obj);
               JDWP_TRACE(LOG_RELEASE, (LOG_ERROR_FL, "## ReadReferenceTypeIDOrNul: read : ID is an invalid ObjectID"));
               AgentException ex(JDWP_ERROR_INVALID_OBJECT);
               JDWP_SET_EXCEPTION(ex);
@@ -369,6 +370,9 @@ jclass InputPacketParser::ReadReferenceTypeIDOrNull(JNIEnv *jni) {
     
     // make GlobalReference and check if WeakReference was freed
     jclass ref = static_cast<jclass>(jni->NewGlobalRef(cls));
+    if (obj != 0) {
+        jni->DeleteLocalRef(obj);
+    }
     if (ref == 0) {
         if (jni->IsSameObject(cls, 0)) {
             JDWP_TRACE(LOG_RELEASE, (LOG_ERROR_FL, "Invalid object calling NewGlobalRef"));
