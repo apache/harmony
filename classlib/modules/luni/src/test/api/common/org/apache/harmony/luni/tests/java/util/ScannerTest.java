@@ -5688,6 +5688,7 @@ public class ScannerTest extends TestCase {
         thread.start();
         for (int index = 0; index < 5; index++) {
             pos.write(("line" + index + "\n").getBytes());
+            pos.flush();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
