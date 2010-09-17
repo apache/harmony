@@ -292,7 +292,7 @@ void mspace_collection(Mspace* mspace)
     TRACE2("gc.process", "\nGC: end of move compact algo ... \n");
 
   }else{
-    LDIE(75, "GC: The speficied major collection algorithm doesn't exist!");
+    LDIE(75, "GC: The specified major collection algorithm doesn't exist!");
   }
 
   if((!LOS_ADJUST_BOUNDARY)&&(kind != TRANS_NOTHING) ) {
