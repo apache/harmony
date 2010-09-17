@@ -26,44 +26,6 @@ import java.nio.charset.CoderResult;
 
 public class UTF_8 extends Charset {
 
-    // The next table contains information about UTF-8 charset and
-    // correspondence of 1st byte to the length of sequence
-    // For information please visit http://www.ietf.org/rfc/rfc3629.txt
-    //
-    // Please note, o means 0, actually.
-    // -------------------------------------------------------------------
-    // 0         1         2         3          Value
-    // -------------------------------------------------------------------
-    // oxxxxxxx                                 00000000 00000000 0xxxxxxx
-    // 11oyyyyy  1oxxxxxx                       00000000 00000yyy yyxxxxxx
-    // 111ozzzz  1oyyyyyy  1oxxxxxx             00000000 zzzzyyyy yyxxxxxx
-    // 1111ouuu  1ouuzzzz  1oyyyyyy  1oxxxxxx   000uuuuu zzzzyyyy yyxxxxxx
-
-    private static final int remainingBytes[] = {
-            // 1owwwwww
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            // 11oyyyyy
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            // 111ozzzz
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            // 1111ouuu
-            3, 3, 3, 3, 3, 3, 3, 3,
-            // > 11110111
-            -1, -1, -1, -1, -1, -1, -1, -1 };
-
-    private static final int remainingNumbers[] = {
-                   0, //                0                 1                2           3
-                4224, // (01o00000b <<  6)+(1o000000b)
-              401536, // (011o0000b << 12)+(1o000000b <<  6)+(1o000000b)
-            29892736  // (0111o000b << 18)+(1o000000b << 12)+(1o000000b << 6)+(1o000000b)
-    };
-    
-    private static final int lowerEncodingLimit[] = { -1, 0x80, 0x800, 0x10000 };
-
     public UTF_8(String canonicalName, String[] aliases) {
         super(canonicalName, aliases);
     }
@@ -96,206 +58,357 @@ public class UTF_8 extends Charset {
                 || cs.name().equalsIgnoreCase("UTF-16BE");
     }
 
+    @Override
     public CharsetDecoder newDecoder() {
         return new Decoder(this);
     }
 
+    @Override
     public CharsetEncoder newEncoder() {
         return new Encoder(this);
     }
 
-    private final class Decoder extends CharsetDecoder {
+    private static final class Decoder extends CharsetDecoder {
 
-        private Decoder(Charset cs) {
+        // The next table contains information about UTF-8 charset and
+        // correspondence of 1st byte to the length of sequence
+        // For information please visit http://www.ietf.org/rfc/rfc3629.txt
+        //
+        // Please note, o means 0, actually.
+        // -------------------------------------------------------------------
+        // 0         1         2         3          Value
+        // -------------------------------------------------------------------
+        // oxxxxxxx                                 00000000 00000000 0xxxxxxx
+        // 11oyyyyy  1oxxxxxx                       00000000 00000yyy yyxxxxxx
+        // 111ozzzz  1oyyyyyy  1oxxxxxx             00000000 zzzzyyyy yyxxxxxx
+        // 1111ouuu  1ouuzzzz  1oyyyyyy  1oxxxxxx   000uuuuu zzzzyyyy yyxxxxxx
+
+        private static final int remainingBytes[] = {
+                // 1owwwwww
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                // 11oyyyyy
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                // 111ozzzz
+                2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                // 1111ouuu
+                3, 3, 3, 3, 3, 3, 3, 3,
+                // > 11110111
+                -1, -1, -1, -1, -1, -1, -1, -1 };
+
+        private static final int remainingNumbers[] = {
+                       0, //                0                 1                2           3
+                    4224, // (01o00000b <<  6)+(1o000000b)
+                  401536, // (011o0000b << 12)+(1o000000b <<  6)+(1o000000b)
+                29892736  // (0111o000b << 18)+(1o000000b << 12)+(1o000000b << 6)+(1o000000b)
+        };
+
+        private static final int lowerEncodingLimit[] = { -1, 0x80, 0x800, 0x10000 };
+
+        Decoder(Charset cs) {
             super(cs, 1.0f, 1.0f);
         }
 
+        @Override
         protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out) {
+            if (in.hasArray() && out.hasArray()) {
+                return decodeHasArray(in, out);
+            }
+            return decodeNotHasArray(in, out);
+        }
+
+        private CoderResult decodeNotHasArray(ByteBuffer in, CharBuffer out) {
             int outRemaining = out.remaining();
             int pos = in.position();
             int limit = in.limit();
-            if (in.hasArray() && out.hasArray()) {
-                final byte[] bArr = in.array();
-                final char[] cArr = out.array();
-                final int inIndexLimit = limit + in.arrayOffset();
+            try {
+                while (pos < limit) {
+                    if (outRemaining == 0) {
+                        return CoderResult.OVERFLOW;
+                    }
 
-                int inIndex = pos + in.arrayOffset();
-                int outIndex = out.position() + out.arrayOffset();
-
-                // if someone would change the limit in process,
-                // he would face consequences
-                for (; inIndex < inIndexLimit && outRemaining > 0; inIndex++) {
-                    int jchar = bArr[inIndex];
+                    int jchar = in.get();
                     if (jchar < 0) {
                         jchar = jchar & 0x7F;
                         int tail = remainingBytes[jchar];
-
                         if (tail == -1) {
-                            in.position(inIndex - in.arrayOffset());
-                            out.position(outIndex - out.arrayOffset());
                             return CoderResult.malformedForLength(1);
                         }
-                        if (inIndexLimit - inIndex < 1 + tail) {
-                            break;
+                        if (limit - pos < 1 + tail) {
+                            return CoderResult.UNDERFLOW;
                         }
 
+                        int nextByte;
                         for (int i = 0; i < tail; i++) {
-                            int nextByte = bArr[inIndex + i + 1] & 0xFF;
+                            nextByte = in.get() & 0xFF;
                             if ((nextByte & 0xC0) != 0x80) {
-                                in.position(inIndex - in.arrayOffset());
-                                out.position(outIndex - out.arrayOffset());
-                                return CoderResult.malformedForLength(1 + i);
+                                return CoderResult
+                                        .malformedForLength(1 + i);
                             }
                             jchar = (jchar << 6) + nextByte;
                         }
                         jchar -= remainingNumbers[tail];
                         if (jchar < lowerEncodingLimit[tail]) {
-                            // Should have been encoded in fewer octets
-                            in.position(inIndex - in.arrayOffset());
-                            out.position(outIndex - out.arrayOffset());
+                            // Should have been encoded in a fewer octets
                             return CoderResult.malformedForLength(1);
                         }
-                        inIndex += tail;
+                        pos += tail;
                     }
                     if (jchar <= 0xffff) {
-                      cArr[outIndex++] = (char) jchar;
+                      out.put((char) jchar);
                       outRemaining--;
                     } else {
                       if (outRemaining < 2) {
                           return CoderResult.OVERFLOW;
                       }
-                      cArr[outIndex++] = (char) ((jchar >> 0xA) + 0xD7C0);
-                      cArr[outIndex++] = (char) ((jchar & 0x3FF) + 0xDC00);
+                      out.put((char) ((jchar >> 0xA) + 0xD7C0));
+                      out.put((char) ((jchar & 0x3FF) + 0xDC00));
                       outRemaining -= 2;
                     }
+                    pos++;
                 }
-                in.position(inIndex - in.arrayOffset());
-                out.position(outIndex - out.arrayOffset());
-                return (outRemaining == 0 && inIndex < inIndexLimit) ? CoderResult.OVERFLOW
-                        : CoderResult.UNDERFLOW;
-            } else {
-                try {
-                    while (pos < limit) {
-                        if (outRemaining == 0) {
-                            return CoderResult.OVERFLOW;
-                        }
-
-                        int jchar = in.get();
-                        if (jchar < 0) {
-                            jchar = jchar & 0x7F;
-                            int tail = remainingBytes[jchar];
-                            if (tail == -1) {
-                                return CoderResult.malformedForLength(1);
-                            }
-                            if (limit - pos < 1 + tail) {
-                                return CoderResult.UNDERFLOW;
-                            }
-
-                            int nextByte;
-                            for (int i = 0; i < tail; i++) {
-                                nextByte = in.get() & 0xFF;
-                                if ((nextByte & 0xC0) != 0x80) {
-                                    return CoderResult
-                                            .malformedForLength(1 + i);
-                                }
-                                jchar = (jchar << 6) + nextByte;
-                            }
-                            jchar -= remainingNumbers[tail];
-                            if (jchar < lowerEncodingLimit[tail]) {
-                                // Should have been encoded in a fewer octets
-                                return CoderResult.malformedForLength(1);
-                            }
-                            pos += tail;
-                        }
-                        if (jchar <= 0xffff) {
-                          out.put((char) jchar);
-                          outRemaining--;
-                        } else {
-                          if (outRemaining < 2) {
-                              return CoderResult.OVERFLOW;
-                          }
-                          out.put((char) ((jchar >> 0xA) + 0xD7C0));
-                          out.put((char) ((jchar & 0x3FF) + 0xDC00));
-                          outRemaining -= 2;
-                        }
-                        pos++;
-                    }
-                    return CoderResult.UNDERFLOW;
-                } finally {
-                    in.position(pos);
-                }
+                return CoderResult.UNDERFLOW;
+            } finally {
+                in.position(pos);
             }
         }
-    }
 
-    private final class Encoder extends CharsetEncoder {
-
-        private Encoder(Charset cs) {
-            super(cs, 1.1f, 4.0f);
-        }
-
-        protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
+        private CoderResult decodeHasArray(ByteBuffer in, CharBuffer out) {
             int outRemaining = out.remaining();
             int pos = in.position();
             int limit = in.limit();
+            final byte[] bArr = in.array();
+            final char[] cArr = out.array();
+            final int inIndexLimit = limit + in.arrayOffset();
+
+            int inIndex = pos + in.arrayOffset();
+            int outIndex = out.position() + out.arrayOffset();
+
+            // if someone would change the limit in process,
+            // he would face consequences
+            for (; inIndex < inIndexLimit && outRemaining > 0; inIndex++) {
+                int jchar = bArr[inIndex];
+                if (jchar < 0) {
+                    jchar = jchar & 0x7F;
+                    int tail = remainingBytes[jchar];
+
+                    if (tail == -1) {
+                        in.position(inIndex - in.arrayOffset());
+                        out.position(outIndex - out.arrayOffset());
+                        return CoderResult.malformedForLength(1);
+                    }
+                    if (inIndexLimit - inIndex < 1 + tail) {
+                        break;
+                    }
+
+                    for (int i = 0; i < tail; i++) {
+                        int nextByte = bArr[inIndex + i + 1] & 0xFF;
+                        if ((nextByte & 0xC0) != 0x80) {
+                            in.position(inIndex - in.arrayOffset());
+                            out.position(outIndex - out.arrayOffset());
+                            return CoderResult.malformedForLength(1 + i);
+                        }
+                        jchar = (jchar << 6) + nextByte;
+                    }
+                    jchar -= remainingNumbers[tail];
+                    if (jchar < lowerEncodingLimit[tail]) {
+                        // Should have been encoded in fewer octets
+                        in.position(inIndex - in.arrayOffset());
+                        out.position(outIndex - out.arrayOffset());
+                        return CoderResult.malformedForLength(1);
+                    }
+                    inIndex += tail;
+                }
+                if (jchar <= 0xffff) {
+                  cArr[outIndex++] = (char) jchar;
+                  outRemaining--;
+                } else {
+                  if (outRemaining < 2) {
+                      return CoderResult.OVERFLOW;
+                  }
+                  cArr[outIndex++] = (char) ((jchar >> 0xA) + 0xD7C0);
+                  cArr[outIndex++] = (char) ((jchar & 0x3FF) + 0xDC00);
+                  outRemaining -= 2;
+                }
+            }
+            in.position(inIndex - in.arrayOffset());
+            out.position(outIndex - out.arrayOffset());
+            return (outRemaining == 0 && inIndex < inIndexLimit) ? CoderResult.OVERFLOW
+                    : CoderResult.UNDERFLOW;
+        }
+
+    }
+
+    private static final class Encoder extends CharsetEncoder {
+
+        Encoder(Charset cs) {
+            super(cs, 1.1f, 4.0f);
+        }
+
+        @Override
+        protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
             if (in.hasArray() && out.hasArray()) {
-                byte[] bArr;
-                char[] cArr;
-                int x = pos;
-                bArr = out.array();
-                cArr = in.array();
-                int outPos = out.position();
-                int rem = in.remaining();
-                for (x = pos; x < pos + rem; x++) {
-                    int jchar = (cArr[x] & 0xFFFF);
+                return encodeHasArray(in, out);
+            }
+            return encodeNotHasArray(in, out);
+        }
+
+        private CoderResult encodeHasArray(CharBuffer in, ByteBuffer out) {
+            int outRemaining = out.remaining();
+            int pos = in.position();
+            int limit = in.limit();
+            byte[] bArr;
+            char[] cArr;
+            int x = pos;
+            bArr = out.array();
+            cArr = in.array();
+            int outPos = out.position();
+            int rem = in.remaining();
+            for (x = pos; x < pos + rem; x++) {
+                int jchar = (cArr[x] & 0xFFFF);
+
+                if (jchar <= 0x7F) {
+                    if (outRemaining < 1) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.OVERFLOW;
+                    }
+                    bArr[outPos++] = (byte) (jchar & 0xFF);
+                    outRemaining--;
+                } else if (jchar <= 0x7FF) {
+
+                    if (outRemaining < 2) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.OVERFLOW;
+                    }
+                    bArr[outPos++] = (byte) (0xC0 + ((jchar >> 6) & 0x1F));
+                    bArr[outPos++] = (byte) (0x80 + (jchar & 0x3F));
+                    outRemaining -= 2;
+
+                } else if (jchar >= 0xD800 && jchar <= 0xDFFF) {
+
+                    // in has to have one byte more.
+                    if (limit <= x + 1) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.UNDERFLOW;
+                    }
+
+                    if (outRemaining < 4) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.OVERFLOW;
+                    }
+
+                    // The surrogate pair starts with a low-surrogate.
+                    if (jchar >= 0xDC00) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.malformedForLength(1);
+                    }
+
+                    int jchar2 = cArr[x + 1] & 0xFFFF;
+
+                    // The surrogate pair ends with a high-surrogate.
+                    if (jchar2 < 0xDC00) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.malformedForLength(1);
+                    }
+
+                    // Note, the Unicode scalar value n is defined
+                    // as follows:
+                    // n = (jchar-0xD800)*0x400+(jchar2-0xDC00)+0x10000
+                    // Where jchar is a high-surrogate,
+                    // jchar2 is a low-surrogate.
+                    int n = (jchar << 10) + jchar2 + 0xFCA02400;
+
+                    bArr[outPos++] = (byte) (0xF0 + ((n >> 18) & 0x07));
+                    bArr[outPos++] = (byte) (0x80 + ((n >> 12) & 0x3F));
+                    bArr[outPos++] = (byte) (0x80 + ((n >> 6) & 0x3F));
+                    bArr[outPos++] = (byte) (0x80 + (n & 0x3F));
+                    outRemaining -= 4;
+                    x++;
+
+                } else {
+
+                    if (outRemaining < 3) {
+                        in.position(x);
+                        out.position(outPos);
+                        return CoderResult.OVERFLOW;
+                    }
+                    bArr[outPos++] = (byte) (0xE0 + ((jchar >> 12) & 0x0F));
+                    bArr[outPos++] = (byte) (0x80 + ((jchar >> 6) & 0x3F));
+                    bArr[outPos++] = (byte) (0x80 + (jchar & 0x3F));
+                    outRemaining -= 3;
+                }
+                if (outRemaining == 0) {
+                    in.position(x + 1);
+                    out.position(outPos);
+                    return CoderResult.OVERFLOW;
+                }
+
+            }
+            if (rem != 0) {
+                in.position(x);
+                out.position(outPos);
+            }
+            return CoderResult.UNDERFLOW;
+        }
+
+        private CoderResult encodeNotHasArray(CharBuffer in, ByteBuffer out) {
+            int outRemaining = out.remaining();
+            int pos = in.position();
+            int limit = in.limit();
+            try {
+                while (pos < limit) {
+                    if (outRemaining == 0) {
+                        return CoderResult.OVERFLOW;
+                    }
+
+                    int jchar = (in.get() & 0xFFFF);
 
                     if (jchar <= 0x7F) {
+
                         if (outRemaining < 1) {
-                            in.position(x);
-                            out.position(outPos);
                             return CoderResult.OVERFLOW;
                         }
-                        bArr[outPos++] = (byte) (jchar & 0xFF);
+                        out.put((byte) (jchar & 0xFF));
                         outRemaining--;
+
                     } else if (jchar <= 0x7FF) {
 
                         if (outRemaining < 2) {
-                            in.position(x);
-                            out.position(outPos);
                             return CoderResult.OVERFLOW;
                         }
-                        bArr[outPos++] = (byte) (0xC0 + ((jchar >> 6) & 0x1F));
-                        bArr[outPos++] = (byte) (0x80 + (jchar & 0x3F));
+                        out.put((byte) (0xC0 + ((jchar >> 6) & 0x1F)));
+                        out.put((byte) (0x80 + (jchar & 0x3F)));
                         outRemaining -= 2;
 
                     } else if (jchar >= 0xD800 && jchar <= 0xDFFF) {
 
                         // in has to have one byte more.
-                        if (limit <= x + 1) {
-                            in.position(x);
-                            out.position(outPos);
+                        if (limit <= pos + 1) {
                             return CoderResult.UNDERFLOW;
                         }
 
                         if (outRemaining < 4) {
-                            in.position(x);
-                            out.position(outPos);
                             return CoderResult.OVERFLOW;
                         }
 
                         // The surrogate pair starts with a low-surrogate.
                         if (jchar >= 0xDC00) {
-                            in.position(x);
-                            out.position(outPos);
                             return CoderResult.malformedForLength(1);
                         }
 
-                        int jchar2 = cArr[x + 1] & 0xFFFF;
+                        int jchar2 = (in.get() & 0xFFFF);
 
                         // The surrogate pair ends with a high-surrogate.
                         if (jchar2 < 0xDC00) {
-                            in.position(x);
-                            out.position(outPos);
                             return CoderResult.malformedForLength(1);
                         }
 
@@ -306,116 +419,28 @@ public class UTF_8 extends Charset {
                         // jchar2 is a low-surrogate.
                         int n = (jchar << 10) + jchar2 + 0xFCA02400;
 
-                        bArr[outPos++] = (byte) (0xF0 + ((n >> 18) & 0x07));
-                        bArr[outPos++] = (byte) (0x80 + ((n >> 12) & 0x3F));
-                        bArr[outPos++] = (byte) (0x80 + ((n >> 6) & 0x3F));
-                        bArr[outPos++] = (byte) (0x80 + (n & 0x3F));
+                        out.put((byte) (0xF0 + ((n >> 18) & 0x07)));
+                        out.put((byte) (0x80 + ((n >> 12) & 0x3F)));
+                        out.put((byte) (0x80 + ((n >> 6) & 0x3F)));
+                        out.put((byte) (0x80 + (n & 0x3F)));
                         outRemaining -= 4;
-                        x++;
+                        pos++;
 
                     } else {
 
                         if (outRemaining < 3) {
-                            in.position(x);
-                            out.position(outPos);
                             return CoderResult.OVERFLOW;
                         }
-                        bArr[outPos++] = (byte) (0xE0 + ((jchar >> 12) & 0x0F));
-                        bArr[outPos++] = (byte) (0x80 + ((jchar >> 6) & 0x3F));
-                        bArr[outPos++] = (byte) (0x80 + (jchar & 0x3F));
+                        out.put((byte) (0xE0 + ((jchar >> 12) & 0x0F)));
+                        out.put((byte) (0x80 + ((jchar >> 6) & 0x3F)));
+                        out.put((byte) (0x80 + (jchar & 0x3F)));
                         outRemaining -= 3;
                     }
-                    if (outRemaining == 0) {
-                        in.position(x + 1);
-                        out.position(outPos);
-                        return CoderResult.OVERFLOW;
-                    }
-
+                    pos++;
                 }
-                if (rem != 0) {
-                    in.position(x);
-                    out.position(outPos);
-                }
-            } else {
-                try {
-                    while (pos < limit) {
-                        if (outRemaining == 0) {
-                            return CoderResult.OVERFLOW;
-                        }
-
-                        int jchar = (in.get() & 0xFFFF);
-
-                        if (jchar <= 0x7F) {
-
-                            if (outRemaining < 1) {
-                                return CoderResult.OVERFLOW;
-                            }
-                            out.put((byte) (jchar & 0xFF));
-                            outRemaining--;
-
-                        } else if (jchar <= 0x7FF) {
-
-                            if (outRemaining < 2) {
-                                return CoderResult.OVERFLOW;
-                            }
-                            out.put((byte) (0xC0 + ((jchar >> 6) & 0x1F)));
-                            out.put((byte) (0x80 + (jchar & 0x3F)));
-                            outRemaining -= 2;
-
-                        } else if (jchar >= 0xD800 && jchar <= 0xDFFF) {
-
-                            // in has to have one byte more.
-                            if (limit <= pos + 1) {
-                                return CoderResult.UNDERFLOW;
-                            }
-
-                            if (outRemaining < 4) {
-                                return CoderResult.OVERFLOW;
-                            }
-
-                            // The surrogate pair starts with a low-surrogate.
-                            if (jchar >= 0xDC00) {
-                                return CoderResult.malformedForLength(1);
-                            }
-
-                            int jchar2 = (in.get() & 0xFFFF);
-
-                            // The surrogate pair ends with a high-surrogate.
-                            if (jchar2 < 0xDC00) {
-                                return CoderResult.malformedForLength(1);
-                            }
-
-                            // Note, the Unicode scalar value n is defined
-                            // as follows:
-                            // n = (jchar-0xD800)*0x400+(jchar2-0xDC00)+0x10000
-                            // Where jchar is a high-surrogate,
-                            // jchar2 is a low-surrogate.
-                            int n = (jchar << 10) + jchar2 + 0xFCA02400;
-
-                            out.put((byte) (0xF0 + ((n >> 18) & 0x07)));
-                            out.put((byte) (0x80 + ((n >> 12) & 0x3F)));
-                            out.put((byte) (0x80 + ((n >> 6) & 0x3F)));
-                            out.put((byte) (0x80 + (n & 0x3F)));
-                            outRemaining -= 4;
-                            pos++;
-
-                        } else {
-
-                            if (outRemaining < 3) {
-                                return CoderResult.OVERFLOW;
-                            }
-                            out.put((byte) (0xE0 + ((jchar >> 12) & 0x0F)));
-                            out.put((byte) (0x80 + ((jchar >> 6) & 0x3F)));
-                            out.put((byte) (0x80 + (jchar & 0x3F)));
-                            outRemaining -= 3;
-                        }
-                        pos++;
-                    }
-                } finally {
-                    in.position(pos);
-                }
+            } finally {
+                in.position(pos);
             }
-
             return CoderResult.UNDERFLOW;
         }
 
