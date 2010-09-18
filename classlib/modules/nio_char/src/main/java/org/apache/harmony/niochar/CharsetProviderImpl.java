@@ -20,6 +20,7 @@ package org.apache.harmony.niochar;
 
 import java.lang.reflect.Constructor;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.spi.CharsetProvider;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -100,6 +101,40 @@ public class CharsetProviderImpl extends CharsetProvider {
      */
     protected String packageName;
 
+    /*
+     * Utility to convert valid charset names to upper case
+     */
+    private static String toUpperCase(String name) {
+        int length = name.length();
+        char[] output = new char[length];
+        for (int i = 0; i < length; i++) {
+            char ch = name.charAt(i);
+            if (passthru(ch)) {
+                output[i] = ch;
+            } else {
+                if ((ch >= '\u0061') && (ch <= '\u007A')) {
+                    // Lowercase 'a' to 'z'
+                    output[i] = (char) (ch - ('a' - 'A'));
+                } else {
+                    throw new IllegalCharsetNameException(name);
+                }
+            }
+        }
+        return new String(output);
+    }
+
+    /*
+     * Answers true if the character is already considered uppercase, false otherwise.
+     */
+    private static boolean passthru(char c) {
+        return ((c >= '\u0041') && (c <= '\u005A')) || // Uppercase letters 'A' to 'Z'
+               ((c >= '\u0030') && (c <= '\u0039')) || // Digits '0' to '9'
+               (c == '\u002D') || // Dash '-'
+               (c == '\u002E') || // Period '.'
+               (c == '\u003A') || // Colon ':'
+               (c == '\u005F');   // Underscore '_'
+    }
+
     /**
      * Default constructor for the built-in charset provider implementation.
      */
@@ -110,7 +145,7 @@ public class CharsetProviderImpl extends CharsetProvider {
         for (int i = 0; i < charsets.length; i++) {
             String aliases[] = (String[]) charsets[i][CHARSET_ALIASES];
             for (int a = 0; a < aliases.length; a++) {
-                cache.put(aliases[a].toUpperCase(), charsets[i]);
+                cache.put(toUpperCase(aliases[a]), charsets[i]);
             }
         }
     }
@@ -142,7 +177,7 @@ public class CharsetProviderImpl extends CharsetProvider {
      */
     @Override
     public Charset charsetForName(String charsetName) {
-        Object arr[] = cache.get(charsetName.toUpperCase());
+        Object arr[] = cache.get(toUpperCase(charsetName));
         if (arr == null) {
             return null;
         }
