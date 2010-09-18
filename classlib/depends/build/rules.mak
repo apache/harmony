@@ -51,7 +51,7 @@ $(DLLNAME): $(LIBNAME)
 	-entry:_DllMainCRTStartup$(DLLENTRY) -dll /BASE:$(DLLBASE) -machine:$(CPU) \
 	-subsystem:windows -out:$@ \
 	-map:$(LIBPATH)$(*F).map -pdb:$(DBGPATH)$(*F).pdb \
-        -manifestfile:$(LIBPATH)$(*F).manifest \
+	-manifest:no \
 	$(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES) $(SYSLIBFILES) \
 	kernel32.lib  msvcrt.lib ws2_32.lib advapi32.lib user32.lib gdi32.lib \
 	comdlg32.lib winspool.lib  $(LIBPATH)$(*F).exp
@@ -65,7 +65,7 @@ $(EXENAME): $(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES)
 	-mkdir $(DBGPATH)
 	link /NOLOGO $(EXEFLAGS) /debug /opt:icf /opt:ref $(VMLINK) \
 	-out:$(EXENAME) -pdb:$(DBGPATH)$(*F).pdb \
-        -manifestfile:$(LIBPATH)$(*F).manifest \
+	-manifest:no \
 	-machine:$(CPU) setargv.obj  \
 	$(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES) $(EXEDLLFILES)
 	if exist $(LIBPATH)$(*F).manifest \
