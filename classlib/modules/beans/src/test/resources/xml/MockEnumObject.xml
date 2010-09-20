@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="${version}" class="java.beans.XMLDecoder">
+ <object class="${classname}">
+  <void property="element">
+   <object class="org.apache.harmony.beans.tests.java.beans.XMLEncoderTest$Element" method="valueOf">
+    <string>ELEMENTA</string>
+   </object>
+  </void>
+ </object>
+</java>

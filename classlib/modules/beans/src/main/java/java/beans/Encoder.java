@@ -64,7 +64,6 @@ import javax.swing.ToolTipManager;
  * </p>
  * 
  */
-@SuppressWarnings("unchecked")
 public class Encoder {
 
     private static final Hashtable<Class<?>, PersistenceDelegate> delegates = new Hashtable<Class<?>, PersistenceDelegate>();
@@ -105,6 +104,7 @@ public class Encoder {
         delegates.put(String.class, new StringPersistenceDelegate());
         delegates.put(Proxy.class, new ProxyPersistenceDelegate());
         delegates.put(Date.class, new UtilDatePersistenceDelegate());
+        delegates.put(Enum.class, new LangEnumPersistenceDelegate());
     }
 
     private ExceptionListener listener = defaultExListener;
@@ -199,9 +199,10 @@ public class Encoder {
 			registerSwingPDs();
 			isInitilizedSwing = true;
 		}
-        
+
         // registered delegate
-        PersistenceDelegate registeredPD = delegates.get(type);
+        PersistenceDelegate registeredPD = Enum.class.isAssignableFrom(type) ? delegates
+                .get(Enum.class) : delegates.get(type);
         if (registeredPD != null) {
             return registeredPD;
         }
@@ -423,7 +424,7 @@ public class Encoder {
         if (o == null) {
             return;
         }
-        Class type = o.getClass();
+        Class<?> type = o.getClass();
         getPersistenceDelegate(type).writeObject(o, this);
     }
 

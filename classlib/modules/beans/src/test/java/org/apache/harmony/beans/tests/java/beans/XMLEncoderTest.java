@@ -59,20 +59,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class XMLEncoderTest extends TestCase {
 
-    public static void main(String[] args) {
-
-        // VerboseEncoder enc = new VerboseEncoder();
-        //
-        // MockBean4Codec b = new MockBean4Codec();
-        // b.getBornFriend().getZarr()[0] = 888;
-        // b.setNill(b.getBornFriend());
-        //
-        // enc.writeObject(b);
-        // enc.flush();
-
-        junit.textui.TestRunner.run(XMLEncoderTest.class);
-    }
-
     public static class DependencyBean {
         private int ints[] = new int[] { 1 };
 
@@ -120,9 +106,8 @@ public class XMLEncoderTest extends TestCase {
             return result;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public PersistenceDelegate getPersistenceDelegate(Class type) {
+        public PersistenceDelegate getPersistenceDelegate(Class<?> type) {
             PersistenceDelegate result = super.getPersistenceDelegate(type);
             return result;
         }
@@ -328,6 +313,7 @@ public class XMLEncoderTest extends TestCase {
     }
     */
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testWriteObject_MockTreeMap() throws Exception {
         Map<String, TreeMap<String, String>> innerTreeMap = new MockTreeMapClass();
         TreeMap resultTreeMap = innerTreeMap.get("outKey");
@@ -338,6 +324,29 @@ public class XMLEncoderTest extends TestCase {
 
         assertCodedXML(innerTreeMap, "/xml/MockTreeMap.xml", baos, xmlEncoder);
         assertEquals(1, innerTreeMap.size());
+    }
+
+    public static enum Element {
+        ELEMENTA, ELEMENTB, ELEMENTC
+    }
+
+    public static class MockEnumObject {
+
+        Element element;
+
+        public Element getElement() {
+            return element;
+        }
+
+        public void setElement(Element element) {
+            this.element = element;
+        }
+    }
+
+    public void testWriteObject_EnumObject() throws Exception {
+        MockEnumObject mockEnumObject = new MockEnumObject();
+        mockEnumObject.setElement(Element.ELEMENTA);
+        assertCodedXML(mockEnumObject, "/xml/MockEnumObject.xml");
     }
 
     public void testClose() {
@@ -783,9 +792,8 @@ public class XMLEncoderTest extends TestCase {
             final Object object = new Object();
             e.setPersistenceDelegate(AType.class,
                     new DefaultPersistenceDelegate() {
-                        @SuppressWarnings("unchecked")
                         @Override
-                        protected void initialize(Class type,
+                        protected void initialize(Class<?> type,
                                 Object oldInstance, Object newInstance,
                                 Encoder out) {
                             out.writeExpression(new Expression(object,
