@@ -17,18 +17,29 @@
 -->
 
 <project name="ANNOTATION Build" default="build" basedir=".">
-    <description>Build for ANNOTATION component</description>
+    <description>Build for X-Tools component</description>
 
     <property name="hy.module" value="x-tools" />
     <property name="hy.hdk" location="${basedir}/../../deploy" />
     <property name="depends.dir" location="${basedir}/../../depends" />
     <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.hdk}/build/ant/depends.xml" />
 
     <property file="../../make/depends.properties" />
 
-    <target name="build" depends="-build-no-check"/>
+    <target name="build" depends="check-depends,-build-no-check"/>
     <target name="-build-no-check" depends="-build-jar,-test-jar"
             if="build.x.tools" />
+
+    <target name="check-depends" unless="skip.java.build">
+        <check-one-file src="${ecj.jar.url}" dest="${ecj.jar}" />
+        <copy file="${ecj.jar}" todir="${hy.jdk}/lib" />
+    </target>
+
+    <target name="fetch-depends" unless="skip.java.build">
+        <mkdir dir="${ecj.dir}" />
+        <download-one-file src="${ecj.url}" dest="${ecj.jar}" md5="${ecj.md5}"/>
+    </target>
 
     <target name="test" depends="-test-module">
         <fail message="Some tests failed">
