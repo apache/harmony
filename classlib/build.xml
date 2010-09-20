@@ -158,7 +158,7 @@ module:
             <src path="modules/swing/src/main/java/common" />
             <src path="modules/text/src/main/java" />
             <src path="modules/x-net/src/main/java/" />
-
+            <src path="modules/x-tools/src/main/java/" />
             <classpath>
                 <fileset dir="${hy.jdk}/jre/lib/boot">
                     <include name="**/*.jar" />
@@ -171,7 +171,8 @@ module:
             <bootclasspath>
                 <fileset dir="${depends.jars}">
                     <!-- FIXME: picked mx4j arbitrarily, needs to be non-empty set -->
-                    <include name="**/mx4j.jar" />
+		    <include name="**/mx4j.jar" />
+		    <include name="**/ecj-3.5.1.jar" />
                 </fileset>
             </bootclasspath>
         </hy.javac>
