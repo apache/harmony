@@ -42,8 +42,7 @@
         <check-one-file src="${jetty-util.url}" dest="${jetty-util.jar}" />
         <check-one-file src="${servlet-api.url}" dest="${servlet-api.jar}" />
         <check-one-file src="${icu4j.url}" dest="${icu4j.jar}" />
-	<check-one-file src="${icu4j-charsets.url}" dest="${icu4j-charsets.jar}" />   
-	<check-one-file src="${ecj.jar.url}" dest="${ecj.jar}" />    
+        <check-one-file src="${icu4j-charsets.url}" dest="${icu4j-charsets.jar}" />    
     </target>
 
     <target name="-check-win" if="is.windows">
@@ -106,11 +105,7 @@
                            md5="${icu4j.md5}" />
         <download-one-file src="${icu4j-charsets.url}"
                            dest="${icu4j-charsets.jar}"
-			   md5="${icu4j-charsets.md5}" />
-        <mkdir dir="${ecj.dir}" />
-        <download-one-file src="${ecj.jar.url}"
-                           dest="${ecj.jar}"
-                           md5="${ecj.jar.md5}" />
+                           md5="${icu4j-charsets.md5}" />
     </target>
 
     <target name="-download-win" if="is.windows">
