@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
@@ -48,7 +49,7 @@ public class ForwardingFileObjectTest {
     }
 
     @Test
-    public void testGetCharContent() {
+    public void testGetCharContent() throws IOException {
         mock.getCharContent(false);
     }
 
