@@ -16,6 +16,7 @@
  */
 package javax.tools;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -25,19 +26,22 @@ import java.net.URI;
 public interface FileObject {
     boolean delete();
 
-    CharSequence getCharContent(boolean ignoreEncodingErrors);
+    CharSequence getCharContent(boolean ignoreEncodingErrors)
+            throws IOException;
 
     long getLastModified();
 
     String getName();
 
-    InputStream openInputStream();
+    InputStream openInputStream() throws IllegalStateException,
+            UnsupportedOperationException, IOException;
 
-    OutputStream openOutputStream();
+    OutputStream openOutputStream() throws IllegalStateException,
+            UnsupportedOperationException, IOException;
 
-    Reader openReader(boolean ignoreEncodingErrors);
+    Reader openReader(boolean ignoreEncodingErrors) throws IOException;
 
-    Writer openWriter();
+    Writer openWriter() throws IOException;
 
     URI toUri();
 }

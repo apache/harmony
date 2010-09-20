@@ -17,6 +17,7 @@
 
 package javax.tools;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -24,10 +25,10 @@ import java.io.Writer;
 import java.net.URI;
 
 public class ForwardingFileObject<F extends FileObject> implements FileObject {
-    
+
     protected final F fileObject;
-    
-    protected ForwardingFileObject(F fileObject){
+
+    protected ForwardingFileObject(F fileObject) {
         this.fileObject = fileObject;
     }
 
@@ -36,29 +37,29 @@ public class ForwardingFileObject<F extends FileObject> implements FileObject {
         return fileObject.delete();
     }
 
-    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+    public CharSequence getCharContent(boolean ignoreEncodingErrors)
+            throws IOException {
         // do nothing here
         return fileObject.getCharContent(ignoreEncodingErrors);
     }
-
 
     public long getLastModified() {
         return fileObject.getLastModified();
     }
 
-    public InputStream openInputStream() {
+    public InputStream openInputStream() throws IOException {
         return fileObject.openInputStream();
     }
 
-    public OutputStream openOutputStream() {
+    public OutputStream openOutputStream() throws IOException {
         return fileObject.openOutputStream();
     }
 
-    public Reader openReader(boolean ignoreEncodingErrors) {
+    public Reader openReader(boolean ignoreEncodingErrors) throws IOException {
         return fileObject.openReader(ignoreEncodingErrors);
     }
 
-    public Writer openWriter() {
+    public Writer openWriter() throws IOException {
         return fileObject.openWriter();
     }
 

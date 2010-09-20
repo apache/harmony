@@ -21,7 +21,7 @@ import java.util.Locale;
 
 public interface Diagnostic<S> {
     static enum Kind {
-        ERROR, MANDATORY_WARNING, NOTE, OTHER, WARNING
+        ERROR, WARNING, MANDATORY_WARNING, NOTE, OTHER 
     }
 
     String getCode();

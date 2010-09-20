@@ -24,7 +24,7 @@ import javax.lang.model.element.NestingKind;
 
 public interface JavaFileObject extends FileObject {
     public static enum Kind {
-        CLASS, HTML, OTHER, SOURCE;
+        SOURCE, CLASS, HTML, OTHER;
         public final String extension = "";
     }
     
