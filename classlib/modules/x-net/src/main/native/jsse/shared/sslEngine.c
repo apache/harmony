@@ -193,7 +193,7 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
 }
 
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_unwrapImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine, jlong src_address, int src_len, 
+  (JNIEnv *env, jclass clazz, jlong jssl, jlong jsslengine, jlong src_address, int src_len, 
   jlong dst_address, int dst_len) {
     _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO *bio = sslengine->bio;
@@ -218,8 +218,11 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     }
     
     // read output data
-    read_result = BIO_read(bio, dst_buffer, dst_len);
+    //read_result = BIO_read(bio, dst_buffer, dst_len);
+    read_result = SSL_read(ssl, dst_buffer, dst_len);
     
+    // TODO: Check for  SSL_RECEIVED_SHUTDOWN
+
     if (read_result > 0) {
         // wrote some data so must not be handshaking
         handshake_state = handshake_not_handshaking;
@@ -254,14 +257,31 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     return result;  
 }
 
+void shutdownImpl(JNIEnv *env, SSL *ssl) {
+    int ret = SSL_shutdown(ssl);
+    if (ret == -1) {
+        jclass exception = (*env)->FindClass(env, "javax/net/ssl/SSLException");
+        (*env)->ThrowNew(env, exception, ERR_reason_error_string(ERR_get_error()));
+    }
+
+    if (ret == 0) {
+        ret = SSL_shutdown(ssl);
+        if (((ret == -1) && (SSL_get_error(ssl, ret) != SSL_ERROR_WANT_READ)) || (ret == 0)) {
+            jclass exception = (*env)->FindClass(env, "javax/net/ssl/SSLException");
+            (*env)->ThrowNew(env, exception, ERR_reason_error_string(ERR_get_error()));
+        }
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_shutdownImpl
+  (JNIEnv *env, jclass clazz, jlong jssl) {
+    SSL *ssl = jlong2addr(SSL, jssl);
+    shutdownImpl(env, ssl);
+}
+
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_closeInboundImpl
   (JNIEnv *env, jclass clazz, jlong jsslengine) {
     _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO_shutdown_wr(sslengine->bio_io);
 }
 
-JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_closeOutboundImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine) {
-    _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
-    BIO_shutdown_wr(sslengine->bio);
-}

@@ -48,6 +48,11 @@ public class SSLEngineImpl extends SSLEngine {
     // indicates if engine was shut down (it means that
     // all cleaning work had been done and the engine is not operable)
     private boolean engine_was_shutdown = false;
+    // indicates if close_notify alert had been sent to another peer
+    private boolean close_notify_was_sent = false;
+    // indicates if close_notify alert had been received from another peer
+    private boolean close_notify_was_received = false;
+    private boolean need_alert_wrap = false;
 
     // active session object
     private SSLSessionImpl session;
@@ -76,7 +81,7 @@ public class SSLEngineImpl extends SSLEngine {
     private static native HandshakeStatus acceptImpl(long ssl);
     private static native SSLEngineResult wrapImpl(long sslEngineAddress,
             long src_address, int src_len, long dst_address, int dst_len);
-    private static native SSLEngineResult unwrapImpl(long sslEngineAddress,
+    private static native SSLEngineResult unwrapImpl(long ssl, long sslEngineAddress,
             long src_address, int src_len, long dst_address, int dst_len);
     
     /**
@@ -117,6 +122,11 @@ public class SSLEngineImpl extends SSLEngine {
         if (!peer_mode_was_set) {
             throw new IllegalStateException("Client/Server mode was not set");
         }
+
+        if (!getEnableSessionCreation()) {
+            handshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
+            throw new SSLException("New session creation is disabled");
+        }
         // TODO: need to repeat connect/accept if status was waiting on wrap/unwrap previously?
         if (!handshake_started) {
             handshake_started = true;
@@ -141,6 +151,7 @@ public class SSLEngineImpl extends SSLEngine {
         }
     }
 
+    private static native void shutdownImpl(long SSL);
     private static native void closeInboundImpl(long SSLEngineAddress);
 
     /**
@@ -158,17 +169,25 @@ public class SSLEngineImpl extends SSLEngine {
             return;
         }
         isInboundDone = true;
-
-        closeInboundImpl(SSLEngineAddress);
-
         engine_was_closed = true;
-        if (!handshake_started) {
+        if (handshake_started) {
+            if (!close_notify_was_received) {
+                if (session != null) {
+                    session.invalidate();
+                }
+                if (!close_notify_was_sent) {
+                    shutdownImpl(SSL);
+                    close_notify_was_sent = true;
+                }
+                need_alert_wrap = true;
+                throw new SSLException("Inbound is closed before close_notify alert has been received.");                
+            }
+            closeInboundImpl(SSLEngineAddress);
+        } else {
             // engine is closing before initial handshake has been made
             shutdown();
         }
     }
-
-    private static native void closeOutboundImpl(long SSLEngineAddress);
 
     /**
      * Closes outbound operations of this engine
@@ -184,14 +203,19 @@ public class SSLEngineImpl extends SSLEngine {
             return;
         }
         isOutboundDone = true;
-        
-        closeOutboundImpl(SSLEngineAddress);
-
-        if (!handshake_started) {
+        engine_was_closed = true;
+        if (handshake_started) {
+            if (!close_notify_was_sent) {
+                if (!close_notify_was_sent) {
+                    shutdownImpl(SSL);
+                    close_notify_was_sent = true;
+                }
+                need_alert_wrap = true;
+            }
+        } else {
             // engine is closing before initial handshake has been made
             shutdown();
         }
-        engine_was_closed = true;
     }
 
     /**
@@ -367,6 +391,13 @@ public class SSLEngineImpl extends SSLEngine {
             // initial handshake has not been started yet
             return HandshakeStatus.NOT_HANDSHAKING;
         }
+        if (need_alert_wrap) {
+            return HandshakeStatus.NEED_WRAP;
+        }
+        if (close_notify_was_sent && !close_notify_was_received) {
+            // waiting for "close_notify" response
+            return HandshakeStatus.NEED_UNWRAP;
+        }
         return handshakeStatus;
     }
     
@@ -452,7 +483,7 @@ public class SSLEngineImpl extends SSLEngine {
             dst_address = AddressUtil.getDirectBufferAddress(dst_temp_buffer);
         }
         
-        SSLEngineResult result = unwrapImpl(SSLEngineAddress, src_address, src_length, dst_address, dst_length);
+        SSLEngineResult result = unwrapImpl(SSL, SSLEngineAddress, src_address, src_length, dst_address, dst_length);
         
         // update the buffers contents and positions
         src.position(src.position() + result.bytesConsumed());
@@ -512,6 +543,10 @@ public class SSLEngineImpl extends SSLEngine {
         if (!handshake_started) {
             beginHandshake();
         }
+
+        if (need_alert_wrap) {
+            need_alert_wrap = false;
+        }
         
         // get direct addresses to the buffers
         // only use the first buffer at the moment
@@ -562,8 +597,8 @@ public class SSLEngineImpl extends SSLEngine {
 
         return result;
     }
-    
-    // Shutdownes the engine and makes all cleanup work.
+
+    // Shutdown the engine and makes all cleanup work.
     private void shutdown() {
         engine_was_closed = true;
         engine_was_shutdown = true;
