@@ -729,30 +729,30 @@ public class NewAttributeBands extends BandSet {
 
         public void addToAttribute(int n, NewAttribute attribute) {
             if (tag.startsWith("KI")) { // Integer
-                attribute.addCPConstant(length, ((CPInteger[]) band)[n]);
+                attribute.addToBody(length, ((CPInteger[]) band)[n]);
             } else if (tag.startsWith("KJ")) { // Long
-                attribute.addCPConstant(length, ((CPLong[]) band)[n]);
+                attribute.addToBody(length, ((CPLong[]) band)[n]);
             } else if (tag.startsWith("KF")) { // Float
-                attribute.addCPConstant(length, ((CPFloat[]) band)[n]);
+                attribute.addToBody(length, ((CPFloat[]) band)[n]);
             } else if (tag.startsWith("KD")) { // Double
-                attribute.addCPConstant(length, ((CPDouble[]) band)[n]);
+                attribute.addToBody(length, ((CPDouble[]) band)[n]);
             } else if (tag.startsWith("KS")) { // String
-                attribute.addCPConstant(length, ((CPString[]) band)[n]);
+                attribute.addToBody(length, ((CPString[]) band)[n]);
             } else if (tag.startsWith("RC")) { // Class
-                attribute.addCPClass(length, ((CPClass[]) band)[n]);
+                attribute.addToBody(length, ((CPClass[]) band)[n]);
             } else if (tag.startsWith("RS")) { // Signature
-                attribute.addCPUTF8(length, ((CPUTF8[]) band)[n]);
+                attribute.addToBody(length, ((CPUTF8[]) band)[n]);
             } else if (tag.startsWith("RD")) { // Descriptor
-                attribute.addCPNameAndType(length, ((CPNameAndType[]) band)[n]);
+                attribute.addToBody(length, ((CPNameAndType[]) band)[n]);
             } else if (tag.startsWith("RF")) { // Field Reference
-                attribute.addCPFieldRef(length, ((CPFieldRef[]) band)[n]);
+                attribute.addToBody(length, ((CPFieldRef[]) band)[n]);
             } else if (tag.startsWith("RM")) { // Method Reference
-                attribute.addCPMethodRef(length, ((CPMethodRef[]) band)[n]);
+                attribute.addToBody(length, ((CPMethodRef[]) band)[n]);
             } else if (tag.startsWith("RI")) { // Interface Method Reference
-                attribute.addCPIMethodRef(length,
+                attribute.addToBody(length,
                         ((CPInterfaceMethodRef[]) band)[n]);
             } else if (tag.startsWith("RU")) { // UTF8 String
-                attribute.addCPUTF8(length, ((CPUTF8[]) band)[n]);
+                attribute.addToBody(length, ((CPUTF8[]) band)[n]);
             }
         }
 
