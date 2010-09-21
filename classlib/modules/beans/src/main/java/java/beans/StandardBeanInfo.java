@@ -985,24 +985,28 @@ class StandardBeanInfo extends SimpleBeanInfo {
             }
 
             // retrieve getters
+            Class<?>[] paramTypes = null;
+            String methodName = null;
             for (Method getter : getters) {
+                paramTypes = getter.getParameterTypes();
+                methodName = getter.getName();
                 // checks if it's a normal getter
-                if (getter.getParameterTypes() == null
-                        || getter.getParameterTypes().length == 0) {
+                if (paramTypes == null || paramTypes.length == 0) {
                     // normal getter found
                     if (normalGetter == null
-                            || getter.getName().startsWith(PREFIX_IS)) {
+                            || methodName.startsWith(PREFIX_IS)) {
                         normalGetter = getter;
                     }
                 }
 
                 // checks if it's an indexed getter
-                if (getter.getParameterTypes() != null
-                        && getter.getParameterTypes().length == 1
-                        && getter.getParameterTypes()[0] == int.class) {
+                if (paramTypes != null && paramTypes.length == 1
+                        && paramTypes[0] == int.class) {
                     // indexed getter found
                     if (indexedGetter == null
-                            || getter.getName().startsWith(PREFIX_IS)) {
+                            || methodName.startsWith(PREFIX_GET)
+                            || (methodName.startsWith(PREFIX_IS) && !indexedGetter
+                                    .getName().startsWith(PREFIX_GET))) {
                         indexedGetter = getter;
                     }
                 }
@@ -1251,6 +1255,12 @@ class StandardBeanInfo extends SimpleBeanInfo {
                     && (indexedGetter != null || indexedSetter != null)) {
                 if (indexedGetter != null
                         && indexedGetter.getName().startsWith(PREFIX_IS)) {
+                    if (indexedSetter != null) {
+                        table.put(STR_INDEXED, STR_VALID);
+                        table.put(STR_INDEXED + PREFIX_SET, indexedSetter);
+                        table.put(STR_INDEXED + STR_PROPERTY_TYPE,
+                                indexedPropType);
+                    }
                     continue;
                 }
                 table.put(STR_INDEXED, STR_VALID);

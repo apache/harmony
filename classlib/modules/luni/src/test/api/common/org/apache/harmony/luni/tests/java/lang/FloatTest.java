@@ -904,6 +904,13 @@ public class FloatTest extends TestCase {
 
         Float negInfiniteSigned = Float.valueOf("-Infinity");
         assertTrue("Floattest7", negInfiniteSigned.equals(new Float(Float.NEGATIVE_INFINITY)));
+        
+        // test HARMONY-6641
+        posInfinite = Float.valueOf("320.0E+2147483647");
+        assertEquals("Floattest8", Float.POSITIVE_INFINITY, posInfinite);
+        
+        negZero = Float.valueOf("-1.4E-2147483314");
+        assertEquals("Floattest9", -0.0f, negZero);
     }
 
     private void test_toString(float ff, String answer) {

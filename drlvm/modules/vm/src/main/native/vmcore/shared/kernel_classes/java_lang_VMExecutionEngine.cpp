@@ -227,7 +227,7 @@ JNIEXPORT jstring JNICALL Java_java_lang_VMExecutionEngine_mapLibraryName
         const char* libname = GetStringUTFChars(jenv, jlibname, NULL);
         apr_pool_t *pp;
         if (APR_SUCCESS == apr_pool_create(&pp, 0)) {
-            res = NewStringUTF(jenv, port_dso_name_decorate(libname, pp));
+            res = NewStringUTF(jenv, port_dso_name_decorate(libname, NULL, pp));
             apr_pool_destroy(pp);
         }
         ReleaseStringUTFChars(jenv, jlibname, libname);

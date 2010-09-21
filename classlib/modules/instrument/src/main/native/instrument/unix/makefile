@@ -26,6 +26,10 @@ ifneq ($(HY_ZIP_API),true)
 MDLLIBFILES += $(LIBPATH)libhyzip.a 
 endif
 
+ifeq ($(HY_LOCAL_ZLIB),true)
+DEFINES += -DHY_LOCAL_ZLIB
+endif
+
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 DLLNAME = $(DLLPATH)libhyinstrument$(HY_SHLIB_SUFFIX)

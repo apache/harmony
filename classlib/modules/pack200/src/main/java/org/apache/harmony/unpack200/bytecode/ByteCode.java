@@ -100,17 +100,8 @@ public class ByteCode extends ClassFileEntry {
         return getByteCodeForm().getOpcode();
     }
 
-    private boolean hashcodeComputed;
-    private int cachedHashCode;
-
-    private void generateHashCode() {
-        cachedHashCode = objectHashCode();
-    }
-
     public int hashCode() {
-        if (!hashcodeComputed)
-            generateHashCode();
-        return cachedHashCode;
+        return objectHashCode();
     }
 
     /*

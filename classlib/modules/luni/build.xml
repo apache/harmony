@@ -54,14 +54,6 @@
                 <include name="vmizip.h"/>
             </fileset>
         </copy>
-        <copy todir="${hy.jdk}/include" preservelastmodified="true">
-            <fileset dir="src/main/native/include">
-                <include name="jni.h" />
-                <include name="jni_types.h" />
-                <include name="jvmti.h" />
-                <include name="jvmti_types.h" />
-            </fileset>
-        </copy>
     </target>
 
     <!-- Build native code -->
@@ -211,14 +203,6 @@
                 <include name="gp.h" />
                 <include name="fdlibm.h" />
                 <include name="hymagic.h" />
-            </fileset>
-        </delete>
-        <delete failonerror="false">
-            <fileset dir="${hy.jdk}/include">
-                <include name="jni.h" />
-                <include name="jni_types.h" />
-                <include name="jvmti.h" />
-                <include name="jvmti_types.h" />
             </fileset>
         </delete>
     </target>

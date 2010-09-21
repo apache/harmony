@@ -54,19 +54,19 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends
     }
 
     protected void writeBody(DataOutputStream dos) throws IOException {
+        int size = dos.size();
         dos.writeShort(num_annotations);
         for (int i = 0; i < num_annotations; i++) {
             annotations[i].writeBody(dos);
+        }
+        if (dos.size() - size != getLength()) {
+            throw new Error();
         }
     }
 
     public String toString() {
         return attributeName.underlyingString() + ": " + num_annotations
                 + " annotations";
-    }
-
-    public boolean equals(Object obj) {
-        return this == obj;
     }
 
     protected ClassFileEntry[] getNestedClassFileEntries() {

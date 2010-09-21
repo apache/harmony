@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ICU4J
 Bundle-SymbolicName: com.ibm.icu4j;singleton:=true
-Bundle-Version: 4.2.1
-Bundle-ClassPath: icu4j-4_2_1.jar,icu4j-charsets-4_2_1.jar
+Bundle-Version: 4.4.1.1
+Bundle-ClassPath: icu4j-4_4_1_1.jar,icu4j-charsets-4_4_1_1.jar
 Eclipse-JREBundle: true
 Import-Package: java.io,
  java.lang,

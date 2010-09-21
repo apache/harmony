@@ -43,6 +43,17 @@
 
     <property name="ibm.vme.dir" value="${hy.os}-${hy.arch}.vme" />
 
+    <target name="-init-hdk">
+        <copy todir="${hy.hdk}/jdk/include">
+            <fileset dir="include">
+                <include name="jvmti.h" />
+                <include name="jvmti_types.h" />
+                <include name="jni.h" />
+                <include name="jni_types.h" />
+            </fileset>
+        </copy>
+    </target>
+
     <target name="build">
         <mkdir dir="${hy.hdk}/jdk" />
         <copy todir="${hy.hdk}/jdk">

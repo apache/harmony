@@ -25,10 +25,6 @@ public class LookupSwitchForm extends SwitchForm {
         super(opcode, name);
     }
 
-    public LookupSwitchForm(int opcode, String name, int[] rewrite) {
-        super(opcode, name, rewrite);
-    }
-
     /*
      * (non-Javadoc)
      *

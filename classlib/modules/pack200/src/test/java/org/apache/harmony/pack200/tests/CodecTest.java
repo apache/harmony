@@ -26,7 +26,6 @@ import org.apache.harmony.pack200.BHSDCodec;
 import org.apache.harmony.pack200.CanonicalCodecFamilies;
 import org.apache.harmony.pack200.Codec;
 import org.apache.harmony.pack200.Pack200Exception;
-import org.apache.harmony.pack200.RunCodec;
 
 /**
  * 
@@ -205,6 +204,15 @@ public class CodecTest extends TestCase {
         checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs3);
         checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs4);
         checkAscendingCardinalities(CanonicalCodecFamilies.deltaUnsignedCodecs5);
+        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaSignedCodecs1);
+        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaSignedCodecs2);
+        checkAscendingCardinalities(CanonicalCodecFamilies.nonDeltaDoubleSignedCodecs1);
+        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs1);
+        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs2);
+        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs3);
+        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs4);
+        checkAscendingCardinalities(CanonicalCodecFamilies.deltaSignedCodecs5);
+        checkAscendingCardinalities(CanonicalCodecFamilies.deltaDoubleSignedCodecs1);
     }
 
     private void checkAscendingCardinalities(BHSDCodec[] family) {

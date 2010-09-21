@@ -96,7 +96,7 @@ public abstract class Charset implements Comparable<Charset> {
     private static CharsetProviderImpl _builtInProvider = null;
 
     // cached built in charsets
-    private static TreeMap<String, Charset> _builtInCharsets = null;
+    private static volatile TreeMap<String, Charset> _builtInCharsets = null;
 
     private final String canonicalName;
 

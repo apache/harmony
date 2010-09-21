@@ -23,6 +23,16 @@ package org.apache.harmony.luni.util;
  * floating point number.
  */
 public final class FloatingPointParser {
+    /*
+     * All number with exponent larger than MAX_EXP can be treated as infinity.
+     * All number with exponent smaller than MIN_EXP can be treated as zero.
+     * Exponent is 10 based.
+     * Eg. double's min value is 5e-324, so double "1e-325" should be parsed as 0.0 
+     */
+    private static final int FLOAT_MIN_EXP = -46;
+    private static final int FLOAT_MAX_EXP = 38;
+    private static final int DOUBLE_MIN_EXP = -324;
+    private static final int DOUBLE_MAX_EXP = 308;
 
 	private static final class StringExponentPair {
 		String s;
@@ -94,7 +104,7 @@ public final class FloatingPointParser {
 	private static StringExponentPair initialParse(String s, int length) {
 		boolean negative = false;
 		char c;
-		int start, end, decimal;
+		int start, end, decimal, shift;
 		int e = 0;
 
 		start = 0;
@@ -119,17 +129,31 @@ public final class FloatingPointParser {
                                         throw new NumberFormatException(s);
                                 }
                                 exponent_offset++; // skip the plus sign
+                                if (exponent_offset == length)
+                                    throw new NumberFormatException(s);
                         }
+            String strExp = s.substring(exponent_offset, length);
 			try {
-				e = Integer.parseInt(s.substring(exponent_offset,
-                                                                 length));
-                        } catch (NumberFormatException ex) {
-                                // ex contains the exponent substring
-                                // only so throw a new exception with
-                                // the correct string
-				throw new NumberFormatException(s);
-                        }                            
-                                    
+				e = Integer.parseInt(strExp);
+            } catch (NumberFormatException ex) {
+                // strExp is not empty, so there are 2 situations the exception be thrown
+                // if the string is invalid we should throw exception, if the actual number
+                // is out of the range of Integer, we can still parse the original number to
+                // double or float
+                char ch;
+                for (int i = 0; i < strExp.length(); i++) {
+                    ch = strExp.charAt(i);
+                    if (ch < '0' || ch > '9') {
+                        if (i == 0 && ch == '-')
+                            continue;
+                        // ex contains the exponent substring
+                        // only so throw a new exception with
+                        // the correct string
+                        throw new NumberFormatException(s);
+                    }
+                }
+                e = strExp.charAt(0) == '-' ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            }
 		} else {
 			end = length;
 		}
@@ -150,7 +174,11 @@ public final class FloatingPointParser {
 
 		decimal = s.indexOf('.');
 		if (decimal > -1) {
-			e -= end - decimal - 1;
+		    shift = end - decimal - 1;
+		    //prevent e overflow, shift >= 0
+		    if (e >= 0 || e - Integer.MIN_VALUE > shift) {
+		        e -= shift;
+		    }
 			s = s.substring(start, decimal) + s.substring(decimal + 1, end);
 		} else {
 			s = s.substring(start, end);
@@ -168,7 +196,10 @@ public final class FloatingPointParser {
 			start++;
 
 		if (end != length || start != 0) {
-			e += length - end;
+		    shift = length - end;
+		    if (e <= 0 || Integer.MAX_VALUE - e > shift) {
+		        e += shift;
+		    }
 			s = s.substring(start, end);
 		}
 
@@ -208,7 +239,7 @@ public final class FloatingPointParser {
 
 		if (namedDouble.regionMatches(false, cmpstart, "Infinity", 0, 8)) {
 			return negative ? Double.NEGATIVE_INFINITY
-					: Float.POSITIVE_INFINITY;
+					: Double.POSITIVE_INFINITY;
 		}
 
 		if (namedDouble.regionMatches(false, cmpstart, "NaN", 0, 3)) {
@@ -280,6 +311,17 @@ public final class FloatingPointParser {
         
 		StringExponentPair info = initialParse(s, length);
 
+		// two kinds of situation will directly return 0.0
+		// 1. info.s is 0
+		// 2. actual exponent is less than Double.MIN_EXPONENT
+		if ("0".equals(info.s) || (info.e + info.s.length() - 1 < DOUBLE_MIN_EXP)) {
+		    return info.negative ? -0.0 : 0.0;
+		}
+		// if actual exponent is larger than Double.MAX_EXPONENT, return infinity
+		// prevent overflow, check twice
+		if ((info.e > DOUBLE_MAX_EXP) || (info.e + info.s.length() - 1 > DOUBLE_MAX_EXP)) {
+		    return info.negative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+		}
 		double result = parseDblImpl(info.s, info.e);
 		if (info.negative)
 			result = -result;
@@ -318,6 +360,17 @@ public final class FloatingPointParser {
         
 		StringExponentPair info = initialParse(s, length);
 
+        // two kinds of situation will directly return 0.0f
+        // 1. info.s is 0
+        // 2. actual exponent is less than Float.MIN_EXPONENT
+        if ("0".equals(info.s) || (info.e + info.s.length() - 1 < FLOAT_MIN_EXP)) {
+            return info.negative ? -0.0f : 0.0f;
+        }
+        // if actual exponent is larger than Float.MAX_EXPONENT, return infinity
+        // prevent overflow, check twice
+        if ((info.e > FLOAT_MAX_EXP) || (info.e + info.s.length() - 1 > FLOAT_MAX_EXP)) {
+            return info.negative ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
+        }
 		float result = parseFltImpl(info.s, info.e);
 		if (info.negative)
 			result = -result;

@@ -46,10 +46,6 @@ public abstract class ClassFileEntry {
         resolved = true;
     }
 
-    protected boolean isResolved() {
-        return resolved;
-    }
-
     protected int objectHashCode() {
         return super.hashCode();
     }

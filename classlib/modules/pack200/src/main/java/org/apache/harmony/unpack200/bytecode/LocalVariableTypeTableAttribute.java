@@ -28,7 +28,7 @@ import org.apache.harmony.pack200.Pack200Exception;
  */
 public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
 
-    private int local_variable_type_table_length;
+    private final int local_variable_type_table_length;
     private final int[] start_pcs;
     private final int[] lengths;
     private int[] name_indexes;
@@ -163,10 +163,6 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
     public String toString() {
         return "LocalVariableTypeTable: " + +local_variable_type_table_length
                 + " varaibles";
-    }
-
-    public boolean equals(Object obj) {
-        return this == obj;
     }
 
 }

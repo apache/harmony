@@ -165,14 +165,6 @@ public class SegmentHeader {
         return archiveModtime;
     }
 
-    public int getArchiveMajor() {
-        return archiveMajor;
-    }
-
-    public int getArchiveMinor() {
-        return archiveMinor;
-    }
-
     public int getAttributeDefinitionCount() {
         return attributeDefinitionCount;
     }
@@ -239,10 +231,6 @@ public class SegmentHeader {
 
     public int getInnerClassCount() {
         return innerClassCount;
-    }
-
-    public void setNumberOfFiles(int numberOfFiles) {
-        this.numberOfFiles = numberOfFiles;
     }
 
     public long getArchiveSize() {

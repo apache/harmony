@@ -121,8 +121,8 @@ bool JarEntry::GetContent(unsigned char* content) const
         }
 #endif //_IPF
         break;
-    case JAR_FILE_ENCHANCED_DEFLATE:
-        printf( "Found ENCHANCED DEFLATE content. No support as of yet.\n" );
+    case JAR_FILE_ENHANCED_DEFLATE:
+        printf( "Found ENHANCED DEFLATE content. No support as of yet.\n" );
         return false;
     case JAR_FILE_PKWARED:
         printf( "Found PKWARED content. No support as of yet.\n" );

@@ -113,39 +113,9 @@ public class NewAttribute extends BCIRenumberedAttribute {
         body.add(new BCLength(value));
     }
 
-    public void addCPConstant(int length, CPConstant constant) {
+    public void addToBody(int length, Object value) {
         lengths.add(new Integer(length));
-        body.add(constant);
-    }
-
-    public void addCPClass(int length, CPClass class1) {
-        lengths.add(new Integer(length));
-        body.add(class1);
-    }
-
-    public void addCPUTF8(int length, CPUTF8 cputf8) {
-        lengths.add(new Integer(length));
-        body.add(cputf8);
-    }
-
-    public void addCPNameAndType(int length, CPNameAndType type) {
-        lengths.add(new Integer(length));
-        body.add(type);
-    }
-
-    public void addCPFieldRef(int length, CPFieldRef ref) {
-        lengths.add(new Integer(length));
-        body.add(ref);
-    }
-
-    public void addCPMethodRef(int length, CPMethodRef ref) {
-        lengths.add(new Integer(length));
-        body.add(ref);
-    }
-
-    public void addCPIMethodRef(int length, CPInterfaceMethodRef ref) {
-        lengths.add(new Integer(length));
-        body.add(ref);
+        body.add(value);
     }
 
     protected void resolve(ClassConstantPool pool) {

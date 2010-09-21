@@ -326,14 +326,13 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>,
      *            the minimum capacity asked for.
      */
     public void ensureCapacity(int minimumCapacity) {
-        int required = minimumCapacity - array.length;
-        if (required > 0) {
+        if (array.length < minimumCapacity) {
             // REVIEW: Why do we check the firstIndex first? Growing
             //         the end makes more sense
             if (firstIndex > 0) {
-                growAtFront(required);
+                growAtFront(minimumCapacity - array.length);
             } else {
-                growAtEnd(required);
+                growAtEnd(minimumCapacity - array.length);
             }
         }
     }

@@ -14,48 +14,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.harmony.pack200.tests;
+package org.apache.harmony.unpack200.tests;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.apache.harmony.pack200.AttributeDefinitionBands;
-import org.apache.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
-import org.apache.harmony.pack200.CPUTF8;
-import org.apache.harmony.pack200.Codec;
-import org.apache.harmony.pack200.CpBands;
-import org.apache.harmony.pack200.NewAttribute;
-import org.apache.harmony.pack200.NewAttributeBands;
-import org.apache.harmony.pack200.NewAttributeBands.Call;
-import org.apache.harmony.pack200.NewAttributeBands.Callable;
-import org.apache.harmony.pack200.NewAttributeBands.Integral;
-import org.apache.harmony.pack200.NewAttributeBands.Reference;
-import org.apache.harmony.pack200.NewAttributeBands.Replication;
-import org.apache.harmony.pack200.NewAttributeBands.Union;
-import org.apache.harmony.pack200.NewAttributeBands.UnionCase;
 import org.apache.harmony.pack200.Pack200Exception;
-import org.apache.harmony.pack200.SegmentHeader;
+import org.apache.harmony.unpack200.AttributeLayout;
+import org.apache.harmony.unpack200.NewAttributeBands;
+import org.apache.harmony.unpack200.NewAttributeBands.Call;
+import org.apache.harmony.unpack200.NewAttributeBands.Callable;
+import org.apache.harmony.unpack200.NewAttributeBands.Integral;
+import org.apache.harmony.unpack200.NewAttributeBands.Reference;
+import org.apache.harmony.unpack200.NewAttributeBands.Replication;
+import org.apache.harmony.unpack200.NewAttributeBands.Union;
+import org.apache.harmony.unpack200.NewAttributeBands.UnionCase;
+import org.apache.harmony.unpack200.Segment;
 
 /**
- * Tests for pack200 support for non-predefined attributes
+ * Tests for unpack200 support for non-predefined attributes
  */
-public class NewAttributeBandsTest extends TestCase {
+public class NewAttributeBandsTest extends AbstractBandsTestCase {
 
-    public void testEmptyLayout() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    public void testEmptyLayout() throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CLASS, "", 25));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
-    public void testIntegralLayouts() throws IOException {
+    public void testIntegralLayout() throws IOException, Pack200Exception {
         tryIntegral("B");
         tryIntegral("FB");
         tryIntegral("SB");
@@ -79,24 +68,20 @@ public class NewAttributeBandsTest extends TestCase {
         tryIntegral("POI");
     }
 
-    private void tryIntegral(String layoutStr) throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(layoutStr);
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    public void tryIntegral(String layout) throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CLASS, layout, 25));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Integral element = (Integral) layoutElements.get(0);
-        assertEquals(layoutStr, element.getTag());
+        assertEquals(layout, element.getTag());
     }
 
-    public void testReplicationLayouts() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    public void testReplicationLayout() throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CLASS, "NH[PHOHRUHRSHH]", 25));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Replication element = (Replication) layoutElements.get(0);
@@ -116,7 +101,7 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals("H", fifthElement.getTag());
     }
 
-    public void testReferenceLayouts() throws IOException {
+    public void testReferenceLayouts() throws IOException, Pack200Exception {
         tryReference("KIB");
         tryReference("KIH");
         tryReference("KII");
@@ -137,24 +122,22 @@ public class NewAttributeBandsTest extends TestCase {
         tryReference("RQNI");
     }
 
-    private void tryReference(String layoutStr) throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(layoutStr);
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    private void tryReference(String layout) throws IOException,
+            Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CODE, layout, 26));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Reference element = (Reference) layoutElements.get(0);
-        assertEquals(layoutStr, element.getTag());
+        assertEquals(layout, element.getTag());
     }
 
-    public void testUnionLayout() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    public void testUnionLayout() throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_CODE,
+                        "TB(55)[FH](23)[]()[RSH]", 26));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         Union element = (Union) layoutElements.get(0);
@@ -180,13 +163,14 @@ public class NewAttributeBandsTest extends TestCase {
         assertEquals("RSH", ref.getTag());
     }
 
-    public void testLayoutWithCalls() throws IOException {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8(
-                "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    public void testLayoutWithCalls() throws IOException, Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(),
+                new AttributeLayout(
+                        "test",
+                        AttributeLayout.CONTEXT_FIELD,
+                        "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]",
+                        26));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
@@ -205,12 +189,12 @@ public class NewAttributeBandsTest extends TestCase {
         assertFalse(thirdCallable.isBackwardsCallable());
     }
 
-    public void testLayoutWithBackwardsCalls() throws Exception {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("[NH[(1)]][KIH][(-1)]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+    public void testLayoutWithBackwardsCall() throws IOException,
+            Pack200Exception {
+        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(
+                new MockSegment(), new AttributeLayout("test",
+                        AttributeLayout.CONTEXT_METHOD, "[NH[(1)]][KIH][(-1)]",
+                        20));
         List layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
@@ -224,11 +208,9 @@ public class NewAttributeBandsTest extends TestCase {
         assertFalse(firstCallable.isBackwardsCallable());
         assertFalse(thirdCallable.isBackwardsCallable());
 
-        name = new CPUTF8("TestAttribute");
-        layout = new CPUTF8("[NH[(1)]][KIH][(-2)]");
-        newAttributeBands = new MockNewAttributeBands(1, null, null,
-                new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD,
+                        "[NH[(1)]][KIH][(-2)]", 20));
         layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         firstCallable = (Callable) layoutElements.get(0);
@@ -242,11 +224,9 @@ public class NewAttributeBandsTest extends TestCase {
         assertFalse(secondCallable.isBackwardsCallable());
         assertFalse(thirdCallable.isBackwardsCallable());
 
-        name = new CPUTF8("TestAttribute");
-        layout = new CPUTF8("[NH[(1)]][KIH][(0)]");
-        newAttributeBands = new MockNewAttributeBands(1, null, null,
-                new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
+        newAttributeBands = new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_METHOD,
+                        "[NH[(1)]][KIH][(0)]", 20));
         layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         firstCallable = (Callable) layoutElements.get(0);
@@ -259,72 +239,18 @@ public class NewAttributeBandsTest extends TestCase {
         assertTrue(thirdCallable.isBackwardsCallable());
         assertFalse(firstCallable.isBackwardsCallable());
         assertFalse(secondCallable.isBackwardsCallable());
-    }
-
-    public void testAddAttributes() throws IOException, Pack200Exception {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("B");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 27 }, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 56 }, null, 0, null));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 3 }, null, 0, null));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        newAttributeBands.pack(out);
-        // BYTE1 is used for B layouts so we don't need to unpack to test the
-        // results
-        byte[] bytes = out.toByteArray();
-        assertEquals(3, bytes.length);
-        assertEquals(27, bytes[0]);
-        assertEquals(56, bytes[1]);
-        assertEquals(3, bytes[2]);
-    }
-
-    public void testAddAttributesWithReplicationLayout() throws IOException,
-            Pack200Exception {
-        CPUTF8 name = new CPUTF8("TestAttribute");
-        CPUTF8 layout = new CPUTF8("NB[SH]");
-        MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1,
-                null, null, new AttributeDefinition(35,
-                        AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 1, 0, 100 }, null, 0, null));
-        short s = -50;
-        byte b1 = (byte) (s >>> 8);
-        byte b2 = (byte) s;
-        newAttributeBands.addAttribute(new NewAttribute(null, "TestAttribute",
-                "B", new byte[] { 3, 0, 5, 0, 25, b1, b2 }, null, 0, null));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        newAttributeBands.pack(out);
-        byte[] bytes = out.toByteArray();
-        assertEquals(1, bytes[0]);
-        assertEquals(3, bytes[1]);
-        byte[] band = new byte[bytes.length - 2];
-        System.arraycopy(bytes, 2, band, 0, band.length);
-        int[] decoded = Codec.SIGNED5.decodeInts(4, new ByteArrayInputStream(
-                band));
-        assertEquals(4, decoded.length);
-        assertEquals(100, decoded[0]);
-        assertEquals(5, decoded[1]);
-        assertEquals(25, decoded[2]);
-        assertEquals(-50, decoded[3]);
+        assertFalse(firstCallable.isBackwardsCallable());
     }
 
     private class MockNewAttributeBands extends NewAttributeBands {
 
-        public MockNewAttributeBands(int effort, CpBands cpBands,
-                SegmentHeader header, AttributeDefinition def)
+        public MockNewAttributeBands(Segment segment, AttributeLayout layout)
                 throws IOException {
-            super(effort, cpBands, header, def);
+            super(segment, layout);
         }
 
         public List getLayoutElements() {
             return attributeLayoutElements;
         }
     }
-
 }

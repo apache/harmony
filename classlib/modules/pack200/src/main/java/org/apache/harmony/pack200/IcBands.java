@@ -170,10 +170,6 @@ public class IcBands extends BandSet {
             return false;
         }
 
-        public int hashCode() {
-            return (C.hashCode() * 37) + F;
-        }
-
         public String toString() {
             return C.toString();
         }

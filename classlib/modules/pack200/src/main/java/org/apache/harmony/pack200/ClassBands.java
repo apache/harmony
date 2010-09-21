@@ -119,6 +119,8 @@ public class ClassBands extends BandSet {
     private final List tempFieldDesc = new ArrayList();
     private final List tempMethodFlags = new ArrayList();
     private final List tempMethodDesc = new ArrayList();
+    private TempParamAnnotation tempMethodRVPA;
+    private TempParamAnnotation tempMethodRIPA;
 
     private boolean anySyntheticClasses = false;
     private boolean anySyntheticFields = false;
@@ -153,6 +155,10 @@ public class ClassBands extends BandSet {
         field_flags = new long[numClasses][];
         method_descr = new CPNameAndType[numClasses][];
         method_flags = new long[numClasses][];
+        for (int i = 0; i < numClasses; i++) {
+            field_flags[i] = new long[0];
+            method_flags[i] = new long[0];
+        }
         // minor_versions = new int[numClasses];
         major_versions = new int[numClasses];
         class_flags = new long[numClasses];
@@ -520,7 +526,7 @@ public class ClassBands extends BandSet {
         int totalFields = sum(class_field_count);
         int[] fieldDescr = new int[totalFields];
         k = 0;
-        for (int i = 0; i < field_descr.length; i++) {
+        for (int i = 0; i < index; i++) {
             for (int j = 0; j < field_descr[i].length; j++) {
                 CPNameAndType descr = field_descr[i][j];
                 fieldDescr[k] = descr.getIndex();
@@ -538,7 +544,7 @@ public class ClassBands extends BandSet {
         int totalMethods = sum(class_method_count);
         int[] methodDescr = new int[totalMethods];
         k = 0;
-        for (int i = 0; i < method_descr.length; i++) {
+        for (int i = 0; i < index; i++) {
             for (int j = 0; j < method_descr[i].length; j++) {
                 CPNameAndType descr = method_descr[i][j];
                 methodDescr[k] = descr.getIndex();
@@ -774,7 +780,9 @@ public class ClassBands extends BandSet {
     private int[] getInts(CPClass[] cpClasses) {
         int[] ints = new int[cpClasses.length];
         for (int i = 0; i < ints.length; i++) {
-            ints[i] = cpClasses[i].getIndex();
+            if(cpClasses[i] != null) {
+                ints[i] = cpClasses[i].getIndex();
+            }
         }
         return ints;
     }
@@ -999,6 +1007,24 @@ public class ClassBands extends BandSet {
     }
 
     public void endOfMethod() {
+        if (tempMethodRVPA != null) {
+            method_RVPA_bands.addParameterAnnotation(tempMethodRVPA.numParams,
+                    tempMethodRVPA.annoN, tempMethodRVPA.pairN,
+                    tempMethodRVPA.typeRS, tempMethodRVPA.nameRU,
+                    tempMethodRVPA.t, tempMethodRVPA.values,
+                    tempMethodRVPA.caseArrayN, tempMethodRVPA.nestTypeRS,
+                    tempMethodRVPA.nestNameRU, tempMethodRVPA.nestPairN);
+            tempMethodRVPA = null;
+        }
+        if (tempMethodRIPA != null) {
+            method_RIPA_bands.addParameterAnnotation(tempMethodRIPA.numParams,
+                    tempMethodRIPA.annoN, tempMethodRIPA.pairN,
+                    tempMethodRIPA.typeRS, tempMethodRIPA.nameRU,
+                    tempMethodRIPA.t, tempMethodRIPA.values,
+                    tempMethodRIPA.caseArrayN, tempMethodRIPA.nestTypeRS,
+                    tempMethodRIPA.nestNameRU, tempMethodRIPA.nestPairN);
+            tempMethodRIPA = null;
+        }
         if(codeFlags.size() > 0) {
             long latestCodeFlag = ((Long)codeFlags.get(codeFlags.size() - 1)).longValue();
             int latestLocalVariableTableN = codeLocalVariableTableN.get(codeLocalVariableTableN.size() - 1);
@@ -1327,23 +1353,54 @@ public class ClassBands extends BandSet {
     public void addParameterAnnotation(int parameter, String desc,
             boolean visible, List nameRU, List t, List values, List caseArrayN, List nestTypeRS, List nestNameRU, List nestPairN) {
         if(visible) {
-            method_RVPA_bands.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-            Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
-            if((flag.intValue() & (1<<23)) != 0) {
-                method_RVPA_bands.incrementAnnoN();
-            } else {
-                method_RVPA_bands.newEntryInAnnoN();
+            if(tempMethodRVPA == null) {
+                tempMethodRVPA = new TempParamAnnotation(numMethodArgs);
+                tempMethodRVPA.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             }
+            Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
             tempMethodFlags.add(new Long(flag.longValue() | (1<<23)));
         } else {
-            method_RIPA_bands.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
-            Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
-            if((flag.longValue() & (1<<24)) != 0) {
-                method_RIPA_bands.incrementAnnoN();
-            } else {
-                method_RIPA_bands.newEntryInAnnoN();
+            if(tempMethodRIPA == null) {
+                tempMethodRIPA = new TempParamAnnotation(numMethodArgs);
+                tempMethodRIPA.addParameterAnnotation(parameter, desc, nameRU, t, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             }
+            Long flag = (Long) tempMethodFlags.remove(tempMethodFlags.size() - 1);
             tempMethodFlags.add(new Long(flag.longValue() | (1<<24)));
+        }
+    }
+
+    private static class TempParamAnnotation {
+
+        int numParams;
+        int[] annoN;
+        IntList pairN = new IntList();
+        List typeRS = new ArrayList();
+        List nameRU = new ArrayList();
+        List t = new ArrayList();
+        List values = new ArrayList();
+        List caseArrayN = new ArrayList();
+        List nestTypeRS = new ArrayList();
+        List nestNameRU = new ArrayList();
+        List nestPairN = new ArrayList();
+
+        public TempParamAnnotation (int numParams) {
+            this.numParams = numParams;
+            annoN = new int[numParams];
+        }
+
+        public void addParameterAnnotation(int parameter, String desc,
+                List nameRU, List t, List values, List caseArrayN,
+                List nestTypeRS, List nestNameRU, List nestPairN) {
+            annoN[parameter]++;
+            typeRS.add(desc);
+            pairN.add(nameRU.size());
+            this.nameRU.addAll(nameRU);
+            this.t.addAll(t);
+            this.values.addAll(values);
+            this.caseArrayN.addAll(caseArrayN);
+            this.nestTypeRS.addAll(nestTypeRS);
+            this.nestNameRU.addAll(nestNameRU);
+            this.nestPairN.addAll(nestPairN);
         }
     }
 
@@ -1548,6 +1605,12 @@ public class ClassBands extends BandSet {
         tempFieldFlags.clear();
         tempMethodDesc.clear();
         tempMethodFlags.clear();
-        index--;
+        if(index > 0) {
+            index--;
+        }
+    }
+
+    public int numClassesProcessed() {
+        return index;
     }
 }

@@ -24,6 +24,18 @@ INCLUDES += -I$(ZLIB_DIST)
 
 BUILDFILES = zcpool.o zipalloc.o zipcache.o zipsup.o pool.o pool_cap.o
 
+ifeq ($(HY_LOCAL_ZLIB),true)
+DEFINES += -DHY_LOCAL_ZLIB
+else
+
+ifeq ($(HY_OS),zos)
+MDLLIBZLIB += $(LIBPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
+else
+MDLLIBZLIB += $(DLLPATH)libhyzlib$(HY_LINKLIB_SUFFIX)
+endif
+
+endif
+
 LIBNAME = $(LIBPATH)libhyzip.a
 
 $(HY_BIN)%.o: $(LIBPATH)libhypool.a(%.o)

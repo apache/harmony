@@ -31,18 +31,6 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
         this.nameAndType = nameAndType;
     }
 
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof CPMethodOrField)) {
-            return false;
-        }
-        return ((CPMethodOrField) obj).className.equals(className)
-                && ((CPMethodOrField) obj).nameAndType.equals(nameAndType);
-    }
-
-    public int hashCode() {
-        return className.hashCode() + nameAndType.hashCode();
-    }
-
     public String toString() {
         return className + ": " + nameAndType;
     }

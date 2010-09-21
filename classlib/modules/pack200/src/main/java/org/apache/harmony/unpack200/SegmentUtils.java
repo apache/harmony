@@ -124,41 +124,4 @@ public final class SegmentUtils {
         return count;
     }
 
-    /**
-     * Answer the index of the first character <= '$' in the parameter. This is
-     * used instead of indexOf('$') because inner classes may be separated by
-     * any character <= '$' (in other words, Foo#Bar is as valid as Foo$Bar). If
-     * no $ character is found, answer -1.
-     *
-     * @param string
-     *            String to search for $
-     * @return first index of $ character, or -1 if not found
-     */
-    public static int indexOfFirstDollar(String string) {
-        for (int index = 0; index < string.length(); index++) {
-            if (string.charAt(index) <= '$') {
-                return index;
-            }
-        }
-        return -1;
-    }
-
-    private SegmentUtils() {
-        // Intended to be a helper class
-    }
-
-    /**
-     * This is a debugging message to aid the developer in writing this class.
-     * If the property 'debug.unpack200' is set, this will generate messages to
-     * stderr; otherwise, it will be silent.
-     *
-     * @param message
-     * @deprecated this may be removed from production code
-     */
-    public static void debug(String message) {
-        if (System.getProperty("debug.unpack200") != null) {
-            System.err.println(message);
-        }
-    }
-
 }

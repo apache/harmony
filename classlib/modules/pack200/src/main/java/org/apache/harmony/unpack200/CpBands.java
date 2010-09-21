@@ -88,7 +88,7 @@ public class CpBands extends BandSet {
     private Map mapUTF8;
 
 // TODO: Not used
-//    private Map mapSignature;
+    private Map mapSignature;
 
     private int intOffset;
     private int floatOffset;
@@ -341,6 +341,7 @@ public class CpBands extends BandSet {
                 Codec.DELTA5, cpSignatureCount);
         String[] cpSignatureForm = getReferences(cpSignatureInts, cpUTF8);
         cpSignature = new String[cpSignatureCount];
+        mapSignature = new HashMap();
         int lCount = 0;
         for (int i = 0; i < cpSignatureCount; i++) {
             String form = cpSignatureForm[i];
@@ -371,6 +372,7 @@ public class CpBands extends BandSet {
                 }
             }
             cpSignature[i] = signature.toString();
+            mapSignature.put(signature.toString(), new Integer(i));
         }
 //        for (int i = 0; i < cpSignatureInts.length; i++) {
 //            if(cpSignatureInts[i] == -1) {
@@ -475,28 +477,12 @@ public class CpBands extends BandSet {
         return cpDescriptor;
     }
 
-    public double[] getCpDouble() {
-        return cpDouble;
-    }
-
     public String[] getCpFieldClass() {
         return cpFieldClass;
     }
 
-    public String[] getCpFieldDescriptor() {
-        return cpFieldDescriptor;
-    }
-
-    public float[] getCpFloat() {
-        return cpFloat;
-    }
-
     public String[] getCpIMethodClass() {
         return cpIMethodClass;
-    }
-
-    public String[] getCpIMethodDescriptor() {
-        return cpIMethodDescriptor;
     }
 
     public int[] getCpInt() {
@@ -517,10 +503,6 @@ public class CpBands extends BandSet {
 
     public String[] getCpSignature() {
         return cpSignature;
-    }
-
-    public String[] getCpString() {
-        return cpString;
     }
 
     public String[] getCpUTF8() {
@@ -547,19 +529,18 @@ public class CpBands extends BandSet {
         CPUTF8 cputf8 = (CPUTF8) stringsToCPUTF8.get(string);
         if (cputf8 == null) {
         	Integer index = null;
-            if(searchForIndex) {
+        	if(searchForIndex) {
             	index = (Integer)mapUTF8.get(string);
             }
             if(index != null) {
             	return cpUTF8Value(index.intValue());
             }
-            /* TODO: mapSignature is not filled anywhere
             if(searchForIndex) {
                 index = (Integer)mapSignature.get(string);
             }
             if(index != null) {
             	return cpSignatureValue(index.intValue());
-            }*/
+            }
             cputf8 = new CPUTF8(string, -1);
             stringsToCPUTF8.put(string, cputf8);
         }

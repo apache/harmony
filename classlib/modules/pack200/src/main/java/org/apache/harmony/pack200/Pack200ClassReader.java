@@ -16,9 +16,6 @@
  */
 package org.apache.harmony.pack200;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.objectweb.asm.ClassReader;
 
 /**
@@ -38,32 +35,6 @@ public class Pack200ClassReader extends ClassReader {
      */
     public Pack200ClassReader(byte[] b) {
         super(b);
-    }
-
-    /**
-     * @param is
-     *            the input stream of class file
-     * @throws IOException
-     */
-    public Pack200ClassReader(InputStream is) throws IOException {
-        super(is);
-    }
-
-    /**
-     * @param name
-     * @throws IOException
-     */
-    public Pack200ClassReader(String name) throws IOException {
-        super(name);
-    }
-
-    /**
-     * @param b
-     * @param off
-     * @param len
-     */
-    public Pack200ClassReader(byte[] b, int off, int len) {
-        super(b, off, len);
     }
 
     public int readUnsignedShort(int index) {

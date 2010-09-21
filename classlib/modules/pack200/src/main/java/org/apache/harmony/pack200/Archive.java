@@ -146,7 +146,7 @@ public class Archive {
         List classes = new ArrayList();
         List files = new ArrayList();
         long segmentLimit = options.getSegmentLimit();
-        
+
         int size = packingFileList.size();
         PackingFile packingFile;
         for (int index = 0; index < size; index++) {
@@ -221,9 +221,9 @@ public class Archive {
 
     static class SegmentUnit {
 
-        private List classList;
+        private final List classList;
 
-        private List fileList;
+        private final List fileList;
 
         private int byteAmount = 0;
 
@@ -322,6 +322,10 @@ public class Archive {
 
         public boolean isDirectory(){
             return isDirectory;
+        }
+
+        public String toString() {
+            return name;
         }
     }
 

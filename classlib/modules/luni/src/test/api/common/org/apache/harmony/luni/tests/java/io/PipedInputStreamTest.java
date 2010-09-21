@@ -361,6 +361,40 @@ public class PipedInputStreamTest extends TestCase {
                 myRun.pass);
     }
 
+    static class Worker extends Thread {
+        PipedOutputStream out;
+
+        Worker(PipedOutputStream pos) {
+            this.out = pos;
+        }
+
+        public void run() {
+            try {
+                out.write(20);
+                out.close();
+                Thread.sleep(5000);
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public void test_read_after_write_close() throws Exception{
+        PipedInputStream in = new PipedInputStream();
+        PipedOutputStream out = new PipedOutputStream();
+        in.connect(out);
+        Thread worker = new Worker(out);
+        worker.start();
+        Thread.sleep(2000);
+        assertEquals("Should read 20.", 20, in.read());
+        worker.join();
+        assertEquals("Write end is closed, should return -1", -1, in.read());
+        byte[] buf = new byte[1];
+        assertEquals("Write end is closed, should return -1", -1, in.read(buf, 0, 1));
+        assertEquals("Buf len 0 should return first", 0, in.read(buf, 0, 0));
+        in.close();
+        out.close();
+    }
+
     /**
      * Tears down the fixture, for example, close a network connection. This
      * method is called after a test is executed.

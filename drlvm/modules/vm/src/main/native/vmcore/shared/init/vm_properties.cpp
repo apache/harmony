@@ -49,18 +49,18 @@ static apr_pool_t *prop_pool;
 
 static const char *api_dll_files[] =
 {
-    "harmonyvm",
-    "hythr",
-    "hyprt",
+    "harmonyvm", NULL,
+    "hythr", NULL,
+    "hyprt", NULL,
 #if defined(HY_LOCAL_ZLIB)
-    "z",
+    "z", "1",
 #else
-    "hyzlib",
+    "hyzlib", NULL,
 #endif
-    "hynio",
-    "vmi",
-    "hyluni",
-    "hyarchive"
+    "hynio", NULL,
+    "vmi", NULL,
+    "hyluni", NULL,
+    "hyarchive", NULL
 };
 
 /**
@@ -74,11 +74,12 @@ static const char *compose_full_files_path_names_list(const char *path,
                                                 bool is_dll)
 {
     const char* full_name = "";
-    for (int iii = 0; iii < names_number; iii++)
+    for (int iii = 0; iii < names_number; )
     {
-        const char *tmp = dll_names[iii];
+        const char *tmp = dll_names[iii++];
+        const char *ver = dll_names[iii++];
         if (is_dll) {
-            tmp = port_dso_name_decorate(tmp, prop_pool);
+            tmp = port_dso_name_decorate(tmp, ver, prop_pool);
         }
         
         /*
@@ -92,9 +93,8 @@ static const char *compose_full_files_path_names_list(const char *path,
         }
         
         full_name = apr_pstrcat(prop_pool, full_name, tmp, 
-            (iii + 1 < names_number) ? PORT_PATH_SEPARATOR_STR : "", NULL);
+            (iii < names_number) ? PORT_PATH_SEPARATOR_STR : "", NULL);
     }
-
     return full_name;
 }
 
