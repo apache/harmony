@@ -133,6 +133,11 @@ public final class ObjID implements Serializable {
     private static class NumberGenerator {
         // Counter to be used in case of insecure mode.
         static long numCounter = 65536; // 2^16
+        
+        private static class RMINumberGeneratorLock {
+            // Used to identify local lock.
+        }
+        private static final Object monitor = new RMINumberGeneratorLock();
 
         // Secure generator.
         SecureRandom sGenerator;
@@ -149,8 +154,10 @@ public final class ObjID implements Serializable {
         /*
          * Returns next long number.
          */
-        synchronized long nextLong() {
-            return useRandom ? sGenerator.nextLong() : numCounter++;
+        long nextLong() {
+            synchronized (monitor) {
+                return useRandom ? sGenerator.nextLong() : numCounter++;
+            }
         }
     }
 }
