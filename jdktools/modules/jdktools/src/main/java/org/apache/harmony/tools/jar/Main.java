@@ -212,9 +212,10 @@ public class Main {
                 File f = new File(ze.getName());
                 f.createNewFile();
                 FileOutputStream fos = new FileOutputStream(f);
-                int i;
-                while ((i = zis.read()) != -1) {
-                    fos.write(i);
+                int c;
+                byte[] bs = new byte[1024];
+                while ((c = zis.read(bs)) != -1) {
+                    fos.write(bs, 0, c);
                 }
                 fos.close();
                 if (verboseFlag) {
