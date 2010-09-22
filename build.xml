@@ -787,7 +787,7 @@ harmony.java.version=${harmony.java.version}
         <chmod file="${hy.target}/src/debian/rules" perm="ugo+x" />
     </target>
 
-    <target name="test" depends="clean-tests">
+    <target name="test" depends="clean-tests" description="Runs all tests">
         <ant antfile="${hy.target}/hdk/build/test/build.xml"
              target="test" inheritAll="false" >
             <propertyset refid="required.props" />
