@@ -42,6 +42,8 @@ public class AttributeLayoutMap {
                         AttributeLayout.CONTEXT_FIELD, "", 0),
                 new AttributeLayout(AttributeLayout.ACC_PUBLIC,
                         AttributeLayout.CONTEXT_METHOD, "", 0),
+                new AttributeLayout(AttributeLayout.ATTRIBUTE_STACK_MAP_TABLE,
+                        AttributeLayout.CONTEXT_CODE, "*", 0),
                 new AttributeLayout(AttributeLayout.ACC_PRIVATE,
                         AttributeLayout.CONTEXT_CLASS, "", 1),
                 new AttributeLayout(AttributeLayout.ACC_PRIVATE,

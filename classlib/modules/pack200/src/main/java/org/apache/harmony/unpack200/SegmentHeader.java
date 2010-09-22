@@ -141,7 +141,7 @@ public class SegmentHeader {
      *             if the minor version is not 7
      */
     private void setArchiveMinorVersion(int version) throws Pack200Exception {
-        if (version != 7)
+        if (version != 7 && version != 1)
             throw new Pack200Exception("Invalid segment minor version");
         archiveMinor = version;
     }
@@ -155,10 +155,14 @@ public class SegmentHeader {
      *             if the major version is not 150
      */
     private void setArchiveMajorVersion(int version) throws Pack200Exception {
-        if (version != 150)
+        if (version != 150 && version != 160)
             throw new Pack200Exception("Invalid segment major version: "
                     + version);
         archiveMajor = version;
+    }
+
+    public int getArchiveMajor() {
+        return archiveMajor;
     }
 
     public long getArchiveModtime() {

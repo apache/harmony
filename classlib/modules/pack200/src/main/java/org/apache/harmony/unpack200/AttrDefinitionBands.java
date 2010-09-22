@@ -33,6 +33,7 @@ import org.apache.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.harmony.unpack200.bytecode.LocalVariableTypeTableAttribute;
 import org.apache.harmony.unpack200.bytecode.SignatureAttribute;
 import org.apache.harmony.unpack200.bytecode.SourceFileAttribute;
+import org.apache.harmony.unpack200.bytecode.StackMapTableAttribute;
 
 /**
  * Attribute definition bands are the set of bands used to define extra
@@ -108,6 +109,7 @@ public class AttrDefinitionBands extends BandSet {
         LocalVariableTypeTableAttribute.setAttributeName(segment.getCpBands().cpUTF8Value("LocalVariableTypeTable")); //$NON-NLS-1$
         SignatureAttribute.setAttributeName(segment.getCpBands().cpUTF8Value("Signature")); //$NON-NLS-1$
         SourceFileAttribute.setAttributeName(segment.getCpBands().cpUTF8Value("SourceFile")); //$NON-NLS-1$
+        StackMapTableAttribute.setAttributeName(segment.getCpBands().cpUTF8Value("StackMapTable")); //$NON-NLS-1$
         MetadataBandGroup.setRvaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeVisibleAnnotations"));
         MetadataBandGroup.setRiaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeInvisibleAnnotations"));
         MetadataBandGroup.setRvpaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeVisibleParameterAnnotations"));

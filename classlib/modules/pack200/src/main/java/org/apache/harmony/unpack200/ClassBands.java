@@ -37,6 +37,7 @@ import org.apache.harmony.unpack200.bytecode.LocalVariableTableAttribute;
 import org.apache.harmony.unpack200.bytecode.LocalVariableTypeTableAttribute;
 import org.apache.harmony.unpack200.bytecode.SignatureAttribute;
 import org.apache.harmony.unpack200.bytecode.SourceFileAttribute;
+import org.apache.harmony.unpack200.bytecode.StackMapTableAttribute;
 
 /**
  * Class Bands
@@ -115,6 +116,8 @@ public class ClassBands extends BandSet {
     private int[][] codeHandlerClassRCN;
 
     private boolean [] codeHasAttributes;
+
+    private StackMapTableBands stackMapTableBands;
 
     /**
      * @param segment
@@ -822,6 +825,76 @@ public class ClassBands extends BandSet {
         int[] codeAttrCalls = decodeBandInt("code_attr_calls", in,
                 Codec.UNSIGNED5, callCount);
 
+        boolean hasStackMapTables = segment.getSegmentHeader()
+                .getArchiveMajor() > 150;
+        AttributeLayout stackMapTableLayout = attrMap.getAttributeLayout(
+                AttributeLayout.ATTRIBUTE_STACK_MAP_TABLE,
+                AttributeLayout.CONTEXT_CODE);
+        if (hasStackMapTables) {
+            int stackMapTableCount = SegmentUtils.countMatches(codeFlags,
+                    stackMapTableLayout);
+            int[] stackMapTableN = decodeBandInt("code_StackMapTable_N", in,
+                    Codec.UNSIGNED5, stackMapTableCount);
+            int[][] stackMapTableFrameT = decodeBandInt(
+                    "code_StackMapTable_frame_T", in, Codec.BYTE1,
+                    stackMapTableN);
+            int count255 = 0;
+            int offsetCount = 0;
+            int verificationTypeInfoCount = 0;
+            for (int i = 0; i < stackMapTableFrameT.length; i++) {
+                for (int j = 0; j < stackMapTableFrameT[i].length; j++) {
+                    int tag = stackMapTableFrameT[i][j];
+                    if (tag == 255) {
+                        count255++;
+                        offsetCount++;
+                    } else if (tag >= 247 && tag <= 254) {
+                        offsetCount++;
+                    }
+                    if (tag >= 64 && tag <= 127) {
+                        verificationTypeInfoCount++;
+                    } else if (tag == 247 || tag == 252) {
+                        verificationTypeInfoCount++;
+                    } else if (tag == 253) {
+                        verificationTypeInfoCount += 2;
+                    } else if (tag == 254) {
+                        verificationTypeInfoCount += 3;
+                    }
+                }
+            }
+            int[] stackMapTableLocalN = decodeBandInt(
+                    "code_StackMapTable_local_N", in, Codec.UNSIGNED5, count255);
+            int[] stackMapTableStackN = decodeBandInt(
+                    "code_StackMapTable_stack_N", in, Codec.UNSIGNED5, count255);
+            for (int i = 0; i < stackMapTableLocalN.length; i++) {
+                verificationTypeInfoCount += stackMapTableLocalN[i];
+            }
+            for (int i = 0; i < stackMapTableStackN.length; i++) {
+                verificationTypeInfoCount += stackMapTableStackN[i];
+            }
+            int[] stackMapTableOffset = decodeBandInt(
+                    "code_StackMapTable_offset", in, Codec.UNSIGNED5,
+                    offsetCount);
+            int[] stackMapTableT = decodeBandInt("", in, Codec.BYTE1,
+                    verificationTypeInfoCount);
+            int sevenCount = 0;
+            int eightCount = 0;
+            for (int i = 0; i < stackMapTableT.length; i++) {
+                if (stackMapTableT[i] == 7) {
+                    sevenCount++;
+                } else if (stackMapTableT[i] == 8) {
+                    eightCount++;
+                }
+            }
+            CPClass[] stackMapTableRC = parseCPClassReferences(
+                    "code_StackMapTable_RC", in, Codec.UNSIGNED5, sevenCount);
+            int[] stackMapTableP = decodeBandInt("code_StackMapTable_P", in,
+                    Codec.BCI5, eightCount);
+            stackMapTableBands = new StackMapTableBands(stackMapTableFrameT,
+                    stackMapTableLocalN, stackMapTableStackN,
+                    stackMapTableOffset, stackMapTableT, stackMapTableRC,
+                    stackMapTableP);
+        }
+
         AttributeLayout lineNumberTableLayout = attrMap.getAttributeLayout(
                 AttributeLayout.ATTRIBUTE_LINE_NUMBER_TABLE,
                 AttributeLayout.CONTEXT_CODE);
@@ -919,6 +992,10 @@ public class ClassBands extends BandSet {
         int lvtIndex = 0;
         int lvttIndex = 0;
         for (int i = 0; i < codeFlagsCount; i++) {
+            if(hasStackMapTables && stackMapTableLayout.matches(codeFlags[i])) {
+                StackMapTableAttribute smta = stackMapTableBands.nextStackMapTableAttribute();
+                codeAttributes[i].add(smta);
+            }
             if (lineNumberTableLayout.matches(codeFlags[i])) {
                 LineNumberTableAttribute lnta = new LineNumberTableAttribute(
                         lineNumberTableN[lineNumberIndex],
@@ -959,7 +1036,6 @@ public class ClassBands extends BandSet {
                 }
             }
         }
-
     }
 
     private int parseFieldMetadataBands(InputStream in, int[] fieldAttrCalls)
@@ -1118,7 +1194,7 @@ public class ClassBands extends BandSet {
         int backwardsCallsUsed = 0;
         String[] RxA = new String[] { "RVA", "RIA", "RVPA", "RIPA", "AD" };
         int[] rxaCounts = new int[] { 0, 0, 0, 0, 0 };
-        
+
         AttributeLayout rvaLayout = attrMap.getAttributeLayout(
                 AttributeLayout.ATTRIBUTE_RUNTIME_VISIBLE_ANNOTATIONS,
                 AttributeLayout.CONTEXT_METHOD);

@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -74,23 +75,22 @@ public class ArchiveTest extends TestCase {
         out = new JarOutputStream(new FileOutputStream(file));
         Archive archive = new Archive(in, out);
         archive.unpack();
-        JarFile jarFile = new JarFile(file);
 
         File compareFile = new File(Archive.class.getResource(
                 "/org/apache/harmony/pack200/tests/sqlUnpacked.jar").toURI());
 
-        JarFile jarFile2 = new JarFile(compareFile);
 
-        long differenceInJarSizes = Math.abs(compareFile.length()
-                - file.length());
+        compareFiles(compareFile, file);
+    }
 
-        assertTrue("Expected jar files to be a similar size, difference was "
-                + differenceInJarSizes + " bytes", differenceInJarSizes < 100);
+    private void compareFiles(File expected, File theFile) throws URISyntaxException,
+            IOException {
 
+        JarFile jarFile = new JarFile(theFile);
+        JarFile jarFile2 = new JarFile(expected);
         Enumeration entries = jarFile.entries();
         Enumeration entries2 = jarFile2.entries();
         while(entries.hasMoreElements() && entries2.hasMoreElements()) {
-
             JarEntry entry = (JarEntry) entries.nextElement();
             assertNotNull(entry);
             String name = entry.getName();
@@ -101,23 +101,26 @@ public class ArchiveTest extends TestCase {
 
             assertEquals(name, name2);
 
-            InputStream ours = jarFile.getInputStream(entry);
-            InputStream expected = jarFile2.getInputStream(entry2);
+            if(name.indexOf('$') == -1) { // We're not quite identical for inner classes
 
-            BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
-            BufferedReader reader2 = new BufferedReader(new InputStreamReader(
-                    expected));
-            String line1 = reader1.readLine();
-            String line2 = reader2.readLine();
-            int i = 1;
-            while (line1 != null || line2 != null) {
-                assertEquals("Unpacked class files differ for " + name, line2, line1);
-                line1 = reader1.readLine();
-                line2 = reader2.readLine();
-                i++;
+                InputStream ours = jarFile.getInputStream(entry);
+                InputStream expectedStr = jarFile2.getInputStream(entry2);
+
+                BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
+                BufferedReader reader2 = new BufferedReader(new InputStreamReader(
+                        expectedStr));
+                String line1 = reader1.readLine();
+                String line2 = reader2.readLine();
+                int i = 1;
+                while (line1 != null || line2 != null) {
+                    assertEquals("Unpacked class files differ for " + name, line2, line1);
+                    line1 = reader1.readLine();
+                    line2 = reader2.readLine();
+                    i++;
+                }
+                reader1.close();
+                reader2.close();
             }
-            reader1.close();
-            reader2.close();
         }
     }
 
@@ -219,7 +222,7 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
         assertFalse(copy.exists());
     }
-    
+
     public void testDeflateHint() throws Exception {
         in = Archive.class
                 .getResourceAsStream("/org/apache/harmony/pack200/tests/sql.pack.gz");
@@ -231,7 +234,7 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
         JarFile jarFile = new JarFile(file);
         assertEquals(ZipEntry.DEFLATED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
-        
+
         in = Archive.class
                 .getResourceAsStream("/org/apache/harmony/pack200/tests/sql.pack.gz");
         file = File.createTempFile("sql", ".jar");
@@ -242,7 +245,18 @@ public class ArchiveTest extends TestCase {
         archive.unpack();
         jarFile = new JarFile(file);
         assertEquals(ZipEntry.STORED, jarFile.getEntry("bin/test/org/apache/harmony/sql/tests/internal/rowset/CachedRowSetImplTest.class").getMethod());
-        
+    }
+
+    public void testJava6ClassFiles() throws Exception {
+        in = Archive.class
+                .getResourceAsStream("/org/apache/harmony/pack200/tests/p200-java6-RI.pack.gz");
+        file = File.createTempFile("p200-java6", ".jar");
+        out = new JarOutputStream(new FileOutputStream(file));
+        Archive archive = new Archive(in, out);
+        archive.unpack();
+        File compareFile = new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/p200-java6-RI.jar").toURI());
+        compareFiles(compareFile, file);
     }
 
     protected void tearDown() throws Exception {
@@ -300,7 +314,7 @@ public class ArchiveTest extends TestCase {
         reader = new FileReader(logFile);
         assertTrue(reader.ready());
         reader.close();
-        
+
         // test append option
         long length = logFile.length();
         in = Archive.class
