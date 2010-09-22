@@ -252,3 +252,13 @@ void getOSCharset(char *locale, const size_t size) {
   }
   return;
 }
+
+jlong getPlatformStdInFD() {
+  return (jlong)0;
+}
+jlong getPlatformStdOutFD() {
+  return (jlong)1;
+}
+jlong getPlatformStdErrFD() {
+  return (jlong)2;
+}
