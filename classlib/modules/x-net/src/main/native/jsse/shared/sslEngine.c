@@ -137,7 +137,7 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     BIO *bio_io = sslengine->bio_io;
     SSL *ssl = jlong2addr(SSL, jssl);
     int write_result = 0, read_result = 0, shutdownState = 0;
-    jobject handshake_state = NULL, engine_state = NULL, result = NULL;
+    jobject handshake_state = NULL, engine_state = engine_ok, result = NULL;
     jclass result_class;
     jmethodID result_constructor;
     jbyte *src_buffer = jlong2addr(jbyte, src_address);
@@ -147,19 +147,18 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     initial_init_state = SSL_in_init(ssl);
     
     // write input data
-    write_result = BIO_write(bio, (const void *)src_buffer, (int)src_len);
+    if (BIO_ctrl_get_write_guarantee(bio) >= (size_t)src_len) {
+        write_result = BIO_write(bio, (const void *)src_buffer, (int)src_len);
+    } else {
+        write_result = 0;
+    }
+
     if (write_result > 0) {
         // wrote some data so must not be handshaking
         handshake_state = handshake_not_handshaking;
-        if (write_result < src_len) {
-            engine_state = engine_buffer_overflow;
-        } else {
-            engine_state = engine_ok;
-        }
     } else {
         write_result = 0;
         handshake_state = handshake_need_unwrap;
-        engine_state = engine_ok;
     }
 
     // Check if close_notify has been sent or received
@@ -169,7 +168,12 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     }
     
     // read output data
-    read_result = BIO_read(bio_io, dst_buffer, dst_len);
+    // if the destination buffer is too small
+    if (BIO_ctrl_pending(bio_io) > (size_t)dst_len) {
+        engine_state = engine_buffer_overflow;
+    } else {
+        read_result = BIO_read(bio_io, dst_buffer, dst_len);
+    }
 
     if (read_result < 0) {
         // change state?
@@ -205,12 +209,13 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     BIO *bio_io = sslengine->bio_io;
     SSL *ssl = jlong2addr(SSL, jssl);
     int write_result = 0, read_result = 0, shutdownState = 0;
-    jobject handshake_state = NULL, engine_state = NULL, result = NULL;
+    jobject handshake_state = handshake_not_handshaking, engine_state = engine_ok, result = NULL;
     jclass result_class;
     jmethodID result_constructor;
     jbyte *src_buffer = jlong2addr(jbyte, src_address);
     jbyte *dst_buffer = jlong2addr(jbyte, dst_address);
-    int initial_init_state, init_state;
+    int initial_init_state;
+    int read_pending = 0;
 
     initial_init_state = SSL_in_init(ssl);
     
@@ -221,36 +226,35 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
         write_result = 0;
     }
     
+    // TODO check for errors
     // read output data
-    read_result = BIO_read(bio, dst_buffer, dst_len);
-    if (read_result > 0) {
-        // wrote some data so must not be handshaking
-        handshake_state = handshake_not_handshaking;
-        if (read_result < src_len) {
-            engine_state = engine_buffer_underflow;
+    read_pending = BIO_ctrl_pending(bio);
+    if (read_pending != 0) {
+        if (read_pending > dst_len) {
+            engine_state = engine_buffer_overflow;
         } else {
-            engine_state = engine_ok;
+            read_result = SSL_read(ssl, dst_buffer, dst_len);
+            
+            // Check if close_notify has been sent or received
+            shutdownState = SSL_get_shutdown(ssl);
+            if (shutdownState) {
+                engine_state = engine_closed;
+            }
+            
+            if (read_result < 0) {
+                read_result = 0;
+            }
         }
-    } else {
-        read_result = 0;
-        handshake_state = handshake_need_wrap;
-        engine_state = engine_ok;
-    }
-
-    // Check if close_notify has been sent or received
-    shutdownState = SSL_get_shutdown(ssl);
-    if (shutdownState) {
-        engine_state = engine_closed;
-    }
-    
-    init_state = SSL_in_init(ssl);
-    // if not in SSL init state
-    if (!init_state) {
-        // if we were in init state when we entered this function
-        if (initial_init_state) {
-            handshake_state = handshake_finished;
+        // if not in SSL init state
+        if (SSL_in_init(ssl)) {
+            handshake_state = handshake_need_wrap;
         } else {
-            handshake_state = handshake_not_handshaking;
+            // if we were in init state when we entered this function
+            if (initial_init_state) {
+                handshake_state = handshake_finished;
+            } else {
+                handshake_state = handshake_not_handshaking;
+            }
         }
     }
     
@@ -260,7 +264,7 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
         "(Ljavax/net/ssl/SSLEngineResult$Status;Ljavax/net/ssl/SSLEngineResult$HandshakeStatus;II)V");
     result = (*env)->NewObject(env, result_class, result_constructor,
         engine_state, handshake_state, write_result, read_result);
-    return result;  
+    return result;
 }
 
 void shutdownImpl(JNIEnv *env, SSL *ssl) {
