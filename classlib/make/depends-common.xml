@@ -60,7 +60,7 @@
                 </or>
             </condition>
             <antcall target="-remove-file-if-bad">
-                <param name="jar" value="@{dest}" />
+                <param name="dest" value="@{dest}" />
             </antcall>
             <property name="@{dest}.fullpath" location="@{dest}" />
             <fail unless="@{dest}.md5.verified">
