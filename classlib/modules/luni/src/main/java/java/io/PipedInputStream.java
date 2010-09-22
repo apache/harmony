@@ -197,6 +197,11 @@ public class PipedInputStream extends InputStream {
             throw new IOException(Messages.getString("luni.CC")); //$NON-NLS-1$
         }
 
+        if (isClosed && in == -1) {
+            // write end closed and no more need to read
+            return -1;
+        }
+
         if (lastWriter != null && !lastWriter.isAlive() && (in < 0)) {
             // luni.CD=Write end dead
             throw new IOException(Messages.getString("luni.CD")); //$NON-NLS-1$
@@ -283,6 +288,11 @@ public class PipedInputStream extends InputStream {
 
         if (count == 0) {
             return 0;
+        }
+
+        if (isClosed && in == -1) {
+            // write end closed and no more need to read
+            return -1;
         }
 
         if (!isConnected) {
