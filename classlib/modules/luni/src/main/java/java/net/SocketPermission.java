@@ -300,14 +300,7 @@ public final class SocketPermission extends Permission implements Serializable {
        String port = hostPort.substring(host.length());
        String emptyString = ""; //$NON-NLS-1$
 
-       if (emptyString.equals(port)) {
-           // Not specified
-           portMin = 80;
-           portMax = 80;
-           return;
-       }
-       
-       if (":*".equals(port)) {
+       if (emptyString.equals(port) || ":*".equals(port)) {
            // The port range should be 0-65535
            portMin = 0;
            portMax = 65535;

@@ -64,6 +64,11 @@ public class SocketPermissionTest extends junit.framework.TestCase {
                 "listen");
         assertTrue("Port range error", sp3.implies(spAllPorts));
         assertTrue("Port range error", spAllPorts.implies(sp3));
+
+        SocketPermission sp4 = new SocketPermission("localhost", "listen");
+        assertEquals("Wrong name4", "localhost", sp4.getName());
+        assertTrue("Port range error", sp4.implies(spAllPorts));
+        assertTrue("Port range error", spAllPorts.implies(sp4));
     }
 
     /**
