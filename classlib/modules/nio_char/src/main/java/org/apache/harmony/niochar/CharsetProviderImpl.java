@@ -365,8 +365,8 @@ public class CharsetProviderImpl extends CharsetProvider {
                                                   "X-UTF-16BE",
                                                   "UTF_16BE" } },
 
-            { "IBM866",      null, new String[] { "cp866",
-                                                  "IBM866",
+            { "IBM866",      null, new String[] { "IBM866",
+                                                  "cp866",
                                                   "866",
                                                   "csIBM866" } }, 
 
@@ -415,8 +415,8 @@ public class CharsetProviderImpl extends CharsetProvider {
                                                   "cp775",
                                                   "csPC775Baltic" } },
 
-            { "additional.IBM850",      null, new String[] { "cp850",
-                                                  "IBM850",
+            { "additional.IBM850",      null, new String[] { "IBM850",
+                                                  "cp850",
                                                   "850",
                                                   "csPC850Multilingual" } },
 
@@ -430,46 +430,46 @@ public class CharsetProviderImpl extends CharsetProvider {
                                                   "855",
                                                   "csIBM855" } },
 
-            { "additional.IBM857",      null, new String[] { "cp857",
-                                                  "IBM857",
+            { "additional.IBM857",      null, new String[] { "IBM857",
+                                                  "cp857",
                                                   "857",
                                                   "csIBM857" } },
 
-            { "additional.IBM860",      null, new String[] { "cp860",
-                                                  "IBM860",
+            { "additional.IBM860",      null, new String[] { "IBM860",
+                                                  "cp860",
                                                   "860",
                                                   "csIBM860" } },
 
-            { "additional.IBM861",      null, new String[] { "cp861",
-                                                  "IBM861",
+            { "additional.IBM861",      null, new String[] { "IBM861",
+                                                  "cp861",
                                                   "861",
                                                   "cp-is",
                                                   "csIBM861" } },
 
-            { "additional.IBM862",      null, new String[] { "cp862",
-                                                  "IBM862",
+            { "additional.IBM862",      null, new String[] { "IBM862",
+                                                  "cp862",
                                                   "862",
                                                   "csPC862LatinHebrew" } },
 
-            { "additional.IBM863",      null, new String[] { "cp863",
-                                                  "IBM863",
+            { "additional.IBM863",      null, new String[] { "IBM863",
+                                                  "cp863",
                                                   "863",
                                                   "csIBM863" } },
 
-            { "additional.IBM865",      null, new String[] { "cp865",
-                                                  "IBM865",
+            { "additional.IBM865",      null, new String[] { "IBM865",
+                                                  "cp865",
                                                   "865",
                                                   "csIBM865" } },
 
-            { "additional.IBM869",      null, new String[] { "cp869",
-                                                  "IBM869",
+            { "additional.IBM869",      null, new String[] { "IBM869",
+                                                  "cp869",
                                                   "869",
                                                   "cp-gr",
                                                   "csIBM869" } },
 
 
-            { "additional.IBM00858",    null, new String[] { "cp858",
-                                                  "IBM00858",
+            { "additional.IBM00858",    null, new String[] { "IBM00858",
+                                                  "cp858",
                                                   "CCSID00858",
                                                   "CP00858" } },
 
@@ -580,12 +580,12 @@ public class CharsetProviderImpl extends CharsetProvider {
                                                   "ebcdic-cp-ar1",
                                                   "csIBM420" } },
 
-            { "additional.IBM864",      null, new String[] { "cp864",
-                                                  "IBM864",
+            { "additional.IBM864",      null, new String[] { "IBM864",
+                                                  "cp864",
                                                   "csIBM864" } },
 
-            { "additional.IBM868",      null, new String[] { "cp868",
-                                                  "IBM868",
+            { "additional.IBM868",      null, new String[] { "IBM868",
+                                                  "cp868",
                                                   "cp-ar",
                                                   "csIBM868" } },
 
@@ -620,66 +620,66 @@ public class CharsetProviderImpl extends CharsetProvider {
             { "additional.IBM_Thai",    null, new String[] { "IBM-Thai",
                                                   "cp838" } },
 
-            { "additional.x_IBM737",    null, new String[] { "x-ibm-737_P100-1997",
-                                                  "x-IBM737",
+            { "additional.x_IBM737",    null, new String[] { "x-IBM737",
+                                                  "x-ibm-737_P100-1997",
                                                   "cp737" } },
 
-            { "additional.x_IBM856",    null, new String[] { "cp856",
-                                                  "x-IBM856"} },
+            { "additional.x_IBM856",    null, new String[] { "x-IBM856",
+                                                  "cp856"} },
 
             { "additional.x_IBM874",    null, new String[] { "TIS-620",
                                                   "x-IBM874",
                                                   "cp874"} },
 
-            { "additional.x_IBM875",    null, new String[] { "x-ibm-875_P100-1995",
-                                                  "x-IBM875",
+            { "additional.x_IBM875",    null, new String[] { "x-IBM875",
+                                                  "x-ibm-875_P100-1995",
                                                   "cp875"} },
 
-            { "additional.x_IBM922",    null, new String[] { "cp922",
-                                                  "x-IBM922"} },
+            { "additional.x_IBM922",    null, new String[] {"x-IBM922",
+                    "cp922"} },
 
-            { "additional.x_IBM1006",   null, new String[] { "x-ibm-1006_P100-1995",
-                                                  "x-IBM1006",
+            { "additional.x_IBM1006",   null, new String[] { "x-IBM1006",
+                                                  "x-ibm-1006_P100-1995",
                                                   "cp1006"} },
 
-            { "additional.x_IBM1025",   null, new String[] { "x-ibm-1025_P100-1995",
-                                                  "x-IBM1025",
+            { "additional.x_IBM1025",   null, new String[] { "x-IBM1025",
+                                                  "x-ibm-1025_P100-1995",
                                                   "cp1025"} },
 
-            { "additional.x_IBM1112",   null, new String[] { "x-ibm-1112_P100-1995",
-                                                  "x-IBM1112",
+            { "additional.x_IBM1112",   null, new String[] { "x-IBM1112",
+                                                  "x-ibm-1112_P100-1995",
                                                   "cp1112"} },
 
-            { "additional.x_IBM1122",   null, new String[] { "x-ibm-1122_P100-1999",
-                                                  "x-IBM1122",
+            { "additional.x_IBM1122",   null, new String[] { "x-IBM1122",
+                                                  "x-ibm-1122_P100-1999",
                                                   "cp1122"} },
 
-            { "additional.x_IBM1123",   null, new String[] { "x-ibm-1123_P100-1995",
-                                                  "x-IBM1123",
+            { "additional.x_IBM1123",   null, new String[] { "x-IBM1123",
+                                                  "x-ibm-1123_P100-1995",
                                                   "cp1123"} },
 
-            { "additional.x_IBM1124",   null, new String[] { "x-ibm-1124_P100-1996",
-                                                  "x-IBM1124",
+            { "additional.x_IBM1124",   null, new String[] { "x-IBM1124",
+                                                  "x-ibm-1124_P100-1996",
                                                   "cp1124"} },
 
-            { "additional.x_IBM1097",   null, new String[] { "x-ibm-1097_P100-1995",
-                                                  "x-IBM1097",
+            { "additional.x_IBM1097",   null, new String[] { "x-IBM1097",
+                                                  "x-ibm-1097_P100-1995",
                                                   "cp1097"} },
 
-            { "additional.x_IBM1098",   null, new String[] { "x-ibm-1098_P100-1995",
-                                                  "x-IBM1098",
+            { "additional.x_IBM1098",   null, new String[] { "x-IBM1098",
+                                                  "x-ibm-1098_P100-1995",
                                                   "cp1098"} },
 
-            { "additional.x_MacCyrillic",           null, new String[] { "x-mac-cyrillic",
-                                                              "x-MacCyrillic",
+            { "additional.x_MacCyrillic",           null, new String[] { "x-MacCyrillic",
+                                                              "x-mac-cyrillic",
                                                               "MacCyrillic"} },
 
-            { "additional.x_MacGreek",              null, new String[] { "x-mac-greek",
-                                                              "x-MacGreek",
+            { "additional.x_MacGreek",              null, new String[] { "x-MacGreek",
+                                                              "x-mac-greek",
                                                               "MacGreek"} },
 
-            { "additional.x_MacTurkish",              null, new String[] { "x-mac-turkish",
-                                                              "x-MacTurkish",
+            { "additional.x_MacTurkish",              null, new String[] { "x-MacTurkish",
+                                                              "x-mac-turkish",
                                                               "MacTurkish"} },
 
             { "additional.windows_31j",            null, new String[] { "Shift_JIS",
