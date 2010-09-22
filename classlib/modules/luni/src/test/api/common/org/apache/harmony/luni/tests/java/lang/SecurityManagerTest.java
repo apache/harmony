@@ -292,30 +292,6 @@ public class SecurityManagerTest extends TestCase {
     }
 
     /**
-     * @tests {@link java.lang.SecurityManager#checkExit(int)}
-     */
-
-    @SuppressWarnings("nls")
-    public void test_checkExit_int1() {
-        SecurityManager mySecMngr = new SecurityManager(){
-            public void checkPermission(Permission permission) {
-                if (!permission.equals(new RuntimePermission("exitVM.1") )) {
-                    throw new SecurityException("unknown permission");
-                }
-            }
-        };
-
-        mySecMngr.checkExit(1);
-
-        try {
-            mySecMngr.checkExit(2);
-            fail("Should throw SecurityException");
-        } catch (SecurityException se) {
-            // expected
-        }
-    }
-
-    /**
      * @tests {@link java.lang.SecurityManager#checkLink(String)}
      */
     @SuppressWarnings("nls")
