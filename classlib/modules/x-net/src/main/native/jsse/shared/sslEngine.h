@@ -32,7 +32,7 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_connectImpl
   (JNIEnv *, jclass, jlong);
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_wrapImpl
-  (JNIEnv *, jclass, jlong, jlong, int, jlong, int);
+  (JNIEnv *, jclass, jlong, jlong, jlong, int, jlong, int);
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_unwrapImpl
   (JNIEnv *, jclass, jlong, jlong, jlong, int, jlong, int);
 JNIEXPORT void JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_shutdownImpl

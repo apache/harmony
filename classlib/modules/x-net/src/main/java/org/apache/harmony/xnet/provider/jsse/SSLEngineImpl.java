@@ -79,7 +79,7 @@ public class SSLEngineImpl extends SSLEngine {
     private static native long initSSLEngine(long context);
     private static native HandshakeStatus connectImpl(long ssl);
     private static native HandshakeStatus acceptImpl(long ssl);
-    private static native SSLEngineResult wrapImpl(long sslEngineAddress,
+    private static native SSLEngineResult wrapImpl(long ssl, long sslEngineAddress,
             long src_address, int src_len, long dst_address, int dst_len);
     private static native SSLEngineResult unwrapImpl(long ssl, long sslEngineAddress,
             long src_address, int src_len, long dst_address, int dst_len);
@@ -570,7 +570,7 @@ public class SSLEngineImpl extends SSLEngine {
             dst_address = AddressUtil.getDirectBufferAddress(dst_temp_buffer);
         }
         
-        SSLEngineResult result = wrapImpl(SSLEngineAddress, src_address, src_length, dst_address, dst_length);
+        SSLEngineResult result = wrapImpl(SSL, SSLEngineAddress, src_address, src_length, dst_address, dst_length);
         
         // update the buffers contents and positions
         srcs[0].position(srcs[0].position() + result.bytesConsumed());

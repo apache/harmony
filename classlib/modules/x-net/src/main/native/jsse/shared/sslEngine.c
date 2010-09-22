@@ -130,13 +130,13 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
 }
 
 JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineImpl_wrapImpl
-  (JNIEnv *env, jclass clazz, jlong jsslengine, jlong src_address, int src_len, 
+  (JNIEnv *env, jclass clazz, jlong jssl, jlong jsslengine, jlong src_address, int src_len, 
   jlong dst_address, int dst_len) {
     _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO *bio = sslengine->bio;
     BIO *bio_io = sslengine->bio_io;
-    SSL *ssl = NULL;
-    int write_result = 0, read_result = 0;
+    SSL *ssl = jlong2addr(SSL, jssl);
+    int write_result = 0, read_result = 0, shutdownState = 0;
     jobject handshake_state = NULL, engine_state = NULL, result = NULL;
     jclass result_class;
     jmethodID result_constructor;
@@ -144,7 +144,6 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     jbyte *dst_buffer = jlong2addr(jbyte, dst_address);
     int initial_init_state, init_state;
 
-    BIO_get_ssl(bio, &ssl);
     initial_init_state = SSL_in_init(ssl);
     
     // write input data
@@ -161,6 +160,12 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
         write_result = 0;
         handshake_state = handshake_need_unwrap;
         engine_state = engine_ok;
+    }
+
+    // Check if close_notify has been sent or received
+    shutdownState = SSL_get_shutdown(ssl);
+    if (shutdownState) {
+        engine_state = engine_closed;
     }
     
     // read output data
@@ -198,8 +203,8 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     _sslengine *sslengine = jlong2addr(_sslengine, jsslengine);
     BIO *bio = sslengine->bio;
     BIO *bio_io = sslengine->bio_io;
-    SSL *ssl = NULL;
-    int write_result = 0, read_result = 0;
+    SSL *ssl = jlong2addr(SSL, jssl);
+    int write_result = 0, read_result = 0, shutdownState = 0;
     jobject handshake_state = NULL, engine_state = NULL, result = NULL;
     jclass result_class;
     jmethodID result_constructor;
@@ -207,7 +212,6 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     jbyte *dst_buffer = jlong2addr(jbyte, dst_address);
     int initial_init_state, init_state;
 
-    BIO_get_ssl(bio, &ssl);
     initial_init_state = SSL_in_init(ssl);
     
     // write input data
@@ -218,11 +222,7 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
     }
     
     // read output data
-    //read_result = BIO_read(bio, dst_buffer, dst_len);
-    read_result = SSL_read(ssl, dst_buffer, dst_len);
-    
-    // TODO: Check for  SSL_RECEIVED_SHUTDOWN
-
+    read_result = BIO_read(bio, dst_buffer, dst_len);
     if (read_result > 0) {
         // wrote some data so must not be handshaking
         handshake_state = handshake_not_handshaking;
@@ -235,6 +235,12 @@ JNIEXPORT jobject JNICALL Java_org_apache_harmony_xnet_provider_jsse_SSLEngineIm
         read_result = 0;
         handshake_state = handshake_need_wrap;
         engine_state = engine_ok;
+    }
+
+    // Check if close_notify has been sent or received
+    shutdownState = SSL_get_shutdown(ssl);
+    if (shutdownState) {
+        engine_state = engine_closed;
     }
     
     init_state = SSL_in_init(ssl);
