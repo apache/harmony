@@ -36,8 +36,6 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.harmony.kernel.vm.VM;
 import org.apache.harmony.luni.util.PriviAction;
 
-import com.ibm.icu.lang.UCharacter;
-
 /**
  * An immutable sequence of characters/code units ({@code char}s). A
  * {@code String} is represented by array of UTF-16 values, such that
@@ -1485,15 +1483,25 @@ public final class String implements Serializable, Comparable<String>,
      *         the characters in this string.
      */
     public String toLowerCase(Locale locale) {
-        String result = UCharacter.toLowerCase(locale, this);
-        
-        // Must return self if chars unchanged
-        if (count != result.count) {
-            return result;
-        }
-        for (int i = 0; i < count; ++i) {
-            if (value[offset + i] != result.value[result.offset + i]) {
-                return result;
+        for (int o = offset, end = offset + count; o < end; o++) {
+            char ch = value[o];
+            if (ch != toLowerCase(ch)) {
+                char[] buffer = new char[count];
+                int i = o - offset;
+                // Not worth checking for i == 0 case
+                System.arraycopy(value, offset, buffer, 0, i);
+                // Turkish
+                if (!"tr".equals(locale.getLanguage())) { //$NON-NLS-1$
+                    while (i < count) {
+                        buffer[i++] = toLowerCase(value[o++]);
+                    }
+                } else {
+                    while (i < count) {
+                        buffer[i++] = (ch = value[o++]) != 0x49 ? toLowerCase(ch)
+                                : (char) 0x131;
+                    }
+                }
+                return new String(0, count, buffer);
             }
         }
         return this;
@@ -1520,6 +1528,66 @@ public final class String implements Serializable, Comparable<String>,
         return toUpperCase(Locale.getDefault());
     }
 
+    private static final char[] upperValues = "SS\u0000\u02bcN\u0000J\u030c\u0000\u0399\u0308\u0301\u03a5\u0308\u0301\u0535\u0552\u0000H\u0331\u0000T\u0308\u0000W\u030a\u0000Y\u030a\u0000A\u02be\u0000\u03a5\u0313\u0000\u03a5\u0313\u0300\u03a5\u0313\u0301\u03a5\u0313\u0342\u1f08\u0399\u0000\u1f09\u0399\u0000\u1f0a\u0399\u0000\u1f0b\u0399\u0000\u1f0c\u0399\u0000\u1f0d\u0399\u0000\u1f0e\u0399\u0000\u1f0f\u0399\u0000\u1f08\u0399\u0000\u1f09\u0399\u0000\u1f0a\u0399\u0000\u1f0b\u0399\u0000\u1f0c\u0399\u0000\u1f0d\u0399\u0000\u1f0e\u0399\u0000\u1f0f\u0399\u0000\u1f28\u0399\u0000\u1f29\u0399\u0000\u1f2a\u0399\u0000\u1f2b\u0399\u0000\u1f2c\u0399\u0000\u1f2d\u0399\u0000\u1f2e\u0399\u0000\u1f2f\u0399\u0000\u1f28\u0399\u0000\u1f29\u0399\u0000\u1f2a\u0399\u0000\u1f2b\u0399\u0000\u1f2c\u0399\u0000\u1f2d\u0399\u0000\u1f2e\u0399\u0000\u1f2f\u0399\u0000\u1f68\u0399\u0000\u1f69\u0399\u0000\u1f6a\u0399\u0000\u1f6b\u0399\u0000\u1f6c\u0399\u0000\u1f6d\u0399\u0000\u1f6e\u0399\u0000\u1f6f\u0399\u0000\u1f68\u0399\u0000\u1f69\u0399\u0000\u1f6a\u0399\u0000\u1f6b\u0399\u0000\u1f6c\u0399\u0000\u1f6d\u0399\u0000\u1f6e\u0399\u0000\u1f6f\u0399\u0000\u1fba\u0399\u0000\u0391\u0399\u0000\u0386\u0399\u0000\u0391\u0342\u0000\u0391\u0342\u0399\u0391\u0399\u0000\u1fca\u0399\u0000\u0397\u0399\u0000\u0389\u0399\u0000\u0397\u0342\u0000\u0397\u0342\u0399\u0397\u0399\u0000\u0399\u0308\u0300\u0399\u0308\u0301\u0399\u0342\u0000\u0399\u0308\u0342\u03a5\u0308\u0300\u03a5\u0308\u0301\u03a1\u0313\u0000\u03a5\u0342\u0000\u03a5\u0308\u0342\u1ffa\u0399\u0000\u03a9\u0399\u0000\u038f\u0399\u0000\u03a9\u0342\u0000\u03a9\u0342\u0399\u03a9\u0399\u0000FF\u0000FI\u0000FL\u0000FFIFFLST\u0000ST\u0000\u0544\u0546\u0000\u0544\u0535\u0000\u0544\u053b\u0000\u054e\u0546\u0000\u0544\u053d\u0000".value; //$NON-NLS-1$
+
+    /**
+     * Return the index of the specified character into the upperValues table.
+     * The upperValues table contains three entries at each position. These
+     * three characters are the upper case conversion. If only two characters
+     * are used, the third character in the table is \u0000.
+     *
+     * @param ch
+     *            the char being converted to upper case
+     *
+     * @return the index into the upperValues table, or -1
+     */
+    private int upperIndex(int ch) {
+        int index = -1;
+        if (ch >= 0xdf) {
+            if (ch <= 0x587) {
+                if (ch == 0xdf) {
+                    index = 0;
+                } else if (ch <= 0x149) {
+                    if (ch == 0x149) {
+                        index = 1;
+                    }
+                } else if (ch <= 0x1f0) {
+                    if (ch == 0x1f0) {
+                        index = 2;
+                    }
+                } else if (ch <= 0x390) {
+                    if (ch == 0x390) {
+                        index = 3;
+                    }
+                } else if (ch <= 0x3b0) {
+                    if (ch == 0x3b0) {
+                        index = 4;
+                    }
+                } else if (ch <= 0x587) {
+                    if (ch == 0x587) {
+                        index = 5;
+                    }
+                }
+            } else if (ch >= 0x1e96) {
+                if (ch <= 0x1e9a) {
+                    index = 6 + ch - 0x1e96;
+                } else if (ch >= 0x1f50 && ch <= 0x1ffc) {
+                    index = "\u000b\u0000\f\u0000\r\u0000\u000e\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\"#$%&'()*+,-./0123456789:;<=>\u0000\u0000?@A\u0000BC\u0000\u0000\u0000\u0000D\u0000\u0000\u0000\u0000\u0000EFG\u0000HI\u0000\u0000\u0000\u0000J\u0000\u0000\u0000\u0000\u0000KL\u0000\u0000MN\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000OPQ\u0000RS\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000TUV\u0000WX\u0000\u0000\u0000\u0000Y".value[ch - 0x1f50]; //$NON-NLS-1$
+                    if (index == 0) {
+                        index = -1;
+                    }
+                } else if (ch >= 0xfb00) {
+                    if (ch <= 0xfb06) {
+                        index = 90 + ch - 0xfb00;
+                    } else if (ch >= 0xfb13 && ch <= 0xfb17) {
+                        index = 97 + ch - 0xfb13;
+                    }
+                }
+            }
+        }
+        return index;
+    }
+
     /**
      * Converts the characters in this string to uppercase, using the specified
      * Locale.
@@ -1530,18 +1598,59 @@ public final class String implements Serializable, Comparable<String>,
      *         the characters in this string.
      */
     public String toUpperCase(Locale locale) {
-        String result = UCharacter.toUpperCase(locale, this);
+        boolean turkish = "tr".equals(locale.getLanguage()); //$NON-NLS-1$
+        char[] output = null;
+        int i = 0;
+        for (int o = offset, end = offset + count; o < end; o++) {
+            char ch = value[o];
+            int index = upperIndex(ch);
+            if (index == -1) {
+                if (output != null && i >= output.length) {
+                    char[] newoutput = new char[output.length + (count / 6) + 2];
+                    System.arraycopy(output, 0, newoutput, 0, output.length);
+                    output = newoutput;
+                }
+                char upch = !turkish ? toUpperCase(ch)
+                        : (ch != 0x69 ? toUpperCase(ch)
+                                : (char) 0x130);
+                if (ch != upch) {
+                    if (output == null) {
+                        output = new char[count];
+                        i = o - offset;
+                        System.arraycopy(value, offset, output, 0, i);
 
-        // Must return self if chars unchanged
-        if (count != result.count) {
-            return result;
-        }
-        for (int i = 0; i < count; i++) {
-            if (value[offset + i] != result.value[result.offset + i]) {
-                return result;
+                    }
+                    output[i++] = upch;
+                } else if (output != null) {
+                    output[i++] = ch;
+                }
+            } else {
+                int target = index * 3;
+                char val3 = upperValues[target + 2];
+                if (output == null) {
+                    output = new char[count + (count / 6) + 2];
+                    i = o - offset;
+                    System.arraycopy(value, offset, output, 0, i);
+                } else if (i + (val3 == 0 ? 1 : 2) >= output.length) {
+                    char[] newoutput = new char[output.length + (count / 6) + 3];
+                    System.arraycopy(output, 0, newoutput, 0, output.length);
+                    output = newoutput;
+                }
+
+                char val = upperValues[target];
+                output[i++] = val;
+                val = upperValues[target + 1];
+                output[i++] = val;
+                if (val3 != 0) {
+                    output[i++] = val3;
+                }
             }
         }
-        return this;
+        if (output == null) {
+            return this;
+        }
+        return output.length == i || output.length - i < 8 ? new String(0, i,
+                output) : new String(output, 0, i);
     }
 
     /**
