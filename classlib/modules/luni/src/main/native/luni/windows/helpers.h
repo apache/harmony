@@ -64,4 +64,7 @@ jbyteArray getPlatformHardwareAddress(JNIEnv * env, jstring ifname, jint index);
 I_32 getPlatformInterfaceAddresses(JNIEnv * env, jstring ifname, jint index, interfaceAddressArray_struct* interfaceAddressArray);
 I_32 freeInterfaceAddressArray(JNIEnv * env, struct interfaceAddressArray_struct * array);
 void getOSCharset(char *locale, const size_t size);
+jlong getPlatformStdInFD();
+jlong getPlatformStdOutFD();
+jlong getPlatformStdErrFD();
 #endif /* helpers_h */

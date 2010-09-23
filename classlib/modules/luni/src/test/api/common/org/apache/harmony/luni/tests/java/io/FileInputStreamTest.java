@@ -18,6 +18,7 @@
 package org.apache.harmony.luni.tests.java.io;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -118,6 +119,31 @@ public class FileInputStreamTest extends TestCase {
         try {
             is.read();
             fail("Able to read from closed stream");
+        } catch (IOException e) {
+            // Expected
+        }
+        
+        // Regression test for HARMONY-6642
+        FileInputStream fis = new FileInputStream(fileName);
+        FileInputStream fis2 = new FileInputStream(fis.getFD());
+        try {
+            fis2.close();
+            fis.read();
+            fail("Able to read from closed fd");
+        } catch (IOException e) {
+            // Expected
+        } finally {
+            try {
+                fis.close();
+            } catch (IOException e) {}
+        }
+        
+        FileInputStream stdin = new FileInputStream(FileDescriptor.in);
+        stdin.close();
+        stdin = new FileInputStream(FileDescriptor.in);
+        try {
+            stdin.read();
+            fail("Able to read from stdin after close");
         } catch (IOException e) {
             // Expected
         }

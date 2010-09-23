@@ -70,5 +70,8 @@ I_32 getPlatformIsExecutable (JNIEnv * env, char *path);
 I_32 setPlatformExecutable (JNIEnv * env, char *path, jboolean executable, jboolean ownerOnly);
 I_32 hasPrivilegeInOtherGroups(JNIEnv * env, struct stat * buffer, mode_t attr);
 void getOSCharset(char *locale, const size_t size);
+jlong getPlatformStdInFD();
+jlong getPlatformStdOutFD();
+jlong getPlatformStdErrFD();
 #endif /* helpers_h */
 

@@ -62,10 +62,16 @@ public final class FileDescriptor {
 
     private static native void oneTimeInitialization();
 
+    private static native long getStdInDescriptor();
+    
+    private static native long getStdOutDescriptor();
+    
+    private static native long getStdErrDescriptor();
+
     static {
-        in.descriptor = 0;
-        out.descriptor = 1;
-        err.descriptor = 2;
+        in.descriptor = getStdInDescriptor();
+        out.descriptor = getStdOutDescriptor();
+        err.descriptor = getStdErrDescriptor();
 
         oneTimeInitialization();
     }

@@ -15,6 +15,11 @@
  *  limitations under the License.
  */
 
+/* windows.h defined UDATA.  Ignore its definition */
+#define UDATA UDATA_win32_
+#include <windows.h>
+#undef UDATA                    /* this is safe because our UDATA is a typedef, not a macro */
+
 /* Undefine the winsockapi because winsock2 defines it.  Removes warnings. */
 #if defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
 #undef _WINSOCKAPI_
@@ -1074,4 +1079,14 @@ void getOSCharset(char *locale, const size_t size) {
   }
   getCharset(cp, locale, size);
   return;
+}
+
+jlong getPlatformStdInFD() {
+  return (jlong)GetStdHandle(STD_INPUT_HANDLE);
+}
+jlong getPlatformStdOutFD() {
+  return (jlong)GetStdHandle(STD_OUTPUT_HANDLE);
+}
+jlong getPlatformStdErrFD() {
+  return (jlong)GetStdHandle(STD_ERROR_HANDLE);
 }
