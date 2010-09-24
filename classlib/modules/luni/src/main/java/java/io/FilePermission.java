@@ -22,6 +22,7 @@ import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.PrivilegedAction;
 
+import org.apache.harmony.luni.util.Util;
 import org.apache.harmony.luni.internal.nls.Messages;
 
 /**
@@ -132,7 +133,7 @@ public final class FilePermission extends Permission implements Serializable {
      * @return the string representing this permission's actions
      */
     private String toCanonicalActionString(String action) {
-        actions = action.trim().toLowerCase();
+        actions = Util.toASCIILowerCase(action.trim());
 
         // get the numerical representation of the action list
         mask = getMask(actions);
