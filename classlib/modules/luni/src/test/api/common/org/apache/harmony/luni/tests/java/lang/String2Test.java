@@ -793,14 +793,11 @@ public class String2Test extends junit.framework.TestCase {
                 .toLowerCase().equals(hwlc));
 
         assertEquals(
-                "a) Sigma has ordinary lower case value when isolated with Unicode 4.0",
+                "a) Sigma has same lower case value at end of word with Unicode 3.0",
                 "\u03c3", "\u03a3".toLowerCase());
         assertEquals(
-                "b) Sigma has final form lower case value at end of word with Unicode 4.0",
-                "a\u03c2", "a\u03a3".toLowerCase());
-        
-        assertEquals("toLowerCase case conversion did not succeed",
-        		"\uD801\uDC44", "\uD801\uDC1C".toLowerCase());
+                "b) Sigma has same lower case value at end of word with Unicode 3.0",
+                "a \u03c3", "a \u03a3".toLowerCase());
     }
 
     /**
@@ -838,8 +835,6 @@ public class String2Test extends junit.framework.TestCase {
         String s = "a\u00df\u1f56";
         assertTrue("Invalid conversion", !s.toUpperCase().equals(s));
 
-        assertEquals("toUpperCase case conversion did not succeed",
-        		"\uD801\uDC1C", "\uD801\uDC44".toUpperCase());
     }
 
     /**
