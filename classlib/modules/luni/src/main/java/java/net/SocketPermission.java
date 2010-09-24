@@ -25,6 +25,7 @@ import java.security.Permission;
 import java.security.PermissionCollection;
 
 import org.apache.harmony.luni.util.Inet6Util;
+import org.apache.harmony.luni.util.Util;
 import org.apache.harmony.luni.internal.nls.Messages;
 
 /**
@@ -222,7 +223,7 @@ public final class SocketPermission extends Permission implements Serializable {
             if (pos == length) {
                 parsing = false;
             }
-            action = sb.toString().trim().toLowerCase();
+            action = Util.toASCIILowerCase(sb.toString().trim());
             if (action.equals(actionNames[SP_CONNECT])) {
                 actionsMask |= SP_CONNECT;
             } else if (action.equals(actionNames[SP_LISTEN])) {
