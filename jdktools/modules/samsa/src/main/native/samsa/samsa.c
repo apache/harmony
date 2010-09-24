@@ -135,7 +135,7 @@ int main (int argc, char **argv, char **envp)
     int newIndex = 0;
     char *root = NULL;
     char *fullExePath = NULL;
-    TOOLDATA *pToolData = (TOOLDATA *) malloc(sizeof(TOOLDATA));
+    TOOLDATA *pToolData;
     
     int isJavaw = 0;
     int toolType = 0; /* 0 = JRE tool, 1 = JDK tool, 2 = JRE tool in jdk/bin */
