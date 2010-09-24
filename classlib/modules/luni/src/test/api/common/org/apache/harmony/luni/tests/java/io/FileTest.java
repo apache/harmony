@@ -1049,9 +1049,8 @@ public class FileTest extends TestCase {
      */
     public void test_hashCode() {
         // Regression for HARMONY-53
-        String mixedFname = "SoMe FiLeNaMe";
-        File mfile = new File(mixedFname);
-        File lfile = new File(mixedFname.toLowerCase());
+        File mfile = new File("SoMe FiLeNaMe"); // Mixed case
+        File lfile = new File("some filename"); // Lower case
 
         if (mfile.equals(lfile)) {
             assertTrue("Assert 0: wrong hashcode", mfile.hashCode() == lfile
