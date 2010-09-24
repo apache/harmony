@@ -171,6 +171,7 @@ int main (int argc, char **argv, char **envp)
     toolType = getToolType(root, toolName);
     if (toolType == -1) {
         fprintf(stderr, "Unable to determine type (JDK/JRE) of tool\n");
+        free(toolName);
         return 1;
     }
       
@@ -181,6 +182,7 @@ int main (int argc, char **argv, char **envp)
     pToolData = getToolData(toolName, root, toolType);
        
     if (pToolData == NULL) { 
+        free(toolName);
         return 2;
     }
     
@@ -415,7 +417,7 @@ char *cleanToolName(const char *name)
     _strlwr(temp);
 
     // remove possible '.exe' suffix
-	exe = strstr(temp, ".exe");
+    exe = strstr(temp, ".exe");
     if (exe) { 
        *exe = '\0';
     }
@@ -452,7 +454,8 @@ char *getRoot(const char* argv0) {
         *last = '\0';
         return exeDir;
     }
-    
+
+    free(exeDir);
     return NULL;
 }
 
