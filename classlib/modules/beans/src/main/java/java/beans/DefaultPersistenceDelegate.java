@@ -23,6 +23,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 
+import org.apache.harmony.beans.BeansUtils;
+
 /**
  * Default PersistenceDelegate for normal classes. The instances of this class
  * are used when other customized PersistenceDelegate is not set in the encoders
@@ -186,13 +188,14 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
     /*
      * Get the value for the specified property of the given bean instance.
      */
-    private Object getPropertyValue(HashMap<String, PropertyDescriptor> proDscMap, Object oldInstance,
+    private Object getPropertyValue(
+            HashMap<String, PropertyDescriptor> proDscMap, Object oldInstance,
             String propName) throws Exception {
         // Try to get the read method for the property
         Method getter = null;
         if (null != proDscMap) {
-            PropertyDescriptor pd = proDscMap
-                    .get(Introspector.decapitalize(propName));
+            PropertyDescriptor pd = proDscMap.get(Introspector
+                    .decapitalize(propName));
             if (null != pd) {
                 getter = pd.getReadMethod();
             }
@@ -212,7 +215,6 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
                     "The getter method for the property " //$NON-NLS-1$
                             + propName + " can't be found."); //$NON-NLS-1$
         }
-
     }
 
     /**
@@ -264,7 +266,7 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
         }
 
         return new Expression(oldInstance, oldInstance.getClass(),
-                Statement.CONSTRUCTOR_NAME, args);
+                BeansUtils.NEW, args);
     }
 
     private static HashMap<String, PropertyDescriptor> internalAsMap(
@@ -280,9 +282,9 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
      * Determines whether one object mutates to the other object. If this
      * <code>DefaultPersistenceDelegate</code> is constructed with one or more
      * property names, and the class of <code>o1</code> overrides the
-     * "equals(Object)" method, then <code>o2</code> is considered to mutate
-     * to <code>o1</code> if <code>o1</code> equals to <code>o2</code>.
-     * Otherwise, the result is the same as the definition in
+     * "equals(Object)" method, then <code>o2</code> is considered to mutate to
+     * <code>o1</code> if <code>o1</code> equals to <code>o2</code>. Otherwise,
+     * the result is the same as the definition in
      * <code>PersistenceDelegate</code>.
      * 
      * @param o1
@@ -295,17 +297,7 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
     @Override
     protected boolean mutatesTo(Object o1, Object o2) {
         if (this.propertyNames.length > 0) {
-            Class<?> clazz = o1.getClass();
-            // Check the "equals" method has been declared
-            Method equalMethod = null;
-            try {
-                equalMethod = clazz.getDeclaredMethod("equals", //$NON-NLS-1$
-                        new Class[] { Object.class });
-            } catch (NoSuchMethodException e) {
-                // Ignored
-            }
-
-            if (null != equalMethod) {
+            if (BeansUtils.declaredEquals(o1.getClass())) {
                 return o1.equals(o2);
             }
         }

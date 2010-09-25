@@ -19,12 +19,13 @@ package java.beans;
 
 import java.util.Date;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class UtilDatePersistenceDelegate extends DefaultPersistenceDelegate {
     @Override
-    @SuppressWarnings("boxing")
     protected Expression instantiate(Object oldInstance, Encoder enc) {
         Date date = (Date) oldInstance;
         return new Expression(oldInstance, oldInstance.getClass(),
-                Statement.CONSTRUCTOR_NAME, new Object[] { date.getTime() });
+                BeansUtils.NEW, new Object[] { date.getTime() });
     }
 }

@@ -19,12 +19,13 @@ package java.beans;
 
 import java.awt.Cursor;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class AwtCursorPersistenceDelegate extends DefaultPersistenceDelegate {
     @Override
-	@SuppressWarnings("boxing")
     protected Expression instantiate(Object oldInstance, Encoder enc) {
-		Cursor cursor = (Cursor) oldInstance;
-		return new Expression(oldInstance, oldInstance.getClass(),
-                Statement.CONSTRUCTOR_NAME, new Object[] { cursor.getType() });
-	}
+        Cursor cursor = (Cursor) oldInstance;
+        return new Expression(oldInstance, oldInstance.getClass(),
+                BeansUtils.NEW, new Object[] { cursor.getType() });
+    }
 }

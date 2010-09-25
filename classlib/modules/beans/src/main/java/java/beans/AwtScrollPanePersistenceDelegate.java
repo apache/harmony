@@ -18,14 +18,14 @@ package java.beans;
 
 import java.awt.ScrollPane;
 
-class AwtScrollPanePersistenceDelegate extends
-		DefaultPersistenceDelegate {
-	@Override
-    @SuppressWarnings("boxing")
+import org.apache.harmony.beans.BeansUtils;
+
+class AwtScrollPanePersistenceDelegate extends DefaultPersistenceDelegate {
+    @Override
     protected Expression instantiate(Object oldInstance, Encoder enc) {
-		return new Expression(oldInstance, oldInstance.getClass(),
-				Statement.CONSTRUCTOR_NAME,
-				new Object[] { ((ScrollPane) oldInstance)
-						.getScrollbarDisplayPolicy() });
-	}
+        return new Expression(oldInstance, oldInstance.getClass(),
+                BeansUtils.NEW,
+                new Object[] { ((ScrollPane) oldInstance)
+                        .getScrollbarDisplayPolicy() });
+    }
 }
