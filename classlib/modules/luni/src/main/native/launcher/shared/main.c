@@ -373,7 +373,7 @@ gpProtectedMain (struct haCmdlineOptions *args)
 
   /* main launcher processing in this function */
   rc = invocation
-      (PORTLIB, argc, argv, handle, JNI_VERSION_1_4, JNI_TRUE, mainClass,
+      (PORTLIB, argc, argv, handle, JNI_VERSION_1_4, JNI_FALSE, mainClass,
        classArg, propertiesFileName, isStandaloneJar, vmdllsubdir, versionFlag);
   if (rc)
     {
