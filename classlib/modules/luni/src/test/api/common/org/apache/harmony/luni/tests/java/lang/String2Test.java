@@ -282,6 +282,7 @@ public class String2Test extends junit.framework.TestCase {
         String s2 = "s2";
         String s3 = s1.concat(s2);
         assertEquals(s2, s3);
+        assertNotSame(s2, s3);
 
         s3 = s2.concat(s1);
         assertSame(s2, s3);

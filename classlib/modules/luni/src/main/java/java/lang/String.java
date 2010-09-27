@@ -757,14 +757,17 @@ public final class String implements Serializable, Comparable<String>,
      *         specified string.
      */
     public String concat(String string) {
-        if (string.count > 0 && count > 0) {
-            char[] buffer = new char[count + string.count];
-            System.arraycopy(value, offset, buffer, 0, count);
-            System.arraycopy(string.value, string.offset, buffer, count,
-                    string.count);
-            return new String(0, buffer.length, buffer);
+        if (string.count == 0) {
+            return this;
         }
-        return count == 0 ? string : this;
+
+        char[] buffer = new char[count + string.count];
+        if (count > 0) {
+            System.arraycopy(value, offset, buffer, 0, count);
+        }
+        System.arraycopy(string.value, string.offset, buffer, count,
+                string.count);
+        return new String(0, buffer.length, buffer);
     }
 
     /**
