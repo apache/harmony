@@ -31,7 +31,7 @@
     <target name="-build-no-check" depends="-build-jar,-test-jar" />
 
     <target name="check-depends" unless="skip.java.build">
-        <check-one-file src="${ecj.jar.url}" dest="${ecj.jar}" />
+        <check-one-file src="${ecj.url}" dest="${ecj.jar}" />
         <copy file="${ecj.jar}" todir="${hy.jdk}/lib" />
     </target>
 
