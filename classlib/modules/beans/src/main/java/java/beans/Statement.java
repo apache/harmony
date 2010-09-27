@@ -656,7 +656,7 @@ public class Statement {
                 }
                 return (bestDist != INFINITY ? bestDist + 1 : INFINITY);
             }
-            return (superDist != INFINITY ? superDist + 1 : INFINITY);
+            return (superDist != INFINITY ? superDist + 2 : INFINITY);
         }
     }
 }

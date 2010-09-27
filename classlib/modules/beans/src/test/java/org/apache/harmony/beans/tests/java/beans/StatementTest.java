@@ -1313,4 +1313,37 @@ public class StatementTest extends TestCase {
             assertTrue(receivedArguments.isEmpty());
         }
     }
+
+    public interface IMockObjectA {
+    }
+
+    public class MockObjectA implements IMockObjectA {
+    }
+
+    public interface IMockAccess<E> {
+        public void setProperty(E e);
+    }
+
+    public class MockAccess implements IMockAccess<IMockObjectA> {
+
+        private IMockObjectA property;
+
+        public void setProperty(IMockObjectA prop) {
+            property = prop;
+        }
+
+        public IMockObjectA getProperty() {
+            return property;
+        }
+
+    }
+
+    public void testExecute_ObjectInterface() throws Exception {
+        MockAccess mockAccess = new MockAccess();
+        MockObjectA mockObjectA = new MockObjectA();
+        new Statement(mockAccess, "setProperty", new Object[] { mockObjectA })
+                .execute();
+        assertSame(mockObjectA, mockAccess.getProperty());
+    }
+
 }
