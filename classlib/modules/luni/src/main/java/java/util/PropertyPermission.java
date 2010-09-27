@@ -108,8 +108,9 @@ public final class PropertyPermission extends BasicPermission {
      * @return the actions associated with the receiver.
      */
     @Override
+    @SuppressWarnings("nls")
     public String getActions() {
-        return read ? (write ? "read,write" : "read") : "write"; //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+        return read ? (write ? "read,write" : "read") : "write";
     }
 
     /**

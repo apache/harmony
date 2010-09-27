@@ -55,8 +55,9 @@ public final class FilePermission extends Permission implements Serializable {
     private transient String canonPath;
 
     // list of actions permitted for socket permission in order
-    private static final String[] actionList = { "read", "write", "execute", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            "delete" }; //$NON-NLS-1$
+    @SuppressWarnings("nls")
+    private static final String[] actionList = { "read", "write", "execute",
+            "delete" };
 
     // "canonicalized" action list
     private String actions;
