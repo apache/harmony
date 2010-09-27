@@ -19,13 +19,14 @@ package java.beans;
 
 import java.awt.Insets;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class AwtInsetsPersistenceDelegate extends DefaultPersistenceDelegate {
     @Override
-	@SuppressWarnings("boxing")
     protected Expression instantiate(Object oldInstance, Encoder enc) {
-		Insets inset = (Insets) oldInstance;
-		return new Expression(oldInstance, oldInstance.getClass(),
-				Statement.CONSTRUCTOR_NAME, new Object[] { inset.top, inset.left, inset.bottom,
-			 inset.right, });
-	}
+        Insets inset = (Insets) oldInstance;
+        return new Expression(oldInstance, oldInstance.getClass(),
+                BeansUtils.NEW, new Object[] { inset.top, inset.left,
+                        inset.bottom, inset.right, });
+    }
 }

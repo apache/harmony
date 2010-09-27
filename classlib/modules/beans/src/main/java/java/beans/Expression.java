@@ -17,7 +17,7 @@
 
 package java.beans;
 
-import org.apache.harmony.beans.internal.nls.Messages;
+import org.apache.harmony.beans.BeansUtils;
 
 public class Expression extends Statement {
 
@@ -40,25 +40,21 @@ public class Expression extends Statement {
 
     @Override
     public String toString() {
-        try {
-            StringBuilder sb = new StringBuilder();
-
-            if (!valueIsDefined) {
-                sb.append("<unbound>"); //$NON-NLS-1$
+        StringBuilder sb = new StringBuilder();
+        if (!valueIsDefined) {
+            sb.append("<unbound>"); //$NON-NLS-1$
+        } else {
+            if (value == null) {
+                sb.append(BeansUtils.NULL);
             } else {
-                if (value == null) {
-                    sb.append("null"); //$NON-NLS-1$
-                } else {
-                    sb.append(convertClassName(value.getClass()));
-                }
+                Class<?> clazz = value.getClass();
+                sb.append(clazz == String.class ? BeansUtils.QUOTE : BeansUtils
+                        .idOfClass(clazz));
             }
-            sb.append('=');
-            sb.append(super.toString());
-
-            return sb.toString();
-        } catch (Exception e) {
-            return new String(Messages.getString("beans.0D", e.getClass())); //$NON-NLS-1$
         }
+        sb.append('=');
+        sb.append(super.toString());
+        return sb.toString();
     }
 
     public void setValue(Object value) {

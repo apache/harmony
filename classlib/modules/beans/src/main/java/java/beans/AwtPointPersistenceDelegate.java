@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package java.beans;
 
 import java.awt.Point;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class AwtPointPersistenceDelegate extends DefaultPersistenceDelegate {
     @Override
-	@SuppressWarnings("boxing")
     protected Expression instantiate(Object oldInstance, Encoder enc) {
-		Point point = (Point) oldInstance;
-		return new Expression(oldInstance, oldInstance.getClass(),
-				Statement.CONSTRUCTOR_NAME, new Object[] { point.x, point.y });
-	}
+        Point point = (Point) oldInstance;
+        return new Expression(oldInstance, oldInstance.getClass(),
+                BeansUtils.NEW, new Object[] { point.x, point.y });
+    }
 }
