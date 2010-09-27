@@ -500,4 +500,13 @@ public class BigDecimalCompareTest extends TestCase {
        BigDecimal aNumber = new BigDecimal(new BigInteger(a), aScale);
        assertEquals("incorrect value", 0, aNumber.signum());
     }
+    
+    /*
+     * Regression test for HARMONY-6406
+     */
+    public void testApproxPrecision() {
+        BigDecimal testInstance = BigDecimal.TEN.multiply(new BigDecimal("0.1"));
+        int result = testInstance.compareTo(new BigDecimal("1.00"));
+        assertEquals(0, result);
+    }
 }
