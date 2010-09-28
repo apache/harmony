@@ -438,14 +438,13 @@ public class BcBands extends BandSet {
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
         int padding = (byteCodeOffset + 1) % 4 == 0 ? 0 : 4 - ((byteCodeOffset + 1) % 4);
-        byteCodeOffset += padding + 8 + 8 * keys.length;
+        byteCodeOffset += 1 + padding + 8 + 8 * keys.length;
         updateRenumbering();
     }
 
     public void visitMethodInsn(int opcode, String owner, String name,
             String desc) {
         byteCodeOffset += 3;
-        updateRenumbering();
         switch (opcode) {
         case 182: // invokevirtual
         case 183: // invokespecial
@@ -495,11 +494,13 @@ public class BcBands extends BandSet {
             bcCodes.add(opcode);
             break;
         case 185: // invokeinterface
+            byteCodeOffset += 2;
             CPMethodOrField cpIMethod = cpBands.getCPIMethod(owner, name, desc);
             bcIMethodRef.add(cpIMethod);
             bcCodes.add(INVOKEINTERFACE);
             break;
         }
+        updateRenumbering();
     }
 
     public void visitMultiANewArrayInsn(String desc, int dimensions) {
@@ -522,7 +523,7 @@ public class BcBands extends BandSet {
             bcLabel.add(labels[i]);
             bcLabelRelativeOffsets.add(byteCodeOffset);
         }
-        int padding = (byteCodeOffset + 1) % 4 == 0 ? 0 : 4 - ((byteCodeOffset + 1) % 4);
+        int padding = byteCodeOffset % 4 == 0 ? 0 : 4 - (byteCodeOffset % 4);
         byteCodeOffset+= (padding + 12 + 4 * labels.length);
         updateRenumbering();
     }
