@@ -17,12 +17,13 @@
 # Makefile for module 'auth'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\auth\native\auth\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hyauth
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
 LIBNAME=$(LIBPATH)$(LIBBASE).lib
-BUILDFILES = $(SHAREDSUB)auth_copyright.obj authwin32.obj
+BUILDFILES = $(HY_BIN)auth_copyright.obj $(HY_BIN)authwin32.obj
 VIRTFILES = $(LIBBASE).res
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 

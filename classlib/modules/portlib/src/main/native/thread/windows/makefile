@@ -17,6 +17,7 @@
 # Makefile for module 'thread'
 #
 
+HY_BIN=$(HY_TARGET)\build\classlib\portlib\native\thread\# trailing slash
 !include <$(HY_HDK)\build\make\defines.mak>
 
 LIBBASE=hythr
@@ -24,9 +25,10 @@ DLLNAME=..\$(LIBBASE).dll
 LIBNAME=$(LIBPATH)$(LIBBASE).lib
 
 BUILDFILES = \
-  $(SHAREDSUB)thread_copyright.obj $(HY_PLATFORM)\thrhelp.obj $(HY_PLATFORM)\thrspinlock.obj \
-  $(SHAREDSUB)hythread.obj $(SHAREDSUB)hythreadinspect.obj $(SHAREDSUB)rwmutex.obj thrdsup.obj \
-  $(SHAREDSUB)thrprof.obj $(HY_PLATFORM)\locklbl.obj lock386.obj
+  $(HY_BIN)thread_copyright.obj $(HY_BIN)thrhelp.obj $(HY_BIN)thrspinlock.obj \
+  $(HY_BIN)hythread.obj $(HY_BIN)hythreadinspect.obj $(HY_BIN)rwmutex.obj \
+  $(HY_BIN)thrdsup.obj $(HY_BIN)thrprof.obj \
+  $(HY_BIN)locklbl.obj $(HY_BIN)lock386.obj
 
 # TOFIX $(LIBBASE).def should be a dependency on all libs
 VIRTFILES = $(LIBBASE).res

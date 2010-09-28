@@ -21,19 +21,10 @@ ml=ml
 DLLENTRY=@12
 !ENDIF
 
-.c.obj:
-	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $*.c
-
-.cpp.obj:
-	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $*.cpp
-
-.asm.obj:
-	$(ml) /Fo$*.obj /c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd $(VMASMDEBUG) -DWIN32 $<
-
 .rc.res:
 	rc -I..\include $<
 
-all: $(DLLNAME) $(EXENAME) $(LIBNAME)
+all: $(HY_BIN) $(DLLNAME) $(EXENAME) $(LIBNAME)
 
 !ifdef LIBNAME
 $(LIBNAME): $(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES)
@@ -51,7 +42,7 @@ $(DLLNAME): $(LIBNAME)
 	-entry:_DllMainCRTStartup$(DLLENTRY) -dll /BASE:$(DLLBASE) -machine:$(CPU) \
 	-subsystem:windows -out:$@ \
 	-map:$(LIBPATH)$(*F).map -pdb:$(DBGPATH)$(*F).pdb \
-        -manifestfile:$(LIBPATH)$(*F).manifest \
+	-manifest:no \
 	$(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES) $(SYSLIBFILES) \
 	kernel32.lib  msvcrt.lib ws2_32.lib advapi32.lib user32.lib gdi32.lib \
 	comdlg32.lib winspool.lib  $(LIBPATH)$(*F).exp
@@ -65,7 +56,7 @@ $(EXENAME): $(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES)
 	-mkdir $(DBGPATH)
 	link /NOLOGO $(EXEFLAGS) /debug /opt:icf /opt:ref $(VMLINK) \
 	-out:$(EXENAME) -pdb:$(DBGPATH)$(*F).pdb \
-        -manifestfile:$(LIBPATH)$(*F).manifest \
+	-manifest:no \
 	-machine:$(CPU) setargv.obj  \
 	$(BUILDFILES) $(VIRTFILES) $(MDLLIBFILES) $(EXEDLLFILES)
 	if exist $(LIBPATH)$(*F).manifest \
@@ -87,3 +78,57 @@ clean:
     -del $(DBGPATH)$(EXEBASE).pdb >nul 2>&1
     -del $(LIBPATH)$(EXEBASE).manifest >nul 2>&1
     -del $(CLEANFILES) >nul 2>&1
+
+$(HY_BIN):
+        -mkdir $(HY_BIN)
+
+# C rules
+{$(HY_PLATFORM)/}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(HY_ARCH)/}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(HY_OS)/}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(SHAREDSUB)}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(SHAREDSUB)additional/}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{.}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(OSS_DIST)}.c{$(HY_BIN)}.obj: # for zlib_dist / fdlibm_dist
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+# C++ rules
+{$(HY_ARCH)/}.cpp{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(HY_OS)/}.cpp{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(SHAREDSUB)}.cpp{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{.}.cpp{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+# assembler rules
+{$(HY_PLATFORM)/}.asm{$(HY_BIN)}.obj:
+	$(ml) /Fo$*.obj /c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd $(VMASMDEBUG) -DWIN32 $<
+
+{$(HY_ARCH)/}.asm{$(HY_BIN)}.obj:
+	$(ml) /Fo$*.obj /c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd $(VMASMDEBUG) -DWIN32 $<
+
+{$(HY_OS)/}.asm{$(HY_BIN)}.obj:
+	$(ml) /Fo$*.obj /c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd $(VMASMDEBUG) -DWIN32 $<
+
+{$(SHAREDSUB)}.asm{$(HY_BIN)}.obj:
+	$(ml) /Fo$*.obj /c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd $(VMASMDEBUG) -DWIN32 $<
+
+{.}.asm{$(HY_BIN)}.obj:
+	$(ml) /Fo$*.obj /c /Cp /W3 /nologo /coff /Zm /Zd /Zi /Gd $(VMASMDEBUG) -DWIN32 $<

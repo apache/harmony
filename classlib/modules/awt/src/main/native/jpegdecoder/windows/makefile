@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\awt\native\jpegdecoder\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 JPEG_DIR=$(HY_JPEG_DIR)\# avoid continuation
 
@@ -24,7 +25,7 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 HYCFLAGS = $(HYCFLAGS) -I$(SHAREDSUB)\include -I$(JPEG_DIR)
 
-BUILDFILES = $(SHAREDSUB)JpegDecoder.obj
+BUILDFILES = $(HY_BIN)JpegDecoder.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib
@@ -37,7 +38,7 @@ CLEANFILES=jconfig.h
 
 !include <$(HY_HDK)\build\make\rules.mak>
 
-$(SHAREDSUB)JpegDecoder.obj: jconfig.h
+$(HY_BIN)JpegDecoder.obj: jconfig.h
 
 jconfig.h: $(JPEG_DIR)jconfig.vc
 	copy $(JPEG_DIR)jconfig.vc $@

@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\awt\native\fontlib\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=FL
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -24,19 +25,19 @@ HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB)include /I$(SHAREDSUB) \
 	/EHsc
 
 BUILDFILES = \
-  $(SHAREDSUB)fljni.obj \
-  $(SHAREDSUB)EncodedValue.obj \
-  $(SHAREDSUB)Environment.obj \
-  $(SHAREDSUB)Font.obj \
-  $(SHAREDSUB)Glyph.obj \
-  $(SHAREDSUB)Outline.obj \
-  $(SHAREDSUB)ParsingTables.obj \
-  $(SHAREDSUB)T1Font.obj \
-  $(SHAREDSUB)T1Glyph.obj \
-  $(SHAREDSUB)TTCurve.obj \
-  $(SHAREDSUB)TTFont.obj \
-  $(SHAREDSUB)TypeDefinition.obj \
-  FontLibExports.obj
+  $(HY_BIN)fljni.obj \
+  $(HY_BIN)EncodedValue.obj \
+  $(HY_BIN)Environment.obj \
+  $(HY_BIN)Font.obj \
+  $(HY_BIN)Glyph.obj \
+  $(HY_BIN)Outline.obj \
+  $(HY_BIN)ParsingTables.obj \
+  $(HY_BIN)T1Font.obj \
+  $(HY_BIN)T1Glyph.obj \
+  $(HY_BIN)TTCurve.obj \
+  $(HY_BIN)TTFont.obj \
+  $(HY_BIN)TypeDefinition.obj \
+  $(HY_BIN)FontLibExports.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib

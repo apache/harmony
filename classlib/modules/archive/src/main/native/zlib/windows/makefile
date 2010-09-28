@@ -17,21 +17,22 @@
 # Makefile for module 'zlib'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\archive\native\zlib\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hyzlib
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
 LIBNAME=$(LIBPATH)$(LIBBASE).lib
 
-ZLIB_DIST=..\..\zlib_dist\# Path to zlib
+OSS_DIST = $(HY_TARGET)\depends\native\zlib_dist\# trailing slash
 
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-  $(SHAREDSUB)zlib_copyright.obj $(ZLIB_DIST)adler32.obj $(ZLIB_DIST)compress.obj \
-  $(ZLIB_DIST)crc32.obj $(ZLIB_DIST)deflate.obj $(ZLIB_DIST)infback.obj \
-  $(ZLIB_DIST)inffast.obj $(ZLIB_DIST)inflate.obj $(ZLIB_DIST)inftrees.obj $(ZLIB_DIST)trees.obj \
-  $(ZLIB_DIST)uncompr.obj $(ZLIB_DIST)zutil.obj
+  $(HY_BIN)zlib_copyright.obj $(HY_BIN)adler32.obj $(HY_BIN)compress.obj \
+  $(HY_BIN)crc32.obj $(HY_BIN)deflate.obj $(HY_BIN)infback.obj \
+  $(HY_BIN)inffast.obj $(HY_BIN)inflate.obj $(HY_BIN)inftrees.obj \
+  $(HY_BIN)trees.obj $(HY_BIN)uncompr.obj $(HY_BIN)zutil.obj
 
 VIRTFILES = $(LIBBASE).res
 DLLBASE=0x11700000

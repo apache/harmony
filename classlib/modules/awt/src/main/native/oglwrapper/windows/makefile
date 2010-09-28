@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\awt\native\oglwrapper\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=oglwrapper
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -22,7 +23,7 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB) /I$(SHAREDSUB)include
 
-BUILDFILES = $(SHAREDSUB)org_apache_harmony_awt_gl_opengl_GL.obj
+BUILDFILES = $(HY_BIN)org_apache_harmony_awt_gl_opengl_GL.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib

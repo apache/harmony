@@ -17,16 +17,16 @@
 # Makefile for module 'common'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\portlib\native\common\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBNAME=$(LIBPATH)hycommon.lib
 
 BUILDFILES = \
-	$(SHAREDSUB)libglob.obj $(SHAREDSUB)iohelp.obj \
-	$(SHAREDSUB)exceptions.obj $(SHAREDSUB)strhelp.obj \
-	$(SHAREDSUB)utf8decode.obj $(SHAREDSUB)utf8encode.obj
+ $(HY_BIN)libglob.obj $(HY_BIN)iohelp.obj $(HY_BIN)exceptions.obj \
+ $(HY_BIN)strhelp.obj $(HY_BIN)utf8decode.obj $(HY_BIN)utf8encode.obj
 MDLLIBFILES =
 
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB)
 
-!include <$(HY_HDK)\build\make\rules.mak>
+!include <$(HY_TARGET)\hdk\build\make\rules.mak>
