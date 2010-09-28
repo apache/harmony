@@ -169,6 +169,14 @@
         <isfalse value="${hy.zip.api}" />
      </condition>
 
+    <condition property="hy.portlib.stubs" value="true">
+        <or>
+            <equals arg1="${hy.os}" arg2="aix" />
+            <equals arg1="${hy.os}" arg2="zos" />
+        </or>
+    </condition>
+    <property name="hy.portlib.stubs" value="false" />
+
     <condition property="hy.platform.suffix" value=".libstdc++5">
         <isset property="use.libstdc++5"/>
     </condition>
