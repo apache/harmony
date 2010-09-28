@@ -89,6 +89,14 @@ public class CollationKey implements Comparable<CollationKey> {
         this.icuKey = key;
     }
 
+    protected CollationKey(String source) {
+        if (source == null) {
+            throw new NullPointerException("Specified source is null");
+        }
+        this.source = source;
+        icuKey = com.ibm.icu.text.Collator.getInstance().getCollationKey(source);
+    }
+
     /**
      * Compares this object to the specified collation key object to determine
      * their relative order.
