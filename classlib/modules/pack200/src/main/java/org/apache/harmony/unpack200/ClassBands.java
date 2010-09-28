@@ -874,7 +874,7 @@ public class ClassBands extends BandSet {
             int[] stackMapTableOffset = decodeBandInt(
                     "code_StackMapTable_offset", in, Codec.UNSIGNED5,
                     offsetCount);
-            int[] stackMapTableT = decodeBandInt("", in, Codec.BYTE1,
+            int[] stackMapTableT = decodeBandInt("code_StackMapTable_T", in, Codec.BYTE1,
                     verificationTypeInfoCount);
             int sevenCount = 0;
             int eightCount = 0;
