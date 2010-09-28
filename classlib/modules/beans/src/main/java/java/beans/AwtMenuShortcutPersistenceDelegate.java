@@ -19,16 +19,15 @@ package java.beans;
 
 import java.awt.MenuShortcut;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class AwtMenuShortcutPersistenceDelegate extends PersistenceDelegate {
-
     @Override
-	@SuppressWarnings("boxing")
-	protected Expression instantiate(Object oldInstance, Encoder enc) {
-		MenuShortcut shortcut = (MenuShortcut) oldInstance;
-		int keyCode = shortcut.getKey();
-		boolean useShiftModifier = shortcut.usesShiftModifier();
-		return new Expression(shortcut, shortcut.getClass(),
-                Statement.CONSTRUCTOR_NAME, new Object[] {keyCode, useShiftModifier});
-	}
-
+    protected Expression instantiate(Object oldInstance, Encoder enc) {
+        MenuShortcut shortcut = (MenuShortcut) oldInstance;
+        int keyCode = shortcut.getKey();
+        boolean useShiftModifier = shortcut.usesShiftModifier();
+        return new Expression(shortcut, shortcut.getClass(), BeansUtils.NEW,
+                new Object[] { keyCode, useShiftModifier });
+    }
 }

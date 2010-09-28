@@ -19,6 +19,7 @@
 #include "nethelp.h"
 #include "exceptions.h"
 #include "harmonyglob.h"
+#include "helpers.h"
 
 JNIEXPORT void JNICALL
 Java_java_io_FileDescriptor_syncImpl (JNIEnv * env, jobject recv)
@@ -56,4 +57,22 @@ Java_java_io_FileDescriptor_oneTimeInitialization (JNIEnv * env,
   if (!descriptorFID)
     return;
   HARMONY_CACHE_SET (env, FID_java_io_FileDescriptor_descriptor, descriptorFID);
+}
+
+JNIEXPORT jlong JNICALL
+Java_java_io_FileDescriptor_getStdInDescriptor (JNIEnv * env, jclass fdClazz)
+{
+  return getPlatformStdInFD();
+}
+
+JNIEXPORT jlong JNICALL
+Java_java_io_FileDescriptor_getStdOutDescriptor (JNIEnv * env, jclass fdClazz)
+{
+  return getPlatformStdOutFD();
+}
+
+JNIEXPORT jlong JNICALL
+Java_java_io_FileDescriptor_getStdErrDescriptor (JNIEnv * env, jclass fdClazz)
+{
+  return getPlatformStdErrFD();
 }

@@ -31,63 +31,50 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.harmony.beans.BeansUtils;
 import org.apache.harmony.beans.internal.nls.Messages;
 
 public class Statement {
-    private static final Object[] EMPTY_ARRAY = new Object[0];
 
     private Object target;
 
     private String methodName;
 
     private Object[] arguments;
-    
+
     // cache used methods of specified target class to accelerate method search
-    private static WeakHashMap<Class<?>, Method[]> cache = new WeakHashMap<Class<?>, Method[]>();
-    
-    // the special method name donating constructors
-    static final String CONSTRUCTOR_NAME = "new"; //$NON-NLS-1$
-
-    // the special method name donating array "get"
-    static final String ARRAY_GET = "get"; //$NON-NLS-1$
-
-    // the special method name donating array "set"
-    static final String ARRAY_SET = "set"; //$NON-NLS-1$
+    private static WeakHashMap<Class<?>, Method[]> classMethodsCache = new WeakHashMap<Class<?>, Method[]>();
 
     public Statement(Object target, String methodName, Object[] arguments) {
         this.target = target;
         this.methodName = methodName;
-        if (arguments != null) {
-            this.arguments = arguments;
-        } else {
-            this.arguments = EMPTY_ARRAY;
-        }
+        this.arguments = arguments == null ? BeansUtils.EMPTY_OBJECT_ARRAY
+                : arguments;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        Object theTarget = getTarget();
-        String theMethodName = getMethodName();
-        Object[] theArguments = getArguments();
-        String targetVar = theTarget != null ? convertClassName(theTarget.getClass()) : "null"; //$NON-NLS-1$
-        sb.append(targetVar);
-        sb.append('.');
-        sb.append(theMethodName);
-        sb.append('(');
-        if (theArguments != null) {
-            for (int i = 0; i < theArguments.length; ++i) {
-                if (i > 0) {
+        if (target == null) {
+            sb.append(BeansUtils.NULL);
+        } else {
+            Class<?> clazz = target.getClass();
+            sb.append(clazz == String.class ? BeansUtils.QUOTE : BeansUtils
+                    .idOfClass(clazz));
+        }
+        sb.append('.' + methodName + '(');
+        if (arguments != null) {
+            Class<?> clazz;
+            for (int index = 0; index < arguments.length; index++) {
+                if (index > 0) {
                     sb.append(", "); //$NON-NLS-1$
                 }
-                if (theArguments[i] == null) {
-                    sb.append("null"); //$NON-NLS-1$
-                } else if (theArguments[i] instanceof String) {
-                    sb.append('"');
-                    sb.append(theArguments[i].toString());
-                    sb.append('"');
+                if (arguments[index] == null) {
+                    sb.append(BeansUtils.NULL);
                 } else {
-                    sb.append(convertClassName(theArguments[i].getClass()));
+                    clazz = arguments[index].getClass();
+                    sb.append(clazz == String.class ? '"' + (String) arguments[index] + '"'
+                            : BeansUtils.idOfClass(clazz));
                 }
             }
         }
@@ -115,120 +102,117 @@ public class Statement {
     Object invokeMethod() throws Exception {
         Object result = null;
         try {
-            Object theTarget = getTarget();
-            String theMethodName = getMethodName();
-            Object[] theArguments = getArguments();
-            if (theTarget.getClass().isArray()) {
-                Method method = findArrayMethod(theMethodName, theArguments);
-                Object[] args = new Object[theArguments.length + 1];
-                args[0] = theTarget;
-                System.arraycopy(theArguments, 0, args, 1, theArguments.length);
-                result = method.invoke(null, args);
-            } else if (theMethodName.equals("newInstance") //$NON-NLS-1$
-                    && theTarget == Array.class) {
-                Class<?> componentType = (Class<?>) theArguments[0];
-                int length = ((Integer) theArguments[1]).intValue();
-                result = Array.newInstance(componentType, length);
-            } else if (theMethodName.equals("new") //$NON-NLS-1$
-                    || theMethodName.equals("newInstance")) { //$NON-NLS-1$
-                if (theTarget instanceof Class<?>) {
-                    Constructor<?> constructor = findConstructor((Class<?>)theTarget, theArguments);
-                    result = constructor.newInstance(theArguments);
+            Object target = getTarget();
+            String methodName = getMethodName();
+            Object[] arguments = getArguments();
+            Class<?> targetClass = target.getClass();
+            if (targetClass.isArray()) {
+                Method method = findArrayMethod(methodName, arguments);
+                Object[] copy = new Object[arguments.length + 1];
+                copy[0] = target;
+                System.arraycopy(arguments, 0, copy, 1, arguments.length);
+                result = method.invoke(null, copy);
+            } else if (BeansUtils.NEWINSTANCE.equals(methodName)
+                    && target == Array.class) {
+                result = Array.newInstance((Class<?>) arguments[0],
+                        ((Integer) arguments[1]).intValue());
+            } else if (BeansUtils.NEW.equals(methodName)
+                    || BeansUtils.NEWINSTANCE.equals(methodName)) {
+                if (target instanceof Class<?>) {
+                    Constructor<?> constructor = findConstructor(
+                            (Class<?>) target, arguments);
+                    result = constructor.newInstance(arguments);
                 } else {
-                    if ("new".equals(theMethodName)) { //$NON-NLS-1$
+                    if (BeansUtils.NEW.equals(methodName)) {
                         throw new NoSuchMethodException(this.toString());
                     }
                     // target class declares a public named "newInstance" method
-                    Method method = findMethod(theTarget.getClass(),
-                            theMethodName, theArguments, false);
-                    result = method.invoke(theTarget, theArguments);
+                    Method method = findMethod(targetClass, methodName,
+                            arguments, false);
+                    result = method.invoke(target, arguments);
                 }
-            } else if (theMethodName.equals("newArray")) {//$NON-NLS-1$
+            } else if (methodName.equals(BeansUtils.NEWARRAY)) {
                 // create a new array instance without length attribute
-                int length = theArguments.length;
-                Class<?> clazz = (Class<?>) theTarget;
+                Class<?> clazz = (Class<?>) target, argClass;
 
                 // check the element types of array
-                for (int i = 0; i < length; i++) {
-                    boolean isNull = theArguments[i] == null;
-                    boolean isPrimitiveWrapper = isNull ? false
-                            : isPrimitiveWrapper(theArguments[i].getClass(),
-                                    clazz);
-                    boolean isAssignable = isNull ? false : clazz
-                            .isAssignableFrom(theArguments[i].getClass());
-                    if (!isNull && !isPrimitiveWrapper && !isAssignable) {
-                        throw new IllegalArgumentException(Messages
-                                .getString("beans.63")); //$NON-NLS-1$
+                for (int index = 0; index < arguments.length; index++) {
+                    argClass = arguments[index] == null ? null
+                            : arguments[index].getClass();
+                    if (argClass != null && !clazz.isAssignableFrom(argClass)
+                            && !BeansUtils.isPrimitiveWrapper(argClass, clazz)) {
+                        throw new IllegalArgumentException(
+                                Messages.getString("beans.63")); //$NON-NLS-1$
                     }
                 }
-                result = Array.newInstance(clazz, length);
+                result = Array.newInstance(clazz, arguments.length);
                 if (clazz.isPrimitive()) {
                     // Copy element according to primitive types
-                    arrayCopy(clazz, theArguments, result, length);
+                    arrayCopy(clazz, arguments, result, arguments.length);
                 } else {
                     // Copy element of Objects
-                    System.arraycopy(theArguments, 0, result, 0, length);
+                    System.arraycopy(arguments, 0, result, 0, arguments.length);
                 }
                 return result;
-            } else if (theTarget instanceof Class<?>) {
+            } else if (target instanceof Class<?>) {
                 Method method = null;
-                boolean found = false;
                 try {
                     /*
                      * Try to look for a static method of class described by the
                      * given Class object at first process only if the class
                      * differs from Class itself
                      */
-                    if (theTarget != Class.class) {
-                        method = findMethod((Class<?>) theTarget, theMethodName, theArguments, true);
-                        result = method.invoke(null, theArguments);
-                        found = true;
+                    if (target != Class.class) {
+                        method = findMethod((Class<?>) target, methodName,
+                                arguments, true);
+                        result = method.invoke(null, arguments);
                     }
                 } catch (NoSuchMethodException e) {
                     // expected
                 }
-                if (!found) {
+                if (method == null) {
                     // static method was not found
                     // try to invoke method of Class object
-                    if (theMethodName.equals("forName") //$NON-NLS-1$
-                            && theArguments.length == 1 && theArguments[0] instanceof String) {
+                    if (BeansUtils.FORNAME.equals(methodName)
+                            && arguments.length == 1
+                            && arguments[0] instanceof String) {
                         // special handling of Class.forName(String)
                         try {
-                            result = Class.forName((String) theArguments[0]);
+                            result = Class.forName((String) arguments[0]);
                         } catch (ClassNotFoundException e2) {
-                            result = Class.forName((String) theArguments[0], true, Thread
-                                    .currentThread().getContextClassLoader());
+                            result = Class.forName((String) arguments[0], true,
+                                    Thread.currentThread()
+                                            .getContextClassLoader());
                         }
                     } else {
-                        method = findMethod(theTarget.getClass(), theMethodName, theArguments, false);
-                        result = method.invoke(theTarget, theArguments);
+                        method = findMethod(targetClass, methodName, arguments,
+                                false);
+                        result = method.invoke(target, arguments);
                     }
                 }
-            } else if (theTarget instanceof Iterator<?>){
-            	final Iterator<?> iterator = (Iterator<?>) theTarget;
-				final Method method = findMethod(theTarget.getClass(), theMethodName,
-						theArguments, false);
-				if (iterator.hasNext()) {
-					PrivilegedAction<Object> action = new PrivilegedAction<Object>() {
+            } else if (target instanceof Iterator<?>) {
+                final Iterator<?> iterator = (Iterator<?>) target;
+                final Method method = findMethod(targetClass, methodName,
+                        arguments, false);
+                if (iterator.hasNext()) {
+                    result = new PrivilegedAction<Object>() {
+                        public Object run() {
+                            try {
+                                method.setAccessible(true);
+                                return (method.invoke(iterator, new Object[0]));
+                            } catch (Exception e) {
+                                // ignore
+                            }
+                            return null;
+                        }
 
-						public Object run() {
-							try {
-								method.setAccessible(true);
-								return (method.invoke(iterator, new Object[0]));
-							} catch (Exception e) {
-								// ignore
-							} 
-							return null;
-						}
-						
-					};
-					result = action.run();
-				}
+                    }.run();
+                }
             } else {
-                Method method = findMethod(theTarget.getClass(), theMethodName,
-                        theArguments, false);
+                Method method = findMethod(targetClass, methodName, arguments,
+                        false);
                 method.setAccessible(true);
-                result = method.invoke(theTarget, theArguments);
+                result = method.invoke(target, arguments);
             }
         } catch (InvocationTargetException ite) {
             Throwable t = ite.getCause();
@@ -236,122 +220,109 @@ public class Statement {
         }
         return result;
     }
-    
+
     private void arrayCopy(Class<?> type, Object[] src, Object dest, int length) {
         if (type == boolean.class) {
             boolean[] destination = (boolean[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Boolean) src[i]).booleanValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Boolean) src[index]).booleanValue();
             }
         } else if (type == short.class) {
             short[] destination = (short[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Short) src[i]).shortValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Short) src[index]).shortValue();
             }
         } else if (type == byte.class) {
             byte[] destination = (byte[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Byte) src[i]).byteValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Byte) src[index]).byteValue();
             }
         } else if (type == char.class) {
             char[] destination = (char[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Character) src[i]).charValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Character) src[index]).charValue();
             }
         } else if (type == int.class) {
             int[] destination = (int[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Integer) src[i]).intValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Integer) src[index]).intValue();
             }
         } else if (type == long.class) {
             long[] destination = (long[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Long) src[i]).longValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Long) src[index]).longValue();
             }
         } else if (type == float.class) {
             float[] destination = (float[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Float) src[i]).floatValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Float) src[index]).floatValue();
             }
         } else if (type == double.class) {
             double[] destination = (double[]) dest;
-            for (int i = 0; i < length; i++) {
-                destination[i] = ((Double) src[i]).doubleValue();
+            for (int index = 0; index < length; index++) {
+                destination[index] = ((Double) src[index]).doubleValue();
             }
         }
     }
 
-    private Method findArrayMethod(String theMethodName, Object[] theArguments) throws NoSuchMethodException {
+    private Method findArrayMethod(String methodName, Object[] args)
+            throws NoSuchMethodException {
         // the code below reproduces exact RI exception throwing behavior
-        if (!theMethodName.equals("set") && !theMethodName.equals("get")) { //$NON-NLS-1$ //$NON-NLS-2$
+        boolean isGet = BeansUtils.GET.equals(methodName); //$NON-NLS-1$
+        boolean isSet = BeansUtils.SET.equals(methodName); //$NON-NLS-1$
+        if (!isGet && !isSet) {
             throw new NoSuchMethodException(Messages.getString("beans.3C")); //$NON-NLS-1$
-        } else if (theArguments.length > 0 && theArguments[0].getClass() != Integer.class) {
+        } else if (args.length > 0 && args[0].getClass() != Integer.class) {
             throw new ClassCastException(Messages.getString("beans.3D")); //$NON-NLS-1$
-        } else if (theMethodName.equals("get") && (theArguments.length != 1)) { //$NON-NLS-1$
-            throw new ArrayIndexOutOfBoundsException(Messages.getString("beans.3E")); //$NON-NLS-1$
-        } else if (theMethodName.equals("set") && (theArguments.length != 2)) { //$NON-NLS-1$
-            throw new ArrayIndexOutOfBoundsException(Messages.getString("beans.3F")); //$NON-NLS-1$
+        } else if (isGet && args.length != 1) {
+            throw new ArrayIndexOutOfBoundsException(
+                    Messages.getString("beans.3E")); //$NON-NLS-1$
+        } else if (isSet && args.length != 2) {
+            throw new ArrayIndexOutOfBoundsException(
+                    Messages.getString("beans.3F")); //$NON-NLS-1$
         }
-        if (theMethodName.equals("get")) { //$NON-NLS-1$
-            return Array.class.getMethod("get", new Class[] { Object.class, //$NON-NLS-1$
-                    int.class });
-        }
-        return Array.class.getMethod("set", new Class[] { Object.class, //$NON-NLS-1$
-                int.class, Object.class });
+
+        Class<?>[] paraTypes = isGet ? new Class<?>[] { Object.class, int.class }
+                : new Class<?>[] { Object.class, int.class, Object.class };
+        return Array.class.getMethod(methodName, paraTypes);
     }
 
-    private Constructor<?> findConstructor(Class<?> targetClass, Object[] theArguments) throws NoSuchMethodException {
-        Class<?>[] argClasses = getClasses(theArguments);
+    private Constructor<?> findConstructor(Class<?> clazz, Object[] args)
+            throws NoSuchMethodException {
+        Class<?>[] argTypes = getTypes(args), paraTypes, resultParaTypes;
         Constructor<?> result = null;
-        Constructor<?>[] constructors = targetClass.getConstructors();
-        for (Constructor<?> constructor : constructors) {
-            Class<?>[] parameterTypes = constructor.getParameterTypes();
-            if (parameterTypes.length == argClasses.length) {
-                boolean found = true;
-                for (int j = 0; j < parameterTypes.length; ++j) {
-                    boolean argIsNull = argClasses[j] == null;
-                    boolean argIsPrimitiveWrapper = isPrimitiveWrapper(argClasses[j],
-                            parameterTypes[j]);
-                    boolean paramIsPrimitive = parameterTypes[j].isPrimitive();
-                    boolean paramIsAssignable = argIsNull ? false : parameterTypes[j]
-                            .isAssignableFrom(argClasses[j]);
-                    if (!argIsNull && !paramIsAssignable && !argIsPrimitiveWrapper || argIsNull
-                            && paramIsPrimitive) {
-                        found = false;
+        boolean isAssignable;
+        for (Constructor<?> constructor : clazz.getConstructors()) {
+            paraTypes = constructor.getParameterTypes();
+            if (match(argTypes, paraTypes)) {
+                if (result == null) {
+                    // first time, set constructor
+                    result = constructor;
+                    continue;
+                }
+                // find out more suitable constructor
+                resultParaTypes = result.getParameterTypes();
+                isAssignable = true;
+                for (int index = 0; index < paraTypes.length; index++) {
+                    if (argTypes[index] != null
+                            && !(isAssignable &= resultParaTypes[index]
+                                    .isAssignableFrom(paraTypes[index]))) {
+                        break;
+                    }
+                    if (argTypes[index] == null
+                            && !(isAssignable &= paraTypes[index]
+                                    .isAssignableFrom(resultParaTypes[index]))) {
                         break;
                     }
                 }
-                if (found) {
-                    if (result == null) {
-                        // first time, set constructor
-                        result = constructor;
-                        continue;
-                    }
-                    // find out more suitable constructor
-                    Class<?>[] resultParameterTypes = result
-                            .getParameterTypes();
-                    boolean isAssignable = true;
-                    for (int j = 0; j < parameterTypes.length; ++j) {
-                        if (theArguments[j] != null
-                                && !(isAssignable &= resultParameterTypes[j]
-                                        .isAssignableFrom(parameterTypes[j]))) {
-                            break;
-                        }
-                        if (theArguments[j] == null
-                                && !(isAssignable &= parameterTypes[j]
-                                        .isAssignableFrom(resultParameterTypes[j]))) {
-                            break;
-                        }
-                    }
-                    if (isAssignable) {
-                        result = constructor;
-                    }
+                if (isAssignable) {
+                    result = constructor;
                 }
             }
         }
         if (result == null) {
             throw new NoSuchMethodException(Messages.getString(
-                    "beans.40", targetClass.getName())); //$NON-NLS-1$
+                    "beans.40", clazz.getName())); //$NON-NLS-1$
         }
         return result;
     }
@@ -359,90 +330,91 @@ public class Statement {
     /**
      * Searches for best matching method for given name and argument types.
      */
-    static Method findMethod(Class<?> targetClass, String methodName, Object[] arguments,
-            boolean methodIsStatic) throws NoSuchMethodException {
-        Class<?>[] argClasses = getClasses(arguments);
+    static Method findMethod(Class<?> clazz, String methodName, Object[] args,
+            boolean isStatic) throws NoSuchMethodException {
+        Class<?>[] argTypes = getTypes(args);
+
         Method[] methods = null;
-        
-        if(cache.containsKey(targetClass)){
-            methods = cache.get(targetClass);
-        }else{
-            methods = targetClass.getMethods();
-            cache.put(targetClass, methods);
+        if (classMethodsCache.containsKey(clazz)) {
+            methods = classMethodsCache.get(clazz);
+        } else {
+            methods = clazz.getMethods();
+            classMethodsCache.put(clazz, methods);
         }
-        
-        ArrayList<Method> foundMethods = new ArrayList<Method>();
-        Method[] foundMethodsArr;
+
+        ArrayList<Method> fitMethods = new ArrayList<Method>();
         for (Method method : methods) {
-            int mods = method.getModifiers();
-            if (method.getName().equals(methodName)
-                    && (methodIsStatic ? Modifier.isStatic(mods) : true)) {
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                if (parameterTypes.length == argClasses.length) {
-                    boolean found = true;
-                    for (int j = 0; j < parameterTypes.length; ++j) {
-                        boolean argIsNull = (argClasses[j] == null);
-                        boolean argIsPrimitiveWrapper = isPrimitiveWrapper(argClasses[j],
-                                parameterTypes[j]);
-                        boolean paramIsAssignable = argIsNull ? false : parameterTypes[j]
-                                .isAssignableFrom(argClasses[j]);
-                        if (!argIsNull && !paramIsAssignable && !argIsPrimitiveWrapper){
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        foundMethods.add(method);
+            if (methodName.equals(method.getName())) {
+                if (!isStatic || Modifier.isStatic(method.getModifiers())) {
+                    if (match(argTypes, method.getParameterTypes())) {
+                        fitMethods.add(method);
                     }
                 }
             }
         }
-        if (foundMethods.size() == 0) {
-            throw new NoSuchMethodException(Messages.getString("beans.41", methodName)); //$NON-NLS-1$
+        int fitSize = fitMethods.size();
+        if (fitSize == 0) {
+            throw new NoSuchMethodException(Messages.getString(
+                    "beans.41", methodName)); //$NON-NLS-1$
         }
-        if(foundMethods.size() == 1){
-            return foundMethods.get(0);
+        if (fitSize == 1) {
+            return fitMethods.get(0);
         }
-        foundMethodsArr = foundMethods.toArray(new Method[foundMethods.size()]);
-        //find the most relevant one
-        MethodComparator comparator = new MethodComparator(methodName, argClasses);
-        Method chosenOne = foundMethodsArr[0];
-        for (int i = 1; i < foundMethodsArr.length; i++) {
-            int difference = comparator.compare(chosenOne, foundMethodsArr[i]);
-            //if 2 methods have same relevance, throw exception
-            if (difference == 0) {
+        // find the most relevant one
+        MethodComparator comparator = new MethodComparator(methodName, argTypes);
+        Method[] fitMethodArray = fitMethods.toArray(new Method[fitSize]);
+        Method onlyMethod = fitMethodArray[0];
+        Class<?> onlyReturnType, fitReturnType;
+        int difference;
+        for (int i = 1; i < fitMethodArray.length; i++) {
+            // if 2 methods have same relevance, check their return type
+            if ((difference = comparator.compare(onlyMethod, fitMethodArray[i])) == 0) {
                 // if 2 methods have the same signature, check their return type
-                Class<?> oneReturnType = chosenOne.getReturnType();
-                Class<?> foundMethodReturnType = foundMethodsArr[i]
-                        .getReturnType();
-                if (oneReturnType.equals(foundMethodReturnType)) {
-                    // if 2 methods have the same signature and return type,
-                    // throw NoSuchMethodException
+                onlyReturnType = onlyMethod.getReturnType();
+                fitReturnType = fitMethodArray[i].getReturnType();
+                if (onlyReturnType == fitReturnType) {
+                    // if 2 methods have the same relevance and return type
                     throw new NoSuchMethodException(Messages.getString(
                             "beans.62", methodName)); //$NON-NLS-1$
                 }
 
-                if (oneReturnType.isAssignableFrom(foundMethodReturnType)) {
-                    // if chosenOne is super class or interface of
-                    // foundMethodReturnType, set chosenOne to foundMethodArr[i]
-                    chosenOne = foundMethodsArr[i];
+                if (onlyReturnType.isAssignableFrom(fitReturnType)) {
+                    // if onlyReturnType is super class or interface of
+                    // fitReturnType, set onlyMethod to fitMethodArray[i]
+                    onlyMethod = fitMethodArray[i];
                 }
             }
-            if(difference > 0){
-                chosenOne = foundMethodsArr[i];
+            if (difference > 0) {
+                onlyMethod = fitMethodArray[i];
             }
         }
-        return chosenOne;
+        return onlyMethod;
+    }
+
+    private static boolean match(Class<?>[] argTypes, Class<?>[] paraTypes) {
+        if (paraTypes.length != argTypes.length) {
+            return false;
+        }
+        for (int index = 0; index < paraTypes.length; index++) {
+            if (argTypes[index] != null
+                    && !paraTypes[index].isAssignableFrom(argTypes[index])
+                    && !BeansUtils.isPrimitiveWrapper(argTypes[index],
+                            paraTypes[index])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     static boolean isStaticMethodCall(Statement stmt) {
         Object target = stmt.getTarget();
-        String mName = stmt.getMethodName();
+        String methodName = stmt.getMethodName();
         if (!(target instanceof Class<?>)) {
             return false;
         }
         try {
-            Statement.findMethod((Class<?>) target, mName, stmt.getArguments(), true);
+            Statement.findMethod((Class<?>) target, methodName,
+                    stmt.getArguments(), true);
             return true;
         } catch (NoSuchMethodException e) {
             return false;
@@ -475,7 +447,8 @@ public class Statement {
         String methodName = stmt.getMethodName();
         Object[] args = stmt.getArguments();
         String[] sig = new String[pdConstructorSignatures[0].length];
-        if (target == null || methodName == null || args == null || args.length == 0) {
+        if (target == null || methodName == null || args == null
+                || args.length == 0) {
             // not a constructor for sure
             return false;
         }
@@ -483,7 +456,8 @@ public class Statement {
         sig[1] = methodName;
         for (int i = 2; i < sig.length; i++) {
             if (args.length > i - 2) {
-                sig[i] = args[i - 2] != null ? args[i - 2].getClass().getName() : "null"; //$NON-NLS-1$
+                sig[i] = args[i - 2] != null ? args[i - 2].getClass().getName()
+                        : "null"; //$NON-NLS-1$
             } else {
                 sig[i] = ""; //$NON-NLS-1$
             }
@@ -494,16 +468,6 @@ public class Statement {
             }
         }
         return false;
-    }
-
-    private static boolean isPrimitiveWrapper(Class<?> wrapper, Class<?> base) {
-        return (base == boolean.class) && (wrapper == Boolean.class) || (base == byte.class)
-                && (wrapper == Byte.class) || (base == char.class)
-                && (wrapper == Character.class) || (base == short.class)
-                && (wrapper == Short.class) || (base == int.class)
-                && (wrapper == Integer.class) || (base == long.class)
-                && (wrapper == Long.class) || (base == float.class) && (wrapper == Float.class)
-                || (base == double.class) && (wrapper == Double.class);
     }
 
     private static Class<?> getPrimitiveWrapper(Class<?> base) {
@@ -528,31 +492,13 @@ public class Statement {
         return res;
     }
 
-    static String convertClassName(Class<?> type) {
-        StringBuilder clazzNameSuffix = new StringBuilder();
-        Class<?> componentType = null;
-        Class<?> clazzType = type;
-        while ((componentType = clazzType.getComponentType()) != null) {
-            clazzNameSuffix.append("Array"); //$NON-NLS-1$
-            clazzType = componentType;
+    private static Class<?>[] getTypes(Object[] arguments) {
+        Class<?>[] types = new Class[arguments.length];
+        for (int index = 0; index < arguments.length; ++index) {
+            types[index] = (arguments[index] == null) ? null : arguments[index]
+                    .getClass();
         }
-        String clazzName = clazzType.getName();
-        int k = clazzName.lastIndexOf('.');
-        if (k != -1 && k < clazzName.length()) {
-            clazzName = clazzName.substring(k + 1);
-        }
-        if (clazzNameSuffix.length() == 0 && "String".equals(clazzName)) { //$NON-NLS-1$
-            return "\"\""; //$NON-NLS-1$
-        }
-        return clazzName + clazzNameSuffix.toString();
-    }
-
-    private static Class<?>[] getClasses(Object[] arguments) {
-        Class<?>[] result = new Class[arguments.length];
-        for (int i = 0; i < arguments.length; ++i) {
-            result[i] = (arguments[i] == null) ? null : arguments[i].getClass();
-        }
-        return result;
+        return types;
     }
 
     /**
@@ -568,7 +514,8 @@ public class Statement {
 
         private final Map<Method, Integer> cache;
 
-        public MethodComparator(String refMethodName, Class<?>[] refArgumentTypes) {
+        public MethodComparator(String refMethodName,
+                Class<?>[] refArgumentTypes) {
             this.referenceMethodName = refMethodName;
             this.referenceMethodArgumentTypes = refArgumentTypes;
             cache = new HashMap<Method, Integer>();
@@ -615,7 +562,8 @@ public class Statement {
                 if (argumentTypes[i].isPrimitive()) {
                     argumentTypes[i] = getPrimitiveWrapper(argumentTypes[i]);
                 }
-                totalNorm += getDistance(referenceMethodArgumentTypes[i], argumentTypes[i]);
+                totalNorm += getDistance(referenceMethodArgumentTypes[i],
+                        argumentTypes[i]);
             }
             return totalNorm;
         }
@@ -656,7 +604,7 @@ public class Statement {
                 }
                 return (bestDist != INFINITY ? bestDist + 1 : INFINITY);
             }
-            return (superDist != INFINITY ? superDist + 1 : INFINITY);
+            return (superDist != INFINITY ? superDist + 2 : INFINITY);
         }
     }
 }

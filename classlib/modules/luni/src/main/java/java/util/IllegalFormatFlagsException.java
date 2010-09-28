@@ -59,11 +59,12 @@ public class IllegalFormatFlagsException extends IllegalFormatException
      * @return the message string of the IllegalFormatFlagsException.
      */
     @Override
+    @SuppressWarnings("nls")
     public String getMessage() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("Flags = '");
         buffer.append(flags);
-        buffer.append("'");
+        buffer.append('\'');
         return buffer.toString();
     }
 

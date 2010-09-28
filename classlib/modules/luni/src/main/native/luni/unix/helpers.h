@@ -35,4 +35,7 @@ I_32 setPlatformLastModified (JNIEnv * env, char *path, I_64 time);
 I_32 setPlatformReadOnly (JNIEnv * env, char *path);
 int portCmp (const void **a, const void **b);
 void getOSCharset(char *locale, const size_t size);
+jlong getPlatformStdInFD();
+jlong getPlatformStdOutFD();
+jlong getPlatformStdErrFD();
 #endif /* helpers_h */

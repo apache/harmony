@@ -19,25 +19,25 @@ package java.beans;
 
 import java.awt.Rectangle;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class AwtRectanglePersistenceDelegate extends DefaultPersistenceDelegate {
 
-	@Override
+    @Override
     protected boolean mutatesTo(Object o1, Object o2) {
-		return o1.equals(o2);
-	}
+        return o1.equals(o2);
+    }
 
-	@Override
+    @Override
     protected void initialize(Class<?> type, Object oldInstance,
-			Object newInstance, Encoder enc) {
-		return;
-	}
-	
-	@Override
-	@SuppressWarnings("boxing")
-    protected Expression instantiate(Object oldInstance, Encoder enc) {
-		Rectangle rect = (Rectangle) oldInstance;
+            Object newInstance, Encoder enc) {
+        return;
+    }
 
-        return new Expression(rect, rect.getClass(), Statement.CONSTRUCTOR_NAME,
+    @Override
+    protected Expression instantiate(Object oldInstance, Encoder enc) {
+        Rectangle rect = (Rectangle) oldInstance;
+        return new Expression(rect, rect.getClass(), BeansUtils.NEW,
                 new Object[] { rect.x, rect.y, rect.width, rect.height });
     }
 }

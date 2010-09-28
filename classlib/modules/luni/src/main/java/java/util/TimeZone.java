@@ -74,6 +74,11 @@ import org.apache.harmony.luni.util.PriviAction;
 public abstract class TimeZone implements Serializable, Cloneable {
     private static final long serialVersionUID = 3581463369166924961L;
 
+    static {
+        // Force ICU initialization ordering via Locale loading.
+        Locale dummy = Locale.US;
+    }
+
     /**
      * The SHORT display name style.
      */

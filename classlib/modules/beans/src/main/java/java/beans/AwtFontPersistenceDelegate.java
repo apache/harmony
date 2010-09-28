@@ -19,13 +19,14 @@ package java.beans;
 
 import java.awt.Font;
 
+import org.apache.harmony.beans.BeansUtils;
+
 class AwtFontPersistenceDelegate extends DefaultPersistenceDelegate {
     @Override
-	@SuppressWarnings("boxing")
     protected Expression instantiate(Object oldInstance, Encoder enc) {
-		Font font = (Font) oldInstance;
-		return new Expression(oldInstance, oldInstance.getClass(),
-                Statement.CONSTRUCTOR_NAME, new Object[] { font.getFontName(),
-						font.getStyle(), font.getSize() });
-	}
+        Font font = (Font) oldInstance;
+        return new Expression(oldInstance, oldInstance.getClass(),
+                BeansUtils.NEW, new Object[] { font.getFontName(),
+                        font.getStyle(), font.getSize() });
+    }
 }

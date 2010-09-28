@@ -42,8 +42,6 @@ public class FileOutputStream extends OutputStream implements Closeable {
      */
     FileDescriptor fd;
 
-    boolean innerFD;
-
     // The unique file channel associated with this FileInputStream (lazily
     // initialized).
     private FileChannel channel;
@@ -94,7 +92,6 @@ public class FileOutputStream extends OutputStream implements Closeable {
         fd = new FileDescriptor();
         fd.descriptor = fileSystem.open(file.properPath(true),
                 append ? IFileSystem.O_APPEND : IFileSystem.O_WRONLY);
-        innerFD = true;
         channel = FileChannelFactory.getFileChannel(this, fd.descriptor,
                 append ? IFileSystem.O_APPEND : IFileSystem.O_WRONLY);
     }
@@ -123,7 +120,6 @@ public class FileOutputStream extends OutputStream implements Closeable {
             security.checkWrite(fd);
         }
         this.fd = fd;
-        innerFD = false;
         channel = FileChannelFactory.getFileChannel(this, fd.descriptor,
                 IFileSystem.O_WRONLY);
     }
@@ -190,7 +186,7 @@ public class FileOutputStream extends OutputStream implements Closeable {
         }
 
         synchronized (this) {
-            if (fd.descriptor >= 0 && innerFD) {
+            if (fd.descriptor >= 0) {
                 fileSystem.close(fd.descriptor);
                 fd.descriptor = -1;
             }

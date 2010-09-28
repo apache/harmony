@@ -2940,9 +2940,8 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
      * @return an approximation of {@code precision()} value
      */
     private int aproxPrecision() {
-        return ((precision > 0)
-        ? precision
-                : (int)((this.bitLength - 1) * LOG10_2)) + 1;
+        return (precision > 0) ? precision
+                : ((int) ((this.bitLength - 1) * LOG10_2)) + 1;
     }
 
     /**

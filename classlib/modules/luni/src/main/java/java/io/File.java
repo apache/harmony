@@ -24,6 +24,7 @@ import java.security.AccessController;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.harmony.luni.internal.io.FileCanonPathCache;
 import org.apache.harmony.luni.util.DeleteOnExit;
@@ -753,7 +754,7 @@ public class File implements Serializable, Comparable<File> {
         if (caseSensitive) {
             return path.hashCode() ^ 1234321;
         }
-        return path.toLowerCase().hashCode() ^ 1234321;
+        return path.toLowerCase(Locale.ENGLISH).hashCode() ^ 1234321;
     }
 
     /**

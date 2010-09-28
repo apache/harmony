@@ -19,14 +19,13 @@ package java.beans;
 
 import java.awt.Dimension;
 
-class AwtDimensionPersistenceDelegate extends DefaultPersistenceDelegate {
-	
-    @Override
-	@SuppressWarnings("boxing")
-    protected Expression instantiate(Object oldInstance, Encoder enc) {
-		Dimension dimension = (Dimension) oldInstance;
+import org.apache.harmony.beans.BeansUtils;
 
-        return new Expression(dimension, dimension.getClass(), Statement.CONSTRUCTOR_NAME,
+class AwtDimensionPersistenceDelegate extends DefaultPersistenceDelegate {
+    @Override
+    protected Expression instantiate(Object oldInstance, Encoder enc) {
+        Dimension dimension = (Dimension) oldInstance;
+        return new Expression(dimension, dimension.getClass(), BeansUtils.NEW,
                 new Object[] { dimension.width, dimension.height });
     }
 }

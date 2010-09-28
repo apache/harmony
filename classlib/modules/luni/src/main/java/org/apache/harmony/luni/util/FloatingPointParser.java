@@ -280,6 +280,28 @@ public final class FloatingPointParser {
 		throw new NumberFormatException();
 	}
 
+	/*
+	 * Answers true if the string should be parsed as a hex encoding.
+	 * Assumes the string is trimmed.
+	 */
+    private static boolean parseAsHex(String s) {
+        int length = s.length();
+        if (length < 2) {
+            return false;
+        }
+        char first = s.charAt(0);
+        char second = s.charAt(1);
+        if (first == '+' || first == '-') {
+            // Move along
+            if (length < 3) {
+                return false;
+            }
+            first = second;
+            second = s.charAt(2);
+        }
+        return (first == '0') && (second == 'x' || second == 'X');
+    }
+
 	/**
 	 * Returns the closest double value to the real number in the string.
 	 * 
@@ -305,7 +327,7 @@ public final class FloatingPointParser {
 		}
         
         // See if it could be a hexadecimal representation
-        if (s.toLowerCase().indexOf("0x") != -1) { //$NON-NLS-1$
+        if (parseAsHex(s)) {
             return HexStringParser.parseDouble(s);
         }
         
@@ -354,7 +376,7 @@ public final class FloatingPointParser {
 		}
         
         // See if it could be a hexadecimal representation
-        if (s.toLowerCase().indexOf("0x") != -1) { //$NON-NLS-1$
+        if (parseAsHex(s)) {
             return HexStringParser.parseFloat(s);
         }
         

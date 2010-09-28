@@ -69,7 +69,7 @@ public class FileURLConnection extends URLConnection {
         if (fileName == null) {
             fileName = ""; //$NON-NLS-1$
         }
-        fileName = Util.decode(fileName, false);
+        fileName = Util.decode(fileName, false, "UTF-8"); //$NON-NLS-1$
         header = new LinkedHashMap<String, String>();
     }
 

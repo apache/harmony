@@ -32,7 +32,6 @@ import java.security.Permission;
 import java.security.Security;
 import java.security.SecurityPermission;
 import java.util.PropertyPermission;
-import java.util.StringTokenizer;
 
 import org.apache.harmony.luni.util.PriviAction;
 
