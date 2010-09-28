@@ -298,6 +298,29 @@ public class ArchiveTest extends TestCase {
 		}
     }
 
+    public void testJava6ClassFiles() throws IOException, Pack200Exception, URISyntaxException {
+        // pack
+        in = new JarFile(new File(Archive.class.getResource(
+                "/org/apache/harmony/pack200/tests/pack200-java6.jar").toURI()));
+        file = File.createTempFile("p200-java6", ".pack");
+        file.deleteOnExit();
+        out = new FileOutputStream(file);
+        PackingOptions options = new PackingOptions();
+        options.setGzip(false);
+        Archive ar = new Archive(in, out, options);
+        ar.pack();
+        in.close();
+        out.close();
+
+        // now unpack
+        InputStream in2 = new FileInputStream(file);
+        File file2 = File.createTempFile("p200-java6out", ".jar");
+        file2.deleteOnExit();
+        JarOutputStream out2 = new JarOutputStream(new FileOutputStream(file2));
+        org.apache.harmony.unpack200.Archive archive = new org.apache.harmony.unpack200.Archive(in2, out2);
+        archive.unpack();
+    }
+
     private void compareJarEntries(JarFile jarFile, JarFile jarFile2)
             throws IOException {
         Enumeration entries = jarFile.entries();

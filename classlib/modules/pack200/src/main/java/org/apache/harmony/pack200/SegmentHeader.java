@@ -34,8 +34,8 @@ public class SegmentHeader extends BandSet {
     }
 
     private static final int[] magic = { 0xCA, 0xFE, 0xD0, 0x0D };
-    private static final int archive_minver = 7;
-    private static final int archive_majver = 150;
+    private static int archive_minver = 7;
+    private static int archive_majver = 150;
 
     private int archive_options;
 
@@ -292,6 +292,10 @@ public class SegmentHeader extends BandSet {
 
     public void addMajorVersion(int major) {
         majverCounter.add(major);
+        if(major >= 50) {
+            archive_majver = 160;
+            archive_minver = 1;
+        }
     }
 
     /**

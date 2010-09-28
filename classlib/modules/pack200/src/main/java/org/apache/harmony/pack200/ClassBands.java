@@ -100,6 +100,15 @@ public class ClassBands extends BandSet {
     private final List codeLocalVariableTypeTableTypeRS = new ArrayList();
     private final IntList codeLocalVariableTypeTableSlot = new IntList();
 
+    private final IntList codeStackMapTableN = new IntList();
+    private final IntList codeStackMapTableFrameT = new IntList();
+    private final IntList codeStackMapTableLocalN = new IntList();
+    private final IntList codeStackMapTableStackN = new IntList();
+    private final IntList codeStackMapTableOffset = new IntList();
+    private final IntList codeStackMapTableT = new IntList();
+    private final List codeStackMapTableRC = new ArrayList();
+    private final List codeStackMapTableP = new ArrayList();
+
     private final MetadataBandGroup class_RVA_bands;
     private final MetadataBandGroup class_RIA_bands;
     private final MetadataBandGroup field_RVA_bands;
@@ -864,6 +873,65 @@ public class ClassBands extends BandSet {
                         + " bytes from code_attr_calls["
                         + code_attr_calls.length + "]");
 
+        encodedBand = encodeBandInt("code_StackMapTable_N",
+                codeStackMapTableN.toArray(), Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_N["
+                + codeStackMapTableN.size() + "]");
+        encodedBand = encodeBandInt("code_StackMapTable_frame_T",
+                codeStackMapTableFrameT.toArray(), Codec.BYTE1);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_frame_T["
+                + codeStackMapTableFrameT.size() + "]");
+        encodedBand = encodeBandInt("code_StackMapTable_local_N",
+                codeStackMapTableLocalN.toArray(), Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_local_N["
+                + codeStackMapTableLocalN.size() + "]");
+        encodedBand = encodeBandInt("code_StackMapTable_stack_N",
+                codeStackMapTableStackN.toArray(), Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_stack_N["
+                + codeStackMapTableStackN.size() + "]");
+
+        encodedBand = encodeBandInt("code_StackMapTable_offset",
+                codeStackMapTableOffset.toArray(), Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_offset["
+                + codeStackMapTableOffset.size() + "]");
+        encodedBand = encodeBandInt("code_StackMapTable_T",
+                codeStackMapTableT.toArray(), Codec.BYTE1);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_T["
+                + codeStackMapTableT.size() + "]");
+        encodedBand = encodeBandInt("code_StackMapTable_RC",
+                cpBands.cpEntryListToArray(codeStackMapTableRC),
+                Codec.UNSIGNED5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_RC["
+                + codeStackMapTableRC.size() + "]");
+        encodedBand = encodeBandInt("code_StackMapTable_P",
+                cpBands.integerListToArray(codeStackMapTableP), Codec.BCI5);
+        out.write(encodedBand);
+        PackingUtils.log("Wrote " + encodedBand.length
+                + " bytes from code_StackMapTable_P["
+                + codeStackMapTableP.size() + "]");
+//        *code_StackMapTable_N :UNSIGNED5 [COUNT(StackMapTable,...)]
+//        *code_StackMapTable_frame_T :BYTE1 [SUM(*code_StackMapTable_N)]
+//        *code_StackMapTable_local_N :UNSIGNED5 [COUNT(255,*code_StackMapTable_frame_T)]
+//        *code_StackMapTable_stack_N :UNSIGNED5 [COUNT(255,*code_StackMapTable_frame_T)]
+//        *code_StackMapTable_offset :UNSIGNED5 [...]
+//        *code_StackMapTable_T :BYTE1 [...]
+//        *code_StackMapTable_RC :UNSIGNED5 [COUNT(7,*code_StackMapTable_T)]
+//        *code_StackMapTable_P :BCI5 [COUNT(8,*code_StackMapTable_T)]
+
         encodedBand = encodeBandInt("code_LineNumberTable_N",
                 codeLineNumberTableN.toArray(), Codec.UNSIGNED5);
         out.write(encodedBand);
@@ -1256,6 +1324,83 @@ public class ClassBands extends BandSet {
         codeLocalVariableTableSlot.add(indx);
     }
 
+    public void addStackMapTableFrame(int frameType, int offset, int nLocal, Object[] local, int nStack,
+            Object[] stack) {
+        Long latestCodeFlag = (Long) codeFlags.get(codeFlags.size() - 1);
+        if ((latestCodeFlag.intValue() & 1) == 0) {
+            codeFlags.remove(codeFlags.size() - 1);
+            codeFlags.add(new Long(latestCodeFlag.intValue() | 1));
+            codeStackMapTableN.add(1);
+        } else {
+            codeStackMapTableN
+                    .increment(codeStackMapTableN.size() - 1);
+        }
+        boolean hasLocals = false;
+        boolean hasStack = false;
+        if(frameType == Opcodes.F_SAME) {
+            if(offset > 63) {
+                codeStackMapTableFrameT.add(251);
+                codeStackMapTableOffset.add(offset);
+            } else {
+                codeStackMapTableFrameT.add(offset);
+            }
+        } else if (frameType == Opcodes.F_SAME1) {
+            hasStack = true;
+            if(offset + 64 > 127) {
+                codeStackMapTableFrameT.add(247);
+                codeStackMapTableOffset.add(offset);
+            } else {
+                codeStackMapTableFrameT.add(offset + 64);
+            }
+        } else if (frameType == Opcodes.F_CHOP) {
+            codeStackMapTableFrameT.add(251 - nLocal);
+            codeStackMapTableOffset.add(offset);
+        }  else if (frameType == Opcodes.F_APPEND) {
+            codeStackMapTableFrameT.add(251 + nLocal);
+            codeStackMapTableOffset.add(offset);
+            hasLocals = true;
+        } else if (frameType == Opcodes.F_FULL) {
+            codeStackMapTableFrameT.add(255);
+            codeStackMapTableOffset.add(offset);
+            codeStackMapTableLocalN.add(nLocal);
+            codeStackMapTableStackN.add(nStack);
+            hasLocals = true;
+            hasStack = true;
+        }
+        if(hasLocals) {
+            for (int i = 0; i < nLocal; i++) {
+                Object localItem = local[i];
+                if(localItem instanceof Integer) {
+                    codeStackMapTableT.add(((Integer) localItem).intValue());
+                } else if (localItem == null) {
+                    codeStackMapTableT.add(5);
+                } else if (localItem instanceof String) {
+                    codeStackMapTableT.add(7);
+                    codeStackMapTableRC.add(cpBands.getCPClass((String) localItem));
+                } else if (localItem instanceof Label) {
+                    codeStackMapTableT.add(8);
+                    codeStackMapTableP.add(localItem);
+                }
+            }
+        }
+        if(hasStack) {
+            for (int i = 0; i < nStack; i++) {
+                Object stackItem = stack[i];
+                if(stackItem instanceof Integer) {
+                    codeStackMapTableT.add(((Integer)stackItem).intValue());
+                } else if (stackItem == null) {
+                    codeStackMapTableT.add(5);
+                } else if (stackItem instanceof String) {
+                    codeStackMapTableT.add(7);
+                    codeStackMapTableRC.add(cpBands.getCPClass((String) stackItem));
+                } else if (stackItem instanceof Label) {
+                    codeStackMapTableT.add(8);
+                    codeStackMapTableP.add(stackItem);
+                }
+            }
+        }
+    }
+
     public void doBciRenumbering(IntList bciRenumbering, Map labelsToOffsets) {
         renumberBci(codeLineNumberTableBciP, bciRenumbering, labelsToOffsets);
         renumberBci(codeLocalVariableTableBciP, bciRenumbering, labelsToOffsets);
@@ -1271,7 +1416,7 @@ public class ClassBands extends BandSet {
                 bciRenumbering, labelsToOffsets);
         renumberDoubleOffsetBci(codeHandlerStartP, codeHandlerEndPO, codeHandlerCatchPO,
                 bciRenumbering, labelsToOffsets);
-
+        renumberBci(codeStackMapTableP, bciRenumbering, labelsToOffsets);
         for (Iterator iterator = classAttributeBands.iterator(); iterator.hasNext();) {
             NewAttributeBands newAttributeBandSet = (NewAttributeBands) iterator.next();
             newAttributeBandSet.renumberBci(bciRenumbering, labelsToOffsets);

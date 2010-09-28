@@ -267,6 +267,8 @@ public class Segment implements ClassVisitor {
      */
     public class SegmentMethodVisitor implements MethodVisitor {
 
+        private int previousFrameLocation;
+
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             return new SegmentAnnotationVisitor(
                     MetadataBandGroup.CONTEXT_METHOD, desc, visible);
@@ -318,12 +320,14 @@ public class Segment implements ClassVisitor {
 
         public void visitCode() {
             classBands.addCode();
+            previousFrameLocation = 0;
         }
 
-        public void visitFrame(int arg0, int arg1, Object[] arg2, int arg3,
-                Object[] arg4) {
-            // TODO: Java 6 - implement support for this
-
+        public void visitFrame(int type, int nLocal, Object[] local,
+                int nStack, Object[] stack) {
+            int offset = bcBands.getByteCodeOffset();
+            classBands.addStackMapTableFrame(type, offset - previousFrameLocation, nLocal, local, nStack, stack);
+            previousFrameLocation = offset + 1;
         }
 
         public void visitLabel(Label label) {
@@ -537,14 +541,14 @@ public class Segment implements ClassVisitor {
             values.add(value);
         }
     }
-    
+
     public class ArrayVisitor implements AnnotationVisitor  {
-        
-        private int indexInCaseArrayN;
-        private List caseArrayN;
-        private List values;
-        private List nameRU;
-        private List T;
+
+        private final int indexInCaseArrayN;
+        private final List caseArrayN;
+        private final List values;
+        private final List nameRU;
+        private final List T;
 
         public ArrayVisitor(List caseArrayN, List T, List nameRU, List values) {
             this.caseArrayN = caseArrayN;
@@ -553,7 +557,7 @@ public class Segment implements ClassVisitor {
             this.values = values;
             this.indexInCaseArrayN = caseArrayN.size() - 1;
         }
-        
+
         public void visit(String name, Object value) {
             Integer numCases = (Integer) caseArrayN.remove(indexInCaseArrayN);
             caseArrayN.add(indexInCaseArrayN, new Integer(numCases.intValue() + 1));

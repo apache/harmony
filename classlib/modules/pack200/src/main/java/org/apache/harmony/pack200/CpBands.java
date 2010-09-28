@@ -51,6 +51,7 @@ public class CpBands extends BandSet {
     private final Set cp_Imethod = new TreeSet();
 
     private final Map stringsToCpUtf8 = new HashMap();
+    private final Map stringsToCpString = new HashMap();
     private final Map stringsToCpNameAndType = new HashMap();
     private final Map stringsToCpClass = new HashMap();
     private final Map stringsToCpSignature = new HashMap();
@@ -71,6 +72,7 @@ public class CpBands extends BandSet {
         defaultAttributeNames.add("RuntimeVisibleParameterAnnotations");
         defaultAttributeNames.add("RuntimeInvisibleParameterAnnotations");
         defaultAttributeNames.add("Code");
+        defaultAttributeNames.add("StackMapTable");
         defaultAttributeNames.add("LineNumberTable");
         defaultAttributeNames.add("LocalVariableTable");
         defaultAttributeNames.add("LocalVariableTypeTable");
@@ -475,7 +477,7 @@ public class CpBands extends BandSet {
     private void removeCpUtf8(String string) {
         CPUTF8 utf8 = (CPUTF8) stringsToCpUtf8.get(string);
         if (utf8 != null) {
-            if(stringsToCpClass.get(string) == null) { // don't remove if strings are also in cpclass
+            if(stringsToCpClass.get(string) == null && stringsToCpString.get(string) == null) { // don't remove if strings are also in cpclass
                 stringsToCpUtf8.remove(string);
                 cp_Utf8.remove(utf8);
             }
@@ -623,6 +625,7 @@ public class CpBands extends BandSet {
             } else if (value instanceof String) {
                 constant = new CPString(getCPUtf8((String) value));
                 cp_String.add(constant);
+                stringsToCpString.put(value, constant);
             } else if (value instanceof Type) {
                 String className = ((Type) value).getClassName();
                 if(className.endsWith("[]")) {
