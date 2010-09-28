@@ -13,7 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-CC = xlc
+CC = xlc_r
 DEFINES += -DAIX -DAIX_PPC32 -DHYPPC32 -D_Xconst="" -DIPv6_FUNCTION_SUPPORT
 PLATFORM += -qcpluscmt -q32 -q mbcs -qlanglvl=extended -qarch=ppc -qinfo=pro \
 	    -qalias=noansi -D_XOPEN_SOURCE_EXTENDED=1 -D_ALL_SOURCE \

@@ -19,7 +19,8 @@ AS = cc
 # Use cxx/c++ for c++ compiles on z/OS
 CXX = cxx
 
-DEFINES += -DZOS -DZOS_S390X -DHYS390X -DHY_ATOE
+DEFINES += -DZOS -DZOS_S390X -DHYS390X -DHY_ATOE -D_OPEN_SYS_IF_EXT=1 \
+           -DIPv6_FUNCTION_SUPPORT
 PLATFORM = -Wc,lp64,xplink,convlit\(ISO8859-1\),FLOAT\(IEEE,FOLD,AFP\) \
            -Wa,goff -Wc,NOANSIALIAS -Wc,DLL,EXPORTALL
 
@@ -52,3 +53,6 @@ HYDEBUGCFLAGS = -g -O0
 # On z/OS set DLLPATH to LIBPATH so we link against .x export files in
 # $(HY_HDK)/lib instead of directly against the .so libraries.
 DLLPATH=$(LIBPATH)
+
+# AR doesn't support the 'o' option on z/OS so mtime will be updated
+AREXTRACT= x
