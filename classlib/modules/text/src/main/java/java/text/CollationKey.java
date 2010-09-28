@@ -17,6 +17,8 @@
 
 package java.text;
 
+import org.apache.harmony.text.internal.nls.Messages;
+
 /**
  * Represents a string under the rules of a specific {@code Collator} object.
  * Comparing two {@code CollationKey} instances returns the relative order of
@@ -91,7 +93,7 @@ public class CollationKey implements Comparable<CollationKey> {
 
     protected CollationKey(String source) {
         if (source == null) {
-            throw new NullPointerException("Specified source is null");
+            throw new NullPointerException(Messages.getString("text.20"));
         }
         this.source = source;
         icuKey = com.ibm.icu.text.Collator.getInstance().getCollationKey(source);
