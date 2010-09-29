@@ -40,6 +40,7 @@ import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import javax.swing.Box;
@@ -49,16 +50,16 @@ import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
 /**
- * The <code>Encoder</code>, together with <code>PersistenceDelegate</code>
- * s, can encode an object into a series of java statements. By executing these
+ * The <code>Encoder</code>, together with <code>PersistenceDelegate</code> s,
+ * can encode an object into a series of java statements. By executing these
  * statements, a new object can be created and it will has the same state as the
  * original object which has been passed to the encoder. Here "has the same
  * state" means the two objects are indistinguishable from their public API.
  * <p>
- * The <code>Encoder</code> and <code>PersistenceDelegate</code> s do this
- * by creating copies of the input object and all objects it references. The
- * copy process continues recursively util every object in the object graph has
- * its new copy and the new version has the same state as the old version. All
+ * The <code>Encoder</code> and <code>PersistenceDelegate</code> s do this by
+ * creating copies of the input object and all objects it references. The copy
+ * process continues recursively util every object in the object graph has its
+ * new copy and the new version has the same state as the old version. All
  * statements used to create those new objects and executed on them during the
  * process form the result of encoding.
  * </p>
@@ -110,7 +111,7 @@ public class Encoder {
 
     private ExceptionListener listener = defaultExListener;
 
-    private ReferenceMap oldNewMap = new ReferenceMap();
+    private IdentityHashMap<Object, Object> oldNewMap = new IdentityHashMap<Object, Object>();
 
 	private static volatile boolean isInitilizedAWT;
 
@@ -143,7 +144,7 @@ public class Encoder {
      *         one.
      */
     public Object get(Object old) {
-        if (old == null || old instanceof String) {
+        if (old == null || old.getClass() == String.class) {
             return old;
         }
         return oldNewMap.get(old);
@@ -167,15 +168,14 @@ public class Encoder {
      * <p>
      * The <code>PersistenceDelegate</code> is determined as following:
      * <ol>
-     * <li>If a <code>PersistenceDelegate</code> has been registered by
-     * calling <code>setPersistenceDelegate</code> for the given type, it is
-     * returned.</li>
+     * <li>If a <code>PersistenceDelegate</code> has been registered by calling
+     * <code>setPersistenceDelegate</code> for the given type, it is returned.</li>
      * <li>If the given type is an array class, a special
      * <code>PersistenceDelegate</code> for array types is returned.</li>
      * <li>If the given type is a proxy class, a special
      * <code>PersistenceDelegate</code> for proxy classes is returned.</li>
-     * <li><code>Introspector</code> is used to check the bean descriptor
-     * value "persistenceDelegate". If one is set, it is returned.</li>
+     * <li><code>Introspector</code> is used to check the bean descriptor value
+     * "persistenceDelegate". If one is set, it is returned.</li>
      * <li>If none of the above applies, the
      * <code>DefaultPersistenceDelegate</code> is returned.</li>
      * </ol>
@@ -329,27 +329,40 @@ public class Encoder {
         delegates.put(type, delegate);
     }
 
-    private Object forceNew(Object old) {
-        if (old == null) {
+    Object expressionValue(Expression exp) {
+        try {
+            return exp == null ? null : exp.getValue();
+        } catch (IndexOutOfBoundsException e) {
             return null;
+        } catch (Exception e) {
+            listener.exceptionThrown(new Exception(
+                    "failed to excute expression: " + exp, e)); //$NON-NLS-1$
         }
-        Object nu = get(old);
-        if (nu != null) {
-            return nu;
-        }
-        writeObject(old);
-        return get(old);
+        return null;
     }
 
-    private Object[] forceNewArray(Object[] oldArray) {
-        if (oldArray == null) {
-            return null;
+    private Statement createNewStatement(Statement oldStat) {
+        Object newTarget = createNewObject(oldStat.getTarget());
+        Object[] oldArgs = oldStat.getArguments();
+        Object[] newArgs = new Object[oldArgs.length];
+        for (int index = 0; index < oldArgs.length; index++) {
+            newArgs[index] = createNewObject(oldArgs[index]);
         }
-        Object newArray[] = new Object[oldArray.length];
-        for (int i = 0; i < oldArray.length; i++) {
-            newArray[i] = forceNew(oldArray[i]);
+
+        if (oldStat.getClass() == Expression.class) {
+            return new Expression(newTarget, oldStat.getMethodName(), newArgs);
+        } else {
+            return new Statement(newTarget, oldStat.getMethodName(), newArgs);
         }
-        return newArray;
+    }
+
+    private Object createNewObject(Object old) {
+        Object nu = get(old);
+        if (nu == null) {
+            writeObject(old);
+            nu = get(old);
+        }
+        return nu;
     }
 
     /**
@@ -382,29 +395,20 @@ public class Encoder {
             throw new NullPointerException();
         }
         try {
-            // if oldValue exists, noop
-            Object oldValue = oldExp.getValue();
+            // if oldValue exists, no operation
+            Object oldValue = expressionValue(oldExp);
             if (oldValue == null || get(oldValue) != null) {
                 return;
             }
 
             // copy to newExp
-            Object newTarget = forceNew(oldExp.getTarget());
-            Object newArgs[] = forceNewArray(oldExp.getArguments());
-            Expression newExp = new Expression(newTarget, oldExp
-                    .getMethodName(), newArgs);
-
-            // execute newExp
-            Object newValue = null;
-            try {
-                newValue = newExp.getValue();
-            } catch (IndexOutOfBoundsException ex) {
-                // Current Container does not have any component, newVal set
-                // to null
-            }
-
+            Expression newExp = (Expression) createNewStatement(oldExp);
             // relate oldValue to newValue
-            put(oldValue, newValue);
+            try {
+                oldNewMap.put(oldValue, newExp.getValue());
+            } catch (IndexOutOfBoundsException e) {
+                // container does not have any component, set newVal null
+            }
 
             // force same state
             writeObject(oldValue);
@@ -450,13 +454,8 @@ public class Encoder {
         if (oldStat == null) {
             throw new NullPointerException();
         }
+        Statement newStat = createNewStatement(oldStat);
         try {
-            // copy to newStat
-            Object newTarget = forceNew(oldStat.getTarget());
-            Object newArgs[] = forceNewArray(oldStat.getArguments());
-            Statement newStat = new Statement(newTarget, oldStat
-                    .getMethodName(), newArgs);
-
             // execute newStat
             newStat.execute();
         } catch (Exception e) {
@@ -464,5 +463,4 @@ public class Encoder {
                     "failed to write statement: " + oldStat, e)); //$NON-NLS-1$
         }
     }
-
 }

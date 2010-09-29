@@ -115,22 +115,23 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
             return;
         }
         PropertyDescriptor[] pds = info.getPropertyDescriptors();
-
+        Method getter, setter;
         // Initialize each found non-transient property
         for (int i = 0; i < pds.length; i++) {
             // Skip a property whose transient attribute is true
             if (Boolean.TRUE.equals(pds[i].getValue("transient"))) { //$NON-NLS-1$
                 continue;
             }
+            getter = pds[i].getReadMethod();
+            setter = pds[i].getWriteMethod();
             // Skip a property having no setter or getter
-            if (null == pds[i].getWriteMethod()
-                    || null == pds[i].getReadMethod()) {
+            if (getter == null || setter == null) {
                 continue;
             }
 
             // Get the value of the property in the old instance
-            Expression getterExp = new Expression(oldInstance, pds[i]
-                    .getReadMethod().getName(), null);
+            Expression getterExp = new Expression(oldInstance,
+                    getter.getName(), null);
             try {
                 // Calculate the old value of the property
                 Object oldVal = getterExp.getValue();
@@ -138,30 +139,14 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
                 enc.writeExpression(getterExp);
                 // Get the target value that exists in the new environment
                 Object targetVal = enc.get(oldVal);
-                // Get the current property value in the new environment
-                Object newVal = new Expression(newInstance, pds[i]
-                        .getReadMethod().getName(), null).getValue();
-                /*
-                 * Make the target value and current property value equivalent
-                 * in the new environment
-                 */
-                if (null == targetVal) {
-                    if (null != newVal) {
-                        // Set to null
-                        Statement setterStm = new Statement(oldInstance, pds[i]
-                                .getWriteMethod().getName(),
-                                new Object[] { null });
-                        enc.writeStatement(setterStm);
-                    }
-                } else {
-                    PersistenceDelegate pd = enc
-                            .getPersistenceDelegate(targetVal.getClass());
-                    if (!pd.mutatesTo(targetVal, newVal)) {
-                        Statement setterStm = new Statement(oldInstance, pds[i]
-                                .getWriteMethod().getName(),
-                                new Object[] { oldVal });
-                        enc.writeStatement(setterStm);
-                    }
+                Object newVal = new Expression(newInstance, getter.getName(),
+                        null).getValue();
+                boolean invokeSetter = targetVal == null ? (newVal != null && oldVal == null)
+                        : !enc.getPersistenceDelegate(targetVal.getClass())
+                                .mutatesTo(targetVal, newVal);
+                if (invokeSetter) {
+                    enc.writeStatement(new Statement(oldInstance, setter
+                            .getName(), new Object[] { oldVal }));
                 }
             } catch (Exception ex) {
                 enc.getExceptionListener().exceptionThrown(ex);
