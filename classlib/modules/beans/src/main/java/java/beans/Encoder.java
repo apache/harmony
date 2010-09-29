@@ -70,6 +70,8 @@ public class Encoder {
 
     private static final DefaultPersistenceDelegate defaultPD = new DefaultPersistenceDelegate();
 
+    private static final LangEnumPersistenceDelegate langEnumPD = new LangEnumPersistenceDelegate();
+
     private static final ArrayPersistenceDelegate arrayPD = new ArrayPersistenceDelegate();
 
     private static final ProxyPersistenceDelegate proxyPD = new ProxyPersistenceDelegate();
@@ -104,7 +106,6 @@ public class Encoder {
         delegates.put(String.class, new StringPersistenceDelegate());
         delegates.put(Proxy.class, new ProxyPersistenceDelegate());
         delegates.put(Date.class, new UtilDatePersistenceDelegate());
-        delegates.put(Enum.class, new LangEnumPersistenceDelegate());
     }
 
     private ExceptionListener listener = defaultExListener;
@@ -201,21 +202,24 @@ public class Encoder {
 		}
 
         // registered delegate
-        PersistenceDelegate registeredPD = Enum.class.isAssignableFrom(type) ? delegates
-                .get(Enum.class) : delegates.get(type);
+        PersistenceDelegate registeredPD = delegates.get(type);
         if (registeredPD != null) {
             return registeredPD;
+        }
+
+        if (java.lang.Enum.class.isAssignableFrom(type)) {
+            return langEnumPD;
         }
 
         if (java.util.List.class.isAssignableFrom(type)) {
             return new UtilListPersistenceDelegate();
         }
 
-        if (Collection.class.isAssignableFrom(type)) {
+        if (java.util.Collection.class.isAssignableFrom(type)) {
             return new UtilCollectionPersistenceDelegate();
         }
 
-        if (Map.class.isAssignableFrom(type)) {
+        if (java.util.Map.class.isAssignableFrom(type)) {
             return new UtilMapPersistenceDelegate();
         }
 
