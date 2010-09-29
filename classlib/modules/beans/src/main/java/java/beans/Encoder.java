@@ -294,7 +294,7 @@ public class Encoder {
     }
 
     /**
-     * Remvoe the existing new copy of the given old object.
+     * Remove the existing new copy of the given old object.
      * 
      * @param old
      *            an old object
