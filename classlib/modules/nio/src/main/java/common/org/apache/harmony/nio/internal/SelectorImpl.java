@@ -563,20 +563,20 @@ final class SelectorImpl extends AbstractSelector {
                     if (key.isConnected()) {
                         selectedOp = OP_WRITE & ops;
                     } else {
-                        selectedOp = OP_CONNECT & ops;
+                        selectedOp = (OP_CONNECT | OP_WRITE) & ops;
                     }
                     break;
             }
 
+            key.setReadyOps(selectedOp);
             if (0 != selectedOp) {
                 boolean wasSelected = mutableSelectedKeys.contains(key);
-                if (wasSelected && key.readyOps() != selectedOp) {
-                    key.setReadyOps(key.readyOps() | selectedOp);
-                    selected++;
-                } else if (!wasSelected) {
-                    key.setReadyOps(selectedOp);
+                if (!wasSelected) {
                     mutableSelectedKeys.add(key);
+                }
+                if (key.getStateChange()) {
                     selected++;
+                    key.setStateChange(false);
                 }
             }
         }
