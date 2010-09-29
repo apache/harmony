@@ -43,6 +43,12 @@ public class StartTlsResponseImpl extends StartTlsResponse {
 
     private boolean isHandshaked = false; // is handshake finished
 
+    private static class HandshakeMonitor {
+        // for identify local locks.
+    };
+
+    private HandshakeMonitor handshakeMonitor = new HandshakeMonitor();
+
     private SSLSocket negotiatedSslSocket = null; // negotiated ssl socket
 
     @Override
@@ -85,14 +91,23 @@ public class StartTlsResponseImpl extends StartTlsResponse {
         sslSocket
                 .addHandshakeCompletedListener(new HandshakeCompletedListener() {
                     public void handshakeCompleted(HandshakeCompletedEvent event) {
-                        isHandshaked = true;
+                        synchronized(handshakeMonitor) {
+                            isHandshaked = true;
+                            handshakeMonitor.notify();
+                        }
                     }
                 });
 
         sslSocket.startHandshake();
 
-        while (!isHandshaked) {
-            // Wait for handshake finish.
+        synchronized(handshakeMonitor) {
+            while (!isHandshaked) {
+                try {
+                    handshakeMonitor.wait();
+                } catch (InterruptedException e) {
+                    // continue the loop
+                }
+            }
         }
 
         HostnameVerifier defaultVerifier = new HostnameVerifier() {
