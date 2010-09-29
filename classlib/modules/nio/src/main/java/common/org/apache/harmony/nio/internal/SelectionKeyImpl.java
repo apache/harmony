@@ -39,12 +39,15 @@ final class SelectionKeyImpl extends AbstractSelectionKey {
 
     private int index;
 
+    private boolean stateChange = false;
+
     public SelectionKeyImpl(AbstractSelectableChannel channel, int operations,
             Object attachment, SelectorImpl selector) {
         this.channel = channel;
         interestOps = operations;
         this.selector = selector;
         attach(attachment);
+        this.stateChange = true;
     }
 
     @Override
@@ -73,6 +76,9 @@ final class SelectionKeyImpl extends AbstractSelectionKey {
             throw new IllegalArgumentException();
         }
         synchronized (selector.keysLock) {
+            if (interestOps != operations) {
+                stateChange = true;
+            }
             interestOps = operations;
             selector.modKey(this);
         }
@@ -103,6 +109,14 @@ final class SelectionKeyImpl extends AbstractSelectionKey {
 
     void setIndex(int index) {
         this.index = index;
+    }
+
+    boolean getStateChange() {
+        return stateChange;
+    }
+
+    void setStateChange(boolean flag) {
+        this.stateChange = flag;
     }
 
     private void checkValid() {

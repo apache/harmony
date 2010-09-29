@@ -19,21 +19,18 @@ package org.apache.harmony.nio.tests.java.nio.channels;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ClosedSelectorException;
+import java.nio.channels.Pipe;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.Pipe;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Set;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.TestCase;
 import tests.support.Support_PortManager;
@@ -404,6 +401,52 @@ public class SelectorTest extends TestCase {
 
         thread.join();
         assertNull(failure.get());
+    }
+
+    public void testOpChange() throws Exception {
+        SocketChannel sc = SocketChannel.open();
+        sc.configureBlocking(false);
+        sc.register(selector, SelectionKey.OP_CONNECT);
+        try {
+            sc.connect(LOCAL_ADDRESS);
+            int count = blockingSelect(SelectType.TIMEOUT, 100);
+            assertEquals(1, count);
+            Set<SelectionKey> selectedKeys = selector.selectedKeys();
+            assertEquals(1, selectedKeys.size());
+            SelectionKey key = selectedKeys.iterator().next();
+            assertEquals(sc.keyFor(selector), key);
+            assertEquals(SelectionKey.OP_CONNECT, key.readyOps());
+            // select again, it should return 0
+            count = selectOnce(SelectType.TIMEOUT, 100);
+            assertEquals(0, count);
+            // but selectedKeys remains the same as previous
+            assertSame(selectedKeys, selector.selectedKeys());
+            sc.finishConnect();
+
+            // same selector, but op is changed
+            SelectionKey key1 = sc.register(selector, SelectionKey.OP_WRITE);
+            assertEquals(key, key1);
+            count = blockingSelect(SelectType.TIMEOUT, 100);
+            assertEquals(1, count);
+            selectedKeys = selector.selectedKeys();
+            assertEquals(1, selectedKeys.size());
+            key = selectedKeys.iterator().next();
+            assertEquals(key, key1);
+            assertEquals(SelectionKey.OP_WRITE, key.readyOps());
+
+            selectedKeys.clear();
+        } finally {
+            try {
+                ssc.accept().close();
+            } catch (Exception e) {
+                // do nothing
+            }
+            try {
+                sc.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+        }
     }
 
     private void assert_select_SelectorClosed(SelectType type, int timeout)
