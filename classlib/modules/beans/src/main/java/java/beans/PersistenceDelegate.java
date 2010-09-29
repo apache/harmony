@@ -90,10 +90,7 @@ public abstract class PersistenceDelegate {
      *         false
      */
     protected boolean mutatesTo(Object o1, Object o2) {
-        if (null == o1 || null == o2 ) {
-            return false;
-        }
-        return o1.getClass() == o2.getClass();
+        return null != o1 && null != o2 && o1.getClass() == o2.getClass();
     }
 
     /**
@@ -112,20 +109,16 @@ public abstract class PersistenceDelegate {
      */
     public void writeObject(Object oldInstance, Encoder out) {
         Object newInstance = out.get(oldInstance);
+        Class<?> clazz = oldInstance.getClass();
         if (mutatesTo(oldInstance, newInstance)) {
-            initialize(oldInstance.getClass(), oldInstance, newInstance, out);
+            initialize(clazz, oldInstance, newInstance, out);
         } else {
             out.remove(oldInstance);
-            Expression exp = instantiate(oldInstance, out);
-            out.writeExpression(exp);
+            out.writeExpression(instantiate(oldInstance, out));
             newInstance = out.get(oldInstance);
-            
             if (newInstance != null) {
-                initialize(oldInstance.getClass(), oldInstance,
-                           newInstance, out);
+                initialize(clazz, oldInstance, newInstance, out);
             }
         }
     }
-
 }
-
