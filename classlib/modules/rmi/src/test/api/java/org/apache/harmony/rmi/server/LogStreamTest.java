@@ -18,8 +18,10 @@
 package org.apache.harmony.rmi.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.rmi.server.LogStream;
+
 import junit.framework.TestCase;
 
 public class LogStreamTest extends TestCase {
@@ -27,13 +29,13 @@ public class LogStreamTest extends TestCase {
      * Test for java.rmi.server.LogStream.write(int b)
      */
     public void testWriteI() throws Exception {
-        //regression test for HARMONY-1271
-        LogStream.log("tst").write((int)'\n');
+        // regression test for HARMONY-1271
+        LogStream.log("tst").write((int) '\n');
 
-        //regression test for HARMONY-994
+        // regression test for HARMONY-994
         LogStream.log("tst").write(0);
     }
-    
+
     public void testSetOutputStreamBad() throws Exception {
         // Regression test HARMONY-1198
         try {
@@ -46,41 +48,54 @@ public class LogStreamTest extends TestCase {
     }
 
     /**
-     * Test for java.rmi.server.LogStream.write(byte[], int, int)
-     * testing invalid offsets/lengths. 
+     * Test for java.rmi.server.LogStream.write(byte[], int, int) testing
+     * invalid offsets/lengths.
      */
     public void testWriteArrInvalidOffLen() throws Exception {
         // Regression test for HARMONY-1691
         // list of invalid offsets/lengths pairs
-        int[][] invalidPairs = new int[][] {
-            { -2, 1 },
-            { 0, -6 },
-            { 6, 1 },
-            { 0, 6 } };
+        int[][] invalidPairs = new int[][] { { -2, 1 }, { 0, -6 }, { 6, 1 },
+                { 0, 6 } };
 
         // store original default stream for LogStream
         PrintStream prevOut = LogStream.getDefaultStream();
 
         try {
             // set empty default stream to not print garbage to System.out/err
-            LogStream.setDefaultStream(
-                    new PrintStream(new ByteArrayOutputStream()));
+            LogStream.setDefaultStream(new PrintStream(
+                    new ByteArrayOutputStream()));
             LogStream ls = LogStream.log("test");
 
             for (int i = 0; i < invalidPairs.length; ++i) {
                 try {
-                    ls.write(new byte[] { 1, 1 },
-                            invalidPairs[i][0], invalidPairs[i][1]);
+                    ls.write(new byte[] { 1, 1 }, invalidPairs[i][0],
+                            invalidPairs[i][1]);
                     fail("IndexOutOfBoundsException "
                             + "is not thrown when off = " + invalidPairs[i][0]
                             + ", len = " + invalidPairs[i][1]);
                 } catch (IndexOutOfBoundsException e) {
-                    //expected
+                    // expected
                 }
             }
         } finally {
             // restore original stream
             LogStream.setDefaultStream(prevOut);
         }
+
     }
+
+    public void testParseLevel() {
+        assertEquals(LogStream.parseLevel("BRIEF"), LogStream.BRIEF);
+        assertEquals(LogStream.parseLevel("SILENT"), LogStream.SILENT);
+        assertEquals(LogStream.parseLevel("VERBOSE"), LogStream.VERBOSE);
+    }
+
+    public void testGetOutputStream() {
+        LogStream log = LogStream.log("abc");
+        OutputStream output = log.getOutputStream();
+        PrintStream defaultPrintStream = LogStream.getDefaultStream();
+
+        assertEquals(output.toString(), defaultPrintStream.toString());
+    }
+
 }
