@@ -173,9 +173,10 @@ public class BreakIteratorTest extends TestCase {
         assertEquals(TEXT.length() - 1, iterator.previous());
     }
 
-    // public void testGetAvailableLocales() {
-    // Locale[] locales = BreakIterator.getAvailableLocales();
-    // }
+    public void testGetAvailableLocales() {
+        Locale[] locales = BreakIterator.getAvailableLocales();
+        assertTrue(locales.length > 0);
+    }
 
     /*
      * Class under test for BreakIterator getCharacterInstance()
