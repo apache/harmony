@@ -167,7 +167,7 @@ public class CollationElementIteratorTest extends TestCase {
 		CollationElementIterator iterator = rbColl
 				.getCollationElementIterator(text);
 		iterator.setOffset(1);
-		assertEquals(1, iterator.getOffset());
+		assertEquals(0, iterator.getOffset());
 	}
 
 	/*
@@ -183,7 +183,7 @@ public class CollationElementIteratorTest extends TestCase {
 		assertEquals(1, iterator.getOffset());
 		iterator.setText("cha");
 		iterator.setOffset(1);
-		assertEquals(1, iterator.getOffset());
+		assertEquals(0, iterator.getOffset());
 	}
 
 	/*
@@ -199,6 +199,6 @@ public class CollationElementIteratorTest extends TestCase {
 		assertEquals(1, iterator.getOffset());
 		iterator.setText(new StringCharacterIterator("cha"));
 		iterator.setOffset(1);
-		assertEquals(1, iterator.getOffset());
+		assertEquals(0, iterator.getOffset());
 	}
 }
