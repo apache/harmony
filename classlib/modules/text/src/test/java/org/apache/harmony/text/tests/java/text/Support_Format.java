@@ -52,7 +52,7 @@ public class Support_Format extends TestCase {
 
 		assertEquals("Test " + count + ": incorrect begin index for field "
 				+ field, begin, pos.getBeginIndex());
-		assertEquals("Test " + count + ": incorrect end index for field"
+		assertEquals("Test " + count + ": incorrect end index for field "
 				+ field, end, pos.getEndIndex());
 	}
 
