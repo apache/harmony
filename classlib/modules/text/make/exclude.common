@@ -1,6 +1,3 @@
-#HARMONY-6524
-org/apache/harmony/text/tests/java/text/RuleBasedCollatorTest.java
-
 #HARMONY-6525
 org/apache/harmony/text/tests/java/text/DecimalFormatTest.java
 

@@ -130,7 +130,7 @@ public class RuleBasedCollatorTest extends TestCase {
             String source = "cha";
             CollationElementIterator iterator = coll
                     .getCollationElementIterator(source);
-            int[] e_offset = { 0, 1, 2 ,3};
+            int[] e_offset = { 0, 2 ,3};
             int offset = iterator.getOffset();
             int i = 0;
             assertEquals(e_offset[i++], offset);
@@ -180,7 +180,7 @@ public class RuleBasedCollatorTest extends TestCase {
             StringCharacterIterator source = new StringCharacterIterator(text);
             CollationElementIterator iterator = coll
                     .getCollationElementIterator(source);
-            int[] e_offset = { 0, 1, 2, 3 };
+            int[] e_offset = { 0, 2, 3 };
             int offset = iterator.getOffset();
             int i = 0;
             assertEquals(e_offset[i++], offset);
