@@ -3,6 +3,3 @@ org/apache/harmony/text/tests/java/text/DecimalFormatTest.java
 
 #HARMONY-6526
 org/apache/harmony/text/tests/java/text/SimpleDateFormatTest.java
-
-#HARMONY-6527
-org/apache/harmony/text/tests/java/text/CollationElementIteratorTest.java
