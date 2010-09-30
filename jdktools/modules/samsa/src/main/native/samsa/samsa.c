@@ -128,9 +128,7 @@ int main (int argc, char **argv, char **envp)
     int moreArgvCount = /* -cp <classpath> */ 2 + /* <tool-class> */ 1 + /* NULL */ 1;
     char **myArgv = (char **) malloc(sizeof(char*) * (myArgvCount + moreArgvCount));    
     char *toolName = NULL;
-    char *cmd_line = NULL;
-    int size, i, j;
-    int cmd_len = 0;
+    int i;
     int exit_code = -1;
     int newIndex = 0;
     char *root = NULL;
@@ -211,6 +209,7 @@ int main (int argc, char **argv, char **envp)
     if (strcmp(toolName, "java") && !isJavaw) {
         char *classpath;
         char *buffer;
+        int size;
 
         myArgvCount = argc + moreArgvCount;
         
@@ -281,68 +280,74 @@ int main (int argc, char **argv, char **envp)
      
 #if defined(WIN32)
 
-    /*
-     * win32 - CreateProcess() needs a cmd line string
-     *   - double quote all arguments to avoid breaking spaces
-     *   - prepend existing double quotes with '\'
-     */
+    {
+        char *cmd_line = NULL;
+        int cmd_len = 0;
+        int j;
+        int size = 0;
+
+        /*
+         * win32 - CreateProcess() needs a cmd line string
+         *   - double quote all arguments to avoid breaking spaces
+         *   - prepend existing double quotes with '\'
+         */
      
-    // determine required memory size for command line arguments
-    size = 0;
-    for (i=1; i < myArgvCount; i++) {
-        if (myArgv[i] != NULL) {
-            int arg_len = strlen(myArgv[i]);
-            size += /* space */ 1 + /* quotes */ 2 + arg_len;
-            for (j = 0; j < arg_len; j++) {
-                 if (myArgv[i][j] == '\"') size++;
+        // determine required memory size for command line arguments
+        for (i=1; i < myArgvCount; i++) {
+            if (myArgv[i] != NULL) {
+                int arg_len = strlen(myArgv[i]);
+                size += /* space */ 1 + /* quotes */ 2 + arg_len;
+                for (j = 0; j < arg_len; j++) {
+                    if (myArgv[i][j] == '\"') size++;
+                }
             }
         }
-    }
     
-    // allocate memory for whole command line
-    cmd_line = (char *) malloc(strlen(fullExePath) + /* quotes */ 2 + /* arguments */ size + /* NULL */ 1);
+        // allocate memory for whole command line
+        cmd_line = (char *) malloc(strlen(fullExePath) + /* quotes */ 2 + /* arguments */ size + /* NULL */ 1);
     
-    if (cmd_line == NULL) { 
-        fprintf(stderr, "Unable to allocate memory for tool command line %s\n", argv[0]);
-        return 4;
-    }
-    
-    // copy quoted exe path
-    sprintf(cmd_line, "\"%s\"", fullExePath);
-    cmd_len = strlen(cmd_line);
-        
-    // copy quoted arguments and prepend existing double quotes with '\'
-    for (i=1; i < myArgvCount; i++) {
-        if (myArgv[i] != NULL) {
-            int arg_len = strlen(myArgv[i]);
-            cmd_line[cmd_len++] = ' ';  // space delimiter
-            cmd_line[cmd_len++] = '\"'; // starting quote
-            for (j = 0; j < arg_len; j++) {
-                char ch = myArgv[i][j];
-                if (ch == '\"') {
-                    cmd_line[cmd_len++] = '\\';
-                }  
-                cmd_line[cmd_len++] = ch;
-            }
-            cmd_line[cmd_len++] = '\"'; // ending quote
+        if (cmd_line == NULL) { 
+            fprintf(stderr, "Unable to allocate memory for tool command line %s\n", argv[0]);
+            return 4;
         }
-    }
-    cmd_line[cmd_len] = '\0';
     
-    // create child process
-    memset(&procInfo, 0, sizeof(PROCESS_INFORMATION));
-    memset(&startInfo, 0, sizeof(STARTUPINFO));
-    startInfo.cb = sizeof(STARTUPINFO);
+        // copy quoted exe path
+        sprintf(cmd_line, "\"%s\"", fullExePath);
+        cmd_len = strlen(cmd_line);
         
-    if (!CreateProcess(NULL, cmd_line, NULL, NULL,
-                    TRUE, 0, NULL, NULL, &startInfo, &procInfo)) { 
+        // copy quoted arguments and prepend existing double quotes with '\'
+        for (i=1; i < myArgvCount; i++) {
+            if (myArgv[i] != NULL) {
+                int arg_len = strlen(myArgv[i]);
+                cmd_line[cmd_len++] = ' ';  // space delimiter
+                cmd_line[cmd_len++] = '\"'; // starting quote
+                for (j = 0; j < arg_len; j++) {
+                    char ch = myArgv[i][j];
+                    if (ch == '\"') {
+                        cmd_line[cmd_len++] = '\\';
+                    }
+                    cmd_line[cmd_len++] = ch;
+                }
+                cmd_line[cmd_len++] = '\"'; // ending quote
+            }
+        }
+        cmd_line[cmd_len] = '\0';
+    
+        // create child process
+        memset(&procInfo, 0, sizeof(PROCESS_INFORMATION));
+        memset(&startInfo, 0, sizeof(STARTUPINFO));
+        startInfo.cb = sizeof(STARTUPINFO);
+        
+        if (!CreateProcess(NULL, cmd_line, NULL, NULL,
+                           TRUE, 0, NULL, NULL, &startInfo, &procInfo)) { 
 
-        fprintf(stderr, "Error creating process : %d\n", GetLastError());
+            fprintf(stderr, "Error creating process : %d\n", GetLastError());
+            free(cmd_line);
+            return exit_code;
+        }
+
         free(cmd_line);
-        return exit_code;
     }
-
-    free(cmd_line);
 
     // wait for child process to finish
     if (!isJavaw && WAIT_FAILED == WaitForSingleObject(procInfo.hProcess, INFINITE)) {
@@ -541,7 +546,6 @@ TOOLDATA *getToolData(const char *toolName, const char *root, int toolType) {
     FILE *fp = NULL;
     char key[256];
     char value[256];
-    int count = 0;
     char *temp = NULL;
     TOOLDATA *pToolData = NULL;
             
@@ -587,6 +591,7 @@ TOOLDATA *getToolData(const char *toolName, const char *root, int toolType) {
     free(temp);
  
     if (fp) {
+        int count = 0;
         while (EOF != (count = fscanf(fp, "%s = %s\n", key, value))) {
             // printf("count = %d : %s = %s\n", count, key, value);
             
