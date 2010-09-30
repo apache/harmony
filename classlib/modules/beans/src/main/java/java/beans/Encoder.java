@@ -37,11 +37,9 @@ import java.awt.font.TextAttribute;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -113,9 +111,9 @@ public class Encoder {
 
     private IdentityHashMap<Object, Object> oldNewMap = new IdentityHashMap<Object, Object>();
 
-	private static volatile boolean isInitilizedAWT;
+    private static volatile boolean isInitilizedAWT;
 
-	private static volatile boolean isInitilizedSwing;
+    private static volatile boolean isInitilizedSwing;
 
     /**
      * Construct a new encoder.
@@ -189,17 +187,16 @@ public class Encoder {
         if (type == null) {
             return nullPD; // may be return a special PD?
         }
-		
-		// checks for awt and swing classes
-		if (!isInitilizedAWT
-				&& type.getName().startsWith("java.awt")) { //$NON-NLS-1$
-			registerAwtPDs();
-			isInitilizedAWT = true;
-		} else if (!isInitilizedSwing
-				&& type.getName().startsWith("javax.swing")) { //$NON-NLS-1$
-			registerSwingPDs();
-			isInitilizedSwing = true;
-		}
+
+        // checks for awt and swing classes
+        if (!isInitilizedAWT && type.getName().startsWith("java.awt")) { //$NON-NLS-1$
+            registerAwtPDs();
+            isInitilizedAWT = true;
+        } else if (!isInitilizedSwing
+                && type.getName().startsWith("javax.swing")) { //$NON-NLS-1$
+            registerSwingPDs();
+            isInitilizedSwing = true;
+        }
 
         // registered delegate
         PersistenceDelegate registeredPD = delegates.get(type);
@@ -249,48 +246,39 @@ public class Encoder {
         return defaultPD;
     }
 
-	private static void registerSwingPDs() {
-		delegates.put(Box.class, new SwingBoxPersistenceDelegate());
-		delegates.put(JFrame.class, new SwingJFramePersistenceDelegate());
-		delegates.put(JTabbedPane.class,
-				new SwingJTabbedPanePersistenceDelegate());
-		delegates.put(DefaultComboBoxModel.class,
-				new SwingDefaultComboBoxModelPersistenceDelegate());
-		delegates.put(ToolTipManager.class,
-				new SwingToolTipManagerPersistenceDelegate());
+    private static void registerSwingPDs() {
+        delegates.put(Box.class, new SwingBoxPersistenceDelegate());
+        delegates.put(JFrame.class, new SwingJFramePersistenceDelegate());
+        delegates.put(JTabbedPane.class,
+                new SwingJTabbedPanePersistenceDelegate());
+        delegates.put(DefaultComboBoxModel.class,
+                new SwingDefaultComboBoxModelPersistenceDelegate());
+        delegates.put(ToolTipManager.class,
+                new SwingToolTipManagerPersistenceDelegate());
 
-	}
+    }
 
-	private static void registerAwtPDs() {
-		delegates.put(Choice.class, new AwtChoicePersistenceDelegate());
-		delegates.put(Color.class, new AwtColorPersistenceDelegate());
-		delegates.put(Container.class,
-				new AwtContainerPersistenceDelegate());
-		delegates.put(Component.class,
-				new AwtComponentPersistenceDelegate());
-		delegates.put(Cursor.class, new AwtCursorPersistenceDelegate());
-		delegates.put(Dimension.class,
-				new AwtDimensionPersistenceDelegate());
-		delegates.put(Font.class, new AwtFontPersistenceDelegate());
-		delegates.put(Insets.class, new AwtInsetsPersistenceDelegate());
-		delegates.put(List.class, new AwtListPersistenceDelegate());
-		delegates.put(Menu.class, new AwtMenuPersistenceDelegate());
-		delegates.put(MenuBar.class, new AwtMenuBarPersistenceDelegate());
-		delegates.put(MenuShortcut.class,
-				new AwtMenuShortcutPersistenceDelegate());
-		delegates.put(Point.class, new AwtPointPersistenceDelegate());
-		delegates.put(Rectangle.class,
-				new AwtRectanglePersistenceDelegate());
-		delegates.put(SystemColor.class,
-				new AwtSystemColorPersistenceDelegate());
-		delegates.put(TextAttribute.class,
-				new AwtFontTextAttributePersistenceDelegate());
-		delegates.put(ScrollPane.class,
-				new AwtScrollPanePersistenceDelegate());
-	}
-
-    private void put(Object old, Object nu) {
-        oldNewMap.put(old, nu);
+    private static void registerAwtPDs() {
+        delegates.put(Choice.class, new AwtChoicePersistenceDelegate());
+        delegates.put(Color.class, new AwtColorPersistenceDelegate());
+        delegates.put(Container.class, new AwtContainerPersistenceDelegate());
+        delegates.put(Component.class, new AwtComponentPersistenceDelegate());
+        delegates.put(Cursor.class, new AwtCursorPersistenceDelegate());
+        delegates.put(Dimension.class, new AwtDimensionPersistenceDelegate());
+        delegates.put(Font.class, new AwtFontPersistenceDelegate());
+        delegates.put(Insets.class, new AwtInsetsPersistenceDelegate());
+        delegates.put(List.class, new AwtListPersistenceDelegate());
+        delegates.put(Menu.class, new AwtMenuPersistenceDelegate());
+        delegates.put(MenuBar.class, new AwtMenuBarPersistenceDelegate());
+        delegates.put(MenuShortcut.class,
+                new AwtMenuShortcutPersistenceDelegate());
+        delegates.put(Point.class, new AwtPointPersistenceDelegate());
+        delegates.put(Rectangle.class, new AwtRectanglePersistenceDelegate());
+        delegates.put(SystemColor.class,
+                new AwtSystemColorPersistenceDelegate());
+        delegates.put(TextAttribute.class,
+                new AwtFontTextAttributePersistenceDelegate());
+        delegates.put(ScrollPane.class, new AwtScrollPanePersistenceDelegate());
     }
 
     /**
@@ -432,8 +420,7 @@ public class Encoder {
         if (o == null) {
             return;
         }
-        Class<?> type = o.getClass();
-        getPersistenceDelegate(type).writeObject(o, this);
+        getPersistenceDelegate(o.getClass()).writeObject(o, this);
     }
 
     /**
