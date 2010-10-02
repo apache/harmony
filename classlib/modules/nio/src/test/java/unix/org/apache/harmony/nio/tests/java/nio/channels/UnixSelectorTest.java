@@ -94,7 +94,7 @@ public class UnixSelectorTest extends TestCase {
         socketChannel.configureBlocking(false);
         Selector sel2 = Selector.open();
         socketChannel.register(sel2, SelectionKey.OP_WRITE);
-        boolean isConnected = socketChannel.connect(new InetSocketAddress(port));
+        boolean isConnected = socketChannel.connect(new InetSocketAddress("localhost", port));
         if (!isConnected) {
             socketChannel.finishConnect();
         }
