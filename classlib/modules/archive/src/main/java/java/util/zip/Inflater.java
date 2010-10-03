@@ -236,10 +236,6 @@ public class Inflater {
             throw new ArrayIndexOutOfBoundsException();
         }
 
-        if (nbytes == 0) {
-            return 0;
-        }
-
         if (streamHandle == -1) {
             throw new IllegalStateException();
         }
