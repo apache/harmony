@@ -400,11 +400,13 @@ PORT_ACCESS_FROM_ENV (env);
 I_32
 getPlatformIsWriteOnly (JNIEnv * env, char *path)
 {
+  PORT_ACCESS_FROM_ENV(env);
   HANDLE fHandle;
   wchar_t *pathW;
   convert_path_to_unicode(env,path,&pathW);
 
   fHandle = CreateFileW(pathW, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+  jclmem_free_memory(env, pathW);
   if (fHandle == INVALID_HANDLE_VALUE) {
     return 1;
   }
