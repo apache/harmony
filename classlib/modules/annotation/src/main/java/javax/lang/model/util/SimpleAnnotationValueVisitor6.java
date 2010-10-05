@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -46,7 +47,7 @@ public class SimpleAnnotationValueVisitor6<R, P> extends
         return defaultAction(a, p);
     }
 
-    public R visitArray(List vals, P p) {
+    public R visitArray(List<? extends AnnotationValue> vals, P p) {
         return defaultAction(vals, p);
     }
 
