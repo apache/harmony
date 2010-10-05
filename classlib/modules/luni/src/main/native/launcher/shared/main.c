@@ -33,6 +33,7 @@
 #include <unistd.h>
 #endif
 
+#include <string.h>
 
 #define PORT_LIB_OPTION "_org.apache.harmony.vmi.portlib"
 
@@ -776,6 +777,102 @@ cleanup:
   return rc;
 }
 
+char *expandEntry(HyPortLibrary *portLibrary, char *origEntry, char *wildcard) {
+    PORT_ACCESS_FROM_PORT (portLibrary);
+    char *expandedEntry = NULL, *path;
+    char resultBuffer[HyMaxPath];
+    UDATA findHandle;
+    I_32 ret = 0;
+    int pathLen;
+
+    // If the wildcard is not in the expected position, return NULL to indicate
+    // the wildcard was not expanded.
+    if (!((wildcard == origEntry) || (*(wildcard-1) == DIR_SEPARATOR))
+        || !(*(wildcard+1) == '\0')) {
+        return NULL;
+    }
+
+    if (strlen(origEntry) == 1) {
+        // The path is just "*", so use .\ as the find path
+        path = hymem_allocate_memory(3);
+        path[0] = '.';
+        path[1] = DIR_SEPARATOR;
+        path[2] = '\0';
+    } else {
+        path = hymem_allocate_memory((int)(wildcard-origEntry)+1);
+        memcpy(path, origEntry, wildcard-origEntry);
+        path[wildcard-origEntry] = '\0';
+    }
+    
+    findHandle = hyfile_findfirst(path, resultBuffer);
+    if (findHandle == -1) {
+        // The findfirst call has failed, just return NULL
+        hymem_free_memory(path);
+        return NULL;
+    }
+    
+    pathLen = strlen(path);
+    while (ret != -1) {
+        int length = strlen(resultBuffer);
+        char *temp = resultBuffer + length - 4; // Get a pointer to the last 4 characters of the string to match .jar/.JAR
+        if (length >= 4 && (!strcmp(".jar", temp) || !strcmp(".JAR", temp))) {
+            // This is a valid jar file name, so add its name to the expanded entry
+            if (!expandedEntry) {
+                expandedEntry = hymem_allocate_memory(pathLen+strlen(resultBuffer)+1); // "path\resultBuffer\0"
+                strcpy(expandedEntry, path);
+                strcat(expandedEntry, resultBuffer);
+            } else {
+                temp = expandedEntry;
+                expandedEntry = hymem_allocate_memory(strlen(temp)+1+pathLen+strlen(resultBuffer)+1); // "temp;path\resultBuffer\0"
+                strcpy(expandedEntry, temp);
+                strcat(expandedEntry, PATH_SEPARATOR_STR);
+                strcat(expandedEntry, path);
+                strcat(expandedEntry, resultBuffer);
+            }
+        }
+        
+        ret = hyfile_findnext(findHandle, resultBuffer);
+    }
+    hyfile_findclose(findHandle);
+
+    hymem_free_memory(path);
+
+    return expandedEntry;
+}
+
+char *expandWildcardCP(HyPortLibrary *portLibrary, char *origClassPath) {
+    PORT_ACCESS_FROM_PORT (portLibrary);
+    char *finalClassPath = NULL;
+    char *tok = strtok(origClassPath, PATH_SEPARATOR_STR);
+    while (tok) {
+        char *expandedEntry = NULL;
+        char *wildcard = strchr(tok, '*');
+
+        if (wildcard) {
+            expandedEntry = expandEntry(portLibrary, tok, wildcard);
+        } 
+
+        if (!expandedEntry) {
+            expandedEntry = tok;
+        }
+
+        if (!finalClassPath) {
+            finalClassPath = hymem_allocate_memory(strlen(expandedEntry)+1); // "expandedEntry\0"
+            strcpy(finalClassPath, expandedEntry);
+        } else {
+            char *temp = finalClassPath;
+            finalClassPath = hymem_allocate_memory(strlen(temp)+1+strlen(expandedEntry)+1); // "temp;expandedEntry\0"
+            strcpy(finalClassPath, temp);
+            strcat(finalClassPath, PATH_SEPARATOR_STR);
+            strcat(finalClassPath, expandedEntry);
+            hymem_free_memory(temp);
+        }
+        tok = strtok(NULL, PATH_SEPARATOR_STR);
+    }
+
+    return finalClassPath;
+}
+
  /**
  * Converts command-line arguments into a format compatible with JNI invocation API.
  *
@@ -969,18 +1066,32 @@ createVMArgs (HyPortLibrary * portLibrary, int argc, char **argv,
           if ((strcmp (argv[i], "-cp") == 0)
               || (strcmp (argv[i], "-classpath") == 0))
             {
-              classPath = hymem_allocate_memory (strlen (argv[i + 1]) + 20);
-              if (classPath == NULL)
-                {
+              char *finalClassPath;
+              char *wildcardLoc = strchr(argv[i+1], '*');
+
+              // If the classpath contains the * wildcard, expand it if possible
+              if (wildcardLoc) {
+                  finalClassPath = expandWildcardCP(PORTLIB, argv[i+1]);
+              } else {
+                  finalClassPath = argv[i + 1];
+              }
+
+              classPath = hymem_allocate_memory (strlen(finalClassPath) + 20);
+              if (classPath == NULL) {
                   /* HYNLS_EXELIB_INTERNAL_VM_ERR_OUT_OF_MEMORY=Internal VM error: Out of memory\n */
                   PORTLIB->nls_printf (PORTLIB, HYNLS_ERROR,
                                        HYNLS_EXELIB_INTERNAL_VM_ERR_OUT_OF_MEMORY);
                   return 1;
-                }
-              //classPath = hymem_allocate_memory( 2048 );
+              }
               strcpy (classPath, "-Djava.class.path=");
-              strcat (classPath, argv[i + 1]);
+              strcat (classPath, finalClassPath);
               options[j].optionString = classPath;
+
+              if (wildcardLoc) {
+                  // If we expanded the classpath, need to free the memory allocated
+                  hymem_free_memory(finalClassPath);
+              }
+
               i++;              /*skip next arguement */
             }
           else if (strcmp(argv[i], "-verify")==0)
