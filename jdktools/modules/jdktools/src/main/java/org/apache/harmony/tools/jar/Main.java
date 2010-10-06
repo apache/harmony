@@ -320,9 +320,11 @@ public class Main {
         zos.putNextEntry(zEntry);
         // now write the data
         FileInputStream fis = new FileInputStream(file);
-        byte fileContent[] = new byte[(int)file.length()];
-        fis.read(fileContent);
-        zos.write(fileContent);
+        byte fileContent[] = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fis.read(fileContent)) != -1) {
+            zos.write(fileContent, 0, bytesRead);
+        }
         zos.closeEntry();
     }    
 }
