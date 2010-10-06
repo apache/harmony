@@ -497,25 +497,23 @@ public class HandlerTest extends TestCase {
 	public void testReportError() {
 		MockHandler h = new MockHandler();
 		h.setErrorManager(new MockErrorManager());
-
-        Exception ex = new Exception("test exception");
-        // with non-null parameters
-        h.reportError("test msg", ex, -1);
-        assertEquals(-1, CallVerificationStack.getInstance().popInt());
-        assertSame(ex, CallVerificationStack.getInstance().pop());
-        assertEquals("test msg", CallVerificationStack.getInstance().pop());
-        // with null parameters
-        h.reportError(null, null, 0);
-        assertEquals(0, CallVerificationStack.getInstance().popInt());
-        assertSame(null, CallVerificationStack.getInstance().pop());
-        assertNull(CallVerificationStack.getInstance().pop());
-	}
-
-	public void testReportErrorWithSecurityManager() {
-        SecurityManager oldMan = System.getSecurityManager();
+		SecurityManager oldMan = System.getSecurityManager();
 		System.setSecurityManager(new MockSecurityManager());
+
 		try {
-            testReportError();
+			Exception ex = new Exception("test exception");
+			// with non-null parameters
+			h.reportError("test msg", ex, -1);
+			assertEquals(-1, CallVerificationStack.getInstance().popInt());
+			assertSame(ex, CallVerificationStack.getInstance().pop());
+			assertEquals("test msg", CallVerificationStack.getInstance().pop());
+			// with null parameters
+			h.reportError(null, null, 0);
+			assertEquals(0, CallVerificationStack.getInstance().popInt());
+			assertSame(null, CallVerificationStack.getInstance().pop());
+			assertNull(CallVerificationStack.getInstance().pop());
+		} catch (SecurityException e) {
+			fail("Should not throw SecurityException!");
 		} finally {
 			System.setSecurityManager(oldMan);
 		}

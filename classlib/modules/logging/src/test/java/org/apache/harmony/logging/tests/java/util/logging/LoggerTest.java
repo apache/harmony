@@ -182,23 +182,22 @@ public class LoggerTest extends TestCase {
 	 * Test getAnonymousLogger()
 	 */
 	public void testGetAnonymousLogger() {
-        Logger alog = Logger.getAnonymousLogger();
-        assertNotSame(alog, Logger.getAnonymousLogger());
-        assertNull(alog.getFilter());
-        assertEquals(0, alog.getHandlers().length);
-        assertNull(alog.getLevel());
-        assertNull(alog.getName());
-        assertNull(alog.getParent().getParent());
-        assertNull(alog.getResourceBundle());
-        assertNull(alog.getResourceBundleName());
-        assertTrue(alog.getUseParentHandlers());
-	}
-
-	public void testGetAnonymousLoggerWithSecurityManager() {
 		SecurityManager oldMan = System.getSecurityManager();
 		System.setSecurityManager(new MockSecurityManager());
+
 		try {
-            testGetAnonymousLogger();
+			Logger alog = Logger.getAnonymousLogger();
+			assertNotSame(alog, Logger.getAnonymousLogger());
+			assertNull(alog.getFilter());
+			assertEquals(0, alog.getHandlers().length);
+			assertNull(alog.getLevel());
+			assertNull(alog.getName());
+			assertNull(alog.getParent().getParent());
+			assertNull(alog.getResourceBundle());
+			assertNull(alog.getResourceBundleName());
+			assertTrue(alog.getUseParentHandlers());
+			// fail("Should throw SecurityException!");
+			// } catch (SecurityException e) {
 		} finally {
 			System.setSecurityManager(oldMan);
 		}
@@ -3400,16 +3399,17 @@ public class LoggerTest extends TestCase {
 	/*
 	 * Test whether privileged code is used to load resource bundles.
 	 */
-	public void testLoadResourceBundleWithSecurityManager() {
+	public void testLoadResourceBundle() {
+        // 
 		SecurityManager oldMan = System.getSecurityManager();
 		System.setSecurityManager(new MockNoLoadingClassSecurityManager());
 		try {
-            Logger.getAnonymousLogger(VALID_RESOURCE_BUNDLE);
+			Logger.getAnonymousLogger(VALID_RESOURCE_BUNDLE);
 		} finally {
 			System.setSecurityManager(oldMan);
 		}
 	}
-
+    
     public void testLoadResourceBundleNonExistent() {
         try {
             // Try a load a non-existent resource bundle.
@@ -3425,35 +3425,38 @@ public class LoggerTest extends TestCase {
      * @tests java.util.logging.Logger#logrb(Level, String, String, String,
      *        String, Object)
      */
-    public void test_init_logger() throws Exception {
+    public void test_init_logger()
+            throws Exception {
         Properties p = new Properties();
         p.put("testGetLogger_Normal_ANewLogger2.level", "ALL");
         LogManager.getLogManager().readConfiguration(
                 EnvironmentHelper.PropertiesToInputStream(p));
+
         assertNull(LogManager.getLogManager().getLogger(
                 "testGetLogger_Normal_ANewLogger2"));
-    }
-    
-    public void test_init_loggerWithSecurityManager() throws Exception {
         SecurityManager originalSecurityManager = System.getSecurityManager();
-        System.setSecurityManager(new SecurityManager());
         try {
+            System.setSecurityManager(new SecurityManager());
+            // should not throw expection
             Logger logger = Logger.getLogger("testGetLogger_Normal_ANewLogger2");
+            // should thrpw exception
             try{
                 logger.setLevel(Level.ALL);
                 fail("should throw SecurityException");
-            } catch (SecurityException expected) {
+            } catch (SecurityException e){
+                // expected
             }
             try{
                 logger.setParent(Logger.getLogger("root"));
                 fail("should throw SecurityException");
-            } catch (SecurityException expected) {
+            } catch (SecurityException e){
+                // expected
             }
         } finally {
             System.setSecurityManager(originalSecurityManager);
         }
     }
-
+    
     /*
      * test initHandler
      */
