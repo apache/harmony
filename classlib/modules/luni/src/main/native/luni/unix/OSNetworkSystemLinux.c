@@ -346,14 +346,14 @@ Java_org_apache_harmony_luni_platform_OSNetworkSystem_selectImpl
 	  /* output result to int array */
 	  flagArray = (*env)->GetIntArrayElements(env, outFlags, &isCopy);
 	  for (val=0; val<countReadC; val++) {
-          if (my_pollfds[val].revents & (POLLIN | POLLPRI)) {
+          if (my_pollfds[val].revents & (POLLIN | POLLPRI | POLLHUP | POLLERR)) {
               flagArray[val] = SOCKET_OP_READ;
               changed=1;
           }
       }
 
 	  for (val=0; val<countWriteC; val++) {
-          if (my_pollfds[val+countReadC].revents & POLLOUT) {
+            if (my_pollfds[val+countReadC].revents & (POLLOUT | POLLHUP | POLLERR)) {
               flagArray[val+countReadC] = SOCKET_OP_WRITE;
               changed=1;
           }

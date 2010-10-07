@@ -105,7 +105,7 @@
         <echo message="    hy.local.zlib = ${hy.local.zlib}" />
         <echo message=" common resources = ${common.resources}" />
         <echo message="         HDK root = ${hy.hdk}" />
-        <echo message="       target dir = ${drlvm.deploy.dir}" />
+        <echo message="       deploy dir = ${drlvm.deploy.dir}" />
     </target>
 
     <target name="debug-echo">

@@ -84,6 +84,33 @@ public class NumberFormatTest extends junit.framework.TestCase {
                 pos);
         assertEquals("Wrong result BD2: " + out, "51", out.toString());
 
+        try {
+            format.format(this, new StringBuffer(), pos);
+            fail("Should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            format.format(null, new StringBuffer(), pos);
+            fail("Should throw IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            format.format(new Long(0), null, pos);
+            fail("Should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
+
+        try {
+            format.format(new Long(0), new StringBuffer(), null);
+            fail("Should throw NullPointerException");
+        } catch (NullPointerException e) {
+            // Expected
+        }
     }
 
     /**

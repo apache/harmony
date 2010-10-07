@@ -345,7 +345,7 @@ public final class StringBuilder extends AbstractStringBuilder implements
     }
 
     /**
-     * Deletes the character at the specified index. shifts any remaining
+     * Deletes the character at the specified index. Shifts any remaining
      * characters to the left.
      * 
      * @param index

@@ -66,6 +66,12 @@ public class ServerNotActiveExceptionTest extends junit.framework.TestCase {
         ServerNotActiveException e = new ServerNotActiveException(errorMessage);
         assertEquals(errorMessage, e.getMessage());
     }
+    
+    
+    public void test_Constructor(){
+        ServerNotActiveException e = new ServerNotActiveException();
+        assertNull(e.getMessage());
+    }
 
     // comparator for ServerNotActiveException objects
     private static final SerializableAssert comparator = new SerializableAssert() {

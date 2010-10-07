@@ -17,13 +17,14 @@
 package org.apache.harmony.archive.tests.java.util.zip;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.zip.Adler32;
 import java.io.UnsupportedEncodingException;
+import java.util.zip.Adler32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.ZipException;
 
@@ -446,6 +447,28 @@ public class InflaterTest extends junit.framework.TestCase {
         }
 
         infl2.end();
+    }
+
+    /*
+     * Regression test for HARMONY-6637
+     */
+    public void testInflateZero() throws Exception {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(
+                byteArrayOutputStream);
+        deflaterOutputStream.close();
+        byte[] input = byteArrayOutputStream.toByteArray();
+
+        Inflater inflater = new Inflater();
+        inflater.setInput(input);
+        byte[] buffer = new byte[0];
+        int numRead = 0;
+        while (!inflater.finished()) {
+            int inflatedChunkSize = inflater.inflate(buffer, numRead,
+                    buffer.length - numRead);
+            numRead += inflatedChunkSize;
+        }
+        inflater.end();
     }
 
 	/**

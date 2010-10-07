@@ -21,9 +21,11 @@
 
 <project name="svn-deps">
     
-    <target name="-svn-info" 
-        description="Sets global SVN properties of the workspace: 
-        is.svn, svn.revision and svn.info">
+    <!--
+        Sets global SVN properties of the workspace: 
+          is.svn, svn.revision and svn.info
+      -->
+    <target name="-svn-info">
         <svn-info dir="${basedir}" prefix="global"/>
         <condition property="is.svn">
             <isset property="global.entry.revision"/>

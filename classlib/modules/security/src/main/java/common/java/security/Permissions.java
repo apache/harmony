@@ -214,16 +214,14 @@ public final class Permissions extends PermissionCollection implements
         ObjectInputStream.GetField fields = in.readFields();
         Map perms = (Map)fields.get("perms", null); //$NON-NLS-1$
         klasses = new HashMap();
-        synchronized (klasses) {
-            for (Iterator iter = perms.entrySet().iterator(); iter.hasNext();) {
-                Map.Entry entry = (Map.Entry)  iter.next();
-                Class key = (Class) entry.getKey();
-                PermissionCollection pc = (PermissionCollection) entry.getValue();
-                if (key != pc.elements().nextElement().getClass()) {
-                    throw new InvalidObjectException(Messages.getString("security.22")); //$NON-NLS-1$
-                }
-                klasses.put(key, pc);
+        for (Iterator iter = perms.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry)  iter.next();
+            Class key = (Class) entry.getKey();
+            PermissionCollection pc = (PermissionCollection) entry.getValue();
+            if (key != pc.elements().nextElement().getClass()) {
+                throw new InvalidObjectException(Messages.getString("security.22")); //$NON-NLS-1$
             }
+            klasses.put(key, pc);
         }
         allEnabled = fields.get("allPermission", null) != null; //$NON-NLS-1$
         if (allEnabled && !klasses.containsKey(AllPermission.class)) {

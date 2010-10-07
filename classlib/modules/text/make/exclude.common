@@ -1,11 +1,5 @@
-#HARMONY-6524
-org/apache/harmony/text/tests/java/text/RuleBasedCollatorTest.java
-
 #HARMONY-6525
 org/apache/harmony/text/tests/java/text/DecimalFormatTest.java
 
 #HARMONY-6526
 org/apache/harmony/text/tests/java/text/SimpleDateFormatTest.java
-
-#HARMONY-6527
-org/apache/harmony/text/tests/java/text/CollationElementIteratorTest.java

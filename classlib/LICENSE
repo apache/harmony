@@ -646,6 +646,8 @@ the licensing terms, the licenses are reproduced here:
 
 RFC 1779 -  A String Representation of Distinguished Names
 
+RFC 2040 - The RC5, RC5-CBC, RC5-CBC-Pad, and RC5-CTS Algorithms
+
 RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of 
            Internet Message Bodies
 
@@ -655,6 +657,9 @@ RFC 2251 - Lightweight Directory Access Protocol (v3)
 RFC 2253 - Lightweight Directory Access Protocol (v3): UTF-8 String 
            Representation of Distinguished Names
            Copyright (C) The Internet Society (1997).  All Rights Reserved.
+
+RFC 2268 - A Description of the RC2(r) Encryption Algorithm
+           Copyright (C) The Internet Society (1998).  All Rights Reserved.
 
 RFC 2313 - PKCS #1: RSA Encryption
            Copyright (C) The Internet Society (1998).  All Rights Reserved.
@@ -674,6 +679,9 @@ RFC 2781 - UTF-16, an encoding of ISO 10646
 RFC 2891 - LDAP Control Extension for Server Side Sorting of Search Results
            Copyright (C) The Internet Society (2000).  All Rights Reserved.
 
+RFC 2898 - PKCS #5: Password-Based Cryptography Specification Version 2.0
+           Copyright (C) The Internet Society (2000).  All Rights Reserved.
+
 RFC 2985 - PKCS #9: Selected Object Classes and Attribute Types
            Copyright (C) The Internet Society (2000).  All Rights Reserved.
 
@@ -683,6 +691,13 @@ RFC 3161 - Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)
 RFC 3280 - Internet X.509 Public Key Infrastructure, Certificate and
            Certificate Revocation List (CRL) Profile
            Copyright (C) The Internet Society (2002).  All Rights Reserved.
+
+RFC 3447 - Public-Key Cryptography Standards (PKCS) #1: RSA Cryptography
+           Specifications Version 2.1
+           Copyright (C) The Internet Society (2003).  All Rights Reserved.
+
+RFC 3629 - UTF-8, a transformation format of ISO 10646
+           Copyright (C) The Internet Society (2003).  All Rights Reserved.
 
 INTERNET-DRAFT - Persistent Search: A Simple LDAP Change Notification Mechanism
            <draft-ietf-ldapext-psearch-03.txt>
@@ -723,13 +738,20 @@ the following IETF RFCs.  Portions of the IETF RFC specifications may be
 included in source code comments for reference, and in accordance with
 the licensing terms, the licenses are reproduced here:
 
+RFC 3961 - Encryption and Checksum Specifications for Kerberos 5
+           Copyright (C) The Internet Society (2005).
+
+RFC 4120 - The Kerberos Network Authentication Service (V5)
+           Copyright (C) The Internet Society (2005).
+
 RFC 4122 - A Universally Unique Identifier (UUID) URN Namespace
            Copyright (C) The Internet Society (2005).
 
+RFC 5208 - Public-Key Cryptography Standards (PKCS) #8:
+           Private-Key Information Syntax Specification Version 1.2
+           Copyright (C) The IETF Trust (2008).
 
-The following statement applies to this RFC:
-      
-      Copyright (C) The Internet Society (2005).
+The following statement applies to each RFC:
 
       This document is subject to the rights, licenses and restrictions
       contained in BCP 78, and except as set forth therein, the authors

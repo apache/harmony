@@ -174,16 +174,16 @@ Usage:
     <!--     fetches external dependencies                              -->
     <!-- ============================================================== -->
     <target name="fetch-depends"
-        description="Fetches dependencies. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2."
-        depends="fetch-classlib-libs,
-                 fetch-vm-libs,
-                 fetch-jdktools-libs"/>
+        description="Fetches dependencies for all components. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2."
+        depends="fetch-depends-classlib,
+                 fetch-depends-vm,
+                 fetch-depends-jdktools"/>
 
     <target name="check-depends"
-        description="Checks dependencies."
-        depends="check-classlib-libs,
-                 check-vm-libs,
-                 check-jdktools-libs"/>
+        description="Checks dependencies for all components."
+        depends="check-depends-classlib,
+                 check-depends-vm,
+                 check-depends-jdktools"/>
 
     <target name="bundle-hdk-tgz" depends="init" if="is.unix">
 
@@ -474,7 +474,7 @@ Usage:
     
     <target name="build-classlib"
             depends="init,-init-hdk,-build-classlib,assemble-hdk-doc"/>
-    <target name="-build-classlib" depends="auto-fetch-classlib-libs">
+    <target name="-build-classlib" depends="auto-fetch-depends-classlib">
         <ant antfile="classlib/build.xml" target="build" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -494,8 +494,8 @@ Usage:
         </delete>
     </target>
 
-    <target name="auto-fetch-classlib-libs" if="auto.fetch">
-        <ant target="fetch-classlib-libs">
+    <target name="auto-fetch-depends-classlib" if="auto.fetch">
+        <ant target="fetch-depends-classlib">
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -504,7 +504,8 @@ Usage:
         </ant>
     </target>
 
-    <target name="fetch-classlib-libs">
+    <target name="fetch-depends-classlib"
+            description="Fetches dependencies for classlib. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2.">
         <ant antfile="classlib/build.xml" target="fetch-depends"
              inheritall="false" >
             <propertyset refid="required.props" />
@@ -515,7 +516,8 @@ Usage:
         </ant>
     </target>
 
-    <target name="check-classlib-libs">
+    <target name="check-depends-classlib"
+            description="Checks dependencies for classlib.">
         <ant antfile="classlib/build.xml" target="check-depends"
              inheritall="false" >
             <propertyset refid="required.props" />
@@ -561,7 +563,7 @@ Usage:
     <!-- ============================================================== -->
     <!-- ensures that dependencies are up to date and then builds a vm  -->
     <!-- ============================================================== -->
-    <target name="build-vm" depends="init,auto-fetch-vm-libs">
+    <target name="build-vm" depends="init,auto-fetch-depends-vm">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="build" inheritAll="false" >
             <propertyset refid="required.props" />
@@ -575,8 +577,8 @@ Usage:
         </ant>
     </target>
 
-    <target name="auto-fetch-vm-libs" if="auto.fetch">
-        <ant target="fetch-vm-libs">
+    <target name="auto-fetch-depends-vm" if="auto.fetch">
+        <ant target="fetch-depends-vm">
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
@@ -585,7 +587,8 @@ Usage:
         </ant>
     </target>
 
-    <target name="fetch-vm-libs">
+    <target name="fetch-depends-vm"
+            description="Fetches dependencies for the vm. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2.">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="fetch-depends" inheritall="false" >
             <propertyset refid="required.props" />
@@ -596,7 +599,8 @@ Usage:
         </ant>
     </target>
 
-    <target name="check-vm-libs">
+    <target name="check-depends-vm"
+            description="Checks dependencies for the vm.">
         <ant antfile="${vm.dir.loc}/build.xml"
              target="check-depends" inheritall="false" >
             <propertyset refid="required.props" />
@@ -625,7 +629,7 @@ Usage:
     <!-- ensures dependencies are up to date, then builds jdktools      -->
     <!-- ============================================================== -->
     <target name="build-jdktools"
-            depends="init,-init-hdk,auto-fetch-jdktools-libs">
+            depends="init,-init-hdk,auto-fetch-depends-jdktools">
         <ant antfile="jdktools/build.xml" target="build" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
@@ -635,15 +639,16 @@ Usage:
         </ant>
     </target>
 
-    <target name="auto-fetch-jdktools-libs" if="auto.fetch">
-        <ant target="fetch-jdktools-libs" inheritall="false" >
+    <target name="auto-fetch-depends-jdktools" if="auto.fetch">
+        <ant target="fetch-depends-jdktools" inheritall="false" >
             <propertyset refid="required.props" />
             <property name="hy.target" location="${hy.target}"/>
             <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
-    <target name="fetch-jdktools-libs">
+    <target name="fetch-depends-jdktools"
+            description="Fetches dependencies for jdktools. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2.">
         <ant antfile="jdktools/build.xml" target="fetch-depends"
              inheritall="false" >
             <propertyset refid="required.props" />
@@ -652,7 +657,8 @@ Usage:
         </ant>
     </target>
 
-    <target name="check-jdktools-libs">
+    <target name="check-depends-jdktools"
+            description="Checks dependencies for jdktools">
         <ant antfile="jdktools/build.xml" target="check-depends"
              inheritall="false" >
             <propertyset refid="required.props" />

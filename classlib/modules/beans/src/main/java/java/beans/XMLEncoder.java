@@ -27,6 +27,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,6 +44,8 @@ import org.apache.harmony.beans.internal.nls.Messages;
  * 
  */
 public class XMLEncoder extends Encoder {
+
+    private static final String DEFAULT_ENCODING = "UTF-8"; //$NON-NLS-1$
 
     private static int DEADLOCK_THRESHOLD = 7;
 
@@ -92,11 +95,11 @@ public class XMLEncoder extends Encoder {
 
     private Object owner = null;
 
-    private ReferenceMap records = new ReferenceMap();
+    private IdentityHashMap<Object, Record> objRecordMap = new IdentityHashMap<Object, Record>();
 
-    private ReferenceMap objPrePendingCache = new ReferenceMap();
+    private IdentityHashMap<Class<?>, Integer> clazzCounterMap = new IdentityHashMap<Class<?>, Integer>();
 
-    private ReferenceMap clazzCounterMap = new ReferenceMap();
+    private IdentityHashMap<Object, ArrayList<Object>> objPrePendingCache = new IdentityHashMap<Object, ArrayList<Object>>();
 
     private boolean writingObject = false;
 
@@ -109,11 +112,10 @@ public class XMLEncoder extends Encoder {
     public XMLEncoder(OutputStream out) {
         if (null != out) {
             try {
-                this.out = new PrintWriter(
-                        new OutputStreamWriter(out, "UTF-8"), true); //$NON-NLS-1$
+                this.out = new PrintWriter(new OutputStreamWriter(out,
+                        DEFAULT_ENCODING), true);
             } catch (UnsupportedEncodingException e) {
-                // never occur
-                e.printStackTrace();
+                // should never occur
             }
         }
     }
@@ -166,7 +168,7 @@ public class XMLEncoder extends Encoder {
             for (Iterator<Object> iter = flushPending.iterator(); iter
                     .hasNext();) {
                 Object o = iter.next();
-                Record rec = (Record) records.get(o);
+                Record rec = objRecordMap.get(o);
                 if (rec != null) {
                     preprocess(o, rec);
                 }
@@ -182,7 +184,7 @@ public class XMLEncoder extends Encoder {
             }
 
             // clear statement records
-            records.clear();
+            objRecordMap.clear();
             flushPendingStat.clear();
             objPrePendingCache.clear();
             clazzCounterMap.clear();
@@ -201,54 +203,33 @@ public class XMLEncoder extends Encoder {
         if (obj == null) {
             out.println("<null />");
         } else if (obj instanceof String) {
-            Record rec = (Record) records.get(obj);
+            Record rec = objRecordMap.get(obj);
             if (null != rec) {
-                if (flushPendingStat.contains(obj)) {
-                    flushExpression(obj, rec, indent - 3, true);
-                } else {
-                    flushExpression(obj, rec, indent - 3, false);
-                }
+                flushExpression(obj, rec, indent - 3,
+                        flushPendingStat.contains(obj));
                 return;
             }
             out.print("<string>");
             flushString((String) obj);
             out.println("</string>");
         } else if (obj instanceof Class<?>) {
-            out.print("<class>");
-            out.print(((Class<?>) obj).getName());
-            out.println("</class>");
+            out.println("<class>" + ((Class<?>) obj).getName() + "</class>");
         } else if (obj instanceof Boolean) {
-            out.print("<boolean>");
-            out.print(obj);
-            out.println("</boolean>");
+            out.println("<boolean>" + obj + "</boolean>");
         } else if (obj instanceof Byte) {
-            out.print("<byte>");
-            out.print(obj);
-            out.println("</byte>");
+            out.println("<byte>" + obj + "</byte>");
         } else if (obj instanceof Character) {
-            out.print("<char>");
-            out.print(obj);
-            out.println("</char>");
+            out.println("<char>" + obj + "</char>");
         } else if (obj instanceof Double) {
-            out.print("<double>");
-            out.print(obj);
-            out.println("</double>");
+            out.println("<double>" + obj + "</double>");
         } else if (obj instanceof Float) {
-            out.print("<float>");
-            out.print(obj);
-            out.println("</float>");
+            out.println("<float>" + obj + "</float>");
         } else if (obj instanceof Integer) {
-            out.print("<int>");
-            out.print(obj);
-            out.println("</int>");
+            out.println("<int>" + obj + "</int>");
         } else if (obj instanceof Long) {
-            out.print("<long>");
-            out.print(obj);
-            out.println("</long>");
+            out.println("<long>" + obj + "</long>");
         } else if (obj instanceof Short) {
-            out.print("<short>");
-            out.print(obj);
-            out.println("</short>");
+            out.println("<short>" + obj + "</short>");
         } else {
             getExceptionListener().exceptionThrown(
                     new Exception(Messages.getString("beans.73", obj)));
@@ -287,14 +268,15 @@ public class XMLEncoder extends Encoder {
 
     private void flushIndent(int indent) {
         for (int i = 0; i < indent; i++) {
-            out.print(" "); //$NON-NLS-1$
+            out.print(' ');
         }
     }
 
     private void flushObject(Object obj, int indent) {
-        Record rec = (Record) records.get(obj);
-        if (rec == null && !isBasicType(obj))
+        Record rec = objRecordMap.get(obj);
+        if (rec == null && !isBasicType(obj)) {
             return;
+        }
 
         if (obj == owner && this.needOwner) {
             flushOwner(obj, rec, indent);
@@ -305,11 +287,7 @@ public class XMLEncoder extends Encoder {
         if (isBasicType(obj)) {
             flushBasicObject(obj, indent);
         } else {
-            if (flushPendingStat.contains(obj)) {
-                flushExpression(obj, rec, indent, true);
-            } else {
-                flushExpression(obj, rec, indent, false);
-            }
+            flushExpression(obj, rec, indent, flushPendingStat.contains(obj));
         }
     }
 
@@ -451,7 +429,7 @@ public class XMLEncoder extends Encoder {
         Object args[] = stat.getArguments();
 
         // special case for array
-        if (Array.class == target && "newInstance".equals(method)) {
+        if (Array.class == target && BeansUtils.NEWINSTANCE.equals(method)) {
             flushStatArray(stat, id, subStats, indent);
             return;
         }
@@ -643,10 +621,10 @@ public class XMLEncoder extends Encoder {
         for (int i = 0; i < subStats.size(); i++) {
             Statement subStat = (Statement) subStats.get(i);
             try {
-                if (subStat instanceof Expression) {
+                if (subStat.getClass() == Expression.class) {
                     Expression subExp = (Expression) subStat;
                     Object obj = subExp.getValue();
-                    Record rec = (Record) records.get(obj);
+                    Record rec = objRecordMap.get(obj);
                     flushExpression(obj, rec, indent + INDENT_UNIT, true);
                 } else {
                     flushStatement(subStat, null, Collections.EMPTY_LIST,
@@ -678,21 +656,21 @@ public class XMLEncoder extends Encoder {
     }
 
     private boolean isGetArrayStat(Object target, String method, Object[] args) {
-        return ("get".equals(method) && args.length == 1 //$NON-NLS-1$
+        return (BeansUtils.GET.equals(method) && args.length == 1
                 && args[0] instanceof Integer && target.getClass().isArray());
     }
 
     private boolean isGetPropertyStat(String method, Object[] args) {
-        return (method.startsWith("get") && method.length() > 3 && args.length == 0); //$NON-NLS-1$
+        return (method.startsWith(BeansUtils.GET) && method.length() > 3 && args.length == 0);
     }
 
     private boolean isSetArrayStat(Object target, String method, Object[] args) {
-        return ("set".equals(method) && args.length == 2 //$NON-NLS-1$
+        return (BeansUtils.SET.equals(method) && args.length == 2
                 && args[0] instanceof Integer && target.getClass().isArray());
     }
 
     private boolean isSetPropertyStat(String method, Object[] args) {
-        return (method.startsWith("set") && method.length() > 3 && args.length == 1); //$NON-NLS-1$
+        return (method.startsWith(BeansUtils.SET) && method.length() > 3 && args.length == 1);
     }
 
     /*
@@ -719,15 +697,15 @@ public class XMLEncoder extends Encoder {
         // do it recursively
         if (null != rec.exp) {
             // deal with 'field' property
-            Record targetRec = (Record) records.get(rec.exp.getTarget());
+            Record targetRec = objRecordMap.get(rec.exp.getTarget());
             if (targetRec != null && targetRec.exp != null
                     && "getField".equals(targetRec.exp.getMethodName())) {
-                records.remove(obj);
+                objRecordMap.remove(obj);
             }
 
             Object args[] = rec.exp.getArguments();
             for (int i = 0; i < args.length; i++) {
-                Record argRec = (Record) records.get(args[i]);
+                Record argRec = objRecordMap.get(args[i]);
                 if (argRec != null) {
                     preprocess(args[i], argRec);
                 }
@@ -736,10 +714,10 @@ public class XMLEncoder extends Encoder {
 
         for (Iterator<?> iter = rec.stats.iterator(); iter.hasNext();) {
             Statement subStat = (Statement) iter.next();
-            if (subStat instanceof Expression) {
+            if (subStat.getClass() == Expression.class) {
                 try {
                     Expression subExp = (Expression) subStat;
-                    Record subRec = (Record) records.get(subExp.getValue());
+                    Record subRec = objRecordMap.get(subExp.getValue());
                     if (subRec == null || subRec.exp == null
                             || subRec.exp != subExp) {
                         iter.remove();
@@ -764,7 +742,7 @@ public class XMLEncoder extends Encoder {
 
             Object subStatArgs[] = subStat.getArguments();
             for (int i = 0; i < subStatArgs.length; i++) {
-                Record argRec = (Record) records.get(subStatArgs[i]);
+                Record argRec = objRecordMap.get(subStatArgs[i]);
                 if (argRec != null) {
                     preprocess(subStatArgs[i], argRec);
                 }
@@ -774,24 +752,18 @@ public class XMLEncoder extends Encoder {
 
     private void recordExpression(Object value, Expression exp) {
         // record how a new object is created or obtained
-        Record rec = (Record) records.get(value);
+        Record rec = objRecordMap.get(value);
         if (rec == null) {
             rec = new Record();
-            records.put(value, rec);
+            objRecordMap.put(value, rec);
         }
 
         if (rec.exp == null) {
-            // it is generated by its sub stats
-            for (Iterator<?> iter = rec.stats.iterator(); iter.hasNext();) {
-                Statement stat = (Statement) iter.next();
-                try {
-                    if (stat instanceof Expression) {
-                        flushPrePending.add(value);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+            // it is generated by its sub statements
+            for (Statement statement : rec.stats) {
+                if (statement.getClass() == Expression.class) {
+                    flushPrePending.add(value);
                 }
-
             }
         }
 
@@ -807,18 +779,19 @@ public class XMLEncoder extends Encoder {
     }
 
     private void recordStatement(Statement stat) {
-        if (null == stat)
+        if (null == stat) {
             return;
+        }
         // deal with 'owner' property
         if (stat.getTarget() == owner && owner != null) {
             needOwner = true;
         }
 
         // record how a statement affects the target object
-        Record rec = (Record) records.get(stat.getTarget());
+        Record rec = objRecordMap.get(stat.getTarget());
         if (rec == null) {
             rec = new Record();
-            records.put(stat.getTarget(), rec);
+            objRecordMap.put(stat.getTarget(), rec);
         }
         rec.stats.add(stat);
     }
@@ -837,7 +810,7 @@ public class XMLEncoder extends Encoder {
         Object obj = value;
 
         while (obj != null) {
-            Record rec = (Record) records.get(obj);
+            Record rec = objRecordMap.get(obj);
 
             if (rec != null && rec.exp != null) {
                 obj = rec.exp.getTarget();
@@ -881,26 +854,16 @@ public class XMLEncoder extends Encoder {
         boolean oldWritingObject = writingObject;
         writingObject = true;
         // get expression value
-        Object oldValue = null;
-
-        try {
-            oldValue = oldExp.getValue();
-        } catch (Exception e) {
-            getExceptionListener().exceptionThrown(
-                    new Exception("failed to execute expression: " //$NON-NLS-1$
-                            + oldExp, e));
-            return;
-        }
-
+        Object oldValue = expressionValue(oldExp);
         // check existence
-        if (get(oldValue) != null
-                && (!(oldValue instanceof String) || oldWritingObject)) {
+        if (oldValue == null || get(oldValue) != null
+                && (oldWritingObject || oldValue.getClass() != String.class)) {
             return;
         }
 
         // record how the object is obtained
         if (!isBasicType(oldValue)
-                || (oldValue instanceof String && !oldWritingObject)) {
+                || (!oldWritingObject && oldValue.getClass() == String.class)) {
             recordExpression(oldValue, oldExp);
         }
 
@@ -908,7 +871,6 @@ public class XMLEncoder extends Encoder {
         if (checkDeadLoop(oldValue)) {
             return;
         }
-
         super.writeExpression(oldExp);
         writingObject = oldWritingObject;
     }
@@ -917,12 +879,10 @@ public class XMLEncoder extends Encoder {
      * Records the object so that it can be written out later, then calls super
      * implementation.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void writeObject(Object o) {
         synchronized (this) {
-            ArrayList<Object> prePending = (ArrayList<Object>) objPrePendingCache
-                    .get(o);
+            ArrayList<Object> prePending = objPrePendingCache.get(o);
             if (prePending == null) {
                 boolean oldWritingObject = writingObject;
                 writingObject = true;
@@ -976,9 +936,9 @@ public class XMLEncoder extends Encoder {
             System.err.println("Continuing...");
             return;
         }
+
         // record how the object is changed
         recordStatement(oldStat);
-
         super.writeStatement(oldStat);
     }
 }

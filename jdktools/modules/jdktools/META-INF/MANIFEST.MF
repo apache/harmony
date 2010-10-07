@@ -6,7 +6,7 @@ Implementation-Vendor: The Apache Software Foundation
 Implementation-Vendor-Id: org.apache.harmony
 Implementation-URL: http://harmony.apache.org
 Class-Path: com.ibm.icu.base_3.6.1.v20070417.jar
-  ecj-3.5.1.jar
+  ecj-3.6.1.jar
   jdimodel.jar
   jdtstub.jar
 Bundle-ManifestVersion: 2
