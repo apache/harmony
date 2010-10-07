@@ -17,8 +17,10 @@
 
 package javax.annotation.processing;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.lang.model.SourceVersion;
@@ -31,8 +33,15 @@ public abstract class AbstractProcessor implements Processor {
 
     private boolean isInitialized;
 
+    private static final Set<String> emptySet;
+
     protected ProcessingEnvironment processingEnv;
 
+    static {
+        Set<String> tempSet = Collections.emptySet();
+        emptySet = Collections.unmodifiableSet(tempSet);
+    }
+    
     protected AbstractProcessor() {
 
     }
@@ -40,41 +49,47 @@ public abstract class AbstractProcessor implements Processor {
     public Iterable<? extends Completion> getCompletions(Element element,
             AnnotationMirror annotation, ExecutableElement member,
             String userText) {
-        // return a empty iterable
-        return new Iterable<Completion>() {
-            public Iterator<Completion> iterator() {
-                return new Iterator<Completion>() {
-
-                    public boolean hasNext() {
-                        return false;
-                    }
-
-                    public Completion next() {
-                        return null;
-                    }
-
-                    public void remove() {
-                        // do nothing
-                    }
-                };
-            }
-        };
+        // return an empty iterable
+        List<Completion> emptyList = Collections.emptyList();
+        return emptyList;
     }
 
+    @SuppressWarnings("unchecked")
     public Set<String> getSupportedAnnotationTypes() {
-        return new HashSet<String>();
+        // check if the processing class has the types set
+        SupportedAnnotationTypes types = this.getClass().getAnnotation(SupportedAnnotationTypes.class);
+        if (types != null) {
+            return Collections.unmodifiableSet(new HashSet(Arrays.asList(types.value())));
+        }
+        // otherwise return an empty set
+        return emptySet;
     }
 
+    @SuppressWarnings("unchecked")
     public Set<String> getSupportedOptions() {
-        return new HashSet<String>();
+        // check if the processing class has the options set
+        SupportedOptions options = this.getClass().getAnnotation(SupportedOptions.class);
+        if (options != null) {
+            return Collections.unmodifiableSet(new HashSet(Arrays.asList(options.value())));
+        }
+        // otherwise return an empty set
+        return emptySet;
     }
 
     public SourceVersion getSupportedSourceVersion() {
+        // check if the processing class has the source version set
+        SupportedSourceVersion sourceVersion = this.getClass().getAnnotation(SupportedSourceVersion.class);
+        if (sourceVersion != null) {
+            return sourceVersion.value();
+        }
         return SourceVersion.RELEASE_6;
     }
 
     public void init(ProcessingEnvironment processingEnv) {
-        if (this.processingEnv != null && this.processingEnv == processingEnv) {
+        if (processingEnv == null) {
+            throw new NullPointerException();
+        }
+        if (this.processingEnv != null) {
             throw new IllegalStateException();
         }
         this.processingEnv = processingEnv;
