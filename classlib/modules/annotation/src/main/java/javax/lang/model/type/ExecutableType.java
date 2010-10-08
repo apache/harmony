@@ -17,7 +17,6 @@
 
 package javax.lang.model.type;
 
-import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 public interface ExecutableType extends TypeMirror {
@@ -27,5 +26,5 @@ public interface ExecutableType extends TypeMirror {
 
     List<? extends TypeMirror> getThrownTypes();
 
-    List<? extends TypeVariable> getTypeVariables();
+    List<? extends javax.lang.model.type.TypeVariable> getTypeVariables();
 }
