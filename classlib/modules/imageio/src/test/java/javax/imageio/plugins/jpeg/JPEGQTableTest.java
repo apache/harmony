@@ -20,30 +20,30 @@ package javax.imageio.plugins.jpeg;
 import junit.framework.TestCase;
 
 public class JPEGQTableTest extends TestCase {
-	
-	public void testToString() {
-		String K1Luminance = "JPEGQTable:\n" +
-							 "\t16 11 10 16 24 40 51 61 \n" +
-							 "\t12 12 14 19 26 58 60 55 \n" +
-							 "\t14 13 16 24 40 57 69 56 \n" +
-							 "\t14 17 22 29 51 87 80 62 \n" +
-							 "\t18 22 37 56 68 109 103 77 \n" +
-							 "\t24 35 55 64 81 104 113 92 \n" +
-							 "\t49 64 78 87 103 121 120 101 \n" +
-							 "\t72 92 95 98 112 100 103 99 \n";
-		
-		String K2Chrominance = "JPEGQTable:\n" +
-							   "\t17 18 24 47 99 99 99 99 \n" +
-							   "\t18 21 26 66 99 99 99 99 \n" +
-							   "\t24 26 56 99 99 99 99 99 \n" +
-							   "\t47 66 99 99 99 99 99 99 \n" +
-							   "\t99 99 99 99 99 99 99 99 \n" +
-							   "\t99 99 99 99 99 99 99 99 \n" +
-							   "\t99 99 99 99 99 99 99 99 \n" +
-							   "\t99 99 99 99 99 99 99 99 \n";
-						 
-		assertEquals(K1Luminance, JPEGQTable.K1Luminance.toString());
-		assertEquals(K2Chrominance, JPEGQTable.K2Chrominance.toString());
-	}
-	
+
+    public void testToString() {
+        String K1Luminance = "JPEGQTable:\n" 
+                + "\t16 11 10 16 24 40 51 61\n"
+                + "\t12 12 14 19 26 58 60 55\n" 
+                + "\t14 13 16 24 40 57 69 56\n"
+                + "\t14 17 22 29 51 87 80 62\n"
+                + "\t18 22 37 56 68 109 103 77\n"
+                + "\t24 35 55 64 81 104 113 92\n"
+                + "\t49 64 78 87 103 121 120 101\n"
+                + "\t72 92 95 98 112 100 103 99\n";
+
+        String K2Chrominance = "JPEGQTable:\n" 
+                + "\t17 18 24 47 99 99 99 99\n"
+                + "\t18 21 26 66 99 99 99 99\n" 
+                + "\t24 26 56 99 99 99 99 99\n"
+                + "\t47 66 99 99 99 99 99 99\n" 
+                + "\t99 99 99 99 99 99 99 99\n"
+                + "\t99 99 99 99 99 99 99 99\n" 
+                + "\t99 99 99 99 99 99 99 99\n"
+                + "\t99 99 99 99 99 99 99 99\n";
+
+        assertEquals(K1Luminance, JPEGQTable.K1Luminance.toString());
+        assertEquals(K2Chrominance, JPEGQTable.K2Chrominance.toString());
+    }
+
 }
