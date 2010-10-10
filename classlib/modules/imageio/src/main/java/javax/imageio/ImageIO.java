@@ -126,6 +126,18 @@ public final class ImageIO {
 
         return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
     }
+    
+    public static String[] getReaderFileSuffixes() {
+        List<String> suffixes = new ArrayList<String>();
+        
+        Iterator<ImageReaderSpi> it = registry.getServiceProviders(ImageReaderSpi.class, true);
+        while (it.hasNext()) {
+            ImageReaderSpi spi = it.next();
+            suffixes.addAll(Arrays.asList(spi.getFileSuffixes()));
+        }
+        
+        return (String[])suffixes.toArray(new String[suffixes.size()]);
+    }
 
     public static Iterator<ImageReader> getImageReaders(Object input) {
         if (input == null) {
@@ -188,6 +200,18 @@ public final class ImageIO {
         }
 
         return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
+    }
+    
+    public static String[] getWriterFileSuffixes() {
+        List<String> suffixes = new ArrayList<String>();
+        
+        Iterator<ImageWriterSpi> it = registry.getServiceProviders(ImageWriterSpi.class, true);
+        while (it.hasNext()) {
+            ImageWriterSpi spi = it.next();
+            suffixes.addAll(Arrays.asList(spi.getFileSuffixes()));
+        }
+        
+        return (String[])suffixes.toArray(new String[suffixes.size()]);
     }
 
     public static Iterator<ImageWriter> getImageWritersByFormatName(String formatName) {

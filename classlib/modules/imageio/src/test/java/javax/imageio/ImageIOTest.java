@@ -145,4 +145,19 @@ public class ImageIOTest extends TestCase {
         assertTrue(actualFormatNames.containsAll(expectedFormatNames));
     }
 
+    public void testGetReaderFileSuffixes() {
+        Set<String> expectedSuffixes = new HashSet<String>(Arrays.asList(new String[] {
+            "jpeg", "jpg", "gif", "png" }));
+        
+        Set<String> actualSuffixes = new HashSet<String>(Arrays.asList(ImageIO.getReaderFileSuffixes()));
+        assertTrue(actualSuffixes.containsAll(expectedSuffixes));
+    }
+    
+    public void testGetWriterFileSuffixes() {
+        Set<String> expectedSuffixes = new HashSet<String>(Arrays.asList(new String[] {
+            "jpeg", "jpg", "png" }));
+        
+        Set<String> actualSuffixes = new HashSet<String>(Arrays.asList(ImageIO.getWriterFileSuffixes()));
+        assertTrue(actualSuffixes.containsAll(expectedSuffixes));
+    }
 }
