@@ -571,11 +571,7 @@ public final class String implements Serializable, Comparable<String>,
      */
     public String(int[] codePoints, int offset, int count) {
         super();
-        if (codePoints == null) {
-            throw new NullPointerException();
-        }
-        if (offset < 0 || count < 0
-                || (long) offset + (long) count > codePoints.length) {
+        if (offset < 0 || count < 0 || offset > codePoints.length - count) {
             throw new IndexOutOfBoundsException();
         }
         this.offset = 0;
