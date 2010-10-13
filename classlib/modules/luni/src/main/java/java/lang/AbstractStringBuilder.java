@@ -77,9 +77,6 @@ abstract class AbstractStringBuilder {
     }
 
     AbstractStringBuilder(int capacity) {
-        if (capacity < 0) {
-            throw new NegativeArraySizeException();
-        }
         value = new char[capacity];
     }
 
