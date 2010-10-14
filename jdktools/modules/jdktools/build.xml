@@ -194,7 +194,8 @@
         <compile-tests description="${hy.module} tests">
             <javac-elements>
                 <src>
-                    <pathelement location="src/test/java" />
+                    <pathelement location="src/test/java/common" />
+                    <pathelement location="src/test/java/${hy.os.family}" />
                 </src>
                 <exclude name="org/apache/harmony/tests/tools/serialver/**"
                          if="is.select"/>
