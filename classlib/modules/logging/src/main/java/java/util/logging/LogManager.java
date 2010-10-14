@@ -32,6 +32,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -321,26 +323,46 @@ public class LogManager {
         }
 
         // find children
-        // TODO: performance can be improved here?
-        Collection<Logger> allLoggers = loggers.values();
-        boolean emptyName = name.length() == 0;
-        String namePrefix = name + '.';
-        for (final Logger child : allLoggers) {
-            Logger oldParent = child.getParent();
-            if (parent == oldParent
-                    && (emptyName || child.getName().startsWith(namePrefix))) {
-                final Logger thisLogger = logger;
-                AccessController.doPrivileged(new PrivilegedAction<Object>() {
+        final boolean isNameEmpty = (name.length() == 0);
+        final Logger thisLogger = logger;
+        final String namePrefix = isNameEmpty ? "" : name + '.';
+        /*
+         * find only children under the current parent (others can
+         * not be children of the new logger)
+         */
+        if (parent == null) {
+            // parent is root, need to check all loggers to find children.
+            final Collection<Logger> allLoggers = loggers.values();
+            AccessController
+                    .doPrivileged(new PrivilegedAction<Object>() {
+                        public Object run() {
+                            for (final Logger child : allLoggers) {
+                                if (null == child.getParent()
+                                        && (child.getName().startsWith(namePrefix))) {
+                                    child.setParent(thisLogger);
+                                }
+                            }
+                            return null;
+                        }
+            });
+        } else {
+            final List<Logger> childs = parent.children;
+            final Logger oldParent = parent;
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
                     public Object run() {
-                        child.setParent(thisLogger);
+                        final List toBeRemoved = new LinkedList();
+                        for (final Logger element : childs) {
+                            final String elementName = element.getName();
+                            if (elementName != null && elementName.startsWith(namePrefix)) {
+                                element.setParent(thisLogger);
+                                toBeRemoved.add(element);
+                            }
+                        }
+                        // remove child as the parent has been changed
+                        oldParent.children.removeAll(toBeRemoved);
                         return null;
                     }
                 });
-                if (null != oldParent) {
-                    // -- remove from old parent as the parent has been changed
-                    oldParent.children.remove(child);
-                }
-            }
         }
     }
 

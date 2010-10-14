@@ -267,21 +267,18 @@ public final class String implements Serializable, Comparable<String>,
      */
     @Deprecated
     public String(byte[] data, int high, int start, int length) {
-        if (data != null) {
-            // start + length could overflow, start/length maybe MaxInt
-            if (start >= 0 && 0 <= length && length <= data.length - start) {
-                offset = 0;
-                value = new char[length];
-                count = length;
-                high <<= 8;
-                for (int i = 0; i < count; i++) {
-                    value[i] = (char) (high + (data[start++] & 0xff));
-                }
-            } else {
-                throw new StringIndexOutOfBoundsException();
+        // putting the data.length check first forces the NPE
+        // start + length could overflow, start/length maybe MaxInt
+        if (length <= data.length - start && start >= 0 && 0 <= length) {
+            offset = 0;
+            value = new char[length];
+            count = length;
+            high <<= 8;
+            for (int i = 0; i < count; i++) {
+                value[i] = (char) (high + (data[start++] & 0xff));
             }
         } else {
-            throw new NullPointerException();
+            throw new StringIndexOutOfBoundsException();
         }
     }
 
@@ -495,11 +492,7 @@ public final class String implements Serializable, Comparable<String>,
      */
     public String(int[] codePoints, int offset, int count) {
         super();
-        if (codePoints == null) {
-            throw new NullPointerException();
-        }
-        if (offset < 0 || count < 0
-                || (long) offset + (long) count > codePoints.length) {
+        if (offset < 0 || count < 0 || offset > codePoints.length - count) {
             throw new IndexOutOfBoundsException();
         }
         this.offset = 0;
@@ -523,9 +516,6 @@ public final class String implements Serializable, Comparable<String>,
      * @since 1.5
      */
     public String(StringBuilder sb) {
-        if (sb == null) {
-            throw new NullPointerException();
-        }
         this.offset = 0;
         this.count = sb.length();
         this.value = new char[this.count];
@@ -1226,10 +1216,7 @@ public final class String implements Serializable, Comparable<String>,
      */
     public boolean regionMatches(int thisStart, String string, int start,
             int length) {
-        if (string == null) {
-            throw new NullPointerException();
-        }
-        if (start < 0 || string.count - start < length) {
+        if (string.count - start < length || start < 0) {
             return false;
         }
         if (thisStart < 0 || count - thisStart < length) {
@@ -1728,10 +1715,6 @@ public final class String implements Serializable, Comparable<String>,
      * @since 1.5
      */
     public boolean contentEquals(CharSequence cs) {
-        if (cs == null) {
-            throw new NullPointerException();
-        }
-
         int len = cs.length();
 
         if (len != count) {
@@ -1940,9 +1923,6 @@ public final class String implements Serializable, Comparable<String>,
      * @since 1.5
      */
     public boolean contains(CharSequence cs) {
-        if (cs == null) {
-            throw new NullPointerException();
-        }
         return indexOf(cs.toString()) >= 0;
     }
 

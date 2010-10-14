@@ -36,6 +36,7 @@ import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import tests.support.Support_Exec;
 
 public class InstrumentTestHelper {
     private Manifest manifest;
@@ -52,9 +53,9 @@ public class InstrumentTestHelper {
 
     private List<String> classpath = new ArrayList<String>();
 
-    private StringBuilder stdOut = new StringBuilder();
+    private String stdOut;
 
-    private StringBuilder stdErr = new StringBuilder();
+    private String stdErr;
 
     private int exitCode;
 
@@ -148,40 +149,11 @@ public class InstrumentTestHelper {
     }
 
     private void runAgentTest() throws IOException, InterruptedException {
-        String[] args = new String[2];
-        args[0] = "-javaagent:" + commandAgent;
-        if (commandAgentOptions != null
-                && commandAgentOptions.trim().length() != 0) {
-            args[0] += "=" + commandAgentOptions;
-        }
-
-        args[1] = mainClass.getName();
-
-        Process process = execJava(args, getClasspath());
-        process.waitFor();
-
-        exitCode = process.exitValue();
-    }
-
-    private Process execJava(String[] args, String[] classpath)
-            throws IOException {
-        // this function returns the resulting process from the exec
-        StringBuilder command;
-        String testVMArgs;
-        StringTokenizer st;
-
-        List<String> execArgs = new ArrayList<String>(3 + args.length);
-
-        // construct the name of executable file
-        String executable = System.getProperty("java.home");
-        if (!executable.endsWith(File.separator)) {
-            executable += File.separator;
-        }
-        executable += "bin" + File.separator + "java";
-        execArgs.add(executable);
+        List<String> execArgs = new ArrayList<String>(4);
 
         // add classpath string
         StringBuilder classPathString = new StringBuilder();
+        String[] classpath = getClasspath();
         if (classpath != null && classpath.length > 0) {
             boolean isFirst = true;
             for (String element : classpath) {
@@ -199,67 +171,17 @@ public class InstrumentTestHelper {
             execArgs.add(classPathString.toString());
         }
 
-        // parse hy.test.vmargs if was given
-        testVMArgs = System.getProperty("hy.test.vmargs");
-        if (testVMArgs != null) {
-            st = new StringTokenizer(testVMArgs, " ");
-            while (st.hasMoreTokens()) {
-                execArgs.add(st.nextToken());
-            }
-        }
+        execArgs.add("-javaagent:" + commandAgent
+                     + ((commandAgentOptions != null
+                         && commandAgentOptions.trim().length() != 0)
+                        ? "=" + commandAgentOptions
+                        : ""));
+        execArgs.add(mainClass.getName());
 
-        // add custom args given as parameter
-        for (String arg : args) {
-            execArgs.add(arg);
-        }
-
-        // construct command line string and print it to stdout
-        command = new StringBuilder(execArgs.get(0));
-        for (int i = 1; i < execArgs.size(); i++) {
-            command.append(" ");
-            command.append(execArgs.get(i));
-        }
-        System.out.println("Exec: " + command.toString());
-        System.out.println();
-
-        // execute java process
-        final Process proc = Runtime.getRuntime().exec(
-                execArgs.toArray(new String[execArgs.size()]));
-
-        final String lineSeparator = System.getProperty("line.separator");
-        Thread errReader = new Thread(new Runnable() {
-            public void run() {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(proc.getErrorStream()));
-                String line = null;
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        stdErr.append(line).append(lineSeparator);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        errReader.start();
-
-        Thread outReader = new Thread(new Runnable() {
-            public void run() {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(proc.getInputStream()));
-                String line = null;
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        stdOut.append(line).append(lineSeparator);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        outReader.start();
-
-        return proc;
+        Object[] res = Support_Exec.runJava(execArgs, null, false);
+        exitCode = ((Integer)res[0]).intValue();
+        stdOut = (String)res[1];
+        stdErr = (String)res[2];
     }
 
     private void generateJars() throws FileNotFoundException, IOException,
@@ -308,11 +230,11 @@ public class InstrumentTestHelper {
     }
 
     public String getStdOut() {
-        return stdOut.toString();
+        return stdOut;
     }
 
     public String getStdErr() {
-        return stdErr.toString();
+        return stdErr;
     }
 
     public String[] getClasspath() {

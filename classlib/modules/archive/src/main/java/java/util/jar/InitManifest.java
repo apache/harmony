@@ -186,6 +186,7 @@ class InitManifest {
                 if (linebreak == 1) {
                     decode(mark, last, false);
                     mark = pos;
+                    last = mark;
                     linebreak = 0;
                     continue;
                 }
