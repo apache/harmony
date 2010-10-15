@@ -36,10 +36,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import junit.framework.TestCase;
 
@@ -1125,4 +1138,781 @@ public class XMLEncoderTest extends TestCase {
         return ((0x0000 <= c && c < 0x0009) || (0x000a < c && c < 0x000d)
                 || (0x000d < c && c < 0x0020) || (0xd7ff < c && c < 0xe000) || c == 0xfffe);
     }
+
+    public static class MockUnmodifiableCollection {
+
+        private Collection<String> property = new ArrayList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.unmodifiableCollection(property);
+        }
+
+        public void setProperty(Collection<String> set) {
+            property.clear();
+            property.addAll(set);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableCollection() throws Exception {
+        MockUnmodifiableCollection mockCollections = new MockUnmodifiableCollection();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableCollection",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockUnmodifiableCollection.xml");
+    }
+
+    public static class MockUnmodifiableList {
+
+        private List<String> property = new LinkedList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.unmodifiableList(property);
+        }
+
+        public void setProperty(Collection<String> set) {
+            property.clear();
+            property.addAll(set);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableList() throws Exception {
+        MockUnmodifiableList mockCollections = new MockUnmodifiableList();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableList",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockUnmodifiableList.xml");
+    }
+
+    public static class MockUnmodifiableRandomAccessList {
+
+        private List<String> property = new ArrayList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.unmodifiableList(property);
+        }
+
+        public void setProperty(Collection<String> set) {
+            property.clear();
+            property.addAll(set);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableRandomAccessList()
+            throws Exception {
+        MockUnmodifiableRandomAccessList mockCollections = new MockUnmodifiableRandomAccessList();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableRandomAccessList",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections,
+                "/xml/MockUnmodifiableRandomAccessList.xml");
+    }
+
+    public static class MockUnmodifiableSet {
+
+        private Set<String> property = new HashSet<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.unmodifiableSet(property);
+        }
+
+        public void setProperty(Collection<String> set) {
+            property.clear();
+            property.addAll(set);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableSet() throws Exception {
+        MockUnmodifiableSet mockCollections = new MockUnmodifiableSet();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableSet",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Set<String> prop = new HashSet<String>();
+        prop.add("A");
+        prop.add("B");
+        prop.add("C");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockUnmodifiableSet.xml");
+    }
+
+    public static class MockUnmodifiableSortedSet {
+
+        private SortedSet<String> property = new TreeSet<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.unmodifiableSortedSet(property);
+        }
+
+        public void setProperty(Collection<String> set) {
+            property.clear();
+            property.addAll(set);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableSortedSet() throws Exception {
+        MockUnmodifiableSortedSet mockCollections = new MockUnmodifiableSortedSet();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableSortedSet",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Set<String> prop = new HashSet<String>();
+        prop.add("A");
+        prop.add("B");
+        prop.add("C");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockUnmodifiableSortedSet.xml");
+    }
+
+    public static class MockUnmodifiableMap {
+
+        private Map<String, String> property = new HashMap<String, String>();
+
+        public Map<String, String> getProperty() {
+            return Collections.unmodifiableMap(property);
+        }
+
+        public void setProperty(Map<String, String> prop) {
+            property.clear();
+            property.putAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableMap() throws Exception {
+        MockUnmodifiableMap mockCollections = new MockUnmodifiableMap();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableMap",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Map<String, String> prop = new HashMap<String, String>();
+        prop.put("A", "a");
+        prop.put("B", "b");
+        prop.put("C", "c");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockUnmodifiableMap.xml");
+    }
+
+    public static class MockUnmodifiableSortedMap {
+
+        private SortedMap<String, String> property = new TreeMap<String, String>();
+
+        public Map<String, String> getProperty() {
+            return Collections.unmodifiableSortedMap(property);
+        }
+
+        public void setProperty(Map<String, String> prop) {
+            property.clear();
+            property.putAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockUnmodifiableSortedMap() throws Exception {
+        MockUnmodifiableSortedMap mockCollections = new MockUnmodifiableSortedMap();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$UnmodifiableSortedMap",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Map<String, String> prop = new HashMap<String, String>();
+        prop.put("A", "a");
+        prop.put("B", "b");
+        prop.put("C", "c");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockUnmodifiableSortedMap.xml");
+    }
+
+    public static class MockSynchronizedCollection {
+
+        private Collection<String> property = new ArrayList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.synchronizedCollection(property);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedCollection() throws Exception {
+        MockSynchronizedCollection mockCollections = new MockSynchronizedCollection();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedCollection",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockSynchronizedCollection.xml");
+    }
+
+    public static class MockSynchronizedList {
+
+        private List<String> property = new LinkedList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.synchronizedList(property);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedList() throws Exception {
+        MockSynchronizedList mockCollections = new MockSynchronizedList();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedList",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockSynchronizedList.xml");
+    }
+
+    public static class MockSynchronizedRandomAccessList {
+
+        private List<String> property = new ArrayList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.synchronizedList(property);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedRandomAccessList()
+            throws Exception {
+        MockSynchronizedRandomAccessList mockCollections = new MockSynchronizedRandomAccessList();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedRandomAccessList",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections,
+                "/xml/MockSynchronizedRandomAccessList.xml");
+    }
+
+    public static class MockSynchronizedSet {
+
+        private Set<String> property = new HashSet<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.synchronizedSet(property);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedSet() throws Exception {
+        MockSynchronizedSet mockCollections = new MockSynchronizedSet();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedSet",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockSynchronizedSet.xml");
+    }
+
+    public static class MockSynchronizedSortedSet {
+
+        private SortedSet<String> property = new TreeSet<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.synchronizedSortedSet(property);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedSortedSet() throws Exception {
+        MockSynchronizedSortedSet mockCollections = new MockSynchronizedSortedSet();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedSortedSet",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockSynchronizedSortedSet.xml");
+    }
+
+    public static class MockSynchronizedMap {
+
+        private Map<String, String> property = new HashMap<String, String>();
+
+        public Map<String, String> getProperty() {
+            return Collections.synchronizedMap(property);
+        }
+
+        public void setProperty(Map<String, String> prop) {
+            property.clear();
+            property.putAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedMap() throws Exception {
+        MockSynchronizedMap mockCollections = new MockSynchronizedMap();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedMap",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Map<String, String> prop = new HashMap<String, String>();
+        prop.put("A", "a");
+        prop.put("B", "b");
+        prop.put("C", "c");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockSynchronizedMap.xml");
+    }
+
+    public static class MockSynchronizedSortedMap {
+
+        private SortedMap<String, String> property = new TreeMap<String, String>();
+
+        public Map<String, String> getProperty() {
+            return Collections.synchronizedSortedMap(property);
+        }
+
+        public void setProperty(Map<String, String> prop) {
+            property.clear();
+            property.putAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockSynchronizedSortedMap() throws Exception {
+        MockSynchronizedSortedMap mockCollections = new MockSynchronizedSortedMap();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$SynchronizedSortedMap",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Map<String, String> prop = new HashMap<String, String>();
+        prop.put("A", "a");
+        prop.put("B", "b");
+        prop.put("C", "c");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockSynchronizedSortedMap.xml");
+    }
+
+    public static class MockCheckedCollection {
+
+        private Collection<String> property = new ArrayList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.checkedCollection(property, String.class);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedCollection() throws Exception {
+        MockCheckedCollection mockCollections = new MockCheckedCollection();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedCollection",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockCheckedCollection.xml");
+    }
+
+    public static class MockCheckedList {
+
+        private List<String> property = new LinkedList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.checkedList(property, String.class);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedList() throws Exception {
+        MockCheckedList mockCollections = new MockCheckedList();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedList",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockCheckedList.xml");
+    }
+
+    public static class MockCheckedRandomAccessList {
+
+        private List<String> property = new ArrayList<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.checkedList(property, String.class);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedRandomAccessList() throws Exception {
+        MockCheckedRandomAccessList mockCollections = new MockCheckedRandomAccessList();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedRandomAccessList",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockCheckedRandomAccessList.xml");
+    }
+
+    public static class MockCheckedSet {
+
+        private Set<String> property = new HashSet<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.checkedSet(property, String.class);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedSet() throws Exception {
+        MockCheckedSet mockCollections = new MockCheckedSet();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedSet",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockCheckedSet.xml");
+    }
+
+    public static class MockCheckedSortedSet {
+
+        private SortedSet<String> property = new TreeSet<String>();
+
+        public Collection<String> getProperty() {
+            return Collections.checkedSortedSet(property, String.class);
+        }
+
+        public void setProperty(Collection<String> prop) {
+            property.clear();
+            property.addAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedSortedSet() throws Exception {
+        MockCheckedSortedSet mockCollections = new MockCheckedSortedSet();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedSortedSet",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        mockCollections.setProperty(Arrays
+                .asList(new String[] { "A", "B", "C" }));
+        assertCodedXML(mockCollections, "/xml/MockCheckedSortedSet.xml");
+    }
+
+    public static class MockCheckedMap {
+
+        private Map<String, String> property = new HashMap<String, String>();
+
+        public Map<String, String> getProperty() {
+            return Collections.checkedMap(property, String.class, String.class);
+        }
+
+        public void setProperty(Map<String, String> prop) {
+            property.clear();
+            property.putAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedMap() throws Exception {
+        MockCheckedMap mockCollections = new MockCheckedMap();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedMap",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Map<String, String> prop = new HashMap<String, String>();
+        prop.put("A", "a");
+        prop.put("B", "b");
+        prop.put("C", "c");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockCheckedMap.xml");
+    }
+
+    public static class MockCheckedSortedMap {
+
+        private SortedMap<String, String> property = new TreeMap<String, String>();
+
+        public Map<String, String> getProperty() {
+            return Collections.checkedSortedMap(property, String.class,
+                    String.class);
+        }
+
+        public void setProperty(Map<String, String> prop) {
+            property.clear();
+            property.putAll(prop);
+        }
+    }
+
+    public void testWriteObject_MockCheckedSortedMap() throws Exception {
+        MockCheckedSortedMap mockCollections = new MockCheckedSortedMap();
+        Class<?> propertyClass = mockCollections.getProperty().getClass();
+        assertEquals("java.util.Collections$CheckedSortedMap",
+                propertyClass.getName());
+        assertSamePD(propertyClass);
+        Map<String, String> prop = new HashMap<String, String>();
+        prop.put("A", "a");
+        prop.put("B", "b");
+        prop.put("C", "c");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockCheckedSortedMap.xml");
+    }
+
+    public static class MockGetPropertyClass {
+
+        private Set<String> property = new HashSet<String>();
+
+        public Set<String> getProperty() {
+            return new HashSet<String>(property);
+        }
+
+        public void setProperty(Set<String> set) {
+            property.clear();
+            property.addAll(set);
+        }
+    }
+
+    public void testWriteObject_MockGetPropertyClass() throws Exception {
+        MockGetPropertyClass mockCollections = new MockGetPropertyClass();
+        assertSamePD(mockCollections.getProperty().getClass());
+        Set<String> prop = new HashSet<String>();
+        prop.add("A");
+        prop.add("B");
+        prop.add("C");
+        mockCollections.setProperty(prop);
+        assertCodedXML(mockCollections, "/xml/MockGetPropertyClass.xml");
+    }
+
+    public static class MockListImplements implements List<String> {
+
+        private List<String> property = new ArrayList<String>();
+
+        public List<String> getProperty() {
+            return property;
+        }
+
+        public void setProperty(List<String> prop) {
+            property = prop;
+        }
+
+        public boolean add(String o) {
+            return property.add(o);
+        }
+
+        public void add(int index, String o) {
+            property.add(index, o);
+        }
+
+        public boolean addAll(Collection<? extends String> c) {
+            return property.addAll(c);
+        }
+
+        public boolean addAll(int index, Collection<? extends String> c) {
+            return property.addAll(index, c);
+        }
+
+        public void clear() {
+            property.clear();
+        }
+
+        public boolean contains(Object o) {
+            return property.contains(o);
+        }
+
+        public boolean containsAll(Collection<?> c) {
+            return property.containsAll(c);
+        }
+
+        public String get(int index) {
+            return property.get(index);
+        }
+
+        public int indexOf(Object o) {
+            return property.indexOf(o);
+        }
+
+        public boolean isEmpty() {
+            return property.isEmpty();
+        }
+
+        public Iterator<String> iterator() {
+            return property.iterator();
+        }
+
+        public int lastIndexOf(Object o) {
+            return property.lastIndexOf(o);
+        }
+
+        public ListIterator<String> listIterator() {
+            return property.listIterator();
+        }
+
+        public ListIterator<String> listIterator(int index) {
+            return property.listIterator(index);
+        }
+
+        public boolean remove(Object o) {
+            return property.remove(o);
+        }
+
+        public String remove(int index) {
+            return property.remove(index);
+        }
+
+        public boolean removeAll(Collection<?> c) {
+            return property.removeAll(c);
+        }
+
+        public boolean retainAll(Collection<?> c) {
+            return property.retainAll(c);
+        }
+
+        public String set(int index, String o) {
+            return property.set(index, o);
+        }
+
+        public int size() {
+            return property.size();
+        }
+
+        public List<String> subList(int fromIndex, int toIndex) {
+            return property.subList(fromIndex, toIndex);
+        }
+
+        public Object[] toArray() {
+            return property.toArray();
+        }
+
+        public <T> T[] toArray(T[] a) {
+            return property.toArray(a);
+        }
+    }
+
+    public void testWriteObject_MockListImplements() throws Exception {
+        List<String> mockListImplements = new MockListImplements();
+        mockListImplements.add("A");
+        assertCodedXML(mockListImplements, "/xml/MockListImplements.xml");
+    }
+
+    public static class MockSetImplements implements Set<String> {
+
+        private Set<String> property;
+
+        public MockSetImplements() {
+            property = new HashSet<String>();
+        }
+
+        public Set<String> getProperty() {
+            return property;
+        }
+
+        public void setProperty(Set<String> prop) {
+            property = prop;
+        }
+
+        public boolean add(String o) {
+            return property.add(o);
+        }
+
+        public void clear() {
+            property.clear();
+        }
+
+        public boolean contains(final Object o) {
+            return property.contains(o);
+        }
+
+        public boolean containsAll(final Collection<?> c) {
+            return property.containsAll(c);
+        }
+
+        public boolean isEmpty() {
+            return property.isEmpty();
+        }
+
+        public Iterator<String> iterator() {
+            return property.iterator();
+        }
+
+        public boolean remove(final Object o) {
+            return property.remove(o);
+        }
+
+        public boolean removeAll(final Collection<?> c) {
+            return property.removeAll(c);
+        }
+
+        public boolean retainAll(final Collection<?> c) {
+            return property.retainAll(c);
+        }
+
+        public int size() {
+            return property.size();
+        }
+
+        public Object[] toArray() {
+            return property.toArray();
+        }
+
+        public <T> T[] toArray(final T[] a) {
+            return property.toArray(a);
+        }
+
+        public int hashCode() {
+            return property.hashCode();
+        }
+
+        public boolean addAll(Collection<? extends String> c) {
+            return property.addAll(c);
+        }
+    }
+
+    public void testWriteObject_MockSetImplements() throws Exception {
+        Set<String> mockSetImplements = new MockSetImplements();
+        mockSetImplements.add("A");
+        assertCodedXML(mockSetImplements, "/xml/MockSetImplements.xml");
+    }
+
+    private Encoder encoder = new Encoder();
+
+    private void assertSamePD(Class<?> clazz) {
+        assertSame(encoder.getPersistenceDelegate(clazz),
+                encoder.getPersistenceDelegate(clazz));
+    }
+
 }
