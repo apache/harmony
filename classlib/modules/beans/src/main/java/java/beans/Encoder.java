@@ -198,14 +198,14 @@ public class Encoder {
             isInitilizedSwing = true;
         }
 
+        if (java.lang.Enum.class.isAssignableFrom(type)) {
+            return langEnumPD;
+        }
+
         // registered delegate
         PersistenceDelegate registeredPD = delegates.get(type);
         if (registeredPD != null) {
             return registeredPD;
-        }
-
-        if (java.lang.Enum.class.isAssignableFrom(type)) {
-            return langEnumPD;
         }
 
         if (java.util.List.class.isAssignableFrom(type)) {

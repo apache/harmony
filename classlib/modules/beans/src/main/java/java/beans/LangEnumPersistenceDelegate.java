@@ -25,4 +25,9 @@ class LangEnumPersistenceDelegate extends PersistenceDelegate {
                 new Object[] { oldEnum.name() });
     }
 
+    @Override
+    protected boolean mutatesTo(Object oldObject, Object newObject) {
+        return oldObject == newObject;
+    }
+
 }

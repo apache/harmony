@@ -349,6 +349,33 @@ public class XMLEncoderTest extends TestCase {
         assertCodedXML(mockEnumObject, "/xml/MockEnumObject.xml");
     }
 
+    public static class Mock2EnumObject {
+
+        Element element = Element.ELEMENTA;
+
+        public Element getElement() {
+            return element;
+        }
+
+        public void setElement(Element element) {
+            this.element = element;
+        }
+    }
+
+    public static class ElementPersistenceDelegate extends
+            DefaultPersistenceDelegate {
+    }
+
+    public void testWriteObject_2EnumObject() throws Exception {
+        Mock2EnumObject mockEnumObject = new Mock2EnumObject();
+        Encoder encoder = new Encoder();
+        encoder.setPersistenceDelegate(Element.class,
+                new ElementPersistenceDelegate());
+        assertFalse(encoder.getPersistenceDelegate(Element.class) instanceof ElementPersistenceDelegate);
+        mockEnumObject.setElement(Element.ELEMENTB);
+        assertCodedXML(mockEnumObject, "/xml/Mock2EnumObject.xml");
+    }
+
     public void testClose() {
         ByteArrayOutputStream out = new ByteArrayOutputStream() {
             boolean closeCalled = false;
