@@ -219,7 +219,13 @@ public class XMLEncoder extends Encoder {
         } else if (obj instanceof Byte) {
             out.println("<byte>" + obj + "</byte> ");
         } else if (obj instanceof Character) {
-            out.println("<char>" + obj + "</char> ");
+            char objChar = ((Character) obj).charValue();
+            if (invalidCharacter(objChar)) {
+                out.println("<char code=\"#" + Integer.toString(objChar, 16)
+                        + "\"/>");
+            } else {
+                out.println("<char>" + objChar + "</char> ");
+            }
         } else if (obj instanceof Double) {
             out.println("<double>" + obj + "</double> ");
         } else if (obj instanceof Float) {
@@ -234,6 +240,11 @@ public class XMLEncoder extends Encoder {
             getExceptionListener().exceptionThrown(
                     new Exception(Messages.getString("beans.73", obj)));
         }
+    }
+
+    private boolean invalidCharacter(char c) {
+        return ((0x0000 <= c && c < 0x0009) || (0x000a < c && c < 0x000d)
+                || (0x000d < c && c < 0x0020) || (0xd7ff < c && c < 0xe000) || c == 0xfffe);
     }
 
     @SuppressWarnings("nls")
@@ -612,7 +623,12 @@ public class XMLEncoder extends Encoder {
             } else if (c == '"') {
                 out.print("&quot;");
             } else {
-                out.print(c);
+                if (invalidCharacter(c)) {
+                    out.print("<char code=\"#" + Integer.toString(c, 16)
+                            + "\"/>");
+                } else {
+                    out.print(c);
+                }
             }
         }
     }
