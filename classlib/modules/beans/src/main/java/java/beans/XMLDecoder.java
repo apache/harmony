@@ -111,6 +111,7 @@ public class XMLDecoder {
             elem.isExpression = true;
             elem.id = attributes.getValue("id");
             elem.idref = attributes.getValue("idref");
+            elem.attributes = attributes;
             if (elem.idref == null) {
                 obtainTarget(elem, attributes);
                 obtainMethod(elem, attributes);
@@ -201,6 +202,7 @@ public class XMLDecoder {
             Elem elem = new Elem();
             elem.isExpression = true;
             elem.id = attributes.getValue("id"); //$NON-NLS-1$
+            elem.attributes = attributes;
             try {
                 // find component class
                 Class<?> compClass = classForName(attributes.getValue("class")); //$NON-NLS-1$
@@ -230,6 +232,7 @@ public class XMLDecoder {
         private void startVoidElem(Attributes attributes) {
             Elem elem = new Elem();
             elem.id = attributes.getValue("id");
+            elem.attributes = attributes;
             obtainTarget(elem, attributes);
             obtainMethod(elem, attributes);
             readObjs.push(elem);
@@ -242,6 +245,7 @@ public class XMLDecoder {
             elem.isExpression = true;
             elem.id = attributes.getValue("id");
             elem.idref = attributes.getValue("idref");
+            elem.attributes = attributes;
             elem.target = tagName;
             readObjs.push(elem);
         }
@@ -258,6 +262,21 @@ public class XMLDecoder {
             }
             // find the elem to close
             Elem toClose = latestUnclosedElem();
+            if ("string".equals(toClose.target)) {
+                StringBuilder sb = new StringBuilder();
+                for (int index = readObjs.size() - 1; index >= 0; index--) {
+                    Elem elem = (Elem) readObjs.get(index);
+                    if (toClose == elem) {
+                        break;
+                    }
+                    if ("char".equals(elem.target)) {
+                        sb.insert(0, elem.methodName);
+                    }
+                }
+                toClose.methodName = toClose.methodName != null ? toClose.methodName
+                        + sb.toString()
+                        : sb.toString();
+            }
             // make sure it is executed
             execute(toClose);
             // set to closed
@@ -465,6 +484,15 @@ public class XMLDecoder {
             } else if ("byte".equals(tag)) {
                 return Byte.valueOf(value);
             } else if ("char".equals(tag)) {
+                if (value == null && elem.attributes != null) {
+                    String codeAttr = elem.attributes.getValue("code");
+                    if (codeAttr != null) {
+                        Character character = new Character((char) Integer
+                                .valueOf(codeAttr.substring(1), 16).intValue());
+                        elem.methodName = character.toString();
+                        return character;
+                    }
+                }
                 return Character.valueOf(value.charAt(0));
             } else if ("double".equals(tag)) {
                 return Double.valueOf(value);
@@ -521,6 +549,8 @@ public class XMLDecoder {
         boolean fromField;
 
         boolean fromOwner;
+
+        Attributes attributes;
 
         Object result;
 

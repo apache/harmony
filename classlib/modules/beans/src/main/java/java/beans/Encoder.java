@@ -71,6 +71,8 @@ public class Encoder {
 
     private static final DefaultPersistenceDelegate defaultPD = new DefaultPersistenceDelegate();
 
+    private static final UtilCollectionsPersistenceDelegate utilCollectionsPD = new UtilCollectionsPersistenceDelegate();
+
     private static final ArrayPersistenceDelegate arrayPD = new ArrayPersistenceDelegate();
 
     private static final ProxyPersistenceDelegate proxyPD = new ProxyPersistenceDelegate();
@@ -136,6 +138,19 @@ public class Encoder {
         delegates.put(ScrollPane.class, new AwtScrollPanePersistenceDelegate());
 
         delegates.put(Date.class, new UtilDatePersistenceDelegate());
+
+        PersistenceDelegate pd = new UtilListPersistenceDelegate();
+        delegates.put(java.util.List.class, pd);
+        delegates.put(java.util.AbstractList.class, pd);
+
+        pd = new UtilCollectionPersistenceDelegate();
+        delegates.put(java.util.Collection.class, pd);
+        delegates.put(java.util.AbstractCollection.class, pd);
+
+        pd = new UtilMapPersistenceDelegate();
+        delegates.put(java.util.Map.class, pd);
+        delegates.put(java.util.AbstractMap.class, pd);
+        delegates.put(java.util.Hashtable.class, pd);
     }
 
     private ExceptionListener listener = defaultExListener;
@@ -221,16 +236,9 @@ public class Encoder {
             return registeredPD;
         }
 
-        if (java.util.List.class.isAssignableFrom(type)) {
-            return new UtilListPersistenceDelegate();
-        }
-
-        if (Collection.class.isAssignableFrom(type)) {
-            return new UtilCollectionPersistenceDelegate();
-        }
-
-        if (Map.class.isAssignableFrom(type)) {
-            return new UtilMapPersistenceDelegate();
+        if (type.getName().startsWith(
+                UtilCollectionsPersistenceDelegate.CLASS_PREFIX)) {
+            return utilCollectionsPD;
         }
 
         if (type.isArray()) {
