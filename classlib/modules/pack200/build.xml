@@ -19,10 +19,10 @@
 <project name="PACK200 Build" default="build" basedir=".">
     <description>Build for PACK200 component</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="pack200" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
     <property file="../../make/depends.properties" />
@@ -75,18 +75,18 @@
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
         <echo message="Compiling ${hy.module} classes" />
 
-        <mkdir dir="../../build/classes" />
+        <mkdir dir="${hy.build.top}/java" />
 
     	<!-- Ordinary classes -->
         <hy.javac sourcepath=""
                   srcdir="src/main/java"
-                  destdir="../../build/classes"
+                  destdir="${hy.build.top}/java"
                   source="1.4"
                   target="1.4">
 
@@ -140,7 +140,7 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
-            <fileset dir="bin/test" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
 
         <mkdir dir="${tests.excludes.hdk.dir}"/>
@@ -159,7 +159,7 @@
     </target>
 
     <target name="-compile-tests" unless="skip.test.build">
-        <mkdir dir="bin/test" />
+        <mkdir dir="${hy.build.mod}/test/api" />
 
         <mkdir dir="${hy.hdk}/build/test" />
         <copy file="${junit.jar}"
@@ -169,7 +169,7 @@
 
         <echo message="Compiling ${hy.module} tests" />
         <hy.javac srcdir="src/test/java"
-                  destdir="bin/test"
+                  destdir="${hy.build.mod}/test/api"
                   sourcepath=""
                   source="1.4" 
                   target="1.4">

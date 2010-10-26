@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/awt/native/linuxfont/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I/usr/X11R6/include -I/usr/include/freetype2 \
             -Iinclude -I../../fontlib/unix -I../../fontlib/shared # TOFIX move includes
@@ -33,4 +34,4 @@ OSLIBS += -lm $(XLIBS)
 DLLNAME=$(DLLPATH)liblinuxfont$(HY_SHLIB_SUFFIX)
 EXPNAME=HYLINUXFONT_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

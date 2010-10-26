@@ -17,12 +17,12 @@
 # Makefile for module 'vmls'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\luni\native\vmls\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBNAME=$(LIBPATH)hyvmls.lib
 
-BUILDFILES = \
-	$(SHAREDSUB)vmls.obj
+BUILDFILES = $(HY_BIN)vmls.obj
 
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB) /I..\..\include\shared /I..\..\include\windows
 

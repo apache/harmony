@@ -19,10 +19,10 @@
 <project name="LOGGING Build" default="build" basedir=".">
     <description>Build for LOGGING component</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="logging" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
     <property file="../../make/depends.properties" />
 
@@ -58,7 +58,7 @@
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
@@ -107,10 +107,10 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
-            <fileset dir="bin/test" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_boot_tests.jar">
-            <fileset dir="bin/test-internal" />
+            <fileset dir="${hy.build.mod}/test/internal" />
         </hy.jar.bin>
 
         <copy file="../../support/src/test/resources/config/testing.policy"
@@ -133,7 +133,7 @@
 
     <target name="-compile-tests" unless="skip.test.build">
         <compile-tests description="${hy.module} internal tests"
-                       destdir="bin/test-internal">
+                       destdir="${hy.build.mod}/test/internal">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/java-internal" />
@@ -143,7 +143,7 @@
         <compile-tests description="${hy.module} api tests">
             <javac-elements>
                 <bootclasspath>
-                    <pathelement path="bin/test-internal"/>
+                    <pathelement path="${hy.build.mod}/test/internal"/>
                 </bootclasspath>
                 <src>
                     <pathelement location="src/test/java" />

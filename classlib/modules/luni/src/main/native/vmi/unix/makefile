@@ -17,13 +17,14 @@
 # Makefile for module 'vmi stubs'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/luni/native/vmi/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = $(SHAREDSUB)vmi_copyright.o $(SHAREDSUB)vmi.o
+BUILDFILES = vmi_copyright.o vmi.o
 MDLLIBFILES =
 
-DLLNAME = ../libvmi$(HY_SHLIB_SUFFIX)
+DLLNAME = $(HY_BIN)libvmi$(HY_SHLIB_SUFFIX)
 EXPNAME = VMI_0.1
 HY_CAN_LINK_DEBUG=no
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

@@ -18,14 +18,16 @@
 
 <project name="verifier-ext" default="build" basedir="../..">
     
-    <property name="component" value="verifier-ext"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="verifier-ext"/>
     <property name="drlvm.verifier-ext.includes"
         value="${drlvm.deploy.dir}/include/verifier-ext"/> 
     <import file="common-vm.xml"/>
     
     <target name="build" depends="-common-vm">
         <mkdir dir="${drlvm.verifier-ext.includes}"/>
-        <copy todir="${drlvm.verifier-ext.includes}">
+        <copy todir="${drlvm.verifier-ext.includes}"
+              preservelastmodified="true">
             <fileset dir="${vm.home}/include">
                 <include name="open/common.h"/>
                 <include name="open/hycomp.h"/>

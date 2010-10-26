@@ -17,9 +17,10 @@
 # Makefile for module 'pool'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/portlib/native/pool/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = $(SHAREDSUB)pool.o $(SHAREDSUB)pool_cap.o
+BUILDFILES = pool.o pool_cap.o
 LIBNAME = $(LIBPATH)libhypool.a
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

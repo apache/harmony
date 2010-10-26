@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\awt\native\win32wrapper\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=Win32Wrapper
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -21,12 +22,12 @@ LIBNAME=$(LIBPATH)$(LIBBASE).lib
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-  Callback.obj \
-  org_apache_harmony_awt_nativebridge_windows_Win32.obj \
-  org_apache_harmony_awt_nativebridge_windows_WGL.obj \
-  WinDataTransfer.obj \
-  WinManagement.obj \
-  nativelib_common.obj
+  $(HY_BIN)Callback.obj \
+  $(HY_BIN)org_apache_harmony_awt_nativebridge_windows_Win32.obj \
+  $(HY_BIN)org_apache_harmony_awt_nativebridge_windows_WGL.obj \
+  $(HY_BIN)WinDataTransfer.obj \
+  $(HY_BIN)WinManagement.obj \
+  $(HY_BIN)nativelib_common.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib

@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\print\native\print\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=print
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -29,10 +30,8 @@ HYCFLAGS = \
   $(VMDEBUG) /I$(HY_HDK)\include /I$(HY_HDK)\jdk\include /I. \
   -I$(SHAREDSUB)\include
 
-BUILDFILES = print.obj \
-ui.obj \
-win_printer_factory.obj \
-devmode_struct_wrapper.obj
+BUILDFILES = $(HY_BIN)print.obj $(HY_BIN)ui.obj \
+  $(HY_BIN)win_printer_factory.obj $(HY_BIN)devmode_struct_wrapper.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib

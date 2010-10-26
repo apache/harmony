@@ -17,50 +17,62 @@
 # Makefile for module 'fdlibm'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\luni\native\fdlibm\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBNAME=$(LIBPATH)hyfdlibm.lib
 
-FDLIBM_DIST=..\..\fdlibm_dist\# Comment to stop line continuation
+OSS_DIST=$(HY_TARGET)\depends\native\fdlibm_dist\# Path to fdlibm
 
 BUILDFILES = \
-  $(FDLIBM_DIST)e_acos.obj $(FDLIBM_DIST)e_acosh.obj $(FDLIBM_DIST)e_asin.obj $(FDLIBM_DIST)e_atan2.obj \
-  $(FDLIBM_DIST)e_atanh.obj $(FDLIBM_DIST)e_cosh.obj $(FDLIBM_DIST)e_exp.obj $(FDLIBM_DIST)e_fmod.obj \
-  $(FDLIBM_DIST)e_gamma.obj $(FDLIBM_DIST)e_gamma_r.obj $(FDLIBM_DIST)e_hypot.obj $(FDLIBM_DIST)e_j0.obj \
-  $(FDLIBM_DIST)e_j1.obj $(FDLIBM_DIST)e_jn.obj $(FDLIBM_DIST)e_lgamma.obj $(FDLIBM_DIST)e_lgamma_r.obj \
-  $(FDLIBM_DIST)e_log.obj $(FDLIBM_DIST)e_log10.obj $(FDLIBM_DIST)e_pow.obj $(FDLIBM_DIST)e_rem_pio2.obj \
-  $(FDLIBM_DIST)e_remainder.obj $(FDLIBM_DIST)e_scalb.obj $(FDLIBM_DIST)e_sinh.obj $(FDLIBM_DIST)e_sqrt.obj \
-  $(FDLIBM_DIST)k_cos.obj $(FDLIBM_DIST)k_rem_pio2.obj $(FDLIBM_DIST)k_sin.obj $(FDLIBM_DIST)k_standard.obj \
-  $(FDLIBM_DIST)k_tan.obj $(FDLIBM_DIST)s_asinh.obj $(FDLIBM_DIST)s_atan.obj $(FDLIBM_DIST)s_cbrt.obj \
-  $(FDLIBM_DIST)s_ceil.obj $(FDLIBM_DIST)s_copysign.obj $(FDLIBM_DIST)s_cos.obj $(FDLIBM_DIST)s_erf.obj \
-  $(FDLIBM_DIST)s_expm1.obj $(FDLIBM_DIST)s_fabs.obj $(FDLIBM_DIST)s_finite.obj $(FDLIBM_DIST)s_floor.obj \
-  $(FDLIBM_DIST)s_frexp.obj $(FDLIBM_DIST)s_ilogb.obj $(FDLIBM_DIST)s_isnan.obj $(FDLIBM_DIST)s_ldexp.obj \
-  $(SHAREDSUB)s_lib_version.obj \
-  $(FDLIBM_DIST)s_log1p.obj $(FDLIBM_DIST)s_logb.obj $(FDLIBM_DIST)s_matherr.obj \
-  $(FDLIBM_DIST)s_modf.obj $(FDLIBM_DIST)s_nextafter.obj $(FDLIBM_DIST)s_rint.obj $(FDLIBM_DIST)s_scalbn.obj \
-  $(FDLIBM_DIST)s_signgam.obj $(FDLIBM_DIST)s_significand.obj $(FDLIBM_DIST)s_sin.obj $(FDLIBM_DIST)s_tan.obj \
-  $(FDLIBM_DIST)s_tanh.obj $(FDLIBM_DIST)w_acos.obj $(FDLIBM_DIST)w_acosh.obj $(FDLIBM_DIST)w_asin.obj \
-  $(FDLIBM_DIST)w_atan2.obj $(FDLIBM_DIST)w_atanh.obj $(FDLIBM_DIST)w_cosh.obj $(FDLIBM_DIST)w_exp.obj \
-  $(FDLIBM_DIST)w_fmod.obj $(FDLIBM_DIST)w_gamma.obj $(FDLIBM_DIST)w_gamma_r.obj $(FDLIBM_DIST)w_hypot.obj \
-  $(FDLIBM_DIST)w_j0.obj $(FDLIBM_DIST)w_j1.obj $(FDLIBM_DIST)w_jn.obj $(FDLIBM_DIST)w_lgamma.obj \
-  $(FDLIBM_DIST)w_lgamma_r.obj $(FDLIBM_DIST)w_log.obj $(FDLIBM_DIST)w_log10.obj $(FDLIBM_DIST)w_pow.obj \
-  $(FDLIBM_DIST)w_remainder.obj $(FDLIBM_DIST)w_scalb.obj $(FDLIBM_DIST)w_sinh.obj $(FDLIBM_DIST)w_sqrt.obj
+  $(HY_BIN)e_acos.obj $(HY_BIN)e_acosh.obj $(HY_BIN)e_asin.obj \
+  $(HY_BIN)e_atan2.obj $(HY_BIN)e_atanh.obj $(HY_BIN)e_cosh.obj \
+  $(HY_BIN)e_exp.obj $(HY_BIN)e_fmod.obj $(HY_BIN)e_gamma.obj \
+  $(HY_BIN)e_gamma_r.obj $(HY_BIN)e_hypot.obj $(HY_BIN)e_j0.obj \
+  $(HY_BIN)e_j1.obj $(HY_BIN)e_jn.obj $(HY_BIN)e_lgamma.obj \
+  $(HY_BIN)e_lgamma_r.obj $(HY_BIN)e_log.obj $(HY_BIN)e_log10.obj \
+  $(HY_BIN)e_pow.obj $(HY_BIN)e_rem_pio2.obj $(HY_BIN)e_remainder.obj \
+  $(HY_BIN)e_scalb.obj $(HY_BIN)e_sinh.obj $(HY_BIN)e_sqrt.obj \
+  $(HY_BIN)k_cos.obj $(HY_BIN)k_rem_pio2.obj $(HY_BIN)k_sin.obj \
+  $(HY_BIN)k_standard.obj $(HY_BIN)k_tan.obj $(HY_BIN)s_asinh.obj \
+  $(HY_BIN)s_atan.obj $(HY_BIN)s_cbrt.obj $(HY_BIN)s_ceil.obj \
+  $(HY_BIN)s_copysign.obj $(HY_BIN)s_cos.obj $(HY_BIN)s_erf.obj \
+  $(HY_BIN)s_expm1.obj $(HY_BIN)s_fabs.obj $(HY_BIN)s_finite.obj \
+  $(HY_BIN)s_floor.obj $(HY_BIN)s_frexp.obj $(HY_BIN)s_ilogb.obj \
+  $(HY_BIN)s_isnan.obj $(HY_BIN)s_ldexp.obj $(HY_BIN)s_lib_version.obj \
+  $(HY_BIN)s_log1p.obj $(HY_BIN)s_logb.obj $(HY_BIN)s_matherr.obj \
+  $(HY_BIN)s_modf.obj $(HY_BIN)s_nextafter.obj $(HY_BIN)s_rint.obj \
+  $(HY_BIN)s_scalbn.obj $(HY_BIN)s_signgam.obj $(HY_BIN)s_significand.obj \
+  $(HY_BIN)s_sin.obj $(HY_BIN)s_tan.obj $(HY_BIN)s_tanh.obj \
+  $(HY_BIN)w_acos.obj $(HY_BIN)w_acosh.obj $(HY_BIN)w_asin.obj \
+  $(HY_BIN)w_atan2.obj $(HY_BIN)w_atanh.obj $(HY_BIN)w_cosh.obj \
+  $(HY_BIN)w_exp.obj $(HY_BIN)w_fmod.obj $(HY_BIN)w_gamma.obj \
+  $(HY_BIN)w_gamma_r.obj $(HY_BIN)w_hypot.obj $(HY_BIN)w_j0.obj \
+  $(HY_BIN)w_j1.obj $(HY_BIN)w_jn.obj $(HY_BIN)w_lgamma.obj \
+  $(HY_BIN)w_lgamma_r.obj $(HY_BIN)w_log.obj $(HY_BIN)w_log10.obj \
+  $(HY_BIN)w_pow.obj $(HY_BIN)w_remainder.obj $(HY_BIN)w_scalb.obj \
+  $(HY_BIN)w_sinh.obj $(HY_BIN)w_sqrt.obj
 
 HYCFLAGS = -Oityb1 -W3 -Fd$(LIBPATH)hyfdlibm.pdb -D_IEEE_LIBM \
-	   /I$(SHAREDSUB) /I$(HY_HDK)\include /I$(HY_HDK)\jdk\include
+	   /I$(SHAREDSUB) /I$(HY_HDK)\include /I$(HY_HDK)\jdk\include \
+	   /I$(OSS_DIST)
 
-.c.obj:
-        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $*.c
+all: $(HY_BIN) $(LIBNAME)
 
-$(LIBPATH)$(LIBNAME): $(BUILDFILES)
-	@echo /NOLOGO -out:$(LIBNAME) >templrf
-	@echo $(BUILDFILES) >>templrf
-	$(implib) @templrf
-	@del templrf
+$(HY_BIN):
+	-mkdir $(HY_BIN)
+
+{$(OSS_DIST)}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(SHAREDSUB)}.c{$(HY_BIN)}.obj:
+	$(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+$(LIBNAME): $(BUILDFILES)
+	$(implib) /NOLOGO -out:$(LIBNAME) $(BUILDFILES)
 
 clean:
 	-del *.obj dist\*.obj
 	-del $(LIBNAME)
 	-del $(LIBPATH)hyfdlibm.pdb
         -del $(SHAREDSUB)*.obj
-

@@ -77,7 +77,8 @@
     </target>
     
     <target name="touch-failures-file" if="test.failed">
-        <copy file="${kernel.test.summary}" tofile="${base.test.dir}/kernel.test.failed">
+        <copy file="${kernel.test.summary}"
+              tofile="${base.test.dir}/kernel.test.failed">
             <filterchain>
                 <linecontains>
                     <contains value="FAILED"/>

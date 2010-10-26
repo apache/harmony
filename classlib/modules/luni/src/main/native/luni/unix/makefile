@@ -17,7 +17,8 @@
 # Makefile for module 'luni'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/luni/native/luni/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 # CFLAGS += -fpic -Wall -Werror 
 ifneq ($(HY_OS),zos)
@@ -27,25 +28,17 @@ endif
 endif
 
 BUILDFILES = \
-	$(SHAREDSUB)luni_copyright.o $(SHAREDSUB)file.o procimpl.o \
-	$(SHAREDSUB)nethelp.o \
-	$(SHAREDSUB)floatbits.o \
-	helpers.o $(SHAREDSUB)math.o $(SHAREDSUB)luniglob.o \
-	$(SHAREDSUB)proxy.o \
-	$(SHAREDSUB)cbigint.o $(SHAREDSUB)dblparse.o $(SHAREDSUB)fltparse.o \
-	$(SHAREDSUB)netif.o $(SHAREDSUB)process.o $(SHAREDSUB)bigint.o \
-	$(SHAREDSUB)osc.o $(SHAREDSUB)socket.o $(SHAREDSUB)inetadds.o \
-	$(SHAREDSUB)filedesc.o $(SHAREDSUB)timezone.o \
-	$(SHAREDSUB)OSFileSystem.o OSFileSystemLinux32.o \
-	$(SHAREDSUB)OSMemory.o OSMemoryLinux32.o $(SHAREDSUB)OSNetworkSystem.o \
-	OSNetworkSystemLinux.o hyenv.o 
+  luni_copyright.o file.o procimpl.o nethelp.o floatbits.o helpers.o math.o \
+  luniglob.o proxy.o cbigint.o dblparse.o fltparse.o netif.o process.o \
+  bigint.o osc.o socket.o inetadds.o filedesc.o timezone.o OSFileSystem.o \
+  OSFileSystemLinux32.o OSMemory.o OSMemoryLinux32.o OSNetworkSystem.o \
+  OSNetworkSystemLinux.o hyenv.o 
 
-MDLLIBFILES += $(LIBPATH)libhyfdlibm.a \
-	$(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
+MDLLIBFILES += $(LIBPATH)libhyfdlibm.a $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
 OSLIBS += -lm
 
 DLLNAME = $(DLLPATH)libhyluni$(HY_SHLIB_SUFFIX)
 EXPNAME = HYLUNI_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

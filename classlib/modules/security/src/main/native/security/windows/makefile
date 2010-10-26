@@ -17,12 +17,13 @@
 # Makefile for module 'security'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\security\native\security\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hysecurity
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
 LIBNAME=$(LIBPATH)$(LIBBASE).lib
-BUILDFILES = $(SHAREDSUB)security_copyright.obj getWindowsRandom.obj
+BUILDFILES = $(HY_BIN)security_copyright.obj $(HY_BIN)getWindowsRandom.obj
 VIRTFILES = $(LIBBASE).res
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 

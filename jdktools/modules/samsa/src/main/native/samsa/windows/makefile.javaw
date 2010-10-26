@@ -17,11 +17,13 @@
 # Makefile for javaw
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\jdktools\samsa\native\samsa\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
+SHAREDSUB=..\# trailing slash not continuation
 EXEBASE = samsaw
 EXENAME = $(LIBPATH)$(EXEBASE).exe
-BUILDFILES = javaw.obj ..\samsa.obj
+BUILDFILES = $(HY_BIN)javaw.obj $(HY_BIN)samsa.obj
 EXEFLAGS=$(conlflags) -subsystem:windows
 EXEDLLFILES=$(guilibsdll)
 

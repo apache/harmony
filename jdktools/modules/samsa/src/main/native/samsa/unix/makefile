@@ -17,9 +17,10 @@
 # Makefile for 'samsa'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/jdktools/samsa/native/samsa/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = ../samsa.o
+BUILDFILES = samsa.o
 
 EXENAME = $(LIBPATH)samsa
 
@@ -30,3 +31,7 @@ MDLLIBFILES =
 endif
 
 include $(HY_HDK)/build/make/rules.mk
+
+$(HY_BIN)%.o: ../%.c
+	@mkdir -p ${@D}
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

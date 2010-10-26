@@ -18,7 +18,8 @@
 
 <project name="verifier" default="build" basedir="../..">
     
-    <property name="component" value="verifier"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="verifier"/>
     <import file="common-vm.xml"/>
     
     <target name="build" depends="-common-vm">        

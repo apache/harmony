@@ -17,13 +17,15 @@
 # Makefile for module 'zip'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\archive\native\zip\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hyzip
 LIBNAME=$(LIBPATH)$(LIBBASE).lib
-BUILDFILES = $(SHAREDSUB)zcpool.obj $(SHAREDSUB)zipalloc.obj \
-	$(SHAREDSUB)zipcache.obj $(SHAREDSUB)zipsup.obj \
+BUILDFILES = $(HY_BIN)zcpool.obj $(HY_BIN)zipalloc.obj \
+	$(HY_BIN)zipcache.obj $(HY_BIN)zipsup.obj \
         $(LIBPATH)hypool$(HY_LINKLIB_SUFFIX)
-HYCFLAGS = $(HYCFLAGS) /I..\..\zlib_dist
+ZLIB_DIST = $(HY_TARGET)\depends\native\zlib_dist\# trailing slash
+HYCFLAGS = $(HYCFLAGS) /I$(ZLIB_DIST)
 
 !include <$(HY_HDK)\build\make\rules.mak>

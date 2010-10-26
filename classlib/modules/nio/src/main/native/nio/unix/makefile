@@ -17,10 +17,10 @@
 # Makefile for module 'nio'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/nio/native/nio/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = \
-	../shared/DirectBufferUtil.o ../shared/AddressUtil.o
+BUILDFILES = DirectBufferUtil.o AddressUtil.o
 ifeq ($(HY_OS),linux)
 BUILDFILES += EpollSelectorImpl.o
 endif
@@ -30,4 +30,4 @@ MDLLIBFILES = $(LIBPATH)libhycommon.a
 DLLNAME = $(DLLPATH)libhynio$(HY_SHLIB_SUFFIX)
 EXPNAME = HYNIO_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

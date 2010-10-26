@@ -19,10 +19,10 @@
 <project name="Samsa Build" default="build" basedir=".">
     <description>Build for samsa program</description>
 
+    <property name="hy.component" value="jdktools" />
     <property name="hy.module" value="samsa" />
-    <property name="hy.hdk" location="../../deploy" />
-    <import file="../../make/properties.xml" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
     <target name="build" depends="build-native,-test-jar"
             unless="skip.native.build"/>

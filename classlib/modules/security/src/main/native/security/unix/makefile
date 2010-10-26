@@ -17,14 +17,14 @@
 # Makefile for module 'security'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/security/native/security/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = \
-	$(SHAREDSUB)security_copyright.o getUnixSystemRandom.o
+BUILDFILES = security_copyright.o getUnixSystemRandom.o
 
 DLLNAME = $(DLLPATH)libhysecurity$(HY_SHLIB_SUFFIX)
 EXPNAME = HYSECURITY_0.1
 
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

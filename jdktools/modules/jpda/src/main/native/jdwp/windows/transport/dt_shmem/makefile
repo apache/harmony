@@ -17,7 +17,8 @@
 # Makefile for module jdwp - dt_shmem transport
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\jdktools\jpda\native\dt_shmem\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 COMMON=..\..\..\common\# comment to avoid \ being treated as continuation
 CMNTRANS=$(COMMON)transport\# comment to avoid \ being treated as continuation
@@ -35,9 +36,7 @@ HYCFLAGS = $(HYCFLAGS) $(INCLUDES) -GX -wd4290
 
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
-BUILDFILES = \
-    $(CMNTRANS)common\LastTransportError.obj \
-    SharedMemTransport.obj
+BUILDFILES = $(HY_BIN)LastTransportError.obj $(HY_BIN)SharedMemTransport.obj
 
 VIRTFILES = 
 
@@ -47,3 +46,11 @@ DLLBASE=0x13200000
 COMMENT=/comment:"JDWP shmem transport native code. (c) Copyright 2008 The Apache Software Foundation or its licensors, as applicable."
 
 !include <$(HY_HDK)\build\make\rules.mak>
+
+{$(CMNTRANS)common}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(CMNTRANS)dt_shmem}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<

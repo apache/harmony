@@ -17,14 +17,15 @@
 # Makefile for module 'vmi'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\luni\native\vmi\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=vmi
 LIBNAME=$(LIBPATH)$(LIBBASE).lib
 HYCFLAGS = $(HYCFLAGS) -DHYPORT_LIBRARY_DEFINE
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
-BUILDFILES = $(SHAREDSUB)vmi_copyright.obj $(SHAREDSUB)vmi.obj
+BUILDFILES = $(HY_BIN)vmi_copyright.obj $(HY_BIN)vmi.obj
 
 VIRTFILES = vmi.res
 

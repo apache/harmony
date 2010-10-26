@@ -21,9 +21,10 @@
 
     <description>Build for luni kernel stub jar</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="luni-kernel" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
     <property name="stub.jar"
               location="${hy.jdk}/jre/lib/boot/${hy.module}-stubs.jar" />

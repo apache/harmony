@@ -17,14 +17,14 @@
 # Makefile for module 'hyzip'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/luni/native/hyzip/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I../../include/shared
-BUILDFILES = $(SHAREDSUB)hyzip.o $(SHAREDSUB)zcpool.o $(SHAREDSUB)zipalloc.o \
-	$(SHAREDSUB)zipcache.o $(SHAREDSUB)zipsup.o pool.o pool_cap.o
+BUILDFILES = hyzip.o zcpool.o zipalloc.o zipcache.o zipsup.o pool.o pool_cap.o
 LIBNAME = $(LIBPATH)libhyzip.a
 
-%.o: $(LIBPATH)libhypool.a(%.o)
-	ar $(ARFLAGS) $(AREXTRACT) $(LIBPATH)libhypool.a $@
+$(HY_BIN)%.o: $(LIBPATH)libhypool.a(%.o)
+	( cd $(HY_BIN) && ar $(ARFLAGS) $(AREXTRACT) $(LIBPATH)libhypool.a $@ )
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

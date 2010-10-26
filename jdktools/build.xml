@@ -67,10 +67,22 @@ module:
 
     <property file="${user.home}/.harmony-jdktools.properties" />
     <property name="common.resources" location="../common_resources" />
-    <import file="make/properties.xml" />
+    <property name="hy.target" location="target" />
+    <property name="hy.component" value="jdktools" />
+    <property name="hy.module" value="toplevel" />
+    <fail message="Property 'hy.target' is not defined">
+        <condition>
+            <not><isset property="hy.target" /></not>
+        </condition>
+    </fail>
+    <fail message="Property 'common.resources' is not defined">
+        <condition>
+            <not><isset property="common.resources" /></not>
+        </condition>
+    </fail>
 
     <!-- import properties for snapshot targets -->
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
     <!-- ================================
 	 target : rebuild

@@ -32,6 +32,8 @@
     <property name="hy.select" value="false" />
 
     <property name="hy.hdk" location="${hy.target}/hdk" />
+    <property name="hy.component" location="federated" />
+    <property name="hy.module" location="toplevel" />
 
     <!-- property to identify when components are being built by the 
          federated build -->
@@ -43,7 +45,15 @@
     <!-- import some vm-specific properties -->
     <property file="${vm.dir.loc}/make/build.properties" />
 
-    <import file="common_resources/make/properties.xml" />
+    <property name="common.resources" location="common_resources" />
+
+    <mkdir dir="${hy.hdk}/build/ant" />
+    <copy todir="${hy.hdk}/build/ant" preservelastmodified="true">
+        <fileset dir="${common.resources}/make" includes="*.xml"/>
+    </copy>
+
+    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <init-hdk />
 
     <description>
         Apache Harmony project federation script
@@ -470,6 +480,8 @@ Usage:
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
         <!-- hack to make sure the federated build doesn't use the classlib
              LICENSE/NOTICE files as they don't cover ICU4C
@@ -487,6 +499,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -497,6 +511,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -507,6 +523,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -516,16 +534,20 @@ Usage:
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
             <property name="keep.working" value="true" />
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
     <target name="-init-classlib-hdk-for-clean">
-        <ant antfile="classlib/build.xml"
+ <!--       <ant antfile="classlib/build.xml"
              target="-init-hdk-for-clean" inheritAll="false" >
             <propertyset refid="required.props" />
             <property name="keep.working" value="true" />
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
-    </target>
+-->    </target>
 
     <target name="-init-hdk">
         <ant antfile="${vm.dir.loc}/build.xml"
@@ -533,6 +555,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -548,6 +572,8 @@ Usage:
             <property name="deploy.canonical.flag" value="false"/>
             <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
             <property name="import.hdk" value="false"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -556,6 +582,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -566,6 +594,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -576,6 +606,8 @@ Usage:
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -588,6 +620,8 @@ Usage:
             <property name="deploy.canonical.flag" value="false"/>
             <property name="drlvm.deploy.dir" location="${hy.hdk}"/>
             <property name="import.hdk" value="false"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -598,15 +632,17 @@ Usage:
             depends="init,-init-hdk,auto-fetch-depends-jdktools">
         <ant antfile="jdktools/build.xml" target="build" inheritall="false" >
             <propertyset refid="required.props" />
-            <property name="common.resources" location="common_resources" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
     <target name="auto-fetch-depends-jdktools" if="auto.fetch">
         <ant target="fetch-depends-jdktools" inheritall="false" >
             <propertyset refid="required.props" />
+            <property name="hy.target" location="${hy.target}"/>
             <property name="common.resources" location="common_resources" />
         </ant>
     </target>
@@ -616,6 +652,7 @@ Usage:
         <ant antfile="jdktools/build.xml" target="fetch-depends"
              inheritall="false" >
             <propertyset refid="required.props" />
+            <property name="hy.target" location="${hy.target}"/>
             <property name="common.resources" location="common_resources" />
         </ant>
     </target>
@@ -625,6 +662,7 @@ Usage:
         <ant antfile="jdktools/build.xml" target="check-depends"
              inheritall="false" >
             <propertyset refid="required.props" />
+            <property name="hy.target" location="${hy.target}"/>
             <property name="common.resources" location="common_resources" />
         </ant>
     </target>
@@ -632,9 +670,10 @@ Usage:
     <target name="clean-jdktools">
         <ant antfile="jdktools/build.xml" target="clean" inheritall="false" >
             <propertyset refid="required.props" />
-            <property name="common.resources" location="common_resources" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
         </ant>
     </target>
 
@@ -653,7 +692,16 @@ Usage:
                  clean-classlib,
                  clean-vm,
                  clean-tests" >
-        <delete dir="${hy.target}" failonerror="false" />
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${hy.target}">
+                <exclude name="depends/**" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="distclean">
+        <delete dir="${hy.target}"
+                includeemptydirs="true" failonerror="false" />
     </target>
 
     <!-- ============================================================== -->
@@ -799,9 +847,11 @@ harmony.java.version=${harmony.java.version}
             <propertyset refid="required.props" />
             <property name="svn.info" value="${harmony.long.version}"/>
             <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
             <property name="keep.working" value="true" />
-            <property name="tests.output" location="${hy.target}/test_report" />
-            <property name="test.jre.home" location="${hy.target}/hdk/jdk/jre" />
+            <property name="tests.output" location="${hy.target}/test_report"/>
+            <property name="test.jre.home"
+                      location="${hy.target}/hdk/jdk/jre" />
         </ant>
     </target>
 

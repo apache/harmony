@@ -21,7 +21,7 @@
     <import file="${bn.imported.basedir}/properties.xml"/>
     
     <macrodef name="clean-native">
-        <attribute name="component" default="${component}"/>
+        <attribute name="component" default="${hy.module}"/>
         <sequential>
             <delete quiet="true" dir="${drlvm.semi.dir}/@{component}" />
         </sequential>
@@ -118,7 +118,7 @@
         </presetdef>
 
         <macrodef name="init-native">
-            <attribute name="component" default="${component}"/>
+            <attribute name="component" default="${hy.module}"/>
             <sequential>
                 <echo message="## Building '@{component}'" />
                 
@@ -144,7 +144,7 @@
         </presetdef>
 
         <macrodef name="make-native">
-            <attribute name="libname" default="${component}"/>
+            <attribute name="libname" default="${hy.module}"/>
             <attribute name="type" />
             <element name="cc-elements" implicit="yes" optional="yes"/>
             <sequential>
@@ -172,7 +172,7 @@
         </macrodef>
         
         <macrodef name="link-lib">
-            <attribute name="name" default="${component}"/>
+            <attribute name="name" default="${hy.module}"/>
             <attribute name="type" />
             <element name="link-elements" implicit="yes" optional="yes"/>
             <sequential>    
@@ -189,7 +189,7 @@
             <attribute name="from" default="component.bin.dir"/>
             <sequential>
                 <mkdir dir="${drlvm.lib.dir}" />
-                <copy todir="${drlvm.lib.dir}">
+                <copy todir="${drlvm.lib.dir}" preservelastmodified="true">
                     <fileset dir="${@{from}}">
                         <include name="*${linklib.suffix}" unless="shlib.is.linklib"/>
                         <include name="*.exp" if="is.windows"/>
@@ -197,7 +197,7 @@
                     </fileset>
                 </copy>
                 <mkdir dir="${drlvm.bin.dir}" />
-                <copy todir="${drlvm.bin.dir}">
+                <copy todir="${drlvm.bin.dir}" preservelastmodified="true">
                     <fileset dir="${@{from}}">
                         <include name="*${shlib.suffix}"/>
                         <include name="*.pdb" if="is.windows"/>

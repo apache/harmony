@@ -21,7 +21,8 @@
 
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/jdktools/jpda/native/dt_socket/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 COMMON=../../../common/
 CMNTRANS=$(COMMON)transport/
@@ -35,12 +36,18 @@ INCLUDES += -I$(CMNTRANS)common -I$(CMNTRANS)dt_socket \
 
 LDFLAGS += $(STDCLIBS)
 
-BUILDFILES = \
-    $(CMNTRANS)common/LastTransportError.o \
-    $(CMNTRANS)dt_socket/SocketTransport.o
+BUILDFILES = LastTransportError.o SocketTransport.o
 
 MDLLIBFILES = 
 
 DLLNAME = $(TOOLSDLLPATH)libdt_socket.so
 
 include $(HY_HDK)/build/make/rules.mk
+
+$(HY_BIN)%.o: $(CMNTRANS)common/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(CMNTRANS)dt_socket/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

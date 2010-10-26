@@ -17,7 +17,8 @@
 # Makefile for module jdwp
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/jdktools/jpda/native/agent/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 COMMON=../../common/
 CMNAGENT=$(COMMON)agent/
@@ -30,34 +31,30 @@ INCLUDES += -I$(CMNAGENT)commands -I$(CMNAGENT)core \
 
 LDFLAGS += $(STDCLIBS)
 
-BUILDFILES = \
-    $(CMNAGENT)commands/ArrayReference.o \
-    $(CMNAGENT)commands/ArrayType.o \
-    $(CMNAGENT)commands/ClassLoaderReference.o \
-    $(CMNAGENT)commands/ClassObjectReference.o \
-    $(CMNAGENT)commands/ClassType.o \
-    $(CMNAGENT)commands/EventRequest.o \
-    $(CMNAGENT)commands/Method.o \
-    $(CMNAGENT)commands/ObjectReference.o \
-    $(CMNAGENT)commands/ReferenceType.o \
-    $(CMNAGENT)commands/StackFrame.o \
-    $(CMNAGENT)commands/StringReference.o \
-    $(CMNAGENT)commands/ThreadGroupReference.o \
-    $(CMNAGENT)commands/ThreadReference.o \
-    $(CMNAGENT)commands/VirtualMachine.o \
-    $(CMNAGENT)core/Agent.o $(CMNAGENT)core/AgentEventRequest.o \
-    $(CMNAGENT)core/AgentMonitor.o $(CMNAGENT)core/ClassManager.o \
-    $(CMNAGENT)core/CommandDispatcher.o $(CMNAGENT)core/CommandHandler.o \
-    $(CMNAGENT)core/EventDispatcher.o $(CMNAGENT)core/LogManager.o \
-    $(CMNAGENT)core/MemoryManager.o $(CMNAGENT)core/ObjectManager.o \
-    $(CMNAGENT)core/OptionParser.o $(CMNAGENT)core/PacketDispatcher.o \
-    $(CMNAGENT)core/PacketParser.o $(CMNAGENT)core/RequestManager.o \
-    $(CMNAGENT)core/RequestModifier.o $(CMNAGENT)core/ThreadManager.o \
-    $(CMNAGENT)core/TransportManager.o $(CMNAGENT)core/AgentManager.o \
-    core/TransportManager_pd.o
+BUILDFILES = ArrayReference.o ArrayType.o ClassLoaderReference.o \
+  ClassObjectReference.o ClassType.o EventRequest.o Method.o \
+  ObjectReference.o ReferenceType.o StackFrame.o StringReference.o \
+  ThreadGroupReference.o ThreadReference.o VirtualMachine.o \
+  Agent.o AgentEventRequest.o AgentMonitor.o ClassManager.o \
+  CommandDispatcher.o CommandHandler.o EventDispatcher.o LogManager.o \
+  MemoryManager.o ObjectManager.o OptionParser.o PacketDispatcher.o \
+  PacketParser.o RequestManager.o RequestModifier.o ThreadManager.o \
+  TransportManager.o AgentManager.o TransportManager_pd.o
 
 MDLLIBFILES = 
 
 DLLNAME = $(TOOLSDLLPATH)libjdwp.so
 
 include $(HY_HDK)/build/make/rules.mk
+
+$(HY_BIN)%.o: core/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(CMNAGENT)core/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(CMNAGENT)commands/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

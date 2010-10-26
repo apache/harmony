@@ -13,20 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/awt/native/lcmm/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)/include $(LCMS_INCLUDES)
 
-BUILDFILES = \
-  $(SHAREDSUB)cmmerror.o \
-  $(SHAREDSUB)cmmio.o \
-  $(SHAREDSUB)cmmxforms.o \
-  $(SHAREDSUB)NativeCMM.o \
-  $(SHAREDSUB)NativeImageFormat.o
+BUILDFILES = cmmerror.o cmmio.o cmmxforms.o NativeCMM.o NativeImageFormat.o
 
 OSLIBS += -llcms
 
 DLLNAME=$(DLLPATH)liblcmm$(HY_SHLIB_SUFFIX)
 EXPNAME=HYLCMM_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

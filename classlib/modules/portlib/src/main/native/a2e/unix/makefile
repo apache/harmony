@@ -17,7 +17,8 @@
 # Makefile for module 'a2e'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/portlib/native/a2e/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -DHYPORT_LIBRARY_DEFINE
 
@@ -28,4 +29,4 @@ MDLLIBFILES =
 DLLNAME = $(DLLPATH)libhya2e$(HY_SHLIB_SUFFIX)
 LIBNAME = $(LIBPATH)libhya2e.a
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

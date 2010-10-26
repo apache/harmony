@@ -17,7 +17,8 @@
 # Makefile for module 'nio_char'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\nio_char\native\niochar\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hyniochar
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -27,100 +28,100 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 ADDITIONAL = $(SHAREDSUB)\additional\#
 
 BUILDFILES = \
-  $(SHAREDSUB)CP_1250.obj \
-  $(SHAREDSUB)CP_1251.obj \
-  $(SHAREDSUB)CP_1252.obj \
-  $(SHAREDSUB)CP_1253.obj \
-  $(SHAREDSUB)CP_1254.obj \
-  $(SHAREDSUB)CP_1257.obj \
-  $(SHAREDSUB)ISO_8859_1.obj \
-  $(SHAREDSUB)ISO_8859_2.obj \
-  $(SHAREDSUB)ISO_8859_4.obj \
-  $(SHAREDSUB)ISO_8859_5.obj \
-  $(SHAREDSUB)ISO_8859_7.obj \
-  $(SHAREDSUB)ISO_8859_9.obj \
-  $(SHAREDSUB)ISO_8859_13.obj \
-  $(SHAREDSUB)ISO_8859_15.obj \
-  $(SHAREDSUB)KOI8_R.obj \
-  $(SHAREDSUB)US_ASCII.obj \
-  $(SHAREDSUB)IBM866.obj \
-  $(ADDITIONAL)IBM00858.obj \
-  $(ADDITIONAL)IBM01140.obj \
-  $(ADDITIONAL)IBM01141.obj \
-  $(ADDITIONAL)IBM01142.obj \
-  $(ADDITIONAL)IBM01143.obj \
-  $(ADDITIONAL)IBM01144.obj \
-  $(ADDITIONAL)IBM01145.obj \
-  $(ADDITIONAL)IBM01146.obj \
-  $(ADDITIONAL)IBM01147.obj \
-  $(ADDITIONAL)IBM01148.obj \
-  $(ADDITIONAL)IBM01149.obj \
-  $(ADDITIONAL)IBM037.obj \
-  $(ADDITIONAL)IBM1026.obj \
-  $(ADDITIONAL)IBM1047.obj \
-  $(ADDITIONAL)IBM273.obj \
-  $(ADDITIONAL)IBM277.obj \
-  $(ADDITIONAL)IBM278.obj \
-  $(ADDITIONAL)IBM280.obj \
-  $(ADDITIONAL)IBM284.obj \
-  $(ADDITIONAL)IBM285.obj \
-  $(ADDITIONAL)IBM297.obj \
-  $(ADDITIONAL)IBM420.obj \
-  $(ADDITIONAL)IBM424.obj \
-  $(ADDITIONAL)IBM437.obj \
-  $(ADDITIONAL)IBM500.obj \
-  $(ADDITIONAL)IBM775.obj \
-  $(ADDITIONAL)IBM850.obj \
-  $(ADDITIONAL)IBM852.obj \
-  $(ADDITIONAL)IBM855.obj \
-  $(ADDITIONAL)IBM857.obj \
-  $(ADDITIONAL)IBM860.obj \
-  $(ADDITIONAL)IBM861.obj \
-  $(ADDITIONAL)IBM862.obj \
-  $(ADDITIONAL)IBM863.obj \
-  $(ADDITIONAL)IBM864.obj \
-  $(ADDITIONAL)IBM865.obj \
-  $(ADDITIONAL)IBM868.obj \
-  $(ADDITIONAL)IBM869.obj \
-  $(ADDITIONAL)IBM870.obj \
-  $(ADDITIONAL)IBM871.obj \
-  $(ADDITIONAL)IBM918.obj \
-  $(ADDITIONAL)IBM_Thai.obj \
-  $(ADDITIONAL)ISO_8859_3.obj \
-  $(ADDITIONAL)ISO_8859_6.obj \
-  $(ADDITIONAL)ISO_8859_8.obj \
-  $(ADDITIONAL)windows_1255.obj \
-  $(ADDITIONAL)windows_1256.obj \
-  $(ADDITIONAL)x_IBM1006.obj \
-  $(ADDITIONAL)x_IBM1025.obj \
-  $(ADDITIONAL)x_IBM1097.obj \
-  $(ADDITIONAL)x_IBM1098.obj \
-  $(ADDITIONAL)x_IBM1112.obj \
-  $(ADDITIONAL)x_IBM1122.obj \
-  $(ADDITIONAL)x_IBM1123.obj \
-  $(ADDITIONAL)x_IBM1124.obj \
-  $(ADDITIONAL)x_IBM737.obj \
-  $(ADDITIONAL)x_IBM856.obj \
-  $(ADDITIONAL)x_IBM874.obj \
-  $(ADDITIONAL)x_IBM875.obj \
-  $(ADDITIONAL)x_IBM922.obj \
-  $(ADDITIONAL)x_MacCyrillic.obj \
-  $(ADDITIONAL)x_MacGreek.obj \
-  $(ADDITIONAL)x_MacTurkish.obj \
-  $(ADDITIONAL)Big5.obj \
-  $(ADDITIONAL)Big5_HKSCS.obj \
-  $(ADDITIONAL)EUC_KR.obj \
-  $(ADDITIONAL)GB2312.obj \
-  $(ADDITIONAL)GBK.obj \
-  $(ADDITIONAL)GB18030.obj \
-  $(ADDITIONAL)windows_31j.obj \
-  $(ADDITIONAL)x_MS950_HKSCS.obj \
-  $(ADDITIONAL)x_windows_949.obj 
+  $(HY_BIN)CP_1250.obj \
+  $(HY_BIN)CP_1251.obj \
+  $(HY_BIN)CP_1252.obj \
+  $(HY_BIN)CP_1253.obj \
+  $(HY_BIN)CP_1254.obj \
+  $(HY_BIN)CP_1257.obj \
+  $(HY_BIN)ISO_8859_1.obj \
+  $(HY_BIN)ISO_8859_2.obj \
+  $(HY_BIN)ISO_8859_4.obj \
+  $(HY_BIN)ISO_8859_5.obj \
+  $(HY_BIN)ISO_8859_7.obj \
+  $(HY_BIN)ISO_8859_9.obj \
+  $(HY_BIN)ISO_8859_13.obj \
+  $(HY_BIN)ISO_8859_15.obj \
+  $(HY_BIN)KOI8_R.obj \
+  $(HY_BIN)US_ASCII.obj \
+  $(HY_BIN)IBM866.obj \
+  $(HY_BIN)IBM00858.obj \
+  $(HY_BIN)IBM01140.obj \
+  $(HY_BIN)IBM01141.obj \
+  $(HY_BIN)IBM01142.obj \
+  $(HY_BIN)IBM01143.obj \
+  $(HY_BIN)IBM01144.obj \
+  $(HY_BIN)IBM01145.obj \
+  $(HY_BIN)IBM01146.obj \
+  $(HY_BIN)IBM01147.obj \
+  $(HY_BIN)IBM01148.obj \
+  $(HY_BIN)IBM01149.obj \
+  $(HY_BIN)IBM037.obj \
+  $(HY_BIN)IBM1026.obj \
+  $(HY_BIN)IBM1047.obj \
+  $(HY_BIN)IBM273.obj \
+  $(HY_BIN)IBM277.obj \
+  $(HY_BIN)IBM278.obj \
+  $(HY_BIN)IBM280.obj \
+  $(HY_BIN)IBM284.obj \
+  $(HY_BIN)IBM285.obj \
+  $(HY_BIN)IBM297.obj \
+  $(HY_BIN)IBM420.obj \
+  $(HY_BIN)IBM424.obj \
+  $(HY_BIN)IBM437.obj \
+  $(HY_BIN)IBM500.obj \
+  $(HY_BIN)IBM775.obj \
+  $(HY_BIN)IBM850.obj \
+  $(HY_BIN)IBM852.obj \
+  $(HY_BIN)IBM855.obj \
+  $(HY_BIN)IBM857.obj \
+  $(HY_BIN)IBM860.obj \
+  $(HY_BIN)IBM861.obj \
+  $(HY_BIN)IBM862.obj \
+  $(HY_BIN)IBM863.obj \
+  $(HY_BIN)IBM864.obj \
+  $(HY_BIN)IBM865.obj \
+  $(HY_BIN)IBM868.obj \
+  $(HY_BIN)IBM869.obj \
+  $(HY_BIN)IBM870.obj \
+  $(HY_BIN)IBM871.obj \
+  $(HY_BIN)IBM918.obj \
+  $(HY_BIN)IBM_Thai.obj \
+  $(HY_BIN)ISO_8859_3.obj \
+  $(HY_BIN)ISO_8859_6.obj \
+  $(HY_BIN)ISO_8859_8.obj \
+  $(HY_BIN)windows_1255.obj \
+  $(HY_BIN)windows_1256.obj \
+  $(HY_BIN)x_IBM1006.obj \
+  $(HY_BIN)x_IBM1025.obj \
+  $(HY_BIN)x_IBM1097.obj \
+  $(HY_BIN)x_IBM1098.obj \
+  $(HY_BIN)x_IBM1112.obj \
+  $(HY_BIN)x_IBM1122.obj \
+  $(HY_BIN)x_IBM1123.obj \
+  $(HY_BIN)x_IBM1124.obj \
+  $(HY_BIN)x_IBM737.obj \
+  $(HY_BIN)x_IBM856.obj \
+  $(HY_BIN)x_IBM874.obj \
+  $(HY_BIN)x_IBM875.obj \
+  $(HY_BIN)x_IBM922.obj \
+  $(HY_BIN)x_MacCyrillic.obj \
+  $(HY_BIN)x_MacGreek.obj \
+  $(HY_BIN)x_MacTurkish.obj \
+  $(HY_BIN)Big5.obj \
+  $(HY_BIN)Big5_HKSCS.obj \
+  $(HY_BIN)EUC_KR.obj \
+  $(HY_BIN)GB2312.obj \
+  $(HY_BIN)GBK.obj \
+  $(HY_BIN)GB18030.obj \
+  $(HY_BIN)windows_31j.obj \
+  $(HY_BIN)x_MS950_HKSCS.obj \
+  $(HY_BIN)x_windows_949.obj 
 
 VIRTFILES = hynio_char.res
 
 MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)vmi$(HY_LINKLIB_SUFFIX)
-  
+
 DLLBASE=0x13200000
 
 !include <$(HY_HDK)\build\make\rules.mak>

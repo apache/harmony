@@ -13,7 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\misc\native\accessors\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=accessors
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -21,11 +22,11 @@ LIBNAME=$(LIBPATH)$(LIBBASE).lib
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_ArrayAccessorImpl.obj \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_Malloc.obj \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_MemoryAccessorNativeImpl.obj \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_ObjectAccessorImpl.obj \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_StringAccessorImpl.obj
+  $(HY_BIN)org_apache_harmony_misc_accessors_ArrayAccessorImpl.obj \
+  $(HY_BIN)org_apache_harmony_misc_accessors_Malloc.obj \
+  $(HY_BIN)org_apache_harmony_misc_accessors_MemoryAccessorNativeImpl.obj \
+  $(HY_BIN)org_apache_harmony_misc_accessors_ObjectAccessorImpl.obj \
+  $(HY_BIN)org_apache_harmony_misc_accessors_StringAccessorImpl.obj
 VIRTFILES = accessors.res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib
 

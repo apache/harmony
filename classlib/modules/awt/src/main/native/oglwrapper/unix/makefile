@@ -13,16 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/awt/native/oglwrapper/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)/include
 
-BUILDFILES = \
-  $(SHAREDSUB)/org_apache_harmony_awt_gl_opengl_GL.o
+BUILDFILES = org_apache_harmony_awt_gl_opengl_GL.o
 
 OSLIBS += $(STDCLIBS)
 
 DLLNAME=$(DLLPATH)liboglwrapper$(HY_SHLIB_SUFFIX)
 EXPNAME=HYOGLWRAPPER_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

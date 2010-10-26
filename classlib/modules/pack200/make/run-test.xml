@@ -23,7 +23,9 @@
     <property file="../test.properties" />
 
     <property name="work.dir" value=".." />
-    <property name="target.dir" value=".." />
+    <property name="hy.test.root" value=".." />
+    <property name="hy.component" value="classlib" />
+    <property name="hy.module" value="pack200" />
     <property name="tests.output" location="../report" />
     <property name="junit.jar" location="../junit.jar" />
 
