@@ -133,7 +133,7 @@
             <mapper type="glob" from="*" to="*.orig" />
         </move>
 
-        <chmod dir="src/main/native/fdlibm_dist" perm="ugo+r" />
+        <chmod dir="${fdlibm.dist}" perm="ugo+r" />
     </target>
 
     <target name="-ascii2ebcdic-conversion" unless="skip.native.build"

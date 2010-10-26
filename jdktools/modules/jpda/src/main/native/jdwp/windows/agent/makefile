@@ -17,7 +17,8 @@
 # Makefile for module jdwp
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\jdktools\jpda\native\jdwp\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 COMMON=..\..\common\# comment to avoid \ being treated as continuation
 CMNAGENT=$(COMMON)agent\# comment to avoid \ being treated as continuation
@@ -35,35 +36,42 @@ HYCFLAGS = $(HYCFLAGS) $(INCLUDES) -GX -wd4290
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-    $(CMNAGENT)commands\ArrayReference.obj \
-    $(CMNAGENT)commands\ArrayType.obj \
-    $(CMNAGENT)commands\ClassLoaderReference.obj \
-    $(CMNAGENT)commands\ClassObjectReference.obj \
-    $(CMNAGENT)commands\ClassType.obj \
-    $(CMNAGENT)commands\EventRequest.obj \
-    $(CMNAGENT)commands\Method.obj \
-    $(CMNAGENT)commands\ObjectReference.obj \
-    $(CMNAGENT)commands\ReferenceType.obj \
-    $(CMNAGENT)commands\StackFrame.obj \
-    $(CMNAGENT)commands\StringReference.obj \
-    $(CMNAGENT)commands\ThreadGroupReference.obj \
-    $(CMNAGENT)commands\ThreadReference.obj \
-    $(CMNAGENT)commands\VirtualMachine.obj \
-    $(CMNAGENT)core\Agent.obj $(CMNAGENT)core\AgentEventRequest.obj $(CMNAGENT)core\AgentMonitor.obj \
-    $(CMNAGENT)core\ClassManager.obj $(CMNAGENT)core\CommandDispatcher.obj $(CMNAGENT)core\CommandHandler.obj \
-    $(CMNAGENT)core\EventDispatcher.obj $(CMNAGENT)core\LogManager.obj $(CMNAGENT)core\MemoryManager.obj \
-    $(CMNAGENT)core\ObjectManager.obj $(CMNAGENT)core\OptionParser.obj $(CMNAGENT)core\PacketDispatcher.obj \
-    $(CMNAGENT)core\PacketParser.obj $(CMNAGENT)core\RequestManager.obj $(CMNAGENT)core\RequestModifier.obj \
-    $(CMNAGENT)core\ThreadManager.obj $(CMNAGENT)core\TransportManager.obj $(CMNAGENT)core\AgentManager.obj \
-    core\TransportManager_pd.obj
+  $(HY_BIN)ArrayReference.obj $(HY_BIN)ArrayType.obj \
+  $(HY_BIN)ClassLoaderReference.obj $(HY_BIN)ClassObjectReference.obj \
+  $(HY_BIN)ClassType.obj $(HY_BIN)EventRequest.obj $(HY_BIN)Method.obj \
+  $(HY_BIN)ObjectReference.obj $(HY_BIN)ReferenceType.obj \
+  $(HY_BIN)StackFrame.obj $(HY_BIN)StringReference.obj \
+  $(HY_BIN)ThreadGroupReference.obj $(HY_BIN)ThreadReference.obj \
+  $(HY_BIN)VirtualMachine.obj $(HY_BIN)Agent.obj \
+  $(HY_BIN)AgentEventRequest.obj $(HY_BIN)AgentMonitor.obj \
+  $(HY_BIN)ClassManager.obj $(HY_BIN)CommandDispatcher.obj \
+  $(HY_BIN)CommandHandler.obj $(HY_BIN)EventDispatcher.obj \
+  $(HY_BIN)LogManager.obj $(HY_BIN)MemoryManager.obj \
+  $(HY_BIN)ObjectManager.obj $(HY_BIN)OptionParser.obj \
+  $(HY_BIN)PacketDispatcher.obj $(HY_BIN)PacketParser.obj \
+  $(HY_BIN)RequestManager.obj $(HY_BIN)RequestModifier.obj \
+  $(HY_BIN)ThreadManager.obj $(HY_BIN)TransportManager.obj \
+  $(HY_BIN)AgentManager.obj $(HY_BIN)TransportManager_pd.obj
 
 VIRTFILES = 
 
 SYSLIBFILES = 
 
 MDLLIBFILES = 
-  
+
 DLLBASE=0x13200000
 COMMENT=/comment:"JDWP agent native code. (c) Copyright 2005 - 2006 The Apache Software Foundation or its licensors, as applicable."
 
 !include <$(HY_HDK)\build\make\rules.mak>
+
+{core}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(CMNAGENT)core}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(CMNAGENT)commands}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<

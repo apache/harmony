@@ -55,7 +55,7 @@
     <property name="hy.build.mod" location="${hy.build}/${hy.module}" />
 
     <!-- Root directory of the common dependency pool -->
-    <property name="depends.dir" location="${hy.target}/depends" />
+    <property name="hy.depends" location="${hy.target}/depends" />
 
     <!-- Debug or release version -->
     <property name="hy.cfg" value="debug" />
@@ -615,7 +615,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
         <sequential>
             <echo message="Running @{module} Unit Test from @{jar}" />
             <echo message="Tested jre: ${test.jre.home}/bin/java" />
-            <property name="test.module.dir" value="${hy.target}/@{module}" />
+            <property name="test.module.dir" value="${hy.test.root}/@{module}" />
             <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
             <property name="test.resources.dir" value="${test.module.dir}/resources" />
             <property name="module.work.dir" location="${work.dir}/@{module}" />
@@ -651,7 +651,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <jvmarg line="-Duser.home=${junit.user.home}" />
 
                 <classpath>
-                    <fileset dir="${hy.target}">
+                    <fileset dir="${hy.test.root}">
                         <include name="*.jar" />
                     </fileset>
                     <pathelement path="${test.resources.dir}/" />
@@ -710,7 +710,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
         <sequential>
             <echo message="Running @{module} Unit Test from @{jar}" />
             <echo message="Tested jre: ${test.jre.home}/bin/java" />
-            <property name="test.module.dir" value="${hy.target}/@{module}" />
+            <property name="test.module.dir" value="${hy.test.root}/@{module}" />
             <property name="test.excludes.dir" value="${test.module.dir}/excludes" />
             <property name="test.resources.dir" value="${test.module.dir}/resources" />
             <property name="module.work.dir" location="${work.dir}/@{module}" />
@@ -746,7 +746,7 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
                 <jvmarg line="-Duser.home=${junit.user.home}" />
 
                 <classpath>
-                    <fileset dir="${hy.target}">
+                    <fileset dir="${hy.test.root}">
                         <include name="*.jar" />
                     </fileset>
                     <pathelement path="${test.resources.dir}/" />

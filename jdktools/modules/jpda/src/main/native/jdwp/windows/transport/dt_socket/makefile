@@ -17,7 +17,8 @@
 # Makefile for module jdwp - dt_socket transport
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\jdktools\jpda\native\dt_socket\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 COMMON=..\..\..\common\# comment to avoid \ being treated as continuation
 CMNTRANS=$(COMMON)transport\# comment to avoid \ being treated as continuation
@@ -35,17 +36,23 @@ HYCFLAGS = $(HYCFLAGS) $(INCLUDES) -GX -wd4290
 
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
-BUILDFILES = \
-    $(CMNTRANS)common\LastTransportError.obj \
-    $(CMNTRANS)dt_socket\SocketTransport.obj 
+BUILDFILES = $(HY_BIN)LastTransportError.obj $(HY_BIN)SocketTransport.obj 
 
 VIRTFILES = 
 
 SYSLIBFILES = 
 
 MDLLIBFILES = 
-  
+
 DLLBASE=0x13200000
 COMMENT=/comment:"JDWP socket transport native code. (c) Copyright 2005 - 2006 The Apache Software Foundation or its licensors, as applicable."
 
 !include <$(HY_HDK)\build\make\rules.mak>
+
+{$(CMNTRANS)common}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<
+
+{$(CMNTRANS)dt_socket}.cpp{$(HY_BIN)}.obj:
+        -mkdir $(*D)
+        $(cc) $(cflags) $(HYCFLAGS) -Fo$*.obj $<

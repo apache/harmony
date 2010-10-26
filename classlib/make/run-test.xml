@@ -23,13 +23,13 @@
     <property file="test.properties" />
 
     <!-- These two parameters could be assigned by user -->
-    <property name="hy.target" value="." />
+    <property name="hy.test.root" value="." />
     <property name="hy.component" value="test" />
     <property name="hy.module" value="toplevel" />
-    <property name="work.dir" value="${hy.target}" />
+    <property name="work.dir" value="${test.root}" />
     <property name="tests.output" value="${work.dir}/report" />
     <property name="report.dir" value="${tests.output}/html" />
-    <property name="junit.jar" value="${hy.target}/junit.jar" />
+    <property name="junit.jar" value="${test.root}/junit.jar" />
 
     <property name="gen.report" value="true" />
     <condition property="do.full.report" value="true">

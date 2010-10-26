@@ -20,7 +20,7 @@
     <import file="test-common.xml"/>
     <property name="ehwa.test.dir" location="${base.test.dir}/ehwa"/>
     <property name="ehwa.test.summary" location="${ehwa.test.dir}/status.txt"/>
-    <property name="ECLIPSE_ARCHIVE.home" location="${depends.dir}/eclipse"/>
+    <property name="ECLIPSE_ARCHIVE.home" location="${hy.depends}/eclipse"/>
 
     <target name="ehwa" depends="-init-test,setup-ehwa, run-ehwa, check-ehwa-result"/>
 
@@ -101,7 +101,8 @@
     </target>
     
     <target name="touch-failures-file" if="test.failed">
-        <copy file="${ehwa.test.summary}" tofile="${base.test.dir}/ehwa.test.failed">
+        <copy file="${ehwa.test.summary}"
+              tofile="${base.test.dir}/ehwa.test.failed">
             <filterchain>
                 <linecontains>
                     <contains value="FAILED"/>

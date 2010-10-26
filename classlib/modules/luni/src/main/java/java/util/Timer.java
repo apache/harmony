@@ -18,6 +18,8 @@
 package java.util;
 
 import org.apache.harmony.luni.internal.nls.Messages;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * {@code Timer}s are used to schedule jobs for execution in a background process. A
@@ -191,6 +193,11 @@ public class Timer {
          * @param name thread's name
          * @param isDaemon daemon thread or not
          */
+        TimerImpl(boolean isDaemon) {
+            this.setDaemon(isDaemon);
+            this.start();
+        }
+
         TimerImpl(String name, boolean isDaemon) {
             this.setName(name);
             this.setDaemon(isDaemon);
@@ -204,7 +211,7 @@ public class Timer {
         @Override
         public void run() {
             while (true) {
-                TimerTask task;
+                final TimerTask task;
                 synchronized (this) {
                     // need to check cancelled inside the synchronized block
                     if (cancelled) {
@@ -370,6 +377,18 @@ public class Timer {
     	}
         this.impl = new TimerImpl(name, isDaemon);
         this.finalizer = new FinalizerHelper(impl);
+        if (isDaemon) {
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                public Object run() {
+                    Runtime.getRuntime().addShutdownHook(new Thread() {
+                        public void run() {
+                            cancel();
+                        }
+                    });
+                    return null;
+                }
+            });
+        }
     }
     
     /**

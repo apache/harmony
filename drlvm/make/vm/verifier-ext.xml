@@ -26,7 +26,8 @@
     
     <target name="build" depends="-common-vm">
         <mkdir dir="${drlvm.verifier-ext.includes}"/>
-        <copy todir="${drlvm.verifier-ext.includes}">
+        <copy todir="${drlvm.verifier-ext.includes}"
+              preservelastmodified="true">
             <fileset dir="${vm.home}/include">
                 <include name="open/common.h"/>
                 <include name="open/hycomp.h"/>

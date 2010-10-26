@@ -31,6 +31,15 @@
         </condition>
     </fail>
 
+    <mkdir dir="${hy.target}/hdk/build/ant" />
+    <copy todir="${hy.target}/hdk/build/ant" preservelastmodified="true">
+        <fileset dir="${common.resources}/make" includes="*.xml"/>
+    </copy>
+
+    <!-- import properties for snapshot targets -->
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
+    <init-hdk/>
+
     <import file="make/properties.xml"/>
 
     <target name="help">
@@ -204,7 +213,7 @@ Usage:
     </target>
 
     <target name="-init-hdk">
-        <copy todir="${hy.hdk}/jdk/include">
+        <copy todir="${hy.hdk}/jdk/include" preservelastmodified="true">
             <fileset dir="vm/include">
                 <include name="jvmti.h" />
                 <include name="jvmti_types.h" />
@@ -235,7 +244,8 @@ Usage:
             deploy the rest of product
          ================================================================-->
     <target name="deploy">
-        <copy todir="${drlvm.deploy.dir}/jdk/include">
+        <copy todir="${drlvm.deploy.dir}/jdk/include"
+              preservelastmodified="true">
             <fileset dir="${vm.home}/include">
                 <include name="jni_types.h" />
                 <include name="jvmti_types.h" />
@@ -256,7 +266,8 @@ Usage:
         </delete>
         
         <!-- launcher should use our hythr -->
-        <copy todir="${drlvm.deploy.dir}/jdk/jre/bin" overwrite="yes">
+        <copy todir="${drlvm.deploy.dir}/jdk/jre/bin"
+              preservelastmodified="true" overwrite="yes">
             <fileset dir="${drlvm.bin.dir}">
                 <include name="*hythr*"/>
             </fileset>

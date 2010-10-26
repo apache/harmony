@@ -189,7 +189,7 @@
             <attribute name="from" default="component.bin.dir"/>
             <sequential>
                 <mkdir dir="${drlvm.lib.dir}" />
-                <copy todir="${drlvm.lib.dir}">
+                <copy todir="${drlvm.lib.dir}" preservelastmodified="true">
                     <fileset dir="${@{from}}">
                         <include name="*${linklib.suffix}" unless="shlib.is.linklib"/>
                         <include name="*.exp" if="is.windows"/>
@@ -197,7 +197,7 @@
                     </fileset>
                 </copy>
                 <mkdir dir="${drlvm.bin.dir}" />
-                <copy todir="${drlvm.bin.dir}">
+                <copy todir="${drlvm.bin.dir}" preservelastmodified="true">
                     <fileset dir="${@{from}}">
                         <include name="*${shlib.suffix}"/>
                         <include name="*.pdb" if="is.windows"/>

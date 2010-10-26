@@ -76,7 +76,8 @@
     </target>
     
     <target name="touch-failures-file" if="test.failed">
-        <copy file="${lazy.test.summary}" tofile="${base.test.dir}/lazy.test.failed">
+        <copy file="${lazy.test.summary}"
+              tofile="${base.test.dir}/lazy.test.failed">
             <filterchain>
                 <linecontains>
                     <contains value="FAILED"/>

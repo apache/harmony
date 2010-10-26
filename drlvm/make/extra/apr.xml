@@ -68,7 +68,7 @@
 
     <target name="build" depends="-make-apr-unix,-build-win">
         <mkdir dir="${drlvm.include.dir}" />
-        <copy todir="${drlvm.include.dir}">
+        <copy todir="${drlvm.include.dir}" preservelastmodified="true">
             <fileset dir="${apr.src}/include" includes="*.h" />
         </copy>
     </target>
@@ -76,11 +76,13 @@
     <target name="-make-apr-unix" if="is.unix" depends="apr-configure">
         <!-- simply invoke make to let it build as the APR people suggest  -->
         <exec executable="make" dir="${apr.src}" failonerror="true"/>
-    	<copy file="${apr.src}/.libs/libapr-1.a" todir="${drlvm.lib.dir}" />
+    	<copy file="${apr.src}/.libs/libapr-1.a" preservelastmodified="true"
+              todir="${drlvm.lib.dir}" />
     </target>
     
     <target name="-build-win" if="is.windows" depends="get-src, setup-native-build" >
-        <copy file="${apr.src}/include/apr.hw" tofile="${apr.src}/include/apr.h"/>
+        <copy file="${apr.src}/include/apr.hw" preservelastmodified="true"
+              tofile="${apr.src}/include/apr.h"/>
         
         <init-native />
         <make-native libname="apr-1" type="static">

@@ -23,7 +23,7 @@
     <property file="../test.properties" />
 
     <property name="work.dir" value=".." />
-    <property name="hy.target" value=".." />
+    <property name="hy.test.root" value=".." />
     <property name="hy.component" value="classlib" />
     <property name="hy.module" value="awt" />
     <property name="tests.output" location="../report" />
