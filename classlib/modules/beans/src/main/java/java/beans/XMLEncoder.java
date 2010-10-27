@@ -136,15 +136,6 @@ public class XMLEncoder extends Encoder {
         return buf;
     }
 
-    private String idSerialNoOfObject(Object obj) {
-        Class<?> clazz = obj.getClass();
-        Integer serialNo = (Integer) clazzCounterMap.get(clazz);
-        serialNo = serialNo == null ? 0 : serialNo;
-        String id = BeansUtils.idOfClass(obj.getClass()) + serialNo;
-        clazzCounterMap.put(clazz, ++serialNo);
-        return id;
-    }
-
     /**
      * Writes out all objects since last flush to the output stream.
      * <p>
@@ -512,7 +503,7 @@ public class XMLEncoder extends Encoder {
             List<?> subStats, int indent) {
         // open tag, begin
         flushIndent(indent);
-        String tagName = stat instanceof Expression ? "object" : "void";
+        String tagName = "void";
         out.print("<");
         out.print(tagName);
 
@@ -689,6 +680,15 @@ public class XMLEncoder extends Encoder {
         return (method.startsWith(BeansUtils.SET) && method.length() > 3 && args.length == 1);
     }
 
+    private String idSerialNoOfObject(Object obj) {
+        Class<?> clazz = obj.getClass();
+        Integer serialNo = (Integer) clazzCounterMap.get(clazz);
+        serialNo = serialNo == null ? 0 : serialNo;
+        String id = BeansUtils.idOfClass(obj.getClass()) + serialNo;
+        clazzCounterMap.put(clazz, ++serialNo);
+        return id;
+    }
+
     /*
      * The preprocess removes unused statements and counts references of every
      * object
@@ -799,17 +799,48 @@ public class XMLEncoder extends Encoder {
             return;
         }
         // deal with 'owner' property
-        if (stat.getTarget() == owner && owner != null) {
+        Object target = stat.getTarget();
+        if (target == owner && owner != null) {
             needOwner = true;
         }
 
         // record how a statement affects the target object
-        Record rec = objRecordMap.get(stat.getTarget());
+        Record rec = objRecordMap.get(target);
         if (rec == null) {
             rec = new Record();
-            objRecordMap.put(stat.getTarget(), rec);
+            objRecordMap.put(target, rec);
         }
-        rec.stats.add(stat);
+
+        boolean hasRecord = false;
+        String methodName = stat.getMethodName();
+        Object[] args = stat.getArguments();
+        if (isSetPropertyStat(methodName, args)
+                || isSetArrayStat(target, methodName, args)) {
+            for (Statement subStat : rec.stats) {
+                if (target == subStat.getTarget()
+                        && methodName.equals(subStat.getMethodName())) {
+                    Object[] subArgs = subStat.getArguments();
+                    if (args.length == subArgs.length) {
+                        boolean equals = true;
+                        for (int index = 0; index < args.length; index++) {
+                            if (getPersistenceDelegate(args[index].getClass())
+                                    .mutatesTo(args[index], subArgs[index])) {
+                                continue;
+                            }
+                            equals = false;
+                            break;
+                        }
+                        if (equals) {
+                            hasRecord = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (!hasRecord) {
+            rec.stats.add(stat);
+        }
     }
 
     /**

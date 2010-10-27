@@ -141,10 +141,8 @@ public class DefaultPersistenceDelegate extends PersistenceDelegate {
                 Object targetVal = enc.get(oldVal);
                 Object newVal = new Expression(newInstance, getter.getName(),
                         null).getValue();
-                boolean invokeSetter = targetVal == null ? (newVal != null && oldVal == null)
-                        : !enc.getPersistenceDelegate(targetVal.getClass())
-                                .mutatesTo(targetVal, newVal);
-                if (invokeSetter) {
+                if (targetVal == null ? (newVal != null && oldVal == null)
+                        : targetVal != newVal && !targetVal.equals(newVal)) {
                     enc.writeStatement(new Statement(oldInstance, setter
                             .getName(), new Object[] { oldVal }));
                 }
