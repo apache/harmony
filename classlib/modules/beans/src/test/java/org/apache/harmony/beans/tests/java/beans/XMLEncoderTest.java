@@ -25,6 +25,7 @@ import java.beans.ExceptionListener;
 import java.beans.Expression;
 import java.beans.PersistenceDelegate;
 import java.beans.Statement;
+import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -1056,5 +1057,107 @@ public class XMLEncoderTest extends TestCase {
         public void setName(String name) {
             this.name = name;
         }
+    }
+
+    public static class MockCharProperty {
+        private char property;
+
+        public char getProperty() {
+            return property;
+        }
+
+        public void setProperty(char property) {
+            this.property = property;
+        }
+
+        public boolean equals(Object obj) {
+            if (obj instanceof MockCharProperty) {
+                return ((MockCharProperty) obj).property == (this.property);
+            }
+            return false;
+        }
+    }
+
+    public void testMockCharProperty() {
+        MockCharProperty expectedObj = new MockCharProperty();
+        MockCharProperty actualObj;
+        ByteArrayOutputStream baos;
+        ByteArrayInputStream bais;
+        XMLEncoder xmlEncoder;
+        XMLDecoder xmlDecoder;
+        char ch;
+        for (int index = 1; index < 65536; index++) {
+            ch = (char) index;
+            if (invalidCharacter(ch)) {
+                expectedObj.setProperty(ch);
+                baos = new ByteArrayOutputStream();
+                xmlEncoder = new XMLEncoder(baos);
+                xmlEncoder.writeObject(expectedObj);
+                xmlEncoder.close();
+                assertTrue(baos.toString().contains("<char code=\"#"));
+
+                bais = new ByteArrayInputStream(baos.toByteArray());
+                xmlDecoder = new XMLDecoder(bais);
+                actualObj = (MockCharProperty) xmlDecoder.readObject();
+                xmlDecoder.close();
+                assertEquals(expectedObj, actualObj);
+            }
+        }
+    }
+
+    public static class MockStringProperty {
+        private String property;
+
+        public String getProperty() {
+            return property;
+        }
+
+        public void setProperty(String property) {
+            this.property = property;
+        }
+
+        public boolean equals(Object obj) {
+            if (obj instanceof MockStringProperty) {
+                return ((MockStringProperty) obj).property
+                        .equals(this.property);
+            }
+            return false;
+        }
+    }
+
+    public void testMockStringProperty() {
+        MockStringProperty expectedObj = new MockStringProperty();
+        MockStringProperty actualObj;
+        ByteArrayOutputStream baos;
+        ByteArrayInputStream bais;
+        XMLEncoder xmlEncoder;
+        XMLDecoder xmlDecoder;
+        char ch;
+        for (int index = 0; index < 65536; index++) {
+            ch = (char) index;
+            if (invalidCharacter(ch)) {
+                expectedObj.setProperty(stringWithChar(ch));
+                baos = new ByteArrayOutputStream();
+                xmlEncoder = new XMLEncoder(baos);
+                xmlEncoder.writeObject(expectedObj);
+                xmlEncoder.close();
+                assertTrue(baos.toString().contains("<char code=\"#"));
+
+                bais = new ByteArrayInputStream(baos.toByteArray());
+                xmlDecoder = new XMLDecoder(bais);
+                actualObj = (MockStringProperty) xmlDecoder.readObject();
+                xmlDecoder.close();
+                assertEquals(expectedObj, actualObj);
+            }
+        }
+    }
+
+    private String stringWithChar(char character) {
+        return "a string with a " + character + " character";
+    }
+
+    private boolean invalidCharacter(char c) {
+        return ((0x0000 <= c && c < 0x0009) || (0x000a < c && c < 0x000d)
+                || (0x000d < c && c < 0x0020) || (0xd7ff < c && c < 0xe000) || c == 0xfffe);
     }
 }
