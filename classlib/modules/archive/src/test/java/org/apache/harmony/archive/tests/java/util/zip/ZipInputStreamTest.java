@@ -191,7 +191,7 @@ public class ZipInputStreamTest extends TestCase {
         zentry = zis.getNextEntry();
         zentry = zis.getNextEntry();
         long s = zis.skip(1025);
-        assertTrue("invalid skip: " + s, s == 1025);
+        assertEquals("invalid skip: " + s, 1025, s);
 
         ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes));
         zis.getNextEntry();

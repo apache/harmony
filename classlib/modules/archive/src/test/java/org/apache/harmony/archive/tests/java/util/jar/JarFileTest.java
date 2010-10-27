@@ -367,9 +367,10 @@ public class JarFileTest extends TestCase {
         // try to read class file header
         is.read(b, 0, 1024);
         jf.close();
-        assertTrue("Invalid bytes were red", b[0] == (byte) 0xCA
-                && b[1] == (byte) 0xFE && b[2] == (byte) 0xBA
-                && b[3] == (byte) 0xBE);
+        assertEquals("Invalid bytes were read", (byte) 0xCA, b[0]);
+        assertEquals("Invalid bytes were read", (byte) 0xFE, b[1]);
+        assertEquals("Invalid bytes were read", (byte) 0xBA, b[2]);
+        assertEquals("Invalid bytes were read", (byte) 0xBE, b[3]);
     }
 
     /**

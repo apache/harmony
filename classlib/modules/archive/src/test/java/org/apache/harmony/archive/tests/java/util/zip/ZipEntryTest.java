@@ -120,7 +120,7 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	 */
 	public void test_getCrc() {
 		// Test for method long java.util.zip.ZipEntry.getCrc()
-		assertTrue("Failed to get Crc", zentry.getCrc() == orgCrc);
+		assertEquals("Failed to get Crc", orgCrc, zentry.getCrc());
 	}
 
 	/**
@@ -133,8 +133,8 @@ public class ZipEntryTest extends junit.framework.TestCase {
 		byte[] ba = { 'T', 'E', 'S', 'T' };
 		zentry = new ZipEntry("test.tst");
 		zentry.setExtra(ba);
-		assertTrue("Incorrect Extra Information Returned.",
-				zentry.getExtra() == ba);
+		assertEquals("Incorrect Extra Information Returned.",
+				ba, zentry.getExtra());
 	}
 
 	/**
@@ -143,11 +143,11 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	public void test_getMethod() {
 		// Test for method int java.util.zip.ZipEntry.getMethod()
 		zentry = zfile.getEntry("File1.txt");
-		assertTrue("Incorrect compression method returned",
-				zentry.getMethod() == java.util.zip.ZipEntry.STORED);
+		assertEquals("Incorrect compression method returned",
+				java.util.zip.ZipEntry.STORED, zentry.getMethod());
 		zentry = zfile.getEntry("File3.txt");
-		assertTrue("Incorrect compression method returned",
-				zentry.getMethod() == java.util.zip.ZipEntry.DEFLATED);
+		assertEquals("Incorrect compression method returned",
+				java.util.zip.ZipEntry.DEFLATED, zentry.getMethod());
 		zentry = new ZipEntry("test.tst");
 		assertEquals("Incorrect Method Returned.", -1, zentry.getMethod());
 	}
@@ -166,7 +166,7 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	 */
 	public void test_getSize() {
 		// Test for method long java.util.zip.ZipEntry.getSize()
-		assertTrue("Incorrect size returned", zentry.getSize() == orgSize);
+		assertEquals("Incorrect size returned", orgSize, zentry.getSize());
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	 */
 	public void test_getTime() {
 		// Test for method long java.util.zip.ZipEntry.getTime()
-		assertTrue("Failed to get time", zentry.getTime() == orgTime);
+		assertEquals("Failed to get time", orgTime, zentry.getTime());
 	}
 
 	/**
@@ -225,8 +225,8 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	public void test_setCompressedSizeJ() {
 		// Test for method void java.util.zip.ZipEntry.setCompressedSize(long)
 		zentry.setCompressedSize(orgCompressedSize + 10);
-		assertTrue("Set compressed size failed",
-				zentry.getCompressedSize() == (orgCompressedSize + 10));
+		assertEquals("Set compressed size failed",
+				(orgCompressedSize + 10), zentry.getCompressedSize());
 		zentry.setCompressedSize(0);
 		assertEquals("Set compressed size failed",
 				0, zentry.getCompressedSize());
@@ -234,8 +234,8 @@ public class ZipEntryTest extends junit.framework.TestCase {
 		assertEquals("Set compressed size failed",
 				-25, zentry.getCompressedSize());
 		zentry.setCompressedSize(4294967296l);
-		assertTrue("Set compressed size failed",
-				zentry.getCompressedSize() == 4294967296l);
+		assertEquals("Set compressed size failed",
+				4294967296l, zentry.getCompressedSize());
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	public void test_setCrcJ() {
 		// Test for method void java.util.zip.ZipEntry.setCrc(long)
 		zentry.setCrc(orgCrc + 100);
-		assertTrue("Failed to set Crc", zentry.getCrc() == (orgCrc + 100));
+		assertEquals("Failed to set Crc", (orgCrc + 100), zentry.getCrc());
 		zentry.setCrc(0);
 		assertEquals("Failed to set Crc", 0, zentry.getCrc());
 		try {
@@ -311,11 +311,11 @@ public class ZipEntryTest extends junit.framework.TestCase {
 		// Test for method void java.util.zip.ZipEntry.setMethod(int)
 		zentry = zfile.getEntry("File3.txt");
 		zentry.setMethod(ZipEntry.STORED);
-		assertTrue("Failed to set compression method",
-				zentry.getMethod() == ZipEntry.STORED);
+		assertEquals("Failed to set compression method",
+				ZipEntry.STORED, zentry.getMethod());
 		zentry.setMethod(ZipEntry.DEFLATED);
-		assertTrue("Failed to set compression method",
-				zentry.getMethod() == ZipEntry.DEFLATED);
+		assertEquals("Failed to set compression method",
+				ZipEntry.DEFLATED, zentry.getMethod());
 		try {
 			int error = 1;
 			zentry = new ZipEntry("test.tst");
@@ -331,7 +331,7 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	public void test_setSizeJ() {
 		// Test for method void java.util.zip.ZipEntry.setSize(long)
 		zentry.setSize(orgSize + 10);
-		assertTrue("Set size failed", zentry.getSize() == (orgSize + 10));
+		assertEquals("Set size failed", (orgSize + 10), zentry.getSize());
 		zentry.setSize(0);
 		assertEquals("Set size failed", 0, zentry.getSize());
 		try {
@@ -357,31 +357,31 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	public void test_setTimeJ() {
 		// Test for method void java.util.zip.ZipEntry.setTime(long)
 		zentry.setTime(orgTime + 10000);
-		assertTrue("Test 1: Failed to set time: " + zentry.getTime(), zentry
-				.getTime() == (orgTime + 10000));
+		assertEquals("Test 1: Failed to set time: " + zentry.getTime(), (orgTime + 10000), 
+		        zentry.getTime());
 		zentry.setTime(orgTime - 10000);
-		assertTrue("Test 2: Failed to set time: " + zentry.getTime(), zentry
-				.getTime() == (orgTime - 10000));
+		assertEquals("Test 2: Failed to set time: " + zentry.getTime(), (orgTime - 10000), 
+		        zentry.getTime());
 		TimeZone zone = TimeZone.getDefault();
 		try {
 			TimeZone.setDefault(TimeZone.getTimeZone("EST"));
 			zentry.setTime(0);
-			assertTrue("Test 3: Failed to set time: " + zentry.getTime(),
-					zentry.getTime() == 315550800000L);
+			assertEquals("Test 3: Failed to set time: " + zentry.getTime(),
+					315550800000L, zentry.getTime());
 			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-			assertTrue("Test 3a: Failed to set time: " + zentry.getTime(),
-					zentry.getTime() == 315532800000L);
+			assertEquals("Test 3a: Failed to set time: " + zentry.getTime(),
+					315532800000L, zentry.getTime());
 			zentry.setTime(0);
 			TimeZone.setDefault(TimeZone.getTimeZone("EST"));
-			assertTrue("Test 3b: Failed to set time: " + zentry.getTime(),
-					zentry.getTime() == 315550800000L);
+			assertEquals("Test 3b: Failed to set time: " + zentry.getTime(),
+					315550800000L, zentry.getTime());
 
 			zentry.setTime(-25);
-			assertTrue("Test 4: Failed to set time: " + zentry.getTime(),
-					zentry.getTime() == 315550800000L);
+			assertEquals("Test 4: Failed to set time: " + zentry.getTime(),
+					315550800000L, zentry.getTime());
 			zentry.setTime(4354837200000L);
-			assertTrue("Test 5: Failed to set time: " + zentry.getTime(),
-					zentry.getTime() == 315550800000L);
+			assertEquals("Test 5: Failed to set time: " + zentry.getTime(),
+					315550800000L, zentry.getTime());
 		} finally {
 			TimeZone.setDefault(zone);
 		}
@@ -411,10 +411,10 @@ public class ZipEntryTest extends junit.framework.TestCase {
 				.getCompressedSize());
 		assertEquals("ZipEntry Created With Incorrect Comment.", "Testing", zentry2
 				.getComment());
-		assertTrue("ZipEntry Created With Incorrect Crc.",
-				zentry2.getCrc() == orgCrc);
-		assertTrue("ZipEntry Created With Incorrect Time.",
-				zentry2.getTime() == orgTime);
+		assertEquals("ZipEntry Created With Incorrect Crc.",
+				orgCrc, zentry2.getCrc());
+		assertEquals("ZipEntry Created With Incorrect Time.",
+				orgTime, zentry2.getTime());
 	}
 
 	/**
@@ -423,8 +423,8 @@ public class ZipEntryTest extends junit.framework.TestCase {
 	public void test_clone() {
 		// Test for method java.util.zip.ZipEntry.clone()
 		Object obj = zentry.clone();
-		assertTrue("toString()", obj.toString().equals(zentry.toString()));
-		assertTrue("hashCode()", obj.hashCode() == zentry.hashCode());
+		assertEquals("toString()", zentry.toString(), obj.toString());
+		assertEquals("hashCode()", zentry.hashCode(), obj.hashCode());
 
 		// One constructor
 		ZipEntry zeInput = new ZipEntry("InputZIP");
