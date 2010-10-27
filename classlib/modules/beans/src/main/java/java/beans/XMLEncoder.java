@@ -126,7 +126,7 @@ public class XMLEncoder extends Encoder {
      */
     public void close() {
         flush();
-        out.println("</java>"); //$NON-NLS-1$
+        out.println("</java> "); //$NON-NLS-1$
         out.close();
     }
 
@@ -157,10 +157,10 @@ public class XMLEncoder extends Encoder {
         synchronized (this) {
             // write xml header
             if (!hasXmlHeader) {
-                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?> ");
                 out.println("<java version=\""
                         + System.getProperty("java.version")
-                        + "\" class=\"java.beans.XMLDecoder\">");
+                        + "\" class=\"java.beans.XMLDecoder\"> ");
                 hasXmlHeader = true;
             }
 
@@ -201,7 +201,7 @@ public class XMLEncoder extends Encoder {
         }
         flushIndent(indent);
         if (obj == null) {
-            out.println("<null />");
+            out.println("<null /> ");
         } else if (obj instanceof String) {
             Record rec = objRecordMap.get(obj);
             if (null != rec) {
@@ -211,25 +211,25 @@ public class XMLEncoder extends Encoder {
             }
             out.print("<string>");
             flushString((String) obj);
-            out.println("</string>");
+            out.println("</string> ");
         } else if (obj instanceof Class<?>) {
-            out.println("<class>" + ((Class<?>) obj).getName() + "</class>");
+            out.println("<class>" + ((Class<?>) obj).getName() + "</class> ");
         } else if (obj instanceof Boolean) {
-            out.println("<boolean>" + obj + "</boolean>");
+            out.println("<boolean>" + obj + "</boolean> ");
         } else if (obj instanceof Byte) {
-            out.println("<byte>" + obj + "</byte>");
+            out.println("<byte>" + obj + "</byte> ");
         } else if (obj instanceof Character) {
-            out.println("<char>" + obj + "</char>");
+            out.println("<char>" + obj + "</char> ");
         } else if (obj instanceof Double) {
-            out.println("<double>" + obj + "</double>");
+            out.println("<double>" + obj + "</double> ");
         } else if (obj instanceof Float) {
-            out.println("<float>" + obj + "</float>");
+            out.println("<float>" + obj + "</float> ");
         } else if (obj instanceof Integer) {
-            out.println("<int>" + obj + "</int>");
+            out.println("<int>" + obj + "</int> ");
         } else if (obj instanceof Long) {
-            out.println("<long>" + obj + "</long>");
+            out.println("<long>" + obj + "</long> ");
         } else if (obj instanceof Short) {
-            out.println("<short>" + obj + "</short>");
+            out.println("<short>" + obj + "</short> ");
         } else {
             getExceptionListener().exceptionThrown(
                     new Exception(Messages.getString("beans.73", obj)));
@@ -253,7 +253,7 @@ public class XMLEncoder extends Encoder {
             flushIndent(indent);
             out.print("<object idref=\"");
             out.print(rec.id);
-            out.println("\" />");
+            out.println("\"/> ");
             return;
         }
 
@@ -313,10 +313,10 @@ public class XMLEncoder extends Encoder {
 
         // open tag, end
         if (rec.exp.getArguments().length == 0 && rec.stats.isEmpty()) {
-            out.println("/>");
+            out.println("/> ");
             return;
         }
-        out.println(">");
+        out.println("> ");
 
         // arguments
         for (int i = 0; i < rec.exp.getArguments().length; i++) {
@@ -330,7 +330,7 @@ public class XMLEncoder extends Encoder {
         flushIndent(indent);
         out.print("</");
         out.print(tagName);
-        out.println(">");
+        out.println("> ");
     }
 
     @SuppressWarnings("nls")
@@ -356,17 +356,17 @@ public class XMLEncoder extends Encoder {
 
         // open tag, end
         if (subStats.isEmpty()) {
-            out.println("/>");
+            out.println("/> ");
             return;
         }
-        out.println(">");
+        out.println("> ");
 
         // sub statements
         flushSubStatements(subStats, indent);
 
         // close tag
         flushIndent(indent);
-        out.println("</array>");
+        out.println("</array> ");
     }
 
     @SuppressWarnings("nls")
@@ -401,10 +401,10 @@ public class XMLEncoder extends Encoder {
 
         // open tag, end
         if (stat.getArguments().length == 0 && subStats.isEmpty()) {
-            out.println("/>");
+            out.println("/> ");
             return;
         }
-        out.println(">");
+        out.println("> ");
 
         // arguments
         for (int i = 0; i < stat.getArguments().length; i++) {
@@ -418,7 +418,7 @@ public class XMLEncoder extends Encoder {
         flushIndent(indent);
         out.print("</");
         out.print(tagName);
-        out.println(">");
+        out.println("> ");
     }
 
     @SuppressWarnings("nls")
@@ -484,15 +484,15 @@ public class XMLEncoder extends Encoder {
             out.print(" field=\"");
             out.print(stat.getArguments()[0]);
             out.print("\"");
-            out.println("/>");
+            out.println("/> ");
         } else {
             out.print(" method=\"");
             out.print(stat.getMethodName());
             out.print("\"");
-            out.println(">");
+            out.println("> ");
             flushObject(stat.getArguments()[0], indent + INDENT_UNIT);
             flushIndent(indent);
-            out.println("</object>");
+            out.println("</object> ");
         }
     }
 
@@ -526,10 +526,10 @@ public class XMLEncoder extends Encoder {
 
         // open tag, end
         if (stat.getArguments().length == 0 && subStats.isEmpty()) {
-            out.println("/>");
+            out.println("/> ");
             return;
         }
-        out.println(">");
+        out.println("> ");
 
         // arguments
         for (int i = 0; i < stat.getArguments().length; i++) {
@@ -543,7 +543,7 @@ public class XMLEncoder extends Encoder {
         flushIndent(indent);
         out.print("</");
         out.print(tagName);
-        out.println(">");
+        out.println("> ");
     }
 
     @SuppressWarnings("nls")
@@ -576,10 +576,10 @@ public class XMLEncoder extends Encoder {
 
         // open tag, end
         if (stat.getArguments().length == 1 && subStats.isEmpty()) {
-            out.println("/>");
+            out.println("/> ");
             return;
         }
-        out.println(">");
+        out.println("> ");
 
         // arguments
         for (int i = 1; i < stat.getArguments().length; i++) {
@@ -593,7 +593,7 @@ public class XMLEncoder extends Encoder {
         flushIndent(indent);
         out.print("</");
         out.print(tagName);
-        out.println(">");
+        out.println("> ");
     }
 
     @SuppressWarnings("nls")
