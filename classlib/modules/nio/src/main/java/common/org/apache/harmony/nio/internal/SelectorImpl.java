@@ -560,11 +560,7 @@ final class SelectorImpl extends AbstractSelector {
                     selectedOp = ACCEPT_OR_READ & ops;
                     break;
                 case WRITEABLE:
-                    if (key.isConnected()) {
-                        selectedOp = OP_WRITE & ops;
-                    } else {
-                        selectedOp = (OP_CONNECT | OP_WRITE) & ops;
-                    }
+                    selectedOp = (OP_CONNECT | OP_WRITE) & ops;
                     break;
             }
 

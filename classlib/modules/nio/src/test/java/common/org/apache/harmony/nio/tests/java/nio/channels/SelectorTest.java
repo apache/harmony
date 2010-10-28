@@ -449,6 +449,22 @@ public class SelectorTest extends TestCase {
         }
     }
 
+    public void test_nonBlockingConnect() throws IOException {
+        SocketChannel channel = null;
+        try {
+            channel = SocketChannel.open();
+            channel.configureBlocking(false);
+            Selector selector = Selector.open();
+            channel.register(selector, SelectionKey.OP_CONNECT);
+            channel.connect(LOCAL_ADDRESS);
+            channel.finishConnect();
+            selector.select();
+            assertEquals(1, selector.selectedKeys().size());
+        } finally {
+            channel.close();
+        }
+    }
+
     private void assert_select_SelectorClosed(SelectType type, int timeout)
             throws IOException {
         // selector is closed
