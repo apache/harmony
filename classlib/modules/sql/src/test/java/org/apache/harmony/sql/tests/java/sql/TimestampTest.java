@@ -679,4 +679,16 @@ public class TimestampTest extends TestCase {
     protected void tearDown(){
     	TimeZone.setDefault(defaultTimeZone);
     }
+
+    /**
+     * @tests overriding Timestamp to create an immutable class.
+     */
+    public void testOverridingTimestamp() {
+        Timestamp ts = new Timestamp(8392418){
+            @Override
+            public void setNanos(int n) {
+                throw new RuntimeException("Overridden method shouldn't be called");
+            }
+        };
+    }
 } // end class TimestampTest

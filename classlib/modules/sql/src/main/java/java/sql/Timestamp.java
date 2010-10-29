@@ -353,7 +353,9 @@ public class Timestamp extends Date {
             milliseconds = 1000 + milliseconds;
         }
         super.setTime(theTime);
-        setNanos(milliseconds * 1000000);
+        // bounds checking not required as the value will be
+        // between 0 and 999999999 from the construction
+        nanos = milliseconds * 1000000;
     }
 
     /**
