@@ -17,10 +17,10 @@
 # Makefile for module 'instrument'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/instrument/native/instrument/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = \
-	../shared/instrument.o ../shared/inst_agt.o 
+BUILDFILES = instrument.o inst_agt.o 
 
 ifneq ($(HY_ZIP_API),true)
 MDLLIBFILES += $(LIBPATH)libhyzip.a 
@@ -35,4 +35,4 @@ MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
 DLLNAME = $(DLLPATH)libhyinstrument$(HY_SHLIB_SUFFIX)
 EXPNAME = HYINSTRUMENT_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

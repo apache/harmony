@@ -19,14 +19,17 @@
 <project name="ARCHIVE Build" default="build" basedir=".">
     <description>Build for ARCHIVE component</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="archive" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
     <property file="../../make/depends.properties" />
     <property file="make/depends.properties" />
+
+    <property name="zlib.dist"
+              location="${hy.target}/depends/native/zlib_dist"/>
 
     <target name="build" depends="check-depends,-build-no-check"/>
     <target name="-build-no-check" depends="-build-jar,-test-jar" />
@@ -50,7 +53,7 @@
     <target name="-copy-zlib-include" unless="hy.skip.zlib">
         <!-- TOFIX: should add property for: unless="skip.native.build" -->
         <copy todir="${hy.hdk}/include" preservelastmodified="true">
-            <fileset dir="src/main/native/zlib_dist">
+            <fileset dir="${zlib.dist}">
                 <include name="zlib.h" />
                 <include name="zconf.h" />
             </fileset>
@@ -73,7 +76,7 @@
     <target name="-extract-props" unless="hy.skip.zlib">
         <uptodate property="zlib.extracted"
                   srcfile="${zlib.tar}"
-                  targetfile="src/main/native/zlib_dist/README" />
+                  targetfile="${zlib.dist}/README" />
         <condition property="zlib.uptodate" value="true">
             <or>
                 <isset property="hy.skip.zlib" />
@@ -83,31 +86,31 @@
     </target>
 
     <target name="-unzip-oss" unless="zlib.uptodate">
-        <mkdir dir="src/main/native/zlib_dist" />
-        <untar src="${zlib.tar}" dest="src/main/native/zlib_dist"
+        <mkdir dir="${zlib.dist}" />
+        <untar src="${zlib.tar}" dest="${zlib.dist}"
                compression="gzip">
             <mapper type="flatten"/>
         </untar>
-        <chmod dir="src/main/native/zlib_dist" perm="ugo+r" />
-        <touch file="src/main/native/zlib_dist/README" />
+        <chmod dir="${zlib.dist}" perm="ugo+r" />
+        <touch file="${zlib.dist}/README" />
     </target>
 
     <target name="-ascii2ebcdic-conversion" if="is.zos" unless="zlib.uptodate">
-        <move todir="src/main/native/zlib_dist_ascii">
-            <fileset dir="src/main/native/zlib_dist">
+        <move todir="${zlib.dist}_ascii">
+            <fileset dir="${zlib.dist}">
                 <include name="**/*" />
                 <exclude name="**/*.o" />
             </fileset>
         </move>
-        <copy todir="src/main/native/zlib_dist" outputencoding="IBM-1047" >
-            <fileset dir="src/main/native/zlib_dist_ascii">
+        <copy todir="${zlib.dist}" outputencoding="IBM-1047" >
+            <fileset dir="${zlib.dist}_ascii">
                 <include name="**/*" />
                 <exclude name="**/*.o" />
             </fileset>               
         </copy>
-        <fixcrlf srcdir="src/main/native/zlib_dist"
+        <fixcrlf srcdir="${zlib.dist}"
                  includes="**/*" excludes="**/*.o" eol="unix" />
-        <delete dir="src/main/native/zlib_dist_ascii" />
+        <delete dir="${zlib.dist}_ascii" />
     </target>
     
     <!-- Build native code -->
@@ -152,7 +155,7 @@
     </target>
 
     <target name="-clean-overlay-oss" unless="hy.skip.zlib" >
-        <delete dir="src/main/native/zlib_dist" quiet="true" />
+        <delete dir="${zlib.dist}" quiet="true" />
     </target>
     
     <target name="test" depends="-test-module">
@@ -181,7 +184,7 @@
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
@@ -219,11 +222,11 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
         
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests.jar">
-            <fileset dir="bin/test" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_internal_tests.jar">
-            <fileset dir="bin/test-internal" />
+            <fileset dir="${hy.build.mod}/test/internal" />
         </hy.jar.bin>
 
         <mkdir dir="${tests.excludes.hdk.dir}"/>
@@ -244,7 +247,7 @@
 
     <target name="-compile-tests" unless="skip.test.build">
         <compile-tests description="${hy.module} internal tests"
-                       destdir="bin/test-internal">
+                       destdir="${hy.build.mod}/test/internal">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/java-internal" />

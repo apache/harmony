@@ -14,13 +14,14 @@
 #  limitations under the License.
 
 #
-# Makefile for module 'common'
+# Makefile for module 'vmls'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/luni/native/vmls/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I../../include/shared
-BUILDFILES = $(SHAREDSUB)vmls.o
+BUILDFILES = vmls.o
 LIBNAME = $(LIBPATH)libhyvmls.a
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

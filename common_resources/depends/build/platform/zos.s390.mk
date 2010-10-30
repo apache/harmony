@@ -19,16 +19,17 @@ AS = cc
 # Use cxx/c++ for c++ compiles on z/OS
 CXX = cxx
 
-DEFINES += -DZOS -DZOS_S390X -DHYS390X -DHY_ATOE -D_OPEN_SYS_IF_EXT=1 -DIPv6_FUNCTION_SUPPORT
-PLATFORM = -Wc,lp64,xplink,convlit\(ISO8859-1\),FLOAT\(IEEE,FOLD,AFP\) \
-           -Wa,goff -Wc,NOANSIALIAS -Wc,DLL,EXPORTALL
+DEFINES += -DZOS -DZOS_S390 -DHYS390 -DHY_ATOE -D_OPEN_SYS_IF_EXT=1 \
+           -DIPv6_FUNCTION_SUPPORT
+PLATFORM = -Wc,xplink,convlit\(ISO8859-1\),FLOAT\(IEEE,FOLD,AFP\) -Wa,goff \
+           -Wc,NOANSIALIAS -Wc,DLL,EXPORTALL
 
-CFLAGS += -Wc,"SSCOMM" -Wc,"langlvl(commonc)"
-CXXFLAGS += -+ -Wc,"langlvl(extended)"
+CFLAGS += -Wc,"SSCOMM" -Wc,"langlvl(commonc)" -Wc,gonumber
+CXXFLAGS += -+ -Wc,"langlvl(extended)" -Wc,gonumber
 
-ASFLAGS += -Wc,lp64,xplink,convlit\(ISO8859-1\)  -Wa,goff -Wc,NOANSIALIAS \
-           -Wc,DLL,EXPORTALL -Wa,SYSPARM\(BIT64\) -c
-LDFLAGS += -Wl,lp64 -Wl,xplink,dll
+ASFLAGS += -Wc,xplink,convlit\(ISO8859-1\) -Wc,gonumber -Wa,goff \
+           -Wc,NOANSIALIAS -Wc,DLL,EXPORTALL -c
+LDFLAGS += -Wl,xplink,dll
 
 # No need for --start-group and --end-group tags here
 MDLLIBPREFIX =
@@ -37,17 +38,21 @@ MDLLIBSUFFIX =
 # No need to specify STDC libs on z/OS
 STDCLIBS =
 
-# Don't use these flags on z/OS
+# Don't use these flags on zOS
 DLL_LDFLAGS =
 
-# We can't use the -Xlinker options on z/OS
-EXERPATHPREFIX = 
+# We can't use the -Xlinker options on zOS
+EXERPATHPREFIX =
 
 # Different compiler on zOS
 WARNFLAGS =
 
 # z/OS has different debug flags
 HYDEBUGCFLAGS = -g -O0
+
+# On z/OS set DLLPATH to LIBPATH so we link against .x export files in
+# $(HY_HDK)/lib instead of directly against the .so libraries.
+DLLPATH=$(LIBPATH)
 
 # AR doesn't support the 'o' option on z/OS so mtime will be updated
 AREXTRACT= x

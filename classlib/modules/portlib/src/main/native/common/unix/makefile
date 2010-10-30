@@ -17,11 +17,12 @@
 # Makefile for module 'common'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/portlib/native/common/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = $(SHAREDSUB)libglob.o $(SHAREDSUB)iohelp.o \
-	$(SHAREDSUB)exceptions.o $(SHAREDSUB)strhelp.o \
-	$(SHAREDSUB)utf8encode.o $(SHAREDSUB)utf8decode.o
+BUILDFILES = \
+  libglob.o iohelp.o exceptions.o strhelp.o utf8encode.o utf8decode.o
 LIBNAME = $(LIBPATH)libhycommon.a
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk
+

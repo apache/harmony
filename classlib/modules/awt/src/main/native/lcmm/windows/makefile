@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\awt\native\lcmm\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LCMS_DIR=$(HY_LCMS_DIR)\# avoid continuation
 
@@ -25,11 +26,11 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB) /I$(LCMS_DIR)include /I$(SHAREDSUB)include
 
 BUILDFILES = \
-  $(SHAREDSUB)cmmerror.obj \
-  $(SHAREDSUB)cmmio.obj \
-  $(SHAREDSUB)cmmxforms.obj \
-  $(SHAREDSUB)NativeCMM.obj \
-  $(SHAREDSUB)NativeImageFormat.obj
+  $(HY_BIN)cmmerror.obj \
+  $(HY_BIN)cmmio.obj \
+  $(HY_BIN)cmmxforms.obj \
+  $(HY_BIN)NativeCMM.obj \
+  $(HY_BIN)NativeImageFormat.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib

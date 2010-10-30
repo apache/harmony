@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/imageio/native/pngencoder/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)include
 
-BUILDFILES = $(SHAREDSUB)pngencoder.o
+BUILDFILES = pngencoder.o
 
 ifneq ($(HY_OS),zos)
 OSLIBS += -lpng
@@ -33,4 +34,4 @@ endif
 DLLNAME=$(DLLPATH)libpngencoder$(HY_SHLIB_SUFFIX)
 EXPNAME=HYPNGENCODER_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

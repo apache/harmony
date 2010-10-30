@@ -17,16 +17,20 @@
 -->
 
 <project name="gc_gen" default="build" basedir="../..">
+
     
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="gc_gen"/>
+
     <import file="common-vm.xml"/>
     <import file="../build-java.xml"/>
     
     <target name="build">
         <antcall target="build-uncompressed">
-            <param name="component" value="gc_gen_uncomp"/>
+            <param name="hy.module" value="gc_gen_uncomp"/>
         </antcall>
         <antcall target="build-compressed">
-            <param name="component" value="gc_gen"/>
+            <param name="hy.module" value="gc_gen"/>
         </antcall>
         <make-java component="gc_gen" src="${vm.home}/gc_gen/javasrc"
             manifest="${vm.home}/gc_gen/resource/MANIFEST.MF">

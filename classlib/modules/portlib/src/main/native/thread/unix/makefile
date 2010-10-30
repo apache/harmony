@@ -17,17 +17,17 @@
 # Makefile for module 'thread'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/portlib/native/thread/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
-BUILDFILES = \
-	$(SHAREDSUB)thread_copyright.o $(HY_ARCH)/thrhelp.o $(HY_ARCH)/thrspinlock.o \
-	$(SHAREDSUB)hythread.o $(SHAREDSUB)hythreadinspect.o linuxonexit.o priority.o \
-	rasthrsup.o $(SHAREDSUB)rwmutex.o thrcreate.o thrdsup.o $(SHAREDSUB)thrprof.o
+BUILDFILES = thread_copyright.o thrhelp.o thrspinlock.o hythread.o \
+  hythreadinspect.o linuxonexit.o priority.o rasthrsup.o rwmutex.o \
+  thrcreate.o thrdsup.o thrprof.o
 
 OSLIBS += -lpthread
 MDLLIBFILES = $(LIBPATH)libhypool.a $(LIBPATH)libhycommon.a
-DLLNAME = ../libhythr$(HY_SHLIB_SUFFIX)
+DLLNAME = $(HY_BIN)libhythr$(HY_SHLIB_SUFFIX)
 EXPNAME = HYTHR_0.1
 HY_CAN_LINK_DEBUG=no
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

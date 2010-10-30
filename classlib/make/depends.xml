@@ -25,10 +25,8 @@
     where possible.
     </description>
 
-    <property name="hy.hdk" location="${basedir}/deploy" />
-
-    <import file="${basedir}/make/properties.xml" />
-    <import file="${basedir}/make/depends-common.xml" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
+    <import file="${hy.target}/hdk/build/ant/depends.xml" />
 
     <target name="check" description="Check whether dependencies are available"
             depends="-check,-check-win,-extract" />

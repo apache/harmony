@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/awt/native/jpegdecoder/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I$(SHAREDSUB)include
 
-BUILDFILES = $(SHAREDSUB)JpegDecoder.o
+BUILDFILES = JpegDecoder.o
 
 OSLIBS += -ljpeg
 
 DLLNAME=$(DLLPATH)libjpegdecoder$(HY_SHLIB_SUFFIX)
 EXPNAME=HYJPEGDECODER_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

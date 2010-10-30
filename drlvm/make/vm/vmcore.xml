@@ -18,7 +18,8 @@
 
 <project name="vmcore" default="build" basedir="../..">
 
-    <property name="component" value="vmcore"/>
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="vmcore"/>
     <import file="common-vm.xml"/>
 
     <target name="fetch-depends">

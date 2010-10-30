@@ -26,10 +26,7 @@
         <fail>
             <condition>
                 <not>
-                    <and>
-                    <available file="${hy.hdk}/include"/>
-                    <available file="${hy.hdk}/lib"/>
-                    </and>
+                    <available file="${hy.hdk}/build/ant"/>
                 </not>
             </condition>
 ...

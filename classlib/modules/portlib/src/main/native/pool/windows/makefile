@@ -17,10 +17,11 @@
 # Makefile for module 'pool'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\portlib\native\pool\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBNAME=$(LIBPATH)hypool.lib
-BUILDFILES = $(SHAREDSUB)pool.obj $(SHAREDSUB)pool_cap.obj
+BUILDFILES = $(HY_BIN)pool.obj $(HY_BIN)pool_cap.obj
 MDLLIBFILES =
 
 !include <$(HY_HDK)\build\make\rules.mak>

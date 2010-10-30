@@ -13,7 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-DEFINES += -DLINUX -DLINUX_X86_64 -DHYX86_64 -DIPv6_FUNCTION_SUPPORT
-XLIBS = -L/usr/X11R6/lib64 -lX11 -lXft -lXext -lXtst
+DEFINES += -DLINUX -DLINUX_X86 -DHYX86 -DIPv6_FUNCTION_SUPPORT
+PLATFORM += -march=pentium3
 OSLIBS += -ldl
 HY_CAN_LINK_DEBUG = yes
+DEPFLAGS = -MD

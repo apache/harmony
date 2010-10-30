@@ -17,11 +17,13 @@
 # Makefile for module samsa
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\jdktools\samsa\native\samsa\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
+SHAREDSUB=..\# trailing slash not continuation
 EXEBASE = samsa
 EXENAME = $(LIBPATH)$(EXEBASE).exe
-BUILDFILES = ..\samsa.obj
+BUILDFILES = $(HY_BIN)samsa.obj
 EXEFLAGS=$(conlflags) -subsystem:console
 EXEDLLFILES=$(conlibsdll)
 

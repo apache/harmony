@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\imageio\native\pngencoder\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 PNG_DIR=$(HY_PNG_DIR)\# avoid continuation
 
@@ -25,7 +26,7 @@ HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB)include /I$(SHAREDSUB) \
            /I$(PNG_DIR) /Iinclude
 
-BUILDFILES = $(SHAREDSUB)pngencoder.obj
+BUILDFILES = $(HY_BIN)pngencoder.obj
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib

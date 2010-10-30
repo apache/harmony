@@ -17,18 +17,19 @@
 # Makefile for module 'launcher.java'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\luni\native\launcher\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 EXEBASE=java
 EXENAME=$(EXEPATH)$(EXEBASE).exe
 HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB)
 
-BUILDFILES = $(SHAREDSUB)launcher_copyright.obj $(SHAREDSUB)cmain.obj \
-        $(SHAREDSUB)main.obj $(SHAREDSUB)strbuf.obj $(SHAREDSUB)libhlp.obj
+BUILDFILES = $(HY_BIN)launcher_copyright.obj $(HY_BIN)cmain.obj \
+        $(HY_BIN)main.obj $(HY_BIN)strbuf.obj $(HY_BIN)libhlp.obj
 !IF "$(HY_NO_THR)" == "false"
 MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)hyprt$(HY_LINKLIB_SUFFIX)
 !ELSE
-BUILDFILES = $(BUILDFILES) main_hlp.obj
+BUILDFILES = $(BUILDFILES) $(HY_BIN)main_hlp.obj
 !ENDIF
 
 VIRTFILES = java.res

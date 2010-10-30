@@ -19,10 +19,10 @@
 <project name="SECURITY Build" default="build" basedir=".">
     <description>Build for SECURITY component</description>
 
+    <property name="hy.component" value="classlib" />
     <property name="hy.module" value="security" />
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
 
     <property file="../../make/depends.properties" />
 
@@ -66,7 +66,7 @@
 
     <target name="-clean-test" unless="skip.test.build">
         <delete dir="${tests.hdk.dir}" failonerror="false" />
-        <delete failonerror="false" dir="bin"/>
+        <delete failonerror="false" dir="${hy.build.mod}/test"/>
     </target>
 
     <target name="-compile-java" unless="skip.java.build">
@@ -108,19 +108,19 @@
         <copy file="make/run-test.xml" tofile="${tests.hdk.dir}/build.xml" />
 
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_api.jar">
-            <fileset dir="bin/test/api" />
+            <fileset dir="${hy.build.mod}/test/api" />
         </hy.jar.bin>
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_api_in.jar">
-            <fileset dir="bin/test/api.injected" />
+            <fileset dir="${hy.build.mod}/test/api.injected" />
         </hy.jar.bin>
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_impl.jar">
-            <fileset dir="bin/test/impl" />
+            <fileset dir="${hy.build.mod}/test/impl" />
         </hy.jar.bin>
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_impl_in.jar">
-            <fileset dir="bin/test/impl.injected" />
+            <fileset dir="${hy.build.mod}/test/impl.injected" />
         </hy.jar.bin>
         <hy.jar.bin destfile="${tests.hdk.dir}/${hy.module}_tests_support.jar">
-            <fileset dir="bin/test/support" />
+            <fileset dir="${hy.build.mod}/test/support" />
         </hy.jar.bin>
 
         <copy todir="${tests.resources.hdk.dir}">
@@ -141,7 +141,7 @@
     <target name="-compile-tests" unless="skip.test.build">
 
         <compile-tests description="${hy.module} test support files"
-                       destdir="bin/test/support">
+                       destdir="${hy.build.mod}/test/support">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/support/common/java"/>
@@ -150,47 +150,47 @@
             </javac-elements>
         </compile-tests>
 
-        <compile-tests description="${hy.module} api tests" destdir="bin/test/api">
+        <compile-tests description="${hy.module} api tests" destdir="${hy.build.mod}/test/api">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/api/java"/>
                 </src>
 
                 <include name="**/*Test.java" />
-                <classpath location="bin/test/support" />
+                <classpath location="${hy.build.mod}/test/support" />
             </javac-elements>
         </compile-tests>
 
         <compile-tests description="${hy.module} api injected tests"
-                       destdir="bin/test/api.injected">
+                       destdir="${hy.build.mod}/test/api.injected">
             <javac-elements>
                 <src path="src/test/api/java.injected"/>
                 <include name="**/*Test.java" />
-                <classpath location="bin/test/support" />
+                <classpath location="${hy.build.mod}/test/support" />
             </javac-elements>
         </compile-tests>
 
         <compile-tests description="${hy.module} impl injected tests"
-                       destdir="bin/test/impl.injected">
+                       destdir="${hy.build.mod}/test/impl.injected">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/impl/java.injected"/>
                 </src>
 
                 <include name="**/*Test.java" />
-                <classpath location="bin/test/support" />
+                <classpath location="${hy.build.mod}/test/support" />
             </javac-elements>
         </compile-tests>
 
         <compile-tests description="${hy.module} impl tests"
-                       destdir="bin/test/impl">
+                       destdir="${hy.build.mod}/test/impl">
             <javac-elements>
                 <src>
                     <pathelement location="src/test/impl/java"/>
                 </src>
 
                 <include name="**/*Test.java" />
-                <classpath location="bin/test/support" />
+                <classpath location="${hy.build.mod}/test/support" />
             </javac-elements>
         </compile-tests>
     </target>

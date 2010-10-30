@@ -19,7 +19,9 @@
 
 CFLAGS := $(DEFINES) $(INCLUDES) $(OPT) $(PLATFORM) $(CFLAGS) $(WARNFLAGS)
 CXXFLAGS := $(DEFINES) $(INCLUDES) $(OPT) $(PLATFORM) $(CXXFLAGS) $(WARNFLAGS)
-EXPFILE = $(notdir $(basename $(DLLNAME))).exp
+EXPFILE = $(HY_BIN)$(notdir $(basename $(DLLNAME))).exp
+
+BUILDFILES := $(addprefix $(HY_BIN),$(BUILDFILES))
 
 ifneq ($(HY_OS),zos)
 # Convert $(LIBPATH)libblah.so to -L$(LIBPATH) ... -lblah, also for $(DLLPATH)
@@ -34,9 +36,14 @@ MDLLIBARGS := \
   $(MDLLIBPREFIX) $(MDLLIBFILES) $(MDLLIBSUFFIX)
 endif
 
-all: $(DLLNAME) $(EXENAME) $(LIBNAME)
+all: $(DLLNAME) $(EXENAME) $(LIBNAME) $(HDKINCLUDES)
+
+CFLAGS += $(DEPFLAGS)
+CXXFLAGS += $(DEPFLAGS)
+-include $(BUILDFILES:.o=.d)
 
 $(LIBNAME): $(BUILDFILES)
+	@mkdir -p $(@D)
 	$(AR) $(ARFLAGS) $(ARCREATE) $@ $(BUILDFILES)
 	$(RANLIB) $@
 
@@ -46,12 +53,13 @@ ifeq ($(HY_OS),aix)
 else
 	echo "$(EXPNAME) {" >$@
 	echo "  global :" >>$@
-	sed -e's/^/    /;s/$$/;/' <$< >>$@
+	sed -e's/^/    /;/#/!s/$$/;/' <$< >>$@
 	echo "  local : *;" >>$@
 	echo "};" >>$@
 endif
 
 $(DLLNAME): $(BUILDFILES) $(MDLLIBFILES) $(EXPFILE)
+	@mkdir -p $(@D)
 	$(DLL_LD) $(DLL_LDFLAGS) $(LDFLAGS) $(VMLINK) -o $@ \
 	$(BUILDFILES) $(MDLLIBARGS) $(OSLIBS)
 ifeq ($(HY_CAN_LINK_DEBUG),yes)
@@ -67,6 +75,7 @@ ifeq ($(HY_OS),zos)
 endif
 
 $(EXENAME): $(BUILDFILES) $(MDLLIBFILES)
+	@mkdir -p $(@D)
 	$(CC) $(VMLINK) $(EXELDFLAGS) \
 	$(BUILDFILES) $(MDLLIBARGS) -o $@ $(OSLIBS) \
 	$(EXERPATHPREFIX) -L$(DLLPATH)
@@ -75,3 +84,76 @@ $(EXENAME): $(BUILDFILES) $(MDLLIBFILES)
 clean:
 	-rm -f $(BUILDFILES) $(DLLNAME) $(EXENAME) $(LIBNAME) $(EXPFILE) \
 	       $(CLEANFILES) $(DBGPATH)$(notdir $(DLLNAME)).dbg
+
+# C rules
+$(HY_BIN)%.o: $(HY_PLATFORM)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(HY_ARCH)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(HY_OS)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)additional/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: %.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(OSS_DIST)%.c # for zlib_dist / fdlibm_dist
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+# C++ rules
+$(HY_BIN)%.o: $(HY_ARCH)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(HY_OS)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)$(HY_ARCH)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: %.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+
+# assembler rules
+$(HY_BIN)%.o: $(HY_PLATFORM)/%.s
+	@mkdir -p $(@D)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: $(HY_ARCH)/%.s
+	@mkdir -p $(@D)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: $(HY_OS)/%.s
+	@mkdir -p $(@D)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: $(SHAREDSUB)%.s
+	@mkdir -p $(@D)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(HY_BIN)%.o: %.s
+	@mkdir -p $(@D)
+	$(AS) $(ASFLAGS) -o $@ $<
+

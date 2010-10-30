@@ -17,7 +17,8 @@
 # Makefile for module jdwp - transport
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/jdktools/jpda/native/dt_socket/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 DLL_LD=$(CXX)
 COMMON=../../../common/
@@ -26,9 +27,7 @@ CMNTRANS=$(COMMON)transport/
 INCLUDES := -I../../../../include -I$(CMNTRANS)common -I$(CMNTRANS)dt_socket \
             -I$(COMMON)generic -I. $(INCLUDES)
 
-BUILDFILES = \
-    $(CMNTRANS)common/LastTransportError.o \
-    $(CMNTRANS)dt_socket/SocketTransport.o 
+BUILDFILES = LastTransportError.o SocketTransport.o
 
 ifneq ($(HY_OS),zos)
   # !zOS
@@ -65,3 +64,11 @@ ifneq ($(HY_OS),zos)
 endif
 
 include $(HY_HDK)/build/make/rules.mk
+
+$(HY_BIN)%.o: $(CMNTRANS)common/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+
+$(HY_BIN)%.o: $(CMNTRANS)dt_socket/%.cpp
+	@mkdir -p ${@D}
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<

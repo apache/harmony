@@ -16,7 +16,10 @@
      limitations under the License.
 -->
 <project name="test-common">
-    
+
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="test-common"/>
+
     <dirname property="tc.imported.basedir" file="${ant.file.test-common}"/>
     <import file="${tc.imported.basedir}/../build-java.xml"/>
 

@@ -17,6 +17,7 @@
 # Configuration Makefile
 #
 
+HY_HDK=$(HY_TARGET)/hdk
 include $(HY_HDK)/build/make/properties.mk
 
 CXX = $(CC)
@@ -51,10 +52,6 @@ EXEPATH=$(HY_HDK)/jdk/jre/bin/
 DBGPATH=$(HY_HDK)/jdk/lib/
 SHAREDSUB=../shared/
 INCLUDES += -I$(HY_HDK)/include -I$(HY_HDK)/jdk/include -I. -I$(SHAREDSUB)
-
-ifndef HYDEBUGCFLAGS
-HYDEBUGCFLAGS = -ggdb -O0
-endif
 
 include $(HY_HDK)/build/make/platform/$(HY_PLATFORM).mk
 

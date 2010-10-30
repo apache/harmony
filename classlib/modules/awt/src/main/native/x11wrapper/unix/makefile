@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/awt/native/x11wrapper/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common -I/usr/X11R6/include
 
-BUILDFILES = \
-  org_apache_harmony_awt_nativebridge_linux_ErrorHandler.o \
+BUILDFILES = org_apache_harmony_awt_nativebridge_linux_ErrorHandler.o \
   org_apache_harmony_awt_nativebridge_linux_GLX.o \
   org_apache_harmony_awt_nativebridge_linux_X11.o \
   org_apache_harmony_awt_nativebridge_linux_Xft.o
@@ -28,4 +28,4 @@ OSLIBS += $(STDCLIBS) $(XLIBS)
 DLLNAME=$(DLLPATH)libX11Wrapper$(HY_SHLIB_SUFFIX)
 EXPNAME=HYX11WRAPPER_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

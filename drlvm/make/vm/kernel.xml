@@ -18,6 +18,8 @@
 
 <project name="kernel" default="build" basedir="../..">
     
+    <property name="hy.component" value="drlvm"/>
+    <property name="hy.module" value="kernel"/>
     <import file="../build-java.xml"/>
     
     <target name="fetch-depends">

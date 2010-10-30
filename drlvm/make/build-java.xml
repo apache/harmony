@@ -41,7 +41,7 @@
     </macrodef>
 
     <macrodef name="make-java">
-        <attribute name="component" default="${component}"/>
+        <attribute name="component" default="${hy.module}"/>
         <attribute name="src"/>
         <attribute name="manifest"/>
         <element name="javac-elements" implicit="yes" optional="yes"/>

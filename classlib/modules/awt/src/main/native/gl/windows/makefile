@@ -14,7 +14,8 @@
 # limitations under the License.
 
 APPVER = 5.0 # Need WINVER=0x0500 to get HMONITOR defined.
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\awt\native\gl\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 PNG_DIR=$(HY_PNG_DIR)\# avoid continuation
 
@@ -27,18 +28,18 @@ HYCFLAGS = $(HYCFLAGS) /D_WIN32_WINNT=0x0500 /I$(SHAREDSUB)include /I$(SHAREDSUB
            /I$(PNG_DIR) /Iinclude
 
 BUILDFILES = \
-  BitmapSurface.obj \
-  GDIBlitter.obj \
-  WinGDIGraphics2D.obj \
-  WinGDIPGraphics2D.obj \
-  WinGraphicsEnvironment.obj \
-  WinThemeGraphics.obj \
-  LockingKeys.obj \
-  $(SHAREDSUB)blitter.obj \
-  $(SHAREDSUB)gifdecoder.obj \
-  $(SHAREDSUB)LUTTables.obj \
-  $(SHAREDSUB)pngdecoder.obj \
-  $(SHAREDSUB)SurfaceDataStructure.obj \
+  $(HY_BIN)BitmapSurface.obj \
+  $(HY_BIN)GDIBlitter.obj \
+  $(HY_BIN)WinGDIGraphics2D.obj \
+  $(HY_BIN)WinGDIPGraphics2D.obj \
+  $(HY_BIN)WinGraphicsEnvironment.obj \
+  $(HY_BIN)WinThemeGraphics.obj \
+  $(HY_BIN)LockingKeys.obj \
+  $(HY_BIN)blitter.obj \
+  $(HY_BIN)gifdecoder.obj \
+  $(HY_BIN)LUTTables.obj \
+  $(HY_BIN)pngdecoder.obj \
+  $(HY_BIN)SurfaceDataStructure.obj \
 
 VIRTFILES = $(LIBBASE).res
 SYSLIBFILES = ws2_32.lib Iphlpapi.lib \

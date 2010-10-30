@@ -17,7 +17,8 @@
 # Makefile for module 'luni'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\luni\native\luni\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hyluni
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -26,18 +27,18 @@ HYCFLAGS = $(HYCFLAGS) /I$(SHAREDSUB)
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-  $(SHAREDSUB)luni_copyright.obj $(SHAREDSUB)file.obj procimpl.obj \
-  $(SHAREDSUB)nethelp.obj $(SHAREDSUB)floatbits.obj \
-  helpers.obj $(SHAREDSUB)math.obj \
-  $(SHAREDSUB)luniglob.obj $(SHAREDSUB)proxy.obj $(SHAREDSUB)netif.obj \
-  $(SHAREDSUB)cbigint.obj $(SHAREDSUB)dblparse.obj $(SHAREDSUB)fltparse.obj \
-  $(SHAREDSUB)process.obj $(SHAREDSUB)bigint.obj $(SHAREDSUB)osc.obj \
-  $(SHAREDSUB)socket.obj $(SHAREDSUB)inetadds.obj \
-  $(SHAREDSUB)filedesc.obj $(SHAREDSUB)timezone.obj \
-  OSFileSystemWin32.obj hyenv.obj\
-  $(SHAREDSUB)OSFileSystem.obj OSMemoryWin32.obj $(SHAREDSUB)OSMemory.obj \
-  $(SHAREDSUB)OSNetworkSystem.obj OSNetworkSystemWin32.obj \
-  consoleimpl.obj
+  $(HY_BIN)luni_copyright.obj $(HY_BIN)file.obj $(HY_BIN)procimpl.obj \
+  $(HY_BIN)nethelp.obj $(HY_BIN)floatbits.obj \
+  $(HY_BIN)helpers.obj $(HY_BIN)math.obj \
+  $(HY_BIN)luniglob.obj $(HY_BIN)proxy.obj $(HY_BIN)netif.obj \
+  $(HY_BIN)cbigint.obj $(HY_BIN)dblparse.obj $(HY_BIN)fltparse.obj \
+  $(HY_BIN)process.obj $(HY_BIN)bigint.obj $(HY_BIN)osc.obj \
+  $(HY_BIN)socket.obj $(HY_BIN)inetadds.obj \
+  $(HY_BIN)filedesc.obj $(HY_BIN)timezone.obj \
+  $(HY_BIN)OSFileSystemWin32.obj $(HY_BIN)hyenv.obj\
+  $(HY_BIN)OSFileSystem.obj $(HY_BIN)OSMemoryWin32.obj $(HY_BIN)OSMemory.obj \
+  $(HY_BIN)OSNetworkSystem.obj $(HY_BIN)OSNetworkSystemWin32.obj \
+  $(HY_BIN)consoleimpl.obj
 
 VIRTFILES = hyluni.res
 

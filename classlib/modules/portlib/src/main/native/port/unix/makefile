@@ -17,26 +17,18 @@
 # Makefile for module 'port'
 #
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/portlib/native/port/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -DHYPORT_LIBRARY_DEFINE -I$(HY_PLATFORM)
 
 BUILDFILES = \
-	$(SHAREDSUB)port_copyright.o $(SHAREDSUB)hyerror.o \
-	hyerrorhelpers.o $(SHAREDSUB)hyexit.o hyfile.o hyfiletext.o \
-	$(SHAREDSUB)hygp.o hymem.o \
-	$(HY_OS)/hymmap.o $(SHAREDSUB)hynls.o hynlshelpers.o hyosdump.o \
-	$(SHAREDSUB)hyport.o $(SHAREDSUB)hyportcontrol.o hyportptb.o \
-	hysharedhelper.o $(HY_OS)/hysl.o hysock.o \
-	$(SHAREDSUB)hystr.o $(SHAREDSUB)hystrftime.o $(SHAREDSUB)hystsl.o \
-	hysysinfo.o hytime.o $(SHAREDSUB)hytlshelpers.o hytty.o
+  port_copyright.o hyerror.o hyerrorhelpers.o hyexit.o hyfile.o hyfiletext.o \
+  hygp.o hymem.o /hymmap.o hynls.o hynlshelpers.o hyosdump.o hyport.o \
+  hyportcontrol.o hyportptb.o hysharedhelper.o hysl.o hysock.o hystr.o \
+  hystrftime.o hystsl.o hysysinfo.o hytime.o hytlshelpers.o hytty.o hycpu.o \
+  hyipcmutex.o hyshmem.o hyshsem.o hyvmem.o
 
-ifeq ($(HY_PORTLIB_STUBS),true)
-BUILDFILES += stubs/hycpu.o stubs/hyipcmutex.o stubs/hyshmem.o \
-              stubs/hyshsem.o stubs/hyvmem.o
-else
-BUILDFILES += hycpu.o hyipcmutex.o hyshmem.o hyshsem.o $(HY_OS)/hyvmem.o
-endif
 
 ifeq ($(HY_NO_THR),true)
 MDLLIBFILES += $(LIBPATH)libhythr$(HY_LINKLIB_SUFFIX)
@@ -44,4 +36,9 @@ endif
 DLLNAME = $(DLLPATH)libhyprt$(HY_SHLIB_SUFFIX)
 EXPNAME = HYPRT_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk
+
+ifeq ($(HY_PORTLIB_STUBS),true)
+$(HY_BIN)%.o: $(SHAREDSUB)%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
+endif

@@ -13,18 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include $(HY_HDK)/build/make/defines.mk
+HY_BIN=$(HY_TARGET)/build/classlib/misc/native/accessors/
+include $(HY_TARGET)/hdk/build/make/defines.mk
 
 INCLUDES += -I$(SHARED)common
 
 BUILDFILES = \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_ArrayAccessorImpl.o \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_Malloc.o \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_MemoryAccessorNativeImpl.o \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_ObjectAccessorImpl.o \
-  $(SHAREDSUB)org_apache_harmony_misc_accessors_StringAccessorImpl.o
+  org_apache_harmony_misc_accessors_ArrayAccessorImpl.o \
+  org_apache_harmony_misc_accessors_Malloc.o \
+  org_apache_harmony_misc_accessors_MemoryAccessorNativeImpl.o \
+  org_apache_harmony_misc_accessors_ObjectAccessorImpl.o \
+  org_apache_harmony_misc_accessors_StringAccessorImpl.o
 
 DLLNAME=$(DLLPATH)libaccessors$(HY_SHLIB_SUFFIX)
 EXPNAME=HYMISC_0.1
 
-include $(HY_HDK)/build/make/rules.mk
+include $(HY_TARGET)/hdk/build/make/rules.mk

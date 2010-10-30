@@ -17,7 +17,8 @@
 # Makefile for module 'port'
 #
 
-!include <$(HY_HDK)\build\make\defines.mak>
+HY_BIN=$(HY_TARGET)\build\classlib\portlib\native\port\# trailing slash
+!include <$(HY_TARGET)\hdk\build\make\defines.mak>
 
 LIBBASE=hyprt
 DLLNAME=$(DLLPATH)$(LIBBASE).dll
@@ -27,14 +28,16 @@ HYCFLAGS = $(HYCFLAGS) -DHYPORT_LIBRARY_DEFINE /I$(SHAREDSUB)
 HYLDFLAGS = $(HYLDFLAGS) -def:$(LIBBASE).def
 
 BUILDFILES = \
-  $(SHAREDSUB)port_copyright.obj hycpu.obj $(SHAREDSUB)hyerror.obj \
-  hyerrorhelpers.obj $(SHAREDSUB)hyexit.obj hyfile.obj hyfiletext.obj \
-  $(SHAREDSUB)hygp.obj hyipcmutex.obj hymem.obj hymmap.obj \
-  $(SHAREDSUB)hynls.obj hynlshelpers.obj hyosdump.obj $(SHAREDSUB)hyport.obj \
-  $(SHAREDSUB)hyportcontrol.obj hyportptb.obj hyshmem.obj hyshsem.obj \
-  hysl.obj hysock.obj $(SHAREDSUB)hystr.obj \
-  $(SHAREDSUB)hystrftime.obj $(SHAREDSUB)hystsl.obj hysysinfo.obj hytime.obj \
-  $(SHAREDSUB)hytlshelpers.obj hytty.obj hyvmem.obj
+  $(HY_BIN)port_copyright.obj $(HY_BIN)hycpu.obj $(HY_BIN)hyerror.obj \
+  $(HY_BIN)hyerrorhelpers.obj $(HY_BIN)hyexit.obj $(HY_BIN)hyfile.obj \
+  $(HY_BIN)hyfiletext.obj $(HY_BIN)hygp.obj $(HY_BIN)hyipcmutex.obj \
+  $(HY_BIN)hymem.obj $(HY_BIN)hymmap.obj $(HY_BIN)hynls.obj \
+  $(HY_BIN)hynlshelpers.obj $(HY_BIN)hyosdump.obj $(HY_BIN)hyport.obj \
+  $(HY_BIN)hyportcontrol.obj $(HY_BIN)hyportptb.obj $(HY_BIN)hyshmem.obj \
+  $(HY_BIN)hyshsem.obj $(HY_BIN)hysl.obj $(HY_BIN)hysock.obj \
+  $(HY_BIN)hystr.obj $(HY_BIN)hystrftime.obj $(HY_BIN)hystsl.obj \
+  $(HY_BIN)hysysinfo.obj $(HY_BIN)hytime.obj $(HY_BIN)hytlshelpers.obj \
+  $(HY_BIN)hytty.obj $(HY_BIN)hyvmem.obj
 
 MDLLIBFILES = $(MDLLIBFILES) $(LIBPATH)hythr$(HY_LINKLIB_SUFFIX)
 VIRTFILES = hyprt.res

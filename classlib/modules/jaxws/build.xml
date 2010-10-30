@@ -21,10 +21,10 @@
 <project name="JAXWS Build" default="build" basedir=".">
     <description>Build for jaxws component</description>
 
-    <property name="hy.hdk" location="${basedir}/../../deploy" />
-    <property name="hy.jdk" location="${hy.hdk}/jdk" />
-    <property name="depends.dir" location="${basedir}/../../depends" />
-    <import file="${hy.hdk}/build/ant/properties.xml" />
+    <property name="hy.component" value="classlib" />
+    <property name="hy.module" value="jaxws" />
+    <property name="hy.target" location="${basedir}/../../target" />
+    <import file="${hy.target}/hdk/build/ant/properties.xml" />
     <import file="${hy.hdk}/build/ant/depends.xml" />
 
     <target name="build" depends="check-depends" />
