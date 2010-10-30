@@ -81,8 +81,14 @@ module:
         </condition>
     </fail>
 
+    <mkdir dir="${hy.target}/hdk/build/ant" />
+    <copy todir="${hy.target}/hdk/build/ant" preservelastmodified="true">
+        <fileset dir="${common.resources}/make" includes="*.xml"/>
+    </copy>
+
     <!-- import properties for snapshot targets -->
     <import file="${hy.target}/hdk/build/ant/properties.xml" />
+    <init-hdk/>
 
     <!-- ================================
 	 target : rebuild
