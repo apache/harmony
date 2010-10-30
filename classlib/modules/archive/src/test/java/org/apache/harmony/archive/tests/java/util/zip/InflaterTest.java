@@ -83,9 +83,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Invalid input to be decompressed");
 		}
 		for (int i = 0; i < byteArray.length; i++) {
-			assertTrue(
+			assertEquals(
 					"Final decompressed data does not equal the original data",
-					byteArray[i] == outPutInf[i]);
+					outPutInf[i], byteArray[i]);
 		}
 		assertEquals("final decompressed data contained more bytes than original - finished()",
 				0, outPutInf[byteArray.length]);
@@ -105,9 +105,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			Adler32 adl = new Adler32();
 			adl.update(dictionaryArray);
 			long checkSumR = adl.getValue();
-			assertTrue(
+			assertEquals(
 					"the checksum value returned by getAdler() is not the same as the checksum returned by creating the adler32 instance",
-					checkSumR == inflateDiction.getAdler());
+					inflateDiction.getAdler(), checkSumR);
 		}
 	}
 
@@ -159,9 +159,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Input to inflate is invalid or corrupted - getTotalIn");
 		}
 		// System.out.print(deflate.getTotalOut() + " " + inflate.getTotalIn());
-		assertTrue(
+		assertEquals(
 				"the total byte in outPutBuf did not equal the byte returned in getTotalIn",
-				inflate.getTotalIn() == deflate.getTotalOut());
+				deflate.getTotalOut(), inflate.getTotalIn());
 
 		Inflater inflate2 = new Inflater();
 		int offSet = 0;// seems only can start as 0
@@ -178,9 +178,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Input to inflate is invalid or corrupted - getTotalIn");
 		}
 		// System.out.print(inflate2.getTotalIn() + " " + length);
-		assertTrue(
+		assertEquals(
 				"total byte dictated by length did not equal byte returned in getTotalIn",
-				inflate2.getTotalIn() == length);
+				length, inflate2.getTotalIn());
 	}
 
 	/**
@@ -217,12 +217,12 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Input to inflate is invalid or corrupted - getTotalIn");
 		}
 
-		assertTrue(
+		assertEquals(
 				"the sum of the bytes returned from inflate does not equal the bytes of getTotalOut()",
-				y == inflate.getTotalOut());
-		assertTrue(
+				inflate.getTotalOut(), y);
+		assertEquals(
 				"the total number of bytes to be compressed does not equal the total bytes decompressed",
-				inflate.getTotalOut() == deflate.getTotalIn());
+				deflate.getTotalIn(), inflate.getTotalOut());
 
 		// testing inflate(byte,int,int)
 		inflate.reset();
@@ -241,12 +241,12 @@ public class InflaterTest extends junit.framework.TestCase {
 			System.out
 					.println("Input to inflate is invalid or corrupted - getTotalIn");
 		}
-		assertTrue(
+		assertEquals(
 				"the sum of the bytes returned from inflate does not equal the bytes of getTotalOut()",
-				y == inflate.getTotalOut());
-		assertTrue(
+				y, inflate.getTotalOut());
+		assertEquals(
 				"the total number of bytes to be compressed does not equal the total bytes decompressed",
-				inflate.getTotalOut() == deflate.getTotalIn());
+				deflate.getTotalIn(), inflate.getTotalOut());
 	}
 
 	/**
@@ -269,9 +269,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Invalid input to be decompressed");
 		}
 		for (int i = 0; i < byteArray.length; i++) {
-			assertTrue(
+			assertEquals(
 					"Final decompressed data does not equal the original data",
-					byteArray[i] == outPutInf[i]);
+					byteArray[i], outPutInf[i]);
 		}
 		assertEquals("final decompressed data contained more bytes than original - inflateB",
 				0, outPutInf[byteArray.length]);
@@ -288,12 +288,12 @@ public class InflaterTest extends junit.framework.TestCase {
 		while (!(defEmpty.finished())) {
 			x += defEmpty.deflate(outPutBuf, x, outPutBuf.length - x);
 		}
-		assertTrue(
+		assertEquals(
 				"the total number of byte from deflate did not equal getTotalOut - inflate(byte)",
-				x == defEmpty.getTotalOut());
-		assertTrue(
+				x, defEmpty.getTotalOut());
+		assertEquals(
 				"the number of input byte from the array did not correspond with getTotalIn - inflate(byte)",
-				defEmpty.getTotalIn() == emptyArray.length);
+				emptyArray.length, defEmpty.getTotalIn());
 		Inflater infEmpty = new Inflater();
 		try {
 			while (!(infEmpty.finished())) {
@@ -306,9 +306,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Invalid input to be decompressed");
 		}
 		for (int i = 0; i < emptyArray.length; i++) {
-			assertTrue(
+			assertEquals(
 					"Final decompressed data does not equal the original data",
-					emptyArray[i] == outPutInf[i]);
+					emptyArray[i], outPutInf[i]);
 			assertEquals("Final decompressed data does not equal zero",
 					0, outPutInf[i]);
 		}
@@ -373,9 +373,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Invalid input to be decompressed");
 		}
 		for (int i = 0; i < byteArray.length; i++) {
-			assertTrue(
+			assertEquals(
 					"Final decompressed data does not equal the original data",
-					byteArray[i] == outPutInf[i]);
+					byteArray[i], outPutInf[i]);
 		}
 		assertEquals("final decompressed data contained more bytes than original - inflateB",
 				0, outPutInf[byteArray.length]);
@@ -603,9 +603,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Invalid input to be decompressed");
 		}
 		for (int i = 0; i < byteArray.length; i++) {
-			assertTrue(
+			assertEquals(
 					"Final decompressed data does not equal the original data",
-					byteArray[i] == outPutInf[i]);
+					byteArray[i], outPutInf[i]);
 		}
 		assertEquals("final decompressed data contained more bytes than original - reset",
 				0, outPutInf[byteArray.length]);
@@ -625,9 +625,9 @@ public class InflaterTest extends junit.framework.TestCase {
 			fail("Invalid input to be decompressed");
 		}
 		for (int i = 0; i < byteArray.length; i++) {
-			assertTrue(
+			assertEquals(
 					"Final decompressed data does not equal the original data",
-					byteArray[i] == outPutInf[i]);
+					byteArray[i], outPutInf[i]);
 		}
 		assertEquals("final decompressed data contained more bytes than original - reset",
 				0, outPutInf[byteArray.length]);
@@ -711,9 +711,9 @@ public class InflaterTest extends junit.framework.TestCase {
 		int length = 6;
 		Inflater inflate = new Inflater();
 		inflate.setInput(byteArray, offSet, length);
-		assertTrue(
+		assertEquals(
 				"setInputBII did not deliver the right number of bytes to the input buffer",
-				inflate.getRemaining() == length);
+				length, inflate.getRemaining());
 		// boundary check
 		inflate.reset();
 		int r = 0;

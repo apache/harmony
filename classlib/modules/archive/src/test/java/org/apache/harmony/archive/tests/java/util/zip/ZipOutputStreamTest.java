@@ -109,9 +109,8 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
         zis = new ZipInputStream(new ByteArrayInputStream(bos.toByteArray()));
         ZipEntry ze2 = zis.getNextEntry();
         zis.closeEntry();
-        assertTrue("Failed to write correct entry", ze.getName().equals(
-                ze2.getName())
-                && ze.getCrc() == ze2.getCrc());
+        assertEquals("Failed to write correct entry", ze.getName(), ze2.getName());
+        assertEquals("Failed to write correct entry", ze.getCrc(), ze2.getCrc());
         try {
             zos.putNextEntry(ze);
             fail("Entry with incorrect setting failed to throw exception");
@@ -192,8 +191,7 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
             count += r;
         }
         zis.closeEntry();
-        assertTrue("Write failed to write correct bytes", new String(b)
-                .equals(data));
+        assertEquals("Write failed to write correct bytes", new String(b), data);
 
         File f = File.createTempFile("testZip", "tst");
         f.deleteOnExit();

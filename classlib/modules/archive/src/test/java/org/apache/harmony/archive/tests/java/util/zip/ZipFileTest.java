@@ -155,7 +155,7 @@ public class ZipFileTest extends junit.framework.TestCase {
 			++c;
 			enumer.nextElement();
 		}
-		assertTrue("Incorrect number of entries returned: " + c, c == 6);
+		assertEquals("Incorrect number of entries returned: " + c, 6, c);
 
 		Enumeration<? extends ZipEntry> enumeration = zfile.entries();
 		zfile.close();
@@ -255,8 +255,8 @@ public class ZipFileTest extends junit.framework.TestCase {
 	 */
 	public void test_getName() {
 		// Test for method java.lang.String java.util.zip.ZipFile.getName()
-		assertTrue("Returned incorrect name: " + zfile.getName(), zfile
-				.getName().equals(tempFileName));
+		assertEquals("Returned incorrect name: " + zfile.getName(), tempFileName,
+		        zfile.getName());
 	}
     
     /**

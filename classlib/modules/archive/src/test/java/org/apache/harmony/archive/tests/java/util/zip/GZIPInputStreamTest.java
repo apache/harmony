@@ -142,9 +142,9 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
                 "the checkSum value of the compressed and decompressed data does not equal",
                 2074883667L, inGZIP.getChecksum().getValue());
         for (int i = 0; i < orgBuf.length; i++) {
-            assertTrue(
+            assertEquals(
                     "the decompressed data does not equal the original data decompressed",
-                    orgBuf[i] == outBuf[i]);
+                    orgBuf[i], outBuf[i]);
             // System.out.println(orgBuf[i] + " " + outBuf[i]);
         }
         int r = 0;
@@ -180,7 +180,7 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
         }
         assertEquals("Should return -1", -1, gin2.read());
         gin2.close();
-        assertTrue("Incorrectly decompressed", total == test.length);
+        assertEquals("Incorrectly decompressed", test.length, total);
 
         gin2 = new GZIPInputStream(new ByteArrayInputStream(comp), 512);
         total = 0;
@@ -189,7 +189,7 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
         }
         assertEquals("Should return -1", -1, gin2.read());
         gin2.close();
-        assertTrue("Incorrectly decompressed", total == test.length);
+        assertEquals("Incorrectly decompressed", test.length, total);
 
         gin2 = new GZIPInputStream(new ByteArrayInputStream(comp), 516);
         total = 0;
@@ -198,7 +198,7 @@ public class GZIPInputStreamTest extends junit.framework.TestCase {
         }
         assertEquals("Should return -1", -1, gin2.read());
         gin2.close();
-        assertTrue("Incorrectly decompressed", total == test.length);
+        assertEquals("Incorrectly decompressed", test.length, total);
 
         comp[40] = 0;
         gin2 = new GZIPInputStream(new ByteArrayInputStream(comp), 512);

@@ -184,9 +184,9 @@ public class InflaterInputStreamTest extends TestCase {
 		inflatIP.close();
 
 		for (int j = 0; j < orgBuffer.length; j++) {
-			assertTrue(
+			assertEquals(
 				"original compressed data did not equal decompressed data",
-				buffer[j] == orgBuffer[j]);
+				orgBuffer[j], buffer[j]);
 		}
 	}
 
@@ -433,9 +433,9 @@ public class InflaterInputStreamTest extends TestCase {
 		inflatIP2.close();
 
 		for (int j = 2; j < orgBuffer.length; j++) {
-			assertTrue(
+			assertEquals(
 				"original compressed data did not equal decompressed data",
-				buffer[j - 2] == orgBuffer[j]);
+				orgBuffer[j], buffer[j - 2]);
 		}
 	}
 
