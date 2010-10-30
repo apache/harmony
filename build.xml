@@ -865,6 +865,23 @@ harmony.java.version=${harmony.java.version}
         <delete dir="${hy.target}/test_report" />
     </target>
 
+    <target name="findbugs" depends="clean-findbugs"
+            description="Runs find bugs report">
+        <ant antfile="classlib/build.xml" target="findbugs" inheritAll="false" >
+            <propertyset refid="required.props" />
+            <property name="svn.info" value="${harmony.long.version}"/>
+            <property name="svn.revision" value="${harmony.version}"/>
+            <property name="hy.target" location="${hy.target}"/>
+            <property name="common.resources" location="common_resources" />
+            <property name="findBugs.report"
+                      location="${hy.target}/findbugs_report" />
+        </ant>
+    </target>
+
+    <target name="clean-findbugs">
+        <delete dir="${hy.target}/findbugs_report" />
+    </target>
+
     <!-- ============================================================== -->
     <!-- produces a nice looking checksum                               -->
     <!-- ============================================================== -->
