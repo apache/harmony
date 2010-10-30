@@ -175,13 +175,15 @@ Usage:
     <!-- ============================================================== -->
     <target name="fetch-depends"
         description="Fetches dependencies for all components. Note: Some of Harmony dependencies are licensed under terms other than the Apache License v2."
-        depends="fetch-depends-classlib,
+        depends="-init-hdk,
+                 fetch-depends-classlib,
                  fetch-depends-vm,
                  fetch-depends-jdktools"/>
 
     <target name="check-depends"
         description="Checks dependencies for all components."
-        depends="check-depends-classlib,
+        depends="-init-hdk,
+                 check-depends-classlib,
                  check-depends-vm,
                  check-depends-jdktools"/>
 
