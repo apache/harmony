@@ -58,6 +58,8 @@
             <echo>Checking @{dest}</echo>
             <available file="@{dest}" type="file"
                        property="@{dest}.exists" />
+            <dirname file="@{dest}" property="@{dest}.mkdir" />
+            <mkdir dir="${@{dest}.mkdir}" />
             <antcall target="-really-download">
                 <param name="src" value="@{src}" />
                 <param name="dest" value="@{dest}" />
@@ -92,7 +94,7 @@ file and put it in the specified directory.
 
     <target name="-really-download" unless="${dest}.exists">
         <echo>Fetching ${dest}</echo>
-    <get src="${src}" dest="${dest}" usetimestamp="true" verbose="true" />
+        <get src="${src}" dest="${dest}" usetimestamp="true" verbose="true" />
     </target>
 
     <target name="-remove-file-if-bad" unless="${dest}.md5.verified">
