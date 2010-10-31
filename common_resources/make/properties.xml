@@ -863,7 +863,8 @@ Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.comp
        <attribute name="jarFile"/>
        <sequential>
            <!-- Find and define findbugs task -->
-           <property name="findbugs.home" location="${basedir}/../../depends/oss/findbugs-1.3.9"/>
+           <property name="findbugs.home"
+                     location="${hy.depends}/oss/findbugs-1.3.9"/>
            <available
                classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
                classpath="${findbugs.home}/lib/findbugs-ant.jar"
