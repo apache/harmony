@@ -683,7 +683,11 @@ Usage:
     <!-- recreates distribution dir                                     -->
     <!-- ============================================================== -->
     <target name="setup" depends="init, properties">
-        <delete dir="${hy.target}"/>
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="${hy.target}">
+                <exclude name="depends/**" />
+            </fileset>
+        </delete>
         <mkdir dir="${hy.target}"/>
     </target>
 
