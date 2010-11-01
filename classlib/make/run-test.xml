@@ -18,18 +18,10 @@
 
 <project name="Harmony Test" default="test" basedir=".">
 
-    <property name="hy.hdk" location="../.." />
-    <property name="test.jre.home" location="${hy.hdk}/jdk/jre" />
-    <property file="test.properties" />
-
-    <!-- These two parameters could be assigned by user -->
-    <property name="hy.test.root" value="." />
+    <property name="hy.test.root" location="." />
     <property name="hy.component" value="test" />
     <property name="hy.module" value="toplevel" />
-    <property name="work.dir" value="${test.root}" />
-    <property name="tests.output" value="${work.dir}/report" />
-    <property name="report.dir" value="${tests.output}/html" />
-    <property name="junit.jar" value="${test.root}/junit.jar" />
+    <import file="${hy.test.root}/../ant/testproperties.xml" />
 
     <property name="gen.report" value="true" />
     <condition property="do.full.report" value="true">
@@ -45,10 +37,7 @@
         </and>
     </condition>
 
-    <import file="../ant/properties.xml" />
-
-    <target name="test"
-            depends="test-jre-vm-info,-test,check-test-result" />
+    <target name="test" depends="test-jre-vm-info,-test,check-test-result" />
 
     <target name="clean">
         <delete dir="${tests.output}" />
