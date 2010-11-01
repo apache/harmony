@@ -116,7 +116,9 @@ BUILDFILES = \
   $(HY_BIN)GB18030.obj \
   $(HY_BIN)windows_31j.obj \
   $(HY_BIN)x_MS950_HKSCS.obj \
-  $(HY_BIN)x_windows_949.obj 
+  $(HY_BIN)x_windows_949.obj \
+  $(HY_BIN)TIS_620.obj \
+  $(HY_BIN)JIS_X0201.obj
 
 VIRTFILES = hynio_char.res
 

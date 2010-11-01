@@ -40,7 +40,7 @@ BUILDFILES += IBM00858.o IBM01140.o IBM01141.o IBM01142.o IBM01143.o \
   x_IBM1123.o x_IBM1124.o x_IBM737.o x_IBM856.o x_IBM874.o x_IBM875.o \
   x_IBM922.o x_MacCyrillic.o x_MacGreek.o x_MacTurkish.o Big5.o Big5_HKSCS.o \
   EUC_KR.o GB2312.o GBK.o GB18030.o windows_31j.o x_MS950_HKSCS.o \
-  x_windows_949.o
+  x_windows_949.o TIS_620.o JIS_X0201.o
 
 DLLNAME = $(DLLPATH)libhyniochar$(HY_SHLIB_SUFFIX)
 MDLLIBFILES += $(LIBPATH)libvmi$(HY_LINKLIB_SUFFIX)
