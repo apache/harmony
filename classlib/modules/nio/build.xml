@@ -92,6 +92,7 @@
             depends="-svn-info,-compile-java,-class-patternset">
         <hy.jar.bin destfile="${hy.jdk}/jre/lib/boot/${hy.module}.jar"
                     manifest="META-INF/MANIFEST.MF">
+            <metainf prefix="META-INF/services" dir="META-INF/services" />
             <fileset refid="classes" />
             <fileset refid="common.resources" />
         </hy.jar.bin>
