@@ -163,6 +163,7 @@ public class DatagramSocket {
                     security.checkMulticast(anAddress);
                 } else {
                     security.checkConnect(anAddress.getHostName(), aPort);
+                    security.checkAccept(anAddress.getHostName(), aPort);
                 }
             }
 
