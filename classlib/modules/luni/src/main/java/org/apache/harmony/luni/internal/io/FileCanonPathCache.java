@@ -55,9 +55,29 @@ public class FileCanonPathCache {
     private static Object lock = new Object();
 
     /**
-     * Expired time.
+     * Expired time, 0 disable this cache.
      */
-    private static long timeout = 600000;
+    private static long timeout = 30000;
+
+    /**
+     * Whether to enable this cache.
+     */
+    private static boolean isEnable = true;
+
+    public static final String FILE_CANONICAL_PATH_CACHE_TIMEOUT = "org.apache.harmony.file.canonical.path.cache.timeout";
+
+    static {
+        String value = System.getProperty(FILE_CANONICAL_PATH_CACHE_TIMEOUT);
+        try {
+            timeout = Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            // use default timeout value
+        }
+
+        if (timeout <= 0) {
+            isEnable = false;
+        }
+    }
 
     /**
      * Retrieve element from cache.
@@ -68,6 +88,10 @@ public class FileCanonPathCache {
      * 
      */
     public static String get(String path) {
+        if (!isEnable) {
+            return null;
+        }
+
         CacheElement element = null;
         synchronized (lock) {
             element = cache.get(path);
@@ -104,6 +128,10 @@ public class FileCanonPathCache {
      *            the canonical path of <code>path</code>.
      */
     public static void put(String path, String canonicalPath) {
+        if (!isEnable) {
+            return;
+        }
+
         CacheElement element = new CacheElement(canonicalPath);
         synchronized (lock) {
             if (cache.size() >= CACHE_SIZE) {
@@ -120,6 +148,10 @@ public class FileCanonPathCache {
      * Remove all elements from cache.
      */
     public static void clear() {
+        if (!isEnable) {
+            return;
+        }
+
         synchronized (lock) {
             cache.clear();
             list.clear();
@@ -132,5 +164,9 @@ public class FileCanonPathCache {
 
     public static void setTimeout(long timeout) {
         FileCanonPathCache.timeout = timeout;
+        if (timeout <= 0) {
+            clear();
+            isEnable = false;
+        }
     }
 }
