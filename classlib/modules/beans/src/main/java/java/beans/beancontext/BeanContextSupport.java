@@ -1295,9 +1295,7 @@ public class BeanContextSupport extends BeanContextChildSupport implements
             readChildren(ois);
         }
 
-        synchronized (bcmListeners) {
-            deserialize(ois, bcmListeners);
-        }
+        deserialize(ois, bcmListeners);
     }
 
     /*

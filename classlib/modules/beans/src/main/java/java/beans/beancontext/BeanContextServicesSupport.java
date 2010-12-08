@@ -1070,9 +1070,7 @@ public class BeanContextServicesSupport extends BeanContextSupport implements
 
         ois.defaultReadObject();
 
-        synchronized (bcsListeners) {
-            deserialize(ois, bcsListeners);
-        }
+        deserialize(ois, bcsListeners);
     }
 
 }
