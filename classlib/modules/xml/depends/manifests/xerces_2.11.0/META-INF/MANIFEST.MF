@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Harmony XML Xerces
 Bundle-SymbolicName: org.apache.harmony.xml.xerces
-Bundle-Version: 2.10.0
+Bundle-Version: 2.11.0
 Bundle-ClassPath: resolver.jar,xercesImpl.jar,xml-apis.jar
 Eclipse-JREBundle: true
 Export-Package: javax.xml,
