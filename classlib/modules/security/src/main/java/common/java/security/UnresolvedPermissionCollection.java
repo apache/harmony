@@ -174,24 +174,20 @@ final class UnresolvedPermissionCollection extends PermissionCollection {
         ObjectInputStream.GetField fields = in.readFields();
         Map permissions = (Map)fields.get("permissions", null); //$NON-NLS-1$
         klasses = new HashMap();
-        synchronized (klasses) {
-            for (Iterator iter = permissions.entrySet().iterator(); iter
-            	.hasNext();) {
-            	Map.Entry entry = (Map.Entry) iter.next();
-	            String key = (String) entry.getKey();
-	            Collection values = (Collection) entry.getValue();
+        for (Iterator iter = permissions.entrySet().iterator(); iter.hasNext();) {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String key = (String) entry.getKey();
+            Collection values = (Collection) entry.getValue();
 
-	            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-	                UnresolvedPermission element =
-	                        (UnresolvedPermission) iterator.next();
+            for (Iterator iterator = values.iterator(); iterator.hasNext();) {
+                UnresolvedPermission element = (UnresolvedPermission) iterator.next();
 
-	                if (!element.getName().equals(key)) {
-	                    throw new InvalidObjectException(
-	                        Messages.getString("security.22")); //$NON-NLS-1$
-	                }
-	            }
-	            klasses.put(key, new HashSet(values));
-	        }
+                if (!element.getName().equals(key)) {
+                    throw new InvalidObjectException(
+                            Messages.getString("security.22")); //$NON-NLS-1$
+                }
+            }
+            klasses.put(key, new HashSet(values));
         }
     }
 }
