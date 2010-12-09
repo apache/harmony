@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
@@ -408,6 +409,25 @@ public class IdentityHashMapTest extends junit.framework.TestCase {
         assertNull(hashMap.remove((Object) null));
         assertEquals(cloneHashMap, ((IdentityHashMap) cloneHashMap)
                 .get((Object) null));
+    }
+    
+    /*
+     * Regression test for HARMONY-6419
+     */
+    public void test_underlyingMap() {
+        IdentityHashMap<String, String> ihm = new IdentityHashMap<String, String>();
+        String key = "key";
+        String value = "value";
+        ihm.put(key, value);
+
+        Set<Entry<String, String>> set = ihm.entrySet();
+        assertEquals(1, set.size());
+
+        Entry<String, String> entry = set.iterator().next();
+
+        String newValue = "newvalue";
+        entry.setValue(newValue);
+        assertSame(newValue, ihm.get(key)); 
     }
 
     // comparator for IdentityHashMap objects

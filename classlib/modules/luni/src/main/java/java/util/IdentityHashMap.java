@@ -83,8 +83,16 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
     private static final Object NULL_OBJECT = new Object();  //$NON-LOCK-1$
 
     static class IdentityHashMapEntry<K, V> extends MapEntry<K, V> {
-        IdentityHashMapEntry(K theKey, V theValue) {
-            super(theKey, theValue);
+
+        final Object iKey;
+
+        final Object[] elementData;
+
+        IdentityHashMapEntry(K theKey, V theValue, Object[] elementData) {
+            super((K) theKey == NULL_OBJECT ? null : theKey,
+                    (V) theValue == NULL_OBJECT ? null : theValue);
+            iKey = theKey;
+            this.elementData = elementData;
         }
 
         @Override
@@ -98,7 +106,7 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
                 return true;
             }
             if (object instanceof Map.Entry) {
-                Map.Entry<?, ?> entry = (Map.Entry) object;
+                Map.Entry<?, ?> entry = (Map.Entry<?, ?>) object;
                 return (key == entry.getKey()) && (value == entry.getValue());
             }
             return false;
@@ -113,6 +121,14 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
         @Override
         public String toString() {
             return key + "=" + value; //$NON-NLS-1$
+        }
+
+        public V setValue(V object) {
+            int index = findIndex(iKey, elementData);
+            if (elementData[index] == key) {
+                elementData[index + 1] = object;
+            }
+            return super.setValue(object);
         }
     }
 
@@ -208,7 +224,7 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
         @Override
         public boolean remove(Object object) {
             if (contains(object)) {
-                associatedMap.remove(((Map.Entry) object).getKey());
+                associatedMap.remove(((Map.Entry<?, ?>) object).getKey());
                 return true;
             }
             return false;
@@ -218,7 +234,7 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
         public boolean contains(Object object) {
             if (object instanceof Map.Entry) {
                 IdentityHashMapEntry<?, ?> entry = associatedMap
-                        .getEntry(((Map.Entry) object).getKey());
+                        .getEntry(((Map.Entry<?, ?>) object).getKey());
                 // we must call equals on the entry obtained from "this"
                 return entry != null && entry.equals(object);
             }
@@ -397,24 +413,15 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
      */
     @SuppressWarnings("unchecked")
     private IdentityHashMapEntry<K, V> getEntry(int index) {
-        Object key = elementData[index];
-        Object value = elementData[index + 1];
-
-        if (key == NULL_OBJECT) {
-            key = null;
-        }
-        if (value == NULL_OBJECT) {
-            value = null;
-        }
-
-        return new IdentityHashMapEntry<K, V>((K) key, (V) value);
+        return new IdentityHashMapEntry<K, V>((K) elementData[index],
+                (V) elementData[index + 1], elementData);
     }
 
     /**
      * Returns the index where the key is found at, or the index of the next
      * empty spot if the key is not found in this table.
      */
-    private int findIndex(Object key, Object[] array) {
+    private static int findIndex(Object key, Object[] array) {
         int length = array.length;
         int index = getModuloHash(key, length);
         int last = (index + length - 2) % length;
@@ -431,7 +438,7 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
         return index;
     }
 
-    private int getModuloHash(Object key, int length) {
+    private static int getModuloHash(Object key, int length) {
         return ((System.identityHashCode(key) & 0x7FFFFFFF) % (length / 2)) * 2;
     }
 
@@ -729,7 +736,7 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
             return true;
         }
         if (object instanceof Map) {
-            Map<?, ?> map = (Map) object;
+            Map<?, ?> map = (Map<?, ?>) object;
             if (size() != map.size()) {
                 return false;
             }
@@ -789,7 +796,7 @@ public class IdentityHashMap<K, V> extends AbstractMap<K, V> implements
         stream.writeInt(size);
         Iterator<?> iterator = entrySet().iterator();
         while (iterator.hasNext()) {
-            MapEntry<?, ?> entry = (MapEntry) iterator.next();
+            MapEntry<?, ?> entry = (MapEntry<?, ?>) iterator.next();
             stream.writeObject(entry.key);
             stream.writeObject(entry.value);
         }
