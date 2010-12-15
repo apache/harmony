@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.harmony.pack200.Archive.PackingFile;
 import org.apache.harmony.pack200.Archive.SegmentUnit;
@@ -92,7 +93,7 @@ public class FileBands extends BandSet {
             totalSize += file_size[i];
 
             // update modification time
-            modtime = (packingFile.getModtime()) / 1000L;
+            modtime = (packingFile.getModtime() + TimeZone.getDefault().getRawOffset()) / 1000L;
             file_modtime[i] = (int) (modtime - archiveModtime);
             if (isLatest && latestModtime < file_modtime[i]) {
                 latestModtime = file_modtime[i];
