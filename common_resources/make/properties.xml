@@ -484,7 +484,7 @@ HY_LINKLIB_SUFFIX=${linklib.suffix}
                     </and>
                 </condition>
 The Eclipse compiler class for Ant could not be found. Please place the ECJ JAR in ANT_HOME/lib.
-The JAR can be downloaded directly from eclipse.org or copied from common_resources/depends/jars/ecj_3.x folder after the fetch-depends target for jdktools has been run.
+The JAR can be downloaded directly from eclipse.org or copied from target/depends/jars/ecj_3.x folder after the fetch-depends target for jdktools has been run.
 Alternatively, you can switch to another compiler, e.g. specify '-Dhy.javac.compiler=modern' for classic javac.                
             </fail>
         </sequential>
