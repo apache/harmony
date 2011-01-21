@@ -72,7 +72,7 @@ public class PipedReaderTest extends TestCase {
     public void test_ConstructorLjava_io_PipedWriter() throws IOException {
         preader = new PipedReader(new PipedWriter());
     }
-    
+
     /**
      * @tests java.io.PipedReader#PipedReader(java.io.PipedWriter,
      *        int)
@@ -87,7 +87,7 @@ public class PipedReaderTest extends TestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
-        
+
         try {
             preader = new PipedReader(null, 0);
             fail("Should throw IllegalArgumentException"); //$NON-NLS-1$
@@ -108,7 +108,7 @@ public class PipedReaderTest extends TestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
-        
+
         try {
             preader = new PipedReader(0);
             fail("Should throw IllegalArgumentException"); //$NON-NLS-1$
@@ -200,7 +200,7 @@ public class PipedReaderTest extends TestCase {
     /**
      * @tests java.io.PipedReader#read(char[], int, int)
      */
-    public void test_read$CII_2() throws IOException {
+    public void test_read$CII_ExceptionPriority() throws IOException {
         // Regression for HARMONY-387
         PipedWriter pw = new PipedWriter();
         PipedReader obj = null;
@@ -218,7 +218,7 @@ public class PipedReaderTest extends TestCase {
     /**
      * @tests java.io.PipedReader#read(char[], int, int)
      */
-    public void test_read$CII_3() throws IOException {
+    public void test_read$CII_ExceptionPriority2() throws IOException {
         PipedWriter pw = new PipedWriter();
         PipedReader obj = null;
         try {
@@ -235,7 +235,7 @@ public class PipedReaderTest extends TestCase {
     /**
      * @tests java.io.PipedReader#read(char[], int, int)
      */
-    public void test_read$CII_4() throws IOException {
+    public void test_read$CII_ExceptionPriority3() throws IOException {
         PipedWriter pw = new PipedWriter();
         PipedReader obj = null;
         try {
@@ -249,9 +249,16 @@ public class PipedReaderTest extends TestCase {
         }
     }
 
-    /**
-     * @tests java.io.PipedReader#read(char[], int, int)
-     */
+    public void test_read$CII_ExceptionPriority4() throws IOException {
+        PipedWriter pw = new PipedWriter();
+        PipedReader pr = new PipedReader(pw);
+        try {
+            pr.read(null, -1, 1);
+            fail();
+        } catch (IndexOutOfBoundsException expected) {
+        }
+    }
+
     public void test_read_$CII_IOException() throws IOException {
         PipedWriter pw = new PipedWriter();
         PipedReader pr = new PipedReader(pw);
@@ -341,18 +348,6 @@ public class PipedReaderTest extends TestCase {
             pr.read(null, 0, 1);
             fail("should throw IOException"); //$NON-NLS-1$
         } catch (IOException e) {
-            // expected
-        } finally {
-            pw = null;
-            pr = null;
-        }
-
-        pw = new PipedWriter();
-        pr = new PipedReader(pw);
-        try {
-            pr.read(null, -1, 1);
-            fail("should throw IndexOutOfBoundsException"); //$NON-NLS-1$
-        } catch (IndexOutOfBoundsException e) {
             // expected
         } finally {
             pw = null;
