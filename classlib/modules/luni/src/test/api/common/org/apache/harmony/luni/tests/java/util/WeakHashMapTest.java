@@ -17,6 +17,8 @@
 
 package org.apache.harmony.luni.tests.java.util;
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-
 import tests.support.Support_MapTest2;
 
 public class WeakHashMapTest extends junit.framework.TestCase {
@@ -43,7 +44,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
 	Object[] valueArray = new Object[100];
 
 	WeakHashMap whm;
-	
+
     Object[] KEY_ARRAY;
 
     Object[] VALUE_ARRAY;
@@ -99,7 +100,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
 		empty.put("something", "here");
 		assertTrue("cannot get element", empty.get("something") == "here");
 	}
-	
+
 	/**
 	 * @tests java.util.WeakHashMap#WeakHashMap(java.util.Map)
 	 */
@@ -192,18 +193,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
         // Dereference a single key, then try to
         // force a collection of the weak ref'd obj
         KEY_ARRAY[50] = null;
-        int count = 0;
-        do {
-            System.gc();
-            System.gc();
-            Runtime.getRuntime().runFinalization();
-            count++;
-        } while (count <= 5 && entrySet.size() == 100);
-
-        if ((count == 5) && (entrySet.size() == 100)) {
-            // We failed (or entrySet broken), so further tests not valid.
-            return;
-        }
+        enqueueWeakReferences();
 
         assertEquals("Assert 4: Incorrect number of entries after gc", 99,
                 entrySet.size());
@@ -243,7 +233,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
         assertTrue("Assert 8:  iterator not empty", !entrySet.iterator()
                 .hasNext());
     }
-    
+
 	/**
 	 * @tests java.util.WeakHashMap#entrySet()
 	 */
@@ -269,13 +259,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
 		values = null;
 		keyArray[50] = null;
 
-		int count = 0;
-		do {
-			System.gc();
-			System.gc();
-			Runtime.getRuntime().runFinalization();
-			count++;
-		} while (count <= 5 && entrySet.size() == 100);
+        enqueueWeakReferences();
 
 		assertTrue(
 				"Incorrect number of entries returned after gc--wanted 99, got: "
@@ -313,12 +297,11 @@ public class WeakHashMapTest extends junit.framework.TestCase {
 		// java.util.WeakHashMap.put(java.lang.Object, java.lang.Object)
 		WeakHashMap map = new WeakHashMap();
 		map.put(null, "value"); // add null key
-		System.gc();
-		System.runFinalization();
+        enqueueWeakReferences();
 		map.remove("nothing"); // Cause objects in queue to be removed
 		assertEquals("null key was removed", 1, map.size());
 	}
-    
+
     /**
      * @tests java.util.WeakHashMap#putAll(java.util.Map)
      */
@@ -378,13 +361,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
 		values = null;
 		keyArray[50] = null;
 
-		int count = 0;
-		do {
-			System.gc();
-			System.gc();
-			Runtime.getRuntime().runFinalization();
-			count++;
-		} while (count <= 5 && keySet.size() == 100);
+        enqueueWeakReferences();
 
 		assertEquals("Incorrect number of keys returned after gc,", 99, keySet
 				.size());
@@ -403,7 +380,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
         Iterator iter = map.keySet().iterator();
         iter.next();
         iter.next();
-        System.gc();
+        enqueueWeakReferences();
         assertFalse("Wrong hasNext() value", iter.hasNext());
     }
 
@@ -449,19 +426,32 @@ public class WeakHashMapTest extends junit.framework.TestCase {
 		values = null;
 		keyArray[50] = null;
 
-		int count = 0;
-		do {
-			System.gc();
-			System.gc();
-			Runtime.getRuntime().runFinalization();
-			count++;
-		} while (count <= 5 && valuesCollection.size() == 100);
+        enqueueWeakReferences();
 
 		assertEquals("Incorrect number of keys returned after gc,", 99,
 				valuesCollection.size());
 	}
 
-	/**
+    /**
+     * Induce the VM to enqueue weak references into the corresponding reference
+     * queues. This guarantees that all weak hash maps can observe their own
+     * references as both cleared and enqueued.
+     *
+     * <p>This method assumes that one value enqueued implies all others will be
+     * enqueued. This behavior isn't specified, and this method may return too
+     * early on some VMs.
+     */
+    private void enqueueWeakReferences() {
+        ReferenceQueue<Object> queue = new ReferenceQueue<Object>();
+        new WeakReference<Object>(new Object(), queue);
+        System.gc();
+        try {
+            queue.remove(200); // '200' shouldn't be necessary, but works on more VMs
+        } catch (InterruptedException e) {
+        }
+    }
+
+    /**
 	 * Sets up the fixture, for example, open a network connection. This method
 	 * is called before a test is executed.
 	 */
