@@ -317,7 +317,7 @@ public class SHA1PRNG_SecureRandomImpl extends SecureRandomSpi implements
                 seed[i] = 0;
             }
 
-            bits = seedLength << 3 + 64; // transforming # of bytes into # of bits
+            bits = (seedLength << 3) + 64; // transforming # of bytes into # of bits
 
             // putting # of bits into two last words (14,15) of 16 word frame in 
             // seed or copies array depending on total length after padding
